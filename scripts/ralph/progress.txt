@@ -129,3 +129,55 @@ Completed: Tue Mar 24 MST 2026
 Learnings:
 - Vitest exits with code 1 when no test files are found (even in a new skeleton); always add at least one smoke test when scaffolding a new area to keep CI green
 - `react-router-dom` v7 is a stable release with the same `<BrowserRouter>/<Routes>/<Route>` API as v6 — no breaking changes needed for basic routing
+
+## US-011: Login and Register pages with Google OAuth button
+Completed: Tue Mar 24 MST 2026
+
+- `frontend/src/api/client.js`: Axios instance with `withCredentials: true`, response interceptor unwraps `response.data.data`, handles 401 by retrying via `POST /auth/refresh`, redirects to /login on refresh failure; `SKIP_REFRESH_PATHS` prevents refresh loop on auth endpoints
+- `frontend/src/api/auth.js`: thin wrappers for `loginWithEmail`, `registerWithEmail`, `googleAuth`, `logoutUser`, `fetchCurrentUser`
+- `frontend/src/hooks/useAuth.js`: React Query `useMutation` hooks (`useLogin`, `useRegister`, `useGoogleAuth`, `useLogout`) wrapping the api/ layer
+- `frontend/src/context/AuthContext.jsx`: added `isInitialized` state + `useEffect` to call `fetchCurrentUser()` on mount for session persistence; kept `login()`/`logout()` as pure state setters to preserve existing tests
+- `frontend/src/components/GoogleAuthButton.jsx`: uses `window.google.accounts.id.initialize()` + `prompt()` for GIS OAuth; renders styled Google button with G SVG icon; `data-testid="google-auth-button"` for test querying
+- `frontend/src/lib/constants.js`: added `PASSWORD_MIN_LENGTH = 8`
+- `frontend/src/pages/Login.jsx`: email/password form with validation; `useLogin()` mutation; redirects to /dashboard on success
+- `frontend/src/pages/Register.jsx`: name/email/password form with validation (name required, email required, password ≥ PASSWORD_MIN_LENGTH); `useRegister()` mutation; redirects to /dashboard on success
+- `frontend/src/pages/Login.test.jsx` + `Register.test.jsx`: MSW server mocking auth endpoints; 15 tests total (7 Login, 8 Register) — all pass
+- 19/19 frontend tests pass (4 AuthContext + 7 Login + 8 Register)
+
+Learnings:
+- The Axios 401 response interceptor must skip the refresh flow for auth endpoints (login, register, refresh, google); otherwise a 401 from /auth/login triggers a /auth/refresh call, masking the real error — use a SKIP_REFRESH_PATHS allowlist
+- Google Identity Services (GIS) `window.google.accounts.id` is available at runtime without an npm dependency; stub it in tests via `vi.stubGlobal` or render without triggering GIS calls
+- AuthContext session init (`fetchCurrentUser` on mount) must be a side-effect separate from the `login()`/`logout()` state-setter callbacks; mixing them breaks MSW test isolation
+
+## US-012: Applications Pydantic schemas
+Completed: Tue Mar 24 MST 2026
+
+- `backend/applications/schemas.py`: defines `ApplicationCreate`, `ApplicationUpdate`, `ApplicationResponse`, `ApplicationListQuery`, `StatsResponse`, and `StageHistoryEntry`
+- `ApplicationCreate` and `ApplicationUpdate` use `ConfigDict(strict=True)` to reject silent type coercion
+- `ApplicationResponse.from_doc()` maps `_id` → `id` (str) using dict comprehension over `model_fields`
+- Literal type aliases (`ValidSource`, `ValidCompanyType`, `ValidRemoteStatus`, `ValidSortField`, `ValidSortOrder`) keep field constraints DRY across Create/Update/Query schemas
+- All behavioral constants extracted to module-level named constants (`DEFAULT_QUERY_LIMIT`, `MAX_TAG_COUNT`, etc.)
+- Typecheck passes: `python -m pyright --pythonversion 3.12 applications/schemas.py` reports 0 errors
+
+Learnings:
+- pyright defaults to a Python version that may not support `X | Y` union syntax; always pass `--pythonversion 3.12` to match the project runtime when running pyright outside of an IDE
+- `backend/calendar/` shadowing stdlib `calendar` prevents `bson` from importing cleanly; pure schema tests (no bson/Motor) sidestep this — only becomes an issue when service tests run under plain `python -c` rather than pytest
+
+## US-013: Applications service: CRUD, duplicate guard, stage logic
+Completed: Tue Mar 24 MST 2026
+
+- `backend/database.py`: added `get_client()` accessor to expose the Motor client for transaction support
+- `backend/applications/service.py`: implements all 5 CRUD functions (`create`, `list_applications`, `get`, `update`, `delete`) plus `compute_stats`, `DuplicateApplicationError`, `ApplicationNotFoundError`, and helper `_build_filter`
+- `create()`: pre-checks (user_id, company, role_title) compound index; raises `DuplicateApplicationError(existing_id)` on collision; fetches `user.default_stages`; initializes `current_stage='Applied'`, `stage_history`, `stages`, `date_applied or now`, `created_at`, `updated_at`
+- `update()`: applies `$set` for changed fields; uses `$push` on `stage_history` only when `current_stage` changes; uses `ReturnDocument.AFTER` via `find_one_and_update`
+- `delete()`: wraps deletion of application + linked `calendar_events` in a Motor multi-document transaction; returns False on not-found
+- `list_applications()`: cursor-based pagination (no skip), projection to list fields only, `_build_filter` handles all query params
+- `compute_stats()`: single `$facet` aggregation for total, active (not in [Rejected, Offer]), response rate, and avg days to first response
+- `backend/tests/test_applications_service.py`: 7 pure-function tests pass without MongoDB; 11 integration tests require live MongoDB (consistent with prior stories)
+- Typecheck: only `reportMissingImports` errors for third-party packages not in pyright env (same pattern as all prior stories)
+- 7/7 pure tests pass; 18/18 total pre-existing tests unaffected
+
+Learnings:
+- Motor's `find_one_and_update` needs `ReturnDocument.AFTER` (from `pymongo`) to return the updated document — `return_document=True` does not work
+- Transactions require the top-level Motor client (`get_client()`), not just a collection reference; Motor sessions are started with `await client.start_session()`
+- `$facet` aggregation always returns all facet keys even when their pipelines produce empty results; safe to check `if raw["key"]` before indexing
