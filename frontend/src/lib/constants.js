@@ -20,4 +20,8 @@ export const BANNER_AUTO_DISMISS_MS = 8_000;
 
 export const QUERY_STALE_TIME_MS = 30_000;
 
+export const STATS_STALE_TIME_MS = 60_000;
+
 export const VIRTUALIZED_LIST_THRESHOLD = 50;
+
+export const PASSWORD_MIN_LENGTH = 8;
