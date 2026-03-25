@@ -226,3 +226,15 @@ Completed: Wed Mar 25 MST 2026
 Learnings:
 - `<input type="date">` does not have the ARIA role "textbox" in JSDOM/RTL — query it via `getByLabelText` with an explicit `aria-label` attribute
 - Multi-select via checkboxes (not `<select multiple>`) is more testable with RTL: `getByRole("checkbox", { name: "Applied" })` works because the checkbox is wrapped in a label with that text
+
+## US-017: ApplicationList component with react-window virtualization
+Completed: Wed Mar 25 MST 2026
+
+- `frontend/src/components/ApplicationList.jsx`: `FixedSizeList` from react-window (itemSize=64, height=600); each row renders company, role, StagePill badge, date applied, source icon; amber dot (`data-testid="stale-indicator"`) on rows with `updated_at > STALE_APPLICATION_DAYS (14) days ago`; column headers (Company, Role, Stage, Date Applied) are sortable buttons that update `sort_by` + `sort_order` URL params; clicking a row calls `onSelect` with the full application object; skeleton (animate-pulse) while loading; "No applications match your filters." empty state
+- `frontend/src/components/ApplicationList.test.jsx`: 7 tests — render company/role, stale indicator only for old rows (vi.setSystemTime freeze), onSelect called with app object, empty state, column headers render (wait for data before asserting), sort URL update, skeleton while loading
+- 42/42 frontend tests pass
+
+Learnings:
+- Column headers in ApplicationList only render after data loads (early return shows skeleton during isLoading); tests that assert on column header buttons must await data first via `screen.findByText("some data row text")`
+- `vi.setSystemTime(NOW)` in the test module (not inside describe/it) freezes `Date.now()` globally for all tests in the file, making stale indicator calculations deterministic
+- react-window `FixedSizeList` uses explicit `height` and `itemSize` props rather than DOM layout measurements, so it renders correctly in JSDOM test environments without mocking ResizeObserver
