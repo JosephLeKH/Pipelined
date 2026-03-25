@@ -76,3 +76,15 @@ Learnings:
 - slowapi requires `request: Request` as an explicit parameter on rate-limited FastAPI handlers; FastAPI injects it automatically but it must be declared in the signature
 - FastAPI `Cookie(default=None)` reads cookie by parameter name (underscores preserved), so `refresh_token: str | None = Cookie(default=None)` correctly reads cookie named `refresh_token`
 - All router tests require the `client` fixture which triggers `app` (session-scoped) → `connect()` → sets `db`; the `clean_db` autouse fixture then attempts `list_collection_names`, which times out without MongoDB — same constraint as DB tests in prior stories
+
+## US-007: Google OAuth endpoint
+Completed: Tue Mar 24 MST 2026
+
+- `backend/auth/service.py`: added `GoogleTokenError`, `GOOGLE_TOKENINFO_URL`, `google_verify_id_token()` (calls Google tokeninfo via httpx.AsyncClient, raises on non-200), and `get_or_create_google_user()` (asyncio.gather lookup by google_id + email, links google_id to existing email accounts, creates new user otherwise)
+- `backend/auth/router.py`: added `POST /api/auth/google` endpoint — verifies token via service, upserts user, sets JWT httpOnly cookies, returns 200 + UserResponse; maps GoogleTokenError → 401
+- `backend/tests/test_auth_google.py`: 2 pure-function tests (pass without MongoDB) + 6 integration tests (structurally correct, require live MongoDB)
+- 2/2 pure-function tests pass; 6 integration tests require live MongoDB (same constraint as US-005/006)
+
+Learnings:
+- Mocking httpx.AsyncClient context manager requires setting both `__aenter__` and `__aexit__` as AsyncMock; the mock must be passed as the `return_value` of the patched `httpx.AsyncClient` constructor
+- Patching at `auth.service.httpx.AsyncClient` (the import site) rather than `httpx.AsyncClient` ensures the mock intercepts calls inside the service module
