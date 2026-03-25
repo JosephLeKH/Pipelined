@@ -6,8 +6,9 @@ from fastapi import APIRouter, Cookie, Depends, HTTPException, Request, Response
 
 from auth import service as auth_service
 from auth.dependencies import get_current_user
-from auth.schemas import LoginRequest, RegisterRequest, UserResponse
+from auth.schemas import GoogleAuthRequest, LoginRequest, RegisterRequest, UserResponse
 from auth.service import (
+    GoogleTokenError,
     REFRESH_TOKEN_TYPE,
     DuplicateEmailError,
     create_access_token,
@@ -147,4 +148,28 @@ async def refresh(
         samesite="lax",
     )
     logger.info("token_refreshed", user_id=payload.sub)
+    return {"data": UserResponse.from_doc(user)}
+
+
+@router.post("/google", status_code=200)
+async def google_auth(body: GoogleAuthRequest, response: Response) -> dict:
+    """Sign in or register with a Google ID token."""
+    try:
+        claims = await auth_service.google_verify_id_token(body.id_token)
+    except GoogleTokenError:
+        raise HTTPException(
+            status_code=401,
+            detail={
+                "code": "INVALID_GOOGLE_TOKEN",
+                "message": "Google token verification failed.",
+            },
+        )
+
+    google_id: str = claims["sub"]
+    email: str = claims["email"]
+    display_name: str = claims.get("name") or email.split("@")[0]
+
+    user = await auth_service.get_or_create_google_user(google_id, email, display_name)
+    _set_auth_cookies(response, str(user["_id"]))
+    logger.info("google_user_authenticated", user_id=str(user["_id"]))
     return {"data": UserResponse.from_doc(user)}
