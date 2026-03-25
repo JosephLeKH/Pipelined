@@ -213,3 +213,16 @@ Learnings:
 - Axios response interceptor `(r) => r.data.data` silently drops `meta` from list responses — the fix is to detect the `meta` key and return the full envelope for list responses only; single-resource responses still unwrap cleanly
 - Empty 204 response bodies: `response.data` is `""` (empty string) in axios, not `null` or `undefined`; guard with `if (!body) return undefined` before accessing `body.data`
 - React Query `useQuery` `enabled: Boolean(id)` prevents the query from running when `id` is falsy (undefined/null) — important for detail views that depend on a selected item
+
+## US-016: StatsBar and FilterBar components
+Completed: Wed Mar 25 MST 2026
+
+- `frontend/src/components/StatsBar.jsx`: renders 4 MetricCard sub-components (Total Applied, Active, Response Rate, Avg Days to Response); uses `useApplicationStats()` from hooks; skeleton state shows `animate-pulse` divs while `isLoading=true`; response_rate formatted as `(x * 100).toFixed(1)%`; avg_days displays "—" when null
+- `frontend/src/components/FilterBar.jsx`: stage multi-select (checkboxes, STAGE_COLORS keys), company type multi-select (startup/mid/enterprise/gov/nonprofit/other), remote status multi-select (remote/hybrid/onsite/unknown), date range (date_from/date_to with type="date"); all synced to URL search params via `useSearchParams` with `replace: true`; reads initial state from URL on mount via `searchParams.getAll()` / `searchParams.get()`
+- `frontend/src/components/StatsBar.test.jsx`: 3 tests — skeleton while loading, 4 metric cards with correct values, "—" for null avg_days
+- `frontend/src/components/FilterBar.test.jsx`: 5 tests — controls render, checkbox updates URL, initial stage from URL, initial date range from URL, uncheck deselects
+- 35/35 frontend tests pass
+
+Learnings:
+- `<input type="date">` does not have the ARIA role "textbox" in JSDOM/RTL — query it via `getByLabelText` with an explicit `aria-label` attribute
+- Multi-select via checkboxes (not `<select multiple>`) is more testable with RTL: `getByRole("checkbox", { name: "Applied" })` works because the checkbox is wrapped in a label with that text
