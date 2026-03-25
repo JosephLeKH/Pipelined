@@ -112,3 +112,20 @@ Completed: Tue Mar 24 MST 2026
 Learnings:
 - `docker compose` healthcheck on MongoDB uses `mongosh --eval "db.adminCommand('ping')"` (mongo:7 ships mongosh); `mongo` CLI is not included in mongo:7+
 - Override `MONGO_URI` in the compose `environment` block (not just env_file) so the in-network hostname `mongo` takes precedence over the `.env` file's localhost value
+
+## US-010: Frontend skeleton: Vite + React + TailwindCSS + routing
+Completed: Tue Mar 24 MST 2026
+
+- `frontend/package.json`: exact-version deps — react 18.3.1, react-dom, react-router-dom 7.6.0, @tanstack/react-query 5.83.0, axios 1.8.4, tailwindcss 3.4.17, lucide-react, react-window, date-fns; devDeps include vite 6.3.5, @vitejs/plugin-react, vitest, @testing-library/* , msw, postcss, autoprefixer
+- `frontend/src/main.jsx`: mounts `<App>` inside `<StrictMode><BrowserRouter><QueryClientProvider><AuthProvider>`; QueryClient configured with 30s staleTime + retry:1
+- `frontend/src/App.jsx`: all 6 routes defined; `ProtectedRoute` wraps /dashboard and /calendar; all pages lazy-loaded via `React.lazy` + `<Suspense>`; `ProtectedRoute` redirects to /login when `user === null`
+- `frontend/src/context/AuthContext.jsx`: `AuthProvider` + `useAuth` hook; user state is null by default; exposes `login(userData)` and `logout()` callbacks
+- `frontend/tailwind.config.js`: content targets `./index.html` + `./src/**/*.{js,jsx}`
+- `frontend/postcss.config.js`, `frontend/src/index.css` (@tailwind directives)
+- `frontend/src/lib/constants.js`: STAGE_COLORS, DEFAULT_STAGE_COLOR, STALE_APPLICATION_DAYS, BANNER_AUTO_DISMISS_MS, QUERY_STALE_TIME_MS, VIRTUALIZED_LIST_THRESHOLD
+- Stub pages for all 6 routes (LandingPage, Login, Register, Dashboard, Calendar, JobBoard)
+- 4/4 AuthContext tests pass; `npm run build` succeeds (Vite 6, 91 modules, CSS generated)
+
+Learnings:
+- Vitest exits with code 1 when no test files are found (even in a new skeleton); always add at least one smoke test when scaffolding a new area to keep CI green
+- `react-router-dom` v7 is a stable release with the same `<BrowserRouter>/<Routes>/<Route>` API as v6 — no breaking changes needed for basic routing
