@@ -88,3 +88,27 @@ Completed: Tue Mar 24 MST 2026
 Learnings:
 - Mocking httpx.AsyncClient context manager requires setting both `__aenter__` and `__aexit__` as AsyncMock; the mock must be passed as the `return_value` of the patched `httpx.AsyncClient` constructor
 - Patching at `auth.service.httpx.AsyncClient` (the import site) rather than `httpx.AsyncClient` ensures the mock intercepts calls inside the service module
+
+## US-008: Extension token endpoint and rate limiting middleware
+Completed: Tue Mar 24 MST 2026
+
+- `backend/auth/router.py`: added `GET /api/auth/extension-token` — requires `get_current_user` dependency (valid access-token cookie), returns `{ data: { token: <15-min JWT> } }` via `create_access_token`
+- `backend/middleware/rate_limit.py`: added `RATE_STANDARD`, `RATE_AI`, `RATE_AUTH` constants derived from `settings`; docstring documents the three tiers (60/min, 10/min, 5/min)
+- `backend/main.py`: replaced `_rate_limit_exceeded_handler` with custom `_rate_limit_handler` that returns `{ "error": { "code": "RATE_LIMIT_EXCEEDED", "message": "..." } }` (standard error envelope) on 429
+- 10/10 pure-function tests pass; DB-dependent tests require live MongoDB (same constraint as all prior stories)
+
+Learnings:
+- FastAPI's `add_exception_handler` accepts any async callable matching `(Request, Exception) -> Response`; no need to import the default slowapi handler when replacing it with a custom one
+- `RateLimitExceeded.detail` contains the human-readable rate limit string (e.g., "5 per 1 minute") — useful for the error message
+
+## US-009: Docker and docker-compose for local development
+Completed: Tue Mar 24 MST 2026
+
+- `backend/Dockerfile`: two-stage build (builder installs deps into /install, runtime copies them in); non-root `appuser` created via addgroup/adduser; uvicorn entrypoint on port 8000
+- `backend/docker-compose.yml`: `app` service (FastAPI, hot-reload via `--reload` + volume mount) depends on `mongo` service (mongo:7 with healthcheck); `MONGO_URI` overridden to `mongodb://mongo:27017` so the app connects to the compose network, not localhost
+- `.env.example` at repo root: all Settings fields with placeholder values (covers DB, auth, OpenAI, GitHub, rate-limiting, CORS)
+- 8/8 pure-function tests still pass; no Python changes so typecheck trivially passes
+
+Learnings:
+- `docker compose` healthcheck on MongoDB uses `mongosh --eval "db.adminCommand('ping')"` (mongo:7 ships mongosh); `mongo` CLI is not included in mongo:7+
+- Override `MONGO_URI` in the compose `environment` block (not just env_file) so the in-network hostname `mongo` takes precedence over the `.env` file's localhost value
