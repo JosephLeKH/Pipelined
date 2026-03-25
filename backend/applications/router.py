@@ -9,6 +9,7 @@ from applications.schemas import (
     ApplicationListQuery,
     ApplicationResponse,
     ApplicationUpdate,
+    StageAddRequest,
     StatsResponse,
     ValidCompanyType,
     ValidRemoteStatus,
@@ -17,7 +18,7 @@ from applications.schemas import (
     DEFAULT_QUERY_LIMIT,
     MAX_QUERY_LIMIT,
 )
-from applications.service import DuplicateApplicationError
+from applications.service import ActiveStageError, DuplicateApplicationError
 from auth.dependencies import get_current_user
 
 logger = structlog.get_logger()
@@ -132,3 +133,37 @@ async def delete_application(
     if not deleted:
         raise HTTPException(status_code=404, detail=APP_NOT_FOUND_DETAIL)
     return Response(status_code=204)
+
+
+@router.post("/{app_id}/stages", status_code=200)
+async def add_stage(
+    app_id: str,
+    body: StageAddRequest,
+    user: dict = Depends(get_current_user),
+) -> dict:
+    """Add a custom stage at the given position in the application's stages array."""
+    user_id = str(user["_id"])
+    stages = await app_service.add_stage(user_id, app_id, body.name, body.position)
+    if stages is None:
+        raise HTTPException(status_code=404, detail=APP_NOT_FOUND_DETAIL)
+    return {"data": {"stages": stages}}
+
+
+@router.delete("/{app_id}/stages/{stage_name}", status_code=200)
+async def remove_stage(
+    app_id: str,
+    stage_name: str,
+    user: dict = Depends(get_current_user),
+) -> dict:
+    """Remove a stage from the application's stages array. Returns 409 if stage is currently active."""
+    user_id = str(user["_id"])
+    try:
+        stages = await app_service.remove_stage(user_id, app_id, stage_name)
+    except ActiveStageError:
+        raise HTTPException(
+            status_code=409,
+            detail={"code": "STAGE_ACTIVE", "message": "Cannot remove the currently active stage."},
+        )
+    if stages is None:
+        raise HTTPException(status_code=404, detail=APP_NOT_FOUND_DETAIL)
+    return {"data": {"stages": stages}}

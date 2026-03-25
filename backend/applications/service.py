@@ -37,6 +37,10 @@ class ApplicationNotFoundError(Exception):
     """Raised when a requested application does not exist for this user."""
 
 
+class ActiveStageError(Exception):
+    """Raised when attempting to remove the currently active stage."""
+
+
 async def _fetch_user_stages(uid: ObjectId) -> list[str]:
     """Return the user's default_stages, falling back to [INITIAL_STAGE]."""
     user = await get_user_by_id(str(uid))
@@ -185,6 +189,45 @@ async def delete(user_id: str, app_id: str) -> bool:
 
     logger.info("application_deleted", user_id=user_id, app_id=app_id)
     return True
+
+
+async def add_stage(user_id: str, app_id: str, name: str, position: int) -> list[str] | None:
+    """Insert a stage at the given position. Returns updated stages list, or None if not found."""
+    uid = ObjectId(user_id)
+    aid = ObjectId(app_id)
+    apps = get_collection("applications")
+    result = await apps.find_one_and_update(
+        {"_id": aid, "user_id": uid},
+        {"$push": {"stages": {"$each": [name], "$position": position}}},
+        return_document=ReturnDocument.AFTER,
+        projection={"stages": 1},
+    )
+    if result is None:
+        return None
+    logger.info("stage_added", user_id=user_id, app_id=app_id, stage=name)
+    return result["stages"]
+
+
+async def remove_stage(user_id: str, app_id: str, name: str) -> list[str] | None:
+    """Remove a stage by name. Raises ActiveStageError if it is the current stage. Returns updated list."""
+    uid = ObjectId(user_id)
+    aid = ObjectId(app_id)
+    apps = get_collection("applications")
+    doc = await apps.find_one({"_id": aid, "user_id": uid}, projection={"current_stage": 1, "stages": 1})
+    if doc is None:
+        return None
+    if doc.get("current_stage") == name:
+        raise ActiveStageError
+    result = await apps.find_one_and_update(
+        {"_id": aid, "user_id": uid},
+        {"$pull": {"stages": name}},
+        return_document=ReturnDocument.AFTER,
+        projection={"stages": 1},
+    )
+    if result is None:
+        return None
+    logger.info("stage_removed", user_id=user_id, app_id=app_id, stage=name)
+    return result["stages"]
 
 
 async def compute_stats(user_id: str) -> dict:
