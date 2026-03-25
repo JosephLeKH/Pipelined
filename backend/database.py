@@ -34,6 +34,13 @@ async def disconnect() -> None:
         client = None
 
 
+def get_client() -> AsyncIOMotorClient:
+    """Return the active Motor client (required for transactions)."""
+    if client is None:
+        raise RuntimeError("Database not connected. Call connect() first.")
+    return client
+
+
 def get_collection(name: str):
     """Return a collection reference from the active database."""
     if db is None:
