@@ -10,6 +10,7 @@ from fastapi.responses import JSONResponse
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 
+from applications.router import router as applications_router
 from auth.router import router as auth_router
 from config import settings
 from database import connect, disconnect, ensure_indexes
@@ -71,6 +72,7 @@ def create_app() -> FastAPI:
         return {"status": "ok"}
 
     app.include_router(auth_router)
+    app.include_router(applications_router)
 
     return app
 
