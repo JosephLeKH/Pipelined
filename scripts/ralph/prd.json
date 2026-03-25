@@ -1,0 +1,695 @@
+{
+  "project": "Pipelined",
+  "branchName": "ralph/pipelined-v1",
+  "description": "Pipelined v1 — Job application tracking platform: FastAPI backend, React SPA, MongoDB, Chrome Extension MV3",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Initialize monorepo directory structure",
+      "description": "As a developer, I need the monorepo skeleton in place so all subsequent stories have the correct directory layout to write into.",
+      "acceptanceCriteria": [
+        "Create /backend, /frontend, /extension, /shared directories",
+        "/backend has __init__.py, /backend/auth, /backend/applications, /backend/calendar, /backend/jobs, /backend/parsing, /backend/middleware, /backend/tests subdirectories",
+        "/frontend/src has api/, context/, hooks/, pages/, components/, lib/ subdirectories",
+        "/extension has content/boards/, background/, popup/, tests/ subdirectories",
+        ".gitignore covers Python (__pycache__, .env, *.pyc), Node (node_modules, dist), and OS artifacts",
+        "Typecheck passes"
+      ],
+      "priority": 1,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-002",
+      "title": "FastAPI app skeleton with health endpoint and CORS",
+      "description": "As a developer, I need a running FastAPI app with CORS and a health check so deployment infrastructure can verify the service is up.",
+      "acceptanceCriteria": [
+        "backend/main.py exports a create_app() factory function",
+        "GET /health returns 200 { status: 'ok' }",
+        "CORS middleware allows frontend origin (configurable via ALLOWED_ORIGINS env var)",
+        "Lifespan events connect/disconnect the Motor DB client",
+        "backend/requirements.txt includes: fastapi, uvicorn[standard], motor, pydantic-settings, pyjwt, bcrypt, httpx, openai, apscheduler, slowapi, structlog",
+        "Typecheck passes"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-003",
+      "title": "Motor async client and MongoDB index creation",
+      "description": "As a developer, I need the async Motor client initialized with proper connection pooling and all required indexes created on startup.",
+      "acceptanceCriteria": [
+        "backend/config.py uses Pydantic BaseSettings; reads MONGO_URI, MONGO_DB_NAME, JWT_SECRET, OPENAI_API_KEY, GOOGLE_CLIENT_ID, GITHUB_TOKEN from env",
+        "backend/database.py has connect(), disconnect(), get_collection(name) functions",
+        "Motor client configured with maxPoolSize=50, retryWrites=True, serverSelectionTimeoutMS=5000",
+        "ensure_indexes() creates all indexes: users (email unique, google_id sparse unique), applications (user_date compound, duplicate_guard compound unique, user_updated), calendar_events (user_date, app_id), job_listings (url_dedup unique, stale_date, filters)",
+        "ensure_indexes() is called in the FastAPI lifespan startup",
+        "Typecheck passes"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-004",
+      "title": "Auth Pydantic schemas",
+      "description": "As a developer, I need the auth request/response Pydantic models so the router and service can reference typed contracts.",
+      "acceptanceCriteria": [
+        "backend/auth/schemas.py defines: RegisterRequest (email, password, display_name), LoginRequest (email, password), GoogleAuthRequest (id_token), UserResponse (id, email, display_name, default_stages), TokenPayload (sub, exp, type)",
+        "All request schemas use ConfigDict(strict=True)",
+        "UserResponse.from_doc() classmethod maps _id to id as string and excludes password_hash",
+        "Typecheck passes"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-005",
+      "title": "Auth service: password hashing, JWT, and user CRUD",
+      "description": "As a developer, I need the auth business logic layer so routers can delegate JWT creation, password validation, and user creation to a service.",
+      "acceptanceCriteria": [
+        "backend/auth/service.py has: hash_password(plain), verify_password(plain, hashed), create_access_token(user_id), create_refresh_token(user_id), decode_token(token)",
+        "bcrypt work factor is 12",
+        "Access token TTL is 15 minutes, refresh token TTL is 7 days (from config)",
+        "create_user(email, password, display_name) inserts into users collection with default_stages=['Applied','Phone Screen','Onsite','Offer','Rejected']",
+        "get_user_by_email(email) and get_user_by_id(user_id) return user doc or None",
+        "DuplicateEmailError domain exception defined and raised on duplicate email",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-006",
+      "title": "Auth router: register, login, logout, me, refresh",
+      "description": "As a user, I want to register, log in, and log out via email/password so I can access my dashboard.",
+      "acceptanceCriteria": [
+        "POST /api/auth/register: creates user, returns 201 + UserResponse, sets httpOnly access + refresh cookies",
+        "POST /api/auth/login: validates credentials, returns 200 + UserResponse, sets cookies; returns 401 on wrong password",
+        "POST /api/auth/logout: clears both cookies, returns 204",
+        "POST /api/auth/refresh: validates refresh token cookie, issues new access token cookie, returns 200",
+        "GET /api/auth/me: returns current user profile (requires valid access token)",
+        "backend/auth/dependencies.py defines get_current_user() Depends callable that decodes JWT from cookie",
+        "HTTPException(401) raised when token is missing or expired",
+        "Rate limiting: 5/minute on register and login",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-007",
+      "title": "Google OAuth endpoint",
+      "description": "As a user, I want to sign in with Google so I don't need to create a password.",
+      "acceptanceCriteria": [
+        "POST /api/auth/google accepts { id_token } in request body",
+        "Backend verifies ID token via Google tokeninfo endpoint (GET https://oauth2.googleapis.com/tokeninfo?id_token=...)",
+        "If user exists (by google_id or email), retrieves and logs in; otherwise creates new user with google_id set",
+        "Returns 200 + UserResponse + sets JWT cookies on success",
+        "Returns 401 if Google token verification fails",
+        "Uses httpx.AsyncClient for the verification call (no requests library)",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 7,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-008",
+      "title": "Extension token endpoint and rate limiting middleware",
+      "description": "As a developer, I need a short-lived extension token endpoint and rate limiting so the extension can authenticate and the API is protected from abuse.",
+      "acceptanceCriteria": [
+        "GET /api/auth/extension-token requires valid access token cookie, returns { data: { token: '...' } } with a 15-minute JWT",
+        "backend/middleware/rate_limit.py configures slowapi: 60/minute standard, 10/minute AI endpoints, 5/minute auth endpoints",
+        "Rate limit middleware mounted in main.py",
+        "429 response uses the standard error envelope: { error: { code: 'RATE_LIMIT_EXCEEDED', message: '...' } }",
+        "Typecheck passes"
+      ],
+      "priority": 8,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-009",
+      "title": "Docker and docker-compose for local development",
+      "description": "As a developer, I need Docker support so I can run the full backend stack locally without manual dependency setup.",
+      "acceptanceCriteria": [
+        "backend/Dockerfile uses multi-stage build: python:3.12-slim, pip install from requirements.txt, non-root user, uvicorn entrypoint",
+        "backend/docker-compose.yml defines: app service (FastAPI) and mongo service (mongo:7), with volume mount for hot reload",
+        "docker compose up starts the app on port 8000 and MongoDB on port 27017",
+        ".env.example file at repo root lists all required env vars with placeholder values",
+        "Typecheck passes"
+      ],
+      "priority": 9,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-010",
+      "title": "Frontend skeleton: Vite + React + TailwindCSS + routing",
+      "description": "As a developer, I need the React app scaffolded with routing and providers so frontend pages can be built on top of a working shell.",
+      "acceptanceCriteria": [
+        "frontend/package.json includes: react, react-dom, react-router-dom, @tanstack/react-query, axios, tailwindcss, lucide-react, react-window, date-fns",
+        "frontend/src/main.jsx renders App inside BrowserRouter, QueryClientProvider, AuthProvider",
+        "frontend/src/App.jsx defines routes: /, /dashboard (protected), /calendar (protected), /jobs, /login, /register",
+        "ProtectedRoute wrapper redirects to /login if user is not authenticated",
+        "frontend/src/context/AuthContext.jsx exports AuthProvider and useAuth hook; user state is null when not logged in",
+        "frontend/tailwind.config.js configured for src/ directory",
+        "npm run dev starts Vite dev server; npm run build succeeds",
+        "Typecheck passes"
+      ],
+      "priority": 10,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-011",
+      "title": "Login and Register pages with Google OAuth button",
+      "description": "As a user, I want to log in or register via Google or email/password so I can access the dashboard.",
+      "acceptanceCriteria": [
+        "frontend/src/pages/Login.jsx renders a Google OAuth button and email/password form",
+        "frontend/src/pages/Register.jsx renders a Google OAuth button and email/password/name form",
+        "frontend/src/api/auth.js exports: register(body), login(body), logout(), getMe(), googleAuth(idToken)",
+        "frontend/src/api/client.js: Axios instance with withCredentials: true, response interceptor that retries on 401 via refresh, redirects to /login on refresh failure",
+        "Successful login/register updates AuthContext user state and navigates to /dashboard",
+        "Form validation shows field-level errors (empty email, short password)",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "priority": 11,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-012",
+      "title": "Applications Pydantic schemas",
+      "description": "As a developer, I need the application request/response Pydantic models so the router and service have typed contracts.",
+      "acceptanceCriteria": [
+        "backend/applications/schemas.py defines: ApplicationCreate (role_title, company, source, source_url?, compensation?, company_type?, location?, remote_status?, date_applied?, tags?), ApplicationUpdate (all fields Optional), ApplicationResponse (id, role_title, company, current_stage, source, date_applied, updated_at, tags, compensation, location, remote_status, stage_history), ApplicationListQuery (sort_by, sort_order, stage, company_type, remote_status, tags, date_from, date_to, cursor, limit), StatsResponse (total_applied, active_count, response_rate, avg_days_to_first_response)",
+        "ApplicationCreate and ApplicationUpdate use ConfigDict(strict=True)",
+        "ApplicationResponse.from_doc() maps _id to id as string",
+        "Typecheck passes"
+      ],
+      "priority": 12,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-013",
+      "title": "Applications service: CRUD, duplicate guard, stage logic",
+      "description": "As a user, I want my application saves to be validated, deduplicated, and to track stage transitions automatically.",
+      "acceptanceCriteria": [
+        "backend/applications/service.py defines: create(user_id, body), list(user_id, query), get(user_id, app_id), update(user_id, app_id, updates), delete(user_id, app_id)",
+        "create() checks duplicate via compound index on (user_id, company, role_title); raises DuplicateApplicationError with existing_id if found",
+        "create() initializes current_stage='Applied', stage_history=[{stage:'Applied', transitioned_at:now}], stages from user.default_stages",
+        "update() with current_stage change appends new entry to stage_history via $push",
+        "delete() uses a transaction to also delete linked calendar_events",
+        "list() uses cursor-based pagination (no skip()), applies projection for list fields only",
+        "All queries include user_id filter",
+        "compute_stats(user_id) uses $facet aggregation to return StatsResponse fields in one round trip",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 13,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-014",
+      "title": "Applications router: all CRUD + stats + stage endpoints",
+      "description": "As a user, I want API endpoints to create, read, update, and delete applications so the frontend can perform all CRUD operations.",
+      "acceptanceCriteria": [
+        "GET /api/applications: returns paginated list with meta.next_cursor; all query params from ApplicationListQuery supported",
+        "POST /api/applications: returns 201 + ApplicationResponse; maps DuplicateApplicationError to 409 with DUPLICATE_APPLICATION code",
+        "GET /api/applications/stats: returns StatsResponse",
+        "GET /api/applications/:id: returns full ApplicationResponse including stage_history and linked calendar events",
+        "PATCH /api/applications/:id: returns updated ApplicationResponse",
+        "DELETE /api/applications/:id: returns 204",
+        "POST /api/applications/:id/stages: adds custom stage at given position; returns updated stages array",
+        "DELETE /api/applications/:id/stages/:name: removes stage; returns 409 if stage is currently active",
+        "All routes require auth via Depends(get_current_user)",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 14,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-015",
+      "title": "Frontend API layer and React Query hooks for applications",
+      "description": "As a developer, I need the frontend data layer so components can read and mutate application data through a consistent interface.",
+      "acceptanceCriteria": [
+        "frontend/src/api/applications.js exports: fetchApplications(filters), fetchApplication(id), createApplication(body), updateApplication(id, body), deleteApplication(id), fetchStats()",
+        "frontend/src/hooks/useApplications.js exports: useApplications(filters), useApplication(id), useApplicationStats(), useCreateApplication(), useUpdateApplication(), useDeleteApplication()",
+        "Mutations invalidate all relevant query keys (KEYS.all, KEYS.stats) on success",
+        "Query staleTime: 30s for lists, 60s for stats",
+        "useApplications passes filter params as URL query params via URLSearchParams",
+        "Typecheck passes"
+      ],
+      "priority": 15,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-016",
+      "title": "StatsBar and FilterBar components",
+      "description": "As a user, I want to see my pipeline metrics and filter my applications so I can understand my job search at a glance.",
+      "acceptanceCriteria": [
+        "StatsBar.jsx renders 4 metric cards: total applied, active count, response rate (as %), avg days to first response",
+        "StatsBar shows skeleton loading state while data loads",
+        "FilterBar.jsx renders: stage multi-select, company type multi-select, remote status multi-select, date range picker (date_from, date_to)",
+        "FilterBar updates URL search params on change (useSearchParams, replace: true)",
+        "FilterBar reads initial state from URL search params on mount",
+        "Max 10 Tailwind classes per element",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "priority": 16,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-017",
+      "title": "ApplicationList component with react-window virtualization",
+      "description": "As a user, I want to scroll through all my applications in a performant list so large numbers of applications don't slow down the page.",
+      "acceptanceCriteria": [
+        "ApplicationList.jsx uses FixedSizeList from react-window with itemSize=64",
+        "Each row renders: company name, role title, StagePill (colored badge), date applied, source icon",
+        "Rows with updated_at > 14 days ago show an amber dot (data-testid='stale-indicator')",
+        "Column headers (Company, Role, Stage, Date Applied) are clickable and update sort params in URL",
+        "Clicking a row calls onSelect with the application object",
+        "STAGE_COLORS constant in lib/constants.js maps stage names to bg/text/dot Tailwind classes",
+        "Empty state rendered when no applications match filters",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "priority": 17,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-018",
+      "title": "DetailPanel component: fields, notes, stage selector, stage history",
+      "description": "As a user, I want to open a side panel showing all details for an application and edit fields inline so I can manage each application without leaving the dashboard.",
+      "acceptanceCriteria": [
+        "DetailPanel.jsx slides in from the right on application select (CSS transform translateX, 250ms ease)",
+        "Panel is 480px wide on desktop, full-width on mobile",
+        "Closes on Escape keypress or click outside",
+        "Displays all ApplicationResponse fields: role_title, company, location, remote_status, compensation, company_type, source_url (link), date_applied",
+        "Notes section: textarea that calls useUpdateApplication() on blur",
+        "Stage selector: dropdown showing current_stage highlighted; selecting a new stage calls PATCH",
+        "Stage history: vertical timeline showing each { stage, transitioned_at } entry in chronological order",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "priority": 18,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-019",
+      "title": "ManualAddForm modal",
+      "description": "As a user, I want to manually add an application without the extension so I can track jobs I applied to outside of supported boards.",
+      "acceptanceCriteria": [
+        "ManualAddForm.jsx is a modal (dialog overlay) triggered by an 'Add Application' button on the Dashboard",
+        "Form fields: role_title (required), company (required), source_url (optional), date_applied (date picker, defaults to today), compensation (optional), location (optional), remote_status (select), company_type (select), tags (optional)",
+        "Submit calls useCreateApplication(); on 409 DUPLICATE_APPLICATION shows inline error with link to existing application",
+        "On success, modal closes and ApplicationList is refreshed via React Query invalidation",
+        "source field is hardcoded to 'manual' on submit",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "priority": 19,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-020",
+      "title": "Dashboard page composition and sort/filter URL persistence",
+      "description": "As a user, I want the dashboard to be a complete, working page where my filter and sort state is preserved in the URL.",
+      "acceptanceCriteria": [
+        "src/pages/Dashboard.jsx composes StatsBar, FilterBar, ApplicationList, DetailPanel, ManualAddForm",
+        "Selected application ID stored in URL param ?selected=<id>; DetailPanel opens for that ID on load",
+        "Sort params (sort_by, sort_order) stored in URL search params",
+        "Filter state from FilterBar passed to useApplications(filters) hook",
+        "14-day stale nudge: amber dot visible on ApplicationList rows without interaction needed",
+        "Page lazy-loaded via React.lazy in App.jsx",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "priority": 20,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-021",
+      "title": "Chrome extension scaffold and manifest.json",
+      "description": "As a developer, I need the extension scaffold in place so board modules and the service worker can be built on top of a valid MV3 structure.",
+      "acceptanceCriteria": [
+        "extension/manifest.json is valid Manifest V3 with: permissions=['storage','activeTab'], host_permissions=['https://api.pipelined.app/*'], content_scripts for LinkedIn/Greenhouse/Lever/Ashby/Workday URLs, service_worker='background/background.js'",
+        "extension/content/content.js exists as entry point for content scripts",
+        "extension/background/background.js exists as service worker entry",
+        "extension/popup/popup.html, popup.js, popup.css exist as stubs",
+        "Extension loads without errors in chrome://extensions as an unpacked extension",
+        "Typecheck passes"
+      ],
+      "priority": 21,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-022",
+      "title": "LinkedIn board module",
+      "description": "As a user, I want the extension to detect and extract job data from LinkedIn job pages so I can save applications in one click.",
+      "acceptanceCriteria": [
+        "extension/content/boards/linkedin.js exports BOARD_ID='linkedin', isJobPage(), extractFields()",
+        "isJobPage() returns true only on URLs matching /linkedin\\.com\\/jobs\\/view\\// with the job title selector present",
+        "extractFields() returns { role_title, company_name, compensation, company_type, location, remote_status } — any field can be null",
+        "Selector chain: primary selector with at least one fallback per field",
+        "remote_status derived from keyword scan of page text: 'remote' → 'remote', 'hybrid' → 'hybrid', 'on-site'/'onsite' → 'onsite'",
+        "extractFields() never throws — returns nulls for missing data",
+        "Tests pass against a saved HTML fixture (tests/fixtures/linkedin-swe-posting.html)",
+        "Typecheck passes"
+      ],
+      "priority": 22,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-023",
+      "title": "Greenhouse, Lever, and Ashby board modules",
+      "description": "As a user, I want the extension to extract job data from Greenhouse, Lever, and Ashby pages so the supported board coverage is complete.",
+      "acceptanceCriteria": [
+        "extension/content/boards/greenhouse.js exports BOARD_ID, isJobPage(), extractFields() — uses .app-title, .company-name, .location selectors",
+        "extension/content/boards/lever.js exports BOARD_ID, isJobPage(), extractFields() — uses .posting-headline h2, .posting-categories selectors",
+        "extension/content/boards/ashby.js exports BOARD_ID, isJobPage(), extractFields() — uses [data-testid] attributes",
+        "All three modules follow the exact same export interface as linkedin.js",
+        "All three: never throw, return nulls for missing fields, include fallback selector chains",
+        "Tests pass for each module against saved HTML fixtures",
+        "Typecheck passes"
+      ],
+      "priority": 23,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-024",
+      "title": "Content script entry, banner injection, and shadow DOM isolation",
+      "description": "As a user, I want to see a non-intrusive banner on job pages so I can save the application with one click without leaving the page.",
+      "acceptanceCriteria": [
+        "extension/content/content.js imports all board modules, finds the matching board, calls extractFields()",
+        "If neither role_title nor company_name extracted, no banner is shown",
+        "Banner injected as a shadow DOM element (<pipelined-banner>) with mode='closed'",
+        "Banner shows: 'Applied for [Role] at [Company]? Save to Pipelined →' CTA button",
+        "Banner auto-dismisses after BANNER_AUTO_DISMISS_MS=8000ms with 300ms opacity fade",
+        "Escape key dismisses the banner",
+        "Banner has ARIA role=alert and aria-live=polite",
+        "Z-index 2147483647 on the host element",
+        "Banner CSS is injected inline into shadow root (not an external stylesheet)",
+        "Typecheck passes"
+      ],
+      "priority": 24,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-025",
+      "title": "Service worker: message routing, API calls, and token management",
+      "description": "As a user, I want the extension to save my application to the backend when I click the banner so it appears in my dashboard.",
+      "acceptanceCriteria": [
+        "extension/background/background.js listens for SAVE_APPLICATION, GET_AUTH_STATUS, GET_RECENT_SAVES message types",
+        "handleSave() serializes concurrent saves via a promise queue (saveQueue pattern) to prevent duplicate guard race conditions",
+        "fetchWithAuth() reads token from chrome.storage.session, adds Authorization header, retries once on 401 via refreshToken()",
+        "On 409 DUPLICATE_APPLICATION response, handleSave() returns { status: 'duplicate', existingId }",
+        "On success, caches application to chrome.storage.local recent_saves (max 5 entries)",
+        "Auth tokens stored in chrome.storage.session (not local)",
+        "Banner receives save result and shows: checkmark (success, dismisses after 1.5s), error with retry (failure), or duplicate message with link",
+        "return true in onMessage listener for all async responses",
+        "Typecheck passes"
+      ],
+      "priority": 25,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-026",
+      "title": "Workday board module and OpenAI fallback parsing",
+      "description": "As a user, I want the extension to save applications from Workday pages even though Workday's DOM is hard to parse directly.",
+      "acceptanceCriteria": [
+        "extension/content/boards/workday.js exports BOARD_ID='workday', isJobPage() for *.myworkday.com/* URLs, extractFields() (returns mostly nulls due to shadow DOM)",
+        "When boardId='workday' or both role_title and company_name are null, content.js includes pageText=document.body.innerText (trimmed to 3200 chars) in the SAVE_APPLICATION message",
+        "backend/parsing/openai_client.py defines parse_with_openai(page_text) — calls GPT-4o mini at temperature=0.0, max_tokens=200, with strict 6-field JSON system prompt",
+        "parse_with_openai() validates response has all 6 keys; returns dict with null values for missing fields",
+        "applications/service.py triggers OpenAI fallback in create() when source='extension' and role_title or company_name is missing, using asyncio.gather for parallel operations where possible",
+        "If OpenAI call fails, application is saved with whatever partial data exists",
+        "Rate limit: 10/minute on the POST /api/applications endpoint (AI endpoint tier)",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 26,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-027",
+      "title": "Extension popup UI",
+      "description": "As a user, I want to open the extension popup and see my recent saves and a link to the dashboard so I can quickly check my pipeline status.",
+      "acceptanceCriteria": [
+        "extension/popup/popup.html has a saves list container, dashboard link, and login prompt section",
+        "popup.js sends GET_AUTH_STATUS to service worker on DOMContentLoaded; shows login prompt if not authenticated",
+        "Popup reads recent_saves from chrome.storage.local (not from API) and renders up to 5 entries",
+        "Each entry shows company name and role title (escaped via textContent before innerHTML injection)",
+        "Dashboard link opens https://app.pipelined.app/dashboard in a new tab via chrome.tabs.create",
+        "Popup renders in under 200ms (no blocking network calls)",
+        "Vanilla JS only — no React or build step",
+        "Typecheck passes"
+      ],
+      "priority": 27,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-028",
+      "title": "Calendar backend: schemas, service, and router",
+      "description": "As a user, I want to create, view, update, and delete calendar events linked to my applications so I can track interviews.",
+      "acceptanceCriteria": [
+        "backend/calendar/schemas.py defines: EventCreate (application_id, event_type enum, date, time?, notes?, title?), EventUpdate (all Optional), EventResponse (id, application_id, event_type, date, time, notes, title, company, role_title)",
+        "backend/calendar/service.py: create_event(), list_events(user_id, date_from, date_to), update_event(), delete_event() — all queries include user_id filter",
+        "list_events() joins with applications collection to populate company and role_title on each event",
+        "GET /api/calendar/events: accepts date_from and date_to params (default current month); returns events with application summary",
+        "POST /api/calendar/events: returns 201 + EventResponse; returns 404 if application_id not found for this user",
+        "PATCH /api/calendar/events/:id: returns updated EventResponse",
+        "DELETE /api/calendar/events/:id: returns 204",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 28,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-029",
+      "title": "Frontend calendar API layer, hooks, and CalendarGrid component",
+      "description": "As a user, I want to see a monthly calendar with my interview events so I can track upcoming activities at a glance.",
+      "acceptanceCriteria": [
+        "frontend/src/api/calendar.js exports: fetchEvents(dateFrom, dateTo), createEvent(body), updateEvent(id, body), deleteEvent(id)",
+        "frontend/src/hooks/useCalendar.js exports: useCalendarEvents(month, year), useCreateEvent(), useUpdateEvent(), useDeleteEvent()",
+        "src/components/CalendarGrid.jsx renders a monthly grid — 7 columns, rows for each week",
+        "Events appear as colored chips inside day cells, showing company name + event_type",
+        "Clicking an event chip opens DetailPanel for the linked application",
+        "Clicking an empty day cell opens NewEventForm pre-filled with that date",
+        "Month navigation: previous/next arrows and 'Today' button update displayed month",
+        "Page lazy-loaded via React.lazy",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "priority": 29,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-030",
+      "title": "NewEventForm and DetailPanel calendar integration",
+      "description": "As a user, I want to add events from the calendar and see linked events in the application detail panel so everything stays connected.",
+      "acceptanceCriteria": [
+        "src/components/NewEventForm.jsx: application selector dropdown (searches by company/role), event_type select, date picker, time input (optional), notes textarea",
+        "NewEventForm submits via useCreateEvent(); on success invalidates calendar query and closes form",
+        "DetailPanel calendar events section: lists linked events for the current application with event_type, date, time",
+        "'Add Event' button inside DetailPanel opens NewEventForm pre-filled with current application_id",
+        "Deleting an event from DetailPanel calls useDeleteEvent() and refreshes calendar",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "priority": 30,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-031",
+      "title": "Job listings backend: schemas, service, and router",
+      "description": "As a user, I want to browse job listings via the API so the frontend can display curated opportunities.",
+      "acceptanceCriteria": [
+        "backend/jobs/schemas.py defines: JobListingResponse (id, company, role, location, remote_status, company_type, experience_level, salary_range, apply_url, date_posted, is_stale, ingested_at), JobListQuery (role_type, experience_level, company_type, remote_status, date_from, salary_min, hide_applied, page, per_page)",
+        "GET /api/jobs: returns paginated list (default 30, max 100) with all filters applied; stale listings included but flagged",
+        "GET /api/jobs/:id: returns single listing or 404",
+        "hide_applied filter: when auth token present, queries user's applications for apply URLs and excludes matching listings",
+        "Offset pagination for job listings",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 31,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-032",
+      "title": "GitHub job sync scheduler",
+      "description": "As a developer, I need the APScheduler job to ingest listings from GitHub repos daily so the job board stays fresh.",
+      "acceptanceCriteria": [
+        "backend/jobs/sync.py defines an APScheduler AsyncIOScheduler configured to run at 03:00 UTC daily (configurable via config.github_sync_hour_utc)",
+        "Scheduler started/stopped in FastAPI lifespan events",
+        "GitHub API client uses httpx with Authorization: token {github_token} header and handles pagination (Link header)",
+        "Parser handles SimplifyJobs/Summer2026-Internships README table format: extracts company, role, location, apply_url",
+        "url_hash computed as SHA-256 of lowercase stripped apply_url",
+        "Each listing upserted via update_one with upsert=True using url_hash as dedup key",
+        "Listings with date_posted older than STALE_LISTING_DAYS=60 updated to is_stale=True",
+        "Sync errors logged via structlog; scheduler continues even if one sync fails",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 32,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-033",
+      "title": "JobCard, JobRow components and JobBoard page",
+      "description": "As a user, I want to browse job listings in either a card grid or compact list view so I can find and apply to new opportunities.",
+      "acceptanceCriteria": [
+        "src/api/jobs.js exports fetchListings(filters)",
+        "src/hooks/useJobs.js exports useJobListings(filters) with staleTime=5min",
+        "JobCard.jsx renders: company name (initial avatar fallback), role, location, remote_status tag, experience_level tag, 'Apply' button that opens apply_url in new tab",
+        "JobRow.jsx renders same data in compact single-line format",
+        "Stale listings (is_stale=true) show 'may be closed' label and dimmed opacity",
+        "src/pages/JobBoard.jsx: view toggle (card/list) persisted in localStorage; filter sidebar with role_type, experience_level, company_type, remote_status, hide_applied checkboxes",
+        "Filters update URL search params",
+        "Virtualized list with react-window when in list view",
+        "Page lazy-loaded via React.lazy",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "priority": 33,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-034",
+      "title": "Landing page",
+      "description": "As a visitor, I want to see a landing page explaining Pipelined so I understand what it does before signing up.",
+      "acceptanceCriteria": [
+        "src/pages/LandingPage.jsx renders: hero section with product tagline, feature highlights (extension, pipeline view, calendar, job board), CTA buttons for 'Sign Up' and 'Log In', Chrome extension install CTA",
+        "Logged-in users visiting / are redirected to /dashboard",
+        "Page is fully responsive: desktop (≥1024px), tablet (768–1023px), mobile (<768px)",
+        "No API calls on this page",
+        "Page lazy-loaded via React.lazy",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "priority": 34,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-035",
+      "title": "Error boundaries and API error surfacing",
+      "description": "As a user, I want errors to show readable messages rather than crashes or blank screens so I can understand what went wrong.",
+      "acceptanceCriteria": [
+        "A React ErrorBoundary component wraps each page route in App.jsx",
+        "ErrorBoundary renders a user-friendly 'Something went wrong' message with a retry button",
+        "API errors from the Axios interceptor surface as { code, message } objects",
+        "useCreateApplication() and useUpdateApplication() mutations surface error.message in the UI (inline below form or toast)",
+        "404 from GET /api/applications/:id shows 'Application not found' in DetailPanel",
+        "No raw stack traces exposed to users in any flow",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "priority": 35,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-036",
+      "title": "Performance optimization: code splitting and direct lucide-react imports",
+      "description": "As a developer, I want optimized bundle size and fast page loads so users get sub-second navigation.",
+      "acceptanceCriteria": [
+        "All 6 page components lazy-loaded via React.lazy in App.jsx (Dashboard, Calendar, JobBoard, Login, Register, LandingPage)",
+        "All lucide-react icon imports use direct subpath format: lucide-react/dist/esm/icons/<name>",
+        "All date-fns imports use direct subpath format: date-fns/format, date-fns/startOfMonth, etc.",
+        "npm run build completes without warnings about large chunks (no chunk > 500KB)",
+        "Typecheck passes"
+      ],
+      "priority": 36,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-037",
+      "title": "Accessibility: keyboard navigation and ARIA",
+      "description": "As a user with accessibility needs, I want to navigate the application using only a keyboard and a screen reader.",
+      "acceptanceCriteria": [
+        "DetailPanel: focus trapped inside while open; first focusable element receives focus on open",
+        "ManualAddForm: focus trapped while open; closes on Escape",
+        "All interactive elements (buttons, links, inputs) have visible focus rings",
+        "StagePill badges have aria-label describing the stage name",
+        "CalendarGrid day cells have aria-label with the date",
+        "StatsBar metric cards have aria-label describing each metric",
+        "Color is not the only means of conveying the stale indicator (amber dot has aria-label='Stale')",
+        "Typecheck passes"
+      ],
+      "priority": 37,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-038",
+      "title": "Security hardening: CORS, CSP, and input sanitization",
+      "description": "As a developer, I need production security settings in place so the app is protected before launch.",
+      "acceptanceCriteria": [
+        "CORS allowed origins locked to production domains only (env var ALLOWED_ORIGINS, not wildcard in production)",
+        "JWT cookies set with: httpOnly=True, secure=True, samesite='lax'",
+        "All Motor queries go through parameterized document filters (no string interpolation into queries)",
+        "Extension popup always uses textContent or the escapeHtml function before any innerHTML usage",
+        "Backend never logs JWT tokens, passwords, or API keys (verified by searching log calls)",
+        "DEBUG=True env var required to enable any dev-only CORS or cookie relaxation",
+        "Typecheck passes"
+      ],
+      "priority": 38,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-039",
+      "title": "GitHub Actions CI pipeline",
+      "description": "As a developer, I want CI to run lint, type-check, and tests on every PR so code quality is enforced automatically.",
+      "acceptanceCriteria": [
+        ".github/workflows/ci.yml defines a workflow triggered on pull_request to main",
+        "Backend job: checkout, install python 3.12, pip install -r requirements.txt, run pytest tests/ with a test MongoDB URI from secrets",
+        "Frontend job: checkout, install node 20, npm ci, npm run build",
+        "Extension job: checkout, install node 20, npm ci in extension/, npm test",
+        "All jobs must pass for PR to be mergeable (branch protection rule documented in README or CI file comment)",
+        "Typecheck passes"
+      ],
+      "priority": 39,
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

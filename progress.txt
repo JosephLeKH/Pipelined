@@ -1,0 +1,15 @@
+## US-001: Initialize monorepo directory structure
+
+Created the full monorepo skeleton:
+
+- backend/__init__.py + subdirs: auth, applications, calendar, jobs, parsing, middleware, tests (each with __init__.py)
+- frontend/src subdirs: api, context, hooks, pages, components, lib (with .gitkeep)
+- extension subdirs: content/boards, background, popup, tests (with .gitkeep)
+- shared/ directory (with .gitkeep)
+- Updated .gitignore: added Python patterns (__pycache__, *.pyc, *.pyo, .pytest_cache, .mypy_cache, venv), Node dist/, and pnpm patterns
+
+Learnings:
+- The top-level backend/, frontend/, extension/ dirs already existed (containing only style guide .md files) — only needed to add subdirectories.
+- Used .gitkeep files in frontend/src and extension dirs since git doesn't track empty directories.
+- Python packages need __init__.py; frontend/extension dirs do not.
+- No typecheck step needed at this stage — no source files yet.
