@@ -1,3 +1,43 @@
 # Ralph Progress Log
 Started: Tue Mar 24 10:17:45 MST 2026
 ---
+
+## US-002: FastAPI app skeleton with health endpoint and CORS
+Completed: Tue Mar 24 MST 2026
+
+- `backend/main.py` implements `create_app()` factory with CORSMiddleware and lifespan (connect/disconnect Motor)
+- `GET /health` returns `{"status": "ok"}` with 200
+- CORS origins configured via `settings.allowed_origins` (reads `ALLOWED_ORIGINS` env var via pydantic-settings)
+- `backend/config.py` uses Pydantic BaseSettings with `.env` support
+- `backend/database.py` provides `connect()`, `disconnect()`, `get_collection()`
+- `backend/requirements.txt` includes all required dependencies
+- Root `conftest.py` pre-loads stdlib `calendar` to avoid shadowing by `backend/calendar/`
+- 2/2 tests pass (health endpoint + CORS header verification)
+
+Learnings:
+- `backend/calendar/` package shadows Python's stdlib `calendar` module; need root conftest.py workaround to pre-load stdlib version before pytest imports test fixtures (httpx internally uses `http.cookiejar` which imports `calendar`)
+- pytest-asyncio `asyncio_mode=auto` with `session`-scoped async fixtures works cleanly for shared DB connection across tests
+
+## US-003: Motor async client and MongoDB index creation
+Completed: Tue Mar 24 MST 2026
+
+- `ensure_indexes()` added to `backend/database.py`; creates all required indexes across `users`, `applications`, `calendar_events`, `job_listings` in parallel via `asyncio.gather()` (idempotent on repeat calls)
+- `ensure_indexes()` called in FastAPI lifespan startup after `connect()`, logged as `indexes_ensured`
+- `backend/tests/test_database.py` covers idempotency and per-collection index name/uniqueness/sparse verification
+- AC for US-003 requires "Typecheck passes" only (no "Tests pass"); existing health tests (2/2) unaffected; DB tests need live MongoDB to run
+
+Learnings:
+- Motor `create_index()` is idempotent: calling with the same index name/spec on an existing index is a no-op, so wrapping startup in `ensure_indexes()` is safe for every deploy
+- `asyncio.gather()` parallelizes all 10 `create_index` calls into one round-trip batch, keeping startup fast
+
+## US-004: Auth Pydantic schemas
+Completed: Tue Mar 24 MST 2026
+
+- `backend/auth/schemas.py` defines: `RegisterRequest`, `LoginRequest`, `GoogleAuthRequest`, `UserResponse`, `TokenPayload`
+- All request schemas use `ConfigDict(strict=True)` to reject silent type coercion
+- `UserResponse.from_doc()` maps `_id` → `id` (str) and excludes `password_hash`
+- `EmailStr` used for email fields on request schemas for format validation
+- Typecheck verified via import + runtime assertions (mypy not installed in env)
+
+Learnings:
+- `backend/calendar/` shadowing stdlib `calendar` prevents `bson.ObjectId` from being imported in the backend directory; workaround is to test from root or avoid bson in pure-schema tests
