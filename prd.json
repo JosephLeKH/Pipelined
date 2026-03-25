@@ -1,7 +1,7 @@
 {
   "project": "Pipelined",
   "branchName": "ralph/pipelined-v1",
-  "description": "Pipelined v1 — Job application tracking platform: FastAPI backend, React SPA, MongoDB, Chrome Extension MV3",
+  "description": "Pipelined v1 \u2014 Job application tracking platform: FastAPI backend, React SPA, MongoDB, Chrome Extension MV3",
   "userStories": [
     {
       "id": "US-001",
@@ -16,7 +16,7 @@
         "Typecheck passes"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
@@ -32,8 +32,8 @@
         "Typecheck passes"
       ],
       "priority": 2,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "create_app() factory, GET /health, CORSMiddleware with ALLOWED_ORIGINS, lifespan Motor connect/disconnect, requirements.txt pinned."
     },
     {
       "id": "US-003",
@@ -372,10 +372,10 @@
       "acceptanceCriteria": [
         "extension/content/boards/linkedin.js exports BOARD_ID='linkedin', isJobPage(), extractFields()",
         "isJobPage() returns true only on URLs matching /linkedin\\.com\\/jobs\\/view\\// with the job title selector present",
-        "extractFields() returns { role_title, company_name, compensation, company_type, location, remote_status } — any field can be null",
+        "extractFields() returns { role_title, company_name, compensation, company_type, location, remote_status } \u2014 any field can be null",
         "Selector chain: primary selector with at least one fallback per field",
-        "remote_status derived from keyword scan of page text: 'remote' → 'remote', 'hybrid' → 'hybrid', 'on-site'/'onsite' → 'onsite'",
-        "extractFields() never throws — returns nulls for missing data",
+        "remote_status derived from keyword scan of page text: 'remote' \u2192 'remote', 'hybrid' \u2192 'hybrid', 'on-site'/'onsite' \u2192 'onsite'",
+        "extractFields() never throws \u2014 returns nulls for missing data",
         "Tests pass against a saved HTML fixture (tests/fixtures/linkedin-swe-posting.html)",
         "Typecheck passes"
       ],
@@ -388,9 +388,9 @@
       "title": "Greenhouse, Lever, and Ashby board modules",
       "description": "As a user, I want the extension to extract job data from Greenhouse, Lever, and Ashby pages so the supported board coverage is complete.",
       "acceptanceCriteria": [
-        "extension/content/boards/greenhouse.js exports BOARD_ID, isJobPage(), extractFields() — uses .app-title, .company-name, .location selectors",
-        "extension/content/boards/lever.js exports BOARD_ID, isJobPage(), extractFields() — uses .posting-headline h2, .posting-categories selectors",
-        "extension/content/boards/ashby.js exports BOARD_ID, isJobPage(), extractFields() — uses [data-testid] attributes",
+        "extension/content/boards/greenhouse.js exports BOARD_ID, isJobPage(), extractFields() \u2014 uses .app-title, .company-name, .location selectors",
+        "extension/content/boards/lever.js exports BOARD_ID, isJobPage(), extractFields() \u2014 uses .posting-headline h2, .posting-categories selectors",
+        "extension/content/boards/ashby.js exports BOARD_ID, isJobPage(), extractFields() \u2014 uses [data-testid] attributes",
         "All three modules follow the exact same export interface as linkedin.js",
         "All three: never throw, return nulls for missing fields, include fallback selector chains",
         "Tests pass for each module against saved HTML fixtures",
@@ -408,7 +408,7 @@
         "extension/content/content.js imports all board modules, finds the matching board, calls extractFields()",
         "If neither role_title nor company_name extracted, no banner is shown",
         "Banner injected as a shadow DOM element (<pipelined-banner>) with mode='closed'",
-        "Banner shows: 'Applied for [Role] at [Company]? Save to Pipelined →' CTA button",
+        "Banner shows: 'Applied for [Role] at [Company]? Save to Pipelined \u2192' CTA button",
         "Banner auto-dismisses after BANNER_AUTO_DISMISS_MS=8000ms with 300ms opacity fade",
         "Escape key dismisses the banner",
         "Banner has ARIA role=alert and aria-live=polite",
@@ -446,7 +446,7 @@
       "acceptanceCriteria": [
         "extension/content/boards/workday.js exports BOARD_ID='workday', isJobPage() for *.myworkday.com/* URLs, extractFields() (returns mostly nulls due to shadow DOM)",
         "When boardId='workday' or both role_title and company_name are null, content.js includes pageText=document.body.innerText (trimmed to 3200 chars) in the SAVE_APPLICATION message",
-        "backend/parsing/openai_client.py defines parse_with_openai(page_text) — calls GPT-4o mini at temperature=0.0, max_tokens=200, with strict 6-field JSON system prompt",
+        "backend/parsing/openai_client.py defines parse_with_openai(page_text) \u2014 calls GPT-4o mini at temperature=0.0, max_tokens=200, with strict 6-field JSON system prompt",
         "parse_with_openai() validates response has all 6 keys; returns dict with null values for missing fields",
         "applications/service.py triggers OpenAI fallback in create() when source='extension' and role_title or company_name is missing, using asyncio.gather for parallel operations where possible",
         "If OpenAI call fails, application is saved with whatever partial data exists",
@@ -469,7 +469,7 @@
         "Each entry shows company name and role title (escaped via textContent before innerHTML injection)",
         "Dashboard link opens https://app.pipelined.app/dashboard in a new tab via chrome.tabs.create",
         "Popup renders in under 200ms (no blocking network calls)",
-        "Vanilla JS only — no React or build step",
+        "Vanilla JS only \u2014 no React or build step",
         "Typecheck passes"
       ],
       "priority": 27,
@@ -482,7 +482,7 @@
       "description": "As a user, I want to create, view, update, and delete calendar events linked to my applications so I can track interviews.",
       "acceptanceCriteria": [
         "backend/calendar/schemas.py defines: EventCreate (application_id, event_type enum, date, time?, notes?, title?), EventUpdate (all Optional), EventResponse (id, application_id, event_type, date, time, notes, title, company, role_title)",
-        "backend/calendar/service.py: create_event(), list_events(user_id, date_from, date_to), update_event(), delete_event() — all queries include user_id filter",
+        "backend/calendar/service.py: create_event(), list_events(user_id, date_from, date_to), update_event(), delete_event() \u2014 all queries include user_id filter",
         "list_events() joins with applications collection to populate company and role_title on each event",
         "GET /api/calendar/events: accepts date_from and date_to params (default current month); returns events with application summary",
         "POST /api/calendar/events: returns 201 + EventResponse; returns 404 if application_id not found for this user",
@@ -502,7 +502,7 @@
       "acceptanceCriteria": [
         "frontend/src/api/calendar.js exports: fetchEvents(dateFrom, dateTo), createEvent(body), updateEvent(id, body), deleteEvent(id)",
         "frontend/src/hooks/useCalendar.js exports: useCalendarEvents(month, year), useCreateEvent(), useUpdateEvent(), useDeleteEvent()",
-        "src/components/CalendarGrid.jsx renders a monthly grid — 7 columns, rows for each week",
+        "src/components/CalendarGrid.jsx renders a monthly grid \u2014 7 columns, rows for each week",
         "Events appear as colored chips inside day cells, showing company name + event_type",
         "Clicking an event chip opens DetailPanel for the linked application",
         "Clicking an empty day cell opens NewEventForm pre-filled with that date",
@@ -597,7 +597,7 @@
       "acceptanceCriteria": [
         "src/pages/LandingPage.jsx renders: hero section with product tagline, feature highlights (extension, pipeline view, calendar, job board), CTA buttons for 'Sign Up' and 'Log In', Chrome extension install CTA",
         "Logged-in users visiting / are redirected to /dashboard",
-        "Page is fully responsive: desktop (≥1024px), tablet (768–1023px), mobile (<768px)",
+        "Page is fully responsive: desktop (\u22651024px), tablet (768\u20131023px), mobile (<768px)",
         "No API calls on this page",
         "Page lazy-loaded via React.lazy",
         "Typecheck passes",
