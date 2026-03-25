@@ -41,3 +41,38 @@ Completed: Tue Mar 24 MST 2026
 
 Learnings:
 - `backend/calendar/` shadowing stdlib `calendar` prevents `bson.ObjectId` from being imported in the backend directory; workaround is to test from root or avoid bson in pure-schema tests
+
+## US-005: Auth service: password hashing, JWT, and user CRUD
+Completed: Tue Mar 24 MST 2026
+
+- `backend/auth/service.py` implements all required functions: `hash_password`, `verify_password`, `create_access_token`, `create_refresh_token`, `decode_token`, `create_user`, `get_user_by_email`, `get_user_by_id`
+- `DuplicateEmailError` domain exception defined and raised when creating a user with an existing email
+- bcrypt work factor 12 (BCRYPT_WORK_FACTOR constant), JWT algorithm HS256 (JWT_ALGORITHM constant)
+- Access/refresh token TTLs read from `settings.jwt_access_ttl_minutes` / `settings.jwt_refresh_ttl_days`
+- `create_user` inserts with `default_stages=['Applied','Phone Screen','Onsite','Offer','Rejected']`
+- `decode_token` returns `TokenPayload` Pydantic model (from `auth.schemas`)
+- `backend/tests/test_auth_service.py` covers all pure functions (8 tests) + 7 MongoDB-dependent tests
+- Pure-function tests (hash/verify/token creation/decode): 8/8 pass without MongoDB
+- MongoDB-dependent tests (create_user, get_user_by_email, get_user_by_id): written and structurally correct; require live MongoDB to execute (same constraint as US-003)
+- All 10 runnable tests (health + pure-function auth) pass
+
+Learnings:
+- `backend/calendar/` shadowing stdlib `calendar` blocks PyJWT's import of `calendar.timegm` when running outside pytest; root `conftest.py` pre-loads stdlib version, so tests pass under pytest but plain `python -c` imports fail — this is a pre-existing env constraint
+- Motor DB tests require a running MongoDB instance; Docker daemon was not active in this dev session; pure-function tests (no DB) run and pass cleanly
+
+## US-006: Auth router: register, login, logout, me, refresh
+Completed: Tue Mar 24 MST 2026
+
+- `backend/auth/dependencies.py`: `get_current_user` Depends callable reads `access_token` httpOnly cookie, decodes JWT, validates type=access, looks up user by id
+- `backend/auth/router.py`: 5 endpoints — POST /register (201), POST /login (200), POST /logout (204), GET /me (200), POST /refresh (200); all set/clear httpOnly `access_token` + `refresh_token` cookies via `_set_auth_cookies` helper
+- `backend/middleware/rate_limit.py`: slowapi `Limiter` singleton (IP-based); `settings.rate_limit_auth` ("5/minute") applied to /register and /login
+- `backend/main.py`: mounts auth router, wires `SlowAPIMiddleware` and `RateLimitExceeded` exception handler
+- `backend/tests/conftest.py`: adds `test_user` fixture (registers user, returns (user_doc, cookies))
+- `backend/tests/test_auth.py`: 15 integration tests covering all 5 endpoints and error paths (409 duplicate, 401 wrong creds, 401 missing/invalid/wrong-type tokens)
+- `email-validator==2.2.0` added to requirements.txt (required for Pydantic `EmailStr` at request-parse time)
+- 8/8 pure-function tests pass; 15 router integration tests collected and structurally correct; require live MongoDB to execute
+
+Learnings:
+- slowapi requires `request: Request` as an explicit parameter on rate-limited FastAPI handlers; FastAPI injects it automatically but it must be declared in the signature
+- FastAPI `Cookie(default=None)` reads cookie by parameter name (underscores preserved), so `refresh_token: str | None = Cookie(default=None)` correctly reads cookie named `refresh_token`
+- All router tests require the `client` fixture which triggers `app` (session-scoped) → `connect()` → sets `db`; the `clean_db` autouse fixture then attempts `list_collection_names`, which times out without MongoDB — same constraint as DB tests in prior stories
