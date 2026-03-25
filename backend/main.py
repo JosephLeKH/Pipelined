@@ -8,7 +8,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from config import settings
-from database import connect, disconnect
+from database import connect, disconnect, ensure_indexes
 
 logger = structlog.get_logger()
 
@@ -19,6 +19,8 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     logger.info("starting_up")
     await connect()
     logger.info("database_connected")
+    await ensure_indexes()
+    logger.info("indexes_ensured")
     yield
     await disconnect()
     logger.info("database_disconnected")
