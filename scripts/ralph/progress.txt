@@ -181,3 +181,35 @@ Learnings:
 - Motor's `find_one_and_update` needs `ReturnDocument.AFTER` (from `pymongo`) to return the updated document — `return_document=True` does not work
 - Transactions require the top-level Motor client (`get_client()`), not just a collection reference; Motor sessions are started with `await client.start_session()`
 - `$facet` aggregation always returns all facet keys even when their pipelines produce empty results; safe to check `if raw["key"]` before indexing
+
+## US-014: Applications router: all CRUD + stats + stage endpoints
+Completed: Wed Mar 25 MST 2026
+
+- `backend/applications/router.py`: implements all 8 endpoints — POST / (201 create), GET / (list + pagination), GET /stats, GET /:id, PATCH /:id, DELETE /:id (204), POST /:id/stages, DELETE /:id/stages/:name
+- `backend/applications/schemas.py`: added `StageAddRequest` (name, position) for stage add endpoint
+- `backend/applications/service.py`: added `ActiveStageError`, `add_stage()` ($push with $position), `remove_stage()` (checks current_stage, then $pull)
+- `backend/main.py`: registered `applications_router` alongside `auth_router`
+- `backend/tests/test_applications.py`: 28 router integration tests covering all endpoints, auth guards, 404/409 error paths, pagination, and cross-user isolation
+- `GET /stats` route registered before `GET /:id` to prevent FastAPI from treating "stats" as an app_id
+- Stage management: add_stage inserts at exact position using `$position` modifier; remove_stage raises ActiveStageError if current_stage matches (→ 409), else $pull removes from array
+- 7/7 pure-function tests pass without MongoDB; all router tests structurally correct, require live MongoDB
+
+Learnings:
+- FastAPI matches routes in registration order — `GET /stats` must be registered before `GET /:id` to avoid the path param swallowing the literal "stats" segment
+- Motor `$push` with `$each` + `$position` modifiers allows precise array insertion: `{"$push": {"stages": {"$each": [name], "$position": position}}}`
+- Returning `Response(status_code=204)` from a FastAPI route typed `-> Response` is the correct way to emit an empty 204 body; returning `None` works too but is less explicit
+
+## US-015: Frontend API layer and React Query hooks for applications
+Completed: Wed Mar 25 MST 2026
+
+- `frontend/src/api/applications.js`: 6 functions — `fetchApplications(filters)` (URLSearchParams, skips null/undefined values, handles array values with repeated keys), `fetchApplication(id)`, `createApplication(body)`, `updateApplication(id, body)`, `deleteApplication(id)`, `fetchStats()`
+- `frontend/src/hooks/useApplications.js`: 6 hooks — `useApplications(filters)`, `useApplication(id)`, `useApplicationStats()`, `useCreateApplication()`, `useUpdateApplication()`, `useDeleteApplication()`; all mutations invalidate `KEYS.all` + `KEYS.stats` via `queryClient.invalidateQueries`; `KEYS` factory exported for use by components
+- `frontend/src/lib/constants.js`: added `STATS_STALE_TIME_MS = 60_000` (60s staleTime for stats queries vs 30s for lists)
+- `frontend/src/api/client.js`: fixed response interceptor — list responses (envelope with `meta` key) now return the full `{ data, meta }` envelope so `next_cursor` is preserved; empty 204 bodies return `undefined`; single-resource and mutation responses still unwrap `body.data`
+- `frontend/src/api/applications.test.js`: 8 unit tests covering all 6 API functions (MSW server, Arrange/Act/Assert structure); all pass
+- 27/27 frontend tests pass (4 AuthContext + 7 Login + 8 Register + 8 applications API)
+
+Learnings:
+- Axios response interceptor `(r) => r.data.data` silently drops `meta` from list responses — the fix is to detect the `meta` key and return the full envelope for list responses only; single-resource responses still unwrap cleanly
+- Empty 204 response bodies: `response.data` is `""` (empty string) in axios, not `null` or `undefined`; guard with `if (!body) return undefined` before accessing `body.data`
+- React Query `useQuery` `enabled: Boolean(id)` prevents the query from running when `id` is falsy (undefined/null) — important for detail views that depend on a selected item
