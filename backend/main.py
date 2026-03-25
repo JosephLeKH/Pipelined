@@ -4,9 +4,9 @@ from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
 import structlog
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from slowapi import _rate_limit_exceeded_handler
+from fastapi.responses import JSONResponse
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 
@@ -16,6 +16,21 @@ from database import connect, disconnect, ensure_indexes
 from middleware.rate_limit import limiter
 
 logger = structlog.get_logger()
+
+RATE_LIMIT_EXCEEDED_CODE = "RATE_LIMIT_EXCEEDED"
+
+
+async def _rate_limit_handler(request: Request, exc: RateLimitExceeded) -> JSONResponse:
+    """Return a 429 using the standard API error envelope."""
+    return JSONResponse(
+        status_code=429,
+        content={
+            "error": {
+                "code": RATE_LIMIT_EXCEEDED_CODE,
+                "message": f"Rate limit exceeded: {exc.detail}",
+            }
+        },
+    )
 
 
 @asynccontextmanager
@@ -40,7 +55,7 @@ def create_app() -> FastAPI:
     )
 
     app.state.limiter = limiter
-    app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+    app.add_exception_handler(RateLimitExceeded, _rate_limit_handler)
     app.add_middleware(SlowAPIMiddleware)
 
     app.add_middleware(

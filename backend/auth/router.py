@@ -151,6 +151,14 @@ async def refresh(
     return {"data": UserResponse.from_doc(user)}
 
 
+@router.get("/extension-token", status_code=200)
+async def extension_token(user: dict = Depends(get_current_user)) -> dict:
+    """Issue a short-lived JWT for use by the Chrome extension as a Bearer token."""
+    token = create_access_token(str(user["_id"]))
+    logger.info("extension_token_issued", user_id=str(user["_id"]))
+    return {"data": {"token": token}}
+
+
 @router.post("/google", status_code=200)
 async def google_auth(body: GoogleAuthRequest, response: Response) -> dict:
     """Sign in or register with a Google ID token."""
