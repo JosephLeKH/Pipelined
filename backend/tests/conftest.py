@@ -31,3 +31,16 @@ async def client(app):
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as c:
         yield c
+
+
+@pytest_asyncio.fixture
+async def test_user(client):
+    """Register a user via /api/auth/register and return (user_doc, cookies)."""
+    response = await client.post("/api/auth/register", json={
+        "email": "test@example.com",
+        "password": "TestPass123!",
+        "display_name": "Test User",
+    })
+    user = response.json()["data"]
+    cookies = dict(response.cookies)
+    return user, cookies
