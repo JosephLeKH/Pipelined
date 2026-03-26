@@ -1,0 +1,23 @@
+{
+  "name": "pipelined-extension",
+  "version": "1.0.0",
+  "description": "Pipelined Chrome Extension MV3",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --experimental-vm-modules node_modules/.bin/jest"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/tests/test_*.js",
+      "**/?(*.)+(spec|test).[jt]s?(x)"
+    ],
+    "transform": {}
+  },
+  "devDependencies": {
+    "jest": "^27.5.1",
+    "jest-chrome": "^0.8.0",
+    "jest-environment-jsdom": "^27.5.1"
+  }
+}

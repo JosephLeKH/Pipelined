@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pipelined</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <header class="header">
+      <span class="logo">Pipelined</span>
+    </header>
+
+    <main id="app">
+      <div id="loading" class="state">Loading...</div>
+      <div id="unauthenticated" class="state hidden">
+        <p>Sign in to Pipelined to start tracking applications.</p>
+        <button id="open-dashboard" class="btn btn-primary">Open Dashboard</button>
+      </div>
+      <div id="authenticated" class="state hidden">
+        <ul id="saves-list"></ul>
+        <button id="open-dashboard-auth" class="btn btn-secondary">Open Dashboard</button>
+      </div>
+    </main>
+
+    <script src="popup.js"></script>
+  </body>
+</html>
