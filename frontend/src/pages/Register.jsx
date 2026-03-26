@@ -1,16 +1,145 @@
-/** Register page: email/password and Google OAuth sign-up (stub). */
+/** Register page: email/password sign-up form and Google OAuth button. */
 
-import { Link } from "react-router-dom";
+import { useState, useCallback } from "react";
+import { Link, useNavigate } from "react-router-dom";
+
+import { useAuth } from "../context/AuthContext";
+import { useRegister } from "../hooks/useAuth";
+import GoogleAuthButton from "../components/GoogleAuthButton";
+import { PASSWORD_MIN_LENGTH } from "../lib/constants";
 
 function Register() {
+  const navigate = useNavigate();
+  const { login } = useAuth();
+  const { mutateAsync: signUp, isPending } = useRegister();
+
+  const [displayName, setDisplayName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  const handleSubmit = useCallback(
+    async (e) => {
+      e.preventDefault();
+      setError("");
+
+      if (!displayName.trim()) {
+        setError("Name is required.");
+        return;
+      }
+      if (!email.trim()) {
+        setError("Email is required.");
+        return;
+      }
+      if (password.length < PASSWORD_MIN_LENGTH) {
+        setError(`Password must be at least ${PASSWORD_MIN_LENGTH} characters.`);
+        return;
+      }
+
+      try {
+        const user = await signUp({
+          email: email.trim(),
+          password,
+          display_name: displayName.trim(),
+        });
+        login(user);
+        navigate("/dashboard", { replace: true });
+      } catch (err) {
+        setError(err?.message ?? "Registration failed. Please try again.");
+      }
+    },
+    [displayName, email, password, signUp, login, navigate]
+  );
+
+  const handleGoogleSuccess = useCallback(() => {
+    navigate("/dashboard", { replace: true });
+  }, [navigate]);
+
+  const handleGoogleError = useCallback((message) => {
+    setError(message);
+  }, []);
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-8">
-      <div className="w-full max-w-sm rounded-xl border p-8 shadow-sm">
-        <h1 className="mb-6 text-2xl font-bold">Sign up</h1>
-        <p className="text-sm text-gray-500">Registration form coming in US-011.</p>
-        <p className="mt-4 text-sm">
+    <main className="flex min-h-screen flex-col items-center justify-center p-8 bg-gray-50">
+      <div className="w-full max-w-sm rounded-xl border border-gray-200 bg-white p-8 shadow-sm">
+        <h1 className="mb-6 text-2xl font-bold text-gray-900">Sign up</h1>
+
+        <GoogleAuthButton
+          label="Sign up with Google"
+          onSuccess={handleGoogleSuccess}
+          onError={handleGoogleError}
+        />
+
+        <div className="my-4 flex items-center gap-3">
+          <hr className="flex-1 border-gray-200" />
+          <span className="text-xs text-gray-400">or</span>
+          <hr className="flex-1 border-gray-200" />
+        </div>
+
+        <form onSubmit={handleSubmit} noValidate>
+          <div className="mb-4">
+            <label htmlFor="display-name" className="mb-1.5 block text-sm font-medium text-gray-700">
+              Name
+            </label>
+            <input
+              id="display-name"
+              type="text"
+              autoComplete="name"
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              placeholder="Jane Smith"
+            />
+          </div>
+
+          <div className="mb-4">
+            <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-gray-700">
+              Email
+            </label>
+            <input
+              id="email"
+              type="email"
+              autoComplete="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              placeholder="you@example.com"
+            />
+          </div>
+
+          <div className="mb-5">
+            <label htmlFor="password" className="mb-1.5 block text-sm font-medium text-gray-700">
+              Password
+            </label>
+            <input
+              id="password"
+              type="password"
+              autoComplete="new-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              placeholder="Min. 8 characters"
+            />
+          </div>
+
+          {error && (
+            <p role="alert" className="mb-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+              {error}
+            </p>
+          )}
+
+          <button
+            type="submit"
+            disabled={isPending}
+            className="w-full rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-60"
+          >
+            {isPending ? "Creating account…" : "Create account"}
+          </button>
+        </form>
+
+        <p className="mt-5 text-center text-sm text-gray-500">
           Have an account?{" "}
-          <Link to="/login" className="text-blue-600 hover:underline">
+          <Link to="/login" className="font-medium text-blue-600 hover:underline">
             Log in
           </Link>
         </p>

@@ -1,11 +1,21 @@
-/** Auth context: provides current user state and login/logout actions. */
+/** Auth context: provides current user state, login/logout actions, and session initialization. */
 
-import { createContext, useContext, useState, useCallback } from "react";
+import { createContext, useContext, useState, useCallback, useEffect } from "react";
+
+import { fetchCurrentUser } from "../api/auth";
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  useEffect(() => {
+    fetchCurrentUser()
+      .then(setUser)
+      .catch(() => {})
+      .finally(() => setIsInitialized(true));
+  }, []);
 
   const login = useCallback((userData) => {
     setUser(userData);
@@ -16,7 +26,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, isInitialized, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
