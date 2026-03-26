@@ -1,7 +1,8 @@
 /** Content script entry: detects job pages, extracts data, injects banner. */
 
-// Board modules are loaded here; implementations come in later stories.
-const BOARDS = [];
+import * as linkedin from "./boards/linkedin.js";
+
+const BOARDS = [linkedin];
 
 const BANNER_AUTO_DISMISS_MS = 8000;
 
