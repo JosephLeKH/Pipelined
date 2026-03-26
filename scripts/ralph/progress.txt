@@ -255,3 +255,22 @@ Learnings:
 - `defaultValue` (not `value`) on textarea is correct for "save on blur" pattern; `value` would require controlled state that resets on every keystroke, while `defaultValue` lets the textarea own its own state between saves
 - Overlay click-outside detection works by comparing `e.target === overlayRef.current` — click bubbling on the inner panel will never equal the outer ref, so no stopPropagation needed
 - `key={application.id}` on the inner container forces React to remount the textarea when a different application is selected, avoiding stale `defaultValue` showing the previous app's notes
+
+## US-019: ManualAddForm modal
+Completed: Thu Mar 26 MST 2026
+
+- `ManualAddForm.jsx`: full-screen overlay modal (z-50) with controlled form state for all fields
+- Form fields: role_title (required), company (required), source_url, date_applied (defaults to today via lazy useState), compensation, location, remote_status select, company_type select, tags (comma-separated text)
+- source hardcoded to 'manual' on submit; tags split on comma and filtered
+- Client-side required-field validation with inline error messages before API call
+- 409 DUPLICATE_APPLICATION: reads `mutationError.code` / `mutationError.details.existing_id` (client interceptor unwraps `error.response.data.error`); shows amber banner with "View existing application" link
+- On success: `mutate(body, { onSuccess: handleClose })` closes modal and resets all state; React Query invalidation already handled by `useCreateApplication` hook
+- Escape key and overlay click both call `handleClose` (which also resets form and mutation state via `reset()`)
+- Dashboard.jsx updated: `useState(false)` for modal open state, "Add Application" button, `<ManualAddForm>` integrated
+- Added `REMOTE_STATUS_OPTIONS` and `COMPANY_TYPE_OPTIONS` constants to `constants.js`
+- 9 tests cover: field rendering, today default, required validation, source=manual, onClose on success, 409 duplicate, Escape close, overlay click close
+
+Learnings:
+- For lazy useState with a pure function, pass the function reference: `useState(getTodayString)` (not `getTodayString()`) to avoid calling it on every render
+- `mutate(body, { onSuccess: cb })` is cleaner than `useEffect` watching `isSuccess` for post-mutation side effects scoped to the component
+- The axios client interceptor rejects with `error.response.data.error ?? error`, so 409s following the `{ "error": {...} }` envelope format land as a plain object on `mutation.error`, not an axios error — check `.code` not `.response.data`
