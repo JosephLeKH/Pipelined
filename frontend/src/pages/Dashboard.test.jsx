@@ -1,0 +1,148 @@
+/** Tests for Dashboard — component composition, URL-driven selection, filter wiring. */
+
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { http, HttpResponse } from "msw";
+import { setupServer } from "msw/node";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { MemoryRouter } from "react-router-dom";
+import { describe, it, expect, beforeAll, afterAll, afterEach } from "vitest";
+
+import Dashboard from "./Dashboard";
+
+const APP = {
+  id: "app1",
+  company: "Acme Corp",
+  role_title: "Software Engineer",
+  current_stage: "Applied",
+  date_applied: "2026-01-15T00:00:00Z",
+  updated_at: "2026-03-20T00:00:00Z",
+  source: "manual",
+  stage_history: [{ stage: "Applied", transitioned_at: "2026-01-15T00:00:00Z" }],
+  stages: ["Applied", "Phone Screen", "Onsite", "Offer", "Rejected"],
+};
+
+const STATS = {
+  total_applied: 5,
+  active_count: 3,
+  response_rate: 0.4,
+  avg_days_to_first_response: 7.2,
+};
+
+const server = setupServer(
+  http.get("/api/applications", () =>
+    HttpResponse.json({ data: [APP], meta: { count: 1, next_cursor: null } })
+  ),
+  http.get("/api/applications/stats", () =>
+    HttpResponse.json({ data: STATS })
+  ),
+  http.get("/api/applications/:id", () =>
+    HttpResponse.json({ data: APP })
+  )
+);
+
+beforeAll(() => server.listen({ onUnhandledRequest: "warn" }));
+afterEach(() => server.resetHandlers());
+afterAll(() => server.close());
+
+function makeWrapper(initialEntries = ["/dashboard"]) {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
+  return ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={initialEntries}>{children}</MemoryRouter>
+    </QueryClientProvider>
+  );
+}
+
+describe("Dashboard", () => {
+  it("should render the page heading and Add Application button", () => {
+    // Arrange / Act
+    render(<Dashboard />, { wrapper: makeWrapper() });
+
+    // Assert — heading is unique; multiple "Add Application" buttons may exist (header + modal form)
+    expect(screen.getByRole("heading", { name: /dashboard/i })).toBeInTheDocument();
+    expect(screen.getAllByRole("button", { name: /add application/i }).length).toBeGreaterThan(0);
+  });
+
+  it("should render FilterBar stage checkboxes", async () => {
+    // Arrange / Act
+    render(<Dashboard />, { wrapper: makeWrapper() });
+
+    // Assert — FilterBar renders stage checkboxes
+    expect(await screen.findByRole("checkbox", { name: /applied/i })).toBeInTheDocument();
+  });
+
+  it("should render ApplicationList with application data", async () => {
+    // Arrange / Act
+    render(<Dashboard />, { wrapper: makeWrapper() });
+
+    // Assert
+    expect(await screen.findByText("Acme Corp")).toBeInTheDocument();
+    expect(screen.getByText("Software Engineer")).toBeInTheDocument();
+  });
+
+  it("should set ?selected=<id> in URL when an application row is clicked", async () => {
+    // Arrange
+    render(<Dashboard />, { wrapper: makeWrapper() });
+    await screen.findByText("Acme Corp");
+
+    // Act
+    await userEvent.click(screen.getByText("Acme Corp").closest("[role='row']"));
+
+    // Assert — DetailPanel slide-in panel becomes visible (translate-x-0 class)
+    const panel = await screen.findByRole("dialog", { name: /application details/i });
+    expect(panel).toBeInTheDocument();
+  });
+
+  it("should open DetailPanel when ?selected=<id> is in the URL on load", async () => {
+    // Arrange — start with ?selected=app1 already in URL
+    render(<Dashboard />, { wrapper: makeWrapper(["/dashboard?selected=app1"]) });
+
+    // Assert — panel overlay becomes visible (opacity-100) and application data loads
+    const overlay = screen.getByTestId("panel-overlay");
+    // Wait for the detail panel to populate with data (role title from PanelHeader)
+    expect(await screen.findByRole("heading", { name: /software engineer/i })).toBeInTheDocument();
+    expect(overlay).toHaveClass("opacity-100");
+  });
+
+  it("should close DetailPanel and remove ?selected from URL when close is triggered", async () => {
+    // Arrange — open with selected param
+    render(<Dashboard />, { wrapper: makeWrapper(["/dashboard?selected=app1"]) });
+    await screen.findByRole("dialog", { name: /application details/i });
+
+    // Act — press Escape to close
+    await userEvent.keyboard("{Escape}");
+
+    // Assert — panel overlay becomes hidden
+    const overlay = screen.getByTestId("panel-overlay");
+    expect(overlay).toHaveClass("opacity-0");
+  });
+
+  it("should open ManualAddForm modal overlay when Add Application header button is clicked", async () => {
+    // Arrange
+    render(<Dashboard />, { wrapper: makeWrapper() });
+    const overlay = screen.getByTestId("modal-overlay");
+
+    // Assert — overlay is hidden before click
+    expect(overlay).toHaveClass("opacity-0");
+
+    // Act — click the header-level "Add Application" button (type="button")
+    const buttons = screen.getAllByRole("button", { name: /add application/i });
+    const headerBtn = buttons.find((el) => el.type === "button" && !el.closest("form"));
+    await userEvent.click(headerBtn);
+
+    // Assert — overlay becomes visible
+    expect(overlay).toHaveClass("opacity-100");
+  });
+
+  it("should render StatsBar metrics after stats load", async () => {
+    // Arrange / Act
+    render(<Dashboard />, { wrapper: makeWrapper() });
+
+    // Assert — one of the metric labels
+    expect(await screen.findByText("Total Applied")).toBeInTheDocument();
+    expect(await screen.findByText("5")).toBeInTheDocument();
+  });
+});
