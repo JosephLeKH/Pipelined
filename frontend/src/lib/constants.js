@@ -25,3 +25,7 @@ export const STATS_STALE_TIME_MS = 60_000;
 export const VIRTUALIZED_LIST_THRESHOLD = 50;
 
 export const PASSWORD_MIN_LENGTH = 8;
+
+export const REMOTE_STATUS_OPTIONS = ["remote", "hybrid", "onsite", "unknown"];
+
+export const COMPANY_TYPE_OPTIONS = ["startup", "mid", "enterprise", "gov", "nonprofit", "other"];
