@@ -238,3 +238,20 @@ Learnings:
 - Column headers in ApplicationList only render after data loads (early return shows skeleton during isLoading); tests that assert on column header buttons must await data first via `screen.findByText("some data row text")`
 - `vi.setSystemTime(NOW)` in the test module (not inside describe/it) freezes `Date.now()` globally for all tests in the file, making stale indicator calculations deterministic
 - react-window `FixedSizeList` uses explicit `height` and `itemSize` props rather than DOM layout measurements, so it renders correctly in JSDOM test environments without mocking ResizeObserver
+
+## US-018: DetailPanel component: fields, notes, stage selector, stage history
+Completed: Thu Mar 26 MST 2026
+
+- `frontend/src/components/DetailPanel.jsx`: slide-in side panel (CSS transform translateX, 250ms ease); 480px on desktop, full-width on mobile; `key={application.id}` resets textarea on application change
+- Closes on Escape keypress (document keydown listener) and click outside (overlay ref comparison)
+- `PanelHeader`: role_title + company + close button (X icon)
+- `PanelBody`: 2-column grid with DetailField sub-components for date_applied, location, remote_status, compensation, company_type; source_url link with ExternalLink icon; stage `<select>` calling PATCH on change; notes `<textarea>` calling PATCH on blur
+- `StageHistoryList`: vertical list with colored dots from STAGE_COLORS, stage name + localized date
+- `useUpdateApplication()` mutation used for both notes and stage changes; updates invalidate all query keys
+- Also ships: `frontend/src/api/auth.js` (auth API layer), `frontend/src/hooks/useAuth.js` (auth mutation hooks), `frontend/src/components/GoogleAuthButton.jsx` (GIS OAuth button), updated `AuthContext.jsx`/`Login.jsx`/`Register.jsx`
+- 9/9 DetailPanel unit tests pass (field display, PATCH on blur/change, stage history order, close behaviors); 51/51 total frontend tests pass
+
+Learnings:
+- `defaultValue` (not `value`) on textarea is correct for "save on blur" pattern; `value` would require controlled state that resets on every keystroke, while `defaultValue` lets the textarea own its own state between saves
+- Overlay click-outside detection works by comparing `e.target === overlayRef.current` — click bubbling on the inner panel will never equal the outer ref, so no stopPropagation needed
+- `key={application.id}` on the inner container forces React to remount the textarea when a different application is selected, avoiding stale `defaultValue` showing the previous app's notes
