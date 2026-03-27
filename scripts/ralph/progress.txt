@@ -473,3 +473,20 @@ Completed: Thu Mar 26 MST 2026
 - JobBoard filters use `useSearchParams` with `replace: true` to keep clean browser history; each filter resets page to 1
 - react-window `FixedSizeList` receives a callback component via `useCallback` to avoid re-creating it on every render
 - JobCard and JobRow both take null-safe fallbacks for optional fields (role, company, apply_url) per schema
+
+---
+
+## US-034: Landing page
+
+**Status:** Complete
+**Commit:** feat(US-034): landing page with hero, features, Chrome CTA, auth redirect
+
+### What was done
+- Updated `frontend/src/pages/LandingPage.jsx`: added `useAuth()` redirect for logged-in users to `/dashboard`, added "Add to Chrome" anchor CTA using `CHROME_EXTENSION_URL` constant and `PuzzleIcon`
+- Created `frontend/src/pages/LandingPage.test.jsx` with 9 tests covering hero tagline, all four feature highlights, Sign Up/Log In CTAs, Chrome extension install CTA, and logged-in redirect
+- All 9 tests pass; production build succeeds
+
+### Learnings
+- LandingPage was already lazy-loaded via `React.lazy` in App.jsx — no changes needed there
+- Auth redirect uses `useAuth().user` with `<Navigate to="/dashboard" replace />` before JSX return; tested by mocking `/api/auth/me` with a MOCK_USER response in MSW
+- Chrome extension CTA uses `<a href={CHROME_EXTENSION_URL}>` (external link) rather than React Router `<Link>`, so it targets `_blank` with `rel="noreferrer"`
