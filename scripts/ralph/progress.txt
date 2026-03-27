@@ -323,3 +323,10 @@ Learnings:
 - JSDOM is available as a direct import from the hoisted node_modules even when only jest-environment-jsdom is in devDependencies
 - `document.body.innerText` is null in JSDOM (not a browser); use `document.body.innerText ?? document.body.textContent ?? ""` for safe fallback
 - LinkedIn fixture needs the word "remote" in body text for remote_status tests — include it in the job description paragraph
+
+## US-023: Greenhouse, Lever, and Ashby board modules
+- Created `extension/content/boards/greenhouse.js`, `lever.js`, `ashby.js` following the same board module interface as `linkedin.js`
+- Each module exports `BOARD_ID`, `isJobPage()`, and `extractFields()` with fallback selector chains
+- Updated `content.js` to import and register all three new boards in the BOARDS array
+- Created minimal HTML fixtures for each board and comprehensive test suites (83 tests total, all passing)
+- Learnings: Fixture HTML must be careful not to mix keywords (e.g., "remote" and "hybrid" in same text) or the remote_status detection priority order causes unexpected test failures
