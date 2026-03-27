@@ -12,6 +12,7 @@ from slowapi.middleware import SlowAPIMiddleware
 
 from applications.router import router as applications_router
 from auth.router import router as auth_router
+from cal.router import router as calendar_router
 from config import settings
 from database import connect, disconnect, ensure_indexes
 from middleware.rate_limit import limiter
@@ -73,6 +74,7 @@ def create_app() -> FastAPI:
 
     app.include_router(auth_router)
     app.include_router(applications_router)
+    app.include_router(calendar_router)
 
     return app
 
