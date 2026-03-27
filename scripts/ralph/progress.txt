@@ -392,3 +392,18 @@ Learnings:
 - `import datetime as dt` is required when defining Pydantic fields named `date` and `time` — the field names shadow the imported types otherwise
 - MongoDB `$lookup` with nested `pipeline` (subpipeline projection) is the clean pattern for joining events with partial application data; avoids fetching full application documents
 - The end-of-month calculation for default `date_to` uses `month % 12 + 1` and `year + month // 12` to handle December roll-over correctly
+
+## US-029: Frontend calendar API layer, hooks, and CalendarGrid component
+Completed: Thu Mar 26 2026
+
+### What was done
+- Created `frontend/src/api/calendar.js` with fetchEvents(dateFrom, dateTo), createEvent(body), updateEvent(id, body), deleteEvent(id) — thin wrappers around the axios client targeting /api/calendar/events.
+- Created `frontend/src/hooks/useCalendar.js` with useCalendarEvents(month, year), useCreateEvent(), useUpdateEvent(), useDeleteEvent() — React Query wrappers with a monthBounds() helper that converts month/year to ISO date range params.
+- Added EVENT_TYPE_COLORS, DEFAULT_EVENT_COLOR, CALENDAR_STALE_TIME_MS, and WEEK_DAYS constants to `frontend/src/lib/constants.js`.
+- Created `frontend/src/components/CalendarGrid.jsx` — a 7-column monthly grid with: colored event chips (company + event_type), today highlighting, prev/next/Today navigation, and callbacks for onEventClick (opens DetailPanel) and onDayClick (pre-wired for NewEventForm in US-030).
+- Updated `frontend/src/pages/Calendar.jsx` to compose CalendarGrid + DetailPanel with useState for month/year/selectedAppId/newEventDate. Page was already lazy-loaded via React.lazy in App.jsx.
+
+### Learnings
+- Backend calendar module lives in `backend/cal/` (not `backend/calendar/`), router prefix is `/api/calendar`.
+- The axios client interceptor unwraps `{ data: [...], meta: {} }` list responses differently from single-resource responses — CalendarGrid handles both shapes defensively.
+- NewEventForm (US-030) needs to be wired in; the date click callback is stubbed with a placeholder paragraph.
