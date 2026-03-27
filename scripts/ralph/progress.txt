@@ -306,3 +306,20 @@ Learnings:
 - jest-chrome@0.8.0 has a peer dep on jest@^26 || ^27; jest@29 breaks the dependency resolution — pin jest to ^27.5.1 for extension tests
 - Jest 27 with `"type": "module"` in package.json requires `--experimental-vm-modules` and `"transform": {}` in jest config to use native ESM
 - Default jest testMatch (`**/?(*.)+(spec|test).js`) does not match `test_*.js` naming convention; must add `"**/tests/test_*.js"` to testMatch in jest config
+
+## US-022: LinkedIn board module
+Completed: Thu Mar 26 MST 2026
+
+- Created `extension/content/boards/linkedin.js` exporting `BOARD_ID`, `isJobPage()`, `extractFields()`
+- `isJobPage()` checks URL against `/linkedin\.com\/jobs\/view\//` and verifies primary title selector is present
+- `extractFields()` returns 6 fields: role_title, company_name, compensation (null), company_type (null), location, remote_status
+- Each field uses a primary + at least one fallback selector; title also falls back to `h1`
+- `remote_status` derived from body text keyword scan: 'remote' → 'remote', 'hybrid' → 'hybrid', 'on-site'/'onsite' → 'onsite'
+- Never throws — returns null for any field not found in DOM
+- 20 tests in `extension/tests/test_linkedin.js` against `tests/fixtures/linkedin-swe-posting.html` fixture; all pass
+- Updated `content/content.js` to import and register the LinkedIn board module
+
+Learnings:
+- JSDOM is available as a direct import from the hoisted node_modules even when only jest-environment-jsdom is in devDependencies
+- `document.body.innerText` is null in JSDOM (not a browser); use `document.body.innerText ?? document.body.textContent ?? ""` for safe fallback
+- LinkedIn fixture needs the word "remote" in body text for remote_status tests — include it in the job description paragraph
