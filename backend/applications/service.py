@@ -9,6 +9,7 @@ from pymongo import ReturnDocument
 from applications.schemas import ApplicationCreate, ApplicationListQuery, ApplicationUpdate
 from auth.service import get_user_by_id
 from database import get_client, get_collection
+from parsing.openai_client import parse_with_openai
 
 logger = structlog.get_logger()
 
@@ -74,10 +75,53 @@ def _build_filter(uid: ObjectId, query: ApplicationListQuery) -> dict:
     return f
 
 
+async def _apply_openai_fallback(body: ApplicationCreate) -> ApplicationCreate:
+    """Call OpenAI to fill in missing role_title/company when source is extension.
+
+    Returns a (possibly enriched) ApplicationCreate. On failure, returns body unchanged.
+    """
+    page_text = body.page_text
+    if not page_text:
+        return body
+
+    try:
+        parsed = await parse_with_openai(page_text)
+    except Exception:
+        logger.warning("openai_fallback_error")
+        return body
+
+    updates: dict = {}
+    if not body.role_title and parsed.get("role_title"):
+        updates["role_title"] = parsed["role_title"]
+    if not body.company and parsed.get("company_name"):
+        updates["company"] = parsed["company_name"]
+    if not body.compensation and parsed.get("compensation"):
+        updates["compensation"] = parsed["compensation"]
+    if not body.company_type and parsed.get("company_type"):
+        updates["company_type"] = parsed["company_type"]
+    if not body.location and parsed.get("location"):
+        updates["location"] = parsed["location"]
+    if not body.remote_status and parsed.get("remote_status"):
+        updates["remote_status"] = parsed["remote_status"]
+
+    if not updates:
+        return body
+
+    return body.model_copy(update=updates)
+
+
 async def create(user_id: str, body: ApplicationCreate) -> dict:
-    """Create a new application. Raises DuplicateApplicationError on (user_id, company, role_title) collision."""
+    """Create a new application. Raises DuplicateApplicationError on (user_id, company, role_title) collision.
+
+    When source='extension' and role_title or company is missing, triggers OpenAI fallback parsing.
+    If OpenAI fails, the application is saved with whatever partial data exists.
+    """
     uid = ObjectId(user_id)
     apps = get_collection("applications")
+
+    needs_fallback = body.source == "extension" and (not body.role_title or not body.company)
+    if needs_fallback:
+        body = await _apply_openai_fallback(body)
 
     existing = await apps.find_one(
         {"user_id": uid, "company": body.company, "role_title": body.role_title},
@@ -89,7 +133,7 @@ async def create(user_id: str, body: ApplicationCreate) -> dict:
     stages = await _fetch_user_stages(uid)
     now = datetime.now(timezone.utc)
 
-    body_dict = body.model_dump()
+    body_dict = body.model_dump(exclude={"page_text"})
     body_dict["source_url"] = str(body.source_url) if body.source_url else None
 
     doc: dict = {

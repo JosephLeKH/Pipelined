@@ -19,6 +19,7 @@ MAX_COMPANY_LENGTH = 200
 MAX_COMPENSATION_LENGTH = 100
 MAX_LOCATION_LENGTH = 200
 MAX_STAGE_LENGTH = 50
+MAX_PAGE_TEXT_LENGTH = 3200
 
 
 class StageHistoryEntry(BaseModel):
@@ -29,8 +30,8 @@ class StageHistoryEntry(BaseModel):
 class ApplicationCreate(BaseModel):
     model_config = ConfigDict(strict=True)
 
-    role_title: str = Field(min_length=1, max_length=MAX_ROLE_TITLE_LENGTH)
-    company: str = Field(min_length=1, max_length=MAX_COMPANY_LENGTH)
+    role_title: str | None = Field(None, min_length=1, max_length=MAX_ROLE_TITLE_LENGTH)
+    company: str | None = Field(None, min_length=1, max_length=MAX_COMPANY_LENGTH)
     source: ValidSource
     source_url: AnyHttpUrl | None = None
     compensation: str | None = Field(None, max_length=MAX_COMPENSATION_LENGTH)
@@ -39,6 +40,7 @@ class ApplicationCreate(BaseModel):
     remote_status: ValidRemoteStatus | None = None
     date_applied: datetime | None = None
     tags: list[str] = Field(default_factory=list, max_length=MAX_TAG_COUNT)
+    page_text: str | None = Field(None, max_length=MAX_PAGE_TEXT_LENGTH)
 
 
 class ApplicationUpdate(BaseModel):
@@ -59,8 +61,8 @@ class ApplicationUpdate(BaseModel):
 
 class ApplicationResponse(BaseModel):
     id: str
-    role_title: str
-    company: str
+    role_title: str | None = None
+    company: str | None = None
     current_stage: str
     source: str
     date_applied: datetime

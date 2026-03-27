@@ -1,7 +1,7 @@
 """Applications route handlers: CRUD, stats, and stage management."""
 
 import structlog
-from fastapi import APIRouter, Depends, HTTPException, Query, Response
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response
 
 from applications import service as app_service
 from applications.schemas import (
@@ -20,6 +20,8 @@ from applications.schemas import (
 )
 from applications.service import ActiveStageError, DuplicateApplicationError
 from auth.dependencies import get_current_user
+from config import settings
+from middleware.rate_limit import limiter
 
 logger = structlog.get_logger()
 
@@ -29,7 +31,9 @@ APP_NOT_FOUND_DETAIL = {"code": "APP_NOT_FOUND", "message": "Application not fou
 
 
 @router.post("", status_code=201)
+@limiter.limit(settings.rate_limit_ai)
 async def create_application(
+    request: Request,
     body: ApplicationCreate,
     user: dict = Depends(get_current_user),
 ) -> dict:

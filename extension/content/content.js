@@ -4,8 +4,11 @@ import * as linkedin from "./boards/linkedin.js";
 import * as greenhouse from "./boards/greenhouse.js";
 import * as lever from "./boards/lever.js";
 import * as ashby from "./boards/ashby.js";
+import * as workday from "./boards/workday.js";
 
-const BOARDS = [linkedin, greenhouse, lever, ashby];
+const BOARDS = [linkedin, greenhouse, lever, ashby, workday];
+
+const PAGE_TEXT_MAX_CHARS = 3200;
 
 const BANNER_AUTO_DISMISS_MS = 8000;
 const BANNER_SUCCESS_DISMISS_MS = 1500;
@@ -88,7 +91,8 @@ function init() {
   if (!board) return;
 
   const fields = board.extractFields();
-  if (!fields.role_title && !fields.company_name) {
+  // Workday uses shadow DOM — show banner even when fields are null; OpenAI fallback fills them in.
+  if (!fields.role_title && !fields.company_name && board.BOARD_ID !== "workday") {
     return;
   }
 
@@ -135,10 +139,15 @@ async function handleSave(shadow, host, fields, boardId) {
   button.disabled = true;
   button.textContent = "Saving\u2026";
 
+  const needsPageText = boardId === "workday" || (!fields.role_title && !fields.company_name);
+  const pageText = needsPageText
+    ? (document.body.innerText ?? "").trim().slice(0, PAGE_TEXT_MAX_CHARS)
+    : null;
+
   const payload = {
     fields,
     boardId,
-    pageText: null,
+    pageText,
     sourceUrl: window.location.href,
   };
 

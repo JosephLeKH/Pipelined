@@ -1,6 +1,7 @@
 """Tests for applications service: CRUD, duplicate guard, and stage logic."""
 
 from datetime import datetime, timezone
+from unittest.mock import AsyncMock, patch
 
 import pytest
 from bson import ObjectId
@@ -10,6 +11,7 @@ from applications.service import (
     INITIAL_STAGE,
     ApplicationNotFoundError,
     DuplicateApplicationError,
+    _apply_openai_fallback,
     _build_filter,
     compute_stats,
     create,
@@ -284,3 +286,106 @@ async def test_compute_stats_returns_correct_totals(app):
     assert stats["total_applied"] == 3
     assert stats["active_count"] == 3
     assert stats["response_rate"] == round(1 / 3, 2)
+
+
+# ---------------------------------------------------------------------------
+# OpenAI fallback tests (pure-function, no MongoDB required)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_apply_openai_fallback_fills_role_title_and_company():
+    # Arrange
+    body = ApplicationCreate(role_title=None, company=None, source="extension", page_text="Software Engineer at Acme")
+    openai_result = {
+        "role_title": "Software Engineer",
+        "company_name": "Acme Corp",
+        "compensation": None,
+        "company_type": None,
+        "location": None,
+        "remote_status": None,
+    }
+
+    with patch("applications.service.parse_with_openai", AsyncMock(return_value=openai_result)):
+        # Act
+        result = await _apply_openai_fallback(body)
+
+    # Assert
+    assert result.role_title == "Software Engineer"
+    assert result.company == "Acme Corp"
+
+
+@pytest.mark.asyncio
+async def test_apply_openai_fallback_returns_body_unchanged_when_no_page_text():
+    # Arrange
+    body = ApplicationCreate(role_title=None, company=None, source="extension", page_text=None)
+
+    # Act
+    result = await _apply_openai_fallback(body)
+
+    # Assert
+    assert result is body
+
+
+@pytest.mark.asyncio
+async def test_apply_openai_fallback_returns_body_unchanged_on_parse_failure():
+    # Arrange
+    body = ApplicationCreate(role_title=None, company=None, source="extension", page_text="some text")
+
+    with patch("applications.service.parse_with_openai", AsyncMock(side_effect=Exception("network error"))):
+        # Act
+        result = await _apply_openai_fallback(body)
+
+    # Assert
+    assert result is body
+
+
+@pytest.mark.asyncio
+async def test_create_extension_application_triggers_openai_fallback_when_fields_missing(app):
+    # Arrange
+    user = await create_user("wd@example.com", "TestPass123!", "WD User")
+    user_id = str(user["_id"])
+    openai_result = {
+        "role_title": "SWE Intern",
+        "company_name": "Workday Inc",
+        "compensation": None,
+        "company_type": None,
+        "location": None,
+        "remote_status": None,
+    }
+    body = ApplicationCreate(
+        role_title=None,
+        company=None,
+        source="extension",
+        page_text="SWE Intern at Workday Inc",
+    )
+
+    with patch("applications.service.parse_with_openai", AsyncMock(return_value=openai_result)):
+        # Act
+        doc = await create(user_id, body)
+
+    # Assert
+    assert doc["role_title"] == "SWE Intern"
+    assert doc["company"] == "Workday Inc"
+    assert "page_text" not in doc
+
+
+@pytest.mark.asyncio
+async def test_create_extension_application_saves_partial_data_when_openai_fails(app):
+    # Arrange
+    user = await create_user("wd2@example.com", "TestPass123!", "WD2 User")
+    user_id = str(user["_id"])
+    body = ApplicationCreate(
+        role_title=None,
+        company=None,
+        source="extension",
+        page_text="some unstructured text",
+    )
+
+    with patch("applications.service.parse_with_openai", AsyncMock(side_effect=Exception("api down"))):
+        # Act
+        doc = await create(user_id, body)
+
+    # Assert — application is saved with whatever partial data exists (nulls OK)
+    assert "page_text" not in doc
+    assert doc["source"] == "extension"
