@@ -14,6 +14,7 @@ from applications.router import router as applications_router
 from auth.router import router as auth_router
 from cal.router import router as calendar_router
 from jobs.router import router as jobs_router
+from jobs.sync import create_scheduler
 from config import settings
 from database import connect, disconnect, ensure_indexes
 from middleware.rate_limit import limiter
@@ -38,13 +39,18 @@ async def _rate_limit_handler(request: Request, exc: RateLimitExceeded) -> JSONR
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
-    """Connect to MongoDB on startup, disconnect on shutdown."""
+    """Connect to MongoDB and start the scheduler on startup; reverse on shutdown."""
     logger.info("starting_up")
     await connect()
     logger.info("database_connected")
     await ensure_indexes()
     logger.info("indexes_ensured")
+    scheduler = create_scheduler()
+    scheduler.start()
+    logger.info("scheduler_started")
     yield
+    scheduler.shutdown()
+    logger.info("scheduler_stopped")
     await disconnect()
     logger.info("database_disconnected")
 
