@@ -158,7 +158,7 @@ $STORY
 
 When this story is complete:
 1. Run quality checks (typecheck, tests) as specified above
-2. MANDATORY — Commit at repo root ($PROJECT_ROOT): after checks pass, run \`git add -A\` and \`git commit -m "feat: [Story ID] - [Story Title]"\`. Do not finish this iteration with a dirty working tree (no uncommitted changes).
+2. MANDATORY — Commit at repo root ($PROJECT_ROOT): after checks pass, run \`git add -A\` and \`git commit -m \"feat: [Story ID] - [Story Title]\"\`. Do not finish this iteration with a dirty working tree (no uncommitted changes).
 3. Update scripts/ralph/prd.json (path: $PRD_FILE) to set passes: true for the story you just finished
 4. Append a brief summary of what you did and any learnings to scripts/ralph/progress.txt
 
