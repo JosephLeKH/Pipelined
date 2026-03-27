@@ -445,3 +445,15 @@ Completed: Thu Mar 26 MST 2026
 - `hide_applied` filter requires optional auth: used a custom `_optional_user` dependency that calls `get_current_user` internally but swallows `HTTPException` and returns `None` instead of raising — allows unauthenticated browse while enabling filter for logged-in users
 - Used `asyncio.gather()` for parallel count + find to avoid async waterfall on listing queries
 - Tests require live MongoDB (no local instance available); all backend tests share this constraint
+
+## US-032: GitHub job sync scheduler
+Completed: Thu Mar 26 MST 2026
+
+- `backend/jobs/sync.py`: APScheduler `AsyncIOScheduler` with `CronTrigger(hour=settings.github_sync_hour_utc)` in UTC; `httpx.AsyncClient` with `Authorization: token {github_token}` header; `_get_paginated()` handles Link header rel=next pagination; `_fetch_readme_content()` base64-decodes GitHub contents API response; `parse_internship_table()` parses SimplifyJobs README markdown table (skips 🔒 locked and ↳ continuation rows); `compute_url_hash()` as SHA-256 of lowercase-stripped apply_url; `_upsert_listing()` uses `update_one(..., upsert=True)` with url_hash as dedup key, `$setOnInsert` for ingested_at and date_posted; `_mark_stale_listings()` sets is_stale=True where date_posted < now - 60 days; `sync_github_repos()` main async job using `asyncio.gather` across repos with per-repo exception handling; `create_scheduler()` factory
+- `backend/main.py`: lifespan updated to create, start, and shutdown scheduler around DB connect/disconnect
+- `backend/tests/test_sync.py`: 14 tests — pure function tests for url_hash normalization, parse_internship_table (valid rows, locked skip, continuation skip, empty input); DB integration tests for upsert insert/dedup/$setOnInsert, stale marking with cutoff boundary; httpx-mocked sync_github_repos ingestion and error-resilience tests
+
+### Learnings
+- The ↳ continuation rows in SimplifyJobs README are skipped by checking if the first cell starts with "↳" before processing
+- `$setOnInsert` is the right MongoDB operator for setting ingested_at and date_posted only on initial insert, while `$set` updates mutable fields on every sync
+- APScheduler 3.x `AsyncIOScheduler` integrates cleanly with FastAPI lifespan: `scheduler.start()` before yield, `scheduler.shutdown()` after yield (before DB disconnect)
