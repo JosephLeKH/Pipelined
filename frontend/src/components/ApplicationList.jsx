@@ -14,6 +14,7 @@ import {
   DEFAULT_STAGE_COLOR,
   STALE_APPLICATION_DAYS,
 } from "../lib/constants";
+import ApiErrorMessage from "./ApiErrorMessage";
 
 const MS_PER_DAY = 86_400_000;
 
@@ -94,7 +95,7 @@ function ApplicationList({ onSelect, filters = {} }) {
     [filters, sortBy, sortOrder]
   );
 
-  const { data: envelope, isLoading } = useApplications(queryFilters);
+  const { data: envelope, isLoading, error, refetch } = useApplications(queryFilters);
   const applications = envelope?.data ?? [];
 
   const handleSort = useCallback(
@@ -120,6 +121,8 @@ function ApplicationList({ onSelect, filters = {} }) {
       </div>
     );
   }
+
+  if (error) return <ApiErrorMessage error={error} onRetry={refetch} />;
 
   if (!applications.length) {
     return (

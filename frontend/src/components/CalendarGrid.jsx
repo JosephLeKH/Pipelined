@@ -7,6 +7,7 @@ import ChevronRight from "lucide-react/dist/esm/icons/chevron-right";
 
 import { useCalendarEvents } from "../hooks/useCalendar";
 import { DEFAULT_EVENT_COLOR, EVENT_TYPE_COLORS, WEEK_DAYS } from "../lib/constants";
+import ApiErrorMessage from "./ApiErrorMessage";
 
 const MONTH_NAMES = [
   "January", "February", "March", "April", "May", "June",
@@ -136,7 +137,7 @@ function CalendarHeader({ month, year, onPrev, onNext, onToday }) {
  *   onDayClick    {function} (date) => void — called when an empty day is clicked
  */
 function CalendarGrid({ month, year, onMonthChange, onEventClick, onDayClick }) {
-  const { data: eventsEnvelope, isLoading } = useCalendarEvents(month, year);
+  const { data: eventsEnvelope, isLoading, error, refetch } = useCalendarEvents(month, year);
 
   // Backend returns { data: [...], meta: { count } }
   const events = useMemo(() => {
@@ -192,6 +193,10 @@ function CalendarGrid({ month, year, onMonthChange, onEventClick, onDayClick }) 
       {isLoading ? (
         <div className="flex h-64 items-center justify-center text-sm text-gray-400">
           Loading events…
+        </div>
+      ) : error ? (
+        <div className="p-6">
+          <ApiErrorMessage error={error} onRetry={refetch} />
         </div>
       ) : (
         <div className="grid grid-cols-7">

@@ -1,6 +1,7 @@
 /** Displays 4 key pipeline metrics: total applied, active count, response rate, avg days to first response. */
 
 import { useApplicationStats } from "../hooks/useApplications";
+import ApiErrorMessage from "./ApiErrorMessage";
 
 function MetricCard({ label, value, isLoading }) {
   if (isLoading) {
@@ -21,7 +22,9 @@ function MetricCard({ label, value, isLoading }) {
 }
 
 function StatsBar() {
-  const { data: stats, isLoading } = useApplicationStats();
+  const { data: stats, isLoading, error, refetch } = useApplicationStats();
+
+  if (error) return <ApiErrorMessage error={error} onRetry={refetch} />;
 
   const responseRateDisplay = stats
     ? `${(stats.response_rate * 100).toFixed(1)}%`

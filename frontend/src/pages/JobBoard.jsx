@@ -9,6 +9,7 @@ import List from "lucide-react/dist/esm/icons/list";
 import ChevronLeft from "lucide-react/dist/esm/icons/chevron-left";
 import ChevronRight from "lucide-react/dist/esm/icons/chevron-right";
 
+import ApiErrorMessage from "../components/ApiErrorMessage";
 import JobCard from "../components/JobCard";
 import JobRow from "../components/JobRow";
 import { useJobs } from "../hooks/useJobs";
@@ -182,7 +183,7 @@ function JobBoard() {
     return f;
   }, [roleType, experienceLevel, remoteStatus, companyType, page]);
 
-  const { data: envelope, isLoading } = useJobs(filters);
+  const { data: envelope, isLoading, error, refetch } = useJobs(filters);
   const jobs = envelope?.data ?? [];
   const total = envelope?.meta?.total ?? 0;
   const totalPages = Math.ceil(total / DEFAULT_PER_PAGE);
@@ -219,6 +220,8 @@ function JobBoard() {
 
       {isLoading ? (
         <LoadingSkeleton view={view} />
+      ) : error ? (
+        <ApiErrorMessage error={error} onRetry={refetch} />
       ) : jobs.length === 0 ? (
         <div className="py-20 text-center text-gray-500">
           No listings match your filters.
