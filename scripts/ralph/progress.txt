@@ -431,3 +431,17 @@ Completed: Thu Mar 26 2026
 ### Learnings
 - The `CalendarEventsList` inside `DetailPanel` fires `useApplicationEvents` on mount; existing DetailPanel tests need an MSW handler for `GET /api/calendar/events` or they throw unhandled-request errors.
 - Used a single `newEventForm: { date, applicationId } | null` state in Calendar.jsx to cover both day-click (date pre-fill) and "Add Event" from DetailPanel (applicationId pre-fill).
+
+## US-031: Job listings backend: schemas, service, and router
+Completed: Thu Mar 26 MST 2026
+
+- `backend/jobs/schemas.py`: `JobListingResponse` (id, company, role, location, remote_status, company_type, experience_level, salary_range, apply_url, date_posted, is_stale, ingested_at) with `from_doc()` classmethod; `JobListQuery` (role_type, experience_level, company_type, remote_status, date_from, salary_min, hide_applied, page, per_page) with offset pagination defaults (30/100)
+- `backend/jobs/service.py`: `list_listings(query, user_id)` builds filter, runs count + paginated find in parallel via `asyncio.gather()`; `_get_applied_urls(user_id)` fetches source_urls from user's applications for `hide_applied` filtering; `get_listing(id)` handles invalid ObjectId gracefully
+- `backend/jobs/router.py`: `GET /api/jobs` with all query filters + optional auth via `_optional_user` dependency (no 401 for unauthenticated); `GET /api/jobs/:id` returns 404 with standard error envelope
+- `backend/main.py`: jobs router registered via `app.include_router(jobs_router)`
+- `backend/tests/test_jobs.py`: 11 integration tests covering empty list, pagination, stale flag, filters (remote_status, experience_level), hide_applied with/without auth, single listing fetch, 404 on unknown/invalid id
+
+### Learnings
+- `hide_applied` filter requires optional auth: used a custom `_optional_user` dependency that calls `get_current_user` internally but swallows `HTTPException` and returns `None` instead of raising — allows unauthenticated browse while enabling filter for logged-in users
+- Used `asyncio.gather()` for parallel count + find to avoid async waterfall on listing queries
+- Tests require live MongoDB (no local instance available); all backend tests share this constraint
