@@ -1,0 +1,34 @@
+/** React Query hooks for job listings data. */
+
+import { useQuery } from "@tanstack/react-query";
+
+import { fetchJob, fetchJobs } from "../api/jobs";
+import { QUERY_STALE_TIME_MS } from "../lib/constants";
+
+/** Centralized query key factory. */
+export const KEYS = {
+  all: ["jobs"],
+  lists: () => [...KEYS.all, "list"],
+  list: (filters) => [...KEYS.lists(), filters],
+  details: () => [...KEYS.all, "detail"],
+  detail: (id) => [...KEYS.details(), id],
+};
+
+/** List job listings with optional filters/pagination. */
+export function useJobs(filters = {}) {
+  return useQuery({
+    queryKey: KEYS.list(filters),
+    queryFn: () => fetchJobs(filters),
+    staleTime: QUERY_STALE_TIME_MS,
+  });
+}
+
+/** Fetch a single job listing by id. */
+export function useJob(id) {
+  return useQuery({
+    queryKey: KEYS.detail(id),
+    queryFn: () => fetchJob(id),
+    enabled: Boolean(id),
+    staleTime: QUERY_STALE_TIME_MS,
+  });
+}

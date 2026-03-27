@@ -45,6 +45,12 @@ export const CALENDAR_STALE_TIME_MS = 60_000;
 
 export const WEEK_DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
+export const ROLE_TYPE_OPTIONS = ["full_time", "part_time", "contract", "internship"];
+
+export const EXPERIENCE_LEVEL_OPTIONS = ["internship", "entry", "mid", "senior", "staff"];
+
+export const JOBS_STALE_TIME_MS = 60_000;
+
 export const EVENT_TYPE_OPTIONS = [
   { value: "phone_screen", label: "Phone Screen" },
   { value: "technical", label: "Technical" },
