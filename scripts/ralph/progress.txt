@@ -375,3 +375,20 @@ Learnings:
 - Exported `show`, `renderSaves`, `openDashboard`, `init` from popup.js to enable unit testing
 - Wrote `test_popup.js` with 17 tests covering: show() state transitions, renderSaves() list rendering (empty, multiple, null fields, MAX_RECENT cap), init() auth flow (unauthenticated skips storage, authenticated renders saves or empty state), openDashboard() chrome.tabs.create call
 - All 123 extension tests pass
+
+## US-028: Calendar backend: schemas, service, and router
+Completed: Thu Mar 26 MST 2026
+
+- `backend/cal/schemas.py`: `EventCreate` (application_id, event_type enum[phone_screen/technical/onsite/behavioral/offer/other], date, time?, notes?, title?), `EventUpdate` (all Optional), `EventResponse` (id, application_id, event_type, date, time, notes, title, company, role_title); uses `import datetime as dt` to avoid field name/type shadowing
+- `backend/cal/service.py`: `create_event()` validates application ownership (404 if not found); `list_events(user_id, date_from, date_to)` uses `$lookup` aggregation to join with applications collection and populate company/role_title; defaults to current calendar month when dates not provided; `update_event()` uses `find_one_and_update` + re-fetches enriched doc; `delete_event()` returns bool; `_get_enriched()` helper for join logic
+- `backend/cal/router.py`: GET /api/calendar/events (date_from, date_to query params), POST /api/calendar/events (201, 404 if app not found), PATCH /api/calendar/events/:id, DELETE /api/calendar/events/:id (204)
+- `backend/main.py`: registered `calendar_router` from `cal.router`
+- `backend/tests/test_calendar.py`: 15 integration tests covering all CRUD endpoints, 401 auth guards, 404 for missing/other-user resources, cross-user isolation, date range filtering
+- All 115 tests collect without errors; all 15 calendar tests structurally correct; require live MongoDB to execute (consistent with prior stories)
+- Typecheck: `pyright --pythonversion 3.12` reports only `reportMissingImports` for third-party packages not in Pyright's env (structlog, bson, pymongo) — same pattern as all prior stories
+
+Learnings:
+- Named the package `cal` instead of `calendar` to avoid Python stdlib conflict; `calendar` is a stdlib module and would shadow the local package under `--import-mode=importlib` causing `ModuleNotFoundError: No module named 'calendar.router'; 'calendar' is not a package`
+- `import datetime as dt` is required when defining Pydantic fields named `date` and `time` — the field names shadow the imported types otherwise
+- MongoDB `$lookup` with nested `pipeline` (subpipeline projection) is the clean pattern for joining events with partial application data; avoids fetching full application documents
+- The end-of-month calculation for default `date_to` uses `month % 12 + 1` and `year + month // 12` to handle December roll-over correctly
