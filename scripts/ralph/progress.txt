@@ -330,3 +330,15 @@ Learnings:
 - Updated `content.js` to import and register all three new boards in the BOARDS array
 - Created minimal HTML fixtures for each board and comprehensive test suites (83 tests total, all passing)
 - Learnings: Fixture HTML must be careful not to mix keywords (e.g., "remote" and "hybrid" in same text) or the remote_status detection priority order causes unexpected test failures
+
+## US-024: Content script entry, banner injection, and shadow DOM isolation
+- Updated `extension/content/content.js`: added inline `BANNER_CSS` constant, `buildBannerContainer()` using DOM methods (no innerHTML), set `host.style.zIndex = MAX_Z_INDEX` on the `<pipelined-banner>` host element, injected `<style>` with `BANNER_CSS` into shadow root, exported `init`/`injectBanner`/`dismiss`/constants for testing
+- Created `extension/tests/test_content.js`: 15 tests covering constants, host injection, z-index, inline CSS, ARIA attrs, banner text content, CTA button, fallback text, auto-dismiss (fake timers), Escape key dismiss, and dismiss animation; all pass
+- Shadow DOM spy pattern: override `attachShadow` to use `mode:'open'` in tests so shadow root is inspectable; production code still uses `mode:'closed'`
+- 98/98 extension tests pass
+
+Learnings:
+- In Jest ESM mode (`--experimental-vm-modules`), `jest` is not a global — must import `jest` (and other globals) from `@jest/globals`
+- Dynamic `import()` in `beforeAll` solves the ESM hoisting problem: set `global.document`/`global.window` first, then `await import(module)` so the module's top-level code runs after globals exist
+- Spying on `Element.prototype.attachShadow` (via `global.window.Element.prototype.attachShadow`) lets tests access closed shadow roots by overriding the mode to 'open'
+- Using DOM construction methods (`createElement`, `textContent`, `appendChild`) instead of `innerHTML` avoids XSS lint warnings and is safer for user-provided content
