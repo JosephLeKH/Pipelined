@@ -352,3 +352,20 @@ Learnings:
 - The service worker (background.js) handles all network I/O; the content script's role is to wire up the UI interaction (button click → sendMessage) and render the response state — clean separation of concerns
 - `chrome.runtime.sendMessage` in content scripts can throw if the extension context is invalidated (e.g., extension reloaded mid-session); always wrap in try/catch and map the exception to an error result
 - For the duplicate banner state, storing a timer reference and clearing it on "View →" click prevents the banner from auto-dismissing while the user is trying to click the link
+
+## US-026: Workday board module and OpenAI fallback parsing
+Completed: Thu Mar 26 MST 2026
+
+- `extension/content/boards/workday.js`: `BOARD_ID='workday'`, `isJobPage()` checks URL only via regex (`/\.myworkday\.com\//`), `extractFields()` returns all-null object due to shadow DOM isolation
+- `extension/content/content.js`: imported workday board, added `PAGE_TEXT_MAX_CHARS=3200` constant, updated `init()` to allow Workday through even when both fields are null, updated `handleSave()` to attach `pageText` when boardId='workday' or both fields are null
+- `backend/parsing/openai_client.py`: `parse_with_openai(page_text)` calls GPT-4o mini (temperature=0.0, max_tokens=200) with strict 6-field JSON system prompt; validates all 6 keys present; returns null dict on any failure (no API key, OpenAI error, invalid JSON, missing fields)
+- `backend/applications/schemas.py`: made `role_title` and `company` optional (`str | None = None`) in `ApplicationCreate`; added `page_text: str | None = Field(None, max_length=3200)` as transient field; updated `ApplicationResponse` to allow null role_title/company
+- `backend/applications/service.py`: added `_apply_openai_fallback(body)` helper that calls OpenAI and merges non-null parsed fields into body; modified `create()` to trigger fallback when source='extension' and either field is missing; strips `page_text` from DB insert via `model_dump(exclude={"page_text"})`
+- `backend/applications/router.py`: added `@limiter.limit(settings.rate_limit_ai)` decorator and `request: Request` param to `create_application`
+- Tests: `extension/tests/test_workday.js` (JSDOM, 4 tests); `backend/tests/test_openai_client.py` (6 tests, all mocked); 5 new tests in `backend/tests/test_applications_service.py`
+
+Learnings:
+- Workday's entire job page UI lives inside closed shadow DOM — `document.querySelector()` cannot penetrate it, making URL-only detection the correct approach for `isJobPage()`
+- `model_copy(update=...)` (Pydantic v2) is the correct way to produce an immutable copy of a model with updated fields; `model_dump(exclude={"page_text"})` strips transient fields before DB insert
+- The OpenAI client validates that all 6 expected fields are present in the response (even if some are null) to guard against partial or malformed responses; `EXPECTED_FIELDS.issubset(parsed.keys())` is the check
+- Rate limiting an AI endpoint with `@limiter.limit(settings.rate_limit_ai)` requires `request: Request` as the first parameter in the route handler
