@@ -457,3 +457,19 @@ Completed: Thu Mar 26 MST 2026
 - The ↳ continuation rows in SimplifyJobs README are skipped by checking if the first cell starts with "↳" before processing
 - `$setOnInsert` is the right MongoDB operator for setting ingested_at and date_posted only on initial insert, while `$set` updates mutable fields on every sync
 - APScheduler 3.x `AsyncIOScheduler` integrates cleanly with FastAPI lifespan: `scheduler.start()` before yield, `scheduler.shutdown()` after yield (before DB disconnect)
+
+## US-033: JobCard, JobRow components and JobBoard page
+Completed: Thu Mar 26 MST 2026
+
+- `frontend/src/api/jobs.js` — thin Axios wrappers: `fetchJobs(filters)` and `fetchJob(id)`
+- `frontend/src/hooks/useJobs.js` — React Query hooks `useJobs(filters)` and `useJob(id)` with key factory
+- `frontend/src/lib/constants.js` — added `ROLE_TYPE_OPTIONS`, `EXPERIENCE_LEVEL_OPTIONS`, `JOBS_STALE_TIME_MS`
+- `frontend/src/components/JobCard.jsx` — card for grid view: company, role, badges (remote/experience/company_type), location, salary, apply link, stale badge
+- `frontend/src/components/JobRow.jsx` — compact row for list view with react-window style prop support, same data fields
+- `frontend/src/pages/JobBoard.jsx` — full implementation: grid/list view toggle, select filters (role_type, experience_level, remote_status, company_type) stored in URL params, react-window virtualization in list view, pagination
+- 83/83 frontend tests pass (15 new tests across JobCard.test.jsx and JobRow.test.jsx)
+
+### Learnings
+- JobBoard filters use `useSearchParams` with `replace: true` to keep clean browser history; each filter resets page to 1
+- react-window `FixedSizeList` receives a callback component via `useCallback` to avoid re-creating it on every render
+- JobCard and JobRow both take null-safe fallbacks for optional fields (role, company, apply_url) per schema
