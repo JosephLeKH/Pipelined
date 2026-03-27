@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 
 import CalendarGrid from "../components/CalendarGrid";
 import DetailPanel from "../components/DetailPanel";
+import NewEventForm from "../components/NewEventForm";
 import { useApplication } from "../hooks/useApplications";
 
 function Calendar() {
@@ -11,7 +12,7 @@ function Calendar() {
   const [month, setMonth] = useState(today.getMonth() + 1);
   const [year, setYear] = useState(today.getFullYear());
   const [selectedAppId, setSelectedAppId] = useState(null);
-  const [newEventDate, setNewEventDate] = useState(null);
+  const [newEventForm, setNewEventForm] = useState(null);
 
   const { data: selectedApp } = useApplication(selectedAppId);
 
@@ -22,17 +23,22 @@ function Calendar() {
 
   const handleEventClick = useCallback((event) => {
     setSelectedAppId(event.application_id);
-    setNewEventDate(null);
   }, []);
 
   const handleDayClick = useCallback((date) => {
-    // Pre-fill NewEventForm with the clicked date (US-030 will wire this up)
-    setNewEventDate(date);
-    setSelectedAppId(null);
+    setNewEventForm({ date, applicationId: null });
   }, []);
 
   const handleClosePanel = useCallback(() => {
     setSelectedAppId(null);
+  }, []);
+
+  const handleAddEvent = useCallback((applicationId) => {
+    setNewEventForm({ date: null, applicationId });
+  }, []);
+
+  const handleCloseForm = useCallback(() => {
+    setNewEventForm(null);
   }, []);
 
   return (
@@ -45,12 +51,17 @@ function Calendar() {
         onEventClick={handleEventClick}
         onDayClick={handleDayClick}
       />
-      <DetailPanel application={selectedApp ?? null} onClose={handleClosePanel} />
-      {/* NewEventForm (US-030) will be rendered here, pre-filled with newEventDate */}
-      {newEventDate && (
-        <p className="text-sm text-gray-400">
-          New event form for {newEventDate.toLocaleDateString()} — coming in US-030.
-        </p>
+      <DetailPanel
+        application={selectedApp ?? null}
+        onClose={handleClosePanel}
+        onAddEvent={handleAddEvent}
+      />
+      {newEventForm && (
+        <NewEventForm
+          initialDate={newEventForm.date}
+          initialApplicationId={newEventForm.applicationId}
+          onClose={handleCloseForm}
+        />
       )}
     </main>
   );

@@ -31,7 +31,8 @@ const APP = {
 };
 
 const server = setupServer(
-  http.patch("/api/applications/:id", () => HttpResponse.json({ data: APP }))
+  http.patch("/api/applications/:id", () => HttpResponse.json({ data: APP })),
+  http.get("/api/calendar/events", () => HttpResponse.json({ data: [], meta: { count: 0 } }))
 );
 
 beforeAll(() => server.listen({ onUnhandledRequest: "error" }));

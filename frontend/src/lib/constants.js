@@ -44,3 +44,12 @@ export const DEFAULT_EVENT_COLOR = { bg: "bg-gray-100", text: "text-gray-800" };
 export const CALENDAR_STALE_TIME_MS = 60_000;
 
 export const WEEK_DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+export const EVENT_TYPE_OPTIONS = [
+  { value: "phone_screen", label: "Phone Screen" },
+  { value: "technical", label: "Technical" },
+  { value: "onsite", label: "Onsite" },
+  { value: "behavioral", label: "Behavioral" },
+  { value: "offer", label: "Offer" },
+  { value: "other", label: "Other" },
+];

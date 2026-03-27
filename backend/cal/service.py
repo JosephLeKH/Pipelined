@@ -57,28 +57,31 @@ async def list_events(
     user_id: str,
     date_from: dt.date | None,
     date_to: dt.date | None,
+    application_id: str | None = None,
 ) -> list[dict]:
-    """Return events for user in date range, joined with application company/role_title.
+    """Return events for user, optionally filtered by application_id or date range.
 
-    Defaults to current calendar month when date_from and date_to are both None.
+    When application_id is provided, returns all events for that application (no date
+    restriction). Otherwise defaults to the current calendar month.
     """
     uid = ObjectId(user_id)
-    today = dt.date.today()
 
-    effective_from = date_from or today.replace(day=DEFAULT_DATE_FROM_DAY)
-    effective_to = date_to or today.replace(
-        day=1,
-        month=today.month % 12 + 1,
-        year=today.year + today.month // 12,
-    ) - dt.timedelta(days=1)
+    match_filter: dict = {"user_id": uid}
+
+    if application_id:
+        match_filter["application_id"] = ObjectId(application_id)
+    else:
+        today = dt.date.today()
+        effective_from = date_from or today.replace(day=DEFAULT_DATE_FROM_DAY)
+        effective_to = date_to or today.replace(
+            day=1,
+            month=today.month % 12 + 1,
+            year=today.year + today.month // 12,
+        ) - dt.timedelta(days=1)
+        match_filter["date"] = {"$gte": effective_from, "$lte": effective_to}
 
     pipeline = [
-        {
-            "$match": {
-                "user_id": uid,
-                "date": {"$gte": effective_from, "$lte": effective_to},
-            }
-        },
+        {"$match": match_filter},
         {
             "$lookup": {
                 "from": "applications",

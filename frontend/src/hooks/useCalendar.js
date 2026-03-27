@@ -10,6 +10,7 @@ export const CALENDAR_KEYS = {
   all: ["calendar"],
   events: () => [...CALENDAR_KEYS.all, "events"],
   eventsByMonth: (month, year) => [...CALENDAR_KEYS.events(), { month, year }],
+  eventsByApplication: (applicationId) => [...CALENDAR_KEYS.events(), { applicationId }],
 };
 
 /** Build ISO date strings for the first and last day of a given month. */
@@ -60,5 +61,15 @@ export function useDeleteEvent() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: CALENDAR_KEYS.all });
     },
+  });
+}
+
+/** Fetch all calendar events linked to a specific application. */
+export function useApplicationEvents(applicationId) {
+  return useQuery({
+    queryKey: CALENDAR_KEYS.eventsByApplication(applicationId),
+    queryFn: () => fetchEvents(null, null, applicationId),
+    enabled: Boolean(applicationId),
+    staleTime: CALENDAR_STALE_TIME_MS,
   });
 }

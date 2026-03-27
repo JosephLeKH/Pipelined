@@ -36,11 +36,12 @@ async def create_event(
 async def list_events(
     date_from: dt.date | None = Query(default=None),
     date_to: dt.date | None = Query(default=None),
+    application_id: str | None = Query(default=None),
     user: dict = Depends(get_current_user),
 ) -> dict:
-    """List calendar events for the current user, defaulting to the current month."""
+    """List calendar events for the current user, optionally filtered by application_id."""
     user_id = str(user["_id"])
-    docs = await cal_service.list_events(user_id, date_from, date_to)
+    docs = await cal_service.list_events(user_id, date_from, date_to, application_id)
     items = [EventResponse.from_doc(d) for d in docs]
     return {"data": items, "meta": {"count": len(items)}}
 

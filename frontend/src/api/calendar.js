@@ -2,11 +2,12 @@
 
 import { client } from "./client";
 
-/** Fetch calendar events within a date range. */
-export async function fetchEvents(dateFrom, dateTo) {
+/** Fetch calendar events within a date range, optionally scoped to one application. */
+export async function fetchEvents(dateFrom, dateTo, applicationId) {
   const params = new URLSearchParams();
   if (dateFrom) params.set("date_from", dateFrom);
   if (dateTo) params.set("date_to", dateTo);
+  if (applicationId) params.set("application_id", applicationId);
   const query = params.toString();
   return client.get(`/calendar/events${query ? `?${query}` : ""}`);
 }
