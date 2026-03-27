@@ -1,11 +1,17 @@
 /** Landing page: public marketing entry point explaining Pipelined's features. */
 
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
+
+import { useAuth } from "../context/AuthContext";
 
 import BriefcaseIcon from "lucide-react/dist/esm/icons/briefcase";
 import ZapIcon from "lucide-react/dist/esm/icons/zap";
 import CalendarIcon from "lucide-react/dist/esm/icons/calendar";
 import SearchIcon from "lucide-react/dist/esm/icons/search";
+import PuzzleIcon from "lucide-react/dist/esm/icons/puzzle";
+
+const CHROME_EXTENSION_URL =
+  "https://chrome.google.com/webstore/detail/pipelined";
 
 const FEATURES = [
   {
@@ -47,6 +53,9 @@ function FeatureCard({ icon: Icon, title, description }) {
 }
 
 function LandingPage() {
+  const { user } = useAuth();
+  if (user) return <Navigate to="/dashboard" replace />;
+
   return (
     <div className="flex min-h-screen flex-col bg-gray-50">
       <header className="flex items-center justify-between px-6 py-4 md:px-12">
@@ -91,6 +100,15 @@ function LandingPage() {
             >
               Log in
             </Link>
+            <a
+              href={CHROME_EXTENSION_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-7 py-3 text-base font-semibold text-gray-700 hover:bg-gray-50"
+            >
+              <PuzzleIcon className="h-5 w-5" aria-hidden="true" />
+              Add to Chrome
+            </a>
           </div>
         </section>
 
