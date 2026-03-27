@@ -29,3 +29,18 @@ export const PASSWORD_MIN_LENGTH = 8;
 export const REMOTE_STATUS_OPTIONS = ["remote", "hybrid", "onsite", "unknown"];
 
 export const COMPANY_TYPE_OPTIONS = ["startup", "mid", "enterprise", "gov", "nonprofit", "other"];
+
+export const EVENT_TYPE_COLORS = {
+  phone_screen: { bg: "bg-purple-100", text: "text-purple-800" },
+  technical: { bg: "bg-blue-100", text: "text-blue-800" },
+  onsite: { bg: "bg-amber-100", text: "text-amber-800" },
+  behavioral: { bg: "bg-teal-100", text: "text-teal-800" },
+  offer: { bg: "bg-green-100", text: "text-green-800" },
+  other: { bg: "bg-gray-100", text: "text-gray-800" },
+};
+
+export const DEFAULT_EVENT_COLOR = { bg: "bg-gray-100", text: "text-gray-800" };
+
+export const CALENDAR_STALE_TIME_MS = 60_000;
+
+export const WEEK_DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
