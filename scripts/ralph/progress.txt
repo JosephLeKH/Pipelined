@@ -342,3 +342,13 @@ Learnings:
 - Dynamic `import()` in `beforeAll` solves the ESM hoisting problem: set `global.document`/`global.window` first, then `await import(module)` so the module's top-level code runs after globals exist
 - Spying on `Element.prototype.attachShadow` (via `global.window.Element.prototype.attachShadow`) lets tests access closed shadow roots by overriding the mode to 'open'
 - Using DOM construction methods (`createElement`, `textContent`, `appendChild`) instead of `innerHTML` avoids XSS lint warnings and is safer for user-provided content
+
+## US-025: Service worker: message routing, API calls, and token management
+- `background.js` was already fully implemented in US-021 (token management, fetchWithAuth, handleSave with promise queue, cacheRecentSave, onMessage router with return true)
+- Added to `content.js`: `BANNER_SUCCESS_DISMISS_MS=1500`, `BANNER_DUPLICATE_DISMISS_MS=6000`, `APP_DASHBOARD_URL`, `MSG` constants; save button click handler in `injectBanner()`; `handleSave()` sends SAVE_APPLICATION to service worker via `chrome.runtime.sendMessage`; `showBannerSuccess()` (checkmark + dismiss after 1.5s), `showBannerError()` (retry button), `showBannerDuplicate()` (view link opens `APP_DASHBOARD_URL?selected=<id>`, auto-dismisses after 6s)
+- 98/98 extension tests pass (all pre-existing tests unaffected)
+
+Learnings:
+- The service worker (background.js) handles all network I/O; the content script's role is to wire up the UI interaction (button click → sendMessage) and render the response state — clean separation of concerns
+- `chrome.runtime.sendMessage` in content scripts can throw if the extension context is invalidated (e.g., extension reloaded mid-session); always wrap in try/catch and map the exception to an error result
+- For the duplicate banner state, storing a timer reference and clearing it on "View →" click prevents the banner from auto-dismissing while the user is trying to click the link
