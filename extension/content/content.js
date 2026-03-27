@@ -1,8 +1,11 @@
 /** Content script entry: detects job pages, extracts data, injects banner. */
 
 import * as linkedin from "./boards/linkedin.js";
+import * as greenhouse from "./boards/greenhouse.js";
+import * as lever from "./boards/lever.js";
+import * as ashby from "./boards/ashby.js";
 
-const BOARDS = [linkedin];
+const BOARDS = [linkedin, greenhouse, lever, ashby];
 
 const BANNER_AUTO_DISMISS_MS = 8000;
 
