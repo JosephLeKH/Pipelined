@@ -369,3 +369,9 @@ Learnings:
 - `model_copy(update=...)` (Pydantic v2) is the correct way to produce an immutable copy of a model with updated fields; `model_dump(exclude={"page_text"})` strips transient fields before DB insert
 - The OpenAI client validates that all 6 expected fields are present in the response (even if some are null) to guard against partial or malformed responses; `EXPECTED_FIELDS.issubset(parsed.keys())` is the check
 - Rate limiting an AI endpoint with `@limiter.limit(settings.rate_limit_ai)` requires `request: Request` as the first parameter in the route handler
+
+## US-027: Extension popup UI
+- Popup HTML/JS/CSS was already scaffolded from prior stories
+- Exported `show`, `renderSaves`, `openDashboard`, `init` from popup.js to enable unit testing
+- Wrote `test_popup.js` with 17 tests covering: show() state transitions, renderSaves() list rendering (empty, multiple, null fields, MAX_RECENT cap), init() auth flow (unauthenticated skips storage, authenticated renders saves or empty state), openDashboard() chrome.tabs.create call
+- All 123 extension tests pass
