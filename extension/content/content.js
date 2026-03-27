@@ -8,8 +8,15 @@ import * as ashby from "./boards/ashby.js";
 const BOARDS = [linkedin, greenhouse, lever, ashby];
 
 const BANNER_AUTO_DISMISS_MS = 8000;
+const BANNER_SUCCESS_DISMISS_MS = 1500;
+const BANNER_DUPLICATE_DISMISS_MS = 6000;
 const FADE_DURATION_MS = 300;
 const MAX_Z_INDEX = "2147483647";
+const APP_DASHBOARD_URL = "https://app.pipelined.app/dashboard";
+
+const MSG = {
+  SAVE_APPLICATION: "SAVE_APPLICATION",
+};
 
 const BANNER_CSS = `
 .pipelined-banner {
@@ -106,6 +113,11 @@ function injectBanner(fields, boardId) {
 
   const timer = setTimeout(() => dismiss(host), BANNER_AUTO_DISMISS_MS);
 
+  shadow.querySelector("[data-action='save']").addEventListener("click", async () => {
+    clearTimeout(timer);
+    await handleSave(shadow, host, fields, boardId);
+  });
+
   document.addEventListener(
     "keydown",
     (e) => {
@@ -116,6 +128,63 @@ function injectBanner(fields, boardId) {
     },
     { once: true }
   );
+}
+
+async function handleSave(shadow, host, fields, boardId) {
+  const button = shadow.querySelector("[data-action='save']");
+  button.disabled = true;
+  button.textContent = "Saving\u2026";
+
+  const payload = {
+    fields,
+    boardId,
+    pageText: null,
+    sourceUrl: window.location.href,
+  };
+
+  let result;
+  try {
+    result = await chrome.runtime.sendMessage({ type: MSG.SAVE_APPLICATION, payload });
+  } catch {
+    result = { status: "error", message: "Extension error" };
+  }
+
+  if (result.status === "success") {
+    showBannerSuccess(shadow, host);
+  } else if (result.status === "duplicate") {
+    showBannerDuplicate(shadow, host, result.existingId);
+  } else {
+    showBannerError(shadow, button);
+  }
+}
+
+function showBannerSuccess(shadow, host) {
+  shadow.querySelector(".pipelined-text").textContent = "\u2713 Saved to Pipelined!";
+  const button = shadow.querySelector("[data-action='save']");
+  if (button) button.remove();
+  setTimeout(() => dismiss(host), BANNER_SUCCESS_DISMISS_MS);
+}
+
+function showBannerError(shadow, button) {
+  shadow.querySelector(".pipelined-text").textContent = "Save failed. Try again?";
+  button.disabled = false;
+  button.textContent = "Retry";
+}
+
+function showBannerDuplicate(shadow, host, existingId) {
+  shadow.querySelector(".pipelined-text").textContent = "Already in your pipeline!";
+  const button = shadow.querySelector("[data-action='save']");
+  const timer = setTimeout(() => dismiss(host), BANNER_DUPLICATE_DISMISS_MS);
+  if (button) {
+    button.disabled = false;
+    button.textContent = "View \u2192";
+    button.dataset.action = "view";
+    button.addEventListener("click", () => {
+      clearTimeout(timer);
+      window.open(`${APP_DASHBOARD_URL}?selected=${existingId}`, "_blank");
+      dismiss(host);
+    });
+  }
 }
 
 function dismiss(host) {
@@ -130,4 +199,4 @@ if (document.readyState === "complete") {
   window.addEventListener("load", init, { once: true });
 }
 
-export { init, injectBanner, dismiss, BANNER_AUTO_DISMISS_MS, FADE_DURATION_MS };
+export { init, injectBanner, dismiss, BANNER_AUTO_DISMISS_MS, BANNER_SUCCESS_DISMISS_MS, FADE_DURATION_MS };
