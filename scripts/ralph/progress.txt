@@ -407,3 +407,27 @@ Completed: Thu Mar 26 2026
 - Backend calendar module lives in `backend/cal/` (not `backend/calendar/`), router prefix is `/api/calendar`.
 - The axios client interceptor unwraps `{ data: [...], meta: {} }` list responses differently from single-resource responses — CalendarGrid handles both shapes defensively.
 - NewEventForm (US-030) needs to be wired in; the date click callback is stubbed with a placeholder paragraph.
+
+---
+
+## US-030 — NewEventForm and DetailPanel calendar integration
+**Status:** COMPLETE  
+**Date:** 2026-03-26  
+**Commit:** feat(US-030): NewEventForm and DetailPanel calendar integration
+
+### What was built
+- **Backend:** Added `application_id` query param to `GET /calendar/events`; service skips date filtering when filtering by application.
+- **`api/calendar.js`:** `fetchEvents` accepts optional `applicationId` parameter.
+- **`hooks/useCalendar.js`:** Added `CALENDAR_KEYS.eventsByApplication` and `useApplicationEvents(applicationId)` hook.
+- **`lib/constants.js`:** Added `EVENT_TYPE_OPTIONS` array matching backend `ValidEventType` values.
+- **`NewEventForm.jsx`:** Modal form with `AppSelector` (text search + filtered select), event_type select, date picker, optional time/notes. Submits via `useCreateEvent`; closes on success, Escape, or overlay click.
+- **`DetailPanel.jsx`:** Added `CalendarEventsList` sub-component showing events via `useApplicationEvents` with colored type badges and delete buttons (via `useDeleteEvent`). Added "Add Event" button that calls `onAddEvent(applicationId)`.
+- **`Calendar.jsx`:** Wired `newEventForm` state `{ date, applicationId }`, renders `NewEventForm` when open, passes `onAddEvent` to `DetailPanel`.
+- **`DetailPanel.test.jsx`:** Added MSW handler for `/api/calendar/events` to prevent unhandled request errors.
+
+### Tests
+- All 68 frontend tests pass across 10 test files.
+
+### Learnings
+- The `CalendarEventsList` inside `DetailPanel` fires `useApplicationEvents` on mount; existing DetailPanel tests need an MSW handler for `GET /api/calendar/events` or they throw unhandled-request errors.
+- Used a single `newEventForm: { date, applicationId } | null` state in Calendar.jsx to cover both day-click (date pre-fill) and "Add Event" from DetailPanel (applicationId pre-fill).
