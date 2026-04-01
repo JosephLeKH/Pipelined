@@ -166,4 +166,49 @@ describe("DetailPanel", () => {
     // Assert
     expect(onClose).toHaveBeenCalledOnce();
   });
+
+  it("should move focus to the first focusable element when panel opens", async () => {
+    // Arrange / Act
+    render(<DetailPanel application={APP} onClose={() => {}} />, { wrapper: makeWrapper() });
+
+    // Assert — close button is the first focusable element in PanelHeader
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: /close panel/i })).toHaveFocus();
+    });
+  });
+
+  it("should trap focus: Tab from last focusable element wraps to first", async () => {
+    // Arrange
+    render(<DetailPanel application={APP} onClose={() => {}} />, { wrapper: makeWrapper() });
+    await screen.findByText("Software Engineer");
+
+    const dialog = screen.getByRole("dialog");
+    const FOCUSABLE = 'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled])';
+    const focusableEls = Array.from(dialog.querySelectorAll(FOCUSABLE));
+    const lastEl = focusableEls[focusableEls.length - 1];
+
+    // Act — focus last element and fire Tab
+    lastEl.focus();
+    fireEvent.keyDown(dialog, { key: "Tab", shiftKey: false });
+
+    // Assert — focus wrapped to first element
+    expect(document.activeElement).toBe(focusableEls[0]);
+  });
+
+  it("should trap focus: Shift+Tab from first focusable element wraps to last", async () => {
+    // Arrange
+    render(<DetailPanel application={APP} onClose={() => {}} />, { wrapper: makeWrapper() });
+    await screen.findByText("Software Engineer");
+
+    const dialog = screen.getByRole("dialog");
+    const FOCUSABLE = 'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled])';
+    const focusableEls = Array.from(dialog.querySelectorAll(FOCUSABLE));
+
+    // Act — focus first element and fire Shift+Tab
+    focusableEls[0].focus();
+    fireEvent.keyDown(dialog, { key: "Tab", shiftKey: true });
+
+    // Assert — focus wrapped to last element
+    expect(document.activeElement).toBe(focusableEls[focusableEls.length - 1]);
+  });
 });

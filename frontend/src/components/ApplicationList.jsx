@@ -32,6 +32,7 @@ function StagePill({ stage }) {
   const color = STAGE_COLORS[stage] ?? DEFAULT_STAGE_COLOR;
   return (
     <span
+      aria-label={stage}
       className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium ${color.bg} ${color.text}`}
     >
       <span className={`h-1.5 w-1.5 rounded-full ${color.dot}`} />
@@ -48,16 +49,18 @@ function ApplicationRow({ application, onSelect, style }) {
   return (
     <div
       style={style}
-      className="flex cursor-pointer items-center gap-4 border-b border-gray-100 px-4 hover:bg-gray-50"
+      className="flex cursor-pointer items-center gap-4 border-b border-gray-100 px-4 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
       onClick={() => onSelect(application)}
+      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") onSelect(application); }}
       role="row"
+      tabIndex={0}
     >
       <span className="w-2 shrink-0">
         {stale && (
           <span
             className="block h-2 w-2 rounded-full bg-amber-400"
             data-testid="stale-indicator"
-            aria-label="stale"
+            aria-label="Stale"
           />
         )}
       </span>
@@ -75,7 +78,7 @@ function ColumnHeader({ field, label, sortBy, sortOrder, onSort }) {
   return (
     <button
       type="button"
-      className="flex items-center gap-1 text-xs font-medium text-gray-500 hover:text-gray-900"
+      className="flex items-center gap-1 text-xs font-medium text-gray-500 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
       onClick={() => onSort(field)}
     >
       {label}

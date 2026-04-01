@@ -175,4 +175,31 @@ describe("ManualAddForm", () => {
     // Assert
     expect(onClose).toHaveBeenCalledOnce();
   });
+
+  it("should move focus to the first focusable element when modal opens", async () => {
+    // Arrange / Act
+    render(<ManualAddForm isOpen onClose={() => {}} />, { wrapper: makeWrapper() });
+
+    // Assert — close button is first focusable element in the dialog header
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: /close modal/i })).toHaveFocus();
+    });
+  });
+
+  it("should trap focus: Tab from last focusable element wraps to first", () => {
+    // Arrange
+    render(<ManualAddForm isOpen onClose={() => {}} />, { wrapper: makeWrapper() });
+
+    const dialog = screen.getByRole("dialog");
+    const FOCUSABLE = 'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled])';
+    const focusableEls = Array.from(dialog.querySelectorAll(FOCUSABLE));
+    const lastEl = focusableEls[focusableEls.length - 1];
+
+    // Act — focus last element and fire Tab
+    lastEl.focus();
+    fireEvent.keyDown(dialog, { key: "Tab", shiftKey: false });
+
+    // Assert — focus wrapped to first element
+    expect(document.activeElement).toBe(focusableEls[0]);
+  });
 });

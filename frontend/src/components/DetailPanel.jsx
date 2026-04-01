@@ -13,6 +13,8 @@ import { STAGE_COLORS, DEFAULT_STAGE_COLOR, EVENT_TYPE_COLORS, DEFAULT_EVENT_COL
 
 const STAGE_OPTIONS = Object.keys(STAGE_COLORS);
 
+const FOCUSABLE_SELECTORS = 'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
 function DetailField({ label, value }) {
   if (!value) return null;
   return (
@@ -60,7 +62,7 @@ function CalendarEventsList({ applicationId, onAddEvent }) {
         <button
           type="button"
           onClick={() => onAddEvent(applicationId)}
-          className="flex items-center gap-1 rounded px-2 py-1 text-xs text-blue-600 hover:bg-blue-50"
+          className="flex items-center gap-1 rounded px-2 py-1 text-xs text-blue-600 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
           aria-label="Add event"
         >
           <Plus className="h-3.5 w-3.5" />
@@ -86,7 +88,7 @@ function CalendarEventsList({ applicationId, onAddEvent }) {
             <button
               type="button"
               onClick={() => deleteEvent(ev.id)}
-              className="rounded p-1 text-gray-300 hover:bg-red-50 hover:text-red-500"
+              className="rounded p-1 text-gray-300 hover:bg-red-50 hover:text-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1"
               aria-label="Delete event"
             >
               <Trash2 className="h-3.5 w-3.5" />
@@ -108,7 +110,7 @@ function PanelHeader({ application, onClose }) {
       <button
         type="button"
         onClick={onClose}
-        className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+        className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
         aria-label="Close panel"
       >
         <X className="h-5 w-5" />
@@ -146,7 +148,7 @@ function PanelBody({ application, handleNotesBlur, handleStageChange, onAddEvent
         </label>
         <select
           id="stage-select"
-          className="rounded border border-gray-300 px-3 py-1.5 text-sm text-gray-800"
+          className="rounded border border-gray-300 px-3 py-1.5 text-sm text-gray-800 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
           value={application.current_stage}
           onChange={handleStageChange}
         >
@@ -161,7 +163,7 @@ function PanelBody({ application, handleNotesBlur, handleStageChange, onAddEvent
         </label>
         <textarea
           id="notes-textarea"
-          className="min-h-[120px] resize-y rounded border border-gray-300 px-3 py-2 text-sm"
+          className="min-h-[120px] resize-y rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
           defaultValue={application.notes ?? ""}
           onBlur={handleNotesBlur}
         />
@@ -174,6 +176,7 @@ function PanelBody({ application, handleNotesBlur, handleStageChange, onAddEvent
 
 function DetailPanel({ application, onClose, onAddEvent }) {
   const overlayRef = useRef(null);
+  const panelRef = useRef(null);
   const { mutate: updateApp } = useUpdateApplication();
 
   const handleKeyDown = useCallback(
@@ -185,6 +188,28 @@ function DetailPanel({ application, onClose, onAddEvent }) {
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [handleKeyDown]);
+
+  // Auto-focus first focusable element when panel opens
+  useEffect(() => {
+    if (application && panelRef.current) {
+      const first = panelRef.current.querySelector(FOCUSABLE_SELECTORS);
+      first?.focus();
+    }
+  }, [application]);
+
+  // Trap focus inside panel while open
+  const handlePanelKeyDown = useCallback((e) => {
+    if (e.key !== "Tab" || !panelRef.current) return;
+    const els = Array.from(panelRef.current.querySelectorAll(FOCUSABLE_SELECTORS));
+    if (!els.length) return;
+    const first = els[0];
+    const last = els[els.length - 1];
+    if (e.shiftKey) {
+      if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+    } else {
+      if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  }, []);
 
   const handleOverlayClick = useCallback(
     (e) => { if (e.target === overlayRef.current) onClose(); },
@@ -211,10 +236,12 @@ function DetailPanel({ application, onClose, onAddEvent }) {
       onClick={handleOverlayClick}
     >
       <div
+        ref={panelRef}
         className={`fixed right-0 top-0 h-full w-full bg-white shadow-xl transition-transform duration-[250ms] md:w-[480px] ${isOpen ? "translate-x-0" : "translate-x-full"}`}
         role="dialog"
         aria-modal="true"
         aria-label="Application details"
+        onKeyDown={handlePanelKeyDown}
       >
         {application && (
           <div key={application.id} className="flex h-full flex-col overflow-y-auto">

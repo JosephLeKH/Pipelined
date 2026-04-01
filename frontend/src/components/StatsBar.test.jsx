@@ -75,4 +75,16 @@ describe("StatsBar", () => {
     const dashes = screen.getAllByText("—");
     expect(dashes.length).toBeGreaterThanOrEqual(1);
   });
+
+  it("should render metric cards with aria-label describing each metric", async () => {
+    // Arrange / Act
+    render(<StatsBar />, { wrapper: makeWrapper() });
+    await screen.findByText("42");
+
+    // Assert — each card has an accessible aria-label
+    expect(screen.getByLabelText(/total applied/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/active/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/response rate/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/avg days to response/i)).toBeInTheDocument();
+  });
 });

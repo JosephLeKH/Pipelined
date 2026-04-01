@@ -151,4 +151,24 @@ describe("ApplicationList", () => {
     const skeletons = document.querySelectorAll(".animate-pulse");
     expect(skeletons.length).toBeGreaterThan(0);
   });
+
+  it("should render StagePill with aria-label matching stage name", async () => {
+    // Arrange / Act
+    render(<ApplicationList onSelect={() => {}} />, { wrapper: makeWrapper() });
+    await screen.findByText("Acme Corp");
+
+    // Assert — each stage has an aria-label on the badge
+    expect(screen.getByLabelText("Applied")).toBeInTheDocument();
+    expect(screen.getByLabelText("Phone Screen")).toBeInTheDocument();
+  });
+
+  it("should render stale indicator with aria-label Stale", async () => {
+    // Arrange / Act
+    render(<ApplicationList onSelect={() => {}} />, { wrapper: makeWrapper() });
+    await screen.findByText("OldCo");
+
+    // Assert — stale indicator uses aria-label not just color
+    const staleIndicator = screen.getByTestId("stale-indicator");
+    expect(staleIndicator).toHaveAttribute("aria-label", "Stale");
+  });
 });

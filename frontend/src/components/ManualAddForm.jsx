@@ -9,6 +9,7 @@ import { REMOTE_STATUS_OPTIONS, COMPANY_TYPE_OPTIONS } from "../lib/constants";
 
 const MANUAL_SOURCE = "manual";
 const DUPLICATE_CODE = "DUPLICATE_APPLICATION";
+const FOCUSABLE_SELECTORS = 'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 function getTodayString() {
   return new Date().toISOString().slice(0, 10);
@@ -28,6 +29,7 @@ function FormField({ label, htmlFor, children, error }) {
 
 function ManualAddForm({ isOpen, onClose }) {
   const overlayRef = useRef(null);
+  const dialogRef = useRef(null);
   const { mutate, error: mutationError, reset } = useCreateApplication();
 
   const [roleTitle, setRoleTitle] = useState("");
@@ -73,6 +75,28 @@ function ManualAddForm({ isOpen, onClose }) {
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, handleKeyDown]);
+
+  // Auto-focus first focusable element when modal opens
+  useEffect(() => {
+    if (isOpen && dialogRef.current) {
+      const first = dialogRef.current.querySelector(FOCUSABLE_SELECTORS);
+      first?.focus();
+    }
+  }, [isOpen]);
+
+  // Trap focus inside dialog while open
+  const handleDialogKeyDown = useCallback((e) => {
+    if (e.key !== "Tab" || !dialogRef.current) return;
+    const els = Array.from(dialogRef.current.querySelectorAll(FOCUSABLE_SELECTORS));
+    if (!els.length) return;
+    const first = els[0];
+    const last = els[els.length - 1];
+    if (e.shiftKey) {
+      if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+    } else {
+      if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  }, []);
 
   const handleOverlayClick = useCallback(
     (e) => { if (e.target === overlayRef.current) handleClose(); },
@@ -120,17 +144,19 @@ function ManualAddForm({ isOpen, onClose }) {
       onClick={handleOverlayClick}
     >
       <div
+        ref={dialogRef}
         className="relative w-full max-w-lg rounded-lg bg-white shadow-xl"
         role="dialog"
         aria-modal="true"
         aria-label="Add application"
+        onKeyDown={handleDialogKeyDown}
       >
         <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
           <h2 className="text-lg font-semibold text-gray-900">Add Application</h2>
           <button
             type="button"
             onClick={handleClose}
-            className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+            className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
             aria-label="Close modal"
           >
             <X className="h-5 w-5" />
@@ -154,7 +180,7 @@ function ManualAddForm({ isOpen, onClose }) {
               type="text"
               value={roleTitle}
               onChange={(e) => setRoleTitle(e.target.value)}
-              className="rounded border border-gray-300 px-3 py-1.5 text-sm"
+              className="rounded border border-gray-300 px-3 py-1.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               aria-required="true"
             />
           </FormField>
@@ -164,7 +190,7 @@ function ManualAddForm({ isOpen, onClose }) {
               type="text"
               value={company}
               onChange={(e) => setCompany(e.target.value)}
-              className="rounded border border-gray-300 px-3 py-1.5 text-sm"
+              className="rounded border border-gray-300 px-3 py-1.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               aria-required="true"
             />
           </FormField>
@@ -174,7 +200,7 @@ function ManualAddForm({ isOpen, onClose }) {
               type="url"
               value={sourceUrl}
               onChange={(e) => setSourceUrl(e.target.value)}
-              className="rounded border border-gray-300 px-3 py-1.5 text-sm"
+              className="rounded border border-gray-300 px-3 py-1.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
           </FormField>
           <div className="grid grid-cols-2 gap-3">
@@ -184,7 +210,7 @@ function ManualAddForm({ isOpen, onClose }) {
                 type="date"
                 value={dateApplied}
                 onChange={(e) => setDateApplied(e.target.value)}
-                className="rounded border border-gray-300 px-3 py-1.5 text-sm"
+                className="rounded border border-gray-300 px-3 py-1.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
             </FormField>
             <FormField label="Compensation" htmlFor="compensation">
@@ -193,7 +219,7 @@ function ManualAddForm({ isOpen, onClose }) {
                 type="text"
                 value={compensation}
                 onChange={(e) => setCompensation(e.target.value)}
-                className="rounded border border-gray-300 px-3 py-1.5 text-sm"
+                className="rounded border border-gray-300 px-3 py-1.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                 placeholder="e.g. $150k"
               />
             </FormField>
@@ -204,7 +230,7 @@ function ManualAddForm({ isOpen, onClose }) {
               type="text"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
-              className="rounded border border-gray-300 px-3 py-1.5 text-sm"
+              className="rounded border border-gray-300 px-3 py-1.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
           </FormField>
           <div className="grid grid-cols-2 gap-3">
@@ -213,7 +239,7 @@ function ManualAddForm({ isOpen, onClose }) {
                 id="remote-status"
                 value={remoteStatus}
                 onChange={(e) => setRemoteStatus(e.target.value)}
-                className="rounded border border-gray-300 px-3 py-1.5 text-sm"
+                className="rounded border border-gray-300 px-3 py-1.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               >
                 <option value="">Select...</option>
                 {REMOTE_STATUS_OPTIONS.map((o) => (
@@ -226,7 +252,7 @@ function ManualAddForm({ isOpen, onClose }) {
                 id="company-type"
                 value={companyType}
                 onChange={(e) => setCompanyType(e.target.value)}
-                className="rounded border border-gray-300 px-3 py-1.5 text-sm"
+                className="rounded border border-gray-300 px-3 py-1.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               >
                 <option value="">Select...</option>
                 {COMPANY_TYPE_OPTIONS.map((o) => (
@@ -241,7 +267,7 @@ function ManualAddForm({ isOpen, onClose }) {
               type="text"
               value={tags}
               onChange={(e) => setTags(e.target.value)}
-              className="rounded border border-gray-300 px-3 py-1.5 text-sm"
+              className="rounded border border-gray-300 px-3 py-1.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               placeholder="Comma-separated, e.g. python, remote"
             />
           </FormField>
@@ -249,13 +275,13 @@ function ManualAddForm({ isOpen, onClose }) {
             <button
               type="button"
               onClick={handleClose}
-              className="rounded px-4 py-2 text-sm text-gray-600 hover:bg-gray-100"
+              className="rounded px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+              className="rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             >
               Add Application
             </button>

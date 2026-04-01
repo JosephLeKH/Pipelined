@@ -48,8 +48,9 @@ function EventChip({ event, onEventClick }) {
     <button
       type="button"
       onClick={(e) => { e.stopPropagation(); onEventClick(event); }}
-      className={`w-full truncate rounded px-1 py-0.5 text-left text-xs font-medium ${colors.bg} ${colors.text} hover:opacity-80`}
+      className={`w-full truncate rounded px-1 py-0.5 text-left text-xs font-medium ${colors.bg} ${colors.text} hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-blue-500`}
       title={label}
+      aria-label={label}
     >
       {label}
     </button>
@@ -67,7 +68,8 @@ function DayCell({ date, isCurrentMonth, events, onDayClick, onEventClick }) {
       tabIndex={0}
       onClick={() => onDayClick(date)}
       onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") onDayClick(date); }}
-      className={`min-h-[80px] cursor-pointer border border-gray-100 p-1.5 transition-colors hover:bg-gray-50 ${
+      aria-label={date.toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
+      className={`min-h-[80px] cursor-pointer border border-gray-100 p-1.5 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 ${
         isCurrentMonth ? "bg-white" : "bg-gray-50"
       }`}
     >
@@ -101,7 +103,7 @@ function CalendarHeader({ month, year, onPrev, onNext, onToday }) {
         <button
           type="button"
           onClick={onToday}
-          className="rounded border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
+          className="rounded border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
         >
           Today
         </button>
@@ -109,7 +111,7 @@ function CalendarHeader({ month, year, onPrev, onNext, onToday }) {
           type="button"
           onClick={onPrev}
           aria-label="Previous month"
-          className="rounded border border-gray-300 p-1.5 text-gray-700 hover:bg-gray-50"
+          className="rounded border border-gray-300 p-1.5 text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
         >
           <ChevronLeft className="h-4 w-4" />
         </button>
@@ -117,7 +119,7 @@ function CalendarHeader({ month, year, onPrev, onNext, onToday }) {
           type="button"
           onClick={onNext}
           aria-label="Next month"
-          className="rounded border border-gray-300 p-1.5 text-gray-700 hover:bg-gray-50"
+          className="rounded border border-gray-300 p-1.5 text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
         >
           <ChevronRight className="h-4 w-4" />
         </button>
