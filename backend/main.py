@@ -55,6 +55,18 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     logger.info("database_disconnected")
 
 
+WILDCARD_ORIGIN = "*"
+
+
+def _get_cors_origins() -> list[str]:
+    """Return CORS origins, stripping wildcards unless DEBUG is enabled."""
+    origins = settings.allowed_origins
+    if not settings.debug and WILDCARD_ORIGIN in origins:
+        logger.warning("wildcard_cors_origin_blocked_in_production")
+        return [o for o in origins if o != WILDCARD_ORIGIN]
+    return origins
+
+
 def create_app() -> FastAPI:
     """Construct and configure the FastAPI application."""
     app = FastAPI(
@@ -69,7 +81,7 @@ def create_app() -> FastAPI:
 
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=settings.allowed_origins,
+        allow_origins=_get_cors_origins(),
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],

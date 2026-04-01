@@ -30,13 +30,17 @@ REFRESH_MAX_AGE = settings.jwt_refresh_ttl_days * 24 * 60 * 60
 
 
 def _set_auth_cookies(response: Response, user_id: str) -> None:
-    """Set httpOnly access and refresh token cookies on the response."""
+    """Set httpOnly access and refresh token cookies on the response.
+
+    secure=True in production; relaxed to False only when DEBUG=True.
+    """
+    secure = not settings.debug
     response.set_cookie(
         key=ACCESS_COOKIE,
         value=create_access_token(user_id),
         max_age=ACCESS_MAX_AGE,
         httponly=True,
-        secure=True,
+        secure=secure,
         samesite="lax",
     )
     response.set_cookie(
@@ -44,7 +48,7 @@ def _set_auth_cookies(response: Response, user_id: str) -> None:
         value=create_refresh_token(user_id),
         max_age=REFRESH_MAX_AGE,
         httponly=True,
-        secure=True,
+        secure=secure,
         samesite="lax",
     )
 
@@ -144,7 +148,7 @@ async def refresh(
         value=create_access_token(payload.sub),
         max_age=ACCESS_MAX_AGE,
         httponly=True,
-        secure=True,
+        secure=not settings.debug,
         samesite="lax",
     )
     logger.info("token_refreshed", user_id=payload.sub)

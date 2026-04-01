@@ -41,6 +41,7 @@ let show;
 let renderSaves;
 let openDashboard;
 let init;
+let escapeHtml;
 
 beforeAll(async () => {
   setupDOM();
@@ -50,6 +51,7 @@ beforeAll(async () => {
   renderSaves = mod.renderSaves;
   openDashboard = mod.openDashboard;
   init = mod.init;
+  escapeHtml = mod.escapeHtml;
 });
 
 beforeEach(() => {
@@ -225,5 +227,35 @@ describe("openDashboard()", () => {
     expect(chrome.tabs.create).toHaveBeenCalledWith({
       url: "https://app.pipelined.app/dashboard",
     });
+  });
+});
+
+// ── escapeHtml() ─────────────────────────────────────────────────────────────
+
+describe("escapeHtml()", () => {
+  it("should escape ampersands", () => {
+    expect(escapeHtml("a & b")).toBe("a &amp; b");
+  });
+
+  it("should escape angle brackets", () => {
+    expect(escapeHtml("<script>alert(1)</script>")).toBe(
+      "&lt;script&gt;alert(1)&lt;/script&gt;"
+    );
+  });
+
+  it("should escape double quotes", () => {
+    expect(escapeHtml('say "hello"')).toBe("say &quot;hello&quot;");
+  });
+
+  it("should escape single quotes", () => {
+    expect(escapeHtml("it's")).toBe("it&#39;s");
+  });
+
+  it("should return plain strings unchanged", () => {
+    expect(escapeHtml("hello world")).toBe("hello world");
+  });
+
+  it("should coerce non-strings to strings", () => {
+    expect(escapeHtml(42)).toBe("42");
   });
 });

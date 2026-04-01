@@ -3,6 +3,21 @@
 const DASHBOARD_URL = "https://app.pipelined.app/dashboard";
 const MAX_RECENT = 5;
 
+/**
+ * Escape a string for safe insertion into innerHTML.
+ * Prefer textContent over innerHTML wherever possible.
+ * @param {string} str
+ * @returns {string}
+ */
+export function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 const MSG = {
   GET_AUTH_STATUS: "GET_AUTH_STATUS",
   GET_RECENT_SAVES: "GET_RECENT_SAVES",
