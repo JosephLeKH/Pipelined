@@ -505,3 +505,8 @@ Completed: Tue Mar 31 MST 2026
 - React class components are required for `componentDidCatch`/`getDerivedStateFromError` — functional components cannot be error boundaries
 - `ApiErrorMessage` normalizes Axios error responses by reading `error.response.data.error` to surface `{ code, message }` from the API envelope format
 - Wrapping only the app root (not individual routes) in `ErrorBoundary` is sufficient for catching unhandled render errors; route-level boundaries can be added later if needed
+
+## US-036: Performance optimization: code splitting and direct lucide-react imports
+**Status:** COMPLETE
+**Summary:** All 6 page components (Dashboard, Calendar, JobBoard, Login, Register, LandingPage) were already lazy-loaded via React.lazy in App.jsx. All lucide-react imports throughout the codebase already use the direct subpath format (lucide-react/dist/esm/icons/<name>). No date-fns imports exist in the frontend. Build completed with largest chunk at 247KB (well under 500KB limit). All 102 frontend tests pass.
+**Learnings:** This story's implementation was already complete from prior development iterations — no code changes were needed, only validation and PRD update.
