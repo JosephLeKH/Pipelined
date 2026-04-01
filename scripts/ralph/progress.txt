@@ -529,3 +529,22 @@ Completed: Tue Mar 31 MST 2026
 - `date.toLocaleDateString("en-US", {...})` format produces "Sunday, March 1, 2026" — tests use case-insensitive regex `/sunday, march 1, 2026/i`
 - Day cells only render after the API loading state resolves, so CalendarGrid tests use `findByLabelText` (async) rather than `getByLabelText`
 - The `FOCUSABLE_SELECTORS` constant is duplicated in DetailPanel and ManualAddForm rather than extracted to a shared utility (only 2 usages — not enough to justify a new file per CLAUDE.md)
+
+## US-038: Security hardening: CORS, CSP, and input sanitization
+**Status:** COMPLETE
+**Commit:** feat: US-038 - Security hardening: CORS, CSP, and input sanitization
+
+### What was done
+- **`backend/config.py`**: Added `debug: bool = False` setting (loaded from `DEBUG` env var via Pydantic Settings)
+- **`backend/main.py`**: Added `_get_cors_origins()` that strips wildcard `*` from `allowed_origins` when `DEBUG=False`, logging a warning if one is found; `create_app()` now uses this function instead of raw `settings.allowed_origins`
+- **`backend/auth/router.py`**: Replaced hardcoded `secure=True` with `secure = not settings.debug` in `_set_auth_cookies()` and the inline cookie set in the refresh endpoint — production always gets `secure=True`, local HTTP dev with `DEBUG=True` gets `secure=False`
+- **`extension/popup/popup.js`**: Added exported `escapeHtml(str)` utility that escapes `&`, `<`, `>`, `"`, `'` — popup uses `textContent` throughout (no `innerHTML` usage), but the function is defined for any future innerHTML usage
+- **`extension/tests/test_popup.js`**: Added 6 tests covering `escapeHtml()` (ampersands, angle brackets, double/single quotes, plain strings, non-string coercion)
+- **Verified**: All Motor queries use `ObjectId`-keyed dict filters (no string interpolation); no JWT tokens, passwords, or API keys appear in any `logger.*` call
+- Pyright: 179 errors before and after (all pre-existing missing-import/Python-3.10 errors unrelated to this story); 129 extension tests pass
+
+### Learnings
+- Pydantic Settings maps `DEBUG=True` env var to `debug: bool` field automatically (case-insensitive)
+- CORS wildcard `*` must be explicitly guarded in application code — `CORSMiddleware` itself has no production-mode safeguard
+- `set_cookie(secure=True)` on `http://test` in httpx integration tests still populates `response.cookies` — the `secure` attribute only affects browser behavior, not server response headers
+- Motor queries using typed `ObjectId` values in dict filters are inherently parameterized — there is no string interpolation attack surface in the driver's query API
