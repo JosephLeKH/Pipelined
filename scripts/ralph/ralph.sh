@@ -1,15 +1,18 @@
 #!/bin/bash
 # Ralph Wiggum - Long-running AI agent loop
 # Usage: ./ralph.sh [--tool amp|claude] [max_iterations]
-# Claude model: defaults to sonnet; override with RALPH_MODEL=opus ./ralph.sh --tool claude
+# Env: RALPH_MODEL (default sonnet), RALPH_SLEEP_SEC (default 2),
+#      RALPH_PROGRESS_TAIL_LINES (optional, append last N lines of progress.txt),
+#      RALPH_MAX_BUDGET_USD (optional, passed to claude --max-budget-usd)
 
 set -e
 
-# Claude Code model alias (see: claude --help --model)
 RALPH_MODEL="${RALPH_MODEL:-sonnet}"
+RALPH_SLEEP_SEC="${RALPH_SLEEP_SEC:-2}"
+RALPH_PROGRESS_TAIL_LINES="${RALPH_PROGRESS_TAIL_LINES:-0}"
 
 # Parse arguments
-TOOL="amp"  # Default to amp for backwards compatibility
+TOOL="amp"
 MAX_ITERATIONS=10
 
 while [[ $# -gt 0 ]]; do
@@ -23,7 +26,6 @@ while [[ $# -gt 0 ]]; do
       shift
       ;;
     *)
-      # Assume it's max_iterations if it's a number
       if [[ "$1" =~ ^[0-9]+$ ]]; then
         MAX_ITERATIONS="$1"
       fi
@@ -32,7 +34,6 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-# Validate tool choice
 if [[ "$TOOL" != "amp" && "$TOOL" != "claude" ]]; then
   echo "Error: Invalid tool '$TOOL'. Must be 'amp' or 'claude'."
   exit 1
@@ -74,36 +75,34 @@ else
     echo "Error: Could not find CLAUDE.md in project root ($PROJECT_ROOT) or script dir ($SCRIPT_DIR)."
     exit 1
   fi
-  echo "Using CLAUDE.md: $CLAUDE_MD"
+  echo "Using CLAUDE.md: $CLAUDE_MD (via --append-system-prompt-file)"
   if ! command -v claude >/dev/null 2>&1; then
     echo "Error: claude is not on PATH. Install: npm install -g @anthropic-ai/claude-code"
     exit 1
   fi
 fi
 
-# Archive previous run if branch changed
 if [ -f "$PRD_FILE" ] && [ -f "$LAST_BRANCH_FILE" ]; then
   CURRENT_BRANCH=$(jq -r '.branchName // empty' "$PRD_FILE" 2>/dev/null || echo "")
   LAST_BRANCH=$(cat "$LAST_BRANCH_FILE" 2>/dev/null || echo "")
-  
+
   if [ -n "$CURRENT_BRANCH" ] && [ -n "$LAST_BRANCH" ] && [ "$CURRENT_BRANCH" != "$LAST_BRANCH" ]; then
     DATE=$(date +%Y-%m-%d)
     FOLDER_NAME=$(echo "$LAST_BRANCH" | sed 's|^ralph/||')
     ARCHIVE_FOLDER="$ARCHIVE_DIR/$DATE-$FOLDER_NAME"
-    
+
     echo "Archiving previous run: $LAST_BRANCH"
     mkdir -p "$ARCHIVE_FOLDER"
     [ -f "$PRD_FILE" ] && cp "$PRD_FILE" "$ARCHIVE_FOLDER/"
     [ -f "$PROGRESS_FILE" ] && cp "$PROGRESS_FILE" "$ARCHIVE_FOLDER/"
     echo "   Archived to: $ARCHIVE_FOLDER"
-    
+
     echo "# Ralph Progress Log" > "$PROGRESS_FILE"
     echo "Started: $(date)" >> "$PROGRESS_FILE"
     echo "---" >> "$PROGRESS_FILE"
   fi
 fi
 
-# Track current branch
 if [ -f "$PRD_FILE" ]; then
   CURRENT_BRANCH=$(jq -r '.branchName // empty' "$PRD_FILE" 2>/dev/null || echo "")
   if [ -n "$CURRENT_BRANCH" ]; then
@@ -111,7 +110,6 @@ if [ -f "$PRD_FILE" ]; then
   fi
 fi
 
-# Initialize progress file if it doesn't exist
 if [ ! -f "$PROGRESS_FILE" ]; then
   echo "# Ralph Progress Log" > "$PROGRESS_FILE"
   echo "Started: $(date)" >> "$PROGRESS_FILE"
@@ -121,6 +119,10 @@ fi
 if [[ "$TOOL" == "claude" ]]; then
   echo "Claude model: $RALPH_MODEL (set RALPH_MODEL to override)"
 fi
+if [ "$RALPH_PROGRESS_TAIL_LINES" -gt 0 ] 2>/dev/null; then
+  echo "Progress tail: last $RALPH_PROGRESS_TAIL_LINES lines appended to each Claude task (RALPH_PROGRESS_TAIL_LINES)"
+fi
+echo "Sleep between iterations: ${RALPH_SLEEP_SEC}s (RALPH_SLEEP_SEC)"
 echo "Starting Ralph - Tool: $TOOL - Max iterations: $MAX_ITERATIONS"
 
 for i in $(seq 1 $MAX_ITERATIONS); do
@@ -129,11 +131,12 @@ for i in $(seq 1 $MAX_ITERATIONS); do
   echo "  Ralph Iteration $i of $MAX_ITERATIONS ($TOOL)"
   echo "==============================================================="
 
-  # Run the selected tool with the ralph prompt
   if [[ "$TOOL" == "amp" ]]; then
-    OUTPUT=$(cat "$SCRIPT_DIR/prompt.md" | amp --dangerously-allow-all 2>&1 | tee /dev/stderr) || true
+    OUTPUT=$(
+      cd "$PROJECT_ROOT" || exit 1
+      cat "$SCRIPT_DIR/prompt.md" | amp --dangerously-allow-all 2>&1 | tee /dev/stderr
+    ) || true
   else
-    # Check if there are any remaining stories
     REMAINING=$(jq '[.userStories[] | select(.passes == false)] | length' "$PRD_FILE" 2>/dev/null || echo "0")
     if [ "$REMAINING" -eq 0 ]; then
       echo ""
@@ -141,36 +144,70 @@ for i in $(seq 1 $MAX_ITERATIONS); do
       exit 0
     fi
 
-    # Get the next incomplete story
-    STORY=$(jq -r '[.userStories[] | select(.passes == false)] | first | "Story ID: \(.id)\nTitle: \(.title)\nDescription: \(.description // .title)"' "$PRD_FILE")
+    TARGET_STORY_ID=$(jq -r '[.userStories[] | select(.passes == false)] | sort_by(.priority) | .[0].id' "$PRD_FILE")
+    STORY_BLOCK=$(jq -r --arg id "$TARGET_STORY_ID" '
+      .userStories[] | select(.id == $id) |
+      "Story ID: \(.id)\nTitle: \(.title)\nPriority: \(.priority // 0)\n\nDescription:\n\(.description // .title)\n\n" +
+      (if ((.notes // "") | gsub("^\\s+|\\s+$"; "") | length) > 0 then "Notes:\n\(.notes)\n\n" else "" end) +
+      "Acceptance criteria:\n" +
+      (if (.acceptanceCriteria | type) == "array" and (.acceptanceCriteria | length) > 0 then
+        [.acceptanceCriteria[] | "- " + .] | join("\n")
+      else "- (none listed)" end)
+    ' "$PRD_FILE")
 
-    # Build the full prompt: CLAUDE.md context + current story
-    CLAUDE_CONTEXT=$(cat "$CLAUDE_MD")
-    FULL_PROMPT="$CLAUDE_CONTEXT
+    PRD_BRANCH=$(jq -r '.branchName // empty' "$PRD_FILE")
+    PROGRESS_APPEND=""
+    if [ "$RALPH_PROGRESS_TAIL_LINES" -gt 0 ] 2>/dev/null && [ -f "$PROGRESS_FILE" ]; then
+      PROGRESS_APPEND=$(printf '%s\n\n%s\n' "## Recent progress (last ${RALPH_PROGRESS_TAIL_LINES} lines)" "$(tail -n "$RALPH_PROGRESS_TAIL_LINES" "$PROGRESS_FILE")")
+    fi
 
----
+    TASK_PROMPT=$(cat <<EOF
+You are one iteration of the Ralph autonomous loop. Working directory for tools: $PROJECT_ROOT
 
-## Current Task
+Project rules are loaded from CLAUDE.md via system instructions — follow them for stack, layout, tests, and style.
 
-$STORY
+## Ralph files (exact paths)
+- PRD JSON: $PRD_FILE
+- Progress log (append only): $PROGRESS_FILE
+- Git branch name from PRD \`branchName\`: ${PRD_BRANCH:-"(not set)"}
 
----
+## Current task — implement ONLY this user story
+$STORY_BLOCK
 
-When this story is complete:
-1. Run quality checks (typecheck, tests) as specified above
-2. MANDATORY — Commit at repo root ($PROJECT_ROOT): after checks pass, run \`git add -A\` and \`git commit -m \"feat: [Story ID] - [Story Title]\"\`. Do not finish this iteration with a dirty working tree (no uncommitted changes).
-3. Update scripts/ralph/prd.json (path: $PRD_FILE) to set passes: true for the story you just finished
-4. Append a brief summary of what you did and any learnings to scripts/ralph/progress.txt
+$PROGRESS_APPEND
+
+## When this story is done
+1. Run quality checks (typecheck, tests) as required by the project.
+2. MANDATORY — From repo root ($PROJECT_ROOT): after checks pass, run \`git add -A\` and \`git commit -m "feat: $TARGET_STORY_ID - <use exact Title from the task header above>"\`. Do not end with a dirty working tree.
+3. Set \`passes: true\` for story id **$TARGET_STORY_ID** in \`$PRD_FILE\` only.
+4. Append a brief summary and learnings to \`$PROGRESS_FILE\`.
 
 ## Stop signal (critical)
+- After step 3, re-read \`$PRD_FILE\`. If any userStory has \`passes: false\`, do NOT output the completion tag.
+- Output <promise>COMPLETE</promise> ONLY when every userStory has \`passes: true\`.
+EOF
+)
 
-- After step 3, re-read scripts/ralph/prd.json and count userStories where passes is false.
-- If ANY story still has passes: false, do NOT output the completion tag. End normally; the next Ralph iteration will pick up the next story.
-- Output <promise>COMPLETE</promise> ONLY when every userStory has passes: true (entire PRD done)."
+    BUDGET_ARGS=()
+    if [ -n "${RALPH_MAX_BUDGET_USD:-}" ]; then
+      BUDGET_ARGS=(--max-budget-usd "$RALPH_MAX_BUDGET_USD")
+    fi
 
-    OUTPUT=$(claude --dangerously-skip-permissions --model "$RALPH_MODEL" -p "$FULL_PROMPT" 2>&1 | tee /dev/stderr) || true
+    OUTPUT=$(
+      cd "$PROJECT_ROOT" || exit 1
+      claude --dangerously-skip-permissions \
+        --model "$RALPH_MODEL" \
+        --append-system-prompt-file "$CLAUDE_MD" \
+        "${BUDGET_ARGS[@]}" \
+        -p "$TASK_PROMPT" 2>&1 | tee /dev/stderr
+    ) || true
 
-    # If the agent left changes uncommitted, snapshot-commit so each iteration has a commit
+    STILL_PASSES=$(jq -r --arg id "$TARGET_STORY_ID" '.userStories[] | select(.id == $id) | .passes | tostring' "$PRD_FILE" 2>/dev/null || echo "unknown")
+    if [ "$STILL_PASSES" != "true" ]; then
+      echo ""
+      echo "Ralph: warning — story $TARGET_STORY_ID still has passes != true in $PRD_FILE (next iteration will pick the open story with smallest \`priority\` number)."
+    fi
+
     if [ -n "$(git -C "$PROJECT_ROOT" status --porcelain 2>/dev/null)" ]; then
       echo ""
       echo "Ralph: uncommitted changes detected — creating snapshot commit for iteration $i."
@@ -178,8 +215,7 @@ When this story is complete:
       git -C "$PROJECT_ROOT" commit -m "chore(ralph): iteration $i snapshot (auto-commit)" || true
     fi
   fi
-  
-  # COMPLETE must match prd.json — models often emit it after one story if the prompt is ambiguous
+
   if echo "$OUTPUT" | grep -q "<promise>COMPLETE</promise>"; then
     REMAINING_AFTER=$(jq '[.userStories[] | select(.passes == false)] | length' "$PRD_FILE" 2>/dev/null || echo "1")
     if [ "$REMAINING_AFTER" -eq 0 ]; then
@@ -191,9 +227,9 @@ When this story is complete:
     echo ""
     echo "Ignoring premature <promise>COMPLETE</promise>: $REMAINING_AFTER user stories still have passes: false in $PRD_FILE — continuing."
   fi
-  
+
   echo "Iteration $i complete. Continuing..."
-  sleep 2
+  sleep "$RALPH_SLEEP_SEC"
 done
 
 echo ""

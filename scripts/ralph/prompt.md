@@ -4,16 +4,18 @@ You are an autonomous coding agent working on a software project.
 
 ## Your Task
 
-1. Read the PRD at `prd.json` (in the same directory as this file)
-2. Read the progress log at `progress.txt` (check Codebase Patterns section first)
+Ralph runs Amp with the **repository root** as the working directory. Use paths relative to that root.
+
+1. Read the PRD at **`scripts/ralph/prd.json`**
+2. Read the progress log at **`scripts/ralph/progress.txt`** (check Codebase Patterns section first)
 3. Check you're on the correct branch from PRD `branchName`. If not, check it out or create from main.
-4. Pick the **highest priority** user story where `passes: false`
+4. Pick the next user story where `passes: false` with the **smallest `priority` number** in that file (if in doubt, sort open stories by `priority` ascending and take the first — matches the Claude Ralph path)
 5. Implement that single user story
 6. Run quality checks (e.g., typecheck, lint, test - use whatever your project requires)
 7. Update AGENTS.md files if you discover reusable patterns (see below)
 8. If checks pass, commit ALL changes with message: `feat: [Story ID] - [Story Title]`
-9. Update the PRD to set `passes: true` for the completed story
-10. Append your progress to `progress.txt`
+9. Update **`scripts/ralph/prd.json`** to set `passes: true` for the completed story
+10. Append your progress to **`scripts/ralph/progress.txt`**
 
 ## Progress Report Format
 
