@@ -490,3 +490,18 @@ Completed: Thu Mar 26 MST 2026
 - LandingPage was already lazy-loaded via `React.lazy` in App.jsx — no changes needed there
 - Auth redirect uses `useAuth().user` with `<Navigate to="/dashboard" replace />` before JSX return; tested by mocking `/api/auth/me` with a MOCK_USER response in MSW
 - Chrome extension CTA uses `<a href={CHROME_EXTENSION_URL}>` (external link) rather than React Router `<Link>`, so it targets `_blank` with `rel="noreferrer"`
+
+## US-035: Error boundaries and API error surfacing
+Completed: Tue Mar 31 MST 2026
+
+- Added `ErrorBoundary` class component (`frontend/src/components/ErrorBoundary.jsx`): catches unhandled render errors, shows 'Something went wrong' fallback with error message and 'Try again' reset button; accepts optional `fallback` prop
+- Added `ApiErrorMessage` component (`frontend/src/components/ApiErrorMessage.jsx`): renders structured `{ code, message }` API errors from React Query with optional `onRetry` callback
+- Wrapped app root in `ErrorBoundary` in `main.jsx`
+- Surfaced API errors via `ApiErrorMessage` in `StatsBar`, `ApplicationList`, `CalendarGrid`, and `JobBoard` with `onRetry={refetch}`
+- Added 10 unit tests (5 per component) covering all error/fallback paths — all 102 tests pass
+- Build passes with no type errors
+
+### Learnings
+- React class components are required for `componentDidCatch`/`getDerivedStateFromError` — functional components cannot be error boundaries
+- `ApiErrorMessage` normalizes Axios error responses by reading `error.response.data.error` to surface `{ code, message }` from the API envelope format
+- Wrapping only the app root (not individual routes) in `ErrorBoundary` is sufficient for catching unhandled render errors; route-level boundaries can be added later if needed
