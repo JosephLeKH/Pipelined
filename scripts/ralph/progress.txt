@@ -510,3 +510,22 @@ Completed: Tue Mar 31 MST 2026
 **Status:** COMPLETE
 **Summary:** All 6 page components (Dashboard, Calendar, JobBoard, Login, Register, LandingPage) were already lazy-loaded via React.lazy in App.jsx. All lucide-react imports throughout the codebase already use the direct subpath format (lucide-react/dist/esm/icons/<name>). No date-fns imports exist in the frontend. Build completed with largest chunk at 247KB (well under 500KB limit). All 102 frontend tests pass.
 **Learnings:** This story's implementation was already complete from prior development iterations — no code changes were needed, only validation and PRD update.
+
+## US-037: Accessibility: keyboard navigation and ARIA
+**Status:** COMPLETE
+**Commit:** feat: US-037 - Accessibility: keyboard navigation and ARIA
+
+### What was done
+- **DetailPanel**: added `FOCUSABLE_SELECTORS` constant, `panelRef`, auto-focus `useEffect` (focuses first focusable element when `application` changes), `handlePanelKeyDown` for Tab focus trapping via `onKeyDown` on the dialog div; added `focus:outline-none focus:ring-2 focus:ring-blue-500` classes to all buttons and `focus:border-blue-500 focus:ring-1` to inputs/textarea/select
+- **ManualAddForm**: same focus trap pattern with `dialogRef` and `handleDialogKeyDown`; focus rings on all inputs, selects, and buttons
+- **StatsBar**: added `aria-label={`${label}: ${value}`}` to MetricCard outer div (both loading and loaded states)
+- **ApplicationList (StagePill)**: added `aria-label={stage}` to the outer span; changed stale indicator `aria-label="stale"` → `aria-label="Stale"` (matches AC exactly); added `tabIndex={0}`, `onKeyDown` (Enter/Space), and `focus:ring` to ApplicationRow; added focus ring to ColumnHeader buttons
+- **CalendarGrid**: added `aria-label` with `date.toLocaleDateString("en-US", { weekday, year, month, day })` to DayCell; added focus rings to EventChip and nav buttons
+- Added 14 new tests: 4 for DetailPanel (auto-focus + focus trap forward/backward), 3 for ManualAddForm (auto-focus + focus trap), 1 for StatsBar (aria-labels), 2 for ApplicationList (StagePill aria-label + stale Stale), 5 for CalendarGrid (new test file)
+- All 116 frontend tests pass; build succeeds
+
+### Learnings
+- Focus trap works by attaching `onKeyDown` to the dialog container and intercepting Tab/Shift+Tab when focus is on the boundary element, then calling `.focus()` programmatically; `e.preventDefault()` prevents the browser from performing its default tab behavior
+- `date.toLocaleDateString("en-US", {...})` format produces "Sunday, March 1, 2026" — tests use case-insensitive regex `/sunday, march 1, 2026/i`
+- Day cells only render after the API loading state resolves, so CalendarGrid tests use `findByLabelText` (async) rather than `getByLabelText`
+- The `FOCUSABLE_SELECTORS` constant is duplicated in DetailPanel and ManualAddForm rather than extracted to a shared utility (only 2 usages — not enough to justify a new file per CLAUDE.md)
