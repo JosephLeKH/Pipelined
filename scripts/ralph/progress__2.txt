@@ -283,3 +283,14 @@ Added MongoDB `$text` index on applications (role_title, company, notes, tags) a
 - README.md: project overview, ASCII architecture diagram, prerequisites table, quick start (backend + frontend + extension), running tests, environment variables table (all 16 vars), deployment (Docker + ECS Fargate), project structure, contributing + style guide links
 - Build: no build required (docs only)
 - Commit: pending
+
+## US-058 — Extension support for Indeed and Glassdoor job pages
+- Completed: 2026-04-06
+- extension/content/boards/indeed.js: BOARD_ID, isJobPage() (URL_PATTERN + .jobsearch-JobInfoHeader-title), extractFields() with role_title/.icl-u-lg-mr--sm company/location from #jobLocationText/remote_status inferred from location text
+- extension/content/boards/glassdoor.js: BOARD_ID, isJobPage() (URL_PATTERN + .job-title), extractFields() with .job-title role/.employer-name company/.location location/.salary-estimate compensation/remote_status inferred from location
+- extension/content/content.js: Added indeed/glassdoor imports and added to BOARDS array
+- extension/manifest.json: Added *://www.indeed.com/viewjob* and *://www.glassdoor.com/job-listing/* to content_scripts matches
+- extension/tests/fixtures/indeed-swe-posting.html + glassdoor-swe-posting.html: JSDOM fixtures
+- extension/tests/test_indeed.js + test_glassdoor.js: 12+13 tests each
+- Extension tests: 162 passed (22 new)
+- Commit: pending

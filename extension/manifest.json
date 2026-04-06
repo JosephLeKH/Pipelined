@@ -14,7 +14,9 @@
         "https://boards.greenhouse.io/*",
         "https://jobs.lever.co/*",
         "https://jobs.ashbyhq.com/*",
-        "https://*.myworkday.com/*"
+        "https://*.myworkday.com/*",
+        "*://www.indeed.com/viewjob*",
+        "*://www.glassdoor.com/job-listing/*"
       ],
       "js": ["content/content.js"],
       "css": ["content/content.css"],

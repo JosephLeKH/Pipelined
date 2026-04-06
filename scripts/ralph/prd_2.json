@@ -361,7 +361,7 @@
         "npm test passes in /extension"
       ],
       "priority": 19,
-      "passes": false,
+      "passes": true,
       "notes": "LinkedIn, Greenhouse, Lever, Ashby, and Workday are covered. Indeed and Glassdoor are the two highest-traffic missing job boards."
     },
     {
