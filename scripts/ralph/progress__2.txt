@@ -68,3 +68,17 @@ Started: Mon Apr  6 00:25:40 PDT 2026
 - `validate_production_secrets` accepts a `Settings` instance rather than reading `settings` global directly, making it trivially testable without monkeypatching.
 - Using a forward-reference string annotation (`"Settings"`) avoids a circular-import issue since the function is defined before the class in the same file.
 - The existing Pyright diagnostics (`reportMissingImports`) are environment-level false positives (packages not installed in the checker's venv) and were pre-existing before this change.
+
+## US-045 — Application notes editor in DetailPanel
+**Status:** COMPLETE
+**Commit:** feat: US-045 - Application notes editor in DetailPanel
+
+### Changes
+- **`frontend/src/lib/constants.js`**: Added `NOTES_MAX_LENGTH = 5000` constant.
+- **`frontend/src/components/DetailPanel.jsx`**: Added `NotesEditor` subcomponent with read/edit mode toggle. In read mode, shows saved notes text + pencil icon button. In edit mode, shows controlled textarea with 5000-char limit + character counter + Save/Cancel buttons. Save calls `useUpdateApplication` mutation with per-call `onSuccess`/`onError` callbacks; on error shows inline error message and reverts to saved value. Removed old `handleNotesBlur` auto-save pattern.
+- **`frontend/src/components/DetailPanel.test.jsx`**: Replaced the notes blur test with four new tests: notes renders with saved value, edit mode toggles on pencil click, Save calls PATCH mutation with notes body, Cancel reverts to saved value.
+
+### Learnings
+- Per-call `mutate(vars, { onSuccess, onError })` callbacks are the right pattern for component-local state management (edit mode, error display) that doesn't belong in the global mutation hook.
+- The `useUpdateApplication` hook in the project doesn't need modification — its global `onSuccess` (cache invalidation) still runs alongside per-call callbacks.
+- All 119 frontend tests pass.

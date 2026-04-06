@@ -96,7 +96,7 @@
         "npm test passes"
       ],
       "priority": 6,
-      "passes": false,
+      "passes": true,
       "notes": "Notes field is in ApplicationDocument schema (backend) and ApplicationCreateRequest, but DetailPanel never renders or edits it."
     },
     {
