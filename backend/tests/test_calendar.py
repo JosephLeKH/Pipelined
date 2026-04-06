@@ -1,6 +1,10 @@
 """Integration tests for calendar event router endpoints."""
 
+import datetime as dt
+
 import pytest
+
+from database import get_collection
 
 APP_PAYLOAD = {
     "role_title": "Software Engineer",
@@ -334,3 +338,82 @@ async def test_delete_event_returns_401_without_auth(client, test_user):
 
     # Assert
     assert resp.status_code == 401
+
+
+# ---------------------------------------------------------------------------
+# Result limit and date range validation
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_list_events_caps_at_500_documents(client, test_user):
+    """Querying list_events with 501 events in DB should return at most 500."""
+    from bson import ObjectId
+
+    # Arrange
+    user, cookies = test_user
+    app_id = await _create_app(client, cookies)
+
+    uid = ObjectId(user["id"])
+    aid = ObjectId(app_id)
+    base_date = dt.date(2026, 3, 1)
+
+    docs = [
+        {
+            "user_id": uid,
+            "application_id": aid,
+            "event_type": "technical",
+            "date": base_date,
+            "time": None,
+            "notes": None,
+            "title": f"Event {i}",
+        }
+        for i in range(501)
+    ]
+    await get_collection("calendar_events").insert_many(docs)
+
+    # Act
+    resp = await client.get(
+        "/api/calendar/events",
+        params={"date_from": "2026-03-01", "date_to": "2026-03-31"},
+        cookies=cookies,
+    )
+
+    # Assert
+    assert resp.status_code == 200
+    body = resp.json()
+    assert len(body["data"]) == 500
+    assert body["meta"]["count"] == 500
+
+
+@pytest.mark.asyncio
+async def test_list_events_returns_400_for_date_range_over_366_days(client, test_user):
+    # Arrange
+    _, cookies = test_user
+
+    # Act — 367-day range exceeds the 366-day limit
+    resp = await client.get(
+        "/api/calendar/events",
+        params={"date_from": "2026-01-01", "date_to": "2027-01-03"},
+        cookies=cookies,
+    )
+
+    # Assert
+    assert resp.status_code == 400
+    assert resp.json()["detail"]["code"] == "INVALID_DATE_RANGE"
+
+
+@pytest.mark.asyncio
+async def test_list_events_accepts_date_range_of_exactly_366_days(client, test_user):
+    # Arrange
+    _, cookies = test_user
+
+    # Act — exactly 366 days is permitted
+    resp = await client.get(
+        "/api/calendar/events",
+        params={"date_from": "2026-01-01", "date_to": "2027-01-02"},
+        cookies=cookies,
+    )
+
+    # Assert
+    assert resp.status_code == 200

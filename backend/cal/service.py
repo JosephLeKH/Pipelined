@@ -11,6 +11,8 @@ from database import get_collection
 logger = structlog.get_logger()
 
 DEFAULT_DATE_FROM_DAY = 1
+MAX_CALENDAR_EVENTS = 500
+MAX_DATE_RANGE_DAYS = 366
 
 
 class EventNotFoundError(Exception):
@@ -100,7 +102,7 @@ async def list_events(
     ]
 
     events = get_collection("calendar_events")
-    return await events.aggregate(pipeline).to_list(length=None)
+    return await events.aggregate(pipeline).to_list(length=MAX_CALENDAR_EVENTS)
 
 
 async def update_event(user_id: str, event_id: str, updates: EventUpdate) -> dict | None:

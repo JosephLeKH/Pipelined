@@ -8,7 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Response
 from auth.dependencies import get_current_user
 from cal import service as cal_service
 from cal.schemas import EventCreate, EventResponse, EventUpdate
-from cal.service import ApplicationNotFoundError
+from cal.service import ApplicationNotFoundError, MAX_DATE_RANGE_DAYS
 
 logger = structlog.get_logger()
 
@@ -16,6 +16,10 @@ router = APIRouter(prefix="/api/calendar", tags=["calendar"])
 
 EVENT_NOT_FOUND_DETAIL = {"code": "EVENT_NOT_FOUND", "message": "Calendar event not found."}
 APP_NOT_FOUND_DETAIL = {"code": "APP_NOT_FOUND", "message": "Application not found for this user."}
+INVALID_DATE_RANGE_DETAIL = {
+    "code": "INVALID_DATE_RANGE",
+    "message": f"date_to must not be more than {MAX_DATE_RANGE_DAYS} days after date_from.",
+}
 
 
 @router.post("/events", status_code=201)
@@ -40,6 +44,9 @@ async def list_events(
     user: dict = Depends(get_current_user),
 ) -> dict:
     """List calendar events for the current user, optionally filtered by application_id."""
+    if date_from is not None and date_to is not None:
+        if (date_to - date_from).days > MAX_DATE_RANGE_DAYS:
+            raise HTTPException(status_code=400, detail=INVALID_DATE_RANGE_DETAIL)
     user_id = str(user["_id"])
     docs = await cal_service.list_events(user_id, date_from, date_to, application_id)
     items = [EventResponse.from_doc(d) for d in docs]
