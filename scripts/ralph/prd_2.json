@@ -1,0 +1,407 @@
+{
+  "project": "Pipelined",
+  "branchName": "ralph/pipelined-v2",
+  "description": "Pipelined v2 \u2014 Bug fixes, missing UI features, auth completions, search, analytics, and new power-user capabilities built on top of the complete v1 foundation.",
+  "userStories": [
+    {
+      "id": "US-040",
+      "title": "Case-insensitive duplicate detection for applications",
+      "description": "As a user, I shouldn't be able to save the same job twice even if I typed the company name with different casing (e.g. 'Stripe' vs 'stripe'). The current duplicate guard uses an exact-match compound index which is case-sensitive, letting through obvious duplicates.",
+      "acceptanceCriteria": [
+        "In applications/service.py, the duplicate pre-check before insert normalises both role_title and company to lowercase before comparison",
+        "The MongoDB duplicate_guard index remains as-is (exact), but the service-layer pre-check uses case-insensitive collation or lowercased fields",
+        "A new 'normalised_role' and 'normalised_company' field (both lowercase) are stored on the document and used for the duplicate lookup query",
+        "Existing test_applications.py adds a test: saving 'Stripe SWE Intern' and then 'stripe swe intern' returns 409",
+        "All existing application tests still pass",
+        "Typecheck passes"
+      ],
+      "priority": 1,
+      "passes": true,
+      "notes": "Found in codebase review: applications/service.py line 127 \u2014 duplicate check is purely exact-match on stored values. No normalisation step."
+    },
+    {
+      "id": "US-041",
+      "title": "Fix extension save queue to survive individual save errors",
+      "description": "As a user, if one extension save fails (network error, 500), the save queue should recover and process subsequent saves. Currently a thrown error in executeSave breaks the Promise chain and all subsequent saves silently drop.",
+      "acceptanceCriteria": [
+        "In extension/background/background.js, the saveQueue promise chain uses .catch() after each executeSave() call so a single failure does not permanently poison the queue",
+        "On save failure, the error is logged to console.error and the banner is updated with an error state message ('Save failed \u2014 try again')",
+        "The popup's recent saves list is NOT updated on failure (no stale entry)",
+        "Extension tests add a test: when executeSave rejects, the next queued save still executes",
+        "All existing extension tests still pass"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Found in codebase review: background.js line 120 \u2014 saveQueue = saveQueue.then(...) with no .catch(). A throw in executeSave breaks all future saves."
+    },
+    {
+      "id": "US-042",
+      "title": "Fix empty page crash in application cursor pagination",
+      "description": "As a user, when there are zero applications or the last page is empty, the backend crashes trying to read the _id of the last document. This causes a 500 instead of returning an empty list with no cursor.",
+      "acceptanceCriteria": [
+        "In applications/service.py, the next_cursor assignment is guarded: only set if docs is non-empty",
+        "GET /api/applications on an empty collection returns { data: [], meta: { next_cursor: null, total: 0 } } with 200 status",
+        "test_applications.py adds a test for the empty-collection pagination response",
+        "All existing application tests still pass",
+        "Typecheck passes"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "Found in codebase review: applications/service.py line 176 \u2014 next_cursor = str(docs[-1]['_id']) crashes when docs is empty."
+    },
+    {
+      "id": "US-043",
+      "title": "Add result limit to calendar list_events and validate date range",
+      "description": "As a developer, the calendar list_events query uses to_list(length=None) which can return thousands of documents for a user with a large calendar. This should be capped and the input date range validated to prevent abuse.",
+      "acceptanceCriteria": [
+        "In cal/service.py, to_list(length=None) is replaced with to_list(length=MAX_CALENDAR_EVENTS) where MAX_CALENDAR_EVENTS = 500 is a module-level constant",
+        "The router validates that date_to is not more than 366 days after date_from; returns 400 with code INVALID_DATE_RANGE if violated",
+        "test_calendar.py adds a test verifying the 500-document cap behaviour (mock returns 501 docs, response has 500)",
+        "All existing calendar tests still pass",
+        "Typecheck passes"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": "Found in codebase review: cal/service.py line 103 \u2014 unbounded query. Potential performance/DoS risk."
+    },
+    {
+      "id": "US-044",
+      "title": "Production secrets validation at startup",
+      "description": "As an operator, the app should refuse to start in production if critical secrets are still set to their insecure dev defaults. Currently JWT_SECRET defaults to 'dev-secret-change-in-production' and OPENAI_API_KEY can be empty \u2014 both silently pass in prod.",
+      "acceptanceCriteria": [
+        "In backend/config.py, a validate_production_secrets() function is added",
+        "If DEBUG=False and JWT_SECRET equals the default dev string, the function raises a RuntimeError with a clear message",
+        "If DEBUG=False and OPENAI_API_KEY is empty, the function raises a RuntimeError",
+        "validate_production_secrets() is called in the FastAPI lifespan startup before connecting to the database",
+        "If DEBUG=True, the function logs a warning but does not raise",
+        "test_health.py adds a test: starting the app with DEBUG=False and the default JWT_SECRET raises RuntimeError",
+        "Typecheck passes"
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": "Found in codebase review: config.py \u2014 jwt_secret has insecure default, no runtime guard."
+    },
+    {
+      "id": "US-045",
+      "title": "Application notes editor in DetailPanel",
+      "description": "As a user, I want to write and save freeform notes for each application (interview impressions, recruiter names, prep materials) directly in the detail panel. The notes field already exists in the application schema but is not rendered or editable in the UI.",
+      "acceptanceCriteria": [
+        "DetailPanel.jsx renders the application's notes field as a textarea below the stage selector",
+        "The textarea is initially read-only; clicking an 'Edit notes' pencil icon button switches it to edit mode",
+        "In edit mode, a 'Save' and 'Cancel' button appear; Save calls PATCH /{app_id} with { notes } and invalidates the React Query cache",
+        "Cancel reverts to the last saved notes value",
+        "Notes textarea has a max 5000 character limit enforced client-side with a character counter",
+        "If the PATCH fails, an error toast is shown and the textarea reverts to the saved value",
+        "A Vitest test for DetailPanel verifies: notes field renders, edit mode toggles, save calls the hook mutation",
+        "npm test passes"
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": "Notes field is in ApplicationDocument schema (backend) and ApplicationCreateRequest, but DetailPanel never renders or edits it."
+    },
+    {
+      "id": "US-046",
+      "title": "Stale application amber dot visual indicator",
+      "description": "As a user, I want a visual nudge on applications I haven't touched in 14+ days so I know which ones need follow-up. The backend has updated_at on every application but the frontend never uses it for the stale indicator that was originally specced.",
+      "acceptanceCriteria": [
+        "In frontend/src/lib/constants.js, STALE_APPLICATION_DAYS = 14 is defined (or already exists \u2014 use it)",
+        "ApplicationList renders a small amber dot (\u25cf) on the left of each row where Date.now() - updated_at > STALE_APPLICATION_DAYS * 86400 * 1000",
+        "The dot has an aria-label='Stale application \u2014 no updates in 14+ days' for accessibility",
+        "Hovering the dot shows a Tailwind tooltip: 'No updates in 14 days \u2014 consider following up'",
+        "StatsBar shows a new 'Needs follow-up' count metric alongside the existing four stats \u2014 computed as the count of active applications that are stale",
+        "The backend GET /api/applications/stats adds a stale_count field: applications where updated_at < now - 14 days AND stage not in inactive stages",
+        "test_applications.py adds a test for the stale_count aggregation",
+        "Vitest test for ApplicationList verifies the amber dot renders for a stale application",
+        "All existing tests pass",
+        "Typecheck passes"
+      ],
+      "priority": 7,
+      "passes": false,
+      "notes": "PRD v1 mentioned stale nudge, backend has updated_at field, but the amber dot was never implemented in the frontend."
+    },
+    {
+      "id": "US-047",
+      "title": "Application timeline view in DetailPanel",
+      "description": "As a user, I want to see a chronological timeline of an application's history (stage changes, calendar events added, notes updated) in the detail panel so I can understand the full journey at a glance.",
+      "acceptanceCriteria": [
+        "DetailPanel.jsx adds a 'Timeline' tab alongside the existing view (or collapsible section below notes)",
+        "The timeline renders stage_history entries from the application document as timeline nodes with date, from_stage \u2192 to_stage",
+        "Calendar events linked to this application are fetched and interspersed in the timeline by date",
+        "Timeline nodes are sorted chronologically (oldest at top)",
+        "Each stage_history node shows: date formatted as 'Mon D, YYYY', stage transition label (e.g. 'Applied \u2192 Phone Screen')",
+        "Each calendar event node shows: event type icon, title, date",
+        "If stage_history is empty and no events exist, shows 'No activity yet' empty state",
+        "Vitest test verifies: timeline renders stage_history entries in correct order, calendar events appear at correct positions",
+        "npm test passes"
+      ],
+      "priority": 8,
+      "passes": false,
+      "notes": "stage_history is already stored on every application document. Calendar events have application_id. Just needs a UI component."
+    },
+    {
+      "id": "US-048",
+      "title": "Archive (soft delete) applications",
+      "description": "As a user, I want to archive old applications rather than permanently deleting them, so I can keep my pipeline clean without losing historical data. Archived applications should be hidden by default but accessible via a toggle.",
+      "acceptanceCriteria": [
+        "ApplicationDocument schema adds: archived: bool = False, archived_at: datetime | None = None",
+        "PATCH /api/applications/{id}/archive sets archived=True, archived_at=now; returns 200 with updated application",
+        "PATCH /api/applications/{id}/unarchive sets archived=False, archived_at=None; returns 200",
+        "GET /api/applications defaults to archived=False in the filter (existing queries unaffected)",
+        "GET /api/applications accepts ?include_archived=true to return all (for the archive view)",
+        "FilterBar.jsx adds an 'Archived' toggle that sets include_archived=true and adds a visual 'viewing archived' banner",
+        "ApplicationList row context menu (right-click or ... button) gains 'Archive' option replacing 'Delete'; Delete remains but shows a confirmation modal",
+        "Archived applications show a muted style in the list (gray text, strikethrough company name)",
+        "test_applications.py adds tests for archive/unarchive endpoints and that archived apps are excluded by default",
+        "All existing tests pass",
+        "Typecheck passes",
+        "npm test passes"
+      ],
+      "priority": 9,
+      "passes": false,
+      "notes": "Hard delete currently loses all history. Archive pattern is standard for any data-sensitive tracking app."
+    },
+    {
+      "id": "US-049",
+      "title": "Export applications to CSV",
+      "description": "As a user, I want to download all my applications as a CSV so I can analyse them in Excel/Sheets, share with a mentor, or back up my data.",
+      "acceptanceCriteria": [
+        "GET /api/applications/export returns a CSV file (Content-Type: text/csv; Content-Disposition: attachment; filename=applications.csv)",
+        "CSV columns: id, role_title, company, stage, location, remote_status, compensation, company_type, tags (semicolon-joined), applied_at, updated_at, notes",
+        "Only non-archived applications are exported by default; ?include_archived=true includes archived ones",
+        "Requires auth (same get_current_user dependency); filters by user_id",
+        "Frontend Dashboard page adds an 'Export CSV' button in the top-right of the filter bar area",
+        "Clicking the button triggers a browser file download via window.location or anchor download trick (no new tab)",
+        "The export button shows a loading spinner while the request is in flight",
+        "test_applications.py adds a test verifying the CSV response structure (header row, correct column count, correct number of data rows)",
+        "Typecheck passes",
+        "All existing tests pass"
+      ],
+      "priority": 10,
+      "passes": false,
+      "notes": "Export is table-stakes for any data tracking app. Users need ownership of their data."
+    },
+    {
+      "id": "US-050",
+      "title": "Password reset flow (forgot password + reset)",
+      "description": "As a user, if I forget my password I want to receive a password-reset email and set a new password without contacting support. This is a critical auth gap for production.",
+      "acceptanceCriteria": [
+        "POST /api/auth/forgot-password accepts { email }; if user exists (email auth, not Google-only), creates a password_reset_token (random 32-byte hex) stored in users collection with reset_token_hash and reset_token_expires_at (1 hour from now)",
+        "Regardless of whether the email exists, returns 200 { data: { message: 'If that email is registered, a reset link has been sent.' } } (prevents email enumeration)",
+        "Sends a reset email via an EmailService in backend/notifications/email_service.py using SMTP or a mock in tests",
+        "Reset email contains a link: {FRONTEND_URL}/reset-password?token={raw_token}",
+        "POST /api/auth/reset-password accepts { token, new_password }; validates token hash, checks expiry, updates password_hash, clears reset_token fields",
+        "Returns 400 with code TOKEN_EXPIRED if token is past expiry",
+        "Returns 400 with code TOKEN_INVALID if token hash not found",
+        "Frontend adds /reset-password page with a form (token from query param + new password + confirm password)",
+        "Frontend adds /forgot-password page with an email input form",
+        "Login page links to /forgot-password",
+        "test_auth.py adds tests for the forgot-password and reset-password endpoints (mocked email send)",
+        "Typecheck passes",
+        "npm test passes"
+      ],
+      "priority": 11,
+      "passes": false,
+      "notes": "Critical missing auth feature. Without password reset, real users who forget passwords are permanently locked out."
+    },
+    {
+      "id": "US-051",
+      "title": "Rate limiting with X-Forwarded-For support behind reverse proxy",
+      "description": "As an operator, rate limiting is currently keyed on the raw IP from the TCP connection, which means all users behind a shared proxy (e.g. Cloudflare, nginx, AWS ALB) appear as one IP and hit the limit together. The limiter must read the real client IP.",
+      "acceptanceCriteria": [
+        "backend/middleware/rate_limit.py replaces get_remote_address with a custom key_func that reads X-Forwarded-For first, falls back to X-Real-IP, then falls back to request.client.host",
+        "A TRUSTED_PROXIES env var (comma-separated IPs) gates whether the X-Forwarded-For header is trusted; if not set or empty, falls back to direct IP (prevents IP spoofing in dev)",
+        "config.py adds trusted_proxies: list[str] = [] setting parsed from TRUSTED_PROXIES",
+        "Rate limiter key_func is applied to all limiters (standard, AI, auth tiers)",
+        "test_health.py adds a test that sends X-Forwarded-For: 1.2.3.4 with a trusted proxy configured and verifies the rate limit key is 1.2.3.4",
+        "Typecheck passes",
+        "All existing tests pass"
+      ],
+      "priority": 12,
+      "passes": false,
+      "notes": "Pipelined deploys on AWS ECS Fargate behind an ALB. Without X-Forwarded-For, all users share one rate limit bucket."
+    },
+    {
+      "id": "US-052",
+      "title": "Full-text search across applications",
+      "description": "As a user with 50+ applications, I want to search by keyword (company name, role title, notes, tags) to quickly find a specific application instead of scrolling through the list.",
+      "acceptanceCriteria": [
+        "database.py adds a $text index on applications: { role_title: 'text', company: 'text', notes: 'text', tags: 'text' } with name='application_text_search'",
+        "GET /api/applications accepts an optional ?q= query parameter",
+        "When q is provided, the service adds a $text: { $search: q } filter to the aggregation pipeline and sorts by textScore",
+        "Cursor-based pagination still works when q is provided (using textScore + _id as composite sort key)",
+        "Frontend FilterBar.jsx adds a search input (magnifying glass icon, debounced 300ms) that sets the q param in the React Query key",
+        "Clearing the search input resets to the default listing",
+        "test_applications.py adds a test: insert two applications, search by role_title keyword, verify only the matching one is returned",
+        "npm test passes for FilterBar with the search input",
+        "All existing tests pass",
+        "Typecheck passes"
+      ],
+      "priority": 13,
+      "passes": false,
+      "notes": "As users accumulate 50-100+ applications, search becomes essential. $text index is simple to add with Motor."
+    },
+    {
+      "id": "US-053",
+      "title": "Job board full-text search",
+      "description": "As a user browsing the job board, I want to search by keyword (role title, company, description) to quickly find relevant listings instead of relying only on the category filters.",
+      "acceptanceCriteria": [
+        "database.py adds a $text index on job_listings: { role_title: 'text', company: 'text', description: 'text' } with name='job_text_search'",
+        "GET /api/jobs accepts an optional ?q= query parameter; when provided, applies $text search filter",
+        "Results are sorted by textScore when q is set, otherwise by ingested_at descending (existing default)",
+        "Pagination still works with search (cursor-based or offset-based as appropriate)",
+        "Frontend JobBoard page adds a search input above the filter chips (same pattern as applications search)",
+        "Searching while other filters are active combines the filters (AND semantics)",
+        "test_jobs.py adds a test for the search query path",
+        "All existing tests pass",
+        "Typecheck passes",
+        "npm test passes"
+      ],
+      "priority": 14,
+      "passes": false,
+      "notes": "Job board currently has no text search. Users can only filter by category, experience, remote. Search is the primary discovery mechanism."
+    },
+    {
+      "id": "US-054",
+      "title": "Interview prep checklist per calendar event",
+      "description": "As a user preparing for an interview, I want to attach a prep checklist and notes to each calendar event (e.g. 'Research company culture', 'Review system design concepts', 'Prepare STAR stories') so I can track what I've done before the interview.",
+      "acceptanceCriteria": [
+        "CalendarEvent schema adds: prep_notes: str = '' (max 3000 chars), prep_checklist: list[PrepChecklistItem] = [] where PrepChecklistItem has id (uuid), text (str, max 200 chars), checked (bool)",
+        "PATCH /api/calendar/events/{id} accepts prep_notes and prep_checklist in the body and updates them",
+        "CalendarGrid.jsx: clicking a day event chip now opens a CalendarEventDetail panel (side drawer) instead of just showing basic info",
+        "CalendarEventDetail panel shows: event title, date/time, linked application info (company + role from join), prep_notes textarea (editable), and a checklist section",
+        "Users can add new checklist items with an input + Enter, check/uncheck items (PATCH on toggle), and delete items",
+        "Saving prep_notes uses a debounced PATCH (500ms) so users don't have to click Save",
+        "Checked items show with strikethrough text",
+        "A Vitest test for CalendarEventDetail verifies: renders notes, adds checklist item, checking item calls mutation",
+        "test_calendar.py adds a test for PATCH with prep_checklist",
+        "All existing tests pass",
+        "Typecheck passes",
+        "npm test passes"
+      ],
+      "priority": 15,
+      "passes": false,
+      "notes": "Calendar events currently just store title/date/type. Interview prep is a high-value feature that differentiates Pipelined from generic calendar apps."
+    },
+    {
+      "id": "US-055",
+      "title": "Bulk application operations: delete and stage update",
+      "description": "As a power user managing many applications, I want to select multiple applications and delete them or move them to the same stage at once, instead of doing it one by one.",
+      "acceptanceCriteria": [
+        "DELETE /api/applications/bulk accepts { ids: list[str] } in the request body; deletes all matching applications (and their calendar events) owned by current user; returns 200 { data: { deleted_count: int } }",
+        "PATCH /api/applications/bulk-stage accepts { ids: list[str], stage: str }; updates stage for all matching applications owned by current user; appends stage_history entry; returns 200 { data: { updated_count: int } }",
+        "Both endpoints validate that ids is non-empty (max 100 ids) and return 400 if empty or exceeds limit",
+        "ApplicationList.jsx adds a checkbox column (hidden by default, appears on hover of row or when any checkbox is checked)",
+        "A 'Select all' checkbox in the header selects/deselects all visible rows",
+        "When 1+ rows are selected, a contextual action bar appears above the list with 'Move to stage' dropdown and 'Delete selected' button",
+        "Bulk delete shows a confirmation modal listing the count of applications to be deleted",
+        "After bulk operation completes, React Query cache is invalidated and selection is cleared",
+        "test_applications.py adds tests for both bulk endpoints (happy path, validation errors, ownership check)",
+        "Vitest test for ApplicationList verifies selection UI renders and bulk action bar appears",
+        "All existing tests pass",
+        "Typecheck passes",
+        "npm test passes"
+      ],
+      "priority": 16,
+      "passes": false,
+      "notes": "Users managing 50+ applications frequently need to bulk-archive old ones or move rejected applications. One-by-one operations are painful."
+    },
+    {
+      "id": "US-056",
+      "title": "Analytics dashboard page",
+      "description": "As a user, I want a dedicated analytics page showing charts of my job search: applications over time, stage funnel, response rate trend, and top companies applied to. This gives insight into patterns and helps optimise the search strategy.",
+      "acceptanceCriteria": [
+        "A new /analytics route is added to the frontend router",
+        "NavBar adds an 'Analytics' link",
+        "GET /api/applications/analytics returns: { applications_by_week: [{week: str, count: int}], stage_funnel: [{stage: str, count: int}], response_rate_by_month: [{month: str, rate: float}], top_companies: [{company: str, count: int}] }",
+        "Analytics page renders 4 charts using recharts (already in dependencies): a BarChart for applications per week, a FunnelChart or BarChart for stage breakdown, a LineChart for response rate trend, and a horizontal BarChart for top 10 companies",
+        "Charts use the project's existing color palette (stage colors from constants.js)",
+        "Empty state: if user has <5 applications, shows 'Add more applications to unlock analytics' message instead of charts",
+        "Date range selector (last 30 / 90 / 180 / all-time) controls all charts simultaneously",
+        "test_applications.py adds a test for the analytics endpoint return shape",
+        "Vitest test for the Analytics page renders without crashing with mock data",
+        "All existing tests pass",
+        "Typecheck passes",
+        "npm test passes"
+      ],
+      "priority": 17,
+      "passes": false,
+      "notes": "recharts is already in frontend/package.json. Analytics is a high-engagement feature that encourages users to return regularly."
+    },
+    {
+      "id": "US-057",
+      "title": "Dark mode with system preference detection and manual toggle",
+      "description": "As a user who prefers dark interfaces or works at night, I want the app to support dark mode that follows my system preference but can be overridden manually. This is a top UX request for any modern web app.",
+      "acceptanceCriteria": [
+        "Tailwind CSS config already has darkMode: 'class' (verify and set if not already)",
+        "A ThemeContext is created in frontend/src/context/ThemeContext.jsx that: reads system preference via window.matchMedia('(prefers-color-scheme: dark)'), persists user override to localStorage under key 'pipelined_theme' ('light' | 'dark' | 'system'), applies the 'dark' class to document.documentElement",
+        "NavBar adds a sun/moon icon toggle button that cycles: system \u2192 light \u2192 dark \u2192 system",
+        "All existing Tailwind classes are reviewed and dark: variants added for: background colors, text colors, border colors, card backgrounds in NavBar, Dashboard, ApplicationList, DetailPanel, FilterBar, CalendarGrid, JobBoard, StatsBar",
+        "The login and register pages also support dark mode",
+        "Vitest test for ThemeContext: verifies class is toggled on documentElement, preference is persisted to localStorage, system preference is respected on initial load",
+        "npm test passes",
+        "npm run build passes (no Tailwind purge issues with dynamic dark: classes)"
+      ],
+      "priority": 18,
+      "passes": false,
+      "notes": "Dark mode is one of the most requested features by technical users. Tailwind's dark mode system makes this tractable."
+    },
+    {
+      "id": "US-058",
+      "title": "Extension support for Indeed and Glassdoor job pages",
+      "description": "As a user who browses jobs on Indeed and Glassdoor in addition to LinkedIn/Greenhouse/Lever, I want the extension to detect these pages and offer the same one-click save experience.",
+      "acceptanceCriteria": [
+        "extension/manifest.json adds content script matches for *://www.indeed.com/viewjob* and *://www.glassdoor.com/job-listing/*",
+        "extension/content/boards/indeed.js exports an extract() function that reads: role_title from .jobsearch-JobInfoHeader-title, company from .icl-u-lg-mr--sm, location from #jobLocationText, remote_status inferred from location text containing 'Remote'",
+        "extension/content/boards/glassdoor.js exports an extract() function that reads: role_title from .job-title, company from .employer-name, location from .location, compensation from .salary-estimate if present",
+        "Both parsers follow the existing board parser interface: { role_title, company, location, remote_status, compensation, company_type, source }",
+        "content.js BOARD_PARSERS map includes 'indeed.com' and 'glassdoor.com' keys pointing to the new parsers",
+        "Fallback to OpenAI page_text still applies if selectors return empty",
+        "extension/tests/test_indeed.js and test_glassdoor.js add extraction tests with JSDOM fixtures (use existing board test pattern)",
+        "All existing extension tests still pass",
+        "npm test passes in /extension"
+      ],
+      "priority": 19,
+      "passes": false,
+      "notes": "LinkedIn, Greenhouse, Lever, Ashby, and Workday are covered. Indeed and Glassdoor are the two highest-traffic missing job boards."
+    },
+    {
+      "id": "US-059",
+      "title": "Tag autocomplete and tag management page",
+      "description": "As a user who uses tags extensively, I want autocomplete suggestions when adding tags to applications (so I reuse existing tags instead of creating near-duplicates like 'fintech' and 'FinTech'), and a dedicated tag management page where I can rename or merge tags across all applications.",
+      "acceptanceCriteria": [
+        "GET /api/tags returns { data: [{ tag: str, count: int }] } \u2014 all distinct tags used by the current user with application count, sorted by count descending",
+        "PATCH /api/tags/rename accepts { old_tag: str, new_tag: str }; updates tags array in all user's applications atomically using updateMany; returns { data: { updated_count: int } }",
+        "DELETE /api/tags/{tag} removes the tag from all user's applications; returns { data: { updated_count: int } }",
+        "ManualAddForm.jsx and DetailPanel.jsx tag inputs use a Combobox-style input: typing shows matching suggestions from GET /api/tags, user can select a suggestion or type a new tag",
+        "Suggestions are case-insensitively matched and shown in a dropdown list (max 8 suggestions)",
+        "New frontend page /tags with a table of all tags (name, count, rename button, delete button)",
+        "Rename opens an inline input; Delete shows a confirmation modal warning 'This will remove the tag from N applications'",
+        "NavBar adds 'Tags' under a user menu dropdown (not a primary nav item)",
+        "test_applications.py or new test_tags.py adds tests for GET /api/tags, PATCH /api/tags/rename, DELETE /api/tags/{tag}",
+        "Vitest test for tag autocomplete component",
+        "All existing tests pass",
+        "Typecheck passes",
+        "npm test passes"
+      ],
+      "priority": 20,
+      "passes": false,
+      "notes": "Tags are freeform and currently have no autocomplete. Users who track 50+ applications inevitably create tag variants (e.g. 'big-tech' vs 'big tech' vs 'BigTech')."
+    },
+    {
+      "id": "US-060",
+      "title": "Root README.md with full setup, dev, and deployment guide",
+      "description": "As a new developer or contributor, I need a comprehensive README at the project root explaining what Pipelined is, how to set it up locally, how to run tests, and how to deploy to production. Currently there is no README anywhere in the project.",
+      "acceptanceCriteria": [
+        "README.md is created at the project root",
+        "Sections: Project overview (1 paragraph), Architecture diagram (ASCII or text-based showing FARM stack + extension), Prerequisites (Node 20, Python 3.12, MongoDB Atlas or local, Chrome), Quick start (step-by-step: clone \u2192 .env setup \u2192 backend start \u2192 frontend start \u2192 extension load), Running tests (backend pytest, frontend vitest, extension jest), Environment variables table (all vars from .env.example with descriptions), Deployment section (Docker build, ECS Fargate notes), Contributing section pointing to style guides",
+        "The .env.example at project root already has all variables; README links to it",
+        "README.md is under 400 lines",
+        "No broken links in the README",
+        "Verify README renders correctly (check markdown syntax)"
+      ],
+      "priority": 21,
+      "passes": false,
+      "notes": "There is no README.md anywhere in the project. This is a critical gap for onboarding and open-source credibility."
+    }
+  ]
+}

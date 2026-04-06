@@ -1,8 +1,8 @@
 #!/bin/bash
 # Ralph Wiggum - Long-running AI agent loop
-# Usage: ./ralph.sh [--tool amp|claude] [max_iterations]
+# Usage: ./ralph.sh [--tool amp|claude] [--prd prd_2.json] [max_iterations]
 # Env: RALPH_MODEL (default sonnet), RALPH_SLEEP_SEC (default 2),
-#      RALPH_PROGRESS_TAIL_LINES (optional, append last N lines of progress.txt),
+#      RALPH_PROGRESS_TAIL_LINES (optional, append last N lines of progress file),
 #      RALPH_MAX_BUDGET_USD (optional, passed to claude --max-budget-usd)
 
 set -e
@@ -14,6 +14,7 @@ RALPH_PROGRESS_TAIL_LINES="${RALPH_PROGRESS_TAIL_LINES:-0}"
 # Parse arguments
 TOOL="amp"
 MAX_ITERATIONS=10
+PRD_NAME=""
 
 while [[ $# -gt 0 ]]; do
   case $1 in
@@ -23,6 +24,14 @@ while [[ $# -gt 0 ]]; do
       ;;
     --tool=*)
       TOOL="${1#*=}"
+      shift
+      ;;
+    --prd)
+      PRD_NAME="$2"
+      shift 2
+      ;;
+    --prd=*)
+      PRD_NAME="${1#*=}"
       shift
       ;;
     *)
@@ -40,14 +49,50 @@ if [[ "$TOOL" != "amp" && "$TOOL" != "claude" ]]; then
 fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PRD_FILE="$SCRIPT_DIR/prd.json"
-PROGRESS_FILE="$SCRIPT_DIR/progress.txt"
+PROJECT_ROOT="$(git -C "$SCRIPT_DIR" rev-parse --show-toplevel 2>/dev/null || echo "$SCRIPT_DIR")"
+
+# Resolve PRD file: --prd flag > auto-detect latest incomplete > prd.json default
+if [ -n "$PRD_NAME" ]; then
+  # Allow bare name like "prd_2" or "prd_2.json" or full path
+  if [[ "$PRD_NAME" == /* ]]; then
+    PRD_FILE="$PRD_NAME"
+  elif [[ "$PRD_NAME" == *.json ]]; then
+    PRD_FILE="$SCRIPT_DIR/$PRD_NAME"
+  else
+    PRD_FILE="$SCRIPT_DIR/${PRD_NAME}.json"
+  fi
+else
+  # Auto-detect: prefer the highest-numbered prd_N.json with incomplete stories,
+  # falling back to prd.json for backwards compatibility.
+  PRD_FILE=""
+  for candidate in "$SCRIPT_DIR"/prd_*.json "$SCRIPT_DIR/prd.json"; do
+    [ -f "$candidate" ] || continue
+    remaining=$(jq '[.userStories[] | select(.passes == false)] | length' "$candidate" 2>/dev/null || echo "0")
+    if [ "$remaining" -gt 0 ]; then
+      PRD_FILE="$candidate"
+      # Don't break — continue so last (highest-numbered) incomplete prd wins
+    fi
+  done
+  # If all PRDs complete, fall back to prd.json
+  if [ -z "$PRD_FILE" ]; then
+    PRD_FILE="$SCRIPT_DIR/prd.json"
+  fi
+fi
+
+# Derive progress file name from the PRD file name (prd_2.json -> progress_2.txt, prd.json -> progress.txt)
+PRD_BASENAME=$(basename "$PRD_FILE" .json)
+if [[ "$PRD_BASENAME" == "prd" ]]; then
+  PROGRESS_FILE="$SCRIPT_DIR/progress.txt"
+else
+  PROGRESS_FILE="$SCRIPT_DIR/progress_${PRD_BASENAME#prd}.txt"
+fi
+
 ARCHIVE_DIR="$SCRIPT_DIR/archive"
 LAST_BRANCH_FILE="$SCRIPT_DIR/.last-branch"
-PROJECT_ROOT="$(git -C "$SCRIPT_DIR" rev-parse --show-toplevel 2>/dev/null || echo "$SCRIPT_DIR")"
 
 if [ ! -f "$PRD_FILE" ]; then
   echo "Error: Missing $PRD_FILE"
+  echo "Tip: use --prd prd_2.json to specify which PRD to run against."
   exit 1
 fi
 
@@ -82,6 +127,7 @@ else
   fi
 fi
 
+# Archive previous run if PRD branch changed
 if [ -f "$PRD_FILE" ] && [ -f "$LAST_BRANCH_FILE" ]; then
   CURRENT_BRANCH=$(jq -r '.branchName // empty' "$PRD_FILE" 2>/dev/null || echo "")
   LAST_BRANCH=$(cat "$LAST_BRANCH_FILE" 2>/dev/null || echo "")
@@ -116,6 +162,8 @@ if [ ! -f "$PROGRESS_FILE" ]; then
   echo "---" >> "$PROGRESS_FILE"
 fi
 
+echo "PRD file: $PRD_FILE"
+echo "Progress file: $PROGRESS_FILE"
 if [[ "$TOOL" == "claude" ]]; then
   echo "Claude model: $RALPH_MODEL (set RALPH_MODEL to override)"
 fi

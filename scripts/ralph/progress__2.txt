@@ -1,0 +1,17 @@
+# Ralph Progress Log
+Started: Mon Apr  6 00:25:40 PDT 2026
+---
+
+## US-040 — Case-insensitive duplicate detection for applications
+**Status:** COMPLETE
+**Commit:** feat: US-040 - Case-insensitive duplicate detection for applications
+
+### Changes
+- **`backend/applications/service.py`**: Modified `create()` to compute `normalised_company` and `normalised_role` (both `.lower()`) before the duplicate check. The `find_one` query now uses `{"normalised_company": ..., "normalised_role": ...}` instead of the raw case-sensitive fields. Both normalised fields are stored on the inserted document.
+- **`backend/tests/test_applications.py`**: Added `test_create_application_returns_409_on_case_insensitive_duplicate` — saves "Stripe SWE Intern"/"Stripe" then retries with "stripe swe intern"/"stripe" and asserts 409 with `DUPLICATE_APPLICATION` code.
+
+### Learnings
+- The MongoDB `duplicate_guard` unique index on `(user_id, company, role_title)` is kept as-is (exact match); the service-layer pre-check is the correct place for normalisation since Mongo collation on unique indexes would require an index rebuild and affects all queries
+- `(body.company or "").lower()` safely handles `None` values (e.g. extension source before OpenAI fallback resolves)
+- Pyright on this machine has 8 pre-existing errors (unresolved imports + Python 3.10 union syntax) unrelated to these changes; no new errors introduced
+- Backend integration tests require a live MongoDB instance (`MONGO_URI` env var); CI handles this via `TEST_MONGO_URI` GitHub secret
