@@ -61,7 +61,7 @@
         "Typecheck passes"
       ],
       "priority": 4,
-      "passes": false,
+      "passes": true,
       "notes": "Found in codebase review: cal/service.py line 103 \u2014 unbounded query. Potential performance/DoS risk."
     },
     {

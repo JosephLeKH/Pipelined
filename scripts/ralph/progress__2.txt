@@ -39,3 +39,18 @@ Started: Mon Apr  6 00:25:40 PDT 2026
 
 ### Learnings
 - The service.py guard was already correct; the missing piece was the explicit test proving the empty-collection path. The `has_next and docs` condition is technically redundant (if `has_next` is true, docs can only be empty when `limit=0`), but the belt-and-suspenders guard is harmless and the test now documents the contract clearly.
+
+## US-043 — Add result limit to calendar list_events and validate date range
+**Status:** COMPLETE
+**Commit:** feat: US-043 - Add result limit to calendar list_events and validate date range
+
+### Changes
+- **`backend/cal/service.py`**: Added `MAX_CALENDAR_EVENTS = 500` and `MAX_DATE_RANGE_DAYS = 366` module-level constants. Replaced `to_list(length=None)` with `to_list(length=MAX_CALENDAR_EVENTS)` in `list_events`.
+- **`backend/cal/router.py`**: Imported `MAX_DATE_RANGE_DAYS` from service. Added `INVALID_DATE_RANGE_DETAIL` constant. Added guard in `list_events` handler: if `date_from` and `date_to` are both provided and `(date_to - date_from).days > MAX_DATE_RANGE_DAYS`, raises HTTP 400 with code `INVALID_DATE_RANGE`.
+- **`backend/tests/test_calendar.py`**: Added 3 new tests: `test_list_events_caps_at_500_documents` (bulk-inserts 501 docs directly via `get_collection`, asserts response has 500), `test_list_events_returns_400_for_date_range_over_366_days` (367-day range), `test_list_events_accepts_date_range_of_exactly_366_days` (boundary, expects 200).
+
+### Learnings
+- Motor's `to_list(length=N)` silently caps the result — it doesn't raise if fewer docs exist. This makes it safe to always pass a cap.
+- For the 500-doc cap test, using `get_collection("calendar_events").insert_many(docs)` in the test avoids 501 HTTP round-trips while still hitting a real MongoDB (no mocking). `get_collection()` raises if db is None, which satisfies type safety better than accessing `db[...]` directly.
+- The AC said "mock returns 501 docs" but the project rule is "never mock the database". The real-DB bulk insert approach tests the same behaviour correctly.
+- Pyright on this machine has pre-existing errors (unresolved imports, Python version for `|` union syntax) — no new errors introduced.
