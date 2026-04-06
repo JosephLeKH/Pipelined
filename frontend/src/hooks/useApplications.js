@@ -4,6 +4,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import {
   archiveApplication,
+  bulkDeleteApplications,
+  bulkUpdateApplicationStage,
   createApplication,
   deleteApplication,
   fetchApplication,
@@ -105,6 +107,30 @@ export function useUnarchiveApplication() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id) => unarchiveApplication(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: KEYS.all });
+      queryClient.invalidateQueries({ queryKey: KEYS.stats });
+    },
+  });
+}
+
+/** Bulk delete multiple applications by id. */
+export function useBulkDeleteApplications() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (ids) => bulkDeleteApplications(ids),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: KEYS.all });
+      queryClient.invalidateQueries({ queryKey: KEYS.stats });
+    },
+  });
+}
+
+/** Bulk update stage for multiple applications. */
+export function useBulkUpdateApplicationStage() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ ids, stage }) => bulkUpdateApplicationStage(ids, stage),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: KEYS.all });
       queryClient.invalidateQueries({ queryKey: KEYS.stats });

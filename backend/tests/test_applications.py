@@ -703,3 +703,171 @@ async def test_export_csv_returns_401_without_auth(client):
 
     # Assert
     assert response.status_code == 401
+
+
+# ---------------------------------------------------------------------------
+# DELETE /api/applications/bulk
+# ---------------------------------------------------------------------------
+
+
+async def test_bulk_delete_removes_applications_and_returns_count(client, test_user):
+    # Arrange
+    _, cookies = test_user
+    r1 = await client.post("/api/applications", json=APP_PAYLOAD, cookies=cookies)
+    r2 = await client.post(
+        "/api/applications", json={**APP_PAYLOAD, "company": "Beta Inc"}, cookies=cookies
+    )
+    id1 = r1.json()["data"]["id"]
+    id2 = r2.json()["data"]["id"]
+
+    # Act
+    response = await client.request(
+        "DELETE", "/api/applications/bulk", json={"ids": [id1, id2]}, cookies=cookies
+    )
+
+    # Assert
+    assert response.status_code == 200
+    assert response.json()["data"]["deleted_count"] == 2
+    get1 = await client.get(f"/api/applications/{id1}", cookies=cookies)
+    assert get1.status_code == 404
+
+
+async def test_bulk_delete_returns_422_on_empty_ids(client, test_user):
+    # Arrange
+    _, cookies = test_user
+
+    # Act
+    response = await client.request(
+        "DELETE", "/api/applications/bulk", json={"ids": []}, cookies=cookies
+    )
+
+    # Assert
+    assert response.status_code == 422
+
+
+async def test_bulk_delete_returns_422_on_too_many_ids(client, test_user):
+    # Arrange
+    _, cookies = test_user
+    ids = ["aaaaaaaaaaaaaaaaaaaaaaaa"] * 101
+
+    # Act
+    response = await client.request(
+        "DELETE", "/api/applications/bulk", json={"ids": ids}, cookies=cookies
+    )
+
+    # Assert
+    assert response.status_code == 422
+
+
+async def test_bulk_delete_only_deletes_own_applications(client, test_user):
+    # Arrange
+    _, cookies = test_user
+    resp_other = await client.post("/api/auth/register", json={
+        "email": "bulkother@example.com",
+        "password": "OtherPass123!",
+        "display_name": "Other User",
+    })
+    other_cookies = dict(resp_other.cookies)
+    r_other = await client.post("/api/applications", json=APP_PAYLOAD, cookies=other_cookies)
+    other_id = r_other.json()["data"]["id"]
+
+    # Act — attempt to delete another user's application
+    response = await client.request(
+        "DELETE", "/api/applications/bulk", json={"ids": [other_id]}, cookies=cookies
+    )
+
+    # Assert — deleted_count is 0; other user's app is untouched
+    assert response.status_code == 200
+    assert response.json()["data"]["deleted_count"] == 0
+    verify = await client.get(f"/api/applications/{other_id}", cookies=other_cookies)
+    assert verify.status_code == 200
+
+
+# ---------------------------------------------------------------------------
+# PATCH /api/applications/bulk-stage
+# ---------------------------------------------------------------------------
+
+
+async def test_bulk_stage_update_updates_stage_and_returns_count(client, test_user):
+    # Arrange
+    _, cookies = test_user
+    r1 = await client.post("/api/applications", json=APP_PAYLOAD, cookies=cookies)
+    r2 = await client.post(
+        "/api/applications", json={**APP_PAYLOAD, "company": "Beta Inc"}, cookies=cookies
+    )
+    id1 = r1.json()["data"]["id"]
+    id2 = r2.json()["data"]["id"]
+
+    # Act
+    response = await client.patch(
+        "/api/applications/bulk-stage",
+        json={"ids": [id1, id2], "stage": "Phone Screen"},
+        cookies=cookies,
+    )
+
+    # Assert
+    assert response.status_code == 200
+    assert response.json()["data"]["updated_count"] == 2
+    detail = await client.get(f"/api/applications/{id1}", cookies=cookies)
+    assert detail.json()["data"]["current_stage"] == "Phone Screen"
+
+
+async def test_bulk_stage_update_appends_stage_history(client, test_user):
+    # Arrange
+    _, cookies = test_user
+    r1 = await client.post("/api/applications", json=APP_PAYLOAD, cookies=cookies)
+    app_id = r1.json()["data"]["id"]
+
+    # Act
+    await client.patch(
+        "/api/applications/bulk-stage",
+        json={"ids": [app_id], "stage": "Onsite"},
+        cookies=cookies,
+    )
+
+    # Assert
+    detail = await client.get(f"/api/applications/{app_id}", cookies=cookies)
+    history = detail.json()["data"]["stage_history"]
+    assert len(history) == 2
+    assert history[-1]["stage"] == "Onsite"
+
+
+async def test_bulk_stage_update_returns_422_on_empty_ids(client, test_user):
+    # Arrange
+    _, cookies = test_user
+
+    # Act
+    response = await client.patch(
+        "/api/applications/bulk-stage",
+        json={"ids": [], "stage": "Rejected"},
+        cookies=cookies,
+    )
+
+    # Assert
+    assert response.status_code == 422
+
+
+async def test_bulk_stage_update_only_updates_own_applications(client, test_user):
+    # Arrange
+    _, cookies = test_user
+    resp_other = await client.post("/api/auth/register", json={
+        "email": "bulkother2@example.com",
+        "password": "OtherPass123!",
+        "display_name": "Other User 2",
+    })
+    other_cookies = dict(resp_other.cookies)
+    r_other = await client.post("/api/applications", json=APP_PAYLOAD, cookies=other_cookies)
+    other_id = r_other.json()["data"]["id"]
+
+    # Act — attempt to update another user's application stage
+    response = await client.patch(
+        "/api/applications/bulk-stage",
+        json={"ids": [other_id], "stage": "Rejected"},
+        cookies=cookies,
+    )
+
+    # Assert — updated_count is 0; other user's app is untouched
+    assert response.status_code == 200
+    assert response.json()["data"]["updated_count"] == 0
+    verify = await client.get(f"/api/applications/{other_id}", cookies=other_cookies)
+    assert verify.json()["data"]["current_stage"] == "Applied"

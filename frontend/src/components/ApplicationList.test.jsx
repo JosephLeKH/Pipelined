@@ -174,4 +174,55 @@ describe("ApplicationList", () => {
       "Stale application — no updates in 14+ days"
     );
   });
+
+  it("should render a select-all checkbox in the header", async () => {
+    // Arrange / Act
+    render(<ApplicationList onSelect={() => {}} />, { wrapper: makeWrapper() });
+    await screen.findByText("Acme Corp");
+
+    // Assert
+    expect(screen.getByLabelText("Select all applications")).toBeInTheDocument();
+  });
+
+  it("should show bulk action bar when a row checkbox is checked", async () => {
+    // Arrange
+    render(<ApplicationList onSelect={() => {}} />, { wrapper: makeWrapper() });
+    await screen.findByText("Acme Corp");
+
+    // Act — check the first app row's checkbox
+    const checkbox = screen.getByLabelText("Select Acme Corp");
+    await userEvent.click(checkbox);
+
+    // Assert — bulk action bar appears
+    expect(screen.getByRole("toolbar", { name: /bulk actions/i })).toBeInTheDocument();
+    expect(screen.getByText("1 selected")).toBeInTheDocument();
+  });
+
+  it("should select all rows when select-all checkbox is clicked", async () => {
+    // Arrange
+    render(<ApplicationList onSelect={() => {}} />, { wrapper: makeWrapper() });
+    await screen.findByText("Acme Corp");
+
+    // Act — click select-all
+    const selectAll = screen.getByLabelText("Select all applications");
+    await userEvent.click(selectAll);
+
+    // Assert — bulk action bar shows count matching app count
+    expect(screen.getByText("2 selected")).toBeInTheDocument();
+  });
+
+  it("should clear selection when select-all is clicked again while all are selected", async () => {
+    // Arrange
+    render(<ApplicationList onSelect={() => {}} />, { wrapper: makeWrapper() });
+    await screen.findByText("Acme Corp");
+    const selectAll = screen.getByLabelText("Select all applications");
+    await userEvent.click(selectAll);
+    expect(screen.getByText("2 selected")).toBeInTheDocument();
+
+    // Act — click select-all again to deselect
+    await userEvent.click(selectAll);
+
+    // Assert — bulk action bar is gone
+    expect(screen.queryByRole("toolbar", { name: /bulk actions/i })).not.toBeInTheDocument();
+  });
 });

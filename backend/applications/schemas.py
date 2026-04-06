@@ -111,3 +111,19 @@ class StageAddRequest(BaseModel):
 
     name: str = Field(min_length=1, max_length=MAX_STAGE_LENGTH)
     position: int = Field(ge=0)
+
+
+MAX_BULK_IDS = 100
+
+
+class BulkDeleteRequest(BaseModel):
+    model_config = ConfigDict(strict=True)
+
+    ids: list[str] = Field(min_length=1, max_length=MAX_BULK_IDS)
+
+
+class BulkStageUpdateRequest(BaseModel):
+    model_config = ConfigDict(strict=True)
+
+    ids: list[str] = Field(min_length=1, max_length=MAX_BULK_IDS)
+    stage: str = Field(min_length=1, max_length=MAX_STAGE_LENGTH)

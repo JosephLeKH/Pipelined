@@ -10,6 +10,8 @@ from applications.schemas import (
     ApplicationListQuery,
     ApplicationResponse,
     ApplicationUpdate,
+    BulkDeleteRequest,
+    BulkStageUpdateRequest,
     StageAddRequest,
     StatsResponse,
     ValidCompanyType,
@@ -117,6 +119,28 @@ async def export_applications_csv(
         media_type="text/csv",
         headers={"Content-Disposition": "attachment; filename=applications.csv"},
     )
+
+
+@router.delete("/bulk", status_code=200)
+async def bulk_delete_applications(
+    body: BulkDeleteRequest,
+    user: dict = Depends(get_current_user),
+) -> dict:
+    """Delete multiple applications and their linked calendar events."""
+    user_id = str(user["_id"])
+    deleted_count = await app_service.bulk_delete(user_id, body.ids)
+    return {"data": {"deleted_count": deleted_count}}
+
+
+@router.patch("/bulk-stage", status_code=200)
+async def bulk_update_application_stage(
+    body: BulkStageUpdateRequest,
+    user: dict = Depends(get_current_user),
+) -> dict:
+    """Update stage for multiple applications, appending stage_history entry."""
+    user_id = str(user["_id"])
+    updated_count = await app_service.bulk_update_stage(user_id, body.ids, body.stage)
+    return {"data": {"updated_count": updated_count}}
 
 
 @router.get("/{app_id}", status_code=200)

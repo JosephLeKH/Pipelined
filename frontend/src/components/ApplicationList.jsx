@@ -1,4 +1,4 @@
-/** Virtualized application list with sortable columns, stale indicators, and archive/delete actions. */
+/** Virtualized application list with sortable columns, stale indicators, archive/delete, and bulk selection. */
 
 import { useMemo, useCallback, useState } from "react";
 import { useSearchParams } from "react-router-dom";
@@ -8,10 +8,17 @@ import Globe from "lucide-react/dist/esm/icons/globe";
 import LayoutDashboard from "lucide-react/dist/esm/icons/layout-dashboard";
 import Pencil from "lucide-react/dist/esm/icons/pencil";
 
-import { useApplications, useArchiveApplication, useDeleteApplication, useUnarchiveApplication } from "../hooks/useApplications";
+import {
+  useApplications,
+  useArchiveApplication,
+  useBulkDeleteApplications,
+  useBulkUpdateApplicationStage,
+  useDeleteApplication,
+  useUnarchiveApplication,
+} from "../hooks/useApplications";
 import { STAGE_COLORS, DEFAULT_STAGE_COLOR, STALE_APPLICATION_DAYS } from "../lib/constants";
 import ApiErrorMessage from "./ApiErrorMessage";
-import { DeleteConfirmModal, RowMenu } from "./ApplicationRowActions";
+import { BulkActionBar, BulkDeleteConfirmModal, DeleteConfirmModal, RowMenu } from "./ApplicationRowActions";
 
 const MS_PER_DAY = 86_400_000;
 
@@ -38,22 +45,35 @@ function StagePill({ stage }) {
   );
 }
 
-function ApplicationRow({ application, onSelect, style, onArchive, onUnarchive, onDelete }) {
+function ApplicationRow({
+  application, onSelect, style, onArchive, onUnarchive, onDelete,
+  checked, onToggle, hasSelection,
+}) {
   const SourceIcon = SOURCE_ICONS[application.source] ?? Pencil;
   const stale = isStale(application.updated_at);
   const dateApplied = new Date(application.date_applied).toLocaleDateString();
   const archived = Boolean(application.archived);
+  const checkboxVisible = hasSelection ? "opacity-100" : "opacity-0 group-hover:opacity-100";
 
   return (
     <div
       style={style}
-      className={`flex cursor-pointer items-center gap-4 border-b border-gray-100 px-4 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 ${archived ? "opacity-60" : ""}`}
+      className={`group flex cursor-pointer items-center gap-4 border-b border-gray-100 px-4 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 ${archived ? "opacity-60" : ""}`}
       onClick={() => onSelect(application)}
       onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") onSelect(application); }}
       role="row"
       tabIndex={0}
     >
-      <span className="relative w-2 shrink-0 group">
+      <span className={`shrink-0 transition-opacity ${checkboxVisible}`} onClick={(e) => e.stopPropagation()}>
+        <input
+          type="checkbox"
+          aria-label={`Select ${application.company}`}
+          checked={checked}
+          onChange={() => onToggle(application.id)}
+          className="h-4 w-4 rounded border-gray-300 text-blue-600"
+        />
+      </span>
+      <span className="relative w-2 shrink-0 group/stale">
         {stale && !archived && (
           <>
             <span
@@ -63,7 +83,7 @@ function ApplicationRow({ application, onSelect, style, onArchive, onUnarchive, 
             />
             <span
               role="tooltip"
-              className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 whitespace-nowrap rounded bg-gray-800 px-2 py-1 text-xs text-white opacity-0 group-hover:opacity-100"
+              className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 whitespace-nowrap rounded bg-gray-800 px-2 py-1 text-xs text-white opacity-0 group-hover/stale:opacity-100"
             >
               No updates in 14 days — consider following up
             </span>
@@ -106,6 +126,8 @@ function ColumnHeader({ field, label, sortBy, sortOrder, onSort }) {
 function ApplicationList({ onSelect, filters = {} }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [pendingDeleteId, setPendingDeleteId] = useState(null);
+  const [selectedIds, setSelectedIds] = useState(new Set());
+  const [bulkDeletePending, setBulkDeletePending] = useState(false);
 
   const sortBy = searchParams.get("sort_by") ?? "date_applied";
   const sortOrder = searchParams.get("sort_order") ?? "desc";
@@ -117,10 +139,13 @@ function ApplicationList({ onSelect, filters = {} }) {
 
   const { data: envelope, isLoading, error, refetch } = useApplications(queryFilters);
   const applications = envelope?.data ?? [];
+  const hasSelection = selectedIds.size > 0;
 
   const archiveMutation = useArchiveApplication();
   const unarchiveMutation = useUnarchiveApplication();
   const deleteMutation = useDeleteApplication();
+  const bulkDeleteMutation = useBulkDeleteApplications();
+  const bulkStageMutation = useBulkUpdateApplicationStage();
 
   const handleSort = useCallback(
     (field) => {
@@ -136,6 +161,22 @@ function ApplicationList({ onSelect, filters = {} }) {
     [searchParams, setSearchParams, sortBy, sortOrder]
   );
 
+  const handleToggle = useCallback((id) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  }, []);
+
+  const handleSelectAll = useCallback(() => {
+    if (selectedIds.size === applications.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(applications.map((a) => a.id)));
+    }
+  }, [selectedIds.size, applications]);
+
   const handleArchive = useCallback((id) => archiveMutation.mutate(id), [archiveMutation]);
   const handleUnarchive = useCallback((id) => unarchiveMutation.mutate(id), [unarchiveMutation]);
   const handleDeleteRequest = useCallback((id) => setPendingDeleteId(id), []);
@@ -143,6 +184,18 @@ function ApplicationList({ onSelect, filters = {} }) {
     (id) => { deleteMutation.mutate(id); setPendingDeleteId(null); },
     [deleteMutation]
   );
+
+  const handleBulkDeleteConfirm = useCallback(() => {
+    bulkDeleteMutation.mutate([...selectedIds], {
+      onSuccess: () => { setSelectedIds(new Set()); setBulkDeletePending(false); },
+    });
+  }, [bulkDeleteMutation, selectedIds]);
+
+  const handleBulkMoveToStage = useCallback((stage) => {
+    bulkStageMutation.mutate({ ids: [...selectedIds], stage }, {
+      onSuccess: () => setSelectedIds(new Set()),
+    });
+  }, [bulkStageMutation, selectedIds]);
 
   if (isLoading) {
     return (
@@ -160,6 +213,8 @@ function ApplicationList({ onSelect, filters = {} }) {
     return <div className="py-16 text-center text-gray-500">No applications match your filters.</div>;
   }
 
+  const allSelected = applications.length > 0 && selectedIds.size === applications.length;
+
   const Row = ({ index, style }) => (
     <ApplicationRow
       application={applications[index]}
@@ -168,6 +223,9 @@ function ApplicationList({ onSelect, filters = {} }) {
       onArchive={handleArchive}
       onUnarchive={handleUnarchive}
       onDelete={handleDeleteRequest}
+      checked={selectedIds.has(applications[index].id)}
+      onToggle={handleToggle}
+      hasSelection={hasSelection}
     />
   );
 
@@ -180,17 +238,42 @@ function ApplicationList({ onSelect, filters = {} }) {
           onCancel={() => setPendingDeleteId(null)}
         />
       )}
-      <div className="flex flex-col">
-        <div className="flex items-center gap-4 border-b border-gray-200 bg-gray-50 px-4 py-2">
-          <div className="w-2 shrink-0" />
-          <ColumnHeader field="company" label="Company" sortBy={sortBy} sortOrder={sortOrder} onSort={handleSort} />
-          <ColumnHeader field="role_title" label="Role" sortBy={sortBy} sortOrder={sortOrder} onSort={handleSort} />
-          <ColumnHeader field="current_stage" label="Stage" sortBy={sortBy} sortOrder={sortOrder} onSort={handleSort} />
-          <ColumnHeader field="date_applied" label="Date Applied" sortBy={sortBy} sortOrder={sortOrder} onSort={handleSort} />
+      {bulkDeletePending && (
+        <BulkDeleteConfirmModal
+          count={selectedIds.size}
+          onConfirm={handleBulkDeleteConfirm}
+          onCancel={() => setBulkDeletePending(false)}
+        />
+      )}
+      <div className="flex flex-col gap-2">
+        {hasSelection && (
+          <BulkActionBar
+            selectedCount={selectedIds.size}
+            onMoveToStage={handleBulkMoveToStage}
+            onDeleteSelected={() => setBulkDeletePending(true)}
+          />
+        )}
+        <div className="flex flex-col">
+          <div className="flex items-center gap-4 border-b border-gray-200 bg-gray-50 px-4 py-2">
+            <span className="shrink-0" onClick={(e) => e.stopPropagation()}>
+              <input
+                type="checkbox"
+                aria-label="Select all applications"
+                checked={allSelected}
+                onChange={handleSelectAll}
+                className="h-4 w-4 rounded border-gray-300 text-blue-600"
+              />
+            </span>
+            <div className="w-2 shrink-0" />
+            <ColumnHeader field="company" label="Company" sortBy={sortBy} sortOrder={sortOrder} onSort={handleSort} />
+            <ColumnHeader field="role_title" label="Role" sortBy={sortBy} sortOrder={sortOrder} onSort={handleSort} />
+            <ColumnHeader field="current_stage" label="Stage" sortBy={sortBy} sortOrder={sortOrder} onSort={handleSort} />
+            <ColumnHeader field="date_applied" label="Date Applied" sortBy={sortBy} sortOrder={sortOrder} onSort={handleSort} />
+          </div>
+          <FixedSizeList height={600} itemCount={applications.length} itemSize={64} width="100%">
+            {Row}
+          </FixedSizeList>
         </div>
-        <FixedSizeList height={600} itemCount={applications.length} itemSize={64} width="100%">
-          {Row}
-        </FixedSizeList>
       </div>
     </>
   );

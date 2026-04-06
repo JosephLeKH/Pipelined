@@ -416,6 +416,56 @@ async def export_applications(user_id: str, include_archived: bool = False) -> s
     return output.getvalue()
 
 
+async def bulk_delete(user_id: str, ids: list[str]) -> int:
+    """Delete multiple applications and their linked calendar_events. Returns deleted_count."""
+    uid = ObjectId(user_id)
+    try:
+        oid_list = [ObjectId(i) for i in ids]
+    except Exception:
+        return 0
+
+    db_client = get_client()
+    apps = get_collection("applications")
+    events = get_collection("calendar_events")
+
+    async with await db_client.start_session() as session:
+        async with session.start_transaction():
+            result = await apps.delete_many(
+                {"_id": {"$in": oid_list}, "user_id": uid}, session=session
+            )
+            deleted_count = result.deleted_count
+            if deleted_count > 0:
+                await events.delete_many(
+                    {"application_id": {"$in": oid_list}, "user_id": uid}, session=session
+                )
+
+    logger.info("bulk_applications_deleted", user_id=user_id, count=deleted_count)
+    return deleted_count
+
+
+async def bulk_update_stage(user_id: str, ids: list[str], stage: str) -> int:
+    """Update stage for multiple applications. Appends stage_history entry. Returns modified_count."""
+    uid = ObjectId(user_id)
+    try:
+        oid_list = [ObjectId(i) for i in ids]
+    except Exception:
+        return 0
+
+    apps = get_collection("applications")
+    now = datetime.now(timezone.utc)
+
+    result = await apps.update_many(
+        {"_id": {"$in": oid_list}, "user_id": uid},
+        {
+            "$set": {"current_stage": stage, "updated_at": now},
+            "$push": {"stage_history": {"stage": stage, "transitioned_at": now}},
+        },
+    )
+
+    logger.info("bulk_stage_updated", user_id=user_id, stage=stage, count=result.modified_count)
+    return result.modified_count
+
+
 async def compute_stats(user_id: str) -> dict:
     """Return StatsResponse fields using a single $facet aggregation."""
     uid = ObjectId(user_id)

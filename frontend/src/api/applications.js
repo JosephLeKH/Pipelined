@@ -57,6 +57,16 @@ export async function fetchStats() {
 
 const EXPORT_BASE = import.meta.env.VITE_API_BASE_URL ?? "/api";
 
+/** Bulk delete multiple applications by id. */
+export async function bulkDeleteApplications(ids) {
+  return client.delete("/applications/bulk", { data: { ids } });
+}
+
+/** Bulk update stage for multiple applications. */
+export async function bulkUpdateApplicationStage(ids, stage) {
+  return client.patch("/applications/bulk-stage", { ids, stage });
+}
+
 /** Download all applications as a CSV blob. Uses native fetch to avoid JSON interceptor. */
 export async function exportApplicationsCsv(includeArchived = false) {
   const params = includeArchived ? "?include_archived=true" : "";
