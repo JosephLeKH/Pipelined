@@ -15,3 +15,16 @@ Started: Mon Apr  6 00:25:40 PDT 2026
 - `(body.company or "").lower()` safely handles `None` values (e.g. extension source before OpenAI fallback resolves)
 - Pyright on this machine has 8 pre-existing errors (unresolved imports + Python 3.10 union syntax) unrelated to these changes; no new errors introduced
 - Backend integration tests require a live MongoDB instance (`MONGO_URI` env var); CI handles this via `TEST_MONGO_URI` GitHub secret
+
+## US-041 — Fix extension save queue to survive individual save errors
+**Status:** COMPLETE
+**Commit:** feat: US-041 - Fix extension save queue to survive individual save errors
+
+### Changes
+- **`extension/background/background.js`**: Rewrote `handleSave` to attach `.catch()` directly on `executeSave(payload)` before assigning to `saveQueue`. This ensures `saveQueue` always resolves even when `executeSave` throws (network error, etc.), so subsequent saves are never silently dropped. The catch handler calls `console.error("Save failed:", err)` and returns `{ status: "error", message: "Save failed — try again" }`. Exported `handleSave` for testability.
+- **`extension/content/content.js`**: Updated `showBannerError` banner text from "Save failed. Try again?" to "Save failed — try again" to match acceptance criteria.
+- **`extension/tests/test_background.js`**: New test file with 4 tests covering: queue continues after throw, `console.error` is called, error status returned, and `chrome.storage.local.set` not called on failure.
+
+### Learnings
+- The subtle bug: `saveQueue = saveQueue.then(() => executeSave(payload))` — if `executeSave` throws, `saveQueue` becomes a rejected promise. Subsequent `.then()` calls on a rejected promise skip the callback, so all future saves silently drop. The fix: `.catch()` must be on the inner promise (`executeSave(payload).catch(...)`) so `saveQueue` itself always resolves.
+- ES module import caching means the shared `saveQueue` state persists across all tests in the file — `beforeEach` must re-mock after `clearAllMocks` wipes implementations, but module-level state (the queue itself) remains valid since all prior tasks resolve.

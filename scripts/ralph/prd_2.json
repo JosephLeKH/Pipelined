@@ -31,7 +31,7 @@
         "All existing extension tests still pass"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Found in codebase review: background.js line 120 \u2014 saveQueue = saveQueue.then(...) with no .catch(). A throw in executeSave breaks all future saves."
     },
     {
