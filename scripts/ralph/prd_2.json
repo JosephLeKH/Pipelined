@@ -200,7 +200,7 @@
         "npm test passes"
       ],
       "priority": 11,
-      "passes": false,
+      "passes": true,
       "notes": "Critical missing auth feature. Without password reset, real users who forget passwords are permanently locked out."
     },
     {

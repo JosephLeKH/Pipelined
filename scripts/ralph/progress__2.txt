@@ -160,3 +160,35 @@ Started: Mon Apr  6 00:25:40 PDT 2026
 - **BSON only encodes `datetime.datetime`, not `datetime.date`**: Always convert `dt.date` → `dt.datetime` before inserting into MongoDB; convert back in `from_doc()`.
 - **pytest-asyncio `loop_scope` override**: Individual `@pytest.mark.asyncio` decorators override module-level `pytestmark`, dropping `loop_scope="session"`. Motor captures the event loop on first operation; mismatched loops cause "Future attached to a different loop" errors. Remove all bare `@pytest.mark.asyncio` decorators when using module-level `pytestmark`.
 - **Rate limiter in tests**: `@limiter.limit()` route decorators enforce limits even without `SlowAPIMiddleware`. Set `limiter.enabled = False` in the `app` fixture to disable globally during tests.
+
+## US-050 — Password reset flow (forgot password + reset)
+Completed: Mon Apr  6 09:36 PDT 2026
+
+### Implementation
+- **backend/notifications/__init__.py** — New package init
+- **backend/notifications/email_service.py** — `EmailService` class with `send_password_reset_email()` using Python `smtplib` via `asyncio.get_running_loop().run_in_executor()` for async-compatible blocking SMTP delivery; configurable SMTP host/port/TLS/credentials via Settings
+- **backend/config.py** — Added `frontend_url`, `smtp_host`, `smtp_port`, `smtp_use_tls`, `smtp_username`, `smtp_password`, `smtp_from_email` settings
+- **backend/auth/schemas.py** — Added `ForgotPasswordRequest` (EmailStr), `ResetPasswordRequest` (token + new_password with 8-char min)
+- **backend/auth/service.py** — Added `TokenExpiredError`, `TokenInvalidError` domain exceptions; `RESET_TOKEN_BYTES=32`, `RESET_TOKEN_TTL_HOURS=1` constants; `create_password_reset_token(email)` — generates `secrets.token_hex(32)`, stores SHA-256 hash + 1-hour expiry in users collection (only for email-auth users, `password_hash != null`); `reset_password(token, new_password)` — validates hash, checks expiry with UTC-aware comparison, updates password_hash, unsets token fields
+- **backend/auth/router.py** — Added `POST /api/auth/forgot-password` (rate-limited, always 200 to prevent enumeration); `POST /api/auth/reset-password` (maps TOKEN_EXPIRED→400, TOKEN_INVALID→400)
+- **backend/tests/test_auth.py** — 5 new tests: forgot-password returns 200 for existing user (mock email_service), forgot-password returns 200 for nonexistent email (no email sent), reset-password success (token captured from mock, new password works for login), reset-password 400 for invalid token, reset-password 400 for expired token (injected directly into DB)
+- **frontend/src/api/auth.js** — Added `forgotPassword(email)` and `resetPassword(token, new_password)` API functions
+- **frontend/src/hooks/useAuth.js** — Added `useForgotPassword()` and `useResetPassword()` React Query mutation hooks
+- **frontend/src/pages/ForgotPassword.jsx** — Email input form; shows success status message after submit; "Back to sign in" link
+- **frontend/src/pages/ResetPassword.jsx** — Reads token from `?token=` query param; new password + confirm password fields; client-side validation (empty, length, match); handles TOKEN_EXPIRED and TOKEN_INVALID error codes; redirects to /login on success
+- **frontend/src/pages/Login.jsx** — Added "Forgot password?" link next to the Password label
+- **frontend/src/App.jsx** — Added `/forgot-password` and `/reset-password` lazy routes
+- **frontend/src/pages/ForgotPassword.test.jsx** — 5 tests covering render, empty validation, success state, server error
+- **frontend/src/pages/ResetPassword.test.jsx** — 6 tests covering render, empty/mismatch/short validations, success state, missing token
+
+### Results
+- Backend: 163 tests passed (5 new)
+- Frontend: 133 tests passed (11 new)
+- Commit: 45b6daa
+
+### Learnings
+- `secrets.token_hex(N)` generates a N-byte hex string (2N characters); SHA-256 hash stored in DB means the raw token is never persisted
+- Motor returns MongoDB datetimes as timezone-naive by default; use `dt.replace(tzinfo=timezone.utc)` guard before UTC comparisons
+- Email enumeration prevention: generate the raw token regardless of whether the user exists, but only store/send if user found — returning the same 200 response either way
+- Google-only users (`password_hash=None`) are correctly excluded from password reset by the `{"password_hash": {"$ne": None}}` filter
+- For asyncio + blocking I/O: `asyncio.get_running_loop().run_in_executor(None, fn, *args)` is the correct pattern in Python 3.10+
