@@ -76,3 +76,9 @@ export async function exportApplicationsCsv(includeArchived = false) {
   if (!response.ok) throw new Error("Export failed");
   return response.blob();
 }
+
+/** Fetch analytics data for the current user. */
+export async function fetchAnalytics(days = null) {
+  const params = days != null ? `?days=${days}` : "";
+  return client.get(`/applications/analytics${params}`);
+}

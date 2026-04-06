@@ -6,6 +6,7 @@ import { useSearchParams } from "react-router-dom";
 import Loader2 from "lucide-react/dist/esm/icons/loader-2";
 
 import FilterBar from "../components/FilterBar";
+import NavBar from "../components/NavBar";
 import StatsBar from "../components/StatsBar";
 import ApplicationList from "../components/ApplicationList";
 import DetailPanel from "../components/DetailPanel";
@@ -73,7 +74,9 @@ function Dashboard() {
   }, [includeArchived]);
 
   return (
-    <main className="flex min-h-screen flex-col gap-6 bg-gray-50 p-6">
+    <div className="flex min-h-screen flex-col bg-gray-50">
+      <NavBar />
+      <main className="flex-1 p-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
         <div className="flex items-center gap-2">
@@ -100,7 +103,8 @@ function Dashboard() {
       <ApplicationList filters={filters} onSelect={handleSelect} />
       <DetailPanel application={selectedApp ?? null} onClose={handleClosePanel} />
       <ManualAddForm isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-    </main>
+      </main>
+    </div>
   );
 }
 

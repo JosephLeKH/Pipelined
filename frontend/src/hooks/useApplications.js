@@ -8,6 +8,7 @@ import {
   bulkUpdateApplicationStage,
   createApplication,
   deleteApplication,
+  fetchAnalytics,
   fetchApplication,
   fetchApplications,
   fetchStats,
@@ -24,6 +25,7 @@ export const KEYS = {
   details: () => [...KEYS.all, "detail"],
   detail: (id) => [...KEYS.details(), id],
   stats: ["applications", "stats"],
+  analytics: (days) => ["applications", "analytics", days],
 };
 
 /** List applications with optional filters/pagination. */
@@ -135,5 +137,14 @@ export function useBulkUpdateApplicationStage() {
       queryClient.invalidateQueries({ queryKey: KEYS.all });
       queryClient.invalidateQueries({ queryKey: KEYS.stats });
     },
+  });
+}
+
+/** Fetch analytics data for the current user. */
+export function useAnalytics(days = null) {
+  return useQuery({
+    queryKey: KEYS.analytics(days),
+    queryFn: () => fetchAnalytics(days),
+    staleTime: STATS_STALE_TIME_MS,
   });
 }

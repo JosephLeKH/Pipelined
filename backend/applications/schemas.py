@@ -127,3 +127,30 @@ class BulkStageUpdateRequest(BaseModel):
 
     ids: list[str] = Field(min_length=1, max_length=MAX_BULK_IDS)
     stage: str = Field(min_length=1, max_length=MAX_STAGE_LENGTH)
+
+
+class WeeklyCount(BaseModel):
+    week: str
+    count: int
+
+
+class StageCount(BaseModel):
+    stage: str
+    count: int
+
+
+class MonthlyRate(BaseModel):
+    month: str
+    rate: float
+
+
+class CompanyCount(BaseModel):
+    company: str
+    count: int
+
+
+class AnalyticsResponse(BaseModel):
+    applications_by_week: list[WeeklyCount]
+    stage_funnel: list[StageCount]
+    response_rate_by_month: list[MonthlyRate]
+    top_companies: list[CompanyCount]

@@ -6,6 +6,7 @@ from fastapi.responses import StreamingResponse
 
 from applications import service as app_service
 from applications.schemas import (
+    AnalyticsResponse,
     ApplicationCreate,
     ApplicationListQuery,
     ApplicationResponse,
@@ -119,6 +120,17 @@ async def export_applications_csv(
         media_type="text/csv",
         headers={"Content-Disposition": "attachment; filename=applications.csv"},
     )
+
+
+@router.get("/analytics", status_code=200)
+async def get_analytics(
+    days: int | None = Query(default=None, description="Lookback window in days (30/90/180). Omit for all-time."),
+    user: dict = Depends(get_current_user),
+) -> dict:
+    """Return aggregated analytics data: applications by week, stage funnel, response rate by month, top companies."""
+    user_id = str(user["_id"])
+    analytics = await app_service.get_analytics(user_id, days)
+    return {"data": AnalyticsResponse(**analytics)}
 
 
 @router.delete("/bulk", status_code=200)

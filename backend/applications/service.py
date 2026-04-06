@@ -519,3 +519,77 @@ async def compute_stats(user_id: str) -> dict:
         "avg_days_to_first_response": avg_days,
         "stale_count": stale,
     }
+
+
+RESPONSE_STAGES = ["Phone Screen", "Onsite", "Offer"]
+
+
+async def get_analytics(user_id: str, days: int | None = None) -> dict:
+    """Return aggregated analytics data for the user's applications.
+
+    Args:
+        user_id: The user to scope the query to.
+        days: Lookback window (30/90/180). None means all-time.
+    """
+    col = get_collection("applications")
+    uid = ObjectId(user_id)
+
+    base_filter: dict = {"user_id": uid, "archived": {"$ne": True}}
+    if days is not None:
+        cutoff = datetime.now(tz=timezone.utc) - timedelta(days=days)
+        base_filter["date_applied"] = {"$gte": cutoff}
+
+    pipeline = [
+        {"$match": base_filter},
+        {"$facet": {
+            "by_week": [
+                {"$group": {
+                    "_id": {"$dateToString": {"format": "%G-W%V", "date": "$date_applied"}},
+                    "count": {"$sum": 1},
+                }},
+                {"$sort": {"_id": 1}},
+            ],
+            "stage_funnel": [
+                {"$group": {"_id": "$current_stage", "count": {"$sum": 1}}},
+                {"$sort": {"count": -1}},
+            ],
+            "by_month": [
+                {"$group": {
+                    "_id": {"$dateToString": {"format": "%Y-%m", "date": "$date_applied"}},
+                    "total": {"$sum": 1},
+                    "responded": {"$sum": {"$cond": [
+                        {"$gt": [{"$size": {"$ifNull": ["$stage_history", []]}}, 1]},
+                        1, 0,
+                    ]}},
+                }},
+                {"$sort": {"_id": 1}},
+            ],
+            "top_companies": [
+                {"$match": {"company": {"$ne": None}}},
+                {"$group": {"_id": "$company", "count": {"$sum": 1}}},
+                {"$sort": {"count": -1}},
+                {"$limit": 10},
+            ],
+        }},
+    ]
+
+    raw = (await col.aggregate(pipeline).to_list(length=1))[0]
+
+    return {
+        "applications_by_week": [
+            {"week": r["_id"], "count": r["count"]}
+            for r in raw["by_week"]
+        ],
+        "stage_funnel": [
+            {"stage": r["_id"], "count": r["count"]}
+            for r in raw["stage_funnel"]
+        ],
+        "response_rate_by_month": [
+            {"month": r["_id"], "rate": round(r["responded"] / r["total"], 2) if r["total"] else 0.0}
+            for r in raw["by_month"]
+        ],
+        "top_companies": [
+            {"company": r["_id"], "count": r["count"]}
+            for r in raw["top_companies"]
+        ],
+    }

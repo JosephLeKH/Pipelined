@@ -8,6 +8,7 @@ import { useAuth } from "./context/AuthContext";
 const LandingPage = lazy(() => import("./pages/LandingPage"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Calendar = lazy(() => import("./pages/Calendar"));
+const Analytics = lazy(() => import("./pages/Analytics"));
 const JobBoard = lazy(() => import("./pages/JobBoard"));
 const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
@@ -53,6 +54,14 @@ function App() {
           element={
             <ProtectedRoute>
               <Calendar />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/analytics"
+          element={
+            <ProtectedRoute>
+              <Analytics />
             </ProtectedRoute>
           }
         />

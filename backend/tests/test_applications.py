@@ -871,3 +871,63 @@ async def test_bulk_stage_update_only_updates_own_applications(client, test_user
     assert response.json()["data"]["updated_count"] == 0
     verify = await client.get(f"/api/applications/{other_id}", cookies=other_cookies)
     assert verify.json()["data"]["current_stage"] == "Applied"
+
+
+async def test_get_analytics_returns_expected_shape(client, test_user):
+    # Arrange — use distinct role titles per company to avoid duplicate-application rejection
+    _, cookies = test_user
+    entries = [
+        ("Alpha", "SWE I"),
+        ("Beta", "SWE II"),
+        ("Alpha", "SWE II"),
+        ("Gamma", "SWE I"),
+        ("Alpha", "SWE III"),
+    ]
+    for company, role in entries:
+        await client.post(
+            "/api/applications",
+            json={**APP_PAYLOAD, "company": company, "role_title": role},
+            cookies=cookies,
+        )
+
+    # Act
+    response = await client.get("/api/applications/analytics", cookies=cookies)
+
+    # Assert
+    assert response.status_code == 200
+    data = response.json()["data"]
+    assert "applications_by_week" in data
+    assert "stage_funnel" in data
+    assert "response_rate_by_month" in data
+    assert "top_companies" in data
+    assert isinstance(data["applications_by_week"], list)
+    assert isinstance(data["stage_funnel"], list)
+    assert isinstance(data["response_rate_by_month"], list)
+    assert isinstance(data["top_companies"], list)
+    # top company should be Alpha with count 3
+    top = data["top_companies"][0]
+    assert top["company"] == "Alpha"
+    assert top["count"] == 3
+
+
+async def test_get_analytics_with_days_filter(client, test_user):
+    # Arrange
+    _, cookies = test_user
+    await client.post("/api/applications", json=APP_PAYLOAD, cookies=cookies)
+
+    # Act
+    response = await client.get("/api/applications/analytics?days=30", cookies=cookies)
+
+    # Assert
+    assert response.status_code == 200
+    data = response.json()["data"]
+    assert "applications_by_week" in data
+    assert "stage_funnel" in data
+
+
+async def test_get_analytics_requires_auth(client):
+    # Act
+    response = await client.get("/api/applications/analytics")
+
+    # Assert
+    assert response.status_code == 401

@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 
 import CalendarEventDetail from "../components/CalendarEventDetail";
 import CalendarGrid from "../components/CalendarGrid";
+import NavBar from "../components/NavBar";
 import NewEventForm from "../components/NewEventForm";
 
 function Calendar() {
@@ -35,8 +36,10 @@ function Calendar() {
   }, []);
 
   return (
-    <main className="flex min-h-screen flex-col gap-6 bg-gray-50 p-6">
-      <h1 className="text-2xl font-bold text-gray-900">Calendar</h1>
+    <div className="flex min-h-screen flex-col bg-gray-50">
+      <NavBar />
+      <main className="flex-1 p-6">
+      <h1 className="mb-6 text-2xl font-bold text-gray-900">Calendar</h1>
       <CalendarGrid
         month={month}
         year={year}
@@ -57,7 +60,8 @@ function Calendar() {
           onClose={handleCloseForm}
         />
       )}
-    </main>
+      </main>
+    </div>
   );
 }
 
