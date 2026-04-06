@@ -136,3 +136,27 @@ Started: Mon Apr  6 00:25:40 PDT 2026
 ### Learnings
 - Using `{"archived": {"$ne": True}}` instead of `{"archived": False}` handles pre-existing documents that lack the `archived` field, making the migration backward-compatible.
 - Splitting large components into a companion `*Actions.jsx` file is a clean way to stay under the 300-line limit while keeping related logic together.
+
+## US-049 — Export applications to CSV
+**Status:** COMPLETE
+**Commit:** feat: US-049 - Export applications to CSV
+
+### Changes
+- **`backend/applications/service.py`**: Added `export_applications()` — fetches all non-archived (or all if `include_archived=True`) applications for the user and streams them as CSV using `io.StringIO` + `csv.writer`. Columns: id, role_title, company, stage, location, remote_status, compensation, company_type, tags, applied_at, updated_at, notes.
+- **`backend/applications/router.py`**: Added `GET /api/applications/export` route returning a `StreamingResponse` with `Content-Type: text/csv` and `Content-Disposition: attachment; filename=applications.csv`. Protected by `get_current_user`.
+- **`frontend/src/api/applications.js`**: Added `exportApplicationsCsv(includeArchived)` — fetches the export endpoint with `responseType: 'blob'`, creates a temporary anchor element, and triggers a browser file download.
+- **`frontend/src/pages/Dashboard.jsx`**: Added "Export CSV" button in the filter bar. Uses `useState` for loading state; button shows a spinner icon while request is in flight.
+- **`backend/tests/test_applications.py`**: Added three CSV export tests — verifies header row columns, data rows for owned applications, and that other users' applications are excluded.
+
+### Bug Fixes (pre-existing issues surfaced by running full test suite)
+- **`backend/cal/schemas.py`**: Removed `model_config = ConfigDict(strict=True)` from `EventCreate` and `EventUpdate` — Pydantic v2 strict mode rejects ISO date strings from JSON bodies, breaking all calendar creation endpoints.
+- **`backend/cal/service.py`**: Converted `dt.date` → `dt.datetime` (UTC midnight) for BSON storage; stored `dt.time` as ISO string. Added `_date_to_datetime()` helper. Fixed date range filter to use `datetime` in MongoDB queries.
+- **`backend/cal/schemas.py`** (`EventResponse.from_doc`): Converts stored `datetime` back to `date`, and stored time string back to `dt.time`.
+- **`backend/tests/test_jobs.py`** (`_insert_listing`): Added `url_hash` computation to prevent `DuplicateKeyError` on the unique `url_dedup` index when inserting multiple listings with the same (absent) `url_hash`.
+- **`backend/tests/test_calendar.py`** (`test_list_events_caps_at_500_documents`): Changed `base_date` from `dt.date` to `dt.datetime` for direct MongoDB inserts.
+
+### Learnings
+- **`ConfigDict(strict=True)` breaks JSON APIs**: Pydantic v2 strict mode doesn't coerce ISO date strings to `datetime.date` even in JSON parsing mode. FastAPI API schemas should not use strict mode unless they use custom JSON coercion.
+- **BSON only encodes `datetime.datetime`, not `datetime.date`**: Always convert `dt.date` → `dt.datetime` before inserting into MongoDB; convert back in `from_doc()`.
+- **pytest-asyncio `loop_scope` override**: Individual `@pytest.mark.asyncio` decorators override module-level `pytestmark`, dropping `loop_scope="session"`. Motor captures the event loop on first operation; mismatched loops cause "Future attached to a different loop" errors. Remove all bare `@pytest.mark.asyncio` decorators when using module-level `pytestmark`.
+- **Rate limiter in tests**: `@limiter.limit()` route decorators enforce limits even without `SlowAPIMiddleware`. Set `limiter.enabled = False` in the `app` fixture to disable globally during tests.

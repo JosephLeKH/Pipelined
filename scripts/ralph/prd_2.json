@@ -177,7 +177,7 @@
         "All existing tests pass"
       ],
       "priority": 10,
-      "passes": false,
+      "passes": true,
       "notes": "Export is table-stakes for any data tracking app. Users need ownership of their data."
     },
     {
