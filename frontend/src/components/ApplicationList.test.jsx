@@ -162,13 +162,16 @@ describe("ApplicationList", () => {
     expect(screen.getByLabelText("Phone Screen")).toBeInTheDocument();
   });
 
-  it("should render stale indicator with aria-label Stale", async () => {
+  it("should render stale indicator with accessible aria-label", async () => {
     // Arrange / Act
     render(<ApplicationList onSelect={() => {}} />, { wrapper: makeWrapper() });
     await screen.findByText("OldCo");
 
-    // Assert — stale indicator uses aria-label not just color
+    // Assert — stale indicator uses descriptive aria-label
     const staleIndicator = screen.getByTestId("stale-indicator");
-    expect(staleIndicator).toHaveAttribute("aria-label", "Stale");
+    expect(staleIndicator).toHaveAttribute(
+      "aria-label",
+      "Stale application — no updates in 14+ days"
+    );
   });
 });

@@ -1,6 +1,6 @@
 """Application CRUD, duplicate guard, and stage transition logic."""
 
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 import structlog
 from bson import ObjectId
@@ -15,6 +15,7 @@ logger = structlog.get_logger()
 
 INITIAL_STAGE = "Applied"
 INACTIVE_STAGES = ["Rejected", "Offer"]
+STALE_DAYS = 14
 
 LIST_PROJECTION = {
     "role_title": 1,
@@ -283,6 +284,7 @@ async def compute_stats(user_id: str) -> dict:
     """Return StatsResponse fields using a single $facet aggregation."""
     uid = ObjectId(user_id)
     col = get_collection("applications")
+    stale_cutoff = datetime.now(timezone.utc) - timedelta(days=STALE_DAYS)
 
     pipeline = [
         {"$match": {"user_id": uid}},
@@ -307,6 +309,13 @@ async def compute_stats(user_id: str) -> dict:
                 }},
                 {"$group": {"_id": None, "avg": {"$avg": "$days"}}},
             ],
+            "stale": [
+                {"$match": {
+                    "current_stage": {"$nin": INACTIVE_STAGES},
+                    "updated_at": {"$lt": stale_cutoff},
+                }},
+                {"$count": "count"},
+            ],
         }},
     ]
 
@@ -315,10 +324,12 @@ async def compute_stats(user_id: str) -> dict:
     active = raw["active"][0]["count"] if raw["active"] else 0
     with_response = raw["with_response"][0]["count"] if raw["with_response"] else 0
     avg_days = round(raw["avg_response_days"][0]["avg"], 1) if raw["avg_response_days"] else None
+    stale = raw["stale"][0]["count"] if raw["stale"] else 0
 
     return {
         "total_applied": total,
         "active_count": active,
         "response_rate": round(with_response / total, 2) if total > 0 else 0.0,
         "avg_days_to_first_response": avg_days,
+        "stale_count": stale,
     }

@@ -1,6 +1,10 @@
 """Integration tests for applications router endpoints."""
 
+from datetime import datetime, timedelta, timezone
+
 import pytest
+
+from database import get_collection
 
 APP_PAYLOAD = {
     "role_title": "Software Engineer",
@@ -138,6 +142,33 @@ async def test_get_stats_returns_401_without_auth(client):
 
     # Assert
     assert response.status_code == 401
+
+
+@pytest.mark.asyncio
+async def test_get_stats_stale_count_counts_active_stale_applications(client, test_user):
+    # Arrange — create two applications
+    user, cookies = test_user
+    resp1 = await client.post("/api/applications", json=APP_PAYLOAD, cookies=cookies)
+    resp2 = await client.post(
+        "/api/applications",
+        json={**APP_PAYLOAD, "company": "Beta Inc"},
+        cookies=cookies,
+    )
+    app1_id = resp1.json()["data"]["id"]
+    app2_id = resp2.json()["data"]["id"]
+
+    # Back-date app1's updated_at to 20 days ago (stale)
+    stale_date = datetime.now(timezone.utc) - timedelta(days=20)
+    apps = get_collection("applications")
+    from bson import ObjectId
+    await apps.update_one({"_id": ObjectId(app1_id)}, {"$set": {"updated_at": stale_date}})
+
+    # Act
+    response = await client.get("/api/applications/stats", cookies=cookies)
+
+    # Assert — only app1 is stale, app2 was just created
+    data = response.json()["data"]
+    assert data["stale_count"] == 1
 
 
 # ---------------------------------------------------------------------------

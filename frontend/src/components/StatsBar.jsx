@@ -36,7 +36,7 @@ function StatsBar() {
       : "—";
 
   return (
-    <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+    <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
       <MetricCard
         label="Total Applied"
         value={stats?.total_applied ?? "—"}
@@ -55,6 +55,11 @@ function StatsBar() {
       <MetricCard
         label="Avg Days to Response"
         value={isLoading ? "—" : avgDaysDisplay}
+        isLoading={isLoading}
+      />
+      <MetricCard
+        label="Needs follow-up"
+        value={stats?.stale_count ?? "—"}
         isLoading={isLoading}
       />
     </div>

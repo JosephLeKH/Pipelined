@@ -99,6 +99,7 @@ class StatsResponse(BaseModel):
     active_count: int
     response_rate: float
     avg_days_to_first_response: float | None = None
+    stale_count: int = 0
 
 
 class StageAddRequest(BaseModel):

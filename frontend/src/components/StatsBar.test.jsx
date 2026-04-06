@@ -14,6 +14,7 @@ const STATS = {
   active_count: 30,
   response_rate: 0.25,
   avg_days_to_first_response: 5.3,
+  stale_count: 7,
 };
 
 const server = setupServer(
@@ -86,5 +87,15 @@ describe("StatsBar", () => {
     expect(screen.getByLabelText(/active/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/response rate/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/avg days to response/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/needs follow-up/i)).toBeInTheDocument();
+  });
+
+  it("should render needs follow-up count from stale_count", async () => {
+    // Arrange / Act
+    render(<StatsBar />, { wrapper: makeWrapper() });
+
+    // Assert
+    expect(await screen.findByText("7")).toBeInTheDocument();
+    expect(screen.getByLabelText(/needs follow-up: 7/i)).toBeInTheDocument();
   });
 });

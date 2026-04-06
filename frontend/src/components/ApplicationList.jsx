@@ -55,13 +55,21 @@ function ApplicationRow({ application, onSelect, style }) {
       role="row"
       tabIndex={0}
     >
-      <span className="w-2 shrink-0">
+      <span className="relative w-2 shrink-0 group">
         {stale && (
-          <span
-            className="block h-2 w-2 rounded-full bg-amber-400"
-            data-testid="stale-indicator"
-            aria-label="Stale"
-          />
+          <>
+            <span
+              className="block h-2 w-2 rounded-full bg-amber-400"
+              data-testid="stale-indicator"
+              aria-label="Stale application — no updates in 14+ days"
+            />
+            <span
+              role="tooltip"
+              className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 whitespace-nowrap rounded bg-gray-800 px-2 py-1 text-xs text-white opacity-0 group-hover:opacity-100"
+            >
+              No updates in 14 days — consider following up
+            </span>
+          </>
         )}
       </span>
       <span className="w-40 truncate font-medium text-gray-900">{application.company}</span>
