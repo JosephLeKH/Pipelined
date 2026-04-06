@@ -207,3 +207,29 @@ Completed: Mon Apr  6 09:36 PDT 2026
 - Tests that call `get_client_ip` directly (not through the HTTP stack) cleanly bypass the disabled limiter without needing HTTP client overhead.
 
 **Tests:** 164 passed (all existing + 1 new).
+
+## US-052 — Full-text search across applications
+Completed: Mon Apr  6 09:45 PDT 2026
+
+### Summary
+Added MongoDB `$text` index on applications (role_title, company, notes, tags) and wired `?q=` search through the full stack.
+
+### Changes
+- **database.py**: Added `application_text_search` text index on `(role_title, company, notes, tags)` inside `ensure_indexes()`.
+- **schemas.py**: Added `q: str | None = None` to `ApplicationListQuery`.
+- **service.py**: Modified `_build_filter` to add `$text: { $search: q }` when `q` is set (skipping the `_id` cursor path). Added `TEXT_SEARCH_CURSOR_SEP` constant and `_list_with_text_search()` helper that uses an aggregation pipeline (`$match → $addFields textScore → $sort score/-_id → $limit → $project`). Text search uses a composite `"score:id"` cursor for pagination. `list_applications()` dispatches to the helper when `q` is provided.
+- **router.py**: Added `q: str | None = Query(default=None)` parameter and passed it to `ApplicationListQuery`.
+- **FilterBar.jsx**: Added `SEARCH_DEBOUNCE_MS = 300` constant, `SearchIcon` import from `lucide-react/dist/esm/icons/search`, local `searchValue` state + `debounceRef`, `handleSearchChange` with 300ms debounce that calls `updateFilter("q", val)`. Added search fieldset with magnifying glass icon before the existing checkboxes.
+- **FilterBar.test.jsx**: Added 3 new tests: renders search input, reads initial `q` param from URL, updates input value on typing.
+- **test_applications.py**: Added `test_list_applications_text_search_returns_matching_application` — inserts "Backend Python Engineer" and "Product Designer", searches `?q=Python`, asserts only 1 result with the matching role_title.
+- **conftest.py**: Added `ensure_indexes()` call after `connect()` in the `app` fixture to guarantee text index exists for tests (httpx ASGITransport doesn't trigger FastAPI lifespan in this setup).
+
+### Learnings
+- httpx's `ASGITransport` does NOT trigger the FastAPI lifespan in the test setup used here — `ensure_indexes()` must be called explicitly in `conftest.py` to guarantee all indexes exist for tests.
+- MongoDB `$text` search sort by `textScore` requires adding `$addFields: {score: {$meta: "textScore"}}` before filtering/sorting in an aggregation pipeline, since textScore isn't a stored field and can't be referenced in `$match` directly.
+- The composite cursor format `"score:id"` (using `rsplit(":", 1)`) handles pagination correctly across text search result pages.
+
+### Test Results
+- Backend: 165 passed (2 new)
+- Frontend: 136 passed (3 new)
+- Build: clean

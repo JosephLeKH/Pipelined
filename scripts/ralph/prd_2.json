@@ -237,7 +237,7 @@
         "Typecheck passes"
       ],
       "priority": 13,
-      "passes": false,
+      "passes": true,
       "notes": "As users accumulate 50-100+ applications, search becomes essential. $text index is simple to add with Motor."
     },
     {
