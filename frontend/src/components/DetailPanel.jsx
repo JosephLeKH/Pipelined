@@ -10,9 +10,9 @@ import ExternalLink from "lucide-react/dist/esm/icons/external-link";
 
 import { useUpdateApplication } from "../hooks/useApplications";
 import { useApplicationEvents, useDeleteEvent } from "../hooks/useCalendar";
+import ApplicationTimeline from "./ApplicationTimeline";
 import {
   STAGE_COLORS,
-  DEFAULT_STAGE_COLOR,
   EVENT_TYPE_COLORS,
   DEFAULT_EVENT_COLOR,
   NOTES_MAX_LENGTH,
@@ -32,29 +32,6 @@ function DetailField({ label, value }) {
   );
 }
 
-function StageHistoryList({ history }) {
-  if (!history?.length) return null;
-  return (
-    <div className="flex flex-col gap-1.5">
-      <span className="text-xs font-medium uppercase text-gray-400">Stage History</span>
-      <ol className="flex flex-col gap-2" data-testid="stage-history">
-        {history.map((entry, i) => (
-          <li key={i} className="flex items-start gap-2 text-sm">
-            <span
-              className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${STAGE_COLORS[entry.stage]?.dot ?? DEFAULT_STAGE_COLOR.dot}`}
-            />
-            <div className="flex flex-col">
-              <span className="font-medium text-gray-800">{entry.stage}</span>
-              <span className="text-xs text-gray-400">
-                {new Date(entry.transitioned_at).toLocaleDateString()}
-              </span>
-            </div>
-          </li>
-        ))}
-      </ol>
-    </div>
-  );
-}
 
 function CalendarEventsList({ applicationId, onAddEvent }) {
   const { data, isLoading } = useApplicationEvents(applicationId);
@@ -266,7 +243,7 @@ function PanelBody({ application, handleStageChange, onAddEvent }) {
         </select>
       </div>
       <NotesEditor applicationId={application.id} initialValue={application.notes} />
-      <StageHistoryList history={application.stage_history} />
+      <ApplicationTimeline stageHistory={application.stage_history} applicationId={application.id} />
       <CalendarEventsList applicationId={application.id} onAddEvent={onAddEvent} />
     </div>
   );

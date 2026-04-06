@@ -158,16 +158,57 @@ describe("DetailPanel", () => {
     await waitFor(() => expect(patchBody).toEqual({ current_stage: "Phone Screen" }));
   });
 
-  it("should render stage history entries in order", () => {
+  it("should render timeline stage entries in chronological order", async () => {
     // Arrange / Act
     render(<DetailPanel application={APP} onClose={() => {}} />, { wrapper: makeWrapper() });
 
-    // Assert
-    const history = screen.getByTestId("stage-history");
-    const items = history.querySelectorAll("li");
-    expect(items).toHaveLength(2);
+    // Assert — first entry is the initial stage, second is the transition
+    const timeline = await screen.findByTestId("timeline");
+    const stageNodes = timeline.querySelectorAll("[data-testid='timeline-stage-node']");
+    expect(stageNodes).toHaveLength(2);
+    expect(stageNodes[0]).toHaveTextContent("Applied");
+    expect(stageNodes[1]).toHaveTextContent("Applied → Phone Screen");
+  });
+
+  it("should show calendar events at correct chronological positions in timeline", async () => {
+    // Arrange — event on Jan 18 falls between Applied (Jan 15) and Phone Screen (Jan 20)
+    server.use(
+      http.get("/api/calendar/events", () =>
+        HttpResponse.json({
+          data: [
+            {
+              id: "ev1",
+              application_id: "app1",
+              event_type: "phone_screen",
+              date: "2026-01-18",
+              title: "HR Call",
+              time: null,
+            },
+          ],
+          meta: { count: 1 },
+        })
+      )
+    );
+    render(<DetailPanel application={APP} onClose={() => {}} />, { wrapper: makeWrapper() });
+
+    // Wait for event to load, then verify chronological order
+    await screen.findByText("HR Call");
+
+    const timeline = screen.getByTestId("timeline");
+    const items = timeline.querySelectorAll("li");
+    expect(items).toHaveLength(3);
     expect(items[0]).toHaveTextContent("Applied");
-    expect(items[1]).toHaveTextContent("Phone Screen");
+    expect(items[1]).toHaveTextContent("HR Call");
+    expect(items[2]).toHaveTextContent("Applied → Phone Screen");
+  });
+
+  it("should show 'No activity yet' when stage_history is empty and no events exist", async () => {
+    // Arrange — app with no stage history (server returns empty events by default)
+    const emptyApp = { ...APP, stage_history: [] };
+    render(<DetailPanel application={emptyApp} onClose={() => {}} />, { wrapper: makeWrapper() });
+
+    // Assert
+    expect(await screen.findByTestId("timeline-empty")).toHaveTextContent("No activity yet");
   });
 
   it("should call onClose when close button is clicked", async () => {
