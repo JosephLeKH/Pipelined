@@ -37,6 +37,7 @@ async def _optional_user(
 
 @router.get("", status_code=200)
 async def list_jobs(
+    q: str | None = Query(default=None),
     role_type: ValidRoleType | None = Query(default=None),
     experience_level: ValidExperienceLevel | None = Query(default=None),
     company_type: ValidCompanyType | None = Query(default=None),
@@ -52,6 +53,7 @@ async def list_jobs(
     from datetime import datetime
 
     query = JobListQuery(
+        q=q,
         role_type=role_type,
         experience_level=experience_level,
         company_type=company_type,

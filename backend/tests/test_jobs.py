@@ -172,6 +172,36 @@ async def test_list_jobs_hide_applied_excludes_applied_listings(client, test_use
     assert len(body["data"]) == 0
 
 
+async def test_list_jobs_text_search_filters_by_keyword(client):
+    # Arrange
+    await _insert_listing({"role": "Backend Engineer", "company": "DataFlow Inc"})
+    await _insert_listing({"role": "Product Designer", "company": "Acme Corp"})
+
+    # Act
+    response = await client.get("/api/jobs?q=DataFlow")
+
+    # Assert
+    assert response.status_code == 200
+    body = response.json()
+    assert body["meta"]["total"] == 1
+    assert body["data"][0]["company"] == "DataFlow Inc"
+
+
+async def test_list_jobs_text_search_combines_with_filters(client):
+    # Arrange
+    await _insert_listing({"role": "Backend Engineer", "company": "DataFlow Inc", "remote_status": "remote"})
+    await _insert_listing({"role": "Backend Engineer", "company": "OtherCo", "remote_status": "onsite"})
+
+    # Act
+    response = await client.get("/api/jobs?q=Backend+Engineer&remote_status=remote")
+
+    # Assert
+    assert response.status_code == 200
+    body = response.json()
+    assert body["meta"]["total"] == 1
+    assert body["data"][0]["remote_status"] == "remote"
+
+
 # ---------------------------------------------------------------------------
 # GET /api/jobs/:id
 # ---------------------------------------------------------------------------

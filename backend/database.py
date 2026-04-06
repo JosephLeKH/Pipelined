@@ -74,6 +74,10 @@ async def ensure_indexes() -> None:
         listings.create_index(
             [("experience_level", 1), ("remote_status", 1)], name="filters"
         ),
+        listings.create_index(
+            [("role", "text"), ("company", "text"), ("description", "text")],
+            name="job_text_search",
+        ),
         users.create_index("email", unique=True, name="email"),
         users.create_index("google_id", unique=True, sparse=True, name="google_id"),
     )

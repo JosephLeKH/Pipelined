@@ -18,6 +18,8 @@ def _build_filter(query: JobListQuery, excluded_urls: list[str]) -> dict:
     """Build a MongoDB filter from query params."""
     f: dict = {}
 
+    if query.q:
+        f["$text"] = {"$search": query.q}
     if query.role_type and query.role_type != "any":
         f["role_type"] = query.role_type
     if query.experience_level and query.experience_level != "any":
@@ -62,25 +64,25 @@ async def list_listings(
     mongo_filter = _build_filter(query, excluded_urls)
     skip = (query.page - 1) * query.per_page
 
-    total, docs = await _fetch_listings_and_count(col, mongo_filter, skip, query.per_page)
+    total, docs = await _fetch_listings_and_count(col, mongo_filter, skip, query.per_page, bool(query.q))
     logger.info("job_listings_fetched", total=total, page=query.page)
     return docs, total
 
 
 async def _fetch_listings_and_count(
-    col, mongo_filter: dict, skip: int, limit: int
+    col, mongo_filter: dict, skip: int, limit: int, text_search: bool
 ) -> tuple[int, list[dict]]:
     """Run count and paginated find in parallel."""
     import asyncio
 
+    projection = {"score": {"$meta": "textScore"}} if text_search else None
+
     total_coro = col.count_documents(mongo_filter)
-    docs_coro = (
-        col.find(mongo_filter)
-        .sort("ingested_at", -1)
-        .skip(skip)
-        .limit(limit)
-        .to_list(length=limit)
-    )
+    find_cursor = col.find(mongo_filter, projection) if projection else col.find(mongo_filter)
+    if text_search:
+        docs_coro = find_cursor.sort([("score", {"$meta": "textScore"})]).skip(skip).limit(limit).to_list(length=limit)
+    else:
+        docs_coro = find_cursor.sort("ingested_at", -1).skip(skip).limit(limit).to_list(length=limit)
     total, docs = await asyncio.gather(total_coro, docs_coro)
     return total, docs
 

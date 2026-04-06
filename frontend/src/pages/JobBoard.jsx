@@ -1,6 +1,6 @@
 /** Job board page: browse curated listings in card grid or compact list view. */
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import { FixedSizeList } from "react-window";
 
@@ -8,6 +8,7 @@ import LayoutGrid from "lucide-react/dist/esm/icons/layout-grid";
 import List from "lucide-react/dist/esm/icons/list";
 import ChevronLeft from "lucide-react/dist/esm/icons/chevron-left";
 import ChevronRight from "lucide-react/dist/esm/icons/chevron-right";
+import SearchIcon from "lucide-react/dist/esm/icons/search";
 
 import ApiErrorMessage from "../components/ApiErrorMessage";
 import JobCard from "../components/JobCard";
@@ -24,6 +25,48 @@ const DEFAULT_VIEW = "grid";
 const ROW_HEIGHT = 72;
 const LIST_HEIGHT = 600;
 const DEFAULT_PER_PAGE = 30;
+const SEARCH_DEBOUNCE_MS = 300;
+
+function JobSearchInput() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchValue, setSearchValue] = useState(searchParams.get("q") ?? "");
+  const debounceRef = useRef(null);
+
+  const handleChange = useCallback(
+    (e) => {
+      const val = e.target.value;
+      setSearchValue(val);
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      debounceRef.current = setTimeout(() => {
+        const next = new URLSearchParams(searchParams);
+        if (val) {
+          next.set("q", val);
+        } else {
+          next.delete("q");
+        }
+        next.set("page", "1");
+        setSearchParams(next, { replace: true });
+      }, SEARCH_DEBOUNCE_MS);
+    },
+    [searchParams, setSearchParams]
+  );
+
+  return (
+    <div className="flex items-center rounded-lg bg-white px-4 py-3 shadow-sm">
+      <div className="relative flex items-center">
+        <SearchIcon className="absolute left-2 h-4 w-4 text-gray-400" aria-hidden="true" />
+        <input
+          type="text"
+          aria-label="search jobs"
+          value={searchValue}
+          onChange={handleChange}
+          placeholder="Role, company, description..."
+          className="rounded border border-gray-300 pl-8 pr-3 py-1.5 text-sm w-72 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+    </div>
+  );
+}
 
 function SelectFilter({ label, paramKey, options }) {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -168,6 +211,7 @@ function JobBoard() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [view, setView] = useState(DEFAULT_VIEW);
 
+  const q = searchParams.get("q") ?? undefined;
   const roleType = searchParams.get("role_type") ?? undefined;
   const experienceLevel = searchParams.get("experience_level") ?? undefined;
   const remoteStatus = searchParams.get("remote_status") ?? undefined;
@@ -176,12 +220,13 @@ function JobBoard() {
 
   const filters = useMemo(() => {
     const f = { page, per_page: DEFAULT_PER_PAGE };
+    if (q) f.q = q;
     if (roleType) f.role_type = roleType;
     if (experienceLevel) f.experience_level = experienceLevel;
     if (remoteStatus) f.remote_status = remoteStatus;
     if (companyType) f.company_type = companyType;
     return f;
-  }, [roleType, experienceLevel, remoteStatus, companyType, page]);
+  }, [q, roleType, experienceLevel, remoteStatus, companyType, page]);
 
   const { data: envelope, isLoading, error, refetch } = useJobs(filters);
   const jobs = envelope?.data ?? [];
@@ -216,6 +261,7 @@ function JobBoard() {
         <ViewToggle view={view} onToggle={setView} />
       </div>
 
+      <JobSearchInput />
       <JobFilters />
 
       {isLoading ? (

@@ -40,6 +40,7 @@ class JobListingResponse(BaseModel):
 class JobListQuery(BaseModel):
     model_config = ConfigDict(strict=False)
 
+    q: str | None = None
     role_type: ValidRoleType | None = None
     experience_level: ValidExperienceLevel | None = None
     company_type: ValidCompanyType | None = None
