@@ -246,3 +246,25 @@ Added MongoDB `$text` index on applications (role_title, company, notes, tags) a
 - Added 2 new backend tests: text search filters by keyword, text search combines with other filters (AND semantics)
 - Note: collection uses 'role' field (not 'role_title') — index uses 'role' to match actual data
 - All 167 backend tests pass, 136 frontend tests pass
+
+## US-054 — Interview prep checklist per calendar event
+**Status:** COMPLETE
+**Commit:** feat: US-054 - Interview prep checklist per calendar event
+
+### Changes
+- **`backend/cal/schemas.py`**: Added `PrepChecklistItem` model (`id`, `text` max 200, `checked`). Added `MAX_PREP_NOTES_LENGTH = 3000` and `MAX_CHECKLIST_ITEM_LENGTH = 200` constants. Extended `EventUpdate` with `prep_notes: str | None` and `prep_checklist: list[PrepChecklistItem] | None`. Extended `EventResponse` with `prep_notes: str = ""` and `prep_checklist: list[PrepChecklistItem] = []`. Updated `from_doc` to parse both fields.
+- **`backend/tests/test_calendar.py`**: Added `test_update_event_sets_prep_checklist_and_notes` — creates event, PATCHes with prep_notes and 2 checklist items, asserts both are returned correctly (including checked state).
+- **`frontend/src/lib/constants.js`**: Added `PREP_NOTES_MAX_LENGTH = 3000`, `PREP_CHECKLIST_ITEM_MAX_LENGTH = 200`, `PREP_NOTES_DEBOUNCE_MS = 500`.
+- **`frontend/src/components/CalendarEventDetail.jsx`** (new): Side drawer component. Shows event type badge, title, date/time, company + role from event join. Prep notes textarea with 500ms debounced PATCH (useUpdateEvent hook). Checklist section: ChecklistItem (toggle/delete), AddChecklistItem (input + Enter to add). Checked items have strikethrough text. Each checklist mutation calls PATCH with full updated list. Backdrop click and Escape key close the drawer.
+- **`frontend/src/pages/Calendar.jsx`**: Replaced `selectedAppId` + `DetailPanel` + `useApplication` with `selectedEvent` + `CalendarEventDetail`. Clicking an event chip now opens CalendarEventDetail instead of the application DetailPanel.
+- **`frontend/src/components/CalendarEventDetail.test.jsx`** (new): 4 Vitest tests — renders notes and checklist with strikethrough, adds item via Enter and verifies PATCH, toggles item and verifies PATCH mutation, close button calls onClose.
+
+### Results
+- Backend: 168 tests passed (1 new)
+- Frontend: 140 tests passed (4 new)
+- Build: clean
+
+### Learnings
+- Pydantic v2 `model_dump()` recursively serializes nested models to dicts, so `PrepChecklistItem` objects in `prep_checklist` are stored correctly in MongoDB without any special serialization in service.py.
+- `crypto.randomUUID()` is available in Vitest's jsdom environment (Node 20+) for generating checklist item IDs client-side.
+- The existing `useUpdateEvent` hook invalidates all calendar queries on success, so toggling/adding checklist items automatically keeps the calendar grid in sync.

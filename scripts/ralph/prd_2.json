@@ -279,7 +279,7 @@
         "npm test passes"
       ],
       "priority": 15,
-      "passes": false,
+      "passes": true,
       "notes": "Calendar events currently just store title/date/type. Interview prep is a high-value feature that differentiates Pipelined from generic calendar apps."
     },
     {
