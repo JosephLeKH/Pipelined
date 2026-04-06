@@ -46,7 +46,7 @@
         "Typecheck passes"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "notes": "Found in codebase review: applications/service.py line 176 \u2014 next_cursor = str(docs[-1]['_id']) crashes when docs is empty."
     },
     {

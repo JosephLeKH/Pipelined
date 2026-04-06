@@ -28,3 +28,14 @@ Started: Mon Apr  6 00:25:40 PDT 2026
 ### Learnings
 - The subtle bug: `saveQueue = saveQueue.then(() => executeSave(payload))` — if `executeSave` throws, `saveQueue` becomes a rejected promise. Subsequent `.then()` calls on a rejected promise skip the callback, so all future saves silently drop. The fix: `.catch()` must be on the inner promise (`executeSave(payload).catch(...)`) so `saveQueue` itself always resolves.
 - ES module import caching means the shared `saveQueue` state persists across all tests in the file — `beforeEach` must re-mock after `clearAllMocks` wipes implementations, but module-level state (the queue itself) remains valid since all prior tasks resolve.
+
+## US-042 — Fix empty page crash in application cursor pagination
+**Status:** COMPLETE
+**Commit:** feat: US-042 - Fix empty page crash in application cursor pagination
+
+### Changes
+- **`backend/applications/service.py`**: Guard was already in place — `next_cursor = str(docs[-1]["_id"]) if has_next and docs else None` correctly avoids IndexError when docs is empty (e.g. limit=0 edge case or empty collection).
+- **`backend/tests/test_applications.py`**: Added `test_list_applications_empty_collection_returns_empty_data` — verifies GET /api/applications with no applications returns 200, `data: []`, `meta.next_cursor: null`, `meta.count: 0`.
+
+### Learnings
+- The service.py guard was already correct; the missing piece was the explicit test proving the empty-collection path. The `has_next and docs` condition is technically redundant (if `has_next` is true, docs can only be empty when `limit=0`), but the belt-and-suspenders guard is harmless and the test now documents the contract clearly.
