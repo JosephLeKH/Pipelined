@@ -63,6 +63,34 @@ describe("FilterBar", () => {
     expect(screen.getByLabelText("date to")).toHaveValue("2025-12-31");
   });
 
+  it("should render the search input", () => {
+    // Arrange / Act
+    render(<FilterBar />, { wrapper: makeWrapper() });
+
+    // Assert
+    expect(screen.getByLabelText("search applications")).toBeInTheDocument();
+  });
+
+  it("should read initial search value from URL q param", () => {
+    // Arrange / Act
+    render(<FilterBar />, { wrapper: makeWrapper(["/?q=Engineer"]) });
+
+    // Assert
+    expect(screen.getByLabelText("search applications")).toHaveValue("Engineer");
+  });
+
+  it("should update search input value as user types", async () => {
+    // Arrange
+    render(<FilterBar />, { wrapper: makeWrapper() });
+    const input = screen.getByLabelText("search applications");
+
+    // Act
+    await userEvent.type(input, "Google");
+
+    // Assert — input value reflects typed text
+    expect(input).toHaveValue("Google");
+  });
+
   it("should uncheck a selected stage checkbox", async () => {
     // Arrange — start with Offer selected
     render(<FilterBar />, { wrapper: makeWrapper(["/?stage=Offer"]) });

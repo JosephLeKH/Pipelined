@@ -73,6 +73,9 @@ async def _fetch_user_stages(uid: ObjectId) -> list[str]:
     return user.get("default_stages", [INITIAL_STAGE]) if user else [INITIAL_STAGE]
 
 
+TEXT_SEARCH_CURSOR_SEP = ":"
+
+
 def _build_filter(uid: ObjectId, query: ApplicationListQuery) -> dict:
     """Build a MongoDB filter dict from query params, always scoped by user_id."""
     f: dict = {"user_id": uid}
@@ -95,12 +98,48 @@ def _build_filter(uid: ObjectId, query: ApplicationListQuery) -> dict:
         if query.date_to:
             date_range["$lte"] = query.date_to
         f["date_applied"] = date_range
-    if query.cursor:
+    if query.q:
+        # Cursor is handled separately via textScore aggregation pipeline
+        f["$text"] = {"$search": query.q}
+    elif query.cursor:
         sort_order = 1 if query.sort_order == "asc" else -1
         cursor_id = ObjectId(query.cursor)
         f["_id"] = {"$lt": cursor_id} if sort_order == -1 else {"$gt": cursor_id}
 
     return f
+
+
+async def _list_with_text_search(
+    uid: ObjectId, apps, query: ApplicationListQuery
+) -> tuple[list[dict], str | None]:
+    """Aggregation pipeline for $text search with textScore + _id composite cursor."""
+    mongo_filter = _build_filter(uid, query)
+    pipeline: list[dict] = [
+        {"$match": mongo_filter},
+        {"$addFields": {"score": {"$meta": "textScore"}}},
+    ]
+    if query.cursor:
+        score_str, id_str = query.cursor.rsplit(TEXT_SEARCH_CURSOR_SEP, 1)
+        cursor_score = float(score_str)
+        cursor_id = ObjectId(id_str)
+        pipeline.append({"$match": {"$or": [
+            {"score": {"$lt": cursor_score}},
+            {"score": cursor_score, "_id": {"$lt": cursor_id}},
+        ]}})
+    pipeline.extend([
+        {"$sort": {"score": -1, "_id": -1}},
+        {"$limit": query.limit + 1},
+        {"$project": {**LIST_PROJECTION, "score": 1}},
+    ])
+    docs = await apps.aggregate(pipeline).to_list(length=query.limit + 1)
+    has_next = len(docs) > query.limit
+    if has_next:
+        docs = docs[: query.limit]
+    next_cursor = None
+    if has_next and docs:
+        last = docs[-1]
+        next_cursor = f"{last['score']}{TEXT_SEARCH_CURSOR_SEP}{last['_id']}"
+    return docs, next_cursor
 
 
 async def _apply_openai_fallback(body: ApplicationCreate) -> ApplicationCreate:
@@ -192,6 +231,10 @@ async def list_applications(
     """Return (docs, next_cursor) using cursor-based pagination (no skip)."""
     uid = ObjectId(user_id)
     apps = get_collection("applications")
+
+    if query.q:
+        return await _list_with_text_search(uid, apps, query)
+
     sort_order = 1 if query.sort_order == "asc" else -1
     mongo_filter = _build_filter(uid, query)
 

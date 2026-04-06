@@ -1,7 +1,10 @@
-/** Filter controls for the application pipeline: stage, company type, remote status, date range, archive toggle. */
+/** Filter controls for the application pipeline: stage, company type, remote status, date range, archive toggle, search. */
 
-import { useCallback } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import SearchIcon from "lucide-react/dist/esm/icons/search";
+
+const SEARCH_DEBOUNCE_MS = 300;
 
 import { STAGE_COLORS } from "../lib/constants";
 
@@ -35,6 +38,8 @@ function CheckboxGroup({ label, options, selected, onChange }) {
 
 function FilterBar() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [searchValue, setSearchValue] = useState(searchParams.get("q") ?? "");
+  const debounceRef = useRef(null);
 
   const stages = searchParams.getAll("stage");
   const companyTypes = searchParams.getAll("company_type");
@@ -55,6 +60,18 @@ function FilterBar() {
       setSearchParams(next, { replace: true });
     },
     [searchParams, setSearchParams]
+  );
+
+  const handleSearchChange = useCallback(
+    (e) => {
+      const val = e.target.value;
+      setSearchValue(val);
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      debounceRef.current = setTimeout(() => {
+        updateFilter("q", val);
+      }, SEARCH_DEBOUNCE_MS);
+    },
+    [updateFilter]
   );
 
   const toggleArchived = useCallback(() => {
@@ -79,6 +96,20 @@ function FilterBar() {
         </div>
       )}
       <div className="flex flex-wrap gap-6 rounded-lg bg-white p-4 shadow-sm">
+        <fieldset className="flex flex-col gap-1">
+          <legend className="mb-1 text-xs font-medium uppercase text-gray-500">Search</legend>
+          <div className="relative flex items-center">
+            <SearchIcon className="absolute left-2 h-4 w-4 text-gray-400" aria-hidden="true" />
+            <input
+              type="text"
+              aria-label="search applications"
+              value={searchValue}
+              onChange={handleSearchChange}
+              placeholder="Title, company, notes..."
+              className="rounded border border-gray-300 pl-8 pr-2 py-1 text-sm"
+            />
+          </div>
+        </fieldset>
         <CheckboxGroup
           label="Stage"
           options={STAGE_OPTIONS}

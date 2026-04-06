@@ -63,6 +63,10 @@ async def ensure_indexes() -> None:
             unique=True,
         ),
         apps.create_index([("user_id", 1), ("updated_at", 1)], name="user_updated"),
+        apps.create_index(
+            [("role_title", "text"), ("company", "text"), ("notes", "text"), ("tags", "text")],
+            name="application_text_search",
+        ),
         events.create_index([("user_id", 1), ("date", 1)], name="user_date"),
         events.create_index([("application_id", 1)], name="app_id"),
         listings.create_index("url_hash", unique=True, name="url_dedup"),

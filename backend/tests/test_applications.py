@@ -261,6 +261,30 @@ async def test_list_applications_returns_401_without_auth(client):
     assert response.status_code == 401
 
 
+async def test_list_applications_text_search_returns_matching_application(client, test_user):
+    # Arrange — insert two applications with distinct role titles
+    _, cookies = test_user
+    await client.post(
+        "/api/applications",
+        json={"role_title": "Backend Python Engineer", "company": "Acme Corp", "source": "manual"},
+        cookies=cookies,
+    )
+    await client.post(
+        "/api/applications",
+        json={"role_title": "Product Designer", "company": "Beta Inc", "source": "manual"},
+        cookies=cookies,
+    )
+
+    # Act — search for a keyword present only in the first application
+    response = await client.get("/api/applications?q=Python", cookies=cookies)
+
+    # Assert — only the matching application is returned
+    assert response.status_code == 200
+    body = response.json()
+    assert body["meta"]["count"] == 1
+    assert body["data"][0]["role_title"] == "Backend Python Engineer"
+
+
 # ---------------------------------------------------------------------------
 # GET /api/applications/{app_id}
 # ---------------------------------------------------------------------------

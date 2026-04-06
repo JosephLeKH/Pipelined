@@ -5,7 +5,7 @@ import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 
 import database
-from database import connect, disconnect
+from database import connect, disconnect, ensure_indexes
 from main import create_app
 from middleware.rate_limit import limiter
 
@@ -16,6 +16,7 @@ async def app():
     limiter.enabled = False
     application = create_app(testing=True)
     await connect()
+    await ensure_indexes()
     if database.db is not None:
         for name in await database.db.list_collection_names():
             await database.db[name].delete_many({})

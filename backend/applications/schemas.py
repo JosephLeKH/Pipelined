@@ -92,6 +92,7 @@ class ApplicationListQuery(BaseModel):
     tags: list[str] | None = None
     date_from: datetime | None = None
     date_to: datetime | None = None
+    q: str | None = None
     cursor: str | None = None
     limit: int = Field(DEFAULT_QUERY_LIMIT, ge=1, le=MAX_QUERY_LIMIT)
     include_archived: bool = False
