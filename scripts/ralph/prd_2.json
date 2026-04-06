@@ -135,7 +135,7 @@
         "npm test passes"
       ],
       "priority": 8,
-      "passes": false,
+      "passes": true,
       "notes": "stage_history is already stored on every application document. Calendar events have application_id. Just needs a UI component."
     },
     {

@@ -102,3 +102,18 @@ Started: Mon Apr  6 00:25:40 PDT 2026
 - Tailwind tooltip pattern: `group` on the container + `opacity-0 group-hover:opacity-100` on the tooltip child. The container must be `relative` and the tooltip uses absolute positioning.
 - The stale indicator was 90% implemented (amber dot existed); the gap was the missing aria-label precision, tooltip, backend stale_count field, and StatsBar metric.
 - All 120 frontend tests pass. Backend tests require live MongoDB (CI validates).
+
+## US-047 — Application timeline view in DetailPanel
+**Status:** COMPLETE
+**Commit:** feat: US-047 - Application timeline view in DetailPanel
+
+### Changes
+- **`frontend/src/components/ApplicationTimeline.jsx`** (new): Collapsible timeline component that merges `stage_history` entries and linked calendar events into a single chronological list. Stage nodes show "Applied → Phone Screen" transition labels; event nodes show type icon + title. Empty state shows "No activity yet". Uses `useApplicationEvents` React Query hook (shares cache with existing CalendarEventsList).
+- **`frontend/src/components/DetailPanel.jsx`**: Replaced `StageHistoryList` inline component with `ApplicationTimeline`. Removed `DEFAULT_STAGE_COLOR` import (no longer needed in this file).
+- **`frontend/src/components/DetailPanel.test.jsx`**: Replaced old `stage-history` testid test with new timeline assertions. Added 3 new tests: chronological order of stage nodes, calendar event interspersed at correct position, and empty state.
+
+### Learnings
+- React Query deduplicates queries by key, so `ApplicationTimeline` and `CalendarEventsList` both calling `useApplicationEvents` with the same `applicationId` results in one network request.
+- For stage transition labels, the first `stage_history` entry has no "from" stage — showing just the stage name (e.g. "Applied") is clearer than "→ Applied".
+- MSW `server.use()` in individual tests overrides the default handler for that test only; `afterEach(() => server.resetHandlers())` restores defaults.
+- 122 frontend tests pass.
