@@ -55,6 +55,28 @@ async def test_create_application_returns_409_on_duplicate(client, test_user):
 
 
 @pytest.mark.asyncio
+async def test_create_application_returns_409_on_case_insensitive_duplicate(client, test_user):
+    # Arrange
+    _, cookies = test_user
+    await client.post(
+        "/api/applications",
+        json={"role_title": "Stripe SWE Intern", "company": "Stripe", "source": "manual"},
+        cookies=cookies,
+    )
+
+    # Act — same role/company with different casing
+    response = await client.post(
+        "/api/applications",
+        json={"role_title": "stripe swe intern", "company": "stripe", "source": "manual"},
+        cookies=cookies,
+    )
+
+    # Assert
+    assert response.status_code == 409
+    assert response.json()["detail"]["code"] == "DUPLICATE_APPLICATION"
+
+
+@pytest.mark.asyncio
 async def test_create_application_returns_422_on_missing_required_field(client, test_user):
     # Arrange
     _, cookies = test_user

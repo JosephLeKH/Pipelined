@@ -123,8 +123,11 @@ async def create(user_id: str, body: ApplicationCreate) -> dict:
     if needs_fallback:
         body = await _apply_openai_fallback(body)
 
+    normalised_company = (body.company or "").lower()
+    normalised_role = (body.role_title or "").lower()
+
     existing = await apps.find_one(
-        {"user_id": uid, "company": body.company, "role_title": body.role_title},
+        {"user_id": uid, "normalised_company": normalised_company, "normalised_role": normalised_role},
         projection={"_id": 1},
     )
     if existing:
@@ -139,6 +142,8 @@ async def create(user_id: str, body: ApplicationCreate) -> dict:
     doc: dict = {
         **body_dict,
         "user_id": uid,
+        "normalised_company": normalised_company,
+        "normalised_role": normalised_role,
         "current_stage": INITIAL_STAGE,
         "stages": stages,
         "stage_history": [{"stage": INITIAL_STAGE, "transitioned_at": now}],
