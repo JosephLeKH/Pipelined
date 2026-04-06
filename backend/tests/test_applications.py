@@ -450,6 +450,94 @@ async def test_delete_application_returns_401_without_auth(client, test_user):
 
 
 # ---------------------------------------------------------------------------
+# PATCH /api/applications/{app_id}/archive and /unarchive
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_archive_application_returns_200_with_archived_true(client, test_user):
+    # Arrange
+    _, cookies = test_user
+    create_resp = await client.post("/api/applications", json=APP_PAYLOAD, cookies=cookies)
+    app_id = create_resp.json()["data"]["id"]
+
+    # Act
+    response = await client.patch(f"/api/applications/{app_id}/archive", cookies=cookies)
+
+    # Assert
+    assert response.status_code == 200
+    data = response.json()["data"]
+    assert data["archived"] is True
+    assert data["archived_at"] is not None
+
+
+@pytest.mark.asyncio
+async def test_unarchive_application_returns_200_with_archived_false(client, test_user):
+    # Arrange
+    _, cookies = test_user
+    create_resp = await client.post("/api/applications", json=APP_PAYLOAD, cookies=cookies)
+    app_id = create_resp.json()["data"]["id"]
+    await client.patch(f"/api/applications/{app_id}/archive", cookies=cookies)
+
+    # Act
+    response = await client.patch(f"/api/applications/{app_id}/unarchive", cookies=cookies)
+
+    # Assert
+    assert response.status_code == 200
+    data = response.json()["data"]
+    assert data["archived"] is False
+    assert data["archived_at"] is None
+
+
+@pytest.mark.asyncio
+async def test_list_applications_excludes_archived_by_default(client, test_user):
+    # Arrange
+    _, cookies = test_user
+    create_resp = await client.post("/api/applications", json=APP_PAYLOAD, cookies=cookies)
+    app_id = create_resp.json()["data"]["id"]
+    await client.patch(f"/api/applications/{app_id}/archive", cookies=cookies)
+
+    # Act — no include_archived param
+    response = await client.get("/api/applications", cookies=cookies)
+
+    # Assert — archived app not returned
+    assert response.status_code == 200
+    body = response.json()
+    assert body["meta"]["count"] == 0
+
+
+@pytest.mark.asyncio
+async def test_list_applications_includes_archived_when_param_is_true(client, test_user):
+    # Arrange
+    _, cookies = test_user
+    create_resp = await client.post("/api/applications", json=APP_PAYLOAD, cookies=cookies)
+    app_id = create_resp.json()["data"]["id"]
+    await client.patch(f"/api/applications/{app_id}/archive", cookies=cookies)
+
+    # Act — pass include_archived=true
+    response = await client.get("/api/applications?include_archived=true", cookies=cookies)
+
+    # Assert — archived app returned
+    assert response.status_code == 200
+    body = response.json()
+    assert body["meta"]["count"] == 1
+    assert body["data"][0]["archived"] is True
+
+
+@pytest.mark.asyncio
+async def test_archive_application_returns_404_for_missing_app(client, test_user):
+    # Arrange
+    _, cookies = test_user
+    fake_id = "000000000000000000000001"
+
+    # Act
+    response = await client.patch(f"/api/applications/{fake_id}/archive", cookies=cookies)
+
+    # Assert
+    assert response.status_code == 404
+
+
+# ---------------------------------------------------------------------------
 # POST /api/applications/{app_id}/stages
 # ---------------------------------------------------------------------------
 

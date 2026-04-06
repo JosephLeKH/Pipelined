@@ -40,6 +40,16 @@ export async function deleteApplication(id) {
   return client.delete(`/applications/${id}`);
 }
 
+/** Archive an application (soft delete). */
+export async function archiveApplication(id) {
+  return client.patch(`/applications/${id}/archive`);
+}
+
+/** Restore an archived application. */
+export async function unarchiveApplication(id) {
+  return client.patch(`/applications/${id}/unarchive`);
+}
+
 /** Fetch aggregated stats for the current user's pipeline. */
 export async function fetchStats() {
   return client.get("/applications/stats");

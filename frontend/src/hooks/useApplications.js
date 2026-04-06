@@ -3,11 +3,13 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import {
+  archiveApplication,
   createApplication,
   deleteApplication,
   fetchApplication,
   fetchApplications,
   fetchStats,
+  unarchiveApplication,
   updateApplication,
 } from "../api/applications";
 import { QUERY_STALE_TIME_MS, STATS_STALE_TIME_MS } from "../lib/constants";
@@ -79,6 +81,30 @@ export function useDeleteApplication() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id) => deleteApplication(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: KEYS.all });
+      queryClient.invalidateQueries({ queryKey: KEYS.stats });
+    },
+  });
+}
+
+/** Archive an application (soft delete). */
+export function useArchiveApplication() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id) => archiveApplication(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: KEYS.all });
+      queryClient.invalidateQueries({ queryKey: KEYS.stats });
+    },
+  });
+}
+
+/** Restore an archived application. */
+export function useUnarchiveApplication() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id) => unarchiveApplication(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: KEYS.all });
       queryClient.invalidateQueries({ queryKey: KEYS.stats });

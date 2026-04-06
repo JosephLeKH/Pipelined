@@ -20,6 +20,7 @@ function Dashboard() {
   const remoteStatuses = searchParams.getAll("remote_status");
   const dateFrom = searchParams.get("date_from");
   const dateTo = searchParams.get("date_to");
+  const includeArchived = searchParams.get("include_archived") === "true";
 
   // Selected application ID from URL
   const selectedId = searchParams.get("selected") ?? "";
@@ -33,8 +34,9 @@ function Dashboard() {
     if (remoteStatuses.length) f.remote_status = remoteStatuses;
     if (dateFrom) f.date_from = dateFrom;
     if (dateTo) f.date_to = dateTo;
+    if (includeArchived) f.include_archived = true;
     return f;
-  }, [stages, companyTypes, remoteStatuses, dateFrom, dateTo]);
+  }, [stages, companyTypes, remoteStatuses, dateFrom, dateTo, includeArchived]);
 
   const handleSelect = useCallback(
     (app) => {

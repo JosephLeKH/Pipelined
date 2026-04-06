@@ -25,6 +25,8 @@ LIST_PROJECTION = {
     "source": 1,
     "updated_at": 1,
     "tags": 1,
+    "archived": 1,
+    "archived_at": 1,
 }
 
 
@@ -52,6 +54,9 @@ async def _fetch_user_stages(uid: ObjectId) -> list[str]:
 def _build_filter(uid: ObjectId, query: ApplicationListQuery) -> dict:
     """Build a MongoDB filter dict from query params, always scoped by user_id."""
     f: dict = {"user_id": uid}
+
+    if not query.include_archived:
+        f["archived"] = {"$ne": True}
 
     if query.stage:
         f["current_stage"] = query.stage
@@ -239,6 +244,36 @@ async def delete(user_id: str, app_id: str) -> bool:
 
     logger.info("application_deleted", user_id=user_id, app_id=app_id)
     return True
+
+
+async def archive(user_id: str, app_id: str) -> dict | None:
+    """Set archived=True and archived_at=now. Returns updated doc, or None if not found."""
+    uid = ObjectId(user_id)
+    aid = ObjectId(app_id)
+    now = datetime.now(timezone.utc)
+    result = await get_collection("applications").find_one_and_update(
+        {"_id": aid, "user_id": uid},
+        {"$set": {"archived": True, "archived_at": now, "updated_at": now}},
+        return_document=ReturnDocument.AFTER,
+    )
+    if result:
+        logger.info("application_archived", user_id=user_id, app_id=app_id)
+    return result
+
+
+async def unarchive(user_id: str, app_id: str) -> dict | None:
+    """Set archived=False and archived_at=None. Returns updated doc, or None if not found."""
+    uid = ObjectId(user_id)
+    aid = ObjectId(app_id)
+    now = datetime.now(timezone.utc)
+    result = await get_collection("applications").find_one_and_update(
+        {"_id": aid, "user_id": uid},
+        {"$set": {"archived": False, "archived_at": None, "updated_at": now}},
+        return_document=ReturnDocument.AFTER,
+    )
+    if result:
+        logger.info("application_unarchived", user_id=user_id, app_id=app_id)
+    return result
 
 
 async def add_stage(user_id: str, app_id: str, name: str, position: int) -> list[str] | None:

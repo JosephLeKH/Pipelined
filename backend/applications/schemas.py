@@ -72,6 +72,8 @@ class ApplicationResponse(BaseModel):
     location: str | None = None
     remote_status: str | None = None
     stage_history: list[StageHistoryEntry] = Field(default_factory=list)
+    archived: bool = False
+    archived_at: datetime | None = None
 
     @classmethod
     def from_doc(cls, doc: dict) -> "ApplicationResponse":
@@ -92,6 +94,7 @@ class ApplicationListQuery(BaseModel):
     date_to: datetime | None = None
     cursor: str | None = None
     limit: int = Field(DEFAULT_QUERY_LIMIT, ge=1, le=MAX_QUERY_LIMIT)
+    include_archived: bool = False
 
 
 class StatsResponse(BaseModel):

@@ -73,6 +73,7 @@ async def list_applications(
     date_to: str | None = Query(default=None),
     cursor: str | None = Query(default=None),
     limit: int = Query(default=DEFAULT_QUERY_LIMIT, ge=1, le=MAX_QUERY_LIMIT),
+    include_archived: bool = Query(default=False),
     user: dict = Depends(get_current_user),
 ) -> dict:
     """List applications with cursor-based pagination and optional filters."""
@@ -89,6 +90,7 @@ async def list_applications(
         date_to=datetime.fromisoformat(date_to) if date_to else None,
         cursor=cursor,
         limit=limit,
+        include_archived=include_archived,
     )
     user_id = str(user["_id"])
     docs, next_cursor = await app_service.list_applications(user_id, query)
@@ -137,6 +139,32 @@ async def delete_application(
     if not deleted:
         raise HTTPException(status_code=404, detail=APP_NOT_FOUND_DETAIL)
     return Response(status_code=204)
+
+
+@router.patch("/{app_id}/archive", status_code=200)
+async def archive_application(
+    app_id: str,
+    user: dict = Depends(get_current_user),
+) -> dict:
+    """Soft-delete an application by setting archived=True."""
+    user_id = str(user["_id"])
+    doc = await app_service.archive(user_id, app_id)
+    if doc is None:
+        raise HTTPException(status_code=404, detail=APP_NOT_FOUND_DETAIL)
+    return {"data": ApplicationResponse.from_doc(doc)}
+
+
+@router.patch("/{app_id}/unarchive", status_code=200)
+async def unarchive_application(
+    app_id: str,
+    user: dict = Depends(get_current_user),
+) -> dict:
+    """Restore an archived application by setting archived=False."""
+    user_id = str(user["_id"])
+    doc = await app_service.unarchive(user_id, app_id)
+    if doc is None:
+        raise HTTPException(status_code=404, detail=APP_NOT_FOUND_DETAIL)
+    return {"data": ApplicationResponse.from_doc(doc)}
 
 
 @router.post("/{app_id}/stages", status_code=200)
