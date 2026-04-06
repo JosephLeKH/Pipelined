@@ -51,6 +51,10 @@ export const EXPERIENCE_LEVEL_OPTIONS = ["internship", "entry", "mid", "senior",
 
 export const NOTES_MAX_LENGTH = 5000;
 
+export const PREP_NOTES_MAX_LENGTH = 3000;
+export const PREP_CHECKLIST_ITEM_MAX_LENGTH = 200;
+export const PREP_NOTES_DEBOUNCE_MS = 500;
+
 export const JOBS_STALE_TIME_MS = 60_000;
 
 export const EVENT_TYPE_OPTIONS = [

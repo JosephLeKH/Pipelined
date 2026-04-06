@@ -2,19 +2,16 @@
 
 import { useState, useCallback } from "react";
 
+import CalendarEventDetail from "../components/CalendarEventDetail";
 import CalendarGrid from "../components/CalendarGrid";
-import DetailPanel from "../components/DetailPanel";
 import NewEventForm from "../components/NewEventForm";
-import { useApplication } from "../hooks/useApplications";
 
 function Calendar() {
   const today = new Date();
   const [month, setMonth] = useState(today.getMonth() + 1);
   const [year, setYear] = useState(today.getFullYear());
-  const [selectedAppId, setSelectedAppId] = useState(null);
+  const [selectedEvent, setSelectedEvent] = useState(null);
   const [newEventForm, setNewEventForm] = useState(null);
-
-  const { data: selectedApp } = useApplication(selectedAppId);
 
   const handleMonthChange = useCallback((m, y) => {
     setMonth(m);
@@ -22,19 +19,15 @@ function Calendar() {
   }, []);
 
   const handleEventClick = useCallback((event) => {
-    setSelectedAppId(event.application_id);
+    setSelectedEvent(event);
   }, []);
 
   const handleDayClick = useCallback((date) => {
     setNewEventForm({ date, applicationId: null });
   }, []);
 
-  const handleClosePanel = useCallback(() => {
-    setSelectedAppId(null);
-  }, []);
-
-  const handleAddEvent = useCallback((applicationId) => {
-    setNewEventForm({ date: null, applicationId });
+  const handleCloseEventDetail = useCallback(() => {
+    setSelectedEvent(null);
   }, []);
 
   const handleCloseForm = useCallback(() => {
@@ -51,11 +44,12 @@ function Calendar() {
         onEventClick={handleEventClick}
         onDayClick={handleDayClick}
       />
-      <DetailPanel
-        application={selectedApp ?? null}
-        onClose={handleClosePanel}
-        onAddEvent={handleAddEvent}
-      />
+      {selectedEvent && (
+        <CalendarEventDetail
+          event={selectedEvent}
+          onClose={handleCloseEventDetail}
+        />
+      )}
       {newEventForm && (
         <NewEventForm
           initialDate={newEventForm.date}

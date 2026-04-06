@@ -401,3 +401,38 @@ async def test_list_events_accepts_date_range_of_exactly_366_days(client, test_u
 
     # Assert
     assert resp.status_code == 200
+
+
+# ---------------------------------------------------------------------------
+# Prep checklist and notes (US-054)
+# ---------------------------------------------------------------------------
+
+
+async def test_update_event_sets_prep_checklist_and_notes(client, test_user):
+    # Arrange
+    _, cookies = test_user
+    app_id = await _create_app(client, cookies)
+    event_body = await _create_event(client, cookies, app_id)
+    event_id = event_body["data"]["id"]
+
+    checklist = [
+        {"id": "item-1", "text": "Research company culture", "checked": False},
+        {"id": "item-2", "text": "Review system design concepts", "checked": True},
+    ]
+
+    # Act
+    resp = await client.patch(
+        f"/api/calendar/events/{event_id}",
+        json={"prep_notes": "Remember to prepare questions", "prep_checklist": checklist},
+        cookies=cookies,
+    )
+
+    # Assert
+    assert resp.status_code == 200
+    data = resp.json()["data"]
+    assert data["prep_notes"] == "Remember to prepare questions"
+    assert len(data["prep_checklist"]) == 2
+    assert data["prep_checklist"][0]["text"] == "Research company culture"
+    assert data["prep_checklist"][0]["checked"] is False
+    assert data["prep_checklist"][1]["text"] == "Review system design concepts"
+    assert data["prep_checklist"][1]["checked"] is True
