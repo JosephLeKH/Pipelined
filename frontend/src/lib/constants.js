@@ -49,6 +49,8 @@ export const ROLE_TYPE_OPTIONS = ["full_time", "part_time", "contract", "interns
 
 export const EXPERIENCE_LEVEL_OPTIONS = ["internship", "entry", "mid", "senior", "staff"];
 
+export const NOTES_MAX_LENGTH = 5000;
+
 export const JOBS_STALE_TIME_MS = 60_000;
 
 export const EVENT_TYPE_OPTIONS = [

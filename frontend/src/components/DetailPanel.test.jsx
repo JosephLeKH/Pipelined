@@ -80,23 +80,63 @@ describe("DetailPanel", () => {
     expect(link).toHaveAttribute("href", "https://example.com/job/123");
   });
 
-  it("should call PATCH on notes blur", async () => {
+  it("should render the notes field with the saved value", () => {
+    // Arrange / Act
+    render(<DetailPanel application={APP} onClose={() => {}} />, { wrapper: makeWrapper() });
+
+    // Assert — saved value shown in read-only display
+    expect(screen.getByTestId("notes-display")).toHaveTextContent("Great company!");
+  });
+
+  it("should toggle into edit mode when the Edit notes button is clicked", async () => {
     // Arrange
-    let patchCalled = false;
+    render(<DetailPanel application={APP} onClose={() => {}} />, { wrapper: makeWrapper() });
+
+    // Act
+    await userEvent.click(screen.getByRole("button", { name: /edit notes/i }));
+
+    // Assert — textarea now visible
+    expect(screen.getByRole("textbox", { name: /notes/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /save/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /cancel/i })).toBeInTheDocument();
+  });
+
+  it("should call PATCH mutation with notes when Save is clicked", async () => {
+    // Arrange
+    let patchBody = null;
     server.use(
-      http.patch("/api/applications/:id", () => {
-        patchCalled = true;
+      http.patch("/api/applications/:id", async ({ request }) => {
+        patchBody = await request.json();
         return HttpResponse.json({ data: APP });
       })
     );
     render(<DetailPanel application={APP} onClose={() => {}} />, { wrapper: makeWrapper() });
+    await userEvent.click(screen.getByRole("button", { name: /edit notes/i }));
 
     // Act
     const textarea = screen.getByRole("textbox", { name: /notes/i });
-    fireEvent.blur(textarea);
+    await userEvent.clear(textarea);
+    await userEvent.type(textarea, "Updated notes");
+    await userEvent.click(screen.getByRole("button", { name: /save/i }));
 
     // Assert
-    await waitFor(() => expect(patchCalled).toBe(true));
+    await waitFor(() => expect(patchBody).toEqual({ notes: "Updated notes" }));
+  });
+
+  it("should revert to saved value when Cancel is clicked in edit mode", async () => {
+    // Arrange
+    render(<DetailPanel application={APP} onClose={() => {}} />, { wrapper: makeWrapper() });
+    await userEvent.click(screen.getByRole("button", { name: /edit notes/i }));
+
+    // Act
+    const textarea = screen.getByRole("textbox", { name: /notes/i });
+    await userEvent.clear(textarea);
+    await userEvent.type(textarea, "Unsaved changes");
+    await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
+
+    // Assert — back to read mode showing original value
+    expect(screen.getByTestId("notes-display")).toHaveTextContent("Great company!");
+    expect(screen.queryByRole("textbox", { name: /notes/i })).not.toBeInTheDocument();
   });
 
   it("should call PATCH with new stage on stage select change", async () => {
