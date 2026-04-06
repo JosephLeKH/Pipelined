@@ -257,7 +257,7 @@
         "npm test passes"
       ],
       "priority": 14,
-      "passes": false,
+      "passes": true,
       "notes": "Job board currently has no text search. Users can only filter by category, experience, remote. Search is the primary discovery mechanism."
     },
     {

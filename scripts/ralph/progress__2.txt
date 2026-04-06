@@ -233,3 +233,16 @@ Added MongoDB `$text` index on applications (role_title, company, notes, tags) a
 - Backend: 165 passed (2 new)
 - Frontend: 136 passed (3 new)
 - Build: clean
+
+
+## US-053: Job board full-text search
+- Added $text index on job_listings collection covering role, company, description fields (name: job_text_search)
+- Added q: str | None field to JobListQuery schema
+- Updated _build_filter to add $text: {$search: q} when q is set
+- Updated _fetch_listings_and_count to sort by textScore (via projection + sort([('score', {'': 'textScore'})])) when text_search=True, else ingested_at desc
+- Added q parameter to list_jobs router handler
+- Added JobSearchInput component to JobBoard page with 300ms debounce, above JobFilters
+- Added q to filters useMemo in JobBoard, passed through to useJobs/fetchJobs
+- Added 2 new backend tests: text search filters by keyword, text search combines with other filters (AND semantics)
+- Note: collection uses 'role' field (not 'role_title') — index uses 'role' to match actual data
+- All 167 backend tests pass, 136 frontend tests pass
