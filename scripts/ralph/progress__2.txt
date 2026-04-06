@@ -82,3 +82,23 @@ Started: Mon Apr  6 00:25:40 PDT 2026
 - Per-call `mutate(vars, { onSuccess, onError })` callbacks are the right pattern for component-local state management (edit mode, error display) that doesn't belong in the global mutation hook.
 - The `useUpdateApplication` hook in the project doesn't need modification — its global `onSuccess` (cache invalidation) still runs alongside per-call callbacks.
 - All 119 frontend tests pass.
+
+## US-046 — Stale application amber dot visual indicator
+**Status:** COMPLETE
+**Commit:** feat: US-046 - Stale application amber dot visual indicator
+
+### Changes
+- **`frontend/src/lib/constants.js`**: `STALE_APPLICATION_DAYS = 14` was already defined — no change needed.
+- **`frontend/src/components/ApplicationList.jsx`**: Updated the stale indicator `<span>` to add a Tailwind tooltip (sibling `<span role="tooltip">` with group-hover opacity) and changed `aria-label` from `"Stale"` to `"Stale application — no updates in 14+ days"`. Added `relative group` to the container span.
+- **`frontend/src/components/ApplicationList.test.jsx`**: Updated the aria-label test to assert the new descriptive value.
+- **`frontend/src/components/StatsBar.jsx`**: Added a 5th `MetricCard` for "Needs follow-up" showing `stats.stale_count`. Updated grid from `md:grid-cols-4` to `md:grid-cols-5`.
+- **`frontend/src/components/StatsBar.test.jsx`**: Added `stale_count: 7` to the STATS mock. Added test verifying "Needs follow-up" count renders and has an aria-label.
+- **`backend/applications/schemas.py`**: Added `stale_count: int = 0` to `StatsResponse`.
+- **`backend/applications/service.py`**: Imported `timedelta`. Added `STALE_DAYS = 14` constant. Added `"stale"` facet to `compute_stats` pipeline — counts active (stage not in INACTIVE_STAGES) applications with `updated_at < now - 14 days`. Returns `stale_count` in the stats dict.
+- **`backend/tests/test_applications.py`**: Added `test_get_stats_stale_count_counts_active_stale_applications` — creates 2 apps, back-dates one's `updated_at` via direct DB write, asserts `stale_count == 1`.
+
+### Learnings
+- `STALE_APPLICATION_DAYS = 14` was already in `constants.js` from the original PRD v1 spec; no new constant needed.
+- Tailwind tooltip pattern: `group` on the container + `opacity-0 group-hover:opacity-100` on the tooltip child. The container must be `relative` and the tooltip uses absolute positioning.
+- The stale indicator was 90% implemented (amber dot existed); the gap was the missing aria-label precision, tooltip, backend stale_count field, and StatsBar metric.
+- All 120 frontend tests pass. Backend tests require live MongoDB (CI validates).

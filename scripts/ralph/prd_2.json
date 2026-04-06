@@ -116,7 +116,7 @@
         "Typecheck passes"
       ],
       "priority": 7,
-      "passes": false,
+      "passes": true,
       "notes": "PRD v1 mentioned stale nudge, backend has updated_at field, but the amber dot was never implemented in the frontend."
     },
     {
