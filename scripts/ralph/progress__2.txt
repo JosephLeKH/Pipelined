@@ -117,3 +117,22 @@ Started: Mon Apr  6 00:25:40 PDT 2026
 - For stage transition labels, the first `stage_history` entry has no "from" stage — showing just the stage name (e.g. "Applied") is clearer than "→ Applied".
 - MSW `server.use()` in individual tests overrides the default handler for that test only; `afterEach(() => server.resetHandlers())` restores defaults.
 - 122 frontend tests pass.
+
+## US-048 — Archive (soft delete) applications
+**Status:** COMPLETE
+**Commit:** feat: US-048 - Archive (soft delete) applications
+
+### Changes
+- **`backend/applications/schemas.py`**: Added `archived: bool = False` and `archived_at: datetime | None = None` to `ApplicationResponse`; added `include_archived: bool = False` to `ApplicationListQuery`.
+- **`backend/applications/service.py`**: Added `archived` and `archived_at` to `LIST_PROJECTION`; updated `_build_filter` to exclude archived docs by default (`{"archived": {"$ne": True}}`); added `archive()` and `unarchive()` service functions.
+- **`backend/applications/router.py`**: Added `include_archived` query param to `list_applications`; added `PATCH /{app_id}/archive` and `PATCH /{app_id}/unarchive` endpoints.
+- **`backend/tests/test_applications.py`**: Added 5 tests covering archive/unarchive endpoints and that archived apps are excluded by default and included with `?include_archived=true`.
+- **`frontend/src/api/applications.js`**: Added `archiveApplication()` and `unarchiveApplication()`.
+- **`frontend/src/hooks/useApplications.js`**: Added `useArchiveApplication` and `useUnarchiveApplication` hooks.
+- **`frontend/src/components/FilterBar.jsx`**: Added "Show archived" checkbox toggle + amber banner when `include_archived=true`.
+- **`frontend/src/components/ApplicationList.jsx`**: Added `RowMenu` with Archive/Unarchive and Delete options; delete shows a confirmation modal; archived rows show muted opacity and strikethrough on company name. Extracted `RowMenu` and `DeleteConfirmModal` to `ApplicationRowActions.jsx` to stay under 300-line limit.
+- **`frontend/src/pages/Dashboard.jsx`**: Reads `include_archived` from URL search params and includes in filters.
+
+### Learnings
+- Using `{"archived": {"$ne": True}}` instead of `{"archived": False}` handles pre-existing documents that lack the `archived` field, making the migration backward-compatible.
+- Splitting large components into a companion `*Actions.jsx` file is a clean way to stay under the 300-line limit while keeping related logic together.

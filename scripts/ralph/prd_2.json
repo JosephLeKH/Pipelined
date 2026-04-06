@@ -157,7 +157,7 @@
         "npm test passes"
       ],
       "priority": 9,
-      "passes": false,
+      "passes": true,
       "notes": "Hard delete currently loses all history. Archive pattern is standard for any data-sensitive tracking app."
     },
     {
