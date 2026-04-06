@@ -1,6 +1,36 @@
 """Application configuration from environment variables."""
 
+import structlog
 from pydantic_settings import BaseSettings
+
+logger = structlog.get_logger()
+
+DEV_JWT_SECRET = "dev-secret-change-in-production"
+
+
+def validate_production_secrets(s: "Settings") -> None:
+    """Raise RuntimeError if insecure dev defaults are detected in production.
+
+    In DEBUG mode, log warnings instead of raising.
+    """
+    issues: list[str] = []
+
+    if s.jwt_secret == DEV_JWT_SECRET:
+        issues.append("JWT_SECRET is set to the insecure dev default")
+    if not s.openai_api_key:
+        issues.append("OPENAI_API_KEY is empty")
+
+    if not issues:
+        return
+
+    if s.debug:
+        for issue in issues:
+            logger.warning("insecure_dev_secret_in_use", issue=issue)
+    else:
+        raise RuntimeError(
+            "Production secrets validation failed — refusing to start: "
+            + "; ".join(issues)
+        )
 
 
 class Settings(BaseSettings):

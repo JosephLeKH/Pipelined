@@ -15,7 +15,7 @@ from auth.router import router as auth_router
 from cal.router import router as calendar_router
 from jobs.router import router as jobs_router
 from jobs.sync import create_scheduler
-from config import settings
+from config import settings, validate_production_secrets
 from database import connect, disconnect, ensure_indexes
 from middleware.rate_limit import limiter
 
@@ -41,6 +41,7 @@ async def _rate_limit_handler(request: Request, exc: RateLimitExceeded) -> JSONR
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Connect to MongoDB and start the scheduler on startup; reverse on shutdown."""
     logger.info("starting_up")
+    validate_production_secrets(settings)
     await connect()
     logger.info("database_connected")
     await ensure_indexes()
