@@ -21,3 +21,11 @@ export async function logoutUser() {
 export async function fetchCurrentUser() {
   return client.get("/auth/me");
 }
+
+export async function forgotPassword(email) {
+  return client.post("/auth/forgot-password", { email });
+}
+
+export async function resetPassword(token, new_password) {
+  return client.post("/auth/reset-password", { token, new_password });
+}

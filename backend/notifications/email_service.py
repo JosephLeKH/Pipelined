@@ -1,0 +1,61 @@
+"""Email notification service using SMTP."""
+
+import asyncio
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
+import structlog
+
+from config import settings
+
+logger = structlog.get_logger()
+
+RESET_EMAIL_SUBJECT = "Reset your Pipelined password"
+
+
+class EmailService:
+    """Send transactional emails via SMTP."""
+
+    def _build_reset_message(self, to_email: str, reset_link: str) -> MIMEMultipart:
+        """Construct the password reset email as a MIMEMultipart message."""
+        msg = MIMEMultipart("alternative")
+        msg["Subject"] = RESET_EMAIL_SUBJECT
+        msg["From"] = settings.smtp_from_email
+        msg["To"] = to_email
+
+        text_body = (
+            "You requested a password reset for your Pipelined account.\n\n"
+            f"Click the link below to reset your password (valid for 1 hour):\n\n"
+            f"{reset_link}\n\n"
+            "If you did not request this, you can safely ignore this email."
+        )
+        html_body = (
+            "<p>You requested a password reset for your Pipelined account.</p>"
+            f"<p><a href='{reset_link}'>Reset your password</a> (valid for 1 hour)</p>"
+            "<p>If you did not request this, you can safely ignore this email.</p>"
+        )
+
+        msg.attach(MIMEText(text_body, "plain"))
+        msg.attach(MIMEText(html_body, "html"))
+        return msg
+
+    def _send_smtp(self, to_email: str, message: MIMEMultipart) -> None:
+        """Deliver the message via SMTP (blocking)."""
+        with smtplib.SMTP(settings.smtp_host, settings.smtp_port) as smtp:
+            if settings.smtp_use_tls:
+                smtp.starttls()
+            if settings.smtp_username and settings.smtp_password:
+                smtp.login(settings.smtp_username, settings.smtp_password)
+            smtp.sendmail(settings.smtp_from_email, to_email, message.as_string())
+
+    async def send_password_reset_email(self, to_email: str, raw_token: str) -> None:
+        """Send a password reset email with the raw token link."""
+        reset_link = f"{settings.frontend_url}/reset-password?token={raw_token}"
+        message = self._build_reset_message(to_email, reset_link)
+        loop = asyncio.get_running_loop()
+        await loop.run_in_executor(None, self._send_smtp, to_email, message)
+        logger.info("password_reset_email_sent", to=to_email)
+
+
+email_service = EmailService()

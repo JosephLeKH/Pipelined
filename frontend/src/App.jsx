@@ -11,6 +11,8 @@ const Calendar = lazy(() => import("./pages/Calendar"));
 const JobBoard = lazy(() => import("./pages/JobBoard"));
 const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
+const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 
 function LoadingSpinner() {
   return (
@@ -35,6 +37,8 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/jobs" element={<JobBoard />} />
         <Route
           path="/dashboard"

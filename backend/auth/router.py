@@ -6,16 +6,28 @@ from fastapi import APIRouter, Cookie, Depends, HTTPException, Request, Response
 
 from auth import service as auth_service
 from auth.dependencies import get_current_user
-from auth.schemas import GoogleAuthRequest, LoginRequest, RegisterRequest, UserResponse
+from auth.schemas import (
+    ForgotPasswordRequest,
+    GoogleAuthRequest,
+    LoginRequest,
+    RegisterRequest,
+    ResetPasswordRequest,
+    UserResponse,
+)
 from auth.service import (
     GoogleTokenError,
     REFRESH_TOKEN_TYPE,
     DuplicateEmailError,
+    TokenExpiredError,
+    TokenInvalidError,
     create_access_token,
+    create_password_reset_token,
     create_refresh_token,
     decode_token,
+    reset_password,
     verify_password,
 )
+from notifications.email_service import email_service
 from config import settings
 from middleware.rate_limit import limiter
 
@@ -185,3 +197,34 @@ async def google_auth(body: GoogleAuthRequest, response: Response) -> dict:
     _set_auth_cookies(response, str(user["_id"]))
     logger.info("google_user_authenticated", user_id=str(user["_id"]))
     return {"data": UserResponse.from_doc(user)}
+
+
+RESET_LINK_SENT_MESSAGE = "If that email is registered, a reset link has been sent."
+
+
+@router.post("/forgot-password", status_code=200)
+@limiter.limit(settings.rate_limit_auth)
+async def forgot_password(request: Request, body: ForgotPasswordRequest) -> dict:
+    """Initiate a password reset; always returns 200 to prevent email enumeration."""
+    raw_token, user = await create_password_reset_token(body.email)
+    if user is not None:
+        await email_service.send_password_reset_email(body.email, raw_token)
+    return {"data": {"message": RESET_LINK_SENT_MESSAGE}}
+
+
+@router.post("/reset-password", status_code=200)
+async def reset_password_endpoint(body: ResetPasswordRequest) -> dict:
+    """Reset a user's password using a valid reset token."""
+    try:
+        await reset_password(body.token, body.new_password)
+    except TokenExpiredError:
+        raise HTTPException(
+            status_code=400,
+            detail={"code": "TOKEN_EXPIRED", "message": "Password reset token has expired."},
+        )
+    except TokenInvalidError:
+        raise HTTPException(
+            status_code=400,
+            detail={"code": "TOKEN_INVALID", "message": "Invalid password reset token."},
+        )
+    return {"data": {"message": "Password reset successfully."}}

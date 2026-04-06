@@ -2,7 +2,7 @@
 
 import { useMutation } from "@tanstack/react-query";
 
-import { loginWithEmail, registerWithEmail, googleAuth, logoutUser } from "../api/auth";
+import { loginWithEmail, registerWithEmail, googleAuth, logoutUser, forgotPassword, resetPassword } from "../api/auth";
 
 export function useLogin() {
   return useMutation({
@@ -26,5 +26,17 @@ export function useGoogleAuth() {
 export function useLogout() {
   return useMutation({
     mutationFn: logoutUser,
+  });
+}
+
+export function useForgotPassword() {
+  return useMutation({
+    mutationFn: ({ email }) => forgotPassword(email),
+  });
+}
+
+export function useResetPassword() {
+  return useMutation({
+    mutationFn: ({ token, new_password }) => resetPassword(token, new_password),
   });
 }

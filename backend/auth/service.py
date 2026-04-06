@@ -1,6 +1,8 @@
 """Auth business logic: password hashing, JWT creation and decoding, user CRUD."""
 
 import asyncio
+import hashlib
+import secrets
 from datetime import datetime, timedelta, timezone
 
 import bcrypt
@@ -20,6 +22,8 @@ ACCESS_TOKEN_TYPE = "access"
 REFRESH_TOKEN_TYPE = "refresh"
 JWT_ALGORITHM = "HS256"
 DEFAULT_STAGES = ["Applied", "Phone Screen", "Onsite", "Offer", "Rejected"]
+RESET_TOKEN_BYTES = 32
+RESET_TOKEN_TTL_HOURS = 1
 
 
 class DuplicateEmailError(Exception):
@@ -27,6 +31,14 @@ class DuplicateEmailError(Exception):
 
     def __init__(self, email: str) -> None:
         self.email = email
+
+
+class TokenExpiredError(Exception):
+    """Raised when a password reset token is past its expiry."""
+
+
+class TokenInvalidError(Exception):
+    """Raised when a password reset token hash is not found."""
 
 
 def hash_password(plain: str) -> str:
@@ -159,3 +171,63 @@ async def get_or_create_google_user(
     doc["_id"] = result.inserted_id
     logger.info("google_user_created", user_id=str(result.inserted_id), email=email)
     return doc
+
+
+def _ensure_utc(dt: datetime) -> datetime:
+    """Return dt with UTC timezone, attaching it if naive."""
+    if dt.tzinfo is None:
+        return dt.replace(tzinfo=timezone.utc)
+    return dt
+
+
+async def create_password_reset_token(email: str) -> tuple[str, dict | None]:
+    """Generate a reset token for an email-auth user and return (raw_token, user_doc).
+
+    Stores reset_token_hash and reset_token_expires_at in the users collection.
+    Returns (raw_token, None) if no email-auth user with that address exists —
+    callers must not reveal this to prevent email enumeration.
+    """
+    users = get_collection("users")
+    user = await users.find_one({"email": email, "password_hash": {"$ne": None}})
+
+    raw_token = secrets.token_hex(RESET_TOKEN_BYTES)
+    token_hash = hashlib.sha256(raw_token.encode()).hexdigest()
+    expires_at = datetime.now(timezone.utc) + timedelta(hours=RESET_TOKEN_TTL_HOURS)
+
+    if user is not None:
+        await users.update_one(
+            {"_id": user["_id"]},
+            {"$set": {"reset_token_hash": token_hash, "reset_token_expires_at": expires_at}},
+        )
+        logger.info("password_reset_token_created", user_id=str(user["_id"]))
+
+    return raw_token, user
+
+
+async def reset_password(token: str, new_password: str) -> None:
+    """Validate the reset token and update the user's password.
+
+    Raises TokenInvalidError if the token hash is not found.
+    Raises TokenExpiredError if the token is past its expiry.
+    Clears reset_token fields after a successful reset.
+    """
+    users = get_collection("users")
+    token_hash = hashlib.sha256(token.encode()).hexdigest()
+
+    user = await users.find_one({"reset_token_hash": token_hash})
+    if user is None:
+        raise TokenInvalidError("Token not found")
+
+    expires_at = user.get("reset_token_expires_at")
+    if expires_at is None or _ensure_utc(expires_at) < datetime.now(timezone.utc):
+        raise TokenExpiredError("Token has expired")
+
+    new_hash = hash_password(new_password)
+    await users.update_one(
+        {"_id": user["_id"]},
+        {
+            "$set": {"password_hash": new_hash},
+            "$unset": {"reset_token_hash": "", "reset_token_expires_at": ""},
+        },
+    )
+    logger.info("password_reset_completed", user_id=str(user["_id"]))

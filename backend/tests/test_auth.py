@@ -1,6 +1,11 @@
 """Integration tests for auth router endpoints."""
 
+from datetime import datetime, timedelta, timezone
+from unittest.mock import AsyncMock, patch
+
 import pytest
+
+import database
 
 pytestmark = pytest.mark.asyncio(loop_scope="session")
 
@@ -195,3 +200,120 @@ async def test_refresh_returns_401_when_access_token_used_as_refresh(client):
     # Assert
     assert response.status_code == 401
     assert response.json()["detail"]["code"] == "WRONG_TOKEN_TYPE"
+
+
+# ---------------------------------------------------------------------------
+# Forgot-password and reset-password endpoint tests
+# ---------------------------------------------------------------------------
+
+RESET_PAYLOAD = {
+    "email": "test@example.com",
+    "password": "TestPass123!",
+    "display_name": "Test User",
+}
+
+
+async def test_forgot_password_returns_200_for_existing_user(client):
+    # Arrange
+    await client.post("/api/auth/register", json=RESET_PAYLOAD)
+
+    # Act
+    with patch(
+        "notifications.email_service.email_service.send_password_reset_email",
+        new_callable=AsyncMock,
+    ) as mock_send:
+        response = await client.post(
+            "/api/auth/forgot-password", json={"email": "test@example.com"}
+        )
+
+    # Assert
+    assert response.status_code == 200
+    assert "reset link has been sent" in response.json()["data"]["message"]
+    mock_send.assert_awaited_once()
+
+
+async def test_forgot_password_returns_200_for_nonexistent_email(client):
+    # Act — email that does not exist
+    with patch(
+        "notifications.email_service.email_service.send_password_reset_email",
+        new_callable=AsyncMock,
+    ) as mock_send:
+        response = await client.post(
+            "/api/auth/forgot-password", json={"email": "nobody@example.com"}
+        )
+
+    # Assert — same 200 response (no enumeration)
+    assert response.status_code == 200
+    assert "reset link has been sent" in response.json()["data"]["message"]
+    mock_send.assert_not_awaited()
+
+
+async def test_reset_password_success(client):
+    # Arrange — register and request a reset token
+    await client.post("/api/auth/register", json=RESET_PAYLOAD)
+
+    captured_token: list[str] = []
+
+    async def capture_send(to_email: str, raw_token: str) -> None:
+        captured_token.append(raw_token)
+
+    with patch(
+        "notifications.email_service.email_service.send_password_reset_email",
+        side_effect=capture_send,
+    ):
+        await client.post("/api/auth/forgot-password", json={"email": "test@example.com"})
+
+    # Act — reset the password with the captured token
+    response = await client.post(
+        "/api/auth/reset-password",
+        json={"token": captured_token[0], "new_password": "NewPass456!"},
+    )
+
+    # Assert
+    assert response.status_code == 200
+    assert response.json()["data"]["message"] == "Password reset successfully."
+
+    # Verify the new password works for login
+    login_response = await client.post(
+        "/api/auth/login",
+        json={"email": "test@example.com", "password": "NewPass456!"},
+    )
+    assert login_response.status_code == 200
+
+
+async def test_reset_password_returns_400_for_invalid_token(client):
+    # Act — token that was never issued
+    response = await client.post(
+        "/api/auth/reset-password",
+        json={"token": "deadbeef" * 8, "new_password": "NewPass456!"},
+    )
+
+    # Assert
+    assert response.status_code == 400
+    assert response.json()["detail"]["code"] == "TOKEN_INVALID"
+
+
+async def test_reset_password_returns_400_for_expired_token(client):
+    # Arrange — register and inject an already-expired token directly into DB
+    await client.post("/api/auth/register", json=RESET_PAYLOAD)
+
+    import hashlib
+    raw_token = "a" * 64
+    token_hash = hashlib.sha256(raw_token.encode()).hexdigest()
+    expired_at = datetime.now(timezone.utc) - timedelta(hours=2)
+
+    users = database.get_collection("users")
+    await users.update_one(
+        {"email": "test@example.com"},
+        {"$set": {"reset_token_hash": token_hash, "reset_token_expires_at": expired_at}},
+    )
+
+    # Act
+    response = await client.post(
+        "/api/auth/reset-password",
+        json={"token": raw_token, "new_password": "NewPass456!"},
+    )
+
+    # Assert
+    assert response.status_code == 400
+    assert response.json()["detail"]["code"] == "TOKEN_EXPIRED"

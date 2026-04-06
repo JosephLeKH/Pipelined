@@ -67,6 +67,15 @@ class Settings(BaseSettings):
     # CORS
     allowed_origins: list[str] = ["http://localhost:5173"]
 
+    # Email / SMTP
+    frontend_url: str = "http://localhost:5173"
+    smtp_host: str = "localhost"
+    smtp_port: int = 1025
+    smtp_use_tls: bool = False
+    smtp_username: str = ""
+    smtp_password: str = ""
+    smtp_from_email: str = "noreply@pipelined.app"
+
     # Environment
     debug: bool = False
 
