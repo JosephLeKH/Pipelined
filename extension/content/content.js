@@ -175,7 +175,7 @@ function showBannerSuccess(shadow, host) {
 }
 
 function showBannerError(shadow, button) {
-  shadow.querySelector(".pipelined-text").textContent = "Save failed. Try again?";
+  shadow.querySelector(".pipelined-text").textContent = "Save failed \u2014 try again";
   button.disabled = false;
   button.textContent = "Retry";
 }

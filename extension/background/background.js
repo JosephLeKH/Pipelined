@@ -117,11 +117,19 @@ async function executeSave(payload) {
 }
 
 async function handleSave(payload) {
-  const result = await (saveQueue = saveQueue.then(() => executeSave(payload)));
-  return result;
+  const taskPromise = saveQueue.then(() =>
+    executeSave(payload).catch((err) => {
+      console.error("Save failed:", err);
+      return { status: "error", message: "Save failed \u2014 try again" };
+    })
+  );
+  saveQueue = taskPromise;
+  return taskPromise;
 }
 
 // ── Message router ────────────────────────────────────────────────────────────
+
+export { handleSave };
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   if (message.type === MSG.SAVE_APPLICATION) {
