@@ -78,7 +78,7 @@
         "Typecheck passes"
       ],
       "priority": 5,
-      "passes": false,
+      "passes": true,
       "notes": "Found in codebase review: config.py \u2014 jwt_secret has insecure default, no runtime guard."
     },
     {

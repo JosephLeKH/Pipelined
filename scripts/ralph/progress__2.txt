@@ -54,3 +54,17 @@ Started: Mon Apr  6 00:25:40 PDT 2026
 - For the 500-doc cap test, using `get_collection("calendar_events").insert_many(docs)` in the test avoids 501 HTTP round-trips while still hitting a real MongoDB (no mocking). `get_collection()` raises if db is None, which satisfies type safety better than accessing `db[...]` directly.
 - The AC said "mock returns 501 docs" but the project rule is "never mock the database". The real-DB bulk insert approach tests the same behaviour correctly.
 - Pyright on this machine has pre-existing errors (unresolved imports, Python version for `|` union syntax) — no new errors introduced.
+
+## US-044 — Production secrets validation at startup
+**Status:** COMPLETE
+**Commit:** feat: US-044 - Production secrets validation at startup
+
+### Changes
+- **`backend/config.py`**: Added `DEV_JWT_SECRET` constant and `validate_production_secrets(s: Settings) -> None`. In production (DEBUG=False), raises `RuntimeError` if `jwt_secret == DEV_JWT_SECRET` or `openai_api_key` is empty. In debug mode, logs structlog warnings instead.
+- **`backend/main.py`**: Imported `validate_production_secrets` and called it in the lifespan startup hook before `connect()`, so the app refuses to start with insecure defaults in production.
+- **`backend/tests/test_health.py`**: Added three tests — raises on default JWT_SECRET in prod, raises on empty OPENAI_API_KEY in prod, and does not raise in debug mode.
+
+### Learnings
+- `validate_production_secrets` accepts a `Settings` instance rather than reading `settings` global directly, making it trivially testable without monkeypatching.
+- Using a forward-reference string annotation (`"Settings"`) avoids a circular-import issue since the function is defined before the class in the same file.
+- The existing Pyright diagnostics (`reportMissingImports`) are environment-level false positives (packages not installed in the checker's venv) and were pre-existing before this change.
