@@ -268,3 +268,18 @@ Added MongoDB `$text` index on applications (role_title, company, notes, tags) a
 - Pydantic v2 `model_dump()` recursively serializes nested models to dicts, so `PrepChecklistItem` objects in `prep_checklist` are stored correctly in MongoDB without any special serialization in service.py.
 - `crypto.randomUUID()` is available in Vitest's jsdom environment (Node 20+) for generating checklist item IDs client-side.
 - The existing `useUpdateEvent` hook invalidates all calendar queries on success, so toggling/adding checklist items automatically keeps the calendar grid in sync.
+
+## US-055 — Bulk application operations: delete and stage update
+- Completed: 2026-04-06
+- Backend: DELETE /api/applications/bulk, PATCH /api/applications/bulk-stage
+- Frontend: Checkbox column in ApplicationList, BulkActionBar, BulkDeleteConfirmModal
+- Tests: 8 backend tests + 4 frontend tests, all passing
+- Build: clean
+- Commit: 8522cca
+
+
+## US-060 — Root README.md with full setup, dev, and deployment guide
+- Completed: 2026-04-06
+- README.md: project overview, ASCII architecture diagram, prerequisites table, quick start (backend + frontend + extension), running tests, environment variables table (all 16 vars), deployment (Docker + ECS Fargate), project structure, contributing + style guide links
+- Build: no build required (docs only)
+- Commit: pending

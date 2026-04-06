@@ -302,7 +302,7 @@
         "npm test passes"
       ],
       "priority": 16,
-      "passes": false,
+      "passes": true,
       "notes": "Users managing 50+ applications frequently need to bulk-archive old ones or move rejected applications. One-by-one operations are painful."
     },
     {
@@ -400,7 +400,7 @@
         "Verify README renders correctly (check markdown syntax)"
       ],
       "priority": 21,
-      "passes": false,
+      "passes": true,
       "notes": "There is no README.md anywhere in the project. This is a critical gap for onboarding and open-source credibility."
     }
   ]
