@@ -215,6 +215,23 @@ async def test_list_applications_pagination_returns_next_cursor(client, test_use
 
 
 @pytest.mark.asyncio
+async def test_list_applications_empty_collection_returns_empty_data(client, test_user):
+    # Arrange — no applications created for this user
+
+    _, cookies = test_user
+
+    # Act
+    response = await client.get("/api/applications", cookies=cookies)
+
+    # Assert
+    assert response.status_code == 200
+    body = response.json()
+    assert body["data"] == []
+    assert body["meta"]["next_cursor"] is None
+    assert body["meta"]["count"] == 0
+
+
+@pytest.mark.asyncio
 async def test_list_applications_returns_401_without_auth(client):
     # Act
     response = await client.get("/api/applications")
