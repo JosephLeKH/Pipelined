@@ -1,6 +1,7 @@
 """Application configuration from environment variables."""
 
 import structlog
+from pydantic import field_validator
 from pydantic_settings import BaseSettings
 
 logger = structlog.get_logger()
@@ -59,6 +60,17 @@ class Settings(BaseSettings):
     rate_limit_standard: str = "60/minute"
     rate_limit_ai: str = "10/minute"
     rate_limit_auth: str = "5/minute"
+    trusted_proxies: list[str] = []
+
+    @field_validator("trusted_proxies", mode="before")
+    @classmethod
+    def parse_comma_separated(cls, v: str | list) -> list[str]:
+        """Parse TRUSTED_PROXIES env var from comma-separated string."""
+        if isinstance(v, list):
+            return v
+        if not v:
+            return []
+        return [ip.strip() for ip in v.split(",") if ip.strip()]
 
     # Application
     stale_application_days: int = 14

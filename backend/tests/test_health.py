@@ -1,8 +1,11 @@
 """Tests for the /health endpoint."""
 
+from unittest.mock import MagicMock, patch
+
 import pytest
 
 from config import DEV_JWT_SECRET, Settings, validate_production_secrets
+from middleware.rate_limit import get_client_ip
 
 pytestmark = pytest.mark.asyncio(loop_scope="session")
 
@@ -64,3 +67,18 @@ def test_validate_production_secrets_no_raise_in_debug_mode():
 
     # Act / Assert — must not raise
     validate_production_secrets(debug_settings)
+
+
+def test_rate_limit_key_uses_x_forwarded_for_with_trusted_proxy():
+    # Arrange — mock a request whose TCP peer is a trusted proxy
+    request = MagicMock()
+    request.client.host = "10.0.0.1"
+    request.headers = {"X-Forwarded-For": "1.2.3.4, 10.0.0.1"}
+
+    # Act — patch settings so 10.0.0.1 is a trusted proxy
+    with patch("middleware.rate_limit.settings") as mock_settings:
+        mock_settings.trusted_proxies = ["10.0.0.1"]
+        result = get_client_ip(request)
+
+    # Assert
+    assert result == "1.2.3.4"
