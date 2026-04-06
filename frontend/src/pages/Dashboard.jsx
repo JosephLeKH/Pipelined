@@ -3,16 +3,20 @@
 import { useState, useMemo, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 
+import Loader2 from "lucide-react/dist/esm/icons/loader-2";
+
 import FilterBar from "../components/FilterBar";
 import StatsBar from "../components/StatsBar";
 import ApplicationList from "../components/ApplicationList";
 import DetailPanel from "../components/DetailPanel";
 import ManualAddForm from "../components/ManualAddForm";
 import { useApplication } from "../hooks/useApplications";
+import { exportApplicationsCsv } from "../api/applications";
 
 function Dashboard() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
 
   // Filter params written by FilterBar
   const stages = searchParams.getAll("stage");
@@ -53,17 +57,43 @@ function Dashboard() {
     setSearchParams(next, { replace: true });
   }, [searchParams, setSearchParams]);
 
+  const handleExport = useCallback(async () => {
+    setIsExporting(true);
+    try {
+      const blob = await exportApplicationsCsv(includeArchived);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "applications.csv";
+      a.click();
+      URL.revokeObjectURL(url);
+    } finally {
+      setIsExporting(false);
+    }
+  }, [includeArchived]);
+
   return (
     <main className="flex min-h-screen flex-col gap-6 bg-gray-50 p-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-        <button
-          type="button"
-          onClick={() => setIsModalOpen(true)}
-          className="rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
-        >
-          Add Application
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={handleExport}
+            disabled={isExporting}
+            className="flex items-center gap-2 rounded border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+          >
+            {isExporting && <Loader2 className="h-4 w-4 animate-spin" />}
+            Export CSV
+          </button>
+          <button
+            type="button"
+            onClick={() => setIsModalOpen(true)}
+            className="rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+          >
+            Add Application
+          </button>
+        </div>
       </div>
       <StatsBar />
       <FilterBar />

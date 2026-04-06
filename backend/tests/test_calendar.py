@@ -6,6 +6,8 @@ import pytest
 
 from database import get_collection
 
+pytestmark = pytest.mark.asyncio(loop_scope="session")
+
 APP_PAYLOAD = {
     "role_title": "Software Engineer",
     "company": "Acme Corp",
@@ -38,7 +40,6 @@ async def _create_event(client, cookies: dict, app_id: str, overrides: dict | No
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.asyncio
 async def test_create_event_returns_201(client, test_user):
     # Arrange
     _, cookies = test_user
@@ -62,7 +63,6 @@ async def test_create_event_returns_201(client, test_user):
     assert "id" in data
 
 
-@pytest.mark.asyncio
 async def test_create_event_returns_404_for_unknown_application(client, test_user):
     # Arrange
     _, cookies = test_user
@@ -80,7 +80,6 @@ async def test_create_event_returns_404_for_unknown_application(client, test_use
     assert resp.json()["detail"]["code"] == "APP_NOT_FOUND"
 
 
-@pytest.mark.asyncio
 async def test_create_event_returns_404_for_other_users_application(client):
     # Arrange — two users
     resp_a = await client.post(
@@ -108,7 +107,6 @@ async def test_create_event_returns_404_for_other_users_application(client):
     assert resp.status_code == 404
 
 
-@pytest.mark.asyncio
 async def test_create_event_returns_401_without_auth(client, test_user):
     # Arrange
     _, cookies = test_user
@@ -129,7 +127,6 @@ async def test_create_event_returns_401_without_auth(client, test_user):
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.asyncio
 async def test_list_events_returns_events_for_date_range(client, test_user):
     # Arrange
     _, cookies = test_user
@@ -151,7 +148,6 @@ async def test_list_events_returns_events_for_date_range(client, test_user):
     assert body["data"][0]["role_title"] == "Software Engineer"
 
 
-@pytest.mark.asyncio
 async def test_list_events_excludes_events_outside_range(client, test_user):
     # Arrange
     _, cookies = test_user
@@ -170,7 +166,6 @@ async def test_list_events_excludes_events_outside_range(client, test_user):
     assert resp.json()["meta"]["count"] == 0
 
 
-@pytest.mark.asyncio
 async def test_list_events_scoped_to_current_user(client):
     # Arrange — two users each with one event
     resp_a = await client.post(
@@ -201,7 +196,6 @@ async def test_list_events_scoped_to_current_user(client):
     assert resp.json()["meta"]["count"] == 1
 
 
-@pytest.mark.asyncio
 async def test_list_events_returns_401_without_auth(client):
     # Act
     resp = await client.get("/api/calendar/events")
@@ -215,7 +209,6 @@ async def test_list_events_returns_401_without_auth(client):
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.asyncio
 async def test_update_event_returns_updated_doc(client, test_user):
     # Arrange
     _, cookies = test_user
@@ -237,7 +230,6 @@ async def test_update_event_returns_updated_doc(client, test_user):
     assert data["title"] == "Onsite Interview"
 
 
-@pytest.mark.asyncio
 async def test_update_event_returns_404_for_missing_event(client, test_user):
     # Arrange
     _, cookies = test_user
@@ -254,7 +246,6 @@ async def test_update_event_returns_404_for_missing_event(client, test_user):
     assert resp.status_code == 404
 
 
-@pytest.mark.asyncio
 async def test_update_event_returns_401_without_auth(client, test_user):
     # Arrange
     _, cookies = test_user
@@ -277,7 +268,6 @@ async def test_update_event_returns_401_without_auth(client, test_user):
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.asyncio
 async def test_delete_event_returns_204(client, test_user):
     # Arrange
     _, cookies = test_user
@@ -292,7 +282,6 @@ async def test_delete_event_returns_204(client, test_user):
     assert resp.status_code == 204
 
 
-@pytest.mark.asyncio
 async def test_delete_event_removes_from_list(client, test_user):
     # Arrange
     _, cookies = test_user
@@ -312,7 +301,6 @@ async def test_delete_event_removes_from_list(client, test_user):
     assert resp.json()["meta"]["count"] == 0
 
 
-@pytest.mark.asyncio
 async def test_delete_event_returns_404_for_missing_event(client, test_user):
     # Arrange
     _, cookies = test_user
@@ -325,7 +313,6 @@ async def test_delete_event_returns_404_for_missing_event(client, test_user):
     assert resp.status_code == 404
 
 
-@pytest.mark.asyncio
 async def test_delete_event_returns_401_without_auth(client, test_user):
     # Arrange
     _, cookies = test_user
@@ -345,7 +332,6 @@ async def test_delete_event_returns_401_without_auth(client, test_user):
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.asyncio
 async def test_list_events_caps_at_500_documents(client, test_user):
     """Querying list_events with 501 events in DB should return at most 500."""
     from bson import ObjectId
@@ -356,7 +342,7 @@ async def test_list_events_caps_at_500_documents(client, test_user):
 
     uid = ObjectId(user["id"])
     aid = ObjectId(app_id)
-    base_date = dt.date(2026, 3, 1)
+    base_date = dt.datetime(2026, 3, 1, tzinfo=dt.timezone.utc)
 
     docs = [
         {
@@ -386,7 +372,6 @@ async def test_list_events_caps_at_500_documents(client, test_user):
     assert body["meta"]["count"] == 500
 
 
-@pytest.mark.asyncio
 async def test_list_events_returns_400_for_date_range_over_366_days(client, test_user):
     # Arrange
     _, cookies = test_user
@@ -403,7 +388,6 @@ async def test_list_events_returns_400_for_date_range_over_366_days(client, test
     assert resp.json()["detail"]["code"] == "INVALID_DATE_RANGE"
 
 
-@pytest.mark.asyncio
 async def test_list_events_accepts_date_range_of_exactly_366_days(client, test_user):
     # Arrange
     _, cookies = test_user

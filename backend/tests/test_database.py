@@ -4,8 +4,9 @@ import pytest
 
 from database import ensure_indexes, get_collection
 
+pytestmark = pytest.mark.asyncio(loop_scope="session")
 
-@pytest.mark.asyncio
+
 async def test_ensure_indexes_is_idempotent(app):
     # Arrange — app fixture already called connect(); just run twice to verify idempotency
     await ensure_indexes()
@@ -14,7 +15,6 @@ async def test_ensure_indexes_is_idempotent(app):
     await ensure_indexes()
 
 
-@pytest.mark.asyncio
 async def test_ensure_indexes_creates_applications_indexes(app):
     # Arrange
     await ensure_indexes()
@@ -30,7 +30,6 @@ async def test_ensure_indexes_creates_applications_indexes(app):
     assert index_info["duplicate_guard"].get("unique") is True
 
 
-@pytest.mark.asyncio
 async def test_ensure_indexes_creates_calendar_events_indexes(app):
     # Arrange
     await ensure_indexes()
@@ -44,7 +43,6 @@ async def test_ensure_indexes_creates_calendar_events_indexes(app):
     assert "app_id" in index_names
 
 
-@pytest.mark.asyncio
 async def test_ensure_indexes_creates_job_listings_indexes(app):
     # Arrange
     await ensure_indexes()
@@ -60,7 +58,6 @@ async def test_ensure_indexes_creates_job_listings_indexes(app):
     assert index_info["url_dedup"].get("unique") is True
 
 
-@pytest.mark.asyncio
 async def test_ensure_indexes_creates_users_indexes(app):
     # Arrange
     await ensure_indexes()

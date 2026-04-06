@@ -6,6 +6,10 @@ import pytest
 
 from database import get_collection
 
+# Use session-scoped event loop for all tests so Motor's connection pool
+# (bound to the session loop in the `app` fixture) is reachable from test bodies.
+pytestmark = pytest.mark.asyncio(loop_scope="session")
+
 APP_PAYLOAD = {
     "role_title": "Software Engineer",
     "company": "Acme Corp",
@@ -18,7 +22,6 @@ APP_PAYLOAD = {
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.asyncio
 async def test_create_application_returns_201(client, test_user):
     # Arrange
     _, cookies = test_user
@@ -35,7 +38,6 @@ async def test_create_application_returns_201(client, test_user):
     assert "id" in data
 
 
-@pytest.mark.asyncio
 async def test_create_application_returns_401_without_auth(client):
     # Act
     response = await client.post("/api/applications", json=APP_PAYLOAD)
@@ -44,7 +46,6 @@ async def test_create_application_returns_401_without_auth(client):
     assert response.status_code == 401
 
 
-@pytest.mark.asyncio
 async def test_create_application_returns_409_on_duplicate(client, test_user):
     # Arrange
     _, cookies = test_user
@@ -58,7 +59,6 @@ async def test_create_application_returns_409_on_duplicate(client, test_user):
     assert response.json()["detail"]["code"] == "DUPLICATE_APPLICATION"
 
 
-@pytest.mark.asyncio
 async def test_create_application_returns_409_on_case_insensitive_duplicate(client, test_user):
     # Arrange
     _, cookies = test_user
@@ -80,7 +80,6 @@ async def test_create_application_returns_409_on_case_insensitive_duplicate(clie
     assert response.json()["detail"]["code"] == "DUPLICATE_APPLICATION"
 
 
-@pytest.mark.asyncio
 async def test_create_application_returns_422_on_missing_required_field(client, test_user):
     # Arrange
     _, cookies = test_user
@@ -99,7 +98,6 @@ async def test_create_application_returns_422_on_missing_required_field(client, 
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.asyncio
 async def test_get_stats_returns_zeroes_for_empty_pipeline(client, test_user):
     # Arrange
     _, cookies = test_user
@@ -115,7 +113,6 @@ async def test_get_stats_returns_zeroes_for_empty_pipeline(client, test_user):
     assert data["response_rate"] == 0.0
 
 
-@pytest.mark.asyncio
 async def test_get_stats_counts_created_applications(client, test_user):
     # Arrange
     _, cookies = test_user
@@ -135,7 +132,6 @@ async def test_get_stats_counts_created_applications(client, test_user):
     assert data["active_count"] == 2
 
 
-@pytest.mark.asyncio
 async def test_get_stats_returns_401_without_auth(client):
     # Act
     response = await client.get("/api/applications/stats")
@@ -144,7 +140,6 @@ async def test_get_stats_returns_401_without_auth(client):
     assert response.status_code == 401
 
 
-@pytest.mark.asyncio
 async def test_get_stats_stale_count_counts_active_stale_applications(client, test_user):
     # Arrange — create two applications
     user, cookies = test_user
@@ -176,7 +171,6 @@ async def test_get_stats_stale_count_counts_active_stale_applications(client, te
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.asyncio
 async def test_list_applications_returns_envelope_with_meta(client, test_user):
     # Arrange
     _, cookies = test_user
@@ -194,7 +188,6 @@ async def test_list_applications_returns_envelope_with_meta(client, test_user):
     assert body["meta"]["next_cursor"] is None
 
 
-@pytest.mark.asyncio
 async def test_list_applications_scoped_to_current_user(client):
     # Arrange — register two separate users
     resp_a = await client.post(
@@ -225,7 +218,6 @@ async def test_list_applications_scoped_to_current_user(client):
     assert body["data"][0]["company"] == "Acme Corp"
 
 
-@pytest.mark.asyncio
 async def test_list_applications_pagination_returns_next_cursor(client, test_user):
     # Arrange
     _, cookies = test_user
@@ -245,7 +237,6 @@ async def test_list_applications_pagination_returns_next_cursor(client, test_use
     assert body["meta"]["next_cursor"] is not None
 
 
-@pytest.mark.asyncio
 async def test_list_applications_empty_collection_returns_empty_data(client, test_user):
     # Arrange — no applications created for this user
 
@@ -262,7 +253,6 @@ async def test_list_applications_empty_collection_returns_empty_data(client, tes
     assert body["meta"]["count"] == 0
 
 
-@pytest.mark.asyncio
 async def test_list_applications_returns_401_without_auth(client):
     # Act
     response = await client.get("/api/applications")
@@ -276,7 +266,6 @@ async def test_list_applications_returns_401_without_auth(client):
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.asyncio
 async def test_get_application_returns_full_doc(client, test_user):
     # Arrange
     _, cookies = test_user
@@ -293,7 +282,6 @@ async def test_get_application_returns_full_doc(client, test_user):
     assert "stage_history" in data
 
 
-@pytest.mark.asyncio
 async def test_get_application_returns_404_for_wrong_user(client):
     # Arrange — two users
     resp_a = await client.post(
@@ -318,7 +306,6 @@ async def test_get_application_returns_404_for_wrong_user(client):
     assert response.status_code == 404
 
 
-@pytest.mark.asyncio
 async def test_get_application_returns_401_without_auth(client, test_user):
     # Arrange
     _, cookies = test_user
@@ -337,7 +324,6 @@ async def test_get_application_returns_401_without_auth(client, test_user):
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.asyncio
 async def test_update_application_returns_updated_doc(client, test_user):
     # Arrange
     _, cookies = test_user
@@ -357,7 +343,6 @@ async def test_update_application_returns_updated_doc(client, test_user):
     assert data["current_stage"] == "Phone Screen"
 
 
-@pytest.mark.asyncio
 async def test_update_application_returns_404_for_missing_app(client, test_user):
     # Arrange
     _, cookies = test_user
@@ -374,7 +359,6 @@ async def test_update_application_returns_404_for_missing_app(client, test_user)
     assert response.status_code == 404
 
 
-@pytest.mark.asyncio
 async def test_update_application_returns_401_without_auth(client, test_user):
     # Arrange
     _, cookies = test_user
@@ -393,7 +377,6 @@ async def test_update_application_returns_401_without_auth(client, test_user):
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.asyncio
 async def test_delete_application_returns_204(client, test_user):
     # Arrange
     _, cookies = test_user
@@ -407,7 +390,6 @@ async def test_delete_application_returns_204(client, test_user):
     assert response.status_code == 204
 
 
-@pytest.mark.asyncio
 async def test_delete_application_removes_from_list(client, test_user):
     # Arrange
     _, cookies = test_user
@@ -422,7 +404,6 @@ async def test_delete_application_removes_from_list(client, test_user):
     assert response.json()["meta"]["count"] == 0
 
 
-@pytest.mark.asyncio
 async def test_delete_application_returns_404_for_missing_app(client, test_user):
     # Arrange
     _, cookies = test_user
@@ -435,7 +416,6 @@ async def test_delete_application_returns_404_for_missing_app(client, test_user)
     assert response.status_code == 404
 
 
-@pytest.mark.asyncio
 async def test_delete_application_returns_401_without_auth(client, test_user):
     # Arrange
     _, cookies = test_user
@@ -454,7 +434,6 @@ async def test_delete_application_returns_401_without_auth(client, test_user):
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.asyncio
 async def test_archive_application_returns_200_with_archived_true(client, test_user):
     # Arrange
     _, cookies = test_user
@@ -471,7 +450,6 @@ async def test_archive_application_returns_200_with_archived_true(client, test_u
     assert data["archived_at"] is not None
 
 
-@pytest.mark.asyncio
 async def test_unarchive_application_returns_200_with_archived_false(client, test_user):
     # Arrange
     _, cookies = test_user
@@ -489,7 +467,6 @@ async def test_unarchive_application_returns_200_with_archived_false(client, tes
     assert data["archived_at"] is None
 
 
-@pytest.mark.asyncio
 async def test_list_applications_excludes_archived_by_default(client, test_user):
     # Arrange
     _, cookies = test_user
@@ -506,7 +483,6 @@ async def test_list_applications_excludes_archived_by_default(client, test_user)
     assert body["meta"]["count"] == 0
 
 
-@pytest.mark.asyncio
 async def test_list_applications_includes_archived_when_param_is_true(client, test_user):
     # Arrange
     _, cookies = test_user
@@ -524,7 +500,6 @@ async def test_list_applications_includes_archived_when_param_is_true(client, te
     assert body["data"][0]["archived"] is True
 
 
-@pytest.mark.asyncio
 async def test_archive_application_returns_404_for_missing_app(client, test_user):
     # Arrange
     _, cookies = test_user
@@ -542,7 +517,6 @@ async def test_archive_application_returns_404_for_missing_app(client, test_user
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.asyncio
 async def test_add_stage_inserts_at_given_position(client, test_user):
     # Arrange
     _, cookies = test_user
@@ -563,7 +537,6 @@ async def test_add_stage_inserts_at_given_position(client, test_user):
     assert stages.index("Technical Screen") == 1
 
 
-@pytest.mark.asyncio
 async def test_add_stage_returns_404_for_missing_app(client, test_user):
     # Arrange
     _, cookies = test_user
@@ -585,7 +558,6 @@ async def test_add_stage_returns_404_for_missing_app(client, test_user):
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.asyncio
 async def test_remove_stage_removes_inactive_stage(client, test_user):
     # Arrange
     _, cookies = test_user
@@ -611,7 +583,6 @@ async def test_remove_stage_removes_inactive_stage(client, test_user):
     assert "Custom Stage" not in stages
 
 
-@pytest.mark.asyncio
 async def test_remove_stage_returns_409_when_stage_is_active(client, test_user):
     # Arrange
     _, cookies = test_user
@@ -629,7 +600,6 @@ async def test_remove_stage_returns_409_when_stage_is_active(client, test_user):
     assert response.json()["detail"]["code"] == "STAGE_ACTIVE"
 
 
-@pytest.mark.asyncio
 async def test_remove_stage_returns_404_for_missing_app(client, test_user):
     # Arrange
     _, cookies = test_user
@@ -643,3 +613,69 @@ async def test_remove_stage_returns_404_for_missing_app(client, test_user):
 
     # Assert
     assert response.status_code == 404
+
+
+# ---------------------------------------------------------------------------
+# GET /api/applications/export
+# ---------------------------------------------------------------------------
+
+
+async def test_export_csv_returns_csv_with_correct_structure(client, test_user):
+    # Arrange
+    _, cookies = test_user
+    await client.post("/api/applications", json=APP_PAYLOAD, cookies=cookies)
+    await client.post(
+        "/api/applications",
+        json={**APP_PAYLOAD, "company": "Beta Inc"},
+        cookies=cookies,
+    )
+
+    # Act
+    response = await client.get("/api/applications/export", cookies=cookies)
+
+    # Assert
+    assert response.status_code == 200
+    assert "text/csv" in response.headers["content-type"]
+    lines = [ln.rstrip("\r") for ln in response.text.strip().split("\n") if ln.strip("\r")]
+    expected_header = "id,role_title,company,stage,location,remote_status,compensation,company_type,tags,applied_at,updated_at,notes"
+    assert lines[0] == expected_header
+    assert len(lines[0].split(",")) == 12
+    assert len(lines) == 3  # header + 2 data rows
+
+
+async def test_export_csv_excludes_archived_by_default(client, test_user):
+    # Arrange
+    _, cookies = test_user
+    resp = await client.post("/api/applications", json=APP_PAYLOAD, cookies=cookies)
+    app_id = resp.json()["data"]["id"]
+    await client.patch(f"/api/applications/{app_id}/archive", cookies=cookies)
+
+    # Act
+    response = await client.get("/api/applications/export", cookies=cookies)
+
+    # Assert
+    lines = [ln.rstrip("\r") for ln in response.text.strip().split("\n") if ln.strip("\r")]
+    assert len(lines) == 1  # header only; archived app excluded
+
+
+async def test_export_csv_includes_archived_when_param_is_true(client, test_user):
+    # Arrange
+    _, cookies = test_user
+    resp = await client.post("/api/applications", json=APP_PAYLOAD, cookies=cookies)
+    app_id = resp.json()["data"]["id"]
+    await client.patch(f"/api/applications/{app_id}/archive", cookies=cookies)
+
+    # Act
+    response = await client.get("/api/applications/export?include_archived=true", cookies=cookies)
+
+    # Assert
+    lines = [ln.rstrip("\r") for ln in response.text.strip().split("\n") if ln.strip("\r")]
+    assert len(lines) == 2  # header + archived row
+
+
+async def test_export_csv_returns_401_without_auth(client):
+    # Act
+    response = await client.get("/api/applications/export")
+
+    # Assert
+    assert response.status_code == 401

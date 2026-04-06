@@ -3,7 +3,7 @@
 import datetime as dt
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, Field
 
 ValidEventType = Literal[
     "phone_screen",
@@ -19,8 +19,6 @@ MAX_TITLE_LENGTH = 200
 
 
 class EventCreate(BaseModel):
-    model_config = ConfigDict(strict=True)
-
     application_id: str
     event_type: ValidEventType
     date: dt.date
@@ -30,8 +28,6 @@ class EventCreate(BaseModel):
 
 
 class EventUpdate(BaseModel):
-    model_config = ConfigDict(strict=True)
-
     event_type: ValidEventType | None = None
     date: dt.date | None = None
     time: dt.time | None = None
@@ -52,12 +48,16 @@ class EventResponse(BaseModel):
 
     @classmethod
     def from_doc(cls, doc: dict) -> "EventResponse":
+        raw_date = doc["date"]
+        parsed_date = raw_date.date() if isinstance(raw_date, dt.datetime) else raw_date
+        raw_time = doc.get("time")
+        parsed_time = dt.time.fromisoformat(raw_time) if isinstance(raw_time, str) else raw_time
         return cls(
             id=str(doc["_id"]),
             application_id=str(doc["application_id"]),
             event_type=doc["event_type"],
-            date=doc["date"],
-            time=doc.get("time"),
+            date=parsed_date,
+            time=parsed_time,
             notes=doc.get("notes"),
             title=doc.get("title"),
             company=doc.get("company"),

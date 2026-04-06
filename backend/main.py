@@ -68,7 +68,7 @@ def _get_cors_origins() -> list[str]:
     return origins
 
 
-def create_app() -> FastAPI:
+def create_app(*, testing: bool = False) -> FastAPI:
     """Construct and configure the FastAPI application."""
     app = FastAPI(
         title="Pipelined API",
@@ -78,7 +78,8 @@ def create_app() -> FastAPI:
 
     app.state.limiter = limiter
     app.add_exception_handler(RateLimitExceeded, _rate_limit_handler)
-    app.add_middleware(SlowAPIMiddleware)
+    if not testing:
+        app.add_middleware(SlowAPIMiddleware)
 
     app.add_middleware(
         CORSMiddleware,

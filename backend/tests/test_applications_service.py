@@ -22,6 +22,8 @@ from applications.service import (
 )
 from auth.service import create_user
 
+pytestmark = pytest.mark.asyncio(loop_scope="session")
+
 # ---------------------------------------------------------------------------
 # Pure-function tests (no MongoDB required)
 # ---------------------------------------------------------------------------
@@ -111,7 +113,6 @@ def test_build_filter_applies_date_range_when_both_set():
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.asyncio
 async def test_create_application_initializes_stage_and_history(app):
     # Arrange
     user = await create_user("svc@example.com", "TestPass123!", "SVC User")
@@ -130,7 +131,6 @@ async def test_create_application_initializes_stage_and_history(app):
     assert doc["user_id"] == ObjectId(user_id)
 
 
-@pytest.mark.asyncio
 async def test_create_application_raises_duplicate_error_on_same_company_role(app):
     # Arrange
     user = await create_user("dup@example.com", "TestPass123!", "Dup User")
@@ -145,7 +145,6 @@ async def test_create_application_raises_duplicate_error_on_same_company_role(ap
     assert exc_info.value.existing_id is not None
 
 
-@pytest.mark.asyncio
 async def test_list_applications_returns_docs_scoped_to_user(app):
     # Arrange
     user_a = await create_user("a@example.com", "TestPass123!", "User A")
@@ -162,7 +161,6 @@ async def test_list_applications_returns_docs_scoped_to_user(app):
     assert next_cursor is None
 
 
-@pytest.mark.asyncio
 async def test_list_applications_returns_next_cursor_when_more_pages_exist(app):
     # Arrange
     user = await create_user("page@example.com", "TestPass123!", "Page User")
@@ -178,7 +176,6 @@ async def test_list_applications_returns_next_cursor_when_more_pages_exist(app):
     assert next_cursor is not None
 
 
-@pytest.mark.asyncio
 async def test_get_application_returns_full_doc(app):
     # Arrange
     user = await create_user("get@example.com", "TestPass123!", "Get User")
@@ -194,7 +191,6 @@ async def test_get_application_returns_full_doc(app):
     assert "stage_history" in result
 
 
-@pytest.mark.asyncio
 async def test_get_application_returns_none_for_wrong_user(app):
     # Arrange
     user_a = await create_user("owner@example.com", "TestPass123!", "Owner")
@@ -208,7 +204,6 @@ async def test_get_application_returns_none_for_wrong_user(app):
     assert result is None
 
 
-@pytest.mark.asyncio
 async def test_update_application_appends_stage_history_on_stage_change(app):
     # Arrange
     user = await create_user("upd@example.com", "TestPass123!", "Upd User")
@@ -225,7 +220,6 @@ async def test_update_application_appends_stage_history_on_stage_change(app):
     assert updated["stage_history"][-1]["stage"] == "Onsite"
 
 
-@pytest.mark.asyncio
 async def test_update_application_without_stage_change_does_not_append_history(app):
     # Arrange
     user = await create_user("nochange@example.com", "TestPass123!", "No Change")
@@ -240,7 +234,6 @@ async def test_update_application_without_stage_change_does_not_append_history(a
     assert len(updated["stage_history"]) == 1
 
 
-@pytest.mark.asyncio
 async def test_delete_application_removes_doc_and_returns_true(app):
     # Arrange
     user = await create_user("del@example.com", "TestPass123!", "Del User")
@@ -255,7 +248,6 @@ async def test_delete_application_removes_doc_and_returns_true(app):
     assert await get(uid, str(doc["_id"])) is None
 
 
-@pytest.mark.asyncio
 async def test_delete_application_returns_false_for_missing_id(app):
     # Arrange
     user = await create_user("miss@example.com", "TestPass123!", "Miss User")
@@ -268,7 +260,6 @@ async def test_delete_application_returns_false_for_missing_id(app):
     assert result is False
 
 
-@pytest.mark.asyncio
 async def test_compute_stats_returns_correct_totals(app):
     # Arrange
     user = await create_user("stats@example.com", "TestPass123!", "Stats User")
@@ -293,7 +284,6 @@ async def test_compute_stats_returns_correct_totals(app):
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.asyncio
 async def test_apply_openai_fallback_fills_role_title_and_company():
     # Arrange
     body = ApplicationCreate(role_title=None, company=None, source="extension", page_text="Software Engineer at Acme")
@@ -315,7 +305,6 @@ async def test_apply_openai_fallback_fills_role_title_and_company():
     assert result.company == "Acme Corp"
 
 
-@pytest.mark.asyncio
 async def test_apply_openai_fallback_returns_body_unchanged_when_no_page_text():
     # Arrange
     body = ApplicationCreate(role_title=None, company=None, source="extension", page_text=None)
@@ -327,7 +316,6 @@ async def test_apply_openai_fallback_returns_body_unchanged_when_no_page_text():
     assert result is body
 
 
-@pytest.mark.asyncio
 async def test_apply_openai_fallback_returns_body_unchanged_on_parse_failure():
     # Arrange
     body = ApplicationCreate(role_title=None, company=None, source="extension", page_text="some text")
@@ -340,7 +328,6 @@ async def test_apply_openai_fallback_returns_body_unchanged_on_parse_failure():
     assert result is body
 
 
-@pytest.mark.asyncio
 async def test_create_extension_application_triggers_openai_fallback_when_fields_missing(app):
     # Arrange
     user = await create_user("wd@example.com", "TestPass123!", "WD User")
@@ -370,7 +357,6 @@ async def test_create_extension_application_triggers_openai_fallback_when_fields
     assert "page_text" not in doc
 
 
-@pytest.mark.asyncio
 async def test_create_extension_application_saves_partial_data_when_openai_fails(app):
     # Arrange
     user = await create_user("wd2@example.com", "TestPass123!", "WD2 User")

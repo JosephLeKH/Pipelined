@@ -16,8 +16,9 @@ from auth.service import (
 )
 from config import settings
 
+pytestmark = pytest.mark.asyncio(loop_scope="session")
 
-@pytest.mark.asyncio
+
 async def test_hash_password_returns_bcrypt_hash():
     # Act
     hashed = hash_password("TestPass123!")
@@ -27,7 +28,6 @@ async def test_hash_password_returns_bcrypt_hash():
     assert hashed.startswith("$2b$12$")
 
 
-@pytest.mark.asyncio
 async def test_verify_password_returns_true_for_correct_password():
     # Arrange
     hashed = hash_password("TestPass123!")
@@ -36,7 +36,6 @@ async def test_verify_password_returns_true_for_correct_password():
     assert verify_password("TestPass123!", hashed) is True
 
 
-@pytest.mark.asyncio
 async def test_verify_password_returns_false_for_wrong_password():
     # Arrange
     hashed = hash_password("TestPass123!")
@@ -45,7 +44,6 @@ async def test_verify_password_returns_false_for_wrong_password():
     assert verify_password("WrongPass!", hashed) is False
 
 
-@pytest.mark.asyncio
 async def test_create_access_token_contains_correct_claims():
     # Arrange
     user_id = "507f1f77bcf86cd799439011"
@@ -59,7 +57,6 @@ async def test_create_access_token_contains_correct_claims():
     assert payload["type"] == "access"
 
 
-@pytest.mark.asyncio
 async def test_create_refresh_token_contains_correct_claims():
     # Arrange
     user_id = "507f1f77bcf86cd799439011"
@@ -73,7 +70,6 @@ async def test_create_refresh_token_contains_correct_claims():
     assert payload["type"] == "refresh"
 
 
-@pytest.mark.asyncio
 async def test_access_token_ttl_differs_from_refresh_token_ttl():
     # Arrange
     user_id = "507f1f77bcf86cd799439011"
@@ -88,7 +84,6 @@ async def test_access_token_ttl_differs_from_refresh_token_ttl():
     assert refresh_payload["exp"] > access_payload["exp"]
 
 
-@pytest.mark.asyncio
 async def test_decode_token_returns_token_payload_for_valid_token():
     # Arrange
     user_id = "507f1f77bcf86cd799439011"
@@ -102,14 +97,12 @@ async def test_decode_token_returns_token_payload_for_valid_token():
     assert payload.type == "access"
 
 
-@pytest.mark.asyncio
 async def test_decode_token_raises_for_invalid_token():
     # Act / Assert
     with pytest.raises(pyjwt.exceptions.InvalidTokenError):
         decode_token("not.a.valid.token")
 
 
-@pytest.mark.asyncio
 async def test_create_user_inserts_with_default_stages(app):
     # Act
     doc = await create_user("user@example.com", "TestPass123!", "Test User")
@@ -121,7 +114,6 @@ async def test_create_user_inserts_with_default_stages(app):
     assert "_id" in doc
 
 
-@pytest.mark.asyncio
 async def test_create_user_stores_hashed_password_not_plaintext(app):
     # Act
     doc = await create_user("hash@example.com", "TestPass123!", "Hash User")
@@ -132,7 +124,6 @@ async def test_create_user_stores_hashed_password_not_plaintext(app):
     assert doc["password_hash"].startswith("$2b$12$")
 
 
-@pytest.mark.asyncio
 async def test_create_user_raises_duplicate_email_error_on_duplicate(app):
     # Arrange
     await create_user("dup@example.com", "TestPass123!", "User One")
@@ -142,7 +133,6 @@ async def test_create_user_raises_duplicate_email_error_on_duplicate(app):
         await create_user("dup@example.com", "OtherPass456!", "User Two")
 
 
-@pytest.mark.asyncio
 async def test_get_user_by_email_returns_doc_for_existing_user(app):
     # Arrange
     await create_user("find@example.com", "TestPass123!", "Find Me")
@@ -155,7 +145,6 @@ async def test_get_user_by_email_returns_doc_for_existing_user(app):
     assert doc["email"] == "find@example.com"
 
 
-@pytest.mark.asyncio
 async def test_get_user_by_email_returns_none_for_missing_user(app):
     # Act
     result = await get_user_by_email("notfound@example.com")
@@ -164,7 +153,6 @@ async def test_get_user_by_email_returns_none_for_missing_user(app):
     assert result is None
 
 
-@pytest.mark.asyncio
 async def test_get_user_by_id_returns_doc_for_existing_user(app):
     # Arrange
     inserted = await create_user("byid@example.com", "TestPass123!", "By ID")
@@ -178,7 +166,6 @@ async def test_get_user_by_id_returns_doc_for_existing_user(app):
     assert str(result["_id"]) == user_id
 
 
-@pytest.mark.asyncio
 async def test_get_user_by_id_returns_none_for_missing_id(app):
     # Act
     result = await get_user_by_id("507f1f77bcf86cd799439011")

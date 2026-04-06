@@ -15,6 +15,11 @@ MAX_CALENDAR_EVENTS = 500
 MAX_DATE_RANGE_DAYS = 366
 
 
+def _date_to_datetime(d: dt.date) -> dt.datetime:
+    """Convert a date to midnight UTC datetime for BSON storage."""
+    return dt.datetime(d.year, d.month, d.day, tzinfo=dt.timezone.utc)
+
+
 class EventNotFoundError(Exception):
     """Raised when a calendar event does not exist for this user."""
 
@@ -41,8 +46,8 @@ async def create_event(user_id: str, body: EventCreate) -> dict:
         "user_id": uid,
         "application_id": aid,
         "event_type": body.event_type,
-        "date": body.date,
-        "time": body.time,
+        "date": _date_to_datetime(body.date),
+        "time": body.time.isoformat() if body.time else None,
         "notes": body.notes,
         "title": body.title,
     }
@@ -80,7 +85,10 @@ async def list_events(
             month=today.month % 12 + 1,
             year=today.year + today.month // 12,
         ) - dt.timedelta(days=1)
-        match_filter["date"] = {"$gte": effective_from, "$lte": effective_to}
+        match_filter["date"] = {
+            "$gte": _date_to_datetime(effective_from),
+            "$lte": _date_to_datetime(effective_to),
+        }
 
     pipeline = [
         {"$match": match_filter},
@@ -113,7 +121,15 @@ async def update_event(user_id: str, event_id: str, updates: EventUpdate) -> dic
     eid = ObjectId(event_id)
     events = get_collection("calendar_events")
 
-    set_fields = {k: v for k, v in updates.model_dump(exclude_none=True).items()}
+    raw = updates.model_dump(exclude_none=True)
+    set_fields: dict = {}
+    for k, v in raw.items():
+        if isinstance(v, dt.date) and not isinstance(v, dt.datetime):
+            set_fields[k] = _date_to_datetime(v)
+        elif isinstance(v, dt.time):
+            set_fields[k] = v.isoformat()
+        else:
+            set_fields[k] = v
     if not set_fields:
         # Nothing to update — fetch and return current doc enriched with app data
         return await _get_enriched(uid, eid)

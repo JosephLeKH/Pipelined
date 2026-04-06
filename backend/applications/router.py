@@ -2,6 +2,7 @@
 
 import structlog
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response
+from fastapi.responses import StreamingResponse
 
 from applications import service as app_service
 from applications.schemas import (
@@ -99,6 +100,21 @@ async def list_applications(
         "data": items,
         "meta": {"next_cursor": next_cursor, "count": len(items)},
     }
+
+
+@router.get("/export", status_code=200)
+async def export_applications_csv(
+    include_archived: bool = Query(default=False),
+    user: dict = Depends(get_current_user),
+) -> StreamingResponse:
+    """Export the current user's applications as a CSV file download."""
+    user_id = str(user["_id"])
+    csv_content = await app_service.export_applications(user_id, include_archived)
+    return StreamingResponse(
+        iter([csv_content]),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=applications.csv"},
+    )
 
 
 @router.get("/{app_id}", status_code=200)

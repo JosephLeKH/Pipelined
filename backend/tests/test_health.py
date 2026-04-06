@@ -4,8 +4,9 @@ import pytest
 
 from config import DEV_JWT_SECRET, Settings, validate_production_secrets
 
+pytestmark = pytest.mark.asyncio(loop_scope="session")
 
-@pytest.mark.asyncio
+
 async def test_health_returns_200_with_ok_status(client):
     # Act
     response = await client.get("/health")
@@ -15,7 +16,6 @@ async def test_health_returns_200_with_ok_status(client):
     assert response.json() == {"status": "ok"}
 
 
-@pytest.mark.asyncio
 async def test_health_cors_header_present_for_allowed_origin(client):
     # Act
     response = await client.get(

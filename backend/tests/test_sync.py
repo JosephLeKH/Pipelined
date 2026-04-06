@@ -17,6 +17,8 @@ from jobs.sync import (
     sync_github_repos,
 )
 
+pytestmark = pytest.mark.asyncio(loop_scope="session")
+
 SAMPLE_README = """
 # Summer 2026 Internships
 
@@ -100,7 +102,6 @@ def test_parse_internship_table_returns_empty_for_no_table():
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.asyncio
 async def test_upsert_listing_inserts_new_document(app):
     # Arrange
     col = get_collection("job_listings")
@@ -123,7 +124,6 @@ async def test_upsert_listing_inserts_new_document(app):
     assert "url_hash" in doc
 
 
-@pytest.mark.asyncio
 async def test_upsert_listing_deduplicates_by_url_hash(app):
     # Arrange
     col = get_collection("job_listings")
@@ -145,7 +145,6 @@ async def test_upsert_listing_deduplicates_by_url_hash(app):
     assert doc["company"] == "Acme Updated"
 
 
-@pytest.mark.asyncio
 async def test_upsert_listing_preserves_ingested_at_on_update(app):
     # Arrange
     col = get_collection("job_listings")
@@ -173,7 +172,6 @@ async def test_upsert_listing_preserves_ingested_at_on_update(app):
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.asyncio
 async def test_mark_stale_listings_marks_old_documents(app):
     # Arrange
     col = get_collection("job_listings")
@@ -193,7 +191,6 @@ async def test_mark_stale_listings_marks_old_documents(app):
     assert doc["is_stale"] is True
 
 
-@pytest.mark.asyncio
 async def test_mark_stale_listings_does_not_mark_recent_documents(app):
     # Arrange
     col = get_collection("job_listings")
@@ -228,7 +225,6 @@ def _make_readme_response(content: str) -> MagicMock:
     return resp
 
 
-@pytest.mark.asyncio
 async def test_sync_github_repos_ingests_listings(app):
     # Arrange
     col = get_collection("job_listings")
@@ -255,7 +251,6 @@ async def test_sync_github_repos_ingests_listings(app):
     assert "Widgets Inc" in companies
 
 
-@pytest.mark.asyncio
 async def test_sync_github_repos_continues_on_repo_error(app):
     # Arrange — mock the client to raise on the first call, succeed on the second
     col = get_collection("job_listings")

@@ -7,6 +7,8 @@ import pytest
 
 from parsing.openai_client import EXPECTED_FIELDS, parse_with_openai
 
+pytestmark = pytest.mark.asyncio(loop_scope="session")
+
 
 def _make_openai_response(content: str) -> MagicMock:
     """Build a minimal mock of the OpenAI chat completion response object."""
@@ -31,7 +33,6 @@ VALID_PAYLOAD = {
 }
 
 
-@pytest.mark.asyncio
 async def test_parse_with_openai_returns_all_six_fields_on_success():
     # Arrange
     mock_response = _make_openai_response(json.dumps(VALID_PAYLOAD))
@@ -55,7 +56,6 @@ async def test_parse_with_openai_returns_all_six_fields_on_success():
     assert result["remote_status"] == "hybrid"
 
 
-@pytest.mark.asyncio
 async def test_parse_with_openai_returns_null_result_when_api_key_missing():
     # Arrange
     with patch("parsing.openai_client.settings") as mock_settings:
@@ -69,7 +69,6 @@ async def test_parse_with_openai_returns_null_result_when_api_key_missing():
     assert all(v is None for v in result.values())
 
 
-@pytest.mark.asyncio
 async def test_parse_with_openai_returns_null_result_on_openai_error():
     # Arrange
     from openai import OpenAIError
@@ -91,7 +90,6 @@ async def test_parse_with_openai_returns_null_result_on_openai_error():
     assert all(v is None for v in result.values())
 
 
-@pytest.mark.asyncio
 async def test_parse_with_openai_returns_null_result_on_invalid_json():
     # Arrange
     mock_response = _make_openai_response("not valid json at all")
@@ -112,7 +110,6 @@ async def test_parse_with_openai_returns_null_result_on_invalid_json():
     assert all(v is None for v in result.values())
 
 
-@pytest.mark.asyncio
 async def test_parse_with_openai_returns_null_result_when_response_missing_fields():
     # Arrange — response has only 2 of 6 required fields
     partial = {"role_title": "Engineer", "company_name": "Acme"}
@@ -134,7 +131,6 @@ async def test_parse_with_openai_returns_null_result_when_response_missing_field
     assert all(v is None for v in result.values())
 
 
-@pytest.mark.asyncio
 async def test_parse_with_openai_returns_null_for_missing_optional_fields():
     # Arrange — valid structure but optional fields are null
     payload = {

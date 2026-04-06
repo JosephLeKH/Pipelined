@@ -2,6 +2,8 @@
 
 import pytest
 
+pytestmark = pytest.mark.asyncio(loop_scope="session")
+
 REGISTER_PAYLOAD = {
     "email": "test@example.com",
     "password": "TestPass123!",
@@ -9,7 +11,6 @@ REGISTER_PAYLOAD = {
 }
 
 
-@pytest.mark.asyncio
 async def test_register_returns_201_with_user_data(client):
     # Act
     response = await client.post("/api/auth/register", json=REGISTER_PAYLOAD)
@@ -23,7 +24,6 @@ async def test_register_returns_201_with_user_data(client):
     assert "password_hash" not in data
 
 
-@pytest.mark.asyncio
 async def test_register_sets_auth_cookies(client):
     # Act
     response = await client.post("/api/auth/register", json=REGISTER_PAYLOAD)
@@ -33,7 +33,6 @@ async def test_register_sets_auth_cookies(client):
     assert "refresh_token" in response.cookies
 
 
-@pytest.mark.asyncio
 async def test_register_returns_409_for_duplicate_email(client):
     # Arrange
     await client.post("/api/auth/register", json=REGISTER_PAYLOAD)
@@ -46,7 +45,6 @@ async def test_register_returns_409_for_duplicate_email(client):
     assert response.json()["detail"]["code"] == "DUPLICATE_EMAIL"
 
 
-@pytest.mark.asyncio
 async def test_login_returns_200_with_valid_credentials(client):
     # Arrange
     await client.post("/api/auth/register", json=REGISTER_PAYLOAD)
@@ -62,7 +60,6 @@ async def test_login_returns_200_with_valid_credentials(client):
     assert response.json()["data"]["email"] == "test@example.com"
 
 
-@pytest.mark.asyncio
 async def test_login_sets_auth_cookies(client):
     # Arrange
     await client.post("/api/auth/register", json=REGISTER_PAYLOAD)
@@ -78,7 +75,6 @@ async def test_login_sets_auth_cookies(client):
     assert "refresh_token" in response.cookies
 
 
-@pytest.mark.asyncio
 async def test_login_returns_401_for_wrong_password(client):
     # Arrange
     await client.post("/api/auth/register", json=REGISTER_PAYLOAD)
@@ -94,7 +90,6 @@ async def test_login_returns_401_for_wrong_password(client):
     assert response.json()["detail"]["code"] == "INVALID_CREDENTIALS"
 
 
-@pytest.mark.asyncio
 async def test_login_returns_401_for_unknown_email(client):
     # Act
     response = await client.post("/api/auth/login", json={
@@ -107,7 +102,6 @@ async def test_login_returns_401_for_unknown_email(client):
     assert response.json()["detail"]["code"] == "INVALID_CREDENTIALS"
 
 
-@pytest.mark.asyncio
 async def test_logout_returns_204(client):
     # Act
     response = await client.post("/api/auth/logout")
@@ -116,7 +110,6 @@ async def test_logout_returns_204(client):
     assert response.status_code == 204
 
 
-@pytest.mark.asyncio
 async def test_me_returns_current_user(client):
     # Arrange
     reg = await client.post("/api/auth/register", json=REGISTER_PAYLOAD)
@@ -132,7 +125,6 @@ async def test_me_returns_current_user(client):
     assert data["display_name"] == "Test User"
 
 
-@pytest.mark.asyncio
 async def test_me_returns_401_without_auth(client):
     # Act
     response = await client.get("/api/auth/me")
@@ -142,7 +134,6 @@ async def test_me_returns_401_without_auth(client):
     assert response.json()["detail"]["code"] == "MISSING_TOKEN"
 
 
-@pytest.mark.asyncio
 async def test_me_returns_401_for_invalid_token(client):
     # Act
     response = await client.get("/api/auth/me", cookies={"access_token": "not.a.valid.token"})
@@ -152,7 +143,6 @@ async def test_me_returns_401_for_invalid_token(client):
     assert response.json()["detail"]["code"] == "INVALID_TOKEN"
 
 
-@pytest.mark.asyncio
 async def test_refresh_issues_new_access_token(client):
     # Arrange
     reg = await client.post("/api/auth/register", json=REGISTER_PAYLOAD)
@@ -170,7 +160,6 @@ async def test_refresh_issues_new_access_token(client):
     assert response.json()["data"]["email"] == "test@example.com"
 
 
-@pytest.mark.asyncio
 async def test_refresh_returns_401_without_refresh_cookie(client):
     # Act
     response = await client.post("/api/auth/refresh")
@@ -180,7 +169,6 @@ async def test_refresh_returns_401_without_refresh_cookie(client):
     assert response.json()["detail"]["code"] == "MISSING_TOKEN"
 
 
-@pytest.mark.asyncio
 async def test_refresh_returns_401_for_invalid_token(client):
     # Act
     response = await client.post(
@@ -193,7 +181,6 @@ async def test_refresh_returns_401_for_invalid_token(client):
     assert response.json()["detail"]["code"] == "INVALID_TOKEN"
 
 
-@pytest.mark.asyncio
 async def test_refresh_returns_401_when_access_token_used_as_refresh(client):
     # Arrange
     reg = await client.post("/api/auth/register", json=REGISTER_PAYLOAD)

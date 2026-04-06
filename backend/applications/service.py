@@ -1,5 +1,7 @@
 """Application CRUD, duplicate guard, and stage transition logic."""
 
+import csv
+import io
 from datetime import datetime, timedelta, timezone
 
 import structlog
@@ -27,6 +29,26 @@ LIST_PROJECTION = {
     "tags": 1,
     "archived": 1,
     "archived_at": 1,
+}
+
+CSV_EXPORT_COLUMNS = (
+    "id", "role_title", "company", "stage", "location",
+    "remote_status", "compensation", "company_type",
+    "tags", "applied_at", "updated_at", "notes",
+)
+
+EXPORT_PROJECTION = {
+    "role_title": 1,
+    "company": 1,
+    "current_stage": 1,
+    "location": 1,
+    "remote_status": 1,
+    "compensation": 1,
+    "company_type": 1,
+    "tags": 1,
+    "date_applied": 1,
+    "updated_at": 1,
+    "notes": 1,
 }
 
 
@@ -313,6 +335,42 @@ async def remove_stage(user_id: str, app_id: str, name: str) -> list[str] | None
         return None
     logger.info("stage_removed", user_id=user_id, app_id=app_id, stage=name)
     return result["stages"]
+
+
+async def export_applications(user_id: str, include_archived: bool = False) -> str:
+    """Return all matching applications serialized as a CSV string."""
+    uid = ObjectId(user_id)
+    apps = get_collection("applications")
+
+    mongo_filter: dict = {"user_id": uid}
+    if not include_archived:
+        mongo_filter["archived"] = {"$ne": True}
+
+    docs = await apps.find(mongo_filter, projection=EXPORT_PROJECTION).to_list(length=None)
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(CSV_EXPORT_COLUMNS)
+    for doc in docs:
+        tags = ";".join(doc.get("tags") or [])
+        applied = doc.get("date_applied")
+        updated = doc.get("updated_at")
+        writer.writerow([
+            str(doc["_id"]),
+            doc.get("role_title") or "",
+            doc.get("company") or "",
+            doc.get("current_stage") or "",
+            doc.get("location") or "",
+            doc.get("remote_status") or "",
+            doc.get("compensation") or "",
+            doc.get("company_type") or "",
+            tags,
+            applied.isoformat() if applied else "",
+            updated.isoformat() if updated else "",
+            doc.get("notes") or "",
+        ])
+    logger.info("applications_exported", user_id=user_id, count=len(docs))
+    return output.getvalue()
 
 
 async def compute_stats(user_id: str) -> dict:

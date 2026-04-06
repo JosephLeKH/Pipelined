@@ -54,3 +54,15 @@ export async function unarchiveApplication(id) {
 export async function fetchStats() {
   return client.get("/applications/stats");
 }
+
+const EXPORT_BASE = import.meta.env.VITE_API_BASE_URL ?? "/api";
+
+/** Download all applications as a CSV blob. Uses native fetch to avoid JSON interceptor. */
+export async function exportApplicationsCsv(includeArchived = false) {
+  const params = includeArchived ? "?include_archived=true" : "";
+  const response = await fetch(`${EXPORT_BASE}/applications/export${params}`, {
+    credentials: "include",
+  });
+  if (!response.ok) throw new Error("Export failed");
+  return response.blob();
+}
