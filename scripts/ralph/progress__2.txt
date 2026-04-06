@@ -192,3 +192,18 @@ Completed: Mon Apr  6 09:36 PDT 2026
 - Email enumeration prevention: generate the raw token regardless of whether the user exists, but only store/send if user found — returning the same 200 response either way
 - Google-only users (`password_hash=None`) are correctly excluded from password reset by the `{"password_hash": {"$ne": None}}` filter
 - For asyncio + blocking I/O: `asyncio.get_running_loop().run_in_executor(None, fn, *args)` is the correct pattern in Python 3.10+
+
+## US-051 — Rate limiting with X-Forwarded-For support behind reverse proxy
+Completed: Mon Apr  6 09:36 PDT 2026
+
+**Implemented:**
+- `config.py`: Added `trusted_proxies: list[str] = []` setting with a `@field_validator` that parses the `TRUSTED_PROXIES` env var from a comma-separated string (e.g. `"10.0.0.1,10.0.0.2"`).
+- `middleware/rate_limit.py`: Replaced `get_remote_address` with a custom `get_client_ip(request)` function. When the connecting IP is in `settings.trusted_proxies`, the function reads `X-Forwarded-For` (leftmost value = original client IP), falls back to `X-Real-IP`, then falls back to `request.client.host`. When `trusted_proxies` is empty (dev/CI default), always uses the direct TCP peer address to prevent header spoofing.
+- `tests/test_health.py`: Added `test_rate_limit_key_uses_x_forwarded_for_with_trusted_proxy` — mocks a request with `X-Forwarded-For: 1.2.3.4, 10.0.0.1` from a trusted connecting IP `10.0.0.1`, patches `settings.trusted_proxies = ["10.0.0.1"]`, and asserts `get_client_ip` returns `"1.2.3.4"`.
+
+**Learnings:**
+- pydantic-settings v2 supports `@field_validator(mode="before")` on list fields to handle non-JSON env var formats (comma-separated strings). The validator receives the raw env value as a `str` and must return the parsed `list`.
+- SlowAPI's `Limiter(key_func=...)` accepts any callable `(Request) -> str`. The single `key_func` is shared across all `@limiter.limit()` decorators — no per-decorator override needed.
+- Tests that call `get_client_ip` directly (not through the HTTP stack) cleanly bypass the disabled limiter without needing HTTP client overhead.
+
+**Tests:** 164 passed (all existing + 1 new).

@@ -217,7 +217,7 @@
         "All existing tests pass"
       ],
       "priority": 12,
-      "passes": false,
+      "passes": true,
       "notes": "Pipelined deploys on AWS ECS Fargate behind an ALB. Without X-Forwarded-For, all users share one rate limit bucket."
     },
     {
