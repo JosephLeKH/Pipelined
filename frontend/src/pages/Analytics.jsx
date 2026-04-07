@@ -37,8 +37,8 @@ const DEFAULT_BAR_COLOR = "#6b7280";
 
 function ChartCard({ title, children }) {
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-      <h2 className="mb-4 text-sm font-semibold text-gray-700">{title}</h2>
+    <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+      <h2 className="mb-4 text-sm font-semibold text-gray-700 dark:text-gray-300">{title}</h2>
       {children}
     </div>
   );
@@ -54,7 +54,7 @@ function Analytics() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen flex-col bg-gray-50">
+      <div className="flex min-h-screen flex-col bg-gray-50 dark:bg-gray-900">
         <NavBar />
         <main className="flex flex-1 items-center justify-center">
           <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-500 border-t-transparent" />
@@ -65,7 +65,7 @@ function Analytics() {
 
   if (error) {
     return (
-      <div className="flex min-h-screen flex-col bg-gray-50">
+      <div className="flex min-h-screen flex-col bg-gray-50 dark:bg-gray-900">
         <NavBar />
         <main className="p-6 text-center text-red-600">Failed to load analytics.</main>
       </div>
@@ -73,11 +73,11 @@ function Analytics() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-gray-50">
+    <div className="flex min-h-screen flex-col bg-gray-50 dark:bg-gray-900">
       <NavBar />
       <main className="flex-1 p-6">
         <div className="mb-6 flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-gray-900">Analytics</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Analytics</h1>
           <div className="flex items-center gap-2">
             {DATE_RANGES.map(({ label, value }) => (
               <button
@@ -87,7 +87,7 @@ function Analytics() {
                 className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
                   days === value
                     ? "bg-blue-600 text-white"
-                    : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
+                    : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
                 }`}
               >
                 {label}
@@ -97,8 +97,8 @@ function Analytics() {
         </div>
 
         {totalApps < EMPTY_STATE_THRESHOLD ? (
-          <div className="flex h-64 items-center justify-center rounded-lg border border-dashed border-gray-300 bg-white">
-            <p className="text-gray-500">Add more applications to unlock analytics</p>
+          <div className="flex h-64 items-center justify-center rounded-lg border border-dashed border-gray-300 bg-white dark:border-gray-600 dark:bg-gray-800">
+            <p className="text-gray-500 dark:text-gray-400">Add more applications to unlock analytics</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">

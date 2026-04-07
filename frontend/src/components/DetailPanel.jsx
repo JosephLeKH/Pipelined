@@ -26,8 +26,8 @@ function DetailField({ label, value }) {
   if (!value) return null;
   return (
     <div className="flex flex-col gap-0.5">
-      <span className="text-xs font-medium uppercase text-gray-400">{label}</span>
-      <span className="text-sm text-gray-800">{value}</span>
+      <span className="text-xs font-medium uppercase text-gray-400 dark:text-gray-500">{label}</span>
+      <span className="text-sm text-gray-800 dark:text-gray-200">{value}</span>
     </div>
   );
 }
@@ -42,11 +42,11 @@ function CalendarEventsList({ applicationId, onAddEvent }) {
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-medium uppercase text-gray-400">Interviews & Events</span>
+        <span className="text-xs font-medium uppercase text-gray-400 dark:text-gray-500">Interviews & Events</span>
         <button
           type="button"
           onClick={() => onAddEvent(applicationId)}
-          className="flex items-center gap-1 rounded px-2 py-1 text-xs text-blue-600 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
+          className="flex items-center gap-1 rounded px-2 py-1 text-xs text-blue-600 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 dark:hover:bg-blue-900/30"
           aria-label="Add event"
         >
           <Plus className="h-3.5 w-3.5" />
@@ -60,12 +60,12 @@ function CalendarEventsList({ applicationId, onAddEvent }) {
       {events.map((ev) => {
         const colors = EVENT_TYPE_COLORS[ev.event_type] ?? DEFAULT_EVENT_COLOR;
         return (
-          <div key={ev.id} className="flex items-center justify-between rounded border border-gray-100 px-3 py-2">
+          <div key={ev.id} className="flex items-center justify-between rounded border border-gray-100 px-3 py-2 dark:border-gray-700">
             <div className="flex flex-col gap-0.5">
               <span className={`inline-block rounded px-1.5 py-0.5 text-xs font-medium ${colors.bg} ${colors.text}`}>
                 {ev.event_type.replace("_", " ")}
               </span>
-              <span className="text-xs text-gray-500">
+              <span className="text-xs text-gray-500 dark:text-gray-400">
                 {ev.date}{ev.time ? ` · ${ev.time}` : ""}
               </span>
             </div>
@@ -134,7 +134,7 @@ function NotesEditor({ applicationId, initialValue }) {
           <button
             type="button"
             onClick={handleEdit}
-            className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
+            className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 dark:hover:bg-gray-700 dark:hover:text-gray-300"
             aria-label="Edit notes"
           >
             <Pencil className="h-3.5 w-3.5" />
@@ -148,7 +148,7 @@ function NotesEditor({ applicationId, initialValue }) {
         <>
           <textarea
             id="notes-textarea"
-            className="min-h-[120px] resize-y rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="min-h-[120px] resize-y rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
             aria-label="Notes"
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
@@ -162,7 +162,7 @@ function NotesEditor({ applicationId, initialValue }) {
               <button
                 type="button"
                 onClick={handleCancel}
-                className="rounded px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
+                className="rounded px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 dark:text-gray-300 dark:hover:bg-gray-700"
               >
                 Cancel
               </button>
@@ -177,7 +177,7 @@ function NotesEditor({ applicationId, initialValue }) {
           </div>
         </>
       ) : (
-        <p className="whitespace-pre-wrap text-sm text-gray-700" data-testid="notes-display">
+        <p className="whitespace-pre-wrap text-sm text-gray-700 dark:text-gray-300" data-testid="notes-display">
           {savedValue || <span className="text-gray-400">No notes yet.</span>}
         </p>
       )}
@@ -187,15 +187,15 @@ function NotesEditor({ applicationId, initialValue }) {
 
 function PanelHeader({ application, onClose }) {
   return (
-    <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+    <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4 dark:border-gray-700">
       <div>
-        <h2 className="text-lg font-semibold text-gray-900">{application.role_title}</h2>
-        <p className="text-sm text-gray-500">{application.company}</p>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{application.role_title}</h2>
+        <p className="text-sm text-gray-500 dark:text-gray-400">{application.company}</p>
       </div>
       <button
         type="button"
         onClick={onClose}
-        className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
+        className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 dark:hover:bg-gray-700 dark:hover:text-gray-300"
         aria-label="Close panel"
       >
         <X className="h-5 w-5" />
@@ -228,12 +228,12 @@ function PanelBody({ application, handleStageChange, onAddEvent }) {
         </a>
       )}
       <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-medium uppercase text-gray-400" htmlFor="stage-select">
+        <label className="text-xs font-medium uppercase text-gray-400 dark:text-gray-500" htmlFor="stage-select">
           Stage
         </label>
         <select
           id="stage-select"
-          className="rounded border border-gray-300 px-3 py-1.5 text-sm text-gray-800 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          className="rounded border border-gray-300 px-3 py-1.5 text-sm text-gray-800 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
           value={application.current_stage}
           onChange={handleStageChange}
         >
@@ -307,7 +307,7 @@ function DetailPanel({ application, onClose, onAddEvent }) {
     >
       <div
         ref={panelRef}
-        className={`fixed right-0 top-0 h-full w-full bg-white shadow-xl transition-transform duration-[250ms] md:w-[480px] ${isOpen ? "translate-x-0" : "translate-x-full"}`}
+        className={`fixed right-0 top-0 h-full w-full bg-white shadow-xl transition-transform duration-[250ms] md:w-[480px] dark:bg-gray-800 ${isOpen ? "translate-x-0" : "translate-x-full"}`}
         role="dialog"
         aria-modal="true"
         aria-label="Application details"

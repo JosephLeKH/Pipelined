@@ -9,6 +9,7 @@ import { MemoryRouter } from "react-router-dom";
 import { describe, it, expect, beforeAll, afterAll, afterEach } from "vitest";
 
 import { AuthProvider } from "../context/AuthContext";
+import { ThemeProvider } from "../context/ThemeContext";
 import Dashboard from "./Dashboard";
 
 const APP = {
@@ -54,11 +55,13 @@ function makeWrapper(initialEntries = ["/dashboard"]) {
     defaultOptions: { queries: { retry: false } },
   });
   return ({ children }) => (
-    <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={initialEntries}>
-        <AuthProvider>{children}</AuthProvider>
-      </MemoryRouter>
-    </QueryClientProvider>
+    <ThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={initialEntries}>
+          <AuthProvider>{children}</AuthProvider>
+        </MemoryRouter>
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 }
 

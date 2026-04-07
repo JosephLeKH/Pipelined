@@ -15,9 +15,9 @@ const REMOTE_STATUS_OPTIONS = ["remote", "hybrid", "onsite", "unknown"];
 function CheckboxGroup({ label, options, selected, onChange }) {
   return (
     <fieldset className="flex flex-col gap-1">
-      <legend className="mb-1 text-xs font-medium uppercase text-gray-500">{label}</legend>
+      <legend className="mb-1 text-xs font-medium uppercase text-gray-500 dark:text-gray-400">{label}</legend>
       {options.map((opt) => (
-        <label key={opt} className="flex items-center gap-2 text-sm text-gray-700">
+        <label key={opt} className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
           <input
             type="checkbox"
             checked={selected.includes(opt)}
@@ -89,15 +89,15 @@ function FilterBar() {
       {includeArchived && (
         <div
           role="status"
-          className="flex items-center gap-2 rounded-md bg-amber-50 px-4 py-2 text-sm text-amber-800 border border-amber-200"
+          className="flex items-center gap-2 rounded-md bg-amber-50 px-4 py-2 text-sm text-amber-800 border border-amber-200 dark:bg-amber-900/20 dark:border-amber-700 dark:text-amber-300"
         >
           <span className="font-medium">Viewing archived applications.</span>
           <span>Uncheck &ldquo;Show archived&rdquo; to return to active view.</span>
         </div>
       )}
-      <div className="flex flex-wrap gap-6 rounded-lg bg-white p-4 shadow-sm">
+      <div className="flex flex-wrap gap-6 rounded-lg bg-white p-4 shadow-sm dark:bg-gray-800">
         <fieldset className="flex flex-col gap-1">
-          <legend className="mb-1 text-xs font-medium uppercase text-gray-500">Search</legend>
+          <legend className="mb-1 text-xs font-medium uppercase text-gray-500 dark:text-gray-400">Search</legend>
           <div className="relative flex items-center">
             <SearchIcon className="absolute left-2 h-4 w-4 text-gray-400" aria-hidden="true" />
             <input
@@ -106,7 +106,7 @@ function FilterBar() {
               value={searchValue}
               onChange={handleSearchChange}
               placeholder="Title, company, notes..."
-              className="rounded border border-gray-300 pl-8 pr-2 py-1 text-sm"
+              className="rounded border border-gray-300 pl-8 pr-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 dark:placeholder-gray-400"
             />
           </div>
         </fieldset>
@@ -129,31 +129,31 @@ function FilterBar() {
           onChange={(val) => updateFilter("remote_status", val)}
         />
         <fieldset className="flex flex-col gap-1">
-          <legend className="mb-1 text-xs font-medium uppercase text-gray-500">Date Range</legend>
-          <label className="flex items-center gap-2 text-sm text-gray-700">
+          <legend className="mb-1 text-xs font-medium uppercase text-gray-500 dark:text-gray-400">Date Range</legend>
+          <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
             From
             <input
               type="date"
               value={dateFrom}
               aria-label="date from"
               onChange={(e) => updateFilter("date_from", e.target.value)}
-              className="rounded border border-gray-300 px-2 py-1 text-sm"
+              className="rounded border border-gray-300 px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
             />
           </label>
-          <label className="flex items-center gap-2 text-sm text-gray-700">
+          <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
             To
             <input
               type="date"
               value={dateTo}
               aria-label="date to"
               onChange={(e) => updateFilter("date_to", e.target.value)}
-              className="rounded border border-gray-300 px-2 py-1 text-sm"
+              className="rounded border border-gray-300 px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
             />
           </label>
         </fieldset>
         <fieldset className="flex flex-col gap-1">
-          <legend className="mb-1 text-xs font-medium uppercase text-gray-500">Archive</legend>
-          <label className="flex items-center gap-2 text-sm text-gray-700">
+          <legend className="mb-1 text-xs font-medium uppercase text-gray-500 dark:text-gray-400">Archive</legend>
+          <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
             <input
               type="checkbox"
               aria-label="Show archived"

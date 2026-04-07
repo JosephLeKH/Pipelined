@@ -58,7 +58,7 @@ function ApplicationRow({
   return (
     <div
       style={style}
-      className={`group flex cursor-pointer items-center gap-4 border-b border-gray-100 px-4 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 ${archived ? "opacity-60" : ""}`}
+      className={`group flex cursor-pointer items-center gap-4 border-b border-gray-100 px-4 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 dark:border-gray-700 dark:hover:bg-gray-700 ${archived ? "opacity-60" : ""}`}
       onClick={() => onSelect(application)}
       onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") onSelect(application); }}
       role="row"
@@ -90,15 +90,15 @@ function ApplicationRow({
           </>
         )}
       </span>
-      <span className={`w-40 truncate font-medium ${archived ? "text-gray-400 line-through" : "text-gray-900"}`}>
+      <span className={`w-40 truncate font-medium ${archived ? "text-gray-400 line-through" : "text-gray-900 dark:text-gray-100"}`}>
         {application.company}
       </span>
-      <span className={`flex-1 truncate text-sm ${archived ? "text-gray-400" : "text-gray-700"}`}>
+      <span className={`flex-1 truncate text-sm ${archived ? "text-gray-400" : "text-gray-700 dark:text-gray-300"}`}>
         {application.role_title}
       </span>
       <StagePill stage={application.current_stage} />
-      <span className="w-28 text-sm text-gray-500">{dateApplied}</span>
-      <SourceIcon className="h-4 w-4 shrink-0 text-gray-400" aria-label={application.source} />
+      <span className="w-28 text-sm text-gray-500 dark:text-gray-400">{dateApplied}</span>
+      <SourceIcon className="h-4 w-4 shrink-0 text-gray-400 dark:text-gray-500" aria-label={application.source} />
       <RowMenu
         application={application}
         onArchive={onArchive}
@@ -114,7 +114,7 @@ function ColumnHeader({ field, label, sortBy, sortOrder, onSort }) {
   return (
     <button
       type="button"
-      className="flex items-center gap-1 text-xs font-medium text-gray-500 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
+      className="flex items-center gap-1 text-xs font-medium text-gray-500 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 dark:text-gray-400 dark:hover:text-gray-100"
       onClick={() => onSort(field)}
     >
       {label}
@@ -254,7 +254,7 @@ function ApplicationList({ onSelect, filters = {} }) {
           />
         )}
         <div className="flex flex-col">
-          <div className="flex items-center gap-4 border-b border-gray-200 bg-gray-50 px-4 py-2">
+          <div className="flex items-center gap-4 border-b border-gray-200 bg-gray-50 px-4 py-2 dark:border-gray-700 dark:bg-gray-800">
             <span className="shrink-0" onClick={(e) => e.stopPropagation()}>
               <input
                 type="checkbox"

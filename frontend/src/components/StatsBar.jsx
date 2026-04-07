@@ -6,17 +6,17 @@ import ApiErrorMessage from "./ApiErrorMessage";
 function MetricCard({ label, value, isLoading }) {
   if (isLoading) {
     return (
-      <div className="flex flex-col gap-1 rounded-lg bg-white p-4 shadow-sm" aria-label={`${label}: loading`}>
-        <div className="h-4 w-24 animate-pulse rounded bg-gray-200" />
-        <div className="h-7 w-16 animate-pulse rounded bg-gray-200" />
+      <div className="flex flex-col gap-1 rounded-lg bg-white p-4 shadow-sm dark:bg-gray-800" aria-label={`${label}: loading`}>
+        <div className="h-4 w-24 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+        <div className="h-7 w-16 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col gap-1 rounded-lg bg-white p-4 shadow-sm" aria-label={`${label}: ${value}`}>
-      <span className="text-sm text-gray-500">{label}</span>
-      <span className="text-2xl font-semibold text-gray-900">{value}</span>
+    <div className="flex flex-col gap-1 rounded-lg bg-white p-4 shadow-sm dark:bg-gray-800" aria-label={`${label}: ${value}`}>
+      <span className="text-sm text-gray-500 dark:text-gray-400">{label}</span>
+      <span className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{value}</span>
     </div>
   );
 }

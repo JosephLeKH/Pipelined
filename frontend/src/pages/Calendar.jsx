@@ -36,10 +36,10 @@ function Calendar() {
   }, []);
 
   return (
-    <div className="flex min-h-screen flex-col bg-gray-50">
+    <div className="flex min-h-screen flex-col bg-gray-50 dark:bg-gray-900">
       <NavBar />
       <main className="flex-1 p-6">
-      <h1 className="mb-6 text-2xl font-bold text-gray-900">Calendar</h1>
+      <h1 className="mb-6 text-2xl font-bold text-gray-900 dark:text-gray-100">Calendar</h1>
       <CalendarGrid
         month={month}
         year={year}

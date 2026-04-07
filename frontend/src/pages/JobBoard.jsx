@@ -52,7 +52,7 @@ function JobSearchInput() {
   );
 
   return (
-    <div className="flex items-center rounded-lg bg-white px-4 py-3 shadow-sm">
+    <div className="flex items-center rounded-lg bg-white px-4 py-3 shadow-sm dark:bg-gray-800">
       <div className="relative flex items-center">
         <SearchIcon className="absolute left-2 h-4 w-4 text-gray-400" aria-hidden="true" />
         <input
@@ -61,7 +61,7 @@ function JobSearchInput() {
           value={searchValue}
           onChange={handleChange}
           placeholder="Role, company, description..."
-          className="rounded border border-gray-300 pl-8 pr-3 py-1.5 text-sm w-72 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="rounded border border-gray-300 pl-8 pr-3 py-1.5 text-sm w-72 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 dark:placeholder-gray-400"
         />
       </div>
     </div>
@@ -87,12 +87,12 @@ function SelectFilter({ label, paramKey, options }) {
   );
 
   return (
-    <label className="flex flex-col gap-1 text-xs font-medium uppercase text-gray-500">
+    <label className="flex flex-col gap-1 text-xs font-medium uppercase text-gray-500 dark:text-gray-400">
       {label}
       <select
         value={value}
         onChange={handleChange}
-        className="mt-0.5 rounded border border-gray-300 px-2 py-1.5 text-sm font-normal capitalize text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="mt-0.5 rounded border border-gray-300 px-2 py-1.5 text-sm font-normal capitalize text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
         aria-label={label}
       >
         <option value="">Any</option>
@@ -108,7 +108,7 @@ function SelectFilter({ label, paramKey, options }) {
 
 function JobFilters() {
   return (
-    <div className="flex flex-wrap gap-4 rounded-lg bg-white p-4 shadow-sm">
+    <div className="flex flex-wrap gap-4 rounded-lg bg-white p-4 shadow-sm dark:bg-gray-800">
       <SelectFilter label="Role Type" paramKey="role_type" options={ROLE_TYPE_OPTIONS} />
       <SelectFilter
         label="Experience"
@@ -131,14 +131,14 @@ function JobFilters() {
 
 function ViewToggle({ view, onToggle }) {
   return (
-    <div className="flex items-center rounded-lg border border-gray-200 bg-white p-1 shadow-sm">
+    <div className="flex items-center rounded-lg border border-gray-200 bg-white p-1 shadow-sm dark:border-gray-700 dark:bg-gray-800">
       <button
         type="button"
         onClick={() => onToggle("grid")}
         aria-label="Grid view"
         aria-pressed={view === "grid"}
         className={`rounded p-1.5 transition-colors ${
-          view === "grid" ? "bg-blue-600 text-white" : "text-gray-500 hover:text-gray-900"
+          view === "grid" ? "bg-blue-600 text-white" : "text-gray-500 hover:text-gray-900 dark:hover:text-gray-100"
         }`}
       >
         <LayoutGrid className="h-4 w-4" />
@@ -149,7 +149,7 @@ function ViewToggle({ view, onToggle }) {
         aria-label="List view"
         aria-pressed={view === "list"}
         className={`rounded p-1.5 transition-colors ${
-          view === "list" ? "bg-blue-600 text-white" : "text-gray-500 hover:text-gray-900"
+          view === "list" ? "bg-blue-600 text-white" : "text-gray-500 hover:text-gray-900 dark:hover:text-gray-100"
         }`}
       >
         <List className="h-4 w-4" />
@@ -168,11 +168,11 @@ function Pagination({ page, totalPages, onPageChange }) {
         onClick={() => onPageChange(page - 1)}
         disabled={page <= 1}
         aria-label="Previous page"
-        className="rounded border border-gray-300 p-1.5 text-gray-600 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+        className="rounded border border-gray-300 p-1.5 text-gray-600 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
       >
         <ChevronLeft className="h-4 w-4" />
       </button>
-      <span className="text-sm text-gray-600">
+      <span className="text-sm text-gray-600 dark:text-gray-300">
         Page {page} of {totalPages}
       </span>
       <button
@@ -180,7 +180,7 @@ function Pagination({ page, totalPages, onPageChange }) {
         onClick={() => onPageChange(page + 1)}
         disabled={page >= totalPages}
         aria-label="Next page"
-        className="rounded border border-gray-300 p-1.5 text-gray-600 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+        className="rounded border border-gray-300 p-1.5 text-gray-600 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
       >
         <ChevronRight className="h-4 w-4" />
       </button>
@@ -193,7 +193,7 @@ function LoadingSkeleton({ view }) {
     return (
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {Array.from({ length: 6 }, (_, i) => (
-          <div key={i} className="h-52 animate-pulse rounded-lg bg-gray-100" />
+          <div key={i} className="h-52 animate-pulse rounded-lg bg-gray-100 dark:bg-gray-700" />
         ))}
       </div>
     );
@@ -201,7 +201,7 @@ function LoadingSkeleton({ view }) {
   return (
     <div className="flex flex-col gap-2">
       {Array.from({ length: 8 }, (_, i) => (
-        <div key={i} className="h-16 animate-pulse rounded bg-gray-100" />
+        <div key={i} className="h-16 animate-pulse rounded bg-gray-100 dark:bg-gray-700" />
       ))}
     </div>
   );
@@ -248,12 +248,12 @@ function JobBoard() {
   );
 
   return (
-    <main className="flex min-h-screen flex-col gap-6 bg-gray-50 p-6">
+    <main className="flex min-h-screen flex-col gap-6 bg-gray-50 p-6 dark:bg-gray-900">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Job Board</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Job Board</h1>
           {!isLoading && (
-            <p className="mt-0.5 text-sm text-gray-500">
+            <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">
               {total} listing{total !== 1 ? "s" : ""}
             </p>
           )}
@@ -269,7 +269,7 @@ function JobBoard() {
       ) : error ? (
         <ApiErrorMessage error={error} onRetry={refetch} />
       ) : jobs.length === 0 ? (
-        <div className="py-20 text-center text-gray-500">
+        <div className="py-20 text-center text-gray-500 dark:text-gray-400">
           No listings match your filters.
         </div>
       ) : view === "grid" ? (
@@ -279,7 +279,7 @@ function JobBoard() {
           ))}
         </div>
       ) : (
-        <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
+        <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
           <FixedSizeList
             height={LIST_HEIGHT}
             itemCount={jobs.length}

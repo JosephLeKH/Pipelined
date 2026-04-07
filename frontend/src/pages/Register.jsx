@@ -60,9 +60,9 @@ function Register() {
   }, []);
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-8 bg-gray-50">
-      <div className="w-full max-w-sm rounded-xl border border-gray-200 bg-white p-8 shadow-sm">
-        <h1 className="mb-6 text-2xl font-bold text-gray-900">Sign up</h1>
+    <main className="flex min-h-screen flex-col items-center justify-center p-8 bg-gray-50 dark:bg-gray-900">
+      <div className="w-full max-w-sm rounded-xl border border-gray-200 bg-white p-8 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+        <h1 className="mb-6 text-2xl font-bold text-gray-900 dark:text-gray-100">Sign up</h1>
 
         <GoogleAuthButton
           label="Sign up with Google"
@@ -78,7 +78,7 @@ function Register() {
 
         <form onSubmit={handleSubmit} noValidate>
           <div className="mb-4">
-            <label htmlFor="display-name" className="mb-1.5 block text-sm font-medium text-gray-700">
+            <label htmlFor="display-name" className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Name
             </label>
             <input
@@ -87,13 +87,13 @@ function Register() {
               autoComplete="name"
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
               placeholder="Jane Smith"
             />
           </div>
 
           <div className="mb-4">
-            <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-gray-700">
+            <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Email
             </label>
             <input
@@ -102,13 +102,13 @@ function Register() {
               autoComplete="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
               placeholder="you@example.com"
             />
           </div>
 
           <div className="mb-5">
-            <label htmlFor="password" className="mb-1.5 block text-sm font-medium text-gray-700">
+            <label htmlFor="password" className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Password
             </label>
             <input
@@ -117,7 +117,7 @@ function Register() {
               autoComplete="new-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
               placeholder="Min. 8 characters"
             />
           </div>
@@ -137,7 +137,7 @@ function Register() {
           </button>
         </form>
 
-        <p className="mt-5 text-center text-sm text-gray-500">
+        <p className="mt-5 text-center text-sm text-gray-500 dark:text-gray-400">
           Have an account?{" "}
           <Link to="/login" className="font-medium text-blue-600 hover:underline">
             Log in
