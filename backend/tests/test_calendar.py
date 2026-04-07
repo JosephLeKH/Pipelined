@@ -196,6 +196,60 @@ async def test_list_events_scoped_to_current_user(client):
     assert resp.json()["meta"]["count"] == 1
 
 
+async def test_list_events_returns_empty_for_other_users_application_id(client):
+    # Arrange — two users; user A creates an event; user B queries with user A's app_id
+    resp_a = await client.post(
+        "/api/auth/register",
+        json={"email": "list_a@test.com", "password": "TestPass123!", "display_name": "ListA"},
+    )
+    cookies_a = dict(resp_a.cookies)
+
+    resp_b = await client.post(
+        "/api/auth/register",
+        json={"email": "list_b@test.com", "password": "TestPass123!", "display_name": "ListB"},
+    )
+    cookies_b = dict(resp_b.cookies)
+
+    app_id_a = await _create_app(client, cookies_a)
+    await _create_event(client, cookies_a, app_id_a)
+
+    # Act — user B requests events filtered by user A's application_id
+    resp = await client.get(
+        "/api/calendar/events",
+        params={"application_id": app_id_a},
+        cookies=cookies_b,
+    )
+
+    # Assert — ownership check returns empty list, not user A's events
+    assert resp.status_code == 200
+    assert resp.json()["meta"]["count"] == 0
+
+
+async def test_delete_event_returns_404_for_other_users_event(client):
+    # Arrange — user A owns the event; user B attempts deletion
+    resp_a = await client.post(
+        "/api/auth/register",
+        json={"email": "del_a@test.com", "password": "TestPass123!", "display_name": "DelA"},
+    )
+    cookies_a = dict(resp_a.cookies)
+
+    resp_b = await client.post(
+        "/api/auth/register",
+        json={"email": "del_b@test.com", "password": "TestPass123!", "display_name": "DelB"},
+    )
+    cookies_b = dict(resp_b.cookies)
+
+    app_id_a = await _create_app(client, cookies_a)
+    event_body = await _create_event(client, cookies_a, app_id_a)
+    event_id = event_body["data"]["id"]
+
+    # Act
+    resp = await client.delete(f"/api/calendar/events/{event_id}", cookies=cookies_b)
+
+    # Assert
+    assert resp.status_code == 404
+
+
 async def test_list_events_returns_401_without_auth(client):
     # Act
     resp = await client.get("/api/calendar/events")

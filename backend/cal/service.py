@@ -24,6 +24,10 @@ class EventNotFoundError(Exception):
     """Raised when a calendar event does not exist for this user."""
 
 
+class CalendarEventNotFoundError(Exception):
+    """Raised when a delete targets an event that does not exist for this user."""
+
+
 class ApplicationNotFoundError(Exception):
     """Raised when the linked application does not exist for this user."""
 
@@ -76,6 +80,14 @@ async def list_events(
     match_filter: dict = {"user_id": uid}
 
     if application_id:
+        # Verify the application belongs to this user before using it as a filter.
+        apps = get_collection("applications")
+        app_doc = await apps.find_one(
+            {"_id": ObjectId(application_id), "user_id": uid},
+            projection={"_id": 1},
+        )
+        if app_doc is None:
+            return []
         match_filter["application_id"] = ObjectId(application_id)
     else:
         today = dt.date.today()
@@ -146,18 +158,17 @@ async def update_event(user_id: str, event_id: str, updates: EventUpdate) -> dic
     return await _get_enriched(uid, eid)
 
 
-async def delete_event(user_id: str, event_id: str) -> bool:
-    """Delete a calendar event. Returns True if deleted."""
+async def delete_event(user_id: str, event_id: str) -> None:
+    """Delete a calendar event. Raises CalendarEventNotFoundError if not found or not owned."""
     uid = ObjectId(user_id)
     eid = ObjectId(event_id)
     events = get_collection("calendar_events")
 
     result = await events.delete_one({"_id": eid, "user_id": uid})
     if result.deleted_count == 0:
-        return False
+        raise CalendarEventNotFoundError
 
     logger.info("calendar_event_deleted", user_id=user_id, event_id=event_id)
-    return True
 
 
 async def _get_enriched(uid: ObjectId, eid: ObjectId) -> dict | None:

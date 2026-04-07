@@ -8,7 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Response
 from auth.dependencies import get_current_user
 from cal import service as cal_service
 from cal.schemas import EventCreate, EventResponse, EventUpdate
-from cal.service import ApplicationNotFoundError, MAX_DATE_RANGE_DAYS
+from cal.service import ApplicationNotFoundError, CalendarEventNotFoundError, MAX_DATE_RANGE_DAYS
 
 logger = structlog.get_logger()
 
@@ -74,7 +74,8 @@ async def delete_event(
 ) -> Response:
     """Delete a calendar event."""
     user_id = str(user["_id"])
-    deleted = await cal_service.delete_event(user_id, event_id)
-    if not deleted:
+    try:
+        await cal_service.delete_event(user_id, event_id)
+    except CalendarEventNotFoundError:
         raise HTTPException(status_code=404, detail=EVENT_NOT_FOUND_DETAIL)
     return Response(status_code=204)
