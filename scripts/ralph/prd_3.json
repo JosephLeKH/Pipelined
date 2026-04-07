@@ -1,0 +1,359 @@
+{
+  "project": "Pipelined",
+  "branchName": "ralph/pipelined-v3",
+  "description": "Pipelined v3 — Carries over US-057 dark mode, patches all security/bug findings from the post-v2 review, polishes UX with skeletons/accessibility/mobile, and ships three expansive new features: custom stage pipelines, bulk CSV import, and a weekly email digest.",
+  "userStories": [
+    {
+      "id": "US-057",
+      "title": "Dark mode with system preference detection and manual toggle",
+      "description": "Carry-over from v2. As a user who prefers dark interfaces or works at night, I want the app to support dark mode that follows my system preference but can be overridden manually.",
+      "acceptanceCriteria": [
+        "tailwind.config.js sets darkMode: 'class'",
+        "frontend/src/context/ThemeContext.jsx is created: reads system preference via window.matchMedia('(prefers-color-scheme: dark)'), persists user override to localStorage under key 'pipelined_theme' ('light' | 'dark' | 'system'), and applies/removes the 'dark' class on document.documentElement",
+        "ThemeContext exports useTheme() hook that returns { theme, setTheme } where theme is the resolved value ('light' | 'dark') and setTheme cycles through modes",
+        "NavBar renders a sun/moon/monitor icon toggle button using the useTheme hook; icon updates to match current mode",
+        "dark: Tailwind variants are added to all major surfaces in NavBar, Dashboard, ApplicationList, DetailPanel, FilterBar, StatsBar, CalendarGrid, JobBoard, Login, Register, ManualAddForm",
+        "Vitest test in frontend/src/context/ThemeContext.test.jsx verifies: dark class is added/removed on documentElement, preference persists to localStorage, system preference is read on mount",
+        "npm test passes",
+        "npm run build passes"
+      ],
+      "priority": 1,
+      "passes": true,
+      "notes": "ThemeContext.jsx and ThemeContext.test.jsx already exist as untracked files per git status — build on them rather than creating from scratch."
+    },
+    {
+      "id": "US-061",
+      "title": "Fix calendar event security: user_id ownership scoping on list and delete",
+      "description": "Critical security bug: a user can list another user's calendar events by guessing their application_id, and delete any event by ID without ownership verification. Both service functions must filter by user_id.",
+      "acceptanceCriteria": [
+        "In cal/service.py list_events(): when application_id filter is provided, add a sub-query to verify the application belongs to the requesting user_id before listing its events (use $lookup or a preliminary applications.find_one({_id, user_id}))",
+        "In cal/service.py delete_event(): the deletion filter must include user_id — use the calendar_events collection filtered by both event_id and user_id; if no document is found, raise a CalendarEventNotFoundError (domain exception) that the router maps to 404",
+        "CalendarEventNotFoundError is defined in cal/service.py and mapped to HTTP 404 in cal/router.py",
+        "test_calendar.py adds two tests: (1) listing events with another user's application_id returns empty list, (2) deleting another user's event returns 404",
+        "All existing calendar tests still pass",
+        "Typecheck passes"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Security bug found in post-v2 review. calendar_events delete does not check user ownership. list_events with application_id filter does not verify the application belongs to the requesting user."
+    },
+    {
+      "id": "US-062",
+      "title": "Fix text search cursor parsing — return 400 instead of crashing",
+      "description": "When a user passes a malformed or tampered cursor in a text search query, the backend crashes with an unhandled ValueError or InvalidId exception. It should return a clean 400 error instead.",
+      "acceptanceCriteria": [
+        "In applications/service.py, the cursor parsing block (where TEXT_SEARCH_CURSOR_SEP is split, float() and ObjectId() are called) is wrapped in a try/except (ValueError, InvalidId) block",
+        "On parse failure, raise an InvalidCursorError domain exception with message 'Invalid pagination cursor'",
+        "applications/router.py maps InvalidCursorError to HTTP 400 with code INVALID_CURSOR",
+        "InvalidCursorError is defined in applications/service.py",
+        "For standard (non-text-search) cursor parsing, apply the same guard: ObjectId() on the cursor string wrapped in try/except InvalidId → HTTP 400",
+        "test_applications.py adds a test: GET /applications?q=hello&cursor=not-valid-cursor returns 400 with code INVALID_CURSOR",
+        "All existing application tests still pass",
+        "Typecheck passes"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "Post-v2 review finding: text search cursor uses float() and ObjectId() without error handling. A tampered cursor crashes the endpoint with a 500."
+    },
+    {
+      "id": "US-063",
+      "title": "Validate analytics days parameter and filter checkbox accessibility fix",
+      "description": "Two quick correctness fixes from the post-v2 review: (1) the analytics endpoint accepts any integer for days including negative/huge values; (2) FilterBar checkbox inputs lack proper id/htmlFor associations, breaking screen reader label click.",
+      "acceptanceCriteria": [
+        "In applications/schemas.py, the analytics query schema validates days: int | None = Field(None, ge=1, le=365) using a Pydantic Field constraint; passing days=0 or days=999 returns 422",
+        "test_applications.py adds a test: GET /applications/analytics?days=-1 returns 422",
+        "In frontend/src/components/FilterBar.jsx, every checkbox input rendered inside CheckboxGroup gets a unique id (e.g. id={`filter-${groupKey}-${option}`}), and its wrapping label gets htmlFor pointing to that id",
+        "Verify keyboard navigation: clicking the label text toggles the checkbox (manual test in the browser is sufficient; document in progress.txt)",
+        "Vitest test for FilterBar verifies that input elements have id attributes and labels have matching htmlFor",
+        "All existing tests pass",
+        "Typecheck passes",
+        "npm test passes"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": "Two small but important fixes combined to save context overhead. Analytics days param allows absurd values; FilterBar checkboxes are inaccessible to keyboard/screen reader users."
+    },
+    {
+      "id": "US-064",
+      "title": "ManualAddForm and bulk action loading states",
+      "description": "As a user submitting the manual application form or triggering a bulk action, I see no feedback while the request is in-flight. The form can be double-submitted and bulk operations give no visual progress. Add pending states throughout.",
+      "acceptanceCriteria": [
+        "ManualAddForm.jsx: while createApplication mutation isPending, the submit button is disabled and shows a spinner icon + 'Creating…' text instead of 'Add Application'",
+        "ManualAddForm.jsx: if the mutation errors, the error message from the API response (or a generic fallback) is shown inside the form above the submit button — not just a toast",
+        "ApplicationList.jsx bulk action bar: while bulk-delete or bulk-stage-update is pending, both action buttons are disabled and show a spinner",
+        "After a successful bulk operation, show a success toast: 'Deleted N applications' or 'Moved N applications to [stage]'",
+        "Vitest test for ManualAddForm: submit button is disabled during pending state",
+        "Vitest test for ApplicationList: bulk action buttons are disabled while mutation is pending",
+        "npm test passes"
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": "Post-v2 review: ManualAddForm uses isPending from the hook but never renders it. Bulk action bar also lacks any in-flight feedback."
+    },
+    {
+      "id": "US-065",
+      "title": "Centralized date formatting utility and consistent date display",
+      "description": "As a developer maintaining the frontend, dates are formatted three different ways across components (toISODate, toLocaleDateString with no locale, toLocaleDateString with en-US options). This causes inconsistency and timezone bugs. Centralise all date formatting.",
+      "acceptanceCriteria": [
+        "Create frontend/src/lib/dateUtils.js with the following exports: formatDate(isoString) → 'Apr 7, 2026', formatDateTime(isoString) → 'Apr 7, 2026 at 3:00 PM', formatRelative(isoString) → 'Today', 'Yesterday', '3 days ago', or falls back to formatDate for older dates",
+        "formatDate and formatDateTime always use { locale: 'en-US' } and the America/New_York fallback (or browser-detected locale via Intl.DateTimeFormat().resolvedOptions().timeZone)",
+        "Replace all inline date formatting in ApplicationList.jsx, DetailPanel.jsx, CalendarGrid.jsx, Analytics.jsx, and any other components — use the new utility functions instead",
+        "Remove any direct calls to .toLocaleDateString() or .toISOString().slice(0,10) in component files (those calls now live only in dateUtils.js)",
+        "Vitest tests for dateUtils.js: formatDate returns expected string, formatRelative returns 'Today' for today's date, 'Yesterday' for yesterday",
+        "npm test passes"
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": "Post-v2 review: inconsistent date formatting across at least 4 components. CalendarGrid uses toISODate(), DetailPanel uses toLocaleDateString() without locale, ApplicationTimeline uses toLocaleDateString with full options."
+    },
+    {
+      "id": "US-066",
+      "title": "Skeleton loaders for ApplicationList and Calendar month navigation",
+      "description": "As a user, when my applications or calendar events are loading, I see either nothing or a centered 'Loading…' text. Skeleton loaders (animated placeholder rows/cells) are significantly better UX — they communicate structure while data loads and prevent layout shift.",
+      "acceptanceCriteria": [
+        "Create frontend/src/components/SkeletonRow.jsx: a single skeleton application list row — gray animated shimmer bars matching the column layout (company, role, stage, date)",
+        "ApplicationList.jsx: when isLoading is true (first load, not refetching), render 8 SkeletonRow components instead of the empty state or spinner",
+        "ApplicationList.jsx: when isFetching is true but data already exists (background refresh), show a subtle top progress bar (thin animated stripe at top of list) instead of re-rendering skeletons",
+        "Create frontend/src/components/SkeletonCalendarCell.jsx: a skeleton day cell for the calendar grid",
+        "CalendarGrid.jsx: when calendar events are loading, render SkeletonCalendarCell in each day that has events (or all days if initial load)",
+        "StatsBar.jsx: when stats are loading, render 4 skeleton stat cards (gray rectangle placeholders) instead of actual values",
+        "Vitest test: ApplicationList renders 8 SkeletonRow when isLoading=true; renders real rows when data is present",
+        "npm test passes"
+      ],
+      "priority": 7,
+      "passes": false,
+      "notes": "Loading UX is currently a centered 'Loading events…' text that blocks the full calendar grid. Skeleton loaders are the modern standard and dramatically improve perceived performance."
+    },
+    {
+      "id": "US-067",
+      "title": "Mobile-responsive layout pass",
+      "description": "As a user accessing Pipelined on a phone or tablet, the current layout breaks: the side-by-side ApplicationList + DetailPanel is too wide, the StatsBar overflows horizontally, and there is no bottom navigation. Add a mobile breakpoint layout that works on phones.",
+      "acceptanceCriteria": [
+        "NavBar.jsx: on mobile (< md breakpoint), the desktop nav links are hidden and replaced with a hamburger icon; tapping it opens a slide-down menu with the same links",
+        "Dashboard.jsx: on mobile, DetailPanel is not shown inline — instead tapping an application row opens DetailPanel as a full-screen bottom sheet (fixed position, slides up from bottom, close button at top-right)",
+        "StatsBar.jsx: wraps to a 2×2 grid on mobile (sm: grid-cols-2) instead of the 4-column row that overflows",
+        "FilterBar.jsx: filter chips are horizontally scrollable on mobile (overflow-x-auto, whitespace-nowrap) instead of wrapping and pushing content down",
+        "CalendarGrid.jsx: on mobile, week row heights are reduced and event chips show only a colored dot (not the full company name)",
+        "All changes use Tailwind responsive prefixes (sm:, md:, lg:) — no media query in JS",
+        "Vitest tests mock window.innerWidth (or use matchMedia mock) to verify the mobile nav menu renders on small screens",
+        "npm test passes",
+        "npm run build passes"
+      ],
+      "priority": 8,
+      "passes": false,
+      "notes": "Current layout is desktop-only. With StatsBar in a row of 4 and ApplicationList + DetailPanel side-by-side, the UI is unusable on a 390px phone screen."
+    },
+    {
+      "id": "US-068",
+      "title": "Custom pipeline stages — user-level stage configuration",
+      "description": "As a user, the default stages (Applied, Phone Screen, Onsite, Offer, Rejected) may not match my actual job search workflow. I want to rename, reorder, add, and remove stages that apply globally to all my applications — and have the stage selector everywhere reflect my custom list.",
+      "acceptanceCriteria": [
+        "The users collection's default_stages field is already used — this story makes it editable",
+        "PATCH /api/auth/me accepts { default_stages: list[str] } and updates the user's default_stages; validates that the list has 2-10 items, each item is 1-40 chars, and 'Rejected' or an equivalent terminal stage is present (or allow any list — just validate count and length)",
+        "GET /api/auth/me returns default_stages in the UserResponse",
+        "New frontend page /settings (linked from NavBar user menu) with a 'Pipeline Stages' section: displays current stages as a sortable drag-and-drop list (use @dnd-kit/core already in or add to package.json), with add/remove/rename controls",
+        "Saving the list calls PATCH /api/auth/me and invalidates useAuth query cache",
+        "The stage selector dropdown in DetailPanel.jsx reads from the user's default_stages (via useAuth hook) instead of a hardcoded constant",
+        "ManualAddForm.jsx stage dropdown also uses default_stages",
+        "Bulk-stage-update dropdown also uses default_stages",
+        "New test in test_auth.py: PATCH /api/auth/me with valid default_stages returns 200; with >10 stages returns 422",
+        "Vitest test for Settings page: renders current stages, shows add input, calls mutation on save",
+        "All existing tests pass",
+        "Typecheck passes",
+        "npm test passes"
+      ],
+      "priority": 9,
+      "passes": false,
+      "notes": "default_stages is already stored per-user but only set at registration. This makes it configurable via a settings page — a top power-user feature request."
+    },
+    {
+      "id": "US-069",
+      "title": "Bulk CSV import for existing applications",
+      "description": "As a user switching from a spreadsheet or another tracker, I want to import all my existing applications at once by uploading a CSV — instead of entering 80 applications one by one. This is critical for user onboarding and migration.",
+      "acceptanceCriteria": [
+        "POST /api/applications/import accepts multipart/form-data with a file field (CSV, max 2MB)",
+        "Expected CSV columns (case-insensitive headers): role_title (required), company (required), stage (optional, defaults to 'Applied'), location (optional), remote_status (optional), compensation (optional), tags (optional, semicolon-separated), notes (optional), applied_at (optional, ISO date string)",
+        "The service parses the CSV using Python's csv module (no new dependencies), validates required fields, skips rows with missing required fields (records skipped count), deduplicates by (user_id, normalised_company, normalised_role)",
+        "Returns 200 { data: { imported: int, skipped: int, errors: [{row: int, reason: str}] } }",
+        "Import is capped at 500 rows per request; rows beyond 500 are ignored and a warning is included in the response",
+        "Frontend: Dashboard page adds an 'Import CSV' button next to the 'Export CSV' button; clicking opens a modal with a file input, a downloadable sample CSV template link, and an import progress summary after upload",
+        "After successful import, React Query cache for applications and stats is invalidated",
+        "test_applications.py adds tests: happy-path import with valid CSV, skip on missing required field, duplicate detection, 500-row cap",
+        "Vitest test for the import modal: file input renders, uploads file, shows result summary",
+        "All existing tests pass",
+        "Typecheck passes",
+        "npm test passes"
+      ],
+      "priority": 10,
+      "passes": false,
+      "notes": "A major onboarding blocker. Users coming from Notion, Airtable, or Google Sheets can't get their data in without typing each entry. CSV import is table-stakes for a data tracking app."
+    },
+    {
+      "id": "US-070",
+      "title": "Wellfound (AngelList) and Dice extension board support",
+      "description": "As a user who browses startup jobs on Wellfound or tech jobs on Dice, I want the extension to detect these pages and offer the same one-click save experience.",
+      "acceptanceCriteria": [
+        "extension/manifest.json adds content script matches for *://wellfound.com/jobs/* and *://www.dice.com/job-detail/*",
+        "extension/content/boards/wellfound.js exports an extract() function that reads: role_title from h1.job-title or [data-test='job-title'], company from .company-name or h2 near the job title, location from .location span, compensation from .compensation if present, company_type inferred from page context ('startup')",
+        "extension/content/boards/dice.js exports an extract() function that reads: role_title from h1.jobTitle, company from .employerInfo .name, location from .location-info, compensation from .salary-range if present",
+        "Both parsers follow the existing board parser interface: { role_title, company, location, remote_status, compensation, company_type, source }",
+        "content.js BOARD_PARSERS map includes 'wellfound.com' and 'dice.com' entries",
+        "Fallback to OpenAI page_text parsing applies when selectors return empty strings",
+        "extension/tests/test_wellfound.js and test_dice.js add JSDOM fixture tests (follow existing board test pattern)",
+        "All existing extension tests still pass",
+        "npm test passes in /extension"
+      ],
+      "priority": 11,
+      "passes": false,
+      "notes": "Wellfound is the primary destination for startup jobs. Dice is heavily used for enterprise/government tech roles. Both are high-traffic sources for Pipelined's target users."
+    },
+    {
+      "id": "US-071",
+      "title": "Extension popup redesign with richer save history and one-click re-save",
+      "description": "As a user, the current extension popup shows a minimal list of recent saves. I want a richer popup with company info, application stage, a status badge for each save, and a quick-action button to open the full application in the dashboard.",
+      "acceptanceCriteria": [
+        "extension/popup/popup.html and popup.js are redesigned: each recent save card shows company name (bold), role title, stage badge (colored pill matching stage color), and relative time ('2 days ago')",
+        "Each card has an 'Open in dashboard' link that opens {PIPELINED_URL}/dashboard?highlight={app_id} in a new tab",
+        "If the user is not logged in (no token in chrome.storage.session), the popup shows a 'Sign in to Pipelined' button linking to the login page",
+        "Popup renders at 320px × 480px (fixed, consistent with popup.html width)",
+        "The popup header shows the user's display_name and a sign-out button (which clears chrome.storage.session)",
+        "Stage badge colors match the frontend constants: Applied=blue, Phone Screen=purple, Onsite=orange, Offer=green, Rejected=red (use the same hex values from shared/constants if they exist, or inline them)",
+        "extension/tests/test_popup.js adds tests: renders save cards with stage badge, renders sign-in state when no token, open-in-dashboard link has correct href",
+        "All existing extension tests still pass",
+        "npm test passes in /extension"
+      ],
+      "priority": 12,
+      "passes": false,
+      "notes": "Current popup is minimal — just a list of save titles. The redesign makes the extension feel like a polished product, not a utility. Companies and stage badges are stored in chrome.storage.local already."
+    },
+    {
+      "id": "US-072",
+      "title": "CSRF protection for all cookie-authenticated mutations",
+      "description": "As an operator, all POST/PATCH/DELETE endpoints that use httpOnly JWT cookies for auth are vulnerable to CSRF. Since modern browsers have SameSite=Lax defaults this is mitigated in most scenarios, but explicit CSRF protection is needed for a production-grade app.",
+      "acceptanceCriteria": [
+        "backend/middleware/csrf.py implements a double-submit cookie pattern: on every GET /api/auth/me response (or a new GET /api/csrf endpoint), set a non-httpOnly CSRF cookie (name: 'pipelined_csrf', Secure, SameSite=Strict, random 32-byte hex value)",
+        "A CSRF middleware class (FastAPI dependency or Starlette middleware) validates that the X-CSRF-Token request header matches the csrf cookie value for all POST, PATCH, DELETE requests (skip validation for GET, HEAD, OPTIONS)",
+        "Endpoints excluded from CSRF: GET /health, POST /api/auth/login, POST /api/auth/register, POST /api/auth/google (these use JSON body, not cookies, or are pre-auth)",
+        "On mismatch, return 403 with error code CSRF_TOKEN_MISMATCH",
+        "frontend/src/api/ axios instance is updated to automatically read the pipelined_csrf cookie and include it as X-CSRF-Token header on all requests",
+        "frontend/src/hooks/useAuth.js: on app load (useEffect), call GET /api/auth/me to ensure the CSRF cookie is set before any mutations are attempted",
+        "test_health.py or new test_csrf.py adds tests: POST without CSRF token returns 403, POST with matching token succeeds",
+        "All existing tests pass (update test client to include CSRF token in request headers)",
+        "Typecheck passes"
+      ],
+      "priority": 13,
+      "passes": false,
+      "notes": "Post-v2 security review finding. Cookie-based auth without CSRF protection is a standard OWASP vulnerability. Double-submit cookie is the right pattern for a SPA."
+    },
+    {
+      "id": "US-073",
+      "title": "Timezone-aware calendar events with user timezone preference",
+      "description": "As a user in a non-UTC timezone, interview times stored as UTC datetimes appear wrong in the calendar (e.g., a 10am PST interview shows as 6pm on the calendar). The system needs to store and display times in the user's local timezone.",
+      "acceptanceCriteria": [
+        "users collection gets a new field: timezone: str = 'America/New_York' (IANA timezone string, default Eastern for US-centric users)",
+        "PATCH /api/auth/me accepts { timezone: str } and validates it is a valid IANA timezone string (use zoneinfo.available_timezones() for validation)",
+        "GET /api/auth/me returns timezone in UserResponse",
+        "Settings page (from US-068) adds a 'Timezone' selector: a searchable <select> listing common IANA timezones grouped by region, defaulting to the user's current browser timezone (Intl.DateTimeFormat().resolvedOptions().timeZone)",
+        "frontend/src/lib/dateUtils.js formatDateTime() reads the user's timezone from AuthContext and uses Intl.DateTimeFormat with timeZone option to display all calendar event times in the user's local timezone",
+        "CalendarGrid.jsx event chips show times in the user's local timezone",
+        "CalendarEventDetail.jsx shows event start/end in user's local timezone with a note '(Your local time)'",
+        "test_auth.py adds a test: PATCH /api/auth/me with invalid timezone string returns 422",
+        "Vitest test for dateUtils.js: formatDateTime with a known UTC string and America/Los_Angeles timezone returns the correct Pacific time",
+        "All existing tests pass",
+        "Typecheck passes",
+        "npm test passes"
+      ],
+      "priority": 14,
+      "passes": false,
+      "notes": "Critical usability bug for users outside the server's timezone. All calendar events are stored as UTC but displayed naively, causing interview times to appear wrong."
+    },
+    {
+      "id": "US-074",
+      "title": "Weekly email digest with job search summary and stale application nudges",
+      "description": "As a user, I want to receive a weekly email every Monday morning summarizing my job search progress: how many applications I submitted this week, which applications are stale, and any interviews scheduled for the coming week. This keeps the job search active and Pipelined top-of-mind.",
+      "acceptanceCriteria": [
+        "backend/notifications/ directory is created with email_service.py (SMTP via smtplib or SendGrid SDK if SENDGRID_API_KEY is set, otherwise logs to structlog in dev/test mode)",
+        "config.py adds: smtp_host, smtp_port, smtp_from_email, smtp_password (all optional), sendgrid_api_key (optional), digest_enabled: bool = True",
+        "backend/notifications/digest.py implements build_weekly_digest(user_id) → Digested data model and send_weekly_digest(user_id) → bool",
+        "The digest includes: total applications this week (last 7 days), total active pipeline count, list of stale applications (name, company, days since update) for apps untouched > 14 days, upcoming calendar events in next 7 days (role, company, date/time)",
+        "APScheduler job in main.py's lifespan: runs every Monday at 8am UTC, calls send_weekly_digest for all users who have digest_enabled=True (stored as user preference field)",
+        "PATCH /api/auth/me accepts { digest_enabled: bool } to opt in/out",
+        "Settings page adds a 'Weekly digest email' toggle switch (on by default for new users)",
+        "Email is plain text with a clear call-to-action link back to the dashboard (no HTML email in v1 of this feature)",
+        "test_digest.py (new file) adds: build_weekly_digest returns correct stale app count, upcoming events list; send_weekly_digest calls email_service with correct content (mock email_service)",
+        "All existing tests pass",
+        "Typecheck passes"
+      ],
+      "priority": 15,
+      "passes": false,
+      "notes": "Retention feature. A weekly digest email is one of the highest-ROI features for a job tracker — it brings users back to the app on a regular cadence without requiring them to remember to check."
+    },
+    {
+      "id": "US-075",
+      "title": "Salary insights: distribution chart in Analytics and range filter on job board",
+      "description": "As a user, compensation data is stored on every application and job listing but never analyzed. I want to see a salary distribution histogram in Analytics (to understand market rates I'm targeting) and a salary range slider filter on the job board (to find listings above my minimum).",
+      "acceptanceCriteria": [
+        "backend/applications/service.py get_analytics() adds a salary_distribution facet: groups applications with non-empty compensation by parsed numeric value buckets ($0-50k, $50-100k, $100-150k, $150-200k, $200k+) — parse compensation strings to extract numeric values (handle '120000', '$120k', '$120,000', '120k-150k' formats using regex)",
+        "GET /api/applications/analytics response adds salary_distribution: [{ bucket: str, count: int }]",
+        "Analytics.jsx adds a Compensation Distribution BarChart (recharts) below the existing charts showing the bucket counts",
+        "GET /api/jobs accepts min_salary: int | None and max_salary: int | None query params",
+        "jobs/service.py applies salary filter: when min_salary is set, filter listings where the parsed numeric salary >= min_salary",
+        "Frontend JobBoard adds a salary range input (two number inputs: Min $ and Max $) that passes min_salary and max_salary to the query",
+        "test_jobs.py adds tests for salary filter endpoint",
+        "test_applications.py adds a test for salary_distribution in the analytics aggregation",
+        "All existing tests pass",
+        "Typecheck passes",
+        "npm test passes"
+      ],
+      "priority": 16,
+      "passes": false,
+      "notes": "Salary data is stored on every application and listing but never surfaced in any analytics. This is a high-value insight for users actively negotiating offers or setting target ranges."
+    },
+    {
+      "id": "US-076",
+      "title": "Undo delete and undo archive with 5-second toast",
+      "description": "As a user, accidentally deleting or archiving an application is irreversible and devastating if it had notes, timeline history, or linked interviews. A 5-second undo toast gives a safety net without requiring a full soft-delete infrastructure change.",
+      "acceptanceCriteria": [
+        "In frontend/src/components/UndoToast.jsx, create a toast component that: appears at the bottom-center of the screen, shows 'Application deleted' or 'Application archived' with an 'Undo' button, auto-dismisses after 5 seconds with a visual countdown progress bar",
+        "The Undo button is only available for 5 seconds — clicking it calls the undo action and dismisses the toast",
+        "For delete: the undo action calls POST /api/applications/{id}/restore (new endpoint) which undeletes the document — implement a soft-delete approach: DELETE /api/applications/{id} now sets deleted: true and deleted_at: datetime rather than removing the document; a background task hard-deletes documents where deleted=True and deleted_at < now - 1 day",
+        "ApplicationDocument schema adds: deleted: bool = False, deleted_at: datetime | None = None",
+        "GET /api/applications default filter excludes deleted=True documents",
+        "POST /api/applications/{id}/restore sets deleted=False, deleted_at=None; returns 200",
+        "For archive: the undo action calls PATCH /api/applications/{id}/unarchive (already exists from US-048)",
+        "ApplicationList.jsx and DetailPanel.jsx: after calling the delete or archive mutation, show the UndoToast instead of immediately invalidating the cache; only invalidate the cache when the toast auto-dismisses (no undo clicked) OR when navigating away",
+        "test_applications.py adds tests for: DELETE sets deleted=True not hard deletes, POST /restore resets deleted fields, deleted applications excluded from default list",
+        "Vitest test for UndoToast: renders with countdown, undo button calls callback, auto-dismisses after timeout",
+        "All existing tests pass",
+        "Typecheck passes",
+        "npm test passes"
+      ],
+      "priority": 17,
+      "passes": false,
+      "notes": "Users have reported losing applications with notes and history due to accidental deletes. The 5s undo pattern (used by Gmail, Notion) is the gold standard UX for destructive actions."
+    },
+    {
+      "id": "US-077",
+      "title": "Application sharing — generate a read-only public link to your pipeline",
+      "description": "As a user working with a career counselor, mentor, or accountability partner, I want to generate a shareable read-only link to my job application pipeline so they can view my progress without needing a Pipelined account. This is a differentiated social feature no competing tracker has.",
+      "acceptanceCriteria": [
+        "POST /api/sharing/create creates a share token: a random 16-character alphanumeric slug stored in a shares collection with { user_id, slug, created_at, expires_at (30 days from now), is_active: true }",
+        "GET /api/sharing/my returns the user's active share token (or null)",
+        "DELETE /api/sharing/revoke deactivates the current token (is_active=False)",
+        "GET /api/public/{slug} is a new PUBLIC (no auth) endpoint that returns a read-only snapshot of the user's applications: { data: { display_name: str, stats: StatsResponse, applications: [{ role_title, company, stage, applied_at, stage_history }] } } — excludes: notes, compensation, tags, personal data",
+        "GET /api/public/{slug} returns 404 if slug is invalid or is_active=False or expires_at < now",
+        "New frontend page /public/{slug} that renders a read-only pipeline view: same StatsBar, same application list (without notes/compensation columns), with a 'Join Pipelined →' CTA in the header",
+        "Settings page adds a 'Share my pipeline' section with: a toggle to generate/revoke the link, a copy-to-clipboard button showing the full shareable URL, expiry countdown",
+        "New index on shares collection: { slug: 1 } unique, { expires_at: 1 } TTL for auto-cleanup",
+        "test_sharing.py (new file) adds: POST creates share, GET /public/{slug} returns correct public data, revoked slug returns 404, expired slug returns 404",
+        "Vitest test for the public pipeline page: renders StatsBar and application list from mock data",
+        "All existing tests pass",
+        "Typecheck passes",
+        "npm test passes"
+      ],
+      "priority": 18,
+      "passes": false,
+      "notes": "Zero competing job trackers have public sharing. This is a viral growth vector — shared pipelines drive new user signups from the CTA. Mentors and career counselors sharing Pipelined with their students creates organic growth."
+    }
+  ]
+}

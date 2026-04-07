@@ -1,0 +1,19 @@
+# Ralph Progress Log
+Started: Tue Apr  7 00:17:12 PDT 2026
+---
+
+## US-057 — Dark mode with system preference detection and manual toggle
+Status: PASSED
+Commit: c8b02f3
+
+### What was done
+- Verified `tailwind.config.js` already had `darkMode: 'class'`
+- Built on existing untracked `ThemeContext.jsx` (system/light/dark cycle, localStorage persistence, matchMedia listener)
+- Built on existing untracked `ThemeContext.test.jsx` (7 tests covering class toggling, persistence, system preference)
+- Confirmed `main.jsx` already wrapped the app in `ThemeProvider`
+- Confirmed `NavBar.jsx` already had the theme toggle button (Sun/Moon/Monitor icons via cycleTheme)
+- Added `dark:` variants to `Register.jsx` (labels + inputs), `ManualAddForm.jsx` (full pass), `JobBoard.jsx` (full pass), `DetailPanel.jsx` (missing elements)
+- Confirmed `Dashboard.jsx`, `ApplicationList.jsx`, `FilterBar.jsx`, `StatsBar.jsx`, `CalendarGrid.jsx`, `Login.jsx`, `Calendar.jsx` already had dark mode classes
+- Fixed `Dashboard.test.jsx` and `Analytics.test.jsx` to wrap with `ThemeProvider` (NavBar requires useTheme)
+- Added `matchMedia` stub and localStorage mock to `src/test/setup.js` to fix jsdom environment gaps
+- All 157 tests pass; build passes
