@@ -23,7 +23,7 @@
         "npm run build passes"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "This is the #1 most requested UX pattern for pipeline trackers. Every competitor (Huntr, Teal, Simplify) has Kanban. The table-only view is a dealbreaker for visual users. Use the user's custom stages from default_stages (US-068) as columns. If US-068 hasn't landed yet, fall back to the hardcoded STAGES constant from constants.js."
     },
     {

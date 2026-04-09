@@ -1,0 +1,19 @@
+# Ralph Progress Log
+Started: Thu Apr  9 10:19:43 PDT 2026
+---
+
+## US-078: Kanban board view with drag-and-drop stage transitions
+Status: PASSED
+Commit: cbcb883
+
+### What was built
+- `frontend/src/components/KanbanCard.jsx`: Draggable card using @dnd-kit/sortable with company, role_title, formatRelative date, and amber stale dot (14+ days inactive). PointerSensor with distance:8 constraint allows normal clicks.
+- `frontend/src/components/KanbanBoard.jsx`: One droppable column per user's `default_stages` (falls back to STAGES constant). Drag-end handler maps over.id to stage name or looks up card's current stage. Mobile: horizontal tab bar + single column view (md:hidden). Desktop: all columns side by side (hidden md:flex). DragOverlay renders inline ghost card.
+- `frontend/src/lib/constants.js`: Added `STAGES` (Object.keys(STAGE_COLORS)) and `VIEW_MODE_STORAGE_KEY = "pipelined_view_mode"`.
+- `frontend/src/pages/Dashboard.jsx`: List/Kanban view toggle (LayoutGrid + List icons from lucide-react), persisted to localStorage. Conditional render of KanbanBoard vs ApplicationList.
+
+### Test strategy
+- KanbanCard.test.jsx: Wrapped with DndContext+SortableContext; used `fireEvent.click` (not userEvent) because @dnd-kit pointer listeners block synthetic pointer events in JSDOM.
+- KanbanBoard.test.jsx: Added `data-testid="kanban-desktop"` to desktop container. Used `within(desktop).findByText` pattern to scope queries away from mobile duplicate renders (JSDOM renders both mobile+desktop since CSS breakpoints don't apply).
+
+### Tests: 214/214 passed | Build: ✓
