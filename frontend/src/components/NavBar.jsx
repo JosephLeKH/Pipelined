@@ -3,6 +3,7 @@
 import { useCallback, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
+import Activity from "lucide-react/dist/esm/icons/activity";
 import BarChart2 from "lucide-react/dist/esm/icons/bar-chart-2";
 import CalendarDays from "lucide-react/dist/esm/icons/calendar-days";
 import LayoutDashboard from "lucide-react/dist/esm/icons/layout-dashboard";
@@ -22,6 +23,7 @@ const NAV_LINKS = [
   { to: "/dashboard", label: "Dashboard", Icon: LayoutDashboard },
   { to: "/calendar", label: "Calendar", Icon: CalendarDays },
   { to: "/analytics", label: "Analytics", Icon: BarChart2 },
+  { to: "/activity", label: "Activity", Icon: Activity },
   { to: "/settings", label: "Settings", Icon: Settings },
 ];
 
