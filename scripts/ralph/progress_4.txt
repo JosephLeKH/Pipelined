@@ -185,3 +185,14 @@ US-089 | Extension auto-save mode for power users | PASSED | 2026-04-09
 - Modified extension/tests/test_content.js: added initAutoSave, AUTO_SAVE_DEBOUNCE_MS, clearSavedUrls imports; added 3-test describe block for initAutoSave (returns false when disabled, returns true when enabled, no re-schedule for duplicate URL)
 - Modified extension/tests/test_popup.js: updated POPUP_HTML with auto-save-row; imported renderAutoSaveToggle; added 2 tests (OFF state when false, ON state when true)
 - Tests: 207/207 pass | Commit: 74b6b8b
+
+---
+US-090 | Extension LinkedIn profile contact save | PASSED | 2026-04-09
+- Created extension/content/banner_helpers.js: extracted shared banner utilities (BANNER_AUTO_DISMISS_MS=8000, BANNER_SUCCESS_DISMISS_MS=1500, BANNER_DUPLICATE_DISMISS_MS=6000, FADE_DURATION_MS=300, BANNER_CSS, createBannerHost(initialText=""), dismiss(), showBannerSuccess(), showBannerError(), showBannerDuplicate()) to keep content.js under 300-line limit and enable sharing with contact_banner.js
+- Rewrote extension/content/content.js: imports from banner_helpers.js; added linkedin_profile board + injectContactBanner import; init() routes type="contact" fields to injectContactBanner; uses createBannerHost() for both injectBanner and auto-save banner (replaces buildAutoSaveBannerHost); reduced from 300 to ~160 lines
+- Created extension/content/boards/linkedin_profile.js: BOARD_ID="linkedin_profile"; URL matches /linkedin.com/in/ excluding /jobs/, /feed/, /search/, /notifications/, /messaging/, /learning/; isJobPage() checks URL + h1.text-heading-xlarge or h1[class*="text-heading"]; extractFields() returns { type:"contact", name, headline, company, linkedin_url }
+- Created extension/content/contact_banner.js: injectContactBanner(fields) shows "Save [name]'s contact info?" banner with Save Contact button; handleContactSave sends SAVE_CONTACT message to service worker; showContactSuccess/showContactError handle outcomes; imports from banner_helpers.js
+- Modified extension/background/background.js: added SAVE_CONTACT to MSG; added executeContactSave(payload) POSTing { name, headline, company, linkedin_url } to /api/contacts; added SAVE_CONTACT message handler in router
+- Modified extension/tests/test_content.js: changed dismiss, BANNER_AUTO_DISMISS_MS, FADE_DURATION_MS imports to come from banner_helpers.js directly (no barrel re-export through content.js)
+- Created extension/tests/test_linkedin_profile.js: 11 tests for isJobPage() (rejects non-profile URL, feed URL, missing heading; accepts profile with heading) and extractFields() (type="contact", name extraction, null fallbacks, headline, linkedin_url)
+- Tests: 218/218 pass | Commit: a81ee24

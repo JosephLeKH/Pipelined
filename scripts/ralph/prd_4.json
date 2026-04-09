@@ -325,7 +325,7 @@
         "npm test passes in /extension"
       ],
       "priority": 13,
-      "passes": false,
+      "passes": true,
       "notes": "This depends on US-086 (contacts API) being implemented first. If US-086 is not done, the service worker save will fail gracefully with a 'Contacts feature coming soon' message. LinkedIn profile DOM changes frequently \u2014 use a fallback chain of 3+ selectors like the job parser does."
     },
     {
