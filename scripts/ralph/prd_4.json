@@ -53,7 +53,7 @@
         "npm run build passes"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "This leverages the existing OpenAI GPT-4o mini integration. The scoring is fire-and-forget so it doesn't slow down application creation. The fit_score is stored on the application document for fast retrieval. Budget guard: if OPENAI_API_KEY is empty, skip scoring silently. pdfplumber is a pure-Python PDF extractor, no system dependencies."
     },
     {

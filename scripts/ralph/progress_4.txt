@@ -17,3 +17,26 @@ Commit: cbcb883
 - KanbanBoard.test.jsx: Added `data-testid="kanban-desktop"` to desktop container. Used `within(desktop).findByText` pattern to scope queries away from mobile duplicate renders (JSDOM renders both mobile+desktop since CSS breakpoints don't apply).
 
 ### Tests: 214/214 passed | Build: ✓
+
+## US-079: AI resume-job fit scoring on application save — PASSED
+
+**Backend:**
+- `backend/parsing/fit_scorer.py`: GPT-4o mini client; validates fit_score 0-100, truncates skills arrays, returns null result on any error
+- `backend/auth/router.py`: POST /api/auth/resume (pdfplumber PDF extraction, 2MB limit, PDF-only) + DELETE /api/auth/resume
+- `backend/auth/service.py`: `save_resume_text()` and `clear_resume_text()` using Motor `$set`/`$unset`
+- `backend/auth/schemas.py`: `has_resume: bool` on `UserResponse`, derived from `bool(doc.get("resume_text"))`
+- `backend/applications/schemas.py`: `AiFitAnalysis` model + `ai_analysis` field on `ApplicationResponse`
+- `backend/applications/service.py`: `asyncio.create_task(_score_and_update(...))` fire-and-forget after insert
+
+**Frontend:**
+- `frontend/src/components/FitBadge.jsx`: color pill (green ≥80, yellow ≥50, orange ≥30, red <30, gray null)
+- FitBadge added to `ApplicationRow`, `KanbanCard`, `DetailPanel` (ResumeFitSection with skills chips)
+- `frontend/src/pages/Settings.jsx`: Upload/Replace/Remove resume UI with `useUploadResume`/`useDeleteResume`
+- `frontend/src/hooks/useAuth.js`: `useUploadResume` and `useDeleteResume` re-fetch full user via `fetchCurrentUser()` after mutation
+
+**Tests:**
+- 8 fit scorer unit tests (mocked OpenAI), 4 auth resume integration tests, 12 FitBadge component tests
+- 226 frontend tests pass, 206 backend tests pass (pre-existing RuntimeError failures in jobs/sharing/sync unaffected)
+- Frontend build passes
+
+**Commit:** b9b14d0
