@@ -145,3 +145,43 @@ US-086 | Networking contacts tracker linked to applications | PASSED | 2026-04-0
 - Created backend/tests/test_contacts.py: 17 integration tests — CRUD, link/unlink (including idempotency), filters (company, relationship, application_id), ping
 - Tests: 17 new backend contacts tests pass | 274 frontend tests pass | Build: ✓
 - Commit: b12922c
+
+---
+US-087 | In-app notification center with bell icon and unread count | PASSED | 2026-04-09
+- Created backend/notifications/notification_service.py: create_notification, list_notifications, get_unread_count, mark_read, mark_all_read; scheduled generators for stale_app, interview_tomorrow, follow_up_due with 7-day dedup window
+- Created backend/notifications/schemas.py: NotificationResponse.from_doc(), UnreadCountResponse
+- Created backend/notifications/router.py: GET /api/notifications, GET /api/notifications/unread-count, PATCH /api/notifications/{id}/read, PATCH /api/notifications/read-all
+- Modified backend/database.py: added notifications indexes (user_id+created_at desc, user_id+read, TTL 30 days on created_at)
+- Modified backend/main.py: mounted notifications_router
+- Modified backend/jobs/sync.py: added hourly generate_notifications job (CronTrigger every minute=0)
+- Created frontend/src/api/notifications.js: fetchNotifications, fetchUnreadCount, markNotificationRead, markAllNotificationsRead
+- Created frontend/src/hooks/useNotifications.js: useNotifications, useUnreadCount (refetchInterval=60s), useMarkRead, useMarkAllRead
+- Created frontend/src/components/NotificationBell.jsx: bell icon with red unread badge, dropdown panel with notification list, type icons (BriefcaseBusiness/CalendarClock/Clock), mark all read, click-outside close, full dark mode
+- Modified frontend/src/components/NavBar.jsx: added <NotificationBell /> in desktop action bar
+- Tests: 8 backend notifications tests + 7 NotificationBell frontend tests; 281 frontend / backend tests pass | Build: ✓
+- Commit: 92a2209
+
+---
+US-088 | Activity feed with unified timeline of all actions | PASSED | 2026-04-09
+- Created backend/activity/__init__.py, service.py, router.py
+- activity/service.py: _applied_events, _stage_change_events (Python-side unwind of stage_history pairs), _event_created_events; asyncio.gather for parallelism; _ensure_utc helper for naive datetime normalization; get_activity_feed sorts desc and caps at MAX_ACTIVITY_ENTRIES=200
+- activity/router.py: GET /api/activity?days=30 (default 30, max 365); returns { data: [...], meta: { total, days } }
+- Modified backend/main.py: mounted activity_router
+- Created frontend/src/api/activity.js: fetchActivityFeed({ days })
+- Created frontend/src/hooks/useActivity.js: useActivityFeed({ days }) with ACTIVITY_KEYS factory
+- Created frontend/src/pages/Activity.jsx: vertical timeline with left border line + dots (blue=applied, purple=stage_change, orange=event_created); time range selector (7d/30d/90d/all); click navigates to /dashboard?selected={application_id}; dark mode; empty state
+- Modified frontend/src/components/NavBar.jsx: added Activity link (lucide activity icon) between Analytics and Settings
+- Modified frontend/src/App.jsx: lazy-loaded /activity ProtectedRoute
+- Tests: 7 backend activity tests + 6 Activity page frontend tests; 287 frontend / 237 backend pass | Build: ✓
+- Commit: 4099391
+
+---
+US-089 | Extension auto-save mode for power users | PASSED | 2026-04-09
+- Modified extension/content/content.js: added AUTO_SAVE_DEBOUNCE_MS=2000, AUTO_SAVE_SUCCESS_DISMISS_MS=3000, module-scope savedUrls Set; async init() calls initAutoSave first, only falls back to injectBanner if not scheduled; added buildAutoSaveBannerHost(), showBannerAutoSaved(), showBannerAutoSaveFailed(), initAutoSave(), clearSavedUrls(); exported new constants and functions
+- initAutoSave: reads auto_save from chrome.storage.local (try-catch for JSDOM safety); skips if URL already in savedUrls; debounces 2s then fires SAVE_APPLICATION message; popstate listener cancels timer on SPA navigation
+- Modified extension/popup/popup.js: added renderAutoSaveToggle() — reads auto_save from storage, reveals auto-save-row, sets aria-pressed + text, toggles on click; called from init() after show("authenticated")
+- Modified extension/popup/popup.html: added auto-save-row div with auto-save-toggle button inside #authenticated
+- Modified extension/popup/popup.css: added .auto-save-row, .auto-save-label, .auto-save-btn styles; aria-pressed=true turns button indigo
+- Modified extension/tests/test_content.js: added initAutoSave, AUTO_SAVE_DEBOUNCE_MS, clearSavedUrls imports; added 3-test describe block for initAutoSave (returns false when disabled, returns true when enabled, no re-schedule for duplicate URL)
+- Modified extension/tests/test_popup.js: updated POPUP_HTML with auto-save-row; imported renderAutoSaveToggle; added 2 tests (OFF state when false, ON state when true)
+- Tests: 207/207 pass | Commit: 74b6b8b
