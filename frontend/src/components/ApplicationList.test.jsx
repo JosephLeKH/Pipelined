@@ -124,7 +124,7 @@ describe("ApplicationList", () => {
     render(<ApplicationList onSelect={() => {}} />, { wrapper: makeWrapper() });
 
     // Assert
-    expect(await screen.findByText(/no applications match/i)).toBeInTheDocument();
+    expect(await screen.findByText(/no applications yet/i)).toBeInTheDocument();
   });
 
   it("should render column headers for Company, Role, Stage, Date Applied", async () => {

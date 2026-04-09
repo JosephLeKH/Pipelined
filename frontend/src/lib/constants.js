@@ -69,6 +69,9 @@ export const STAGES = Object.keys(STAGE_COLORS);
 
 export const VIEW_MODE_STORAGE_KEY = "pipelined_view_mode";
 
+export const ONBOARDING_DISMISSED_KEY = "pipelined_onboarding_dismissed";
+export const ONBOARDING_CONFETTI_DISMISS_MS = 3_000;
+
 export const EVENT_TYPE_OPTIONS = [
   { value: "phone_screen", label: "Phone Screen" },
   { value: "technical", label: "Technical" },

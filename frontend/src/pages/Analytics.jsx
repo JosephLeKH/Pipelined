@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import BarChart3 from "lucide-react/dist/esm/icons/bar-chart-3";
 import { BarChart } from "recharts/es6/chart/BarChart";
 import { LineChart } from "recharts/es6/chart/LineChart";
 import { Bar } from "recharts/es6/cartesian/Bar";
@@ -14,9 +15,10 @@ import { Legend } from "recharts/es6/component/Legend";
 import { ResponsiveContainer } from "recharts/es6/component/ResponsiveContainer";
 
 import { useAnalytics } from "../hooks/useApplications";
+import EmptyState from "../components/EmptyState";
 import NavBar from "../components/NavBar";
 
-const EMPTY_STATE_THRESHOLD = 5;
+const EMPTY_STATE_THRESHOLD = 3;
 
 const DATE_RANGES = [
   { label: "Last 30 days", value: 30 },
@@ -97,9 +99,11 @@ function Analytics() {
         </div>
 
         {totalApps < EMPTY_STATE_THRESHOLD ? (
-          <div className="flex h-64 items-center justify-center rounded-lg border border-dashed border-gray-300 bg-white dark:border-gray-600 dark:bg-gray-800">
-            <p className="text-gray-500 dark:text-gray-400">Add more applications to unlock analytics</p>
-          </div>
+          <EmptyState
+            title="Not enough data yet"
+            description="Add at least 3 applications to unlock analytics and insights."
+            icon={BarChart3}
+          />
         ) : (
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             <ChartCard title="Applications per Week">

@@ -15,6 +15,7 @@ import KanbanBoard from "../components/KanbanBoard";
 import CsvImportModal from "../components/CsvImportModal";
 import DetailPanel from "../components/DetailPanel";
 import ManualAddForm from "../components/ManualAddForm";
+import OnboardingChecklist from "../components/OnboardingChecklist";
 import { useApplication } from "../hooks/useApplications";
 import { exportApplicationsCsv } from "../api/applications";
 import { VIEW_MODE_STORAGE_KEY } from "../lib/constants";
@@ -147,12 +148,18 @@ function Dashboard() {
             </button>
           </div>
         </div>
+        <OnboardingChecklist onAdd={() => setIsModalOpen(true)} />
         <StatsBar />
         <FilterBar />
         {viewMode === "kanban" ? (
           <KanbanBoard filters={filters} onSelect={handleSelect} />
         ) : (
-          <ApplicationList filters={filters} onSelect={handleSelect} />
+          <ApplicationList
+            filters={filters}
+            onSelect={handleSelect}
+            onAdd={() => setIsModalOpen(true)}
+            onImportCsv={() => setIsImportOpen(true)}
+          />
         )}
         <DetailPanel application={selectedApp ?? null} onClose={handleClosePanel} />
         <ManualAddForm isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />

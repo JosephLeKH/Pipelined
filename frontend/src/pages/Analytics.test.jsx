@@ -100,7 +100,7 @@ describe("Analytics", () => {
     renderAnalytics();
 
     expect(
-      await screen.findByText("Add more applications to unlock analytics")
+      await screen.findByText("Not enough data yet")
     ).toBeInTheDocument();
   });
 

@@ -15,9 +15,11 @@ import {
   useUnarchiveApplication,
 } from "../hooks/useApplications";
 import { SKELETON_ROW_COUNT } from "../lib/constants";
+import FolderOpen from "lucide-react/dist/esm/icons/folder-open";
 import ApiErrorMessage from "./ApiErrorMessage";
 import ApplicationRow from "./ApplicationRow";
 import { BulkActionBar, BulkDeleteConfirmModal } from "./ApplicationRowActions";
+import EmptyState from "./EmptyState";
 import SkeletonRow from "./SkeletonRow";
 import UndoToast from "./UndoToast";
 
@@ -35,7 +37,7 @@ function ColumnHeader({ field, label, sortBy, sortOrder, onSort }) {
   );
 }
 
-function ApplicationList({ onSelect, filters = {} }) {
+function ApplicationList({ onSelect, filters = {}, onAdd, onImportCsv }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [undoAction, setUndoAction] = useState(null);
   const [selectedIds, setSelectedIds] = useState(new Set());
@@ -148,7 +150,22 @@ function ApplicationList({ onSelect, filters = {} }) {
   if (error) return <ApiErrorMessage error={error} onRetry={refetch} />;
 
   if (!applications.length) {
-    return <div className="py-16 text-center text-gray-500">No applications match your filters.</div>;
+    const hasFilters = Object.keys(filters).length > 0;
+    if (hasFilters) {
+      return <div className="py-16 text-center text-gray-500">No applications match your filters.</div>;
+    }
+    const actionButtons = [
+      ...(onAdd ? [{ label: "Add Application", onClick: onAdd }] : []),
+      ...(onImportCsv ? [{ label: "Import CSV", onClick: onImportCsv }] : []),
+    ];
+    return (
+      <EmptyState
+        title="No applications yet"
+        description="Start tracking your job search by adding your first application."
+        icon={FolderOpen}
+        actionButton={actionButtons.length > 0 ? actionButtons : undefined}
+      />
+    );
   }
 
   const allSelected = applications.length > 0 && selectedIds.size === applications.length;

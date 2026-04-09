@@ -2,15 +2,21 @@
 
 import { useState, useCallback } from "react";
 
+import CalendarDays from "lucide-react/dist/esm/icons/calendar-days";
 import CalendarEventDetail from "../components/CalendarEventDetail";
 import CalendarGrid from "../components/CalendarGrid";
+import EmptyState from "../components/EmptyState";
 import NavBar from "../components/NavBar";
 import NewEventForm from "../components/NewEventForm";
+import { useCalendarEvents } from "../hooks/useCalendar";
 
 function Calendar() {
   const today = new Date();
   const [month, setMonth] = useState(today.getMonth() + 1);
   const [year, setYear] = useState(today.getFullYear());
+
+  const { data: eventsEnv, isLoading: eventsLoading } = useCalendarEvents(month, year);
+  const events = eventsEnv?.data ?? [];
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [newEventForm, setNewEventForm] = useState(null);
 
@@ -47,6 +53,13 @@ function Calendar() {
         onEventClick={handleEventClick}
         onDayClick={handleDayClick}
       />
+      {!eventsLoading && events.length === 0 && (
+        <EmptyState
+          title="No interviews scheduled"
+          description="Events will appear here when you schedule interviews for your applications."
+          icon={CalendarDays}
+        />
+      )}
       {selectedEvent && (
         <CalendarEventDetail
           event={selectedEvent}
