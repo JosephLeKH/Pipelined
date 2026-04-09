@@ -2,19 +2,19 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 
-import Pencil from "lucide-react/dist/esm/icons/pencil";
 import Plus from "lucide-react/dist/esm/icons/plus";
 import Trash2 from "lucide-react/dist/esm/icons/trash-2";
 import X from "lucide-react/dist/esm/icons/x";
 import ExternalLink from "lucide-react/dist/esm/icons/external-link";
 
-import { useUpdateApplication } from "../hooks/useApplications";
+import { useDeleteApplication, useRestoreApplication, useUpdateApplication } from "../hooks/useApplications";
 import { useApplicationEvents, useDeleteEvent } from "../hooks/useCalendar";
 import ApplicationTimeline from "./ApplicationTimeline";
+import NotesEditor from "./NotesEditor";
+import UndoToast from "./UndoToast";
 import {
   EVENT_TYPE_COLORS,
   DEFAULT_EVENT_COLOR,
-  NOTES_MAX_LENGTH,
 } from "../lib/constants";
 import { formatDate } from "../lib/dateUtils";
 import { useAuth } from "../context/AuthContext";
@@ -83,122 +83,31 @@ function CalendarEventsList({ applicationId, onAddEvent }) {
   );
 }
 
-function NotesEditor({ applicationId, initialValue }) {
-  const { mutate: updateApp } = useUpdateApplication();
-  const [isEditing, setIsEditing] = useState(false);
-  const [savedValue, setSavedValue] = useState(initialValue ?? "");
-  const [draft, setDraft] = useState(initialValue ?? "");
-  const [errorMsg, setErrorMsg] = useState(null);
-
-  const handleEdit = () => {
-    setDraft(savedValue);
-    setErrorMsg(null);
-    setIsEditing(true);
-  };
-
-  const handleCancel = () => {
-    setDraft(savedValue);
-    setErrorMsg(null);
-    setIsEditing(false);
-  };
-
-  const handleSave = () => {
-    updateApp(
-      { id: applicationId, body: { notes: draft } },
-      {
-        onSuccess: () => {
-          setSavedValue(draft);
-          setIsEditing(false);
-          setErrorMsg(null);
-        },
-        onError: () => {
-          setErrorMsg("Failed to save notes. Please try again.");
-          setDraft(savedValue);
-          setIsEditing(false);
-        },
-      }
-    );
-  };
-
-  return (
-    <div className="flex flex-col gap-1.5" data-testid="notes-editor">
-      <div className="flex items-center justify-between">
-        <label
-          className="text-xs font-medium uppercase text-gray-400"
-          htmlFor={isEditing ? "notes-textarea" : undefined}
-        >
-          Notes
-        </label>
-        {!isEditing && (
-          <button
-            type="button"
-            onClick={handleEdit}
-            className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 dark:hover:bg-gray-700 dark:hover:text-gray-300"
-            aria-label="Edit notes"
-          >
-            <Pencil className="h-3.5 w-3.5" />
-          </button>
-        )}
-      </div>
-      {errorMsg && (
-        <p role="alert" className="text-xs text-red-600">{errorMsg}</p>
-      )}
-      {isEditing ? (
-        <>
-          <textarea
-            id="notes-textarea"
-            className="min-h-[120px] resize-y rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
-            aria-label="Notes"
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            maxLength={NOTES_MAX_LENGTH}
-          />
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-gray-400">
-              {draft.length}/{NOTES_MAX_LENGTH}
-            </span>
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={handleCancel}
-                className="rounded px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 dark:text-gray-300 dark:hover:bg-gray-700"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={handleSave}
-                className="rounded bg-blue-600 px-2 py-1 text-xs text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
-              >
-                Save
-              </button>
-            </div>
-          </div>
-        </>
-      ) : (
-        <p className="whitespace-pre-wrap text-sm text-gray-700 dark:text-gray-300" data-testid="notes-display">
-          {savedValue || <span className="text-gray-400">No notes yet.</span>}
-        </p>
-      )}
-    </div>
-  );
-}
-
-function PanelHeader({ application, onClose }) {
+function PanelHeader({ application, onClose, onDelete }) {
   return (
     <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4 dark:border-gray-700">
       <div>
         <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{application.role_title}</h2>
         <p className="text-sm text-gray-500 dark:text-gray-400">{application.company}</p>
       </div>
-      <button
-        type="button"
-        onClick={onClose}
-        className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 dark:hover:bg-gray-700 dark:hover:text-gray-300"
-        aria-label="Close panel"
-      >
-        <X className="h-5 w-5" />
-      </button>
+      <div className="flex items-center gap-1">
+        <button
+          type="button"
+          onClick={onClose}
+          className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 dark:hover:bg-gray-700 dark:hover:text-gray-300"
+          aria-label="Close panel"
+        >
+          <X className="h-5 w-5" />
+        </button>
+        <button
+          type="button"
+          onClick={onDelete}
+          className="rounded p-1 text-gray-400 hover:bg-red-50 hover:text-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1 dark:hover:bg-red-900/30"
+          aria-label="Delete application"
+        >
+          <Trash2 className="h-4 w-4" />
+        </button>
+      </div>
     </div>
   );
 }
@@ -258,7 +167,35 @@ function PanelBody({ application, handleStageChange, onAddEvent }) {
 function DetailPanel({ application, onClose, onAddEvent }) {
   const overlayRef = useRef(null);
   const panelRef = useRef(null);
+  const [undoPendingId, setUndoPendingId] = useState(null);
+  const [cachedApp, setCachedApp] = useState(application);
   const { mutate: updateApp } = useUpdateApplication();
+  const { mutate: deleteApp } = useDeleteApplication();
+  const { mutate: restoreApp } = useRestoreApplication();
+
+  // Keep cachedApp in sync when panel is not in undo mode
+  useEffect(() => {
+    if (application) setCachedApp(application);
+  }, [application]);
+
+  const handleDelete = useCallback(() => {
+    if (!cachedApp) return;
+    deleteApp(cachedApp.id, {
+      onSuccess: () => setUndoPendingId(cachedApp.id),
+    });
+  }, [cachedApp, deleteApp]);
+
+  const handleUndoDelete = useCallback(() => {
+    restoreApp(undoPendingId, {
+      onSuccess: () => setUndoPendingId(null),
+      onError: () => { setUndoPendingId(null); onClose(); },
+    });
+  }, [undoPendingId, restoreApp, onClose]);
+
+  const handleUndoDismiss = useCallback(() => {
+    setUndoPendingId(null);
+    onClose();
+  }, [onClose]);
 
   const handleKeyDown = useCallback(
     (e) => { if (e.key === "Escape") onClose(); },
@@ -298,11 +235,12 @@ function DetailPanel({ application, onClose, onAddEvent }) {
   );
 
   const handleStageChange = useCallback(
-    (e) => { if (application) updateApp({ id: application.id, body: { current_stage: e.target.value } }); },
-    [application, updateApp]
+    (e) => { if (cachedApp) updateApp({ id: cachedApp.id, body: { current_stage: e.target.value } }); },
+    [cachedApp, updateApp]
   );
 
-  const isOpen = Boolean(application);
+  const displayApp = application ?? cachedApp;
+  const isOpen = Boolean(application) || Boolean(undoPendingId);
 
   return (
     <div
@@ -323,15 +261,22 @@ function DetailPanel({ application, onClose, onAddEvent }) {
         aria-label="Application details"
         onKeyDown={handlePanelKeyDown}
       >
-        {application && (
-          <div key={application.id} className="flex h-full flex-col overflow-y-auto">
-            <PanelHeader application={application} onClose={onClose} />
+        {displayApp && (
+          <div key={displayApp.id} className="flex h-full flex-col overflow-y-auto">
+            <PanelHeader application={displayApp} onClose={onClose} onDelete={handleDelete} />
             <PanelBody
-              application={application}
+              application={displayApp}
               handleStageChange={handleStageChange}
               onAddEvent={onAddEvent}
             />
           </div>
+        )}
+        {undoPendingId && (
+          <UndoToast
+            message="Application deleted."
+            onUndo={handleUndoDelete}
+            onDismiss={handleUndoDismiss}
+          />
         )}
       </div>
     </div>

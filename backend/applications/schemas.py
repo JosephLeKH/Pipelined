@@ -74,6 +74,8 @@ class ApplicationResponse(BaseModel):
     stage_history: list[StageHistoryEntry] = Field(default_factory=list)
     archived: bool = False
     archived_at: datetime | None = None
+    deleted: bool = False
+    deleted_at: datetime | None = None
 
     @classmethod
     def from_doc(cls, doc: dict) -> "ApplicationResponse":

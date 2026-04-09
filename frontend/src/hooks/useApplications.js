@@ -13,6 +13,7 @@ import {
   fetchApplications,
   fetchStats,
   importApplicationsCsv,
+  restoreApplication,
   unarchiveApplication,
   updateApplication,
 } from "../api/applications";
@@ -110,6 +111,18 @@ export function useUnarchiveApplication() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id) => unarchiveApplication(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: KEYS.all });
+      queryClient.invalidateQueries({ queryKey: KEYS.stats });
+    },
+  });
+}
+
+/** Restore a soft-deleted application. */
+export function useRestoreApplication() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id) => restoreApplication(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: KEYS.all });
       queryClient.invalidateQueries({ queryKey: KEYS.stats });

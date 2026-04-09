@@ -83,6 +83,11 @@ export async function fetchAnalytics(days = null) {
   return client.get(`/applications/analytics${params}`);
 }
 
+/** Restore a soft-deleted application. */
+export async function restoreApplication(id) {
+  return client.post(`/applications/${id}/restore`);
+}
+
 /** Upload a CSV file to bulk-import applications. */
 export async function importApplicationsCsv(file) {
   const form = new FormData();

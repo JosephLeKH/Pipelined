@@ -195,10 +195,12 @@ async def sync_github_repos() -> None:
 
 DIGEST_SEND_HOUR_UTC: int = 8
 DIGEST_SEND_DAY_OF_WEEK: str = "mon"
+PURGE_DELETED_HOUR_UTC: int = 4
 
 
 def create_scheduler() -> AsyncIOScheduler:
-    """Build an AsyncIOScheduler with GitHub sync and weekly digest jobs."""
+    """Build an AsyncIOScheduler with GitHub sync, weekly digest, and purge jobs."""
+    from applications.service import purge_stale_deleted_applications  # noqa: PLC0415
     from notifications.digest import send_all_digests  # noqa: PLC0415 — avoid circular at module level
 
     scheduler = AsyncIOScheduler()
@@ -212,6 +214,12 @@ def create_scheduler() -> AsyncIOScheduler:
         send_all_digests,
         trigger=CronTrigger(day_of_week=DIGEST_SEND_DAY_OF_WEEK, hour=DIGEST_SEND_HOUR_UTC, timezone="UTC"),
         id="weekly_digest",
+        replace_existing=True,
+    )
+    scheduler.add_job(
+        purge_stale_deleted_applications,
+        trigger=CronTrigger(hour=PURGE_DELETED_HOUR_UTC, timezone="UTC"),
+        id="purge_deleted",
         replace_existing=True,
     )
     return scheduler

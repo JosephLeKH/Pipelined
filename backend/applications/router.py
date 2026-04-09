@@ -25,7 +25,7 @@ from applications.schemas import (
     MAX_IMPORT_FILE_SIZE_BYTES,
     MAX_QUERY_LIMIT,
 )
-from applications.service import ActiveStageError, DuplicateApplicationError, InvalidCursorError
+from applications.service import ActiveStageError, ApplicationNotFoundError, DuplicateApplicationError, InvalidCursorError
 from auth.dependencies import get_current_user
 from config import settings
 from middleware.rate_limit import limiter
@@ -219,6 +219,19 @@ async def delete_application(
     if not deleted:
         raise HTTPException(status_code=404, detail=APP_NOT_FOUND_DETAIL)
     return Response(status_code=204)
+
+
+@router.post("/{app_id}/restore", status_code=200)
+async def restore_application(
+    app_id: str,
+    user: dict = Depends(get_current_user),
+) -> dict:
+    """Restore a soft-deleted application."""
+    user_id = str(user["_id"])
+    doc = await app_service.restore(user_id, app_id)
+    if doc is None:
+        raise HTTPException(status_code=404, detail=APP_NOT_FOUND_DETAIL)
+    return {"data": ApplicationResponse.from_doc(doc)}
 
 
 @router.patch("/{app_id}/archive", status_code=200)

@@ -25,6 +25,7 @@ logger = structlog.get_logger()
 INITIAL_STAGE = "Applied"
 INACTIVE_STAGES = ["Rejected", "Offer"]
 STALE_DAYS = 14
+DELETED_PURGE_DAYS = 1
 
 LIST_PROJECTION = {
     "role_title": 1,
@@ -89,7 +90,7 @@ TEXT_SEARCH_CURSOR_SEP = ":"
 
 def _build_filter(uid: ObjectId, query: ApplicationListQuery) -> dict:
     """Build a MongoDB filter dict from query params, always scoped by user_id."""
-    f: dict = {"user_id": uid}
+    f: dict = {"user_id": uid, "deleted": {"$ne": True}}
 
     if not query.include_archived:
         f["archived"] = {"$ne": True}
@@ -271,9 +272,9 @@ async def list_applications(
 
 
 async def get(user_id: str, app_id: str) -> dict | None:
-    """Return the full application document, or None if not found."""
+    """Return the full application document, or None if not found or deleted."""
     return await get_collection("applications").find_one(
-        {"_id": ObjectId(app_id), "user_id": ObjectId(user_id)}
+        {"_id": ObjectId(app_id), "user_id": ObjectId(user_id), "deleted": {"$ne": True}}
     )
 
 
@@ -306,26 +307,56 @@ async def update(user_id: str, app_id: str, updates: ApplicationUpdate) -> dict 
 
 
 async def delete(user_id: str, app_id: str) -> bool:
-    """Delete application and linked calendar_events in a transaction. Returns True if deleted."""
+    """Soft-delete an application by setting deleted=True. Returns True if found."""
     uid = ObjectId(user_id)
     aid = ObjectId(app_id)
-    db_client = get_client()
+    now = datetime.now(timezone.utc)
+    result = await get_collection("applications").find_one_and_update(
+        {"_id": aid, "user_id": uid, "deleted": {"$ne": True}},
+        {"$set": {"deleted": True, "deleted_at": now, "updated_at": now}},
+    )
+    if result is None:
+        return False
+    logger.info("application_soft_deleted", user_id=user_id, app_id=app_id)
+    return True
+
+
+async def restore(user_id: str, app_id: str) -> dict | None:
+    """Restore a soft-deleted application. Returns updated doc, or None if not found."""
+    uid = ObjectId(user_id)
+    aid = ObjectId(app_id)
+    now = datetime.now(timezone.utc)
+    result = await get_collection("applications").find_one_and_update(
+        {"_id": aid, "user_id": uid, "deleted": True},
+        {"$set": {"deleted": False, "deleted_at": None, "updated_at": now}},
+        return_document=ReturnDocument.AFTER,
+    )
+    if result:
+        logger.info("application_restored", user_id=user_id, app_id=app_id)
+    return result
+
+
+async def purge_stale_deleted_applications() -> int:
+    """Hard-delete applications soft-deleted more than DELETED_PURGE_DAYS ago."""
+    cutoff = datetime.now(timezone.utc) - timedelta(days=DELETED_PURGE_DAYS)
     apps = get_collection("applications")
     events = get_collection("calendar_events")
+    db_client = get_client()
 
+    docs = await apps.find(
+        {"deleted": True, "deleted_at": {"$lt": cutoff}}, {"_id": 1}
+    ).to_list(length=None)
+    if not docs:
+        return 0
+
+    ids = [d["_id"] for d in docs]
     async with await db_client.start_session() as session:
         async with session.start_transaction():
-            result = await apps.delete_one(
-                {"_id": aid, "user_id": uid}, session=session
-            )
-            if result.deleted_count == 0:
-                return False
-            await events.delete_many(
-                {"application_id": aid, "user_id": uid}, session=session
-            )
+            await events.delete_many({"application_id": {"$in": ids}}, session=session)
+            result = await apps.delete_many({"_id": {"$in": ids}}, session=session)
 
-    logger.info("application_deleted", user_id=user_id, app_id=app_id)
-    return True
+    logger.info("purged_deleted_applications", count=result.deleted_count)
+    return result.deleted_count
 
 
 async def archive(user_id: str, app_id: str) -> dict | None:
