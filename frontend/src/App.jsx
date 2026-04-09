@@ -1,10 +1,50 @@
 /** App shell: defines routes, lazy-loads pages, protects authenticated routes. */
 
-import { lazy, Suspense } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { lazy, Suspense, useEffect, useRef } from "react";
+import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 
 import { useAuth } from "./context/AuthContext";
 import CommandPalette from "./components/CommandPalette";
+import ShortcutHelp from "./components/ShortcutHelp";
+import { CHORD_TIMEOUT_MS } from "./lib/shortcuts";
+
+const CHORD_DESTINATIONS = { d: "/dashboard", c: "/calendar", a: "/analytics", j: "/jobs" };
+const IGNORED_CHORD_TAGS = new Set(["INPUT", "TEXTAREA", "SELECT"]);
+
+function GlobalChordShortcuts() {
+  const navigate = useNavigate();
+  const pendingChord = useRef(null);
+  const chordTimer = useRef(null);
+
+  useEffect(() => {
+    function handler(e) {
+      const t = e.target;
+      if (IGNORED_CHORD_TAGS.has(t.tagName) || t.isContentEditable) return;
+      if (pendingChord.current === "g" && CHORD_DESTINATIONS[e.key]) {
+        e.preventDefault();
+        clearTimeout(chordTimer.current);
+        pendingChord.current = null;
+        navigate(CHORD_DESTINATIONS[e.key]);
+        return;
+      }
+      if (e.key === "g") {
+        pendingChord.current = "g";
+        clearTimeout(chordTimer.current);
+        chordTimer.current = setTimeout(() => { pendingChord.current = null; }, CHORD_TIMEOUT_MS);
+      } else {
+        pendingChord.current = null;
+        clearTimeout(chordTimer.current);
+      }
+    }
+    document.addEventListener("keydown", handler);
+    return () => {
+      document.removeEventListener("keydown", handler);
+      clearTimeout(chordTimer.current);
+    };
+  }, [navigate]);
+
+  return null;
+}
 
 const LandingPage = lazy(() => import("./pages/LandingPage"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
@@ -38,6 +78,8 @@ function App() {
   return (
     <Suspense fallback={<LoadingSpinner />}>
       <CommandPalette />
+      <ShortcutHelp />
+      <GlobalChordShortcuts />
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />

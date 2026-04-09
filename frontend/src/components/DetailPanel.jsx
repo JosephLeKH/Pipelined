@@ -9,6 +9,7 @@ import ExternalLink from "lucide-react/dist/esm/icons/external-link";
 
 import { useDeleteApplication, useRestoreApplication, useUpdateApplication } from "../hooks/useApplications";
 import { useApplicationEvents, useDeleteEvent } from "../hooks/useCalendar";
+import { useHotkeys } from "../hooks/useHotkeys";
 import ApplicationTimeline from "./ApplicationTimeline";
 import FitBadge from "./FitBadge";
 import NotesEditor from "./NotesEditor";
@@ -251,6 +252,13 @@ function DetailPanel({ application, onClose, onAddEvent }) {
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [handleKeyDown]);
+
+  const panelOpen = Boolean(application);
+  useHotkeys("s", () => { document.getElementById("stage-select")?.focus(); }, { enabled: panelOpen });
+  useHotkeys("n", () => {
+    const editBtn = document.querySelector("[aria-label='Edit notes']");
+    if (editBtn) { editBtn.click(); } else { document.getElementById("notes-textarea")?.focus(); }
+  }, { enabled: panelOpen });
 
   // Auto-focus first focusable element when panel opens
   useEffect(() => {

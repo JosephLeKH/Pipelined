@@ -1,6 +1,7 @@
 /** Dashboard page: composes StatsBar, FilterBar, ApplicationList or KanbanBoard, DetailPanel, ManualAddForm. */
 
 import { useState, useMemo, useCallback } from "react";
+import { useHotkeys } from "../hooks/useHotkeys";
 import { useSearchParams } from "react-router-dom";
 
 import LayoutGrid from "lucide-react/dist/esm/icons/layout-grid";
@@ -87,6 +88,9 @@ function Dashboard() {
     localStorage.setItem(VIEW_MODE_STORAGE_KEY, mode);
   }, []);
 
+  const shortcutsEnabled = !isModalOpen && !isImportOpen;
+  useHotkeys("a", () => setIsModalOpen(true), { enabled: shortcutsEnabled });
+
   return (
     <div className="flex min-h-screen flex-col bg-gray-50 dark:bg-gray-900">
       <NavBar />
@@ -142,6 +146,7 @@ function Dashboard() {
             <button
               type="button"
               onClick={() => setIsModalOpen(true)}
+              title="Add Application (A)"
               className="rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
             >
               Add Application
@@ -159,6 +164,7 @@ function Dashboard() {
             onSelect={handleSelect}
             onAdd={() => setIsModalOpen(true)}
             onImportCsv={() => setIsImportOpen(true)}
+            shortcutsEnabled={shortcutsEnabled}
           />
         )}
         <DetailPanel application={selectedApp ?? null} onClose={handleClosePanel} />

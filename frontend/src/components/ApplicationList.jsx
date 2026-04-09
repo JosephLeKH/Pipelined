@@ -1,9 +1,11 @@
 /** Virtualized application list with sortable columns, stale indicators, archive/delete, and bulk selection. */
 
-import { useMemo, useCallback, useState } from "react";
+import { useMemo, useCallback, useState, useRef, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { FixedSizeList } from "react-window";
 import { toast } from "sonner";
+
+import { useHotkeys } from "../hooks/useHotkeys";
 
 import {
   useApplications,
@@ -37,11 +39,13 @@ function ColumnHeader({ field, label, sortBy, sortOrder, onSort }) {
   );
 }
 
-function ApplicationList({ onSelect, filters = {}, onAdd, onImportCsv }) {
+function ApplicationList({ onSelect, filters = {}, onAdd, onImportCsv, shortcutsEnabled = false }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [undoAction, setUndoAction] = useState(null);
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [bulkDeletePending, setBulkDeletePending] = useState(false);
+  const [focusedIdx, setFocusedIdx] = useState(-1);
+  const listRef = useRef(null);
 
   const sortBy = searchParams.get("sort_by") ?? "date_applied";
   const sortOrder = searchParams.get("sort_order") ?? "desc";
@@ -137,6 +141,39 @@ function ApplicationList({ onSelect, filters = {}, onAdd, onImportCsv }) {
     });
   }, [bulkStageMutation, selectedIds]);
 
+  // Reset keyboard focus when application list changes
+  useEffect(() => { setFocusedIdx(-1); }, [applications.length]);
+
+  useHotkeys("j", () => {
+    setFocusedIdx((prev) => {
+      const next = Math.min(prev + 1, applications.length - 1);
+      listRef.current?.scrollToItem(next, "smart");
+      return next;
+    });
+  }, { enabled: shortcutsEnabled });
+
+  useHotkeys("k", () => {
+    setFocusedIdx((prev) => {
+      const next = Math.max(prev - 1, 0);
+      listRef.current?.scrollToItem(next, "smart");
+      return next;
+    });
+  }, { enabled: shortcutsEnabled });
+
+  useHotkeys("Enter", () => {
+    if (focusedIdx >= 0 && focusedIdx < applications.length) {
+      onSelect(applications[focusedIdx]);
+    }
+  }, { enabled: shortcutsEnabled });
+
+  useHotkeys("x", () => {
+    if (focusedIdx >= 0 && focusedIdx < applications.length) {
+      handleToggle(applications[focusedIdx].id);
+    }
+  }, { enabled: shortcutsEnabled });
+
+  useHotkeys("Escape", () => setFocusedIdx(-1), { enabled: shortcutsEnabled && focusedIdx >= 0 });
+
   if (isLoading) {
     return (
       <div className="flex flex-col">
@@ -181,6 +218,7 @@ function ApplicationList({ onSelect, filters = {}, onAdd, onImportCsv }) {
       checked={selectedIds.has(applications[index].id)}
       onToggle={handleToggle}
       hasSelection={hasSelection}
+      isFocused={focusedIdx === index}
     />
   );
 
@@ -236,7 +274,7 @@ function ApplicationList({ onSelect, filters = {}, onAdd, onImportCsv }) {
             <ColumnHeader field="current_stage" label="Stage" sortBy={sortBy} sortOrder={sortOrder} onSort={handleSort} />
             <ColumnHeader field="date_applied" label="Date Applied" sortBy={sortBy} sortOrder={sortOrder} onSort={handleSort} />
           </div>
-          <FixedSizeList height={600} itemCount={applications.length} itemSize={64} width="100%">
+          <FixedSizeList ref={listRef} height={600} itemCount={applications.length} itemSize={64} width="100%">
             {Row}
           </FixedSizeList>
         </div>

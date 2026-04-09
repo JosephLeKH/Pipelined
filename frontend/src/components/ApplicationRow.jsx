@@ -36,7 +36,7 @@ export function StagePill({ stage }) {
 
 function ApplicationRow({
   application, onSelect, style, onArchive, onUnarchive, onDelete,
-  checked, onToggle, hasSelection,
+  checked, onToggle, hasSelection, isFocused = false,
 }) {
   const SourceIcon = SOURCE_ICONS[application.source] ?? Pencil;
   const stale = isStale(application.updated_at);
@@ -47,7 +47,7 @@ function ApplicationRow({
   return (
     <div
       style={style}
-      className={`group flex cursor-pointer items-center gap-4 border-b border-gray-100 px-4 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 dark:border-gray-700 dark:hover:bg-gray-700 ${archived ? "opacity-60" : ""}`}
+      className={`group flex cursor-pointer items-center gap-4 border-b border-gray-100 px-4 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 dark:border-gray-700 dark:hover:bg-gray-700 ${archived ? "opacity-60" : ""} ${isFocused ? "bg-blue-50 ring-2 ring-inset ring-blue-400 dark:bg-blue-900/20 dark:ring-blue-500" : ""}`}
       onClick={() => onSelect(application)}
       onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") onSelect(application); }}
       role="row"
