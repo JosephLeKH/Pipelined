@@ -121,7 +121,7 @@
         "npm test passes"
       ],
       "priority": 7,
-      "passes": false,
+      "passes": true,
       "notes": "Loading UX is currently a centered 'Loading events…' text that blocks the full calendar grid. Skeleton loaders are the modern standard and dramatically improve perceived performance."
     },
     {

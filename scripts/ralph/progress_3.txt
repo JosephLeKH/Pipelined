@@ -97,3 +97,20 @@ Created `frontend/src/lib/dateUtils.js` with four exports:
 **Learnings:**
 - Date-only strings ('YYYY-MM-DD') must be parsed as `new Date(y, m-1, d)` (local time), not `new Date(isoString)` (UTC midnight), to prevent timezone-offset display shifts.
 - Exporting `toISODate` from dateUtils keeps the duplicate helper pattern DRY across CalendarGrid and NewEventForm.
+
+## US-066 — Skeleton loaders for ApplicationList and Calendar month navigation
+Status: PASSED
+Commit: bce638f
+
+### What was done
+- Created `SkeletonRow.jsx`: animated shimmer row matching the column layout (checkbox, stale indicator, company, role, stage pill, date, source icon, menu)
+- Created `SkeletonCalendarCell.jsx`: skeleton day cell for the calendar grid with day number and event chip placeholders
+- Updated `ApplicationList.jsx`: replaced 5-div pulse loader with 8 SkeletonRow components on initial load; added thin `animate-pulse` progress bar at top when `isFetching && !isLoading` (background refresh)
+- Updated `CalendarGrid.jsx`: replaced centered "Loading events…" text with a 7-column grid of SkeletonCalendarCell for all 42 days
+- Added `SKELETON_ROW_COUNT = 8` constant to `constants.js`
+- Added two new tests to `ApplicationList.test.jsx`: one verifying 8 skeleton rows on load, one verifying real rows after data loads
+- StatsBar already had skeleton MetricCard implementation — no changes needed
+
+### Learnings
+- `isLoading` vs `isFetching`: isLoading=true only on first fetch (no cached data); isFetching=true on any in-flight request including background refresh. Using both gives precise UX control.
+- CalendarGrid uses `weeks` (derived from month/year props) even during loading, so SkeletonCalendarCells can be rendered in the correct grid layout without waiting for data.
