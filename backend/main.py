@@ -11,6 +11,7 @@ from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 
 from applications.router import router as applications_router
+from contacts.router import router as contacts_router
 from auth.router import router as auth_router
 from cal.router import router as calendar_router
 from jobs.router import router as jobs_router
@@ -101,6 +102,7 @@ def create_app(*, testing: bool = False) -> FastAPI:
     app.include_router(calendar_router)
     app.include_router(jobs_router)
     app.include_router(sharing_router)
+    app.include_router(contacts_router)
 
     return app
 

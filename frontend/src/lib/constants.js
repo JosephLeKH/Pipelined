@@ -81,6 +81,19 @@ export const EVENT_TYPE_OPTIONS = [
   { value: "other", label: "Other" },
 ];
 
+export const STALE_CONTACT_DAYS = 14;
+
+export const RELATIONSHIP_OPTIONS = ["recruiter", "referral", "mentor", "peer", "hiring_manager", "other"];
+
+export const RELATIONSHIP_COLORS = {
+  recruiter: { bg: "bg-blue-100", text: "text-blue-700" },
+  referral: { bg: "bg-green-100", text: "text-green-700" },
+  mentor: { bg: "bg-purple-100", text: "text-purple-700" },
+  peer: { bg: "bg-teal-100", text: "text-teal-700" },
+  hiring_manager: { bg: "bg-amber-100", text: "text-amber-700" },
+  other: { bg: "bg-gray-100", text: "text-gray-700" },
+};
+
 export const CLEARBIT_LOGO_BASE_URL = "https://logo.clearbit.com";
 
 export const COMPANY_LOGO_FALLBACK_COLORS = [
