@@ -152,6 +152,28 @@ describe("ApplicationList", () => {
     expect(skeletons.length).toBeGreaterThan(0);
   });
 
+  it("should render 8 SkeletonRow components when isLoading is true", () => {
+    // Arrange — suspend response so loading state persists
+    server.use(http.get("/api/applications", () => new Promise(() => {})));
+
+    // Act
+    render(<ApplicationList onSelect={() => {}} />, { wrapper: makeWrapper() });
+
+    // Assert — exactly 8 skeleton rows
+    const skeletonRows = document.querySelectorAll("[data-testid='skeleton-row']");
+    expect(skeletonRows).toHaveLength(8);
+  });
+
+  it("should render real rows when data is present", async () => {
+    // Arrange / Act
+    render(<ApplicationList onSelect={() => {}} />, { wrapper: makeWrapper() });
+
+    // Assert — skeleton rows are gone, real data is present
+    expect(await screen.findByText("Acme Corp")).toBeInTheDocument();
+    expect(screen.getByText("OldCo")).toBeInTheDocument();
+    expect(document.querySelectorAll("[data-testid='skeleton-row']")).toHaveLength(0);
+  });
+
   it("should render StagePill with aria-label matching stage name", async () => {
     // Arrange / Act
     render(<ApplicationList onSelect={() => {}} />, { wrapper: makeWrapper() });

@@ -28,6 +28,8 @@ export const PASSWORD_MIN_LENGTH = 8;
 
 export const REMOTE_STATUS_OPTIONS = ["remote", "hybrid", "onsite", "unknown"];
 
+export const SKELETON_ROW_COUNT = 8;
+
 export const COMPANY_TYPE_OPTIONS = ["startup", "mid", "enterprise", "gov", "nonprofit", "other"];
 
 export const EVENT_TYPE_COLORS = {

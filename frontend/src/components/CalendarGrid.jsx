@@ -9,6 +9,7 @@ import { useCalendarEvents } from "../hooks/useCalendar";
 import { DEFAULT_EVENT_COLOR, EVENT_TYPE_COLORS, WEEK_DAYS } from "../lib/constants";
 import { toISODate, formatDateLong } from "../lib/dateUtils";
 import ApiErrorMessage from "./ApiErrorMessage";
+import SkeletonCalendarCell from "./SkeletonCalendarCell";
 
 const MONTH_NAMES = [
   "January", "February", "March", "April", "May", "June",
@@ -187,8 +188,10 @@ function CalendarGrid({ month, year, onMonthChange, onEventClick, onDayClick }) 
         ))}
       </div>
       {isLoading ? (
-        <div className="flex h-64 items-center justify-center text-sm text-gray-400">
-          Loading events…
+        <div className="grid grid-cols-7">
+          {weeks.flat().map((date) => (
+            <SkeletonCalendarCell key={toISODate(date)} />
+          ))}
         </div>
       ) : error ? (
         <div className="p-6">

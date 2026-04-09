@@ -17,10 +17,11 @@ import {
   useDeleteApplication,
   useUnarchiveApplication,
 } from "../hooks/useApplications";
-import { STAGE_COLORS, DEFAULT_STAGE_COLOR, STALE_APPLICATION_DAYS } from "../lib/constants";
+import { STAGE_COLORS, DEFAULT_STAGE_COLOR, STALE_APPLICATION_DAYS, SKELETON_ROW_COUNT } from "../lib/constants";
 import { formatDate } from "../lib/dateUtils";
 import ApiErrorMessage from "./ApiErrorMessage";
 import { BulkActionBar, BulkDeleteConfirmModal, DeleteConfirmModal, RowMenu } from "./ApplicationRowActions";
+import SkeletonRow from "./SkeletonRow";
 
 const MS_PER_DAY = 86_400_000;
 
@@ -139,7 +140,7 @@ function ApplicationList({ onSelect, filters = {} }) {
     [filters, sortBy, sortOrder]
   );
 
-  const { data: envelope, isLoading, error, refetch } = useApplications(queryFilters);
+  const { data: envelope, isLoading, isFetching, error, refetch } = useApplications(queryFilters);
   const applications = envelope?.data ?? [];
   const hasSelection = selectedIds.size > 0;
 
@@ -210,9 +211,9 @@ function ApplicationList({ onSelect, filters = {} }) {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col gap-2 py-4">
-        {Array.from({ length: 5 }, (_, i) => (
-          <div key={i} className="h-16 animate-pulse rounded bg-gray-100" />
+      <div className="flex flex-col">
+        {Array.from({ length: SKELETON_ROW_COUNT }, (_, i) => (
+          <SkeletonRow key={i} />
         ))}
       </div>
     );
@@ -266,7 +267,14 @@ function ApplicationList({ onSelect, filters = {} }) {
             isMoving={bulkStageMutation.isPending}
           />
         )}
-        <div className="flex flex-col">
+        <div className="relative flex flex-col">
+          {isFetching && !isLoading && (
+            <div
+              className="absolute inset-x-0 top-0 h-0.5 animate-pulse bg-blue-400"
+              aria-hidden="true"
+              data-testid="fetch-progress-bar"
+            />
+          )}
           <div className="flex items-center gap-4 border-b border-gray-200 bg-gray-50 px-4 py-2 dark:border-gray-700 dark:bg-gray-800">
             <span className="shrink-0" onClick={(e) => e.stopPropagation()}>
               <input
