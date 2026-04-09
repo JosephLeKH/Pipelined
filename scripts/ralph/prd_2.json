@@ -324,7 +324,7 @@
         "npm test passes"
       ],
       "priority": 17,
-      "passes": false,
+      "passes": true,
       "notes": "recharts is already in frontend/package.json. Analytics is a high-engagement feature that encourages users to return regularly."
     },
     {

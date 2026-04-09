@@ -18,7 +18,7 @@
         "npm run build passes"
       ],
       "priority": 1,
-      "passes": true,
+      "passes": false,
       "notes": "ThemeContext.jsx and ThemeContext.test.jsx already exist as untracked files per git status — build on them rather than creating from scratch."
     },
     {
@@ -34,7 +34,7 @@
         "Typecheck passes"
       ],
       "priority": 2,
-      "passes": true,
+      "passes": false,
       "notes": "Security bug found in post-v2 review. calendar_events delete does not check user ownership. list_events with application_id filter does not verify the application belongs to the requesting user."
     },
     {
@@ -52,7 +52,7 @@
         "Typecheck passes"
       ],
       "priority": 3,
-      "passes": true,
+      "passes": false,
       "notes": "Post-v2 review finding: text search cursor uses float() and ObjectId() without error handling. A tampered cursor crashes the endpoint with a 500."
     },
     {

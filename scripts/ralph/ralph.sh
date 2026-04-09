@@ -84,7 +84,9 @@ PRD_BASENAME=$(basename "$PRD_FILE" .json)
 if [[ "$PRD_BASENAME" == "prd" ]]; then
   PROGRESS_FILE="$SCRIPT_DIR/progress.txt"
 else
-  PROGRESS_FILE="$SCRIPT_DIR/progress_${PRD_BASENAME#prd}.txt"
+  PRD_SUFFIX="${PRD_BASENAME#prd}"   # "prd_2" -> "_2"
+  PRD_SUFFIX="${PRD_SUFFIX#_}"       # "_2"    -> "2"
+  PROGRESS_FILE="$SCRIPT_DIR/progress_${PRD_SUFFIX}.txt"
 fi
 
 ARCHIVE_DIR="$SCRIPT_DIR/archive"

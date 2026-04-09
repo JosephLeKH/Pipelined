@@ -17,3 +17,12 @@ Commit: c8b02f3
 - Fixed `Dashboard.test.jsx` and `Analytics.test.jsx` to wrap with `ThemeProvider` (NavBar requires useTheme)
 - Added `matchMedia` stub and localStorage mock to `src/test/setup.js` to fix jsdom environment gaps
 - All 157 tests pass; build passes
+
+## US-062 — Fix text search cursor parsing — return 400 instead of crashing
+- Added `InvalidCursorError` domain exception to `applications/service.py`
+- Wrapped `_build_filter` plain cursor ObjectId parsing in `try/except` → raises `InvalidCursorError`
+- Wrapped `_list_with_text_search` composite cursor parsing (rsplit + float + ObjectId) in `try/except` → raises `InvalidCursorError`
+- `applications/router.py` catches `InvalidCursorError` → HTTP 400 with code `INVALID_CURSOR`
+- Added two tests: one for text-search cursor (`?q=hello&cursor=not-valid-cursor`) and one for plain cursor (`?cursor=not-an-objectid`), both asserting 400 + `INVALID_CURSOR`
+- All 52 application tests pass
+- Learnings: Implementation was already partially done (from prior observation 229-231); just needed the text-search path guard and tests.
