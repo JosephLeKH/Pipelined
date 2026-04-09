@@ -20,6 +20,10 @@ const BANNER_DUPLICATE_DISMISS_MS = 6000;
 const FADE_DURATION_MS = 300;
 const MAX_Z_INDEX = "2147483647";
 const APP_DASHBOARD_URL = "https://app.pipelined.app/dashboard";
+const AUTO_SAVE_DEBOUNCE_MS = 2000;
+const AUTO_SAVE_SUCCESS_DISMISS_MS = 3000;
+
+const savedUrls = new Set();
 
 const MSG = {
   SAVE_APPLICATION: "SAVE_APPLICATION",
@@ -90,7 +94,7 @@ function buildBannerContainer(fields) {
   return container;
 }
 
-function init() {
+async function init() {
   const board = BOARDS.find((b) => b.isJobPage());
   if (!board) return;
 
@@ -100,7 +104,10 @@ function init() {
     return;
   }
 
-  injectBanner(fields, board.BOARD_ID);
+  const autoSaveScheduled = await initAutoSave(fields, board.BOARD_ID);
+  if (!autoSaveScheduled) {
+    injectBanner(fields, board.BOARD_ID);
+  }
 }
 
 function injectBanner(fields, boardId) {
@@ -206,10 +213,88 @@ function dismiss(host) {
   setTimeout(() => host.remove(), FADE_DURATION_MS);
 }
 
+function buildAutoSaveBannerHost() {
+  const host = document.createElement("pipelined-banner");
+  host.style.position = "fixed";
+  host.style.zIndex = MAX_Z_INDEX;
+  const shadow = host.attachShadow({ mode: "closed" });
+  const styleEl = document.createElement("style");
+  styleEl.textContent = BANNER_CSS;
+  shadow.appendChild(styleEl);
+  const container = document.createElement("div");
+  container.className = "pipelined-banner";
+  container.setAttribute("role", "alert");
+  container.setAttribute("aria-live", "polite");
+  const textSpan = document.createElement("span");
+  textSpan.className = "pipelined-text";
+  textSpan.textContent = "Auto-saving\u2026";
+  container.appendChild(textSpan);
+  shadow.appendChild(container);
+  return { host, shadow };
+}
+
+function showBannerAutoSaved(shadow, host) {
+  shadow.querySelector(".pipelined-text").textContent = "\u2713 Saved to Pipelined!";
+  setTimeout(() => dismiss(host), AUTO_SAVE_SUCCESS_DISMISS_MS);
+}
+
+function showBannerAutoSaveFailed(shadow, host, payload) {
+  shadow.querySelector(".pipelined-text").textContent = "Auto-save failed \u2014 try again";
+  const btn = document.createElement("button");
+  btn.className = "pipelined-cta";
+  btn.textContent = "Retry";
+  btn.addEventListener("click", async () => {
+    btn.disabled = true;
+    btn.textContent = "Saving\u2026";
+    let res;
+    try { res = await chrome.runtime.sendMessage({ type: MSG.SAVE_APPLICATION, payload }); }
+    catch { res = { status: "error" }; }
+    if (res.status === "success") showBannerAutoSaved(shadow, host);
+    else if (res.status === "duplicate") showBannerDuplicate(shadow, host, res.existingId);
+    else { btn.disabled = false; btn.textContent = "Retry"; }
+  });
+  shadow.querySelector(".pipelined-banner").appendChild(btn);
+}
+
+export async function initAutoSave(fields, boardId) {
+  let auto_save = false;
+  try {
+    const result = await chrome.storage.local.get("auto_save");
+    auto_save = result.auto_save ?? false;
+  } catch { return false; }
+  if (!auto_save) return false;
+
+  const url = window.location.href;
+  if (savedUrls.has(url)) return false;
+
+  const timer = setTimeout(async () => {
+    if (savedUrls.has(url)) return;
+    savedUrls.add(url);
+    const { host, shadow } = buildAutoSaveBannerHost();
+    document.body.appendChild(host);
+    const needsPageText = boardId === "workday" || (!fields.role_title && !fields.company_name);
+    const payload = {
+      fields, boardId, sourceUrl: url,
+      pageText: needsPageText ? (document.body.innerText ?? "").trim().slice(0, PAGE_TEXT_MAX_CHARS) : null,
+    };
+    let result;
+    try { result = await chrome.runtime.sendMessage({ type: MSG.SAVE_APPLICATION, payload }); }
+    catch { result = { status: "error" }; }
+    if (result.status === "success") showBannerAutoSaved(shadow, host);
+    else if (result.status === "duplicate") showBannerDuplicate(shadow, host, result.existingId);
+    else showBannerAutoSaveFailed(shadow, host, payload);
+  }, AUTO_SAVE_DEBOUNCE_MS);
+
+  window.addEventListener("popstate", () => clearTimeout(timer), { once: true });
+  return true;
+}
+
+export function clearSavedUrls() { savedUrls.clear(); }
+
 if (document.readyState === "complete") {
   init();
 } else {
   window.addEventListener("load", init, { once: true });
 }
 
-export { init, injectBanner, dismiss, BANNER_AUTO_DISMISS_MS, BANNER_SUCCESS_DISMISS_MS, FADE_DURATION_MS };
+export { init, injectBanner, dismiss, BANNER_AUTO_DISMISS_MS, BANNER_SUCCESS_DISMISS_MS, FADE_DURATION_MS, AUTO_SAVE_DEBOUNCE_MS };

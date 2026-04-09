@@ -131,6 +131,26 @@ export function signOut() {
   show("unauthenticated");
 }
 
+export async function renderAutoSaveToggle() {
+  const row = document.getElementById("auto-save-row");
+  if (!row) return;
+  let auto_save = false;
+  try {
+    const result = await chrome.storage.local.get("auto_save");
+    auto_save = result.auto_save ?? false;
+  } catch { return; }
+  const btn = document.getElementById("auto-save-toggle");
+  btn.setAttribute("aria-pressed", String(auto_save));
+  btn.textContent = auto_save ? "ON" : "OFF";
+  row.classList.remove("hidden");
+  btn.addEventListener("click", async () => {
+    const next = btn.getAttribute("aria-pressed") !== "true";
+    await chrome.storage.local.set({ auto_save: next });
+    btn.setAttribute("aria-pressed", String(next));
+    btn.textContent = next ? "ON" : "OFF";
+  });
+}
+
 export async function init() {
   const authStatus = await chrome.runtime.sendMessage({ type: MSG.GET_AUTH_STATUS });
 
@@ -153,6 +173,7 @@ export async function init() {
   const { recent_saves = [] } = await chrome.storage.local.get("recent_saves");
   renderSaves(recent_saves);
   show("authenticated");
+  await renderAutoSaveToggle();
 }
 
 document.getElementById("open-dashboard").addEventListener("click", openDashboard);

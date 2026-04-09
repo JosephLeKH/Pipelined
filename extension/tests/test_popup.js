@@ -20,6 +20,10 @@ const POPUP_HTML = `
     </div>
     <div id="authenticated" class="state hidden">
       <ul id="saves-list"></ul>
+      <div id="auto-save-row" class="auto-save-row hidden">
+        <span class="auto-save-label">Auto-save</span>
+        <button id="auto-save-toggle" class="auto-save-btn" aria-pressed="false">OFF</button>
+      </div>
       <button id="open-dashboard-auth" class="btn btn-secondary">Open Dashboard</button>
     </div>
   </main>
@@ -51,6 +55,7 @@ let init;
 let escapeHtml;
 let relativeTime;
 let signOut;
+let renderAutoSaveToggle;
 
 beforeAll(async () => {
   setupDOM();
@@ -63,6 +68,7 @@ beforeAll(async () => {
   escapeHtml = mod.escapeHtml;
   relativeTime = mod.relativeTime;
   signOut = mod.signOut;
+  renderAutoSaveToggle = mod.renderAutoSaveToggle;
 });
 
 beforeEach(() => {
@@ -329,6 +335,34 @@ describe("relativeTime()", () => {
     const oneDayAgo = new Date(Date.now() - 86400000).toISOString();
 
     expect(relativeTime(oneDayAgo)).toBe("1 day ago");
+  });
+});
+
+// ── renderAutoSaveToggle() ────────────────────────────────────────────────────
+
+describe("renderAutoSaveToggle()", () => {
+  it("should show toggle with OFF state when auto_save is false", async () => {
+    chrome.storage.local.get.mockResolvedValue({ auto_save: false });
+
+    await renderAutoSaveToggle();
+
+    const row = document.getElementById("auto-save-row");
+    const btn = document.getElementById("auto-save-toggle");
+
+    expect(row.classList.contains("hidden")).toBe(false);
+    expect(btn.getAttribute("aria-pressed")).toBe("false");
+    expect(btn.textContent).toBe("OFF");
+  });
+
+  it("should show toggle with ON state when auto_save is true", async () => {
+    chrome.storage.local.get.mockResolvedValue({ auto_save: true });
+
+    await renderAutoSaveToggle();
+
+    const btn = document.getElementById("auto-save-toggle");
+
+    expect(btn.getAttribute("aria-pressed")).toBe("true");
+    expect(btn.textContent).toBe("ON");
   });
 });
 

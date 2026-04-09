@@ -42,6 +42,9 @@ let injectBanner;
 let dismiss;
 let BANNER_AUTO_DISMISS_MS;
 let FADE_DURATION_MS;
+let initAutoSave;
+let AUTO_SAVE_DEBOUNCE_MS;
+let clearSavedUrls;
 
 beforeAll(async () => {
   setupDOM();
@@ -51,6 +54,9 @@ beforeAll(async () => {
   dismiss = mod.dismiss;
   BANNER_AUTO_DISMISS_MS = mod.BANNER_AUTO_DISMISS_MS;
   FADE_DURATION_MS = mod.FADE_DURATION_MS;
+  initAutoSave = mod.initAutoSave;
+  AUTO_SAVE_DEBOUNCE_MS = mod.AUTO_SAVE_DEBOUNCE_MS;
+  clearSavedUrls = mod.clearSavedUrls;
 });
 
 beforeEach(() => {
@@ -207,5 +213,49 @@ describe("dismiss()", () => {
     jest.advanceTimersByTime(FADE_DURATION_MS + 1);
 
     expect(document.body.contains(host)).toBe(false);
+  });
+});
+
+describe("initAutoSave()", () => {
+  function setupChrome(autoSave = false) {
+    global.chrome = {
+      storage: { local: { get: jest.fn().mockResolvedValue({ auto_save: autoSave }) } },
+      runtime: { sendMessage: jest.fn().mockResolvedValue({ status: "success" }) },
+    };
+  }
+
+  beforeEach(() => {
+    clearSavedUrls();
+  });
+
+  it("should return false when auto_save is disabled", async () => {
+    setupChrome(false);
+
+    const result = await initAutoSave({ role_title: "SWE", company_name: "Acme" }, "linkedin");
+
+    expect(result).toBe(false);
+  });
+
+  it("should return true when auto_save is enabled", async () => {
+    setupChrome(true);
+
+    const result = await initAutoSave({ role_title: "SWE", company_name: "Acme" }, "linkedin");
+
+    expect(result).toBe(true);
+  });
+
+  it("should not re-schedule save for a URL already in savedUrls", async () => {
+    setupChrome(true);
+
+    // First call returns true and schedules timer
+    const first = await initAutoSave({ role_title: "SWE", company_name: "Acme" }, "linkedin");
+    expect(first).toBe(true);
+
+    // Advance timer so the callback fires (savedUrls.add runs synchronously before first await)
+    jest.advanceTimersByTime(AUTO_SAVE_DEBOUNCE_MS + 1);
+
+    // Second call for same URL — URL is now in savedUrls
+    const second = await initAutoSave({ role_title: "SWE", company_name: "Acme" }, "linkedin");
+    expect(second).toBe(false);
   });
 });
