@@ -1,6 +1,7 @@
 #!/bin/bash
 # Ralph Wiggum - Long-running AI agent loop
-# Usage: ./ralph.sh [--tool amp|claude] [--prd prd_2.json] [max_iterations]
+# Usage: ./ralph.sh [--tool amp|claude] [--prd prd.json] [max_iterations]
+# Default PRD: scripts/ralph/prd_4.json (override with --prd)
 # Env: RALPH_MODEL (default sonnet), RALPH_SLEEP_SEC (default 2),
 #      RALPH_PROGRESS_TAIL_LINES (optional, append last N lines of progress file),
 #      RALPH_MAX_BUDGET_USD (optional, passed to claude --max-budget-usd)
@@ -51,7 +52,7 @@ fi
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(git -C "$SCRIPT_DIR" rev-parse --show-toplevel 2>/dev/null || echo "$SCRIPT_DIR")"
 
-# Resolve PRD file: --prd flag > auto-detect latest incomplete > prd.json default
+# Resolve PRD file: --prd flag > default prd_4.json
 if [ -n "$PRD_NAME" ]; then
   # Allow bare name like "prd_2" or "prd_2.json" or full path
   if [[ "$PRD_NAME" == /* ]]; then
@@ -62,21 +63,7 @@ if [ -n "$PRD_NAME" ]; then
     PRD_FILE="$SCRIPT_DIR/${PRD_NAME}.json"
   fi
 else
-  # Auto-detect: prefer the highest-numbered prd_N.json with incomplete stories,
-  # falling back to prd.json for backwards compatibility.
-  PRD_FILE=""
-  for candidate in "$SCRIPT_DIR"/prd_*.json "$SCRIPT_DIR/prd.json"; do
-    [ -f "$candidate" ] || continue
-    remaining=$(jq '[.userStories[] | select(.passes == false)] | length' "$candidate" 2>/dev/null || echo "0")
-    if [ "$remaining" -gt 0 ]; then
-      PRD_FILE="$candidate"
-      # Don't break — continue so last (highest-numbered) incomplete prd wins
-    fi
-  done
-  # If all PRDs complete, fall back to prd.json
-  if [ -z "$PRD_FILE" ]; then
-    PRD_FILE="$SCRIPT_DIR/prd.json"
-  fi
+  PRD_FILE="$SCRIPT_DIR/prd_4.json"
 fi
 
 # Derive progress file name from the PRD file name (prd_2.json -> progress_2.txt, prd.json -> progress.txt)
