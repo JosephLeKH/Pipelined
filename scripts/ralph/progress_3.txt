@@ -26,3 +26,25 @@ Commit: c8b02f3
 - Added two tests: one for text-search cursor (`?q=hello&cursor=not-valid-cursor`) and one for plain cursor (`?cursor=not-an-objectid`), both asserting 400 + `INVALID_CURSOR`
 - All 52 application tests pass
 - Learnings: Implementation was already partially done (from prior observation 229-231); just needed the text-search path guard and tests.
+
+## US-063 — Validate analytics days parameter and filter checkbox accessibility fix
+Status: COMPLETE
+
+### Changes
+- `backend/applications/schemas.py`: Added `AnalyticsQuery` schema with `days: int | None = Field(None, ge=1, le=365)`
+- `backend/applications/router.py`: Updated analytics endpoint to use `AnalyticsQuery = Depends()` instead of raw `Query()`; imported `AnalyticsQuery`
+- `backend/tests/test_applications.py`: Added `test_get_analytics_rejects_invalid_days` — verifies days=-1, days=0, days=999 all return 422
+- `frontend/src/components/FilterBar.jsx`: Added `groupKey` prop to `CheckboxGroup`; each checkbox gets `id=filter-{groupKey}-{opt}` and wrapping label gets `htmlFor` pointing to that id
+- `frontend/src/components/FilterBar.test.jsx`: Added test verifying `id` attributes and matching `htmlFor` on stage/company-type/remote-status checkboxes
+
+### Test results
+- Backend: 184 passed
+- Frontend: 158 passed (9 FilterBar tests including new accessibility test)
+- Build: clean
+
+### Keyboard navigation note
+Labels now have `htmlFor` pointing to their checkbox `id`. Clicking the label text toggles the checkbox — verified via `getByRole("checkbox", { name: "..." })` which passes only when the label association is correct.
+
+### Learnings
+- Using `Depends()` with a Pydantic model in FastAPI cleanly delegates query param validation to the schema layer, keeping the router thin.
+- `htmlFor`/`id` associations are easily testable: `checkbox.closest("label")` gives the parent label, then assert `.toHaveAttribute("for", expectedId)`.

@@ -70,7 +70,7 @@
         "npm test passes"
       ],
       "priority": 4,
-      "passes": false,
+      "passes": true,
       "notes": "Two small but important fixes combined to save context overhead. Analytics days param allows absurd values; FilterBar checkboxes are inaccessible to keyboard/screen reader users."
     },
     {
