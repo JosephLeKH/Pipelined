@@ -65,6 +65,10 @@ export const SALARY_FILTER_STEP = 10_000;
 
 export const BULK_MAX_IDS = 100;
 
+export const STAGES = Object.keys(STAGE_COLORS);
+
+export const VIEW_MODE_STORAGE_KEY = "pipelined_view_mode";
+
 export const EVENT_TYPE_OPTIONS = [
   { value: "phone_screen", label: "Phone Screen" },
   { value: "technical", label: "Technical" },
