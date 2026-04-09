@@ -56,3 +56,34 @@ Commit: cbcb883
 **Tests:** 12/12 CommandPalette tests pass, 238/238 total frontend tests pass | Build: ✓
 
 **Commit:** 4ddc189
+
+## US-081: Onboarding flow and rich empty states for new users — PASSED
+
+**New components:**
+- `frontend/src/components/EmptyState.jsx`: Reusable empty-state with title, description, icon (Lucide), and optional actionButton (single or array). Full dark mode.
+- `frontend/src/components/OnboardingChecklist.jsx`: Dismissable card with 3 steps (install extension, add first app, customize stages). Checks source="extension" in apps, total>0, and user.default_stages vs STAGES constant. Auto-dismisses after 3s success message when all done. localStorage key: pipelined_onboarding_dismissed.
+
+**Integrations:**
+- `ApplicationList.jsx`: Shows EmptyState "No applications yet" (with Add/Import actions) when no apps and no filters; keeps "No applications match your filters." when filtered to zero.
+- `Calendar.jsx`: Shows EmptyState "No interviews scheduled" below CalendarGrid when no events for current month. Uses shared React Query cache (no extra network call).
+- `Analytics.jsx`: Replaced dashed-div empty state with EmptyState "Not enough data yet"; threshold changed from 5 → 3.
+- `Dashboard.jsx`: OnboardingChecklist rendered above StatsBar; passes onAdd to ApplicationList.
+- `constants.js`: Added ONBOARDING_DISMISSED_KEY and ONBOARDING_CONFETTI_DISMISS_MS.
+
+**Updated existing tests:** ApplicationList.test.jsx and Analytics.test.jsx updated to match new EmptyState text.
+
+**Tests:** 12 EmptyState + 6 OnboardingChecklist = 18 new tests; 250/250 total pass | Build: ✓
+
+**Commit:** d3a26b2
+
+---
+US-082 | Global keyboard shortcuts with cheat sheet modal | PASSED | 2026-04-09
+- Created frontend/src/hooks/useHotkeys.js: custom hook, ignores inputs/textareas/selects, cbRef prevents stale closures
+- Created frontend/src/lib/shortcuts.js: SHORTCUTS array + SHORTCUT_SCOPES + CHORD_TIMEOUT_MS constants
+- Created frontend/src/components/ShortcutHelp.jsx: self-managing modal, opens on '?', shows shortcuts by scope
+- Modified frontend/src/App.jsx: added GlobalChordShortcuts (g→d/c/a/j with 500ms timeout), mounted ShortcutHelp
+- Modified frontend/src/components/ApplicationList.jsx: j/k/Enter/x/Escape hotkeys, focusedIdx state, listRef scrollToItem
+- Modified frontend/src/components/ApplicationRow.jsx: isFocused prop with blue highlight ring
+- Modified frontend/src/components/DetailPanel.jsx: s shortcut focuses #stage-select, n shortcut opens/focuses notes
+- Modified frontend/src/pages/Dashboard.jsx: 'a' shortcut opens add modal, shortcutsEnabled prop passed to ApplicationList
+- Tests: 10 new tests (6 useHotkeys + 4 ShortcutHelp), all 260 tests pass, build clean
