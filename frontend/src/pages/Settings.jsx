@@ -25,6 +25,7 @@ import Plus from "lucide-react/dist/esm/icons/plus";
 import Trash2 from "lucide-react/dist/esm/icons/trash-2";
 
 import NavBar from "../components/NavBar";
+import TimezoneSelector from "../components/TimezoneSelector";
 import { useAuth } from "../context/AuthContext";
 import { useUpdateUser } from "../hooks/useAuth";
 
@@ -212,8 +213,13 @@ function PipelineStagesEditor({ initialStages, onSave, isSaving, saveError }) {
 function Settings() {
   const { user } = useAuth();
   const { mutateAsync, isPending, error: mutationError } = useUpdateUser();
+  const { mutateAsync: mutateTz, isPending: isTzPending, error: tzError } = useUpdateUser();
   const [savedStages, setSavedStages] = useState(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [timezone, setTimezone] = useState(
+    () => user?.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone ?? "America/New_York"
+  );
+  const [tzSaved, setTzSaved] = useState(false);
 
   const handleSave = useCallback(
     async (stages) => {
@@ -228,6 +234,11 @@ function Settings() {
     },
     [mutateAsync]
   );
+
+  const handleSaveTz = useCallback(async () => {
+    setTzSaved(false);
+    try { await mutateTz({ timezone }); setTzSaved(true); } catch { /* tzError surfaced */ }
+  }, [timezone, mutateTz]);
 
   const currentStages = savedStages ?? user?.default_stages ?? [];
   const saveError = mutationError ? (mutationError.message ?? GENERIC_ERROR) : null;
@@ -261,6 +272,37 @@ function Settings() {
               saveError={saveError}
             />
           )}
+        </section>
+
+        <section className="mt-6 rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+          <h2 className="mb-1 text-base font-semibold text-gray-900 dark:text-gray-100">
+            Timezone
+          </h2>
+          <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">
+            Calendar events will display times in this timezone.
+          </p>
+          {tzSaved && !isTzPending && (
+            <p role="alert" className="mb-4 rounded bg-green-50 px-3 py-2 text-sm text-green-700 dark:bg-green-900/30 dark:text-green-300">
+              Timezone saved.
+            </p>
+          )}
+          {tzError && (
+            <p role="alert" className="mb-4 text-sm text-red-600 dark:text-red-400">
+              {tzError.message ?? GENERIC_ERROR}
+            </p>
+          )}
+          <TimezoneSelector value={timezone} onChange={setTimezone} />
+          <div className="mt-4 flex justify-end">
+            <button
+              type="button"
+              onClick={handleSaveTz}
+              disabled={isTzPending}
+              className="flex items-center gap-2 rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            >
+              {isTzPending && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
+              Save timezone
+            </button>
+          </div>
         </section>
       </main>
     </div>

@@ -1,6 +1,11 @@
 """Pydantic request/response models for auth endpoints."""
 
+from zoneinfo import available_timezones
+
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
+
+_VALID_TIMEZONES: frozenset[str] = frozenset(available_timezones())
+DEFAULT_TIMEZONE = "America/New_York"
 
 
 class RegisterRequest(BaseModel):
@@ -29,6 +34,7 @@ class UserResponse(BaseModel):
     email: str
     display_name: str
     default_stages: list[str]
+    timezone: str
 
     @classmethod
     def from_doc(cls, doc: dict) -> "UserResponse":
@@ -37,6 +43,7 @@ class UserResponse(BaseModel):
             email=doc["email"],
             display_name=doc["display_name"],
             default_stages=doc["default_stages"],
+            timezone=doc.get("timezone", DEFAULT_TIMEZONE),
         )
 
 
@@ -67,14 +74,19 @@ STAGE_NAME_MAX_LENGTH = 40
 class UpdateUserRequest(BaseModel):
     model_config = ConfigDict(strict=True)
 
-    default_stages: list[str] = Field(
+    default_stages: list[str] | None = Field(
+        None,
         min_length=STAGES_MIN_COUNT,
         max_length=STAGES_MAX_COUNT,
     )
+    timezone: str | None = None
 
     def model_post_init(self, __context: object) -> None:
-        for stage in self.default_stages:
-            if not stage or len(stage) > STAGE_NAME_MAX_LENGTH:
-                raise ValueError(
-                    f"Each stage must be 1–{STAGE_NAME_MAX_LENGTH} characters."
-                )
+        if self.default_stages is not None:
+            for stage in self.default_stages:
+                if not stage or len(stage) > STAGE_NAME_MAX_LENGTH:
+                    raise ValueError(
+                        f"Each stage must be 1–{STAGE_NAME_MAX_LENGTH} characters."
+                    )
+        if self.timezone is not None and self.timezone not in _VALID_TIMEZONES:
+            raise ValueError(f"Unknown timezone: {self.timezone}")

@@ -27,20 +27,30 @@ export function formatDate(isoString) {
   });
 }
 
-/** Format an ISO string as "Apr 7, 2026 at 3:00 PM". */
-export function formatDateTime(isoString) {
+/** Format an HH:MM or HH:MM:SS time string as "H:MM AM/PM". */
+export function formatTime(timeStr) {
+  if (!timeStr) return "";
+  const [h, min] = timeStr.split(":").map(Number);
+  const ampm = h < 12 ? "AM" : "PM";
+  const displayHour = h % 12 || 12;
+  return `${displayHour}:${String(min).padStart(2, "0")} ${ampm}`;
+}
+
+/** Format an ISO string as "Apr 7, 2026 at 3:00 PM" in the given timezone. */
+export function formatDateTime(isoString, timezone) {
   if (!isoString) return "";
+  const tz = timezone ?? TIMEZONE;
   const date = new Date(isoString);
   const datePart = date.toLocaleDateString(LOCALE, {
     month: "short",
     day: "numeric",
     year: "numeric",
-    timeZone: TIMEZONE,
+    timeZone: tz,
   });
   const timePart = date.toLocaleTimeString(LOCALE, {
     hour: "numeric",
     minute: "2-digit",
-    timeZone: TIMEZONE,
+    timeZone: tz,
   });
   return `${datePart} at ${timePart}`;
 }

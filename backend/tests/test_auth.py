@@ -384,3 +384,36 @@ async def test_patch_me_returns_401_without_auth(client):
 
     # Assert
     assert response.status_code == 401
+
+
+async def test_patch_me_rejects_invalid_timezone(client):
+    # Arrange
+    reg = await client.post("/api/auth/register", json=REGISTER_PAYLOAD)
+    cookies = dict(reg.cookies)
+
+    # Act
+    response = await client.patch(
+        "/api/auth/me",
+        json={"timezone": "Not/AReal_Zone"},
+        cookies=cookies,
+    )
+
+    # Assert
+    assert response.status_code == 422
+
+
+async def test_patch_me_updates_timezone(client):
+    # Arrange
+    reg = await client.post("/api/auth/register", json=REGISTER_PAYLOAD)
+    cookies = dict(reg.cookies)
+
+    # Act
+    response = await client.patch(
+        "/api/auth/me",
+        json={"timezone": "America/Los_Angeles"},
+        cookies=cookies,
+    )
+
+    # Assert
+    assert response.status_code == 200
+    assert response.json()["data"]["timezone"] == "America/Los_Angeles"

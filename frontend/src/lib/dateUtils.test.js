@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { formatDate, formatDateTime, formatRelative, toISODate } from "./dateUtils";
+import { formatDate, formatDateTime, formatTime, formatRelative, toISODate } from "./dateUtils";
 
 describe("formatDate", () => {
   it("should format an ISO datetime string as 'Mon D, YYYY'", () => {
@@ -29,8 +29,36 @@ describe("formatDateTime", () => {
     expect(result).toMatch(/Apr|March|2026/);
   });
 
+  it("should format in the provided timezone", () => {
+    // 2026-04-07T20:00:00Z = 1:00 PM PDT (UTC-7)
+    const result = formatDateTime("2026-04-07T20:00:00.000Z", "America/Los_Angeles");
+
+    expect(result).toContain("at");
+    expect(result).toMatch(/Apr\s+7,\s+2026/);
+    expect(result).toMatch(/1:00\s*PM/);
+  });
+
   it("should return empty string for falsy input", () => {
     expect(formatDateTime("")).toBe("");
+  });
+});
+
+describe("formatTime", () => {
+  it("should format HH:MM as H:MM AM/PM", () => {
+    expect(formatTime("09:30")).toBe("9:30 AM");
+    expect(formatTime("13:00")).toBe("1:00 PM");
+    expect(formatTime("00:00")).toBe("12:00 AM");
+    expect(formatTime("12:00")).toBe("12:00 PM");
+  });
+
+  it("should handle HH:MM:SS format", () => {
+    expect(formatTime("14:45:00")).toBe("2:45 PM");
+  });
+
+  it("should return empty string for falsy input", () => {
+    expect(formatTime("")).toBe("");
+    expect(formatTime(null)).toBe("");
+    expect(formatTime(undefined)).toBe("");
   });
 });
 

@@ -26,7 +26,7 @@ from auth.service import (
     create_refresh_token,
     decode_token,
     reset_password,
-    update_user_stages,
+    update_user_profile,
     verify_password,
 )
 from notifications.email_service import email_service
@@ -138,8 +138,8 @@ async def update_me(
     body: UpdateUserRequest,
     user: dict = Depends(get_current_user),
 ) -> dict:
-    """Update the current user's profile settings (e.g. default_stages)."""
-    updated = await update_user_stages(str(user["_id"]), body.default_stages)
+    """Update the current user's profile settings (default_stages and/or timezone)."""
+    updated = await update_user_profile(str(user["_id"]), body.default_stages, body.timezone)
     logger.info("user_profile_updated", user_id=str(user["_id"]))
     return {"data": UserResponse.from_doc(updated)}
 

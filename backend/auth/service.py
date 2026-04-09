@@ -22,6 +22,7 @@ ACCESS_TOKEN_TYPE = "access"
 REFRESH_TOKEN_TYPE = "refresh"
 JWT_ALGORITHM = "HS256"
 DEFAULT_STAGES = ["Applied", "Phone Screen", "Onsite", "Offer", "Rejected"]
+DEFAULT_TIMEZONE = "America/New_York"
 RESET_TOKEN_BYTES = 32
 RESET_TOKEN_TTL_HOURS = 1
 
@@ -92,6 +93,7 @@ async def create_user(email: str, password: str, display_name: str) -> dict:
         "password_hash": password_hash,
         "display_name": display_name,
         "default_stages": DEFAULT_STAGES,
+        "timezone": DEFAULT_TIMEZONE,
         "created_at": datetime.now(timezone.utc),
     }
     result = await users.insert_one(doc)
@@ -165,6 +167,7 @@ async def get_or_create_google_user(
         "display_name": display_name,
         "password_hash": None,
         "default_stages": DEFAULT_STAGES,
+        "timezone": DEFAULT_TIMEZONE,
         "created_at": datetime.now(timezone.utc),
     }
     result = await users.insert_one(doc)
@@ -204,15 +207,25 @@ async def create_password_reset_token(email: str) -> tuple[str, dict | None]:
     return raw_token, user
 
 
-async def update_user_stages(user_id: str, stages: list[str]) -> dict:
-    """Update the user's default_stages and return the updated document."""
+async def update_user_profile(
+    user_id: str,
+    stages: list[str] | None,
+    timezone: str | None,
+) -> dict:
+    """Update the user's default_stages and/or timezone; return the updated document."""
     users = get_collection("users")
-    await users.update_one(
-        {"_id": ObjectId(user_id)},
-        {"$set": {"default_stages": stages}},
-    )
+    update_fields: dict = {}
+    if stages is not None:
+        update_fields["default_stages"] = stages
+    if timezone is not None:
+        update_fields["timezone"] = timezone
+    if update_fields:
+        await users.update_one(
+            {"_id": ObjectId(user_id)},
+            {"$set": update_fields},
+        )
     user = await users.find_one({"_id": ObjectId(user_id)})
-    logger.info("user_stages_updated", user_id=user_id, count=len(stages))
+    logger.info("user_profile_updated", user_id=user_id, fields=list(update_fields))
     return user
 
 

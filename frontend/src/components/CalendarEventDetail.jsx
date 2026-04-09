@@ -8,19 +8,10 @@ import X from "lucide-react/dist/esm/icons/x";
 
 import { useUpdateEvent } from "../hooks/useCalendar";
 import { EVENT_TYPE_COLORS, DEFAULT_EVENT_COLOR, PREP_NOTES_MAX_LENGTH, PREP_NOTES_DEBOUNCE_MS } from "../lib/constants";
-import { formatDate } from "../lib/dateUtils";
+import { formatDate, formatTime } from "../lib/dateUtils";
+import { useAuth } from "../context/AuthContext";
 
 const FOCUSABLE_SELECTORS = 'button:not([disabled]), [href], input:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
-
-
-/** Format an ISO time string (HH:MM or HH:MM:SS) as "H:MM AM/PM". */
-function formatTime(timeStr) {
-  if (!timeStr) return null;
-  const [h, min] = timeStr.split(":").map(Number);
-  const ampm = h < 12 ? "AM" : "PM";
-  const displayHour = h % 12 || 12;
-  return `${displayHour}:${String(min).padStart(2, "0")} ${ampm}`;
-}
 
 function ChecklistItem({ item, onToggle, onDelete }) {
   return (
@@ -95,6 +86,8 @@ function CalendarEventDetail({ event, onClose }) {
   const debounceRef = useRef(null);
   const panelRef = useRef(null);
   const { mutate: updateEvent } = useUpdateEvent();
+  const { user } = useAuth();
+  const userTimezone = user?.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
 
   // Sync local state when event changes (e.g. different event opened)
   useEffect(() => {
@@ -149,7 +142,8 @@ function CalendarEventDetail({ event, onClose }) {
 
   const colors = EVENT_TYPE_COLORS[event.event_type] ?? DEFAULT_EVENT_COLOR;
   const eventTypeLabel = event.event_type.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
-  const timeStr = event.time ? formatTime(event.time) : null;
+  const formattedTime = event.time ? formatTime(event.time) : null;
+  const timeDisplay = formattedTime ? `${formattedTime} (${userTimezone})` : null;
 
   return (
     <>
@@ -182,7 +176,7 @@ function CalendarEventDetail({ event, onClose }) {
               {formatDate(
                 typeof event.date === "string" ? event.date.slice(0, 10) : event.date
               )}
-              {timeStr && ` · ${timeStr}`}
+              {timeDisplay && ` · ${timeDisplay}`}
             </p>
           </div>
           <button

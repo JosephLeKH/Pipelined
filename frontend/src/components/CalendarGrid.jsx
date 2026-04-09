@@ -7,7 +7,7 @@ import ChevronRight from "lucide-react/dist/esm/icons/chevron-right";
 
 import { useCalendarEvents } from "../hooks/useCalendar";
 import { DEFAULT_EVENT_COLOR, EVENT_TYPE_COLORS, WEEK_DAYS } from "../lib/constants";
-import { toISODate, formatDateLong } from "../lib/dateUtils";
+import { toISODate, formatDateLong, formatTime } from "../lib/dateUtils";
 import ApiErrorMessage from "./ApiErrorMessage";
 import SkeletonCalendarCell from "./SkeletonCalendarCell";
 
@@ -38,7 +38,8 @@ function buildWeeks(month, year) {
 
 function EventChip({ event, onEventClick }) {
   const colors = EVENT_TYPE_COLORS[event.event_type] ?? DEFAULT_EVENT_COLOR;
-  const label = `${event.company ?? "Unknown"} · ${event.event_type.replace(/_/g, " ")}`;
+  const timeStr = event.time ? ` · ${formatTime(event.time)}` : "";
+  const label = `${event.company ?? "Unknown"} · ${event.event_type.replace(/_/g, " ")}${timeStr}`;
   return (
     <button
       type="button"

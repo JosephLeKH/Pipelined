@@ -8,11 +8,23 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter } from "react-router-dom";
 import { describe, it, expect, vi, beforeAll, afterAll, afterEach } from "vitest";
 
+import { AuthProvider } from "../context/AuthContext";
 import CalendarEventDetail from "./CalendarEventDetail";
 
 const PATCH_HANDLER = vi.fn();
 
 const server = setupServer(
+  http.get("/api/auth/me", () =>
+    HttpResponse.json({
+      data: {
+        id: "user1",
+        email: "test@example.com",
+        display_name: "Test User",
+        default_stages: ["Applied", "Rejected"],
+        timezone: "America/New_York",
+      },
+    })
+  ),
   http.patch("/api/calendar/events/:id", async ({ request }) => {
     const body = await request.json();
     PATCH_HANDLER(body);
@@ -59,7 +71,9 @@ function makeWrapper() {
   });
   return ({ children }) => (
     <QueryClientProvider client={queryClient}>
-      <MemoryRouter>{children}</MemoryRouter>
+      <MemoryRouter>
+        <AuthProvider>{children}</AuthProvider>
+      </MemoryRouter>
     </QueryClientProvider>
   );
 }
