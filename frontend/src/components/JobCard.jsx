@@ -4,6 +4,8 @@ import MapPin from "lucide-react/dist/esm/icons/map-pin";
 import ExternalLink from "lucide-react/dist/esm/icons/external-link";
 import Building2 from "lucide-react/dist/esm/icons/building-2";
 
+import { formatDate } from "../lib/dateUtils";
+
 const REMOTE_BADGE_COLORS = {
   remote: { bg: "bg-green-100", text: "text-green-800" },
   hybrid: { bg: "bg-blue-100", text: "text-blue-800" },
@@ -25,9 +27,7 @@ function RemoteBadge({ remoteStatus }) {
 }
 
 function JobCard({ job }) {
-  const datePosted = job.date_posted
-    ? new Date(job.date_posted).toLocaleDateString()
-    : null;
+  const datePosted = job.date_posted ? formatDate(job.date_posted) : null;
 
   return (
     <article

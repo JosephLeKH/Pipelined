@@ -17,6 +17,7 @@ import {
   DEFAULT_EVENT_COLOR,
   NOTES_MAX_LENGTH,
 } from "../lib/constants";
+import { formatDate } from "../lib/dateUtils";
 
 const STAGE_OPTIONS = Object.keys(STAGE_COLORS);
 
@@ -205,7 +206,7 @@ function PanelHeader({ application, onClose }) {
 }
 
 function PanelBody({ application, handleStageChange, onAddEvent }) {
-  const dateApplied = new Date(application.date_applied).toLocaleDateString();
+  const dateApplied = formatDate(application.date_applied);
   return (
     <div className="flex flex-col gap-4 px-6 py-4">
       <div className="grid grid-cols-2 gap-3">

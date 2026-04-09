@@ -18,6 +18,7 @@ import {
   EVENT_TYPE_COLORS,
   DEFAULT_EVENT_COLOR,
 } from "../lib/constants";
+import { formatDate } from "../lib/dateUtils";
 
 const EVENT_ICONS = {
   phone_screen: Phone,
@@ -28,13 +29,6 @@ const EVENT_ICONS = {
   other: CalendarDays,
 };
 
-function formatDate(dateStr) {
-  return new Date(dateStr).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-}
 
 function buildTimeline(stageHistory, events) {
   const stageNodes = (stageHistory ?? []).map((entry, i, arr) => ({

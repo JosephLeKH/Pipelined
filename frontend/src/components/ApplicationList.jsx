@@ -18,6 +18,7 @@ import {
   useUnarchiveApplication,
 } from "../hooks/useApplications";
 import { STAGE_COLORS, DEFAULT_STAGE_COLOR, STALE_APPLICATION_DAYS } from "../lib/constants";
+import { formatDate } from "../lib/dateUtils";
 import ApiErrorMessage from "./ApiErrorMessage";
 import { BulkActionBar, BulkDeleteConfirmModal, DeleteConfirmModal, RowMenu } from "./ApplicationRowActions";
 
@@ -52,7 +53,7 @@ function ApplicationRow({
 }) {
   const SourceIcon = SOURCE_ICONS[application.source] ?? Pencil;
   const stale = isStale(application.updated_at);
-  const dateApplied = new Date(application.date_applied).toLocaleDateString();
+  const dateApplied = formatDate(application.date_applied);
   const archived = Boolean(application.archived);
   const checkboxVisible = hasSelection ? "opacity-100" : "opacity-0 group-hover:opacity-100";
 

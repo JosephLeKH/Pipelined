@@ -8,16 +8,10 @@ import X from "lucide-react/dist/esm/icons/x";
 
 import { useUpdateEvent } from "../hooks/useCalendar";
 import { EVENT_TYPE_COLORS, DEFAULT_EVENT_COLOR, PREP_NOTES_MAX_LENGTH, PREP_NOTES_DEBOUNCE_MS } from "../lib/constants";
+import { formatDate } from "../lib/dateUtils";
 
 const FOCUSABLE_SELECTORS = 'button:not([disabled]), [href], input:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
-/** Format an ISO date string (YYYY-MM-DD) as "Mon D, YYYY". */
-function formatDate(dateStr) {
-  if (!dateStr) return "";
-  const [y, m, d] = dateStr.split("-").map(Number);
-  const date = new Date(y, m - 1, d);
-  return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-}
 
 /** Format an ISO time string (HH:MM or HH:MM:SS) as "H:MM AM/PM". */
 function formatTime(timeStr) {

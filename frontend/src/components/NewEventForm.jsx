@@ -7,14 +7,7 @@ import X from "lucide-react/dist/esm/icons/x";
 import { useApplications } from "../hooks/useApplications";
 import { useCreateEvent } from "../hooks/useCalendar";
 import { EVENT_TYPE_OPTIONS } from "../lib/constants";
-
-/** ISO date string (YYYY-MM-DD) from a Date object using local time. */
-function toISODate(date) {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, "0");
-  const d = String(date.getDate()).padStart(2, "0");
-  return `${y}-${m}-${d}`;
-}
+import { toISODate } from "../lib/dateUtils";
 
 function AppSelector({ apps, applicationId, onApplicationChange }) {
   const [appSearch, setAppSearch] = useState("");

@@ -3,6 +3,8 @@
 import MapPin from "lucide-react/dist/esm/icons/map-pin";
 import ExternalLink from "lucide-react/dist/esm/icons/external-link";
 
+import { formatDate } from "../lib/dateUtils";
+
 const REMOTE_COLORS = {
   remote: "text-green-700",
   hybrid: "text-blue-700",
@@ -11,9 +13,7 @@ const REMOTE_COLORS = {
 };
 
 function JobRow({ job, style }) {
-  const datePosted = job.date_posted
-    ? new Date(job.date_posted).toLocaleDateString()
-    : "—";
+  const datePosted = job.date_posted ? formatDate(job.date_posted) : "—";
 
   const remoteColor = REMOTE_COLORS[job.remote_status] ?? "text-gray-500";
 

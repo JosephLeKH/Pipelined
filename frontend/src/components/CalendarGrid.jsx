@@ -7,6 +7,7 @@ import ChevronRight from "lucide-react/dist/esm/icons/chevron-right";
 
 import { useCalendarEvents } from "../hooks/useCalendar";
 import { DEFAULT_EVENT_COLOR, EVENT_TYPE_COLORS, WEEK_DAYS } from "../lib/constants";
+import { toISODate, formatDateLong } from "../lib/dateUtils";
 import ApiErrorMessage from "./ApiErrorMessage";
 
 const MONTH_NAMES = [
@@ -33,13 +34,6 @@ function buildWeeks(month, year) {
   return weeks;
 }
 
-/** ISO date string (YYYY-MM-DD) from a Date object using local time. */
-function toISODate(date) {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, "0");
-  const d = String(date.getDate()).padStart(2, "0");
-  return `${y}-${m}-${d}`;
-}
 
 function EventChip({ event, onEventClick }) {
   const colors = EVENT_TYPE_COLORS[event.event_type] ?? DEFAULT_EVENT_COLOR;
@@ -68,7 +62,7 @@ function DayCell({ date, isCurrentMonth, events, onDayClick, onEventClick }) {
       tabIndex={0}
       onClick={() => onDayClick(date)}
       onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") onDayClick(date); }}
-      aria-label={date.toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
+      aria-label={formatDateLong(date)}
       className={`min-h-[80px] cursor-pointer border border-gray-100 p-1.5 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 dark:border-gray-700 dark:hover:bg-gray-700 ${
         isCurrentMonth ? "bg-white dark:bg-gray-800" : "bg-gray-50 dark:bg-gray-900"
       }`}
