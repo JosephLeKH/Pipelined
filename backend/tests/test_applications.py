@@ -1157,3 +1157,55 @@ async def test_deleted_applications_excluded_from_list(client, test_user):
     assert list_resp.status_code == 200
     ids = [a["id"] for a in list_resp.json()["data"]]
     assert app_id not in ids
+
+
+# ---------------------------------------------------------------------------
+# GET /api/applications/stats — applied_this_week and current_streak
+# ---------------------------------------------------------------------------
+
+
+async def test_stats_applied_this_week_counts_current_week_applications(client, test_user):
+    # Arrange — create one app (default date_applied = now, i.e. this week)
+    _, cookies = test_user
+    post_resp = await client.post("/api/applications", json=APP_PAYLOAD, cookies=cookies)
+    assert post_resp.status_code == 201
+
+    # Act
+    response = await client.get("/api/applications/stats", cookies=cookies)
+
+    # Assert
+    data = response.json()["data"]
+    assert data["applied_this_week"] >= 1
+    assert "current_streak" in data
+
+
+async def test_stats_applied_this_week_excludes_last_week_applications(client, test_user):
+    # Arrange — insert an app directly with date_applied 8 days ago (last week)
+    user, cookies = test_user
+    from bson import ObjectId
+    from datetime import timedelta
+    last_week = datetime.now(timezone.utc) - timedelta(days=8)
+    col = get_collection("applications")
+    await col.insert_one({
+        "user_id": ObjectId(user["id"]),
+        "role_title": "Old Role",
+        "company": "Old Corp",
+        "normalised_company": "old corp",
+        "normalised_role": "old role",
+        "source": "manual",
+        "current_stage": "Applied",
+        "stages": ["Applied"],
+        "stage_history": [{"stage": "Applied", "transitioned_at": last_week}],
+        "date_applied": last_week,
+        "created_at": last_week,
+        "updated_at": last_week,
+        "tags": [],
+        "archived": False,
+    })
+
+    # Act
+    response = await client.get("/api/applications/stats", cookies=cookies)
+
+    # Assert
+    data = response.json()["data"]
+    assert data["applied_this_week"] == 0

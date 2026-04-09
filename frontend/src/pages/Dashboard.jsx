@@ -9,6 +9,7 @@ import List from "lucide-react/dist/esm/icons/list";
 import Loader2 from "lucide-react/dist/esm/icons/loader-2";
 
 import FilterBar from "../components/FilterBar";
+import GoalProgress from "../components/GoalProgress";
 import NavBar from "../components/NavBar";
 import StatsBar from "../components/StatsBar";
 import ApplicationList from "../components/ApplicationList";
@@ -154,6 +155,7 @@ function Dashboard() {
           </div>
         </div>
         <OnboardingChecklist onAdd={() => setIsModalOpen(true)} />
+        <GoalProgress />
         <StatsBar />
         <FilterBar />
         {viewMode === "kanban" ? (

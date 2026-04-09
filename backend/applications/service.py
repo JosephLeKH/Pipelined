@@ -3,7 +3,7 @@
 import asyncio
 import csv
 import io
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 
 import structlog
 from bson import ObjectId
@@ -542,8 +542,53 @@ async def bulk_update_stage(user_id: str, ids: list[str], stage: str) -> int:
     return result.modified_count
 
 
+STREAK_LOOKBACK_WEEKS = 52
+
+
+def _current_iso_week_bounds() -> tuple[str, str]:
+    """Return (monday_iso, sunday_iso) strings for the current ISO week."""
+    today = date.today()
+    monday = today - timedelta(days=today.weekday())
+    return monday.isoformat(), (monday + timedelta(days=6)).isoformat()
+
+
+def _compute_weekly_stats(date_applied_list: list[str], weekly_goal: int) -> tuple[int, int]:
+    """Return (applied_this_week, current_streak) from ISO date strings."""
+    monday_str, sunday_str = _current_iso_week_bounds()
+    applied_this_week = sum(1 for d in date_applied_list if monday_str <= d <= sunday_str)
+
+    week_counts: dict[tuple[int, int], int] = {}
+    for d_str in date_applied_list:
+        try:
+            d = date.fromisoformat(d_str)
+        except ValueError:
+            continue
+        iso = d.isocalendar()
+        key = (iso.year, iso.week)
+        week_counts[key] = week_counts.get(key, 0) + 1
+
+    today = date.today()
+    streak = 0
+    check = today - timedelta(days=today.weekday() + 7)
+    for _ in range(STREAK_LOOKBACK_WEEKS):
+        iso = check.isocalendar()
+        if week_counts.get((iso.year, iso.week), 0) >= weekly_goal:
+            streak += 1
+            check -= timedelta(weeks=1)
+        else:
+            break
+    return applied_this_week, streak
+
+
+def _extract_date_str(value: object) -> str:
+    """Return ISO date string from a datetime object or existing string."""
+    if isinstance(value, datetime):
+        return value.date().isoformat()
+    return str(value) if value else ""
+
+
 async def compute_stats(user_id: str) -> dict:
-    """Return StatsResponse fields using a single $facet aggregation."""
+    """Return StatsResponse fields using a single $facet aggregation plus weekly stats."""
     uid = ObjectId(user_id)
     col = get_collection("applications")
     stale_cutoff = datetime.now(timezone.utc) - timedelta(days=STALE_DAYS)
@@ -578,15 +623,26 @@ async def compute_stats(user_id: str) -> dict:
                 }},
                 {"$count": "count"},
             ],
+            "date_applied_list": [
+                {"$match": {"deleted": {"$ne": True}}},
+                {"$project": {"_id": 0, "date_applied": 1}},
+            ],
         }},
     ]
 
-    raw = (await col.aggregate(pipeline).to_list(length=1))[0]
+    user_doc, raw = await asyncio.gather(
+        get_user_by_id(user_id),
+        col.aggregate(pipeline).to_list(length=None),
+    )
+    raw = raw[0]
+    weekly_goal = user_doc.get("weekly_goal", 5) if user_doc else 5
     total = raw["total"][0]["count"] if raw["total"] else 0
     active = raw["active"][0]["count"] if raw["active"] else 0
     with_response = raw["with_response"][0]["count"] if raw["with_response"] else 0
     avg_days = round(raw["avg_response_days"][0]["avg"], 1) if raw["avg_response_days"] else None
     stale = raw["stale"][0]["count"] if raw["stale"] else 0
+    dates = [_extract_date_str(d.get("date_applied")) for d in raw["date_applied_list"]]
+    applied_this_week, current_streak = _compute_weekly_stats(dates, weekly_goal)
 
     return {
         "total_applied": total,
@@ -594,6 +650,8 @@ async def compute_stats(user_id: str) -> dict:
         "response_rate": round(with_response / total, 2) if total > 0 else 0.0,
         "avg_days_to_first_response": avg_days,
         "stale_count": stale,
+        "applied_this_week": applied_this_week,
+        "current_streak": current_streak,
     }
 
 

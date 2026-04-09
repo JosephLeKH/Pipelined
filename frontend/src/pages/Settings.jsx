@@ -1,6 +1,6 @@
 /** Settings page — pipeline stage configuration and user preferences. */
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 
 import {
   DndContext,
@@ -36,6 +36,9 @@ const STAGES_MAX_COUNT = 10;
 const GENERIC_ERROR = "Failed to save stages. Please try again.";
 const RESUME_ACCEPT = ".pdf";
 const RESUME_MAX_MB = 2;
+const WEEKLY_GOAL_MIN = 1;
+const WEEKLY_GOAL_MAX = 50;
+const DEFAULT_WEEKLY_GOAL = 5;
 
 function SortableStageItem({ id, value, onRename, onRemove, canRemove }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
@@ -218,6 +221,7 @@ function Settings() {
   const { mutateAsync, isPending, error: mutationError } = useUpdateUser();
   const { mutateAsync: mutateTz, isPending: isTzPending, error: tzError } = useUpdateUser();
   const { mutateAsync: mutateDigest, isPending: isDigestPending } = useUpdateUser();
+  const { mutateAsync: mutateGoal, isPending: isGoalPending } = useUpdateUser();
   const { mutate: uploadResume, isPending: isUploading } = useUploadResume();
   const { mutate: deleteResume, isPending: isDeleting } = useDeleteResume();
   const [resumeError, setResumeError] = useState(null);
@@ -229,6 +233,9 @@ function Settings() {
   );
   const [tzSaved, setTzSaved] = useState(false);
   const [digestEnabled, setDigestEnabled] = useState(() => user?.digest_enabled ?? true);
+  const [weeklyGoal, setWeeklyGoal] = useState(() => user?.weekly_goal ?? DEFAULT_WEEKLY_GOAL);
+  const [goalSaved, setGoalSaved] = useState(false);
+  const [goalError, setGoalError] = useState(null);
 
   const handleSave = useCallback(
     async (stages) => {
@@ -279,6 +286,19 @@ function Settings() {
     try { await mutateDigest({ digest_enabled: enabled }); } catch { setDigestEnabled(!enabled); }
   }, [mutateDigest]);
 
+  const handleSaveGoal = useCallback(async () => {
+    const val = Number(weeklyGoal);
+    if (!Number.isInteger(val) || val < WEEKLY_GOAL_MIN || val > WEEKLY_GOAL_MAX) {
+      setGoalError(`Goal must be between ${WEEKLY_GOAL_MIN} and ${WEEKLY_GOAL_MAX}.`);
+      return;
+    }
+    setGoalError(null);
+    setGoalSaved(false);
+    try { await mutateGoal({ weekly_goal: val }); setGoalSaved(true); } catch {
+      setGoalError("Failed to save goal. Please try again.");
+    }
+  }, [weeklyGoal, mutateGoal]);
+
   const currentStages = savedStages ?? user?.default_stages ?? [];
   const saveError = mutationError ? (mutationError.message ?? GENERIC_ERROR) : null;
 
@@ -311,6 +331,46 @@ function Settings() {
               saveError={saveError}
             />
           )}
+        </section>
+
+        <section className="mt-6 rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+          <h2 className="mb-1 text-base font-semibold text-gray-900 dark:text-gray-100">
+            Weekly Application Goal
+          </h2>
+          <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">
+            Set a target number of applications to submit per week. Shown as a progress ring on the dashboard.
+          </p>
+          {goalSaved && !isGoalPending && (
+            <p role="alert" className="mb-4 rounded bg-green-50 px-3 py-2 text-sm text-green-700 dark:bg-green-900/30 dark:text-green-300">
+              Weekly goal saved.
+            </p>
+          )}
+          {goalError && (
+            <p role="alert" className="mb-4 text-sm text-red-600 dark:text-red-400">{goalError}</p>
+          )}
+          <div className="flex items-center gap-3">
+            <input
+              type="number"
+              min={WEEKLY_GOAL_MIN}
+              max={WEEKLY_GOAL_MAX}
+              value={weeklyGoal}
+              onChange={(e) => setWeeklyGoal(e.target.value)}
+              aria-label="Weekly application goal"
+              className="w-24 rounded border border-gray-300 px-3 py-1.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
+            />
+            <span className="text-sm text-gray-500 dark:text-gray-400">applications / week</span>
+          </div>
+          <div className="mt-4 flex justify-end">
+            <button
+              type="button"
+              onClick={handleSaveGoal}
+              disabled={isGoalPending}
+              className="flex items-center gap-2 rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            >
+              {isGoalPending && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
+              Save goal
+            </button>
+          </div>
         </section>
 
         <section className="mt-6 rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
