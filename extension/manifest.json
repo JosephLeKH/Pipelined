@@ -16,7 +16,9 @@
         "https://jobs.ashbyhq.com/*",
         "https://*.myworkday.com/*",
         "*://www.indeed.com/viewjob*",
-        "*://www.glassdoor.com/job-listing/*"
+        "*://www.glassdoor.com/job-listing/*",
+        "*://wellfound.com/jobs/*",
+        "*://www.dice.com/job-detail/*"
       ],
       "js": ["content/content.js"],
       "css": ["content/content.css"],

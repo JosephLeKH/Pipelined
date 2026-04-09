@@ -7,8 +7,10 @@ import * as ashby from "./boards/ashby.js";
 import * as workday from "./boards/workday.js";
 import * as indeed from "./boards/indeed.js";
 import * as glassdoor from "./boards/glassdoor.js";
+import * as wellfound from "./boards/wellfound.js";
+import * as dice from "./boards/dice.js";
 
-const BOARDS = [linkedin, greenhouse, lever, ashby, workday, indeed, glassdoor];
+const BOARDS = [linkedin, greenhouse, lever, ashby, workday, indeed, glassdoor, wellfound, dice];
 
 const PAGE_TEXT_MAX_CHARS = 3200;
 
