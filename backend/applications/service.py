@@ -8,7 +8,14 @@ import structlog
 from bson import ObjectId
 from pymongo import ReturnDocument
 
-from applications.schemas import ApplicationCreate, ApplicationListQuery, ApplicationUpdate
+from applications.schemas import (
+    ApplicationCreate,
+    ApplicationListQuery,
+    ApplicationUpdate,
+    ImportResult,
+    ImportRowError,
+    MAX_IMPORT_ROWS,
+)
 from auth.service import get_user_by_id
 from database import get_client, get_collection
 from parsing.openai_client import parse_with_openai
@@ -603,3 +610,83 @@ async def get_analytics(user_id: str, days: int | None = None) -> dict:
             for r in raw["top_companies"]
         ],
     }
+
+
+async def import_applications(user_id: str, csv_bytes: bytes) -> ImportResult:
+    """Parse CSV bytes and bulk-insert applications, skipping duplicates.
+
+    Required CSV columns: company, role_title.
+    Optional: location, remote_status, compensation, company_type, date_applied.
+    Rows exceeding MAX_IMPORT_ROWS are silently truncated (warning included in result).
+    """
+    uid = ObjectId(user_id)
+    apps = get_collection("applications")
+    stages = await _fetch_user_stages(uid)
+    now = datetime.now(timezone.utc)
+
+    text = csv_bytes.decode("utf-8-sig", errors="replace")
+    reader = csv.DictReader(io.StringIO(text))
+    rows = list(reader)
+
+    warning: str | None = None
+    if len(rows) > MAX_IMPORT_ROWS:
+        warning = f"Only the first {MAX_IMPORT_ROWS} rows were processed."
+        rows = rows[:MAX_IMPORT_ROWS]
+
+    errors: list[ImportRowError] = []
+    docs_to_insert: list[dict] = []
+
+    for idx, row in enumerate(rows, start=2):  # row 1 = header
+        company = (row.get("company") or "").strip()
+        role_title = (row.get("role_title") or "").strip()
+        if not company or not role_title:
+            errors.append(ImportRowError(row=idx, reason="Missing required field: company or role_title"))
+            continue
+
+        normalised_company = company.lower()
+        normalised_role = role_title.lower()
+        existing = await apps.find_one(
+            {"user_id": uid, "normalised_company": normalised_company, "normalised_role": normalised_role},
+            projection={"_id": 1},
+        )
+        if existing:
+            errors.append(ImportRowError(row=idx, reason="Duplicate: already exists"))
+            continue
+
+        date_applied_raw = (row.get("date_applied") or "").strip()
+        try:
+            date_applied = datetime.fromisoformat(date_applied_raw) if date_applied_raw else now
+        except ValueError:
+            date_applied = now
+
+        doc: dict = {
+            "user_id": uid,
+            "company": company,
+            "role_title": role_title,
+            "normalised_company": normalised_company,
+            "normalised_role": normalised_role,
+            "current_stage": INITIAL_STAGE,
+            "stages": stages,
+            "stage_history": [{"stage": INITIAL_STAGE, "transitioned_at": now}],
+            "date_applied": date_applied,
+            "source": "manual",
+            "location": (row.get("location") or "").strip() or None,
+            "remote_status": (row.get("remote_status") or "").strip() or None,
+            "compensation": (row.get("compensation") or "").strip() or None,
+            "company_type": (row.get("company_type") or "").strip() or None,
+            "tags": [],
+            "archived": False,
+            "archived_at": None,
+            "created_at": now,
+            "updated_at": now,
+        }
+        docs_to_insert.append(doc)
+
+    imported = 0
+    if docs_to_insert:
+        result = await apps.insert_many(docs_to_insert, ordered=False)
+        imported = len(result.inserted_ids)
+        logger.info("applications_imported", user_id=user_id, count=imported)
+
+    skipped = len([e for e in errors if "Duplicate" in e.reason])
+    return ImportResult(imported=imported, skipped=skipped, errors=errors, warning=warning)

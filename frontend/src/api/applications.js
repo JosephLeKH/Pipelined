@@ -82,3 +82,12 @@ export async function fetchAnalytics(days = null) {
   const params = days != null ? `?days=${days}` : "";
   return client.get(`/applications/analytics${params}`);
 }
+
+/** Upload a CSV file to bulk-import applications. */
+export async function importApplicationsCsv(file) {
+  const form = new FormData();
+  form.append("file", file);
+  return client.post("/applications/import", form, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+}

@@ -1,7 +1,7 @@
 """Applications route handlers: CRUD, stats, and stage management."""
 
 import structlog
-from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response, UploadFile
 from fastapi.responses import StreamingResponse
 
 from applications import service as app_service
@@ -14,6 +14,7 @@ from applications.schemas import (
     ApplicationUpdate,
     BulkDeleteRequest,
     BulkStageUpdateRequest,
+    ImportResult,
     StageAddRequest,
     StatsResponse,
     ValidCompanyType,
@@ -21,6 +22,7 @@ from applications.schemas import (
     ValidSortField,
     ValidSortOrder,
     DEFAULT_QUERY_LIMIT,
+    MAX_IMPORT_FILE_SIZE_BYTES,
     MAX_QUERY_LIMIT,
 )
 from applications.service import ActiveStageError, DuplicateApplicationError, InvalidCursorError
@@ -160,6 +162,23 @@ async def bulk_update_application_stage(
     user_id = str(user["_id"])
     updated_count = await app_service.bulk_update_stage(user_id, body.ids, body.stage)
     return {"data": {"updated_count": updated_count}}
+
+
+@router.post("/import", status_code=200)
+async def import_applications_csv(
+    file: UploadFile,
+    user: dict = Depends(get_current_user),
+) -> dict:
+    """Import applications from a CSV file. Returns {imported, skipped, errors}."""
+    user_id = str(user["_id"])
+    csv_bytes = await file.read(MAX_IMPORT_FILE_SIZE_BYTES + 1)
+    if len(csv_bytes) > MAX_IMPORT_FILE_SIZE_BYTES:
+        raise HTTPException(
+            status_code=413,
+            detail={"code": "FILE_TOO_LARGE", "message": "CSV file exceeds 2 MB limit."},
+        )
+    result = await app_service.import_applications(user_id, csv_bytes)
+    return {"data": result.model_dump()}
 
 
 @router.get("/{app_id}", status_code=200)

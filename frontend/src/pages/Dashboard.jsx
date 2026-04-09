@@ -9,6 +9,7 @@ import FilterBar from "../components/FilterBar";
 import NavBar from "../components/NavBar";
 import StatsBar from "../components/StatsBar";
 import ApplicationList from "../components/ApplicationList";
+import CsvImportModal from "../components/CsvImportModal";
 import DetailPanel from "../components/DetailPanel";
 import ManualAddForm from "../components/ManualAddForm";
 import { useApplication } from "../hooks/useApplications";
@@ -17,6 +18,7 @@ import { exportApplicationsCsv } from "../api/applications";
 function Dashboard() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isImportOpen, setIsImportOpen] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
 
   // Filter params written by FilterBar
@@ -82,6 +84,13 @@ function Dashboard() {
         <div className="flex items-center gap-2">
           <button
             type="button"
+            onClick={() => setIsImportOpen(true)}
+            className="rounded border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+          >
+            Import CSV
+          </button>
+          <button
+            type="button"
             onClick={handleExport}
             disabled={isExporting}
             className="flex items-center gap-2 rounded border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
@@ -103,6 +112,7 @@ function Dashboard() {
       <ApplicationList filters={filters} onSelect={handleSelect} />
       <DetailPanel application={selectedApp ?? null} onClose={handleClosePanel} />
       <ManualAddForm isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <CsvImportModal isOpen={isImportOpen} onClose={() => setIsImportOpen(false)} />
       </main>
     </div>
   );

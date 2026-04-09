@@ -980,3 +980,82 @@ async def test_get_analytics_requires_auth(client):
 
     # Assert
     assert response.status_code == 401
+
+
+# ---------------------------------------------------------------------------
+# POST /api/applications/import
+# ---------------------------------------------------------------------------
+
+CSV_HEADER = "company,role_title,location\n"
+
+
+async def test_import_csv_happy_path(client, test_user):
+    # Arrange
+    _, cookies = test_user
+    csv_bytes = (CSV_HEADER + "Acme Corp,Software Engineer,NYC\nBeta Inc,PM,SF\n").encode()
+    files = {"file": ("apps.csv", csv_bytes, "text/csv")}
+
+    # Act
+    response = await client.post("/api/applications/import", files=files, cookies=cookies)
+
+    # Assert
+    assert response.status_code == 200
+    data = response.json()["data"]
+    assert data["imported"] == 2
+    assert data["skipped"] == 0
+    assert data["errors"] == []
+
+
+async def test_import_csv_skips_missing_required_fields(client, test_user):
+    # Arrange
+    _, cookies = test_user
+    csv_bytes = (CSV_HEADER + ",Software Engineer,NYC\nAcme Corp,,SF\n").encode()
+    files = {"file": ("apps.csv", csv_bytes, "text/csv")}
+
+    # Act
+    response = await client.post("/api/applications/import", files=files, cookies=cookies)
+
+    # Assert
+    assert response.status_code == 200
+    data = response.json()["data"]
+    assert data["imported"] == 0
+    assert len(data["errors"]) == 2
+    assert "Missing required field" in data["errors"][0]["reason"]
+
+
+async def test_import_csv_skips_duplicates(client, test_user):
+    # Arrange
+    _, cookies = test_user
+    await client.post(
+        "/api/applications",
+        json={"role_title": "Software Engineer", "company": "Acme Corp", "source": "manual"},
+        cookies=cookies,
+    )
+    csv_bytes = (CSV_HEADER + "Acme Corp,Software Engineer,NYC\n").encode()
+    files = {"file": ("apps.csv", csv_bytes, "text/csv")}
+
+    # Act
+    response = await client.post("/api/applications/import", files=files, cookies=cookies)
+
+    # Assert
+    assert response.status_code == 200
+    data = response.json()["data"]
+    assert data["imported"] == 0
+    assert data["skipped"] == 1
+
+
+async def test_import_csv_truncates_at_row_cap(client, test_user):
+    # Arrange
+    _, cookies = test_user
+    rows = "".join(f"Company{i},Role{i},NYC\n" for i in range(510))
+    csv_bytes = (CSV_HEADER + rows).encode()
+    files = {"file": ("apps.csv", csv_bytes, "text/csv")}
+
+    # Act
+    response = await client.post("/api/applications/import", files=files, cookies=cookies)
+
+    # Assert
+    assert response.status_code == 200
+    data = response.json()["data"]
+    assert data["imported"] == 500
+    assert data["warning"] is not None

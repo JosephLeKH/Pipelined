@@ -12,6 +12,7 @@ import {
   fetchApplication,
   fetchApplications,
   fetchStats,
+  importApplicationsCsv,
   unarchiveApplication,
   updateApplication,
 } from "../api/applications";
@@ -146,5 +147,17 @@ export function useAnalytics(days = null) {
     queryKey: KEYS.analytics(days),
     queryFn: () => fetchAnalytics(days),
     staleTime: STATS_STALE_TIME_MS,
+  });
+}
+
+/** Bulk-import applications from a CSV file. Invalidates lists and stats on success. */
+export function useImportApplications() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (file) => importApplicationsCsv(file),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: KEYS.lists() });
+      queryClient.invalidateQueries({ queryKey: KEYS.stats });
+    },
   });
 }

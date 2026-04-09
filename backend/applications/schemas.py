@@ -158,3 +158,19 @@ class AnalyticsResponse(BaseModel):
     stage_funnel: list[StageCount]
     response_rate_by_month: list[MonthlyRate]
     top_companies: list[CompanyCount]
+
+
+MAX_IMPORT_ROWS = 500
+MAX_IMPORT_FILE_SIZE_BYTES = 2 * 1024 * 1024  # 2 MB
+
+
+class ImportRowError(BaseModel):
+    row: int
+    reason: str
+
+
+class ImportResult(BaseModel):
+    imported: int
+    skipped: int
+    errors: list[ImportRowError]
+    warning: str | None = None
