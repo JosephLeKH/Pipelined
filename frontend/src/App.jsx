@@ -4,6 +4,7 @@ import { lazy, Suspense } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 
 import { useAuth } from "./context/AuthContext";
+import CommandPalette from "./components/CommandPalette";
 
 const LandingPage = lazy(() => import("./pages/LandingPage"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
@@ -36,6 +37,7 @@ function ProtectedRoute({ children }) {
 function App() {
   return (
     <Suspense fallback={<LoadingSpinner />}>
+      <CommandPalette />
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
