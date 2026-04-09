@@ -87,3 +87,61 @@ US-082 | Global keyboard shortcuts with cheat sheet modal | PASSED | 2026-04-09
 - Modified frontend/src/components/DetailPanel.jsx: s shortcut focuses #stage-select, n shortcut opens/focuses notes
 - Modified frontend/src/pages/Dashboard.jsx: 'a' shortcut opens add modal, shortcutsEnabled prop passed to ApplicationList
 - Tests: 10 new tests (6 useHotkeys + 4 ShortcutHelp), all 260 tests pass, build clean
+
+---
+US-083 | Weekly application goals with streak tracker and progress ring | PASSED | 2026-04-09
+- Created frontend/src/components/GoalProgress.jsx: SVG circular progress ring (r=36, stroke-dasharray/offset), flame streak icon, celebratory toast on goal reached (goalReachedRef prevents repeats). Green ≥100%, blue >0%, gray 0%.
+- Modified frontend/src/pages/Dashboard.jsx: Added <GoalProgress /> above <StatsBar />
+- Modified frontend/src/pages/Settings.jsx: Added "Weekly Application Goal" number input (1-50) with PATCH /api/auth/me mutation
+- Modified backend/applications/service.py: Added _extract_date_str() helper to convert MongoDB datetime objects to ISO date strings for weekly stats calculation
+- Modified backend/tests/test_applications.py: Added 2 tests — test_stats_applied_this_week_counts_current_week_applications (POST + check ≥1), test_stats_applied_this_week_excludes_last_week_applications (direct DB insert 8 days ago + check ==0)
+- Tests: 3 new GoalProgress frontend tests, 2 new backend stats tests; 263 frontend / 208 backend pass, build clean
+- Commit: 11fc290
+
+---
+US-084 | Company logo enrichment via Clearbit favicon API | PASSED | 2026-04-09
+- Created frontend/src/components/CompanyLogo.jsx: <img> with Clearbit logo URL + letter-circle fallback on error; deterministic color from company name hash (8 muted Tailwind colors); loading='lazy'; dark mode support
+- Created frontend/src/components/CompanyLogo.test.jsx: 5 tests (img src, null domain fallback, onError fallback, correct letter, empty company name)
+- Modified frontend/src/lib/constants.js: Added CLEARBIT_LOGO_BASE_URL and COMPANY_LOGO_FALLBACK_COLORS constants
+- Modified frontend/src/components/ApplicationRow.jsx: Added <CompanyLogo size={24} /> before company name span; narrowed company span from w-40 to w-36
+- Modified frontend/src/components/KanbanCard.jsx: Added <CompanyLogo size={20} /> in flex div alongside company name
+- Modified frontend/src/components/DetailPanel.jsx: Added <CompanyLogo size={32} /> in PanelHeader next to role/company text
+- Modified backend/applications/service.py: Added _derive_company_domain() helper (urlparse netloc or company slug fallback); added company_domain to LIST_PROJECTION and doc dict in create()
+- Modified backend/applications/schemas.py: Added company_domain: str | None = None to ApplicationResponse
+- Tests: 5 new CompanyLogo frontend tests; 268 frontend / 63 application backend tests pass, build clean
+- Commit: 9903545
+
+---
+US-085 | Application follow-up reminders with due date tracking | PASSED | 2026-04-09
+- Modified backend/applications/schemas.py: Added follow_up_date to ValidSortField, ApplicationUpdate (strict=False for datetime coercion), ApplicationResponse, and StatsResponse (follow_ups_due: int = 0)
+- Modified backend/applications/service.py: Added follow_up_date to LIST_PROJECTION; updated update() to use model_fields_set pattern for $unset support; added follow_ups_due $facet branch in compute_stats()
+- Modified backend/auth/schemas.py: Added weekly_goal to UserResponse (default 5)
+- Modified backend/tests/test_applications.py: 4 new tests — set/clear follow_up_date via PATCH, follow_ups_due count in stats, follow_ups_due excludes archived
+- Created frontend/src/components/FollowUpBanner.jsx: Dismissable yellow banner when follow_ups_due > 0; singular/plural copy; View button sets follow_up_due=true URL param; dismiss hides permanently per-render
+- Created frontend/src/components/FollowUpBanner.test.jsx: 6 tests covering show/hide, singular form, onView, dismiss
+- Modified frontend/src/components/ApplicationRow.jsx: Bell icon + tooltip when follow_up_date is past
+- Modified frontend/src/components/KanbanCard.jsx: Yellow dot indicator for overdue follow-ups
+- Modified frontend/src/components/DetailPanel.jsx: FollowUpSection with date input, Clear button, overdue warning banner (AlertTriangle)
+- Modified frontend/src/pages/Dashboard.jsx: Added useApplicationStats() for follow_ups_due, FollowUpBanner component, handleViewFollowUps callback
+- Modified frontend/src/pages/Dashboard.test.jsx: Changed findByText assertion to use findBy without toBeInTheDocument (avoids race with extra stats render cycle)
+- Tests: 6 new FollowUpBanner + 4 new backend tests; 275 frontend / 67 backend pass, build clean
+- Commit: 899c7f2
+
+---
+US-086 | Networking contacts tracker linked to applications | PASSED | 2026-04-09
+- Created backend/contacts/__init__.py, schemas.py, service.py, router.py — full CRUD + link/unlink/ping
+- contacts/schemas.py: ContactCreate, ContactUpdate, ContactResponse (from_doc), LinkApplicationRequest; MAX constants
+- contacts/service.py: create, list_contacts (company/relationship/application_id filters), get, update, delete, link_application ($addToSet idempotent), unlink_application ($pull), ping (last_contacted_at = now)
+- contacts/router.py: 8 endpoints scoped to authenticated user; domain exceptions mapped to 404
+- database.py: contacts collection with two indexes (user_id+name, user_id+company)
+- main.py: contacts_router registered
+- Created frontend/src/api/contacts.js: thin Axios wrappers
+- Created frontend/src/hooks/useContacts.js: CONTACT_KEYS factory, 8 hooks (useContacts, useApplicationContacts, useContact, useCreateContact, useUpdateContact, useDeleteContact, useLinkContact, useUnlinkContact, usePingContact)
+- constants.js: STALE_CONTACT_DAYS=14, RELATIONSHIP_OPTIONS, RELATIONSHIP_COLORS
+- Created frontend/src/components/ContactCard.jsx: amber stale dot (>14 days), ping button (PhoneCall), unlink button, formatDistanceToNow relative time, RelationshipBadge
+- Created frontend/src/components/ContactForm.jsx: inline create form with name/company/role/email/relationship; creates then auto-links if applicationId provided
+- Created frontend/src/components/ContactLinkDropdown.jsx: search + link existing contacts; filters out already-linked contacts
+- DetailPanel.jsx: ContactsSection (below CalendarEventsList) with New/Link toggle buttons; renders ContactCard list + form/dropdown based on addMode state
+- Created backend/tests/test_contacts.py: 17 integration tests — CRUD, link/unlink (including idempotency), filters (company, relationship, application_id), ping
+- Tests: 17 new backend contacts tests pass | 274 frontend tests pass | Build: ✓
+- Commit: b12922c

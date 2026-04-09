@@ -1,7 +1,7 @@
 {
   "project": "Pipelined",
   "branchName": "ralph/pipelined-v4",
-  "description": "Pipelined v4 \u2014 Kanban board view, AI resume-job fit scoring, command palette, onboarding flow, keyboard shortcuts, application goals, company logos, follow-up reminders, contacts tracker, notification center, activity feed, and auto-save extension mode.",
+  "description": "Pipelined v4 — Kanban board view, AI resume-job fit scoring, command palette, onboarding flow, keyboard shortcuts, application goals, company logos, follow-up reminders, contacts tracker, notification center, activity feed, and auto-save extension mode.",
   "userStories": [
     {
       "id": "US-078",
@@ -10,11 +10,11 @@
       "acceptanceCriteria": [
         "Install @dnd-kit/core and @dnd-kit/sortable as dependencies (npm install @dnd-kit/core @dnd-kit/sortable)",
         "Create frontend/src/components/KanbanBoard.jsx: renders one column per stage from the user's default_stages (via useAuth hook), each column has a header with stage name + count badge",
-        "Create frontend/src/components/KanbanCard.jsx: a draggable card showing company name (bold), role_title, formatRelative(date_applied) from dateUtils, and a stale amber dot if applicable \u2014 card has rounded corners, subtle shadow, and dark mode support",
+        "Create frontend/src/components/KanbanCard.jsx: a draggable card showing company name (bold), role_title, formatRelative(date_applied) from dateUtils, and a stale amber dot if applicable — card has rounded corners, subtle shadow, and dark mode support",
         "KanbanBoard uses DndContext + SortableContext from @dnd-kit; dropping a card on a different column calls useUpdateApplication mutate({ current_stage: newStage })",
         "Each column scrolls vertically independently (max-height with overflow-y-auto), empty columns show a dashed placeholder 'No applications'",
-        "Dashboard.jsx adds a view toggle in the header: two icon buttons (list icon and grid/kanban icon) that switch between ApplicationList and KanbanBoard \u2014 persist the choice to localStorage key 'pipelined_view_mode' (default: 'list')",
-        "KanbanBoard respects all active filters from FilterBar (stage, company_type, remote_status, search query) \u2014 it receives the same filtered data that ApplicationList receives",
+        "Dashboard.jsx adds a view toggle in the header: two icon buttons (list icon and grid/kanban icon) that switch between ApplicationList and KanbanBoard — persist the choice to localStorage key 'pipelined_view_mode' (default: 'list')",
+        "KanbanBoard respects all active filters from FilterBar (stage, company_type, remote_status, search query) — it receives the same filtered data that ApplicationList receives",
         "Clicking a KanbanCard sets the URL param ?selected={id} to open DetailPanel, same as clicking a list row",
         "On mobile (< md breakpoint), KanbanBoard renders columns as horizontal scrollable tabs instead of side-by-side columns",
         "Vitest test for KanbanBoard: renders correct number of columns matching user's default_stages, renders cards in correct columns by current_stage",
@@ -34,17 +34,17 @@
         "Backend: add pdfplumber to requirements.txt (pip package for PDF text extraction)",
         "Backend: POST /api/auth/resume accepts multipart/form-data with a PDF file (max 2MB), extracts text via pdfplumber, stores it as resume_text (string) on the user document, returns 200 { data: { chars_extracted: int } }",
         "Backend: DELETE /api/auth/resume clears resume_text from the user document, returns 204",
-        "Backend: GET /api/auth/me includes has_resume: bool (true if resume_text is non-empty) in the response \u2014 do NOT return the full resume_text in the response for bandwidth",
+        "Backend: GET /api/auth/me includes has_resume: bool (true if resume_text is non-empty) in the response — do NOT return the full resume_text in the response for bandwidth",
         "Backend: create backend/parsing/fit_scorer.py with async function score_fit(resume_text: str, job_description: str) -> dict that calls OpenAI GPT-4o mini with a prompt returning JSON: { fit_score: int (0-100), matched_skills: list[str] (max 8), missing_skills: list[str] (max 5), summary: str (one sentence) }",
         "fit_scorer.py uses temperature=0, max_tokens=300, timeout=8 seconds; on any error returns { fit_score: None, matched_skills: [], missing_skills: [], summary: None }",
         "Backend: in applications/service.py create_application(), after successful insert, if the user has resume_text and the application has source='extension' with page_text OR has role_title+company, fire-and-forget an asyncio.create_task() that calls score_fit() and updates the application document with ai_analysis: { fit_score, matched_skills, missing_skills, summary, scored_at }",
         "Backend: GET /api/applications/{id} response includes ai_analysis field (null if not scored)",
         "Backend: GET /api/applications list response includes ai_analysis.fit_score in the projection (just the score number for list view, not full analysis)",
-        "Frontend: create frontend/src/components/FitBadge.jsx: a small colored pill showing fit_score \u2014 green (80-100), yellow (50-79), orange (30-49), red (0-29), gray if null/pending; shows 'AI' label + score number",
+        "Frontend: create frontend/src/components/FitBadge.jsx: a small colored pill showing fit_score — green (80-100), yellow (50-79), orange (30-49), red (0-29), gray if null/pending; shows 'AI' label + score number",
         "Frontend: ApplicationList.jsx renders FitBadge in each row after the stage column (only if score is not null)",
         "Frontend: KanbanCard.jsx (from US-078) renders FitBadge in bottom-right corner of card if score exists",
         "Frontend: DetailPanel.jsx shows a 'Resume Fit' section when ai_analysis is present: fit_score as a large number with color, matched_skills as green chips, missing_skills as red chips, summary text below",
-        "Frontend: Settings page (or a new section in the NavBar user menu) has 'Upload Resume' button \u2014 file input accepting .pdf, calls POST /api/auth/resume, shows success/error toast, and a 'Remove Resume' button if has_resume is true",
+        "Frontend: Settings page (or a new section in the NavBar user menu) has 'Upload Resume' button — file input accepting .pdf, calls POST /api/auth/resume, shows success/error toast, and a 'Remove Resume' button if has_resume is true",
         "Backend test: test_fit_scorer.py mocks OpenAI and verifies score_fit returns correct shape; test error fallback returns nulls",
         "Backend test: test_auth.py adds test for POST /api/auth/resume with a valid PDF fixture, verifies has_resume=true in GET /me",
         "Vitest test for FitBadge: renders correct color class for each score range, renders gray for null",
@@ -59,13 +59,13 @@
     {
       "id": "US-080",
       "title": "Command palette with Cmd+K global search and actions",
-      "description": "As a power user, I want to press Cmd+K (or Ctrl+K) anywhere in the app to open a search/action palette where I can instantly find applications, navigate to pages, or trigger actions \u2014 like VS Code, Linear, and Notion.",
+      "description": "As a power user, I want to press Cmd+K (or Ctrl+K) anywhere in the app to open a search/action palette where I can instantly find applications, navigate to pages, or trigger actions — like VS Code, Linear, and Notion.",
       "acceptanceCriteria": [
         "Create frontend/src/components/CommandPalette.jsx: a modal overlay that opens on Cmd+K (Mac) / Ctrl+K (Windows/Linux), with a search input at the top and a scrollable results list below",
         "The palette has three sections separated by headers: 'Applications' (search results), 'Navigation' (page links), 'Actions' (quick actions)",
         "Typing in the search input filters applications by company/role name (client-side filter against cached React Query data from useApplications, no extra API call for first 100 apps; if >100 apps, debounce 200ms and call the API with q= param)",
-        "Application results show: company name (bold), role title, stage badge \u2014 clicking navigates to /dashboard?selected={id}",
-        "Navigation items (always shown when search is empty): 'Dashboard' \u2192 /dashboard, 'Calendar' \u2192 /calendar, 'Analytics' \u2192 /analytics, 'Job Board' \u2192 /jobs, 'Settings' \u2192 /settings",
+        "Application results show: company name (bold), role title, stage badge — clicking navigates to /dashboard?selected={id}",
+        "Navigation items (always shown when search is empty): 'Dashboard' → /dashboard, 'Calendar' → /calendar, 'Analytics' → /analytics, 'Job Board' → /jobs, 'Settings' → /settings",
         "Action items (always shown when search is empty): 'Add Application' (opens ManualAddForm), 'Export CSV' (triggers export), 'Toggle Dark Mode' (calls setTheme from ThemeContext)",
         "Arrow keys (up/down) navigate the result list with visual highlight; Enter activates the highlighted item; Escape closes the palette",
         "The palette renders a semi-transparent backdrop that closes on click outside",
@@ -78,7 +78,7 @@
       ],
       "priority": 3,
       "passes": true,
-      "notes": "Do NOT add a third-party command palette library (cmdk, kbar) \u2014 implement it as a focused component to keep bundle size small. The palette is a thin wrapper: input + filtered list + keyboard navigation. Total should be under 200 lines."
+      "notes": "Do NOT add a third-party command palette library (cmdk, kbar) — implement it as a focused component to keep bundle size small. The palette is a thin wrapper: input + filtered list + keyboard navigation. Total should be under 200 lines."
     },
     {
       "id": "US-081",
@@ -86,7 +86,7 @@
       "description": "As a first-time user, when I sign up and land on an empty dashboard, I have no idea what to do. I need guided onboarding and helpful empty states that teach me how to use Pipelined and encourage me to add my first application.",
       "acceptanceCriteria": [
         "Create frontend/src/components/OnboardingChecklist.jsx: a dismissable card shown at the top of Dashboard when the user has 0 applications AND localStorage key 'pipelined_onboarding_dismissed' is not 'true'",
-        "The checklist shows 3 steps with checkboxes: (1) 'Install the Chrome extension' \u2014 links to chrome://extensions or a placeholder URL, checked if user has any source='extension' applications, (2) 'Add your first application' \u2014 button that opens ManualAddForm, checked if total applications > 0, (3) 'Customize your pipeline stages' \u2014 links to /settings, checked if user has modified default_stages (i.e., default_stages differs from the system default list)",
+        "The checklist shows 3 steps with checkboxes: (1) 'Install the Chrome extension' — links to chrome://extensions or a placeholder URL, checked if user has any source='extension' applications, (2) 'Add your first application' — button that opens ManualAddForm, checked if total applications > 0, (3) 'Customize your pipeline stages' — links to /settings, checked if user has modified default_stages (i.e., default_stages differs from the system default list)",
         "Each unchecked step has a brief description (one sentence) explaining why it matters",
         "A 'Dismiss' text button in the top-right of the checklist sets localStorage and hides it permanently",
         "When all 3 steps are checked, the checklist auto-hides with a confetti-like success message ('You are all set!') and auto-dismisses after 3 seconds",
@@ -102,19 +102,19 @@
       ],
       "priority": 4,
       "passes": true,
-      "notes": "First-session retention is everything for a new app. An empty dashboard is a dead end. The onboarding checklist is inspired by Linear's setup flow. The EmptyState component is reusable across every page. Do not over-design \u2014 keep it clean, minimal, and actionable."
+      "notes": "First-session retention is everything for a new app. An empty dashboard is a dead end. The onboarding checklist is inspired by Linear's setup flow. The EmptyState component is reusable across every page. Do not over-design — keep it clean, minimal, and actionable."
     },
     {
       "id": "US-082",
       "title": "Global keyboard shortcuts with cheat sheet modal",
       "description": "As a keyboard-driven user (most CS students), I want vim-like shortcuts throughout the app so I can navigate and manage applications without touching my mouse.",
       "acceptanceCriteria": [
-        "Create frontend/src/hooks/useHotkeys.js: a custom hook that registers keyboard shortcuts \u2014 useHotkeys(key: string, callback: () => void, options?: { enabled?: boolean }) \u2014 listens on document keydown, ignores events when focus is in an input/textarea/select or contentEditable element",
+        "Create frontend/src/hooks/useHotkeys.js: a custom hook that registers keyboard shortcuts — useHotkeys(key: string, callback: () => void, options?: { enabled?: boolean }) — listens on document keydown, ignores events when focus is in an input/textarea/select or contentEditable element",
         "Create frontend/src/lib/shortcuts.js: exports a SHORTCUTS constant array of { key, label, description, scope } objects for all shortcuts (used by both the hook registrations and the cheat sheet)",
         "Dashboard shortcuts (active when on /dashboard): 'j' moves selection down one row in ApplicationList, 'k' moves selection up one row, 'Enter' opens DetailPanel for selected row, 'a' opens ManualAddForm, 'x' toggles selection checkbox on current row, 'Escape' closes DetailPanel or deselects",
-        "Global shortcuts (active on all pages): 'g then d' (chord) navigates to /dashboard, 'g then c' to /calendar, 'g then a' to /analytics, 'g then j' to /jobs, '?' opens the keyboard shortcuts cheat sheet modal, 'Cmd+K' or 'Ctrl+K' opens CommandPalette (from US-080 \u2014 if not yet built, wire the shortcut but no-op)",
+        "Global shortcuts (active on all pages): 'g then d' (chord) navigates to /dashboard, 'g then c' to /calendar, 'g then a' to /analytics, 'g then j' to /jobs, '?' opens the keyboard shortcuts cheat sheet modal, 'Cmd+K' or 'Ctrl+K' opens CommandPalette (from US-080 — if not yet built, wire the shortcut but no-op)",
         "DetailPanel shortcuts (active when DetailPanel is open): 's' focuses the stage dropdown, 'n' focuses the notes textarea, 'Escape' closes the panel",
-        "Create frontend/src/components/ShortcutHelp.jsx: a modal showing all shortcuts organized by scope (Global, Dashboard, Detail Panel) in a clean two-column layout (key on left, description on right) \u2014 opens when '?' is pressed",
+        "Create frontend/src/components/ShortcutHelp.jsx: a modal showing all shortcuts organized by scope (Global, Dashboard, Detail Panel) in a clean two-column layout (key on left, description on right) — opens when '?' is pressed",
         "Keyboard shortcut hints shown in tooltips on major action buttons (e.g., ManualAddForm trigger button tooltip shows 'Add Application (A)')",
         "All shortcuts are disabled when any modal, form, or command palette is open (check for open overlay state)",
         "Supports dark mode",
@@ -125,7 +125,7 @@
       ],
       "priority": 5,
       "passes": true,
-      "notes": "Chord shortcuts ('g then d') use a 500ms timeout window \u2014 press 'g', then within 500ms press 'd'. If timeout expires, reset. This is the vim/Gmail pattern. The useHotkeys hook should be lightweight (<50 lines) \u2014 do NOT use a third-party hotkey library."
+      "notes": "Chord shortcuts ('g then d') use a 500ms timeout window — press 'g', then within 500ms press 'd'. If timeout expires, reset. This is the vim/Gmail pattern. The useHotkeys hook should be lightweight (<50 lines) — do NOT use a third-party hotkey library."
     },
     {
       "id": "US-083",
@@ -149,8 +149,8 @@
         "npm run build passes"
       ],
       "priority": 6,
-      "passes": false,
-      "notes": "The SVG progress ring is a simple circle with stroke-dasharray/stroke-dashoffset \u2014 no charting library needed, about 20 lines of SVG. Streak calculation should handle edge cases: first week of use (streak = 0 until a full week completes), weeks with 0 applications break the streak. ISO weeks start on Monday."
+      "passes": true,
+      "notes": "The SVG progress ring is a simple circle with stroke-dasharray/stroke-dashoffset — no charting library needed, about 20 lines of SVG. Streak calculation should handle edge cases: first week of use (streak = 0 until a full week completes), weeks with 0 applications break the streak. ISO weeks start on Monday."
     },
     {
       "id": "US-084",
@@ -158,7 +158,7 @@
       "description": "As a user, I want to see company logos next to my applications so the dashboard and Kanban board feel polished and professional instead of text-only walls.",
       "acceptanceCriteria": [
         "Backend: in applications/service.py, after creating an application, if source_url is present, extract the domain (urlparse(source_url).netloc, strip 'www.' prefix) and store it as company_domain on the application document",
-        "Backend: if source_url is absent but company is present, derive a best-guess domain: company.lower().replace(' ', '').replace(',', '').replace('.', '') + '.com' \u2014 store as company_domain (heuristic, not guaranteed correct)",
+        "Backend: if source_url is absent but company is present, derive a best-guess domain: company.lower().replace(' ', '').replace(',', '').replace('.', '') + '.com' — store as company_domain (heuristic, not guaranteed correct)",
         "Backend: GET /api/applications list projection includes company_domain field",
         "Frontend: create frontend/src/components/CompanyLogo.jsx: accepts company_domain (string | null) and company (string) props; renders an <img> tag with src='https://logo.clearbit.com/{company_domain}' (size 32x32), with an onError fallback that hides the image and shows a colored circle with the first letter of the company name (like Gmail avatar fallbacks)",
         "The fallback letter circle uses a deterministic color based on company name hash (pick from 8 muted colors) so the same company always gets the same color",
@@ -172,8 +172,8 @@
         "npm run build passes"
       ],
       "priority": 7,
-      "passes": false,
-      "notes": "Clearbit Logo API (logo.clearbit.com) is free, requires no API key, and returns company logos by domain. It's used by Notion, Linear, and most SaaS apps. The letter fallback ensures every application has a visual anchor even when the logo fails. Do NOT cache logos on the backend \u2014 let the browser cache handle it (Clearbit sets long Cache-Control headers)."
+      "passes": true,
+      "notes": "Clearbit Logo API (logo.clearbit.com) is free, requires no API key, and returns company logos by domain. It's used by Notion, Linear, and most SaaS apps. The letter fallback ensures every application has a visual anchor even when the logo fails. Do NOT cache logos on the backend — let the browser cache handle it (Clearbit sets long Cache-Control headers)."
     },
     {
       "id": "US-085",
@@ -181,15 +181,15 @@
       "description": "As a job seeker, following up on applications is the #1 thing I forget to do. I want to set a 'follow up by' date on any application, and see overdue follow-ups prominently on my dashboard.",
       "acceptanceCriteria": [
         "Backend: application document schema adds follow_up_date: datetime | None = None",
-        "Backend: PATCH /api/applications/{id} accepts { follow_up_date: str (ISO date) | null } \u2014 null clears the reminder",
+        "Backend: PATCH /api/applications/{id} accepts { follow_up_date: str (ISO date) | null } — null clears the reminder",
         "Backend: GET /api/applications list projection includes follow_up_date",
         "Backend: GET /api/applications/stats response adds follow_ups_due: int (count of non-archived applications where follow_up_date <= today and follow_up_date is not null)",
         "Frontend: DetailPanel.jsx adds a 'Follow up' section below the stage selector: a date input (type='date') bound to follow_up_date, with a 'Clear' button to remove it; saved via useUpdateApplication on change (debounced 500ms)",
         "Frontend: DetailPanel.jsx shows a yellow warning banner 'Follow-up overdue by {N} days' when follow_up_date is in the past",
-        "Frontend: create frontend/src/components/FollowUpBanner.jsx: a dismissable banner shown at the top of Dashboard (below OnboardingChecklist if present) when follow_ups_due > 0 \u2014 shows 'You have {N} follow-ups due' with a 'View' button that filters the application list to only show overdue follow-ups",
+        "Frontend: create frontend/src/components/FollowUpBanner.jsx: a dismissable banner shown at the top of Dashboard (below OnboardingChecklist if present) when follow_ups_due > 0 — shows 'You have {N} follow-ups due' with a 'View' button that filters the application list to only show overdue follow-ups",
         "ApplicationList.jsx: when follow_up_date is today or past, show a small bell icon in the row (between stage and date columns) with a tooltip 'Follow-up due {date}'",
         "KanbanCard.jsx: show a small bell dot indicator on cards with overdue follow-ups",
-        "Backend: add follow_up_date as a sortable field \u2014 GET /api/applications?sort_by=follow_up_date sorts by soonest follow-up first (nulls last)",
+        "Backend: add follow_up_date as a sortable field — GET /api/applications?sort_by=follow_up_date sorts by soonest follow-up first (nulls last)",
         "Backend test: test_applications.py adds test for PATCH with follow_up_date, verifies follow_ups_due count in stats, verifies sort by follow_up_date",
         "Vitest test for FollowUpBanner: renders when follow_ups_due > 0, hidden when 0",
         "All existing tests pass",
@@ -197,7 +197,7 @@
         "npm run build passes"
       ],
       "priority": 8,
-      "passes": false,
+      "passes": true,
       "notes": "Follow-up reminders are a simple datetime field but high-impact for user outcomes. The 'follow-ups due' count in stats makes the dashboard feel alive and action-oriented. Can be extended later to include email/push notification when a follow-up is due."
     },
     {
@@ -208,8 +208,8 @@
         "Backend: create backend/contacts/ module with router.py, service.py, schemas.py following the standard split",
         "Backend: contacts collection schema: { _id, user_id, name (required), company (optional), role (optional, their role), email (optional), linkedin_url (optional), notes (optional), relationship (enum: recruiter, referral, mentor, peer, hiring_manager, other), linked_applications: [ObjectId] (array of application _ids), last_contacted_at (datetime, optional), created_at, updated_at }",
         "Backend: ensure indexes on contacts: (user_id, name) for lookup, (user_id, company) for company grouping",
-        "Backend: POST /api/contacts creates a contact (validate name required, relationship defaults to 'other') \u2192 201",
-        "Backend: GET /api/contacts?company=X&relationship=Y lists user's contacts with optional filters, sorted by last_contacted_at desc (nulls last) \u2014 include pagination (cursor-based or limit/offset since contact counts are typically low)",
+        "Backend: POST /api/contacts creates a contact (validate name required, relationship defaults to 'other') → 201",
+        "Backend: GET /api/contacts?company=X&relationship=Y lists user's contacts with optional filters, sorted by last_contacted_at desc (nulls last) — include pagination (cursor-based or limit/offset since contact counts are typically low)",
         "Backend: GET /api/contacts/{id} returns single contact",
         "Backend: PATCH /api/contacts/{id} updates fields (partial update), returns 200",
         "Backend: DELETE /api/contacts/{id} deletes contact, returns 204",
@@ -227,8 +227,8 @@
         "npm run build passes"
       ],
       "priority": 9,
-      "passes": false,
-      "notes": "This creates a new /contacts module following the exact router/service/schema pattern. Keep it lightweight \u2014 this is a CRM-lite, not Salesforce. The key UX is the 'Pinged' button (one-click to log a touchpoint) and the stale indicator. linked_applications is a simple array of ObjectIds, not a separate junction collection."
+      "passes": true,
+      "notes": "This creates a new /contacts module following the exact router/service/schema pattern. Keep it lightweight — this is a CRM-lite, not Salesforce. The key UX is the 'Pinged' button (one-click to log a touchpoint) and the stale indicator. linked_applications is a simple array of ObjectIds, not a separate junction collection."
     },
     {
       "id": "US-087",
@@ -255,7 +255,7 @@
       ],
       "priority": 10,
       "passes": false,
-      "notes": "This creates the foundation for all future notification channels (email, push). The hourly APScheduler job generates notifications server-side; the frontend polls unread count every 60s (cheap query on indexed field). Notifications auto-expire \u2014 add a TTL index on created_at (30 days) so old notifications are cleaned up by MongoDB."
+      "notes": "This creates the foundation for all future notification channels (email, push). The hourly APScheduler job generates notifications server-side; the frontend polls unread count every 60s (cheap query on indexed field). Notifications auto-expire — add a TTL index on created_at (30 days) so old notifications are cleaned up by MongoDB."
     },
     {
       "id": "US-088",
@@ -281,7 +281,7 @@
       ],
       "priority": 11,
       "passes": false,
-      "notes": "The $unionWith aggregation is the cleanest approach \u2014 no new collection needed, data is always fresh from source. The activity feed is read-only and purely derived. For stage_history, unwind the array to get individual entries. The timeline UI is a simple vertical line with positioned dots \u2014 no charting library needed, just Tailwind borders and positioning."
+      "notes": "The $unionWith aggregation is the cleanest approach — no new collection needed, data is always fresh from source. The activity feed is read-only and purely derived. For stage_history, unwind the array to get individual entries. The timeline UI is a simple vertical line with positioned dots — no charting library needed, just Tailwind borders and positioning."
     },
     {
       "id": "US-089",
@@ -289,9 +289,9 @@
       "description": "As a power user who browses 50+ job pages per session, clicking 'Save' on every page is tedious. I want an auto-save toggle that automatically saves applications when I visit a job page, with a confirmation banner instead of a save button.",
       "acceptanceCriteria": [
         "Extension: add an 'auto_save' setting to chrome.storage.local (default: false)",
-        "Extension: popup.js adds an 'Auto-save' toggle switch in the settings section of the popup (below the recent saves list) \u2014 toggling it updates chrome.storage.local.auto_save",
+        "Extension: popup.js adds an 'Auto-save' toggle switch in the settings section of the popup (below the recent saves list) — toggling it updates chrome.storage.local.auto_save",
         "Extension: content.js reads auto_save from chrome.storage.local on page load; if true AND isJobPage() AND extraction produced at least role_title or company_name, automatically trigger the save after a 2-second debounce (to allow page to fully render)",
-        "Extension: when auto-save triggers, the banner shows 'Saved to Pipelined' (green check icon) instead of the 'Save to Pipelined' button \u2014 auto-dismisses after 3 seconds",
+        "Extension: when auto-save triggers, the banner shows 'Saved to Pipelined' (green check icon) instead of the 'Save to Pipelined' button — auto-dismisses after 3 seconds",
         "Extension: if auto-save results in a duplicate, the banner shows 'Already in your pipeline' (same as manual duplicate) and auto-dismisses after 3 seconds",
         "Extension: if auto-save fails (network error, not authenticated), the banner shows 'Auto-save failed' with a manual 'Retry' button (does not auto-dismiss on error)",
         "Extension: auto-save does NOT fire if the user has already manually saved on this page in this session (track via a Set of URLs in content.js module scope to prevent double-saves when navigating back)",
@@ -304,40 +304,40 @@
       ],
       "priority": 12,
       "passes": false,
-      "notes": "The 2-second debounce is important \u2014 some job boards (LinkedIn, Workday) update the DOM after initial load. The URL-based dedup Set prevents re-saving when the user navigates back to an already-saved page. Auto-save is opt-in and off by default to avoid surprising new users."
+      "notes": "The 2-second debounce is important — some job boards (LinkedIn, Workday) update the DOM after initial load. The URL-based dedup Set prevents re-saving when the user navigates back to an already-saved page. Auto-save is opt-in and off by default to avoid surprising new users."
     },
     {
       "id": "US-090",
       "title": "Extension LinkedIn profile contact save",
       "description": "As a user networking on LinkedIn, when I visit someone's LinkedIn profile, I want the extension to offer saving them as a contact in Pipelined, linked to applications at their company.",
       "acceptanceCriteria": [
-        "Extension: create extension/content/boards/linkedin_profile.js \u2014 a new board module with BOARD_ID='linkedin_profile' that matches LinkedIn profile pages (URL pattern: /linkedin\\.com\\/in\\//)",
+        "Extension: create extension/content/boards/linkedin_profile.js — a new board module with BOARD_ID='linkedin_profile' that matches LinkedIn profile pages (URL pattern: /linkedin\\.com\\/in\\//)",
         "isJobPage() returns true only if the URL matches a profile page (not /jobs/, /feed/, etc.) AND a profile name element is found in the DOM",
-        "extractFields() returns a DIFFERENT shape for profiles: { type: 'contact', name: string, headline: string (role/title), company: string (current company from experience), linkedin_url: window.location.href } \u2014 extract from profile DOM selectors (.text-heading-xlarge for name, .text-body-medium for headline)",
+        "extractFields() returns a DIFFERENT shape for profiles: { type: 'contact', name: string, headline: string (role/title), company: string (current company from experience), linkedin_url: window.location.href } — extract from profile DOM selectors (.text-heading-xlarge for name, .text-body-medium for headline)",
         "Extension: content.js detects the 'contact' type return and renders a DIFFERENT banner: 'Save {name} as a contact?' with a 'Save Contact' button (blue) instead of 'Save to Pipelined'",
-        "Extension: service worker handles a new message type SAVE_CONTACT: POST /api/contacts with { name, role: headline, company, linkedin_url, relationship: 'other' } \u2014 requires contacts API from US-086",
+        "Extension: service worker handles a new message type SAVE_CONTACT: POST /api/contacts with { name, role: headline, company, linkedin_url, relationship: 'other' } — requires contacts API from US-086",
         "If the contact already exists (409 from backend or client-side check), banner shows 'Already in your contacts'",
         "After saving, the banner shows the contact name with a check icon, auto-dismisses after 2 seconds",
         "Extension: manifest.json content_scripts already includes linkedin.com/*, so no manifest change needed (profile pages are under the same origin)",
-        "Extension: content.js BOARDS array includes linkedin_profile AFTER the linkedin job parser, so job pages are matched first (job pages take priority over profile pages on URLs that could match both \u2014 but /in/ URLs won't match the job parser's /jobs/ pattern)",
+        "Extension: content.js BOARDS array includes linkedin_profile AFTER the linkedin job parser, so job pages are matched first (job pages take priority over profile pages on URLs that could match both — but /in/ URLs won't match the job parser's /jobs/ pattern)",
         "Extension test: test_linkedin_profile.js adds JSDOM fixture test for profile extraction (name, headline, company from DOM)",
         "All existing extension tests still pass",
         "npm test passes in /extension"
       ],
       "priority": 13,
       "passes": false,
-      "notes": "This depends on US-086 (contacts API) being implemented first. If US-086 is not done, the service worker save will fail gracefully with a 'Contacts feature coming soon' message. LinkedIn profile DOM changes frequently \u2014 use a fallback chain of 3+ selectors like the job parser does."
+      "notes": "This depends on US-086 (contacts API) being implemented first. If US-086 is not done, the service worker save will fail gracefully with a 'Contacts feature coming soon' message. LinkedIn profile DOM changes frequently — use a fallback chain of 3+ selectors like the job parser does."
     },
     {
       "id": "US-091",
       "title": "Application duplicate merge with conflict resolution",
       "description": "As a user who applies to the same company through multiple channels (extension + manual + CSV import), I sometimes end up with near-duplicate applications that differ slightly in fields. I want to merge two applications into one, choosing which fields to keep from each.",
       "acceptanceCriteria": [
-        "Backend: POST /api/applications/merge accepts { source_id: str, target_id: str } \u2014 merges source into target: for each field, keeps the target's value unless it's null/empty, in which case use source's value; stage_history arrays are concatenated and sorted by timestamp; calendar_events linked to source are re-linked to target; source application is then deleted",
+        "Backend: POST /api/applications/merge accepts { source_id: str, target_id: str } — merges source into target: for each field, keeps the target's value unless it's null/empty, in which case use source's value; stage_history arrays are concatenated and sorted by timestamp; calendar_events linked to source are re-linked to target; source application is then deleted",
         "Backend: the merge endpoint returns the updated target application (200)",
         "Backend: merge verifies both applications belong to the requesting user_id (404 if either not found)",
-        "Backend: merge is transactional (Motor session) \u2014 if any step fails, the entire merge rolls back",
-        "Frontend: ApplicationList.jsx adds a 'Merge' option in the bulk action bar when exactly 2 applications are selected \u2014 button is hidden when 0, 1, or 3+ selected",
+        "Backend: merge is transactional (Motor session) — if any step fails, the entire merge rolls back",
+        "Frontend: ApplicationList.jsx adds a 'Merge' option in the bulk action bar when exactly 2 applications are selected — button is hidden when 0, 1, or 3+ selected",
         "Clicking 'Merge' opens a frontend/src/components/MergeDialog.jsx modal: shows both applications side-by-side, for each field (company, role, stage, location, compensation, notes, tags) shows both values with radio buttons to pick which to keep (pre-selects the non-null or more recently updated value)",
         "The merge dialog shows a 'Preview' of the resulting merged application at the bottom before confirming",
         "Confirm button calls POST /api/applications/merge with the source_id being the application whose fields are mostly NOT selected, target_id being the one kept",
@@ -350,7 +350,7 @@
       ],
       "priority": 14,
       "passes": false,
-      "notes": "Duplicate applications are inevitable with multiple input channels (extension, manual, CSV import). The merge flow is the correct solution \u2014 not just deleting one, because each may have unique notes, tags, stage history, or linked events. The transactional merge prevents data loss. This is a power-user feature but critical for data hygiene."
+      "notes": "Duplicate applications are inevitable with multiple input channels (extension, manual, CSV import). The merge flow is the correct solution — not just deleting one, because each may have unique notes, tags, stage history, or linked events. The transactional merge prevents data loss. This is a power-user feature but critical for data hygiene."
     },
     {
       "id": "US-092",
@@ -358,13 +358,13 @@
       "description": "As a user browsing the job board, I want to save a search query (e.g., 'SWE intern remote') and be notified when new listings match my saved criteria, so I don't have to manually re-check the board every day.",
       "acceptanceCriteria": [
         "Backend: create a saved_searches collection: { _id, user_id, name (string, user-chosen label), query (string), filters: { role_type, experience_level, remote_status, company_type, min_salary } (all optional), last_checked_at (datetime), new_matches_count (int, default 0), created_at }",
-        "Backend: POST /api/saved-searches creates a saved search \u2192 201; max 10 per user (return 409 if limit reached)",
+        "Backend: POST /api/saved-searches creates a saved search → 201; max 10 per user (return 409 if limit reached)",
         "Backend: GET /api/saved-searches lists user's saved searches",
-        "Backend: DELETE /api/saved-searches/{id} deletes a saved search \u2192 204",
+        "Backend: DELETE /api/saved-searches/{id} deletes a saved search → 204",
         "Backend: GET /api/saved-searches/{id}/results runs the saved search's query+filters against job_listings and returns results (same format as GET /api/jobs), also resets new_matches_count to 0 and updates last_checked_at",
         "Backend: in the GitHub sync job (after new listings are inserted), for each user's saved searches, count how many new listings (ingested_at > saved_search.last_checked_at) match the search criteria, and increment new_matches_count",
         "Backend: the notification system (US-087, if available) creates a notification when new_matches_count > 0 after a sync: '{N} new jobs match your saved search \"{name}\"'",
-        "Frontend: JobBoard.jsx adds a 'Save this search' button next to the search/filter bar (visible when any search query or filter is active) \u2014 opens a small popover with a name input and 'Save' button",
+        "Frontend: JobBoard.jsx adds a 'Save this search' button next to the search/filter bar (visible when any search query or filter is active) — opens a small popover with a name input and 'Save' button",
         "Frontend: JobBoard.jsx shows a 'Saved Searches' sidebar section (or tab) listing saved searches with name, filter summary, and new_matches_count badge (blue pill if > 0)",
         "Clicking a saved search applies its query and filters to the job board",
         "Frontend: create frontend/src/hooks/useSavedSearches.js with CRUD hooks following existing pattern",
