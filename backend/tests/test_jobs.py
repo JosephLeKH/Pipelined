@@ -240,3 +240,28 @@ async def test_get_job_returns_404_for_invalid_id(client):
 
     # Assert
     assert response.status_code == 404
+
+
+async def test_list_jobs_filters_by_salary_range(client):
+    """salary_min and salary_max should filter by salary_min_value field."""
+    # Arrange — one low-salary, one high-salary listing with distinct apply_urls
+    await _insert_listing({"salary_min_value": 80_000, "apply_url": "https://lowsal.example.com/jobs/a"})
+    await _insert_listing({"salary_min_value": 160_000, "apply_url": "https://highsal.example.com/jobs/a"})
+
+    # Act — salary_min=120000 should include only high-salary listing
+    resp_min = await client.get("/api/jobs?salary_min=120000")
+    # Act — salary_max=100000 should include only low-salary listing
+    resp_max = await client.get("/api/jobs?salary_max=100000")
+
+    # Assert
+    assert resp_min.status_code == 200
+    assert resp_max.status_code == 200
+    # No listing in resp_min should have salary_min_value below 120000
+    # (we can check apply_url since we control the inserted docs)
+    min_urls = [j.get("apply_url") for j in resp_min.json()["data"]]
+    assert "https://lowsal.example.com/jobs/a" not in min_urls
+    assert "https://highsal.example.com/jobs/a" in min_urls
+
+    max_urls = [j.get("apply_url") for j in resp_max.json()["data"]]
+    assert "https://highsal.example.com/jobs/a" not in max_urls
+    assert "https://lowsal.example.com/jobs/a" in max_urls

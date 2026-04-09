@@ -59,6 +59,10 @@ export const PREP_NOTES_DEBOUNCE_MS = 500;
 
 export const JOBS_STALE_TIME_MS = 60_000;
 
+export const SALARY_FILTER_MIN = 0;
+export const SALARY_FILTER_MAX = 500_000;
+export const SALARY_FILTER_STEP = 10_000;
+
 export const BULK_MAX_IDS = 100;
 
 export const EVENT_TYPE_OPTIONS = [

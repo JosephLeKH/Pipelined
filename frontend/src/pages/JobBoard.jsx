@@ -12,14 +12,9 @@ import SearchIcon from "lucide-react/dist/esm/icons/search";
 
 import ApiErrorMessage from "../components/ApiErrorMessage";
 import JobCard from "../components/JobCard";
+import { JobFilters } from "../components/JobFilters";
 import JobRow from "../components/JobRow";
 import { useJobs } from "../hooks/useJobs";
-import {
-  ROLE_TYPE_OPTIONS,
-  EXPERIENCE_LEVEL_OPTIONS,
-  REMOTE_STATUS_OPTIONS,
-  COMPANY_TYPE_OPTIONS,
-} from "../lib/constants";
 
 const DEFAULT_VIEW = "grid";
 const ROW_HEIGHT = 72;
@@ -68,66 +63,6 @@ function JobSearchInput() {
   );
 }
 
-function SelectFilter({ label, paramKey, options }) {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const value = searchParams.get(paramKey) ?? "";
-
-  const handleChange = useCallback(
-    (e) => {
-      const next = new URLSearchParams(searchParams);
-      if (e.target.value) {
-        next.set(paramKey, e.target.value);
-      } else {
-        next.delete(paramKey);
-      }
-      next.set("page", "1");
-      setSearchParams(next, { replace: true });
-    },
-    [searchParams, setSearchParams, paramKey]
-  );
-
-  return (
-    <label className="flex flex-col gap-1 text-xs font-medium uppercase text-gray-500 dark:text-gray-400">
-      {label}
-      <select
-        value={value}
-        onChange={handleChange}
-        className="mt-0.5 rounded border border-gray-300 px-2 py-1.5 text-sm font-normal capitalize text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
-        aria-label={label}
-      >
-        <option value="">Any</option>
-        {options.map((opt) => (
-          <option key={opt} value={opt}>
-            {opt.replace(/_/g, " ")}
-          </option>
-        ))}
-      </select>
-    </label>
-  );
-}
-
-function JobFilters() {
-  return (
-    <div className="flex flex-wrap gap-4 rounded-lg bg-white p-4 shadow-sm dark:bg-gray-800">
-      <SelectFilter label="Role Type" paramKey="role_type" options={ROLE_TYPE_OPTIONS} />
-      <SelectFilter
-        label="Experience"
-        paramKey="experience_level"
-        options={EXPERIENCE_LEVEL_OPTIONS}
-      />
-      <SelectFilter
-        label="Remote"
-        paramKey="remote_status"
-        options={REMOTE_STATUS_OPTIONS}
-      />
-      <SelectFilter
-        label="Company Type"
-        paramKey="company_type"
-        options={COMPANY_TYPE_OPTIONS}
-      />
-    </div>
-  );
-}
 
 function ViewToggle({ view, onToggle }) {
   return (
@@ -216,6 +151,8 @@ function JobBoard() {
   const experienceLevel = searchParams.get("experience_level") ?? undefined;
   const remoteStatus = searchParams.get("remote_status") ?? undefined;
   const companyType = searchParams.get("company_type") ?? undefined;
+  const salaryMin = searchParams.get("salary_min") ? Number(searchParams.get("salary_min")) : undefined;
+  const salaryMax = searchParams.get("salary_max") ? Number(searchParams.get("salary_max")) : undefined;
   const page = Number(searchParams.get("page") ?? "1");
 
   const filters = useMemo(() => {
@@ -225,8 +162,10 @@ function JobBoard() {
     if (experienceLevel) f.experience_level = experienceLevel;
     if (remoteStatus) f.remote_status = remoteStatus;
     if (companyType) f.company_type = companyType;
+    if (salaryMin !== undefined) f.salary_min = salaryMin;
+    if (salaryMax !== undefined) f.salary_max = salaryMax;
     return f;
-  }, [q, roleType, experienceLevel, remoteStatus, companyType, page]);
+  }, [q, roleType, experienceLevel, remoteStatus, companyType, salaryMin, salaryMax, page]);
 
   const { data: envelope, isLoading, error, refetch } = useJobs(filters);
   const jobs = envelope?.data ?? [];

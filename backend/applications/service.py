@@ -540,6 +540,52 @@ async def compute_stats(user_id: str) -> dict:
 
 RESPONSE_STAGES = ["Phone Screen", "Onsite", "Offer"]
 
+SALARY_BUCKET_LABELS: list[str] = ["$0–50k", "$50–100k", "$100–150k", "$150–200k", "$200k+"]
+SALARY_BUCKET_THRESHOLDS: list[int] = [50_000, 100_000, 150_000, 200_000]
+
+
+def _parse_compensation(text: str) -> int | None:
+    """Extract the first numeric salary from a compensation string.
+
+    Handles: "$120k", "120K", "120000", "$120,000", "120k-150k".
+    Returns the value in whole dollars, or None if unparseable.
+    """
+    import re  # noqa: PLC0415 — avoid module-level re import for this helper
+
+    m = re.search(r"(\d+(?:\.\d+)?)\s*[kK]", text)
+    if m:
+        return int(float(m.group(1)) * 1_000)
+    m = re.search(r"(\d[\d,]{3,})", text)
+    if m:
+        return int(m.group(1).replace(",", ""))
+    return None
+
+
+async def _get_salary_distribution(uid: ObjectId, col, base_filter: dict) -> list[dict]:
+    """Parse compensation strings and return salary bucket counts."""
+    docs = await col.find(
+        {**base_filter, "compensation": {"$nin": [None, ""]}},
+        {"compensation": 1},
+    ).to_list(length=None)
+
+    counts = {label: 0 for label in SALARY_BUCKET_LABELS}
+    for doc in docs:
+        val = _parse_compensation(doc.get("compensation") or "")
+        if val is None:
+            continue
+        if val < SALARY_BUCKET_THRESHOLDS[0]:
+            counts[SALARY_BUCKET_LABELS[0]] += 1
+        elif val < SALARY_BUCKET_THRESHOLDS[1]:
+            counts[SALARY_BUCKET_LABELS[1]] += 1
+        elif val < SALARY_BUCKET_THRESHOLDS[2]:
+            counts[SALARY_BUCKET_LABELS[2]] += 1
+        elif val < SALARY_BUCKET_THRESHOLDS[3]:
+            counts[SALARY_BUCKET_LABELS[3]] += 1
+        else:
+            counts[SALARY_BUCKET_LABELS[4]] += 1
+
+    return [{"bucket": label, "count": counts[label]} for label in SALARY_BUCKET_LABELS]
+
 
 async def get_analytics(user_id: str, days: int | None = None) -> dict:
     """Return aggregated analytics data for the user's applications.
@@ -548,6 +594,8 @@ async def get_analytics(user_id: str, days: int | None = None) -> dict:
         user_id: The user to scope the query to.
         days: Lookback window (30/90/180). None means all-time.
     """
+    import asyncio  # noqa: PLC0415 — local import to keep module-level clean
+
     col = get_collection("applications")
     uid = ObjectId(user_id)
 
@@ -590,7 +638,11 @@ async def get_analytics(user_id: str, days: int | None = None) -> dict:
         }},
     ]
 
-    raw = (await col.aggregate(pipeline).to_list(length=1))[0]
+    raw_result, salary_dist = await asyncio.gather(
+        col.aggregate(pipeline).to_list(length=1),
+        _get_salary_distribution(uid, col, base_filter),
+    )
+    raw = raw_result[0]
 
     return {
         "applications_by_week": [
@@ -609,6 +661,7 @@ async def get_analytics(user_id: str, days: int | None = None) -> dict:
             {"company": r["_id"], "count": r["count"]}
             for r in raw["top_companies"]
         ],
+        "salary_distribution": salary_dist,
     }
 
 

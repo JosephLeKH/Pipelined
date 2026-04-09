@@ -932,14 +932,20 @@ async def test_get_analytics_returns_expected_shape(client, test_user):
     assert "stage_funnel" in data
     assert "response_rate_by_month" in data
     assert "top_companies" in data
+    assert "salary_distribution" in data
     assert isinstance(data["applications_by_week"], list)
     assert isinstance(data["stage_funnel"], list)
     assert isinstance(data["response_rate_by_month"], list)
     assert isinstance(data["top_companies"], list)
+    assert isinstance(data["salary_distribution"], list)
     # top company should be Alpha with count 3
     top = data["top_companies"][0]
     assert top["company"] == "Alpha"
     assert top["count"] == 3
+    # salary_distribution should have all 5 buckets
+    buckets = [item["bucket"] for item in data["salary_distribution"]]
+    assert "$0–50k" in buckets
+    assert "$100–150k" in buckets
 
 
 async def test_get_analytics_with_days_filter(client, test_user):
@@ -980,6 +986,39 @@ async def test_get_analytics_requires_auth(client):
 
     # Assert
     assert response.status_code == 401
+
+
+async def test_get_analytics_salary_distribution_buckets(client, test_user):
+    """salary_distribution should bucket compensation strings into the correct ranges."""
+    _, cookies = test_user
+
+    # Arrange — create apps with varied compensation formats
+    salary_cases = [
+        ("$40k", "Intern Role"),          # $0–50k
+        ("$80k", "Junior Role"),          # $50–100k
+        ("$80,000", "Junior Role B"),     # $50–100k
+        ("120000", "Mid Role"),           # $100–150k
+        ("$175k", "Senior Role"),         # $150–200k
+        ("$250k", "Staff Role"),          # $200k+
+    ]
+    for comp, role in salary_cases:
+        await client.post(
+            "/api/applications",
+            json={**APP_PAYLOAD, "role_title": role, "compensation": comp},
+            cookies=cookies,
+        )
+
+    # Act
+    response = await client.get("/api/applications/analytics", cookies=cookies)
+
+    # Assert
+    assert response.status_code == 200
+    dist = {item["bucket"]: item["count"] for item in response.json()["data"]["salary_distribution"]}
+    assert dist["$0–50k"] >= 1
+    assert dist["$50–100k"] >= 2
+    assert dist["$100–150k"] >= 1
+    assert dist["$150–200k"] >= 1
+    assert dist["$200k+"] >= 1
 
 
 # ---------------------------------------------------------------------------

@@ -155,6 +155,18 @@ function Analytics() {
                 </BarChart>
               </ResponsiveContainer>
             </ChartCard>
+
+            <ChartCard title="Compensation Distribution">
+              <ResponsiveContainer width="100%" height={240}>
+                <BarChart data={analytics.salary_distribution}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="bucket" tick={{ fontSize: 11 }} />
+                  <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
+                  <Tooltip />
+                  <Bar dataKey="count" name="Applications" fill="#f59e0b" radius={[3, 3, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </ChartCard>
           </div>
         )}
       </main>

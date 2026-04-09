@@ -149,6 +149,11 @@ class CompanyCount(BaseModel):
     count: int
 
 
+class SalaryBucket(BaseModel):
+    bucket: str
+    count: int
+
+
 class AnalyticsQuery(BaseModel):
     days: int | None = Field(None, ge=1, le=365)
 
@@ -158,6 +163,7 @@ class AnalyticsResponse(BaseModel):
     stage_funnel: list[StageCount]
     response_rate_by_month: list[MonthlyRate]
     top_companies: list[CompanyCount]
+    salary_distribution: list[SalaryBucket]
 
 
 MAX_IMPORT_ROWS = 500

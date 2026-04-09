@@ -30,8 +30,13 @@ def _build_filter(query: JobListQuery, excluded_urls: list[str]) -> dict:
         f["remote_status"] = query.remote_status
     if query.date_from:
         f["date_posted"] = {"$gte": query.date_from}
-    if query.salary_min is not None:
-        f["salary_min_value"] = {"$gte": query.salary_min}
+    if query.salary_min is not None or query.salary_max is not None:
+        salary_filter: dict = {}
+        if query.salary_min is not None:
+            salary_filter["$gte"] = query.salary_min
+        if query.salary_max is not None:
+            salary_filter["$lte"] = query.salary_max
+        f["salary_min_value"] = salary_filter
     if excluded_urls:
         f["apply_url"] = {"$nin": excluded_urls}
 
