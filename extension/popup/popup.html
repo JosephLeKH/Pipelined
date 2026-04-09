@@ -9,13 +9,15 @@
   <body>
     <header class="header">
       <span class="logo">Pipelined</span>
+      <span id="user-name" class="user-name"></span>
+      <button id="sign-out" class="btn-sign-out hidden">Sign out</button>
     </header>
 
     <main id="app">
       <div id="loading" class="state">Loading...</div>
       <div id="unauthenticated" class="state hidden">
-        <p>Sign in to Pipelined to start tracking applications.</p>
-        <button id="open-dashboard" class="btn btn-primary">Open Dashboard</button>
+        <p class="sign-in-prompt">Sign in to Pipelined to start tracking applications.</p>
+        <button id="open-dashboard" class="btn btn-primary">Sign in to Pipelined</button>
       </div>
       <div id="authenticated" class="state hidden">
         <ul id="saves-list"></ul>

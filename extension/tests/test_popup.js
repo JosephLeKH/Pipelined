@@ -7,12 +7,16 @@ import { jest, describe, it, expect, beforeAll, beforeEach } from "@jest/globals
 import { JSDOM } from "jsdom";
 
 const POPUP_HTML = `
-  <header class="header"><span class="logo">Pipelined</span></header>
+  <header class="header">
+    <span class="logo">Pipelined</span>
+    <span id="user-name" class="user-name"></span>
+    <button id="sign-out" class="btn-sign-out hidden">Sign out</button>
+  </header>
   <main id="app">
     <div id="loading" class="state">Loading...</div>
     <div id="unauthenticated" class="state hidden">
-      <p>Sign in to Pipelined to start tracking applications.</p>
-      <button id="open-dashboard" class="btn btn-primary">Open Dashboard</button>
+      <p class="sign-in-prompt">Sign in to Pipelined to start tracking applications.</p>
+      <button id="open-dashboard" class="btn btn-primary">Sign in to Pipelined</button>
     </div>
     <div id="authenticated" class="state hidden">
       <ul id="saves-list"></ul>
@@ -32,7 +36,10 @@ function setupDOM() {
 function setupChrome() {
   global.chrome = {
     runtime: { sendMessage: jest.fn() },
-    storage: { local: { get: jest.fn() } },
+    storage: {
+      local: { get: jest.fn() },
+      session: { clear: jest.fn() },
+    },
     tabs: { create: jest.fn() },
   };
 }
@@ -42,6 +49,8 @@ let renderSaves;
 let openDashboard;
 let init;
 let escapeHtml;
+let relativeTime;
+let signOut;
 
 beforeAll(async () => {
   setupDOM();
@@ -52,6 +61,8 @@ beforeAll(async () => {
   openDashboard = mod.openDashboard;
   init = mod.init;
   escapeHtml = mod.escapeHtml;
+  relativeTime = mod.relativeTime;
+  signOut = mod.signOut;
 });
 
 beforeEach(() => {
@@ -101,8 +112,8 @@ describe("renderSaves()", () => {
 
   it("should render one save-item per entry", () => {
     renderSaves([
-      { company: "Google", role_title: "SWE" },
-      { company: "Stripe", role_title: "Backend Engineer" },
+      { company: "Google", role_title: "SWE", stage: "applied", id: "1" },
+      { company: "Stripe", role_title: "Backend Engineer", stage: "applied", id: "2" },
     ]);
 
     const items = document.querySelectorAll(".save-item");
@@ -111,7 +122,7 @@ describe("renderSaves()", () => {
   });
 
   it("should display company name in .company span", () => {
-    renderSaves([{ company: "Anthropic", role_title: "ML Engineer" }]);
+    renderSaves([{ company: "Anthropic", role_title: "ML Engineer", stage: "applied", id: "1" }]);
 
     const company = document.querySelector(".company");
 
@@ -119,7 +130,7 @@ describe("renderSaves()", () => {
   });
 
   it("should display role title in .role span", () => {
-    renderSaves([{ company: "Anthropic", role_title: "ML Engineer" }]);
+    renderSaves([{ company: "Anthropic", role_title: "ML Engineer", stage: "applied", id: "1" }]);
 
     const role = document.querySelector(".role");
 
@@ -130,6 +141,8 @@ describe("renderSaves()", () => {
     const saves = Array.from({ length: 8 }, (_, i) => ({
       company: `Company${i}`,
       role_title: `Role${i}`,
+      stage: "applied",
+      id: `id${i}`,
     }));
 
     renderSaves(saves);
@@ -140,7 +153,7 @@ describe("renderSaves()", () => {
   });
 
   it("should render empty string when company is null", () => {
-    renderSaves([{ company: null, role_title: "SWE" }]);
+    renderSaves([{ company: null, role_title: "SWE", stage: "applied", id: "1" }]);
 
     const company = document.querySelector(".company");
 
@@ -148,11 +161,46 @@ describe("renderSaves()", () => {
   });
 
   it("should render empty string when role_title is null", () => {
-    renderSaves([{ company: "Acme", role_title: null }]);
+    renderSaves([{ company: "Acme", role_title: null, stage: "applied", id: "1" }]);
 
     const role = document.querySelector(".role");
 
     expect(role.textContent).toBe("");
+  });
+
+  it("should render a stage badge for each save card", () => {
+    renderSaves([{ company: "Acme", role_title: "SWE", stage: "applied", id: "1" }]);
+
+    const badge = document.querySelector(".stage-badge");
+
+    expect(badge).not.toBeNull();
+    expect(badge.textContent).toBe("Applied");
+  });
+
+  it("should render phone-screen stage badge with correct label", () => {
+    renderSaves([{ company: "Acme", role_title: "SWE", stage: "phone screen", id: "1" }]);
+
+    const badge = document.querySelector(".stage-badge");
+
+    expect(badge.textContent).toBe("Phone Screen");
+  });
+
+  it("should render offer stage badge with correct label", () => {
+    renderSaves([{ company: "Acme", role_title: "SWE", stage: "offer", id: "1" }]);
+
+    const badge = document.querySelector(".stage-badge");
+
+    expect(badge.textContent).toBe("Offer");
+  });
+
+  it("should render open-in-dashboard link with correct href", () => {
+    renderSaves([{ company: "Acme", role_title: "SWE", stage: "applied", id: "abc123" }]);
+
+    const link = document.querySelector(".open-link");
+
+    expect(link).not.toBeNull();
+    expect(link.href).toContain("highlight=abc123");
+    expect(link.href).toContain("/dashboard");
   });
 });
 
@@ -160,7 +208,7 @@ describe("renderSaves()", () => {
 
 describe("init()", () => {
   it("should show unauthenticated state when not authenticated", async () => {
-    chrome.runtime.sendMessage.mockResolvedValue({ authenticated: false });
+    chrome.runtime.sendMessage.mockResolvedValue({ authenticated: false, display_name: "" });
 
     await init();
 
@@ -169,7 +217,7 @@ describe("init()", () => {
   });
 
   it("should show authenticated state when token is present", async () => {
-    chrome.runtime.sendMessage.mockResolvedValue({ authenticated: true });
+    chrome.runtime.sendMessage.mockResolvedValue({ authenticated: true, display_name: "Alice" });
     chrome.storage.local.get.mockResolvedValue({ recent_saves: [] });
 
     await init();
@@ -179,9 +227,9 @@ describe("init()", () => {
   });
 
   it("should render save items when authenticated with recent saves", async () => {
-    chrome.runtime.sendMessage.mockResolvedValue({ authenticated: true });
+    chrome.runtime.sendMessage.mockResolvedValue({ authenticated: true, display_name: "" });
     chrome.storage.local.get.mockResolvedValue({
-      recent_saves: [{ company: "Meta", role_title: "SWE" }],
+      recent_saves: [{ company: "Meta", role_title: "SWE", stage: "applied", id: "1" }],
     });
 
     await init();
@@ -191,7 +239,7 @@ describe("init()", () => {
   });
 
   it("should render empty message when authenticated but no saves cached", async () => {
-    chrome.runtime.sendMessage.mockResolvedValue({ authenticated: true });
+    chrome.runtime.sendMessage.mockResolvedValue({ authenticated: true, display_name: "" });
     chrome.storage.local.get.mockResolvedValue({ recent_saves: [] });
 
     await init();
@@ -200,7 +248,7 @@ describe("init()", () => {
   });
 
   it("should default to empty saves if recent_saves key is missing from storage", async () => {
-    chrome.runtime.sendMessage.mockResolvedValue({ authenticated: true });
+    chrome.runtime.sendMessage.mockResolvedValue({ authenticated: true, display_name: "" });
     chrome.storage.local.get.mockResolvedValue({});
 
     await init();
@@ -210,11 +258,20 @@ describe("init()", () => {
   });
 
   it("should not call storage when unauthenticated", async () => {
-    chrome.runtime.sendMessage.mockResolvedValue({ authenticated: false });
+    chrome.runtime.sendMessage.mockResolvedValue({ authenticated: false, display_name: "" });
 
     await init();
 
     expect(chrome.storage.local.get).not.toHaveBeenCalled();
+  });
+
+  it("should display user display_name in header when authenticated", async () => {
+    chrome.runtime.sendMessage.mockResolvedValue({ authenticated: true, display_name: "Jane Doe" });
+    chrome.storage.local.get.mockResolvedValue({ recent_saves: [] });
+
+    await init();
+
+    expect(document.getElementById("user-name").textContent).toBe("Jane Doe");
   });
 });
 
@@ -227,6 +284,51 @@ describe("openDashboard()", () => {
     expect(chrome.tabs.create).toHaveBeenCalledWith({
       url: "https://app.pipelined.app/dashboard",
     });
+  });
+});
+
+// ── signOut() ────────────────────────────────────────────────────────────────
+
+describe("signOut()", () => {
+  it("should clear the session storage", () => {
+    signOut();
+
+    expect(chrome.storage.session.clear).toHaveBeenCalled();
+  });
+
+  it("should show the unauthenticated state after sign-out", () => {
+    show("authenticated");
+
+    signOut();
+
+    expect(document.getElementById("unauthenticated").classList.contains("hidden")).toBe(false);
+    expect(document.getElementById("authenticated").classList.contains("hidden")).toBe(true);
+  });
+});
+
+// ── relativeTime() ────────────────────────────────────────────────────────────
+
+describe("relativeTime()", () => {
+  it("should return empty string for null input", () => {
+    expect(relativeTime(null)).toBe("");
+  });
+
+  it("should return 'just now' for very recent dates", () => {
+    const now = new Date().toISOString();
+
+    expect(relativeTime(now)).toBe("just now");
+  });
+
+  it("should return 'N days ago' for dates a few days in the past", () => {
+    const threeDaysAgo = new Date(Date.now() - 3 * 86400000).toISOString();
+
+    expect(relativeTime(threeDaysAgo)).toBe("3 days ago");
+  });
+
+  it("should return '1 day ago' for exactly one day ago", () => {
+    const oneDayAgo = new Date(Date.now() - 86400000).toISOString();
+
+    expect(relativeTime(oneDayAgo)).toBe("1 day ago");
   });
 });
 

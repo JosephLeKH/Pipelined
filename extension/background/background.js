@@ -37,6 +37,9 @@ async function refreshToken() {
     if (response.ok) {
       const data = await response.json();
       await setToken(data.data.token);
+      if (data.data.display_name) {
+        await chrome.storage.local.set({ display_name: data.data.display_name });
+      }
       return true;
     }
   } catch {
@@ -138,7 +141,9 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   }
 
   if (message.type === MSG.GET_AUTH_STATUS) {
-    getToken().then((token) => sendResponse({ authenticated: !!token }));
+    Promise.all([getToken(), chrome.storage.local.get("display_name")]).then(
+      ([token, { display_name = "" }]) => sendResponse({ authenticated: !!token, display_name })
+    );
     return true;
   }
 

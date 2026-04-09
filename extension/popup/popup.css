@@ -10,7 +10,7 @@
 
 body {
   width: 320px;
-  min-height: 200px;
+  min-height: 480px;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 14px;
   color: #1e293b;
@@ -20,6 +20,7 @@ body {
 .header {
   display: flex;
   align-items: center;
+  gap: 8px;
   padding: 12px 16px;
   border-bottom: 1px solid #e2e8f0;
 }
@@ -28,6 +29,32 @@ body {
   font-weight: 700;
   font-size: 16px;
   color: #6366f1;
+  flex: 1;
+}
+
+.user-name {
+  font-size: 12px;
+  color: #64748b;
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.btn-sign-out {
+  background: none;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 11px;
+  color: #64748b;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn-sign-out:hover {
+  background: #f8fafc;
+  color: #334155;
 }
 
 #app {
@@ -42,10 +69,17 @@ body {
   display: none !important;
 }
 
+.sign-in-prompt {
+  color: #64748b;
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+
 .save-item {
   display: flex;
   flex-direction: column;
-  padding: 8px 0;
+  gap: 3px;
+  padding: 10px 0;
   border-bottom: 1px solid #f1f5f9;
   list-style: none;
 }
@@ -54,14 +88,59 @@ body {
   border-bottom: none;
 }
 
+.save-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
 .company {
   font-weight: 600;
   color: #0f172a;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.stage-badge {
+  display: inline-block;
+  padding: 1px 7px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .role {
   color: #64748b;
   font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.save-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.save-time {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.open-link {
+  font-size: 11px;
+  color: #6366f1;
+  text-decoration: none;
+}
+
+.open-link:hover {
+  text-decoration: underline;
 }
 
 .empty {

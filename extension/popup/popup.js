@@ -1,7 +1,27 @@
-/** Popup: show last 5 saves, link to dashboard, auth status. */
+/** Popup: show last 5 saves with stage badges, link to dashboard, auth status. */
 
 const DASHBOARD_URL = "https://app.pipelined.app/dashboard";
 const MAX_RECENT = 5;
+
+// Stage badge colors (hex values match the frontend stage constants)
+const STAGE_COLORS = {
+  applied: { bg: "#dbeafe", text: "#1d4ed8", label: "Applied" },
+  "phone screen": { bg: "#ede9fe", text: "#6d28d9", label: "Phone Screen" },
+  onsite: { bg: "#ffedd5", text: "#c2410c", label: "Onsite" },
+  offer: { bg: "#dcfce7", text: "#15803d", label: "Offer" },
+  rejected: { bg: "#fee2e2", text: "#b91c1c", label: "Rejected" },
+};
+
+const DEFAULT_STAGE_COLOR = { bg: "#f1f5f9", text: "#475569", label: "Applied" };
+
+const MSG = {
+  GET_AUTH_STATUS: "GET_AUTH_STATUS",
+  GET_RECENT_SAVES: "GET_RECENT_SAVES",
+};
+
+const MS_PER_DAY = 86400000;
+const MS_PER_HOUR = 3600000;
+const MS_PER_MINUTE = 60000;
 
 /**
  * Escape a string for safe insertion into innerHTML.
@@ -18,10 +38,20 @@ export function escapeHtml(str) {
     .replace(/'/g, "&#39;");
 }
 
-const MSG = {
-  GET_AUTH_STATUS: "GET_AUTH_STATUS",
-  GET_RECENT_SAVES: "GET_RECENT_SAVES",
-};
+/**
+ * Returns a human-readable relative time string for an ISO date string.
+ * @param {string|null} isoDate
+ * @returns {string}
+ */
+export function relativeTime(isoDate) {
+  if (!isoDate) return "";
+  const diff = Date.now() - new Date(isoDate).getTime();
+  if (diff < MS_PER_MINUTE) return "just now";
+  if (diff < MS_PER_HOUR) return `${Math.floor(diff / MS_PER_MINUTE)}m ago`;
+  if (diff < MS_PER_DAY) return `${Math.floor(diff / MS_PER_HOUR)}h ago`;
+  const days = Math.floor(diff / MS_PER_DAY);
+  return days === 1 ? "1 day ago" : `${days} days ago`;
+}
 
 export function show(id) {
   document.getElementById("loading").classList.add("hidden");
@@ -45,16 +75,49 @@ export function renderSaves(saves) {
     const item = document.createElement("li");
     item.className = "save-item";
 
+    const top = document.createElement("div");
+    top.className = "save-top";
+
     const company = document.createElement("span");
     company.className = "company";
     company.textContent = s.company || "";
+
+    const stageKey = (s.stage || "").toLowerCase();
+    const stageStyle = STAGE_COLORS[stageKey] || DEFAULT_STAGE_COLOR;
+    const badge = document.createElement("span");
+    badge.className = "stage-badge";
+    badge.textContent = stageStyle.label;
+    badge.style.background = stageStyle.bg;
+    badge.style.color = stageStyle.text;
+
+    top.appendChild(company);
+    top.appendChild(badge);
 
     const role = document.createElement("span");
     role.className = "role";
     role.textContent = s.role_title || "";
 
-    item.appendChild(company);
+    const bottom = document.createElement("div");
+    bottom.className = "save-bottom";
+
+    const time = document.createElement("span");
+    time.className = "save-time";
+    time.textContent = relativeTime(s.date_applied || s.saved_at || null);
+
+    const link = document.createElement("a");
+    link.className = "open-link";
+    link.textContent = "Open \u2192";
+    link.href = `${DASHBOARD_URL}?highlight=${encodeURIComponent(s.id || "")}`;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.dataset.appId = s.id || "";
+
+    bottom.appendChild(time);
+    bottom.appendChild(link);
+
+    item.appendChild(top);
     item.appendChild(role);
+    item.appendChild(bottom);
     list.appendChild(item);
   });
 }
@@ -63,12 +126,28 @@ export function openDashboard() {
   chrome.tabs.create({ url: DASHBOARD_URL });
 }
 
+export function signOut() {
+  chrome.storage.session.clear();
+  show("unauthenticated");
+}
+
 export async function init() {
   const authStatus = await chrome.runtime.sendMessage({ type: MSG.GET_AUTH_STATUS });
 
   if (!authStatus.authenticated) {
     show("unauthenticated");
     return;
+  }
+
+  if (authStatus.display_name) {
+    const userNameEl = document.getElementById("user-name");
+    if (userNameEl) userNameEl.textContent = authStatus.display_name;
+  }
+
+  const signOutBtn = document.getElementById("sign-out");
+  if (signOutBtn) {
+    signOutBtn.classList.remove("hidden");
+    signOutBtn.addEventListener("click", signOut);
   }
 
   const { recent_saves = [] } = await chrome.storage.local.get("recent_saves");
