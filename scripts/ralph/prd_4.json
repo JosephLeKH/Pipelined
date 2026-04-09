@@ -77,7 +77,7 @@
         "npm run build passes"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "notes": "Do NOT add a third-party command palette library (cmdk, kbar) — implement it as a focused component to keep bundle size small. The palette is a thin wrapper: input + filtered list + keyboard navigation. Total should be under 200 lines."
     },
     {

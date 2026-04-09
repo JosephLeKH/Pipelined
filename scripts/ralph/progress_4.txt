@@ -40,3 +40,19 @@ Commit: cbcb883
 - Frontend build passes
 
 **Commit:** b9b14d0
+
+## US-080: Command palette with Cmd+K global search and actions — PASSED
+
+**Frontend:**
+- `frontend/src/components/CommandPalette.jsx`: Modal overlay opening on Cmd+K / Ctrl+K globally. Three sections — Applications (filtered search), Navigation (page links with shortcut hints), Actions (Add Application, Export CSV, Toggle Dark Mode). Client-side filter against React Query cache for ≤100 apps; debounced API call for >100. Arrow key navigation with visual highlight, Enter to activate, Escape to close, backdrop click to close. ManualAddForm integration for "Add Application" action. Full dark mode support.
+- `frontend/src/App.jsx`: CommandPalette mounted once at app shell level, outside Routes, so it's always active.
+- `frontend/src/lib/constants.js`: `EMPTY_APPS = Object.freeze([])` pattern used as module-level constant for reference-stable empty array (prevents spurious useMemo recomputes when allApps loads async).
+
+**Key fix — React 18 batching + useMemo stability:**
+- Root cause of "arrow keys change highlighted index" test failure: `filteredApps` useMemo returned a new `[]` literal when `query=""`, which caused reference churn when `allApps` loaded asynchronously via MSW. This triggered `items` recompute → `useEffect(() => setIdx(0), [items])` → reset the ArrowDown's `setIdx(1)`.
+- Fix: return module-level `EMPTY_APPS` (frozen `[]`) when `query=""` → stable reference → no spurious `setIdx(0)` on async data load.
+- Test fix: use `userEvent.keyboard("{ArrowDown}")` from `@testing-library/user-event` v14 which properly integrates with React 18 batching (vs `fireEvent.keyDown` on document which doesn't flush state synchronously in tests).
+
+**Tests:** 12/12 CommandPalette tests pass, 238/238 total frontend tests pass | Build: ✓
+
+**Commit:** 4ddc189
