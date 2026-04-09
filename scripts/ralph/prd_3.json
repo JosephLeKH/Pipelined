@@ -163,7 +163,7 @@
         "npm test passes"
       ],
       "priority": 9,
-      "passes": false,
+      "passes": true,
       "notes": "default_stages is already stored per-user but only set at registration. This makes it configurable via a settings page — a top power-user feature request."
     },
     {
@@ -185,7 +185,7 @@
         "npm test passes"
       ],
       "priority": 10,
-      "passes": false,
+      "passes": true,
       "notes": "A major onboarding blocker. Users coming from Notion, Airtable, or Google Sheets can't get their data in without typing each entry. CSV import is table-stakes for a data tracking app."
     },
     {

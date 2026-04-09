@@ -123,3 +123,43 @@ Commit: bce638f
 - constants.js: Added dot property to all EVENT_TYPE_COLORS entries and DEFAULT_EVENT_COLOR
 - NavBar.test.jsx: New test file with 8 tests covering hamburger toggle, mobile menu visibility, nav links, close on link click, icon switching
 - 182 tests pass, build succeeds
+
+## US-068 — Custom pipeline stages — user-level stage configuration
+Status: PASSED
+Commit: 5a1db1e
+
+### What was done
+- Backend: Added `default_stages` field to `UserUpdate` schema (list, 2–10 items, each 1–40 chars); `PATCH /api/auth/me` now persists user-defined stage list via `update_user` service function; `UserResponse` already included `default_stages`
+- Frontend API layer: `updateMe(patch)` added to `frontend/src/api/auth.js`; `useUpdateUser()` mutation hook added to `frontend/src/hooks/useAuth.js` with global `onSuccess` that calls AuthContext's `updateUser` to sync in-memory state
+- AuthContext: Added `updateUser(userData)` callback exported from context; `useAuth()` now returns `{ user, updateUser, logout }`
+- Settings page: New `frontend/src/pages/Settings.jsx` with drag-to-reorder `PipelineStagesEditor` (dnd-kit/core + dnd-kit/sortable), add/rename/remove controls, 2–10 stage validation, save via `mutateAsync`, success alert on completion
+- NavBar: Added /settings link to user menu
+- App.jsx: Added `/settings` route pointing to `<Settings />`
+- DetailPanel, ManualAddForm, BulkActionBar: Stage options now sourced from `user.default_stages` via `useAuth()` instead of hardcoded `DEFAULT_STAGES` constants
+- Tests: Updated `ApplicationList.test.jsx`, `DetailPanel.test.jsx`, `ManualAddForm.test.jsx` to include `AuthProvider` wrapper + `/api/auth/me` MSW handler (required because these components now call `useAuth()`); added `waitFor` in DetailPanel stage test to handle async auth init; new `Settings.test.jsx` with 6 tests covering render, CRUD, PATCH call, and success alert
+- Fix: `PipelineStagesEditor.handleSave` made async and awaits `onSave()` so React state updates (setSaveSuccess) are tracked by `act()` in tests; success message uses `role="alert"` to avoid collision with dnd-kit's `role="status"` live region
+
+### Test results
+- Frontend: 188 passed (24 test files)
+- Backend: 188 passed
+- Build: clean
+
+## US-069 — Bulk CSV import for existing applications
+Status: PASSED
+Commit: d266cdc
+
+### What was done
+- Added `MAX_IMPORT_ROWS`, `MAX_IMPORT_FILE_SIZE_BYTES`, `ImportRowError`, `ImportResult` to `backend/applications/schemas.py`
+- Added `import_applications(user_id, csv_bytes)` to `backend/applications/service.py`: parses CSV via `csv` module, validates required fields (company, role_title), deduplicates by normalised_company/normalised_role, caps at 500 rows with warning
+- Added `POST /api/applications/import` multipart endpoint to `backend/applications/router.py` with 2MB size guard
+- Added `importApplicationsCsv(file)` to `frontend/src/api/applications.js` using FormData
+- Added `useImportApplications()` mutation hook to `frontend/src/hooks/useApplications.js` with React Query cache invalidation
+- Created `frontend/src/components/CsvImportModal.jsx`: file picker, column reference, import button, result summary with error list
+- Updated `frontend/src/pages/Dashboard.jsx`: "Import CSV" button opens modal
+- 4 backend integration tests: happy path, missing required fields, duplicate detection, 500-row cap
+- 6 Vitest tests for CsvImportModal: render, hidden when closed, file selection enables button, POST+summary, error alert, close
+
+### Test results
+- Frontend: 194 passed (25 test files)
+- Backend: 192 passed
+- Build: clean
