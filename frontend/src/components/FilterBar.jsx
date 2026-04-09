@@ -12,26 +12,30 @@ const STAGE_OPTIONS = Object.keys(STAGE_COLORS);
 const COMPANY_TYPE_OPTIONS = ["startup", "mid", "enterprise", "gov", "nonprofit", "other"];
 const REMOTE_STATUS_OPTIONS = ["remote", "hybrid", "onsite", "unknown"];
 
-function CheckboxGroup({ label, options, selected, onChange }) {
+function CheckboxGroup({ label, groupKey, options, selected, onChange }) {
   return (
     <fieldset className="flex flex-col gap-1">
       <legend className="mb-1 text-xs font-medium uppercase text-gray-500 dark:text-gray-400">{label}</legend>
-      {options.map((opt) => (
-        <label key={opt} className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-          <input
-            type="checkbox"
-            checked={selected.includes(opt)}
-            onChange={(e) => {
-              if (e.target.checked) {
-                onChange([...selected, opt]);
-              } else {
-                onChange(selected.filter((s) => s !== opt));
-              }
-            }}
-          />
-          {opt}
-        </label>
-      ))}
+      {options.map((opt) => {
+        const inputId = `filter-${groupKey}-${opt}`;
+        return (
+          <label key={opt} htmlFor={inputId} className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+            <input
+              id={inputId}
+              type="checkbox"
+              checked={selected.includes(opt)}
+              onChange={(e) => {
+                if (e.target.checked) {
+                  onChange([...selected, opt]);
+                } else {
+                  onChange(selected.filter((s) => s !== opt));
+                }
+              }}
+            />
+            {opt}
+          </label>
+        );
+      })}
     </fieldset>
   );
 }
@@ -112,18 +116,21 @@ function FilterBar() {
         </fieldset>
         <CheckboxGroup
           label="Stage"
+          groupKey="stage"
           options={STAGE_OPTIONS}
           selected={stages}
           onChange={(val) => updateFilter("stage", val)}
         />
         <CheckboxGroup
           label="Company Type"
+          groupKey="company-type"
           options={COMPANY_TYPE_OPTIONS}
           selected={companyTypes}
           onChange={(val) => updateFilter("company_type", val)}
         />
         <CheckboxGroup
           label="Remote Status"
+          groupKey="remote-status"
           options={REMOTE_STATUS_OPTIONS}
           selected={remoteStatuses}
           onChange={(val) => updateFilter("remote_status", val)}

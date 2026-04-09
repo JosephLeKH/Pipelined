@@ -103,4 +103,22 @@ describe("FilterBar", () => {
     // Assert
     expect(checkbox).not.toBeChecked();
   });
+
+  it("should have id attributes on checkboxes and matching htmlFor on labels", () => {
+    // Arrange / Act
+    render(<FilterBar />, { wrapper: makeWrapper() });
+
+    // Assert — spot-check stage, company type, and remote status checkboxes
+    const appliedCheckbox = screen.getByRole("checkbox", { name: "Applied" });
+    expect(appliedCheckbox).toHaveAttribute("id", "filter-stage-Applied");
+    expect(appliedCheckbox.closest("label")).toHaveAttribute("for", "filter-stage-Applied");
+
+    const startupCheckbox = screen.getByRole("checkbox", { name: "startup" });
+    expect(startupCheckbox).toHaveAttribute("id", "filter-company-type-startup");
+    expect(startupCheckbox.closest("label")).toHaveAttribute("for", "filter-company-type-startup");
+
+    const remoteCheckbox = screen.getByRole("checkbox", { name: "remote" });
+    expect(remoteCheckbox).toHaveAttribute("id", "filter-remote-status-remote");
+    expect(remoteCheckbox.closest("label")).toHaveAttribute("for", "filter-remote-status-remote");
+  });
 });

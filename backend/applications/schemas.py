@@ -149,6 +149,10 @@ class CompanyCount(BaseModel):
     count: int
 
 
+class AnalyticsQuery(BaseModel):
+    days: int | None = Field(None, ge=1, le=365)
+
+
 class AnalyticsResponse(BaseModel):
     applications_by_week: list[WeeklyCount]
     stage_funnel: list[StageCount]

@@ -957,6 +957,23 @@ async def test_get_analytics_with_days_filter(client, test_user):
     assert "stage_funnel" in data
 
 
+async def test_get_analytics_rejects_invalid_days(client, test_user):
+    # Arrange
+    _, cookies = test_user
+
+    # Act — negative days
+    response_neg = await client.get("/api/applications/analytics?days=-1", cookies=cookies)
+    # Act — zero days
+    response_zero = await client.get("/api/applications/analytics?days=0", cookies=cookies)
+    # Act — days exceeding max
+    response_max = await client.get("/api/applications/analytics?days=999", cookies=cookies)
+
+    # Assert
+    assert response_neg.status_code == 422
+    assert response_zero.status_code == 422
+    assert response_max.status_code == 422
+
+
 async def test_get_analytics_requires_auth(client):
     # Act
     response = await client.get("/api/applications/analytics")
