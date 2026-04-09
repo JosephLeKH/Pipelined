@@ -7,7 +7,10 @@ from httpx import ASGITransport, AsyncClient
 import database
 from database import connect, disconnect, ensure_indexes
 from main import create_app
+from middleware.csrf import CSRF_COOKIE_NAME, CSRF_HEADER_NAME
 from middleware.rate_limit import limiter
+
+TEST_CSRF_TOKEN = "a" * 64  # 32-byte equivalent; matches cookie + header
 
 
 @pytest_asyncio.fixture(scope="session", loop_scope="session")
@@ -35,9 +38,14 @@ async def clean_db():
 
 @pytest_asyncio.fixture(scope="session", loop_scope="session")
 async def client(app):
-    """Async HTTP client bound to the test app."""
+    """Async HTTP client bound to the test app with CSRF token pre-set."""
     transport = ASGITransport(app=app)
-    async with AsyncClient(transport=transport, base_url="http://test") as c:
+    async with AsyncClient(
+        transport=transport,
+        base_url="http://test",
+        headers={CSRF_HEADER_NAME: TEST_CSRF_TOKEN},
+    ) as c:
+        c.cookies.set(CSRF_COOKIE_NAME, TEST_CSRF_TOKEN)
         yield c
 
 

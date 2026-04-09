@@ -31,6 +31,7 @@ from auth.service import (
 )
 from notifications.email_service import email_service
 from config import settings
+from middleware.csrf import CSRF_COOKIE_NAME, generate_csrf_token
 from middleware.rate_limit import limiter
 
 logger = structlog.get_logger()
@@ -119,8 +120,16 @@ async def logout(response: Response) -> None:
 
 
 @router.get("/me", status_code=200)
-async def me(user: dict = Depends(get_current_user)) -> dict:
-    """Return the currently authenticated user's profile."""
+async def me(response: Response, user: dict = Depends(get_current_user)) -> dict:
+    """Return the currently authenticated user's profile and seed the CSRF cookie."""
+    csrf_token = generate_csrf_token()
+    response.set_cookie(
+        key=CSRF_COOKIE_NAME,
+        value=csrf_token,
+        httponly=False,
+        secure=not settings.debug,
+        samesite="strict",
+    )
     return {"data": UserResponse.from_doc(user)}
 
 

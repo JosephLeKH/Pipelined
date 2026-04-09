@@ -17,6 +17,7 @@ from jobs.router import router as jobs_router
 from jobs.sync import create_scheduler
 from config import settings, validate_production_secrets
 from database import connect, disconnect, ensure_indexes
+from middleware.csrf import CSRFMiddleware
 from middleware.rate_limit import limiter
 
 logger = structlog.get_logger()
@@ -88,6 +89,7 @@ def create_app(*, testing: bool = False) -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+    app.add_middleware(CSRFMiddleware)
 
     @app.get("/health")
     async def health() -> dict:

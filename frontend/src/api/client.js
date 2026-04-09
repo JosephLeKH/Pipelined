@@ -3,11 +3,26 @@
 import axios from "axios";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "/api";
+const CSRF_COOKIE_NAME = "pipelined_csrf";
+const CSRF_HEADER_NAME = "X-CSRF-Token";
+
+function getCookie(name) {
+  const match = document.cookie.split("; ").find((row) => row.startsWith(`${name}=`));
+  return match ? decodeURIComponent(match.split("=")[1]) : null;
+}
 
 export const client = axios.create({
   baseURL: API_BASE_URL,
   withCredentials: true,
   headers: { "Content-Type": "application/json" },
+});
+
+client.interceptors.request.use((config) => {
+  const csrf = getCookie(CSRF_COOKIE_NAME);
+  if (csrf) {
+    config.headers[CSRF_HEADER_NAME] = csrf;
+  }
+  return config;
 });
 
 const SKIP_REFRESH_PATHS = ["/auth/login", "/auth/register", "/auth/refresh", "/auth/google"];
