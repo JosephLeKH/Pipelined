@@ -67,6 +67,10 @@ class ActiveStageError(Exception):
     """Raised when attempting to remove the currently active stage."""
 
 
+class InvalidCursorError(Exception):
+    """Raised when a pagination cursor cannot be parsed."""
+
+
 async def _fetch_user_stages(uid: ObjectId) -> list[str]:
     """Return the user's default_stages, falling back to [INITIAL_STAGE]."""
     user = await get_user_by_id(str(uid))
@@ -103,7 +107,10 @@ def _build_filter(uid: ObjectId, query: ApplicationListQuery) -> dict:
         f["$text"] = {"$search": query.q}
     elif query.cursor:
         sort_order = 1 if query.sort_order == "asc" else -1
-        cursor_id = ObjectId(query.cursor)
+        try:
+            cursor_id = ObjectId(query.cursor)
+        except Exception as exc:
+            raise InvalidCursorError("Invalid pagination cursor") from exc
         f["_id"] = {"$lt": cursor_id} if sort_order == -1 else {"$gt": cursor_id}
 
     return f
@@ -119,9 +126,12 @@ async def _list_with_text_search(
         {"$addFields": {"score": {"$meta": "textScore"}}},
     ]
     if query.cursor:
-        score_str, id_str = query.cursor.rsplit(TEXT_SEARCH_CURSOR_SEP, 1)
-        cursor_score = float(score_str)
-        cursor_id = ObjectId(id_str)
+        try:
+            score_str, id_str = query.cursor.rsplit(TEXT_SEARCH_CURSOR_SEP, 1)
+            cursor_score = float(score_str)
+            cursor_id = ObjectId(id_str)
+        except Exception as exc:
+            raise InvalidCursorError("Invalid pagination cursor") from exc
         pipeline.append({"$match": {"$or": [
             {"score": {"$lt": cursor_score}},
             {"score": cursor_score, "_id": {"$lt": cursor_id}},

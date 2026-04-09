@@ -261,6 +261,38 @@ async def test_list_applications_returns_401_without_auth(client):
     assert response.status_code == 401
 
 
+async def test_list_applications_returns_400_for_invalid_cursor(client, test_user):
+    # Arrange
+    _, cookies = test_user
+
+    # Act — pass a cursor that cannot be parsed as a text-search composite cursor
+    resp = await client.get(
+        "/api/applications",
+        params={"q": "hello", "cursor": "not-a-valid-cursor"},
+        cookies=cookies,
+    )
+
+    # Assert
+    assert resp.status_code == 400
+    assert resp.json()["detail"]["code"] == "INVALID_CURSOR"
+
+
+async def test_list_applications_returns_400_for_invalid_plain_cursor(client, test_user):
+    # Arrange
+    _, cookies = test_user
+
+    # Act — pass a cursor that is not a valid ObjectId
+    resp = await client.get(
+        "/api/applications",
+        params={"cursor": "not-an-objectid"},
+        cookies=cookies,
+    )
+
+    # Assert
+    assert resp.status_code == 400
+    assert resp.json()["detail"]["code"] == "INVALID_CURSOR"
+
+
 async def test_list_applications_text_search_returns_matching_application(client, test_user):
     # Arrange — insert two applications with distinct role titles
     _, cookies = test_user

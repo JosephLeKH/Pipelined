@@ -22,7 +22,7 @@ from applications.schemas import (
     DEFAULT_QUERY_LIMIT,
     MAX_QUERY_LIMIT,
 )
-from applications.service import ActiveStageError, DuplicateApplicationError
+from applications.service import ActiveStageError, DuplicateApplicationError, InvalidCursorError
 from auth.dependencies import get_current_user
 from config import settings
 from middleware.rate_limit import limiter
@@ -99,7 +99,13 @@ async def list_applications(
         include_archived=include_archived,
     )
     user_id = str(user["_id"])
-    docs, next_cursor = await app_service.list_applications(user_id, query)
+    try:
+        docs, next_cursor = await app_service.list_applications(user_id, query)
+    except InvalidCursorError:
+        raise HTTPException(
+            status_code=400,
+            detail={"code": "INVALID_CURSOR", "message": "Invalid pagination cursor."},
+        )
     items = [ApplicationResponse.from_doc(d) for d in docs]
     return {
         "data": items,
