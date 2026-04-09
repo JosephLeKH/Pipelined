@@ -87,7 +87,7 @@
         "npm test passes"
       ],
       "priority": 5,
-      "passes": false,
+      "passes": true,
       "notes": "Post-v2 review: ManualAddForm uses isPending from the hook but never renders it. Bulk action bar also lacks any in-flight feedback."
     },
     {

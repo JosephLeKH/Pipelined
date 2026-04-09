@@ -48,3 +48,24 @@ Labels now have `htmlFor` pointing to their checkbox `id`. Clicking the label te
 ### Learnings
 - Using `Depends()` with a Pydantic model in FastAPI cleanly delegates query param validation to the schema layer, keeping the router thin.
 - `htmlFor`/`id` associations are easily testable: `checkbox.closest("label")` gives the parent label, then assert `.toHaveAttribute("for", expectedId)`.
+
+## US-064 — ManualAddForm and bulk action loading states
+Status: PASSED
+Commit: bb94481
+
+### What was done
+- Added `isPending` to `useCreateApplication` hook destructure in ManualAddForm.jsx
+- Submit button now disabled + shows Loader2 spinner + "Creating…" text while pending
+- Added generic API error display (role="alert") above submit button for non-duplicate errors
+- Added `Loader2` spinner import to ApplicationRowActions.jsx
+- BulkActionBar now accepts `isDeleting` and `isMoving` props; both buttons disabled when either pending; spinner shown on respective button
+- Installed `sonner` library; added `<Toaster position="bottom-right" richColors />` to main.jsx
+- ApplicationList passes `bulkDeleteMutation.isPending` and `bulkStageMutation.isPending` to BulkActionBar
+- Added `toast.success()` calls after successful bulk delete and bulk stage update
+- Added 2 new Vitest tests: ManualAddForm pending state test (13 tests total) and ApplicationList bulk pending test (14 tests total)
+- Full test suite: 161 tests pass; build passes
+
+### Learnings
+- The `useCreateApplication` hook already returned `isPending` — it just wasn't being destructured or used in the component
+- BulkActionBar needed new props threaded from ApplicationList since it doesn't have direct access to mutation state
+- sonner's toast.success() works as a no-op in Vitest tests (no Toaster mounted in test wrappers) without needing mocking
