@@ -3,6 +3,7 @@
 import { useMemo, useCallback, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { FixedSizeList } from "react-window";
+import { toast } from "sonner";
 
 import Globe from "lucide-react/dist/esm/icons/globe";
 import LayoutDashboard from "lucide-react/dist/esm/icons/layout-dashboard";
@@ -186,14 +187,23 @@ function ApplicationList({ onSelect, filters = {} }) {
   );
 
   const handleBulkDeleteConfirm = useCallback(() => {
+    const count = selectedIds.size;
     bulkDeleteMutation.mutate([...selectedIds], {
-      onSuccess: () => { setSelectedIds(new Set()); setBulkDeletePending(false); },
+      onSuccess: () => {
+        setSelectedIds(new Set());
+        setBulkDeletePending(false);
+        toast.success(`Deleted ${count} application${count === 1 ? "" : "s"}`);
+      },
     });
   }, [bulkDeleteMutation, selectedIds]);
 
   const handleBulkMoveToStage = useCallback((stage) => {
+    const count = selectedIds.size;
     bulkStageMutation.mutate({ ids: [...selectedIds], stage }, {
-      onSuccess: () => setSelectedIds(new Set()),
+      onSuccess: () => {
+        setSelectedIds(new Set());
+        toast.success(`Moved ${count} application${count === 1 ? "" : "s"} to ${stage}`);
+      },
     });
   }, [bulkStageMutation, selectedIds]);
 
@@ -251,6 +261,8 @@ function ApplicationList({ onSelect, filters = {} }) {
             selectedCount={selectedIds.size}
             onMoveToStage={handleBulkMoveToStage}
             onDeleteSelected={() => setBulkDeletePending(true)}
+            isDeleting={bulkDeleteMutation.isPending}
+            isMoving={bulkStageMutation.isPending}
           />
         )}
         <div className="flex flex-col">

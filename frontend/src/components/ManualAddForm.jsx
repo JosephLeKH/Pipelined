@@ -2,10 +2,13 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 
+import Loader2 from "lucide-react/dist/esm/icons/loader-2";
 import X from "lucide-react/dist/esm/icons/x";
 
 import { useCreateApplication } from "../hooks/useApplications";
 import { REMOTE_STATUS_OPTIONS, COMPANY_TYPE_OPTIONS } from "../lib/constants";
+
+const GENERIC_ERROR_MSG = "Something went wrong. Please try again.";
 
 const MANUAL_SOURCE = "manual";
 const DUPLICATE_CODE = "DUPLICATE_APPLICATION";
@@ -30,7 +33,7 @@ function FormField({ label, htmlFor, children, error }) {
 function ManualAddForm({ isOpen, onClose }) {
   const overlayRef = useRef(null);
   const dialogRef = useRef(null);
-  const { mutate, error: mutationError, reset } = useCreateApplication();
+  const { mutate, isPending, error: mutationError, reset } = useCreateApplication();
 
   const [roleTitle, setRoleTitle] = useState("");
   const [company, setCompany] = useState("");
@@ -271,6 +274,11 @@ function ManualAddForm({ isOpen, onClose }) {
               placeholder="Comma-separated, e.g. python, remote"
             />
           </FormField>
+          {mutationError && !isDuplicate && (
+            <p role="alert" className="rounded border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
+              {mutationError.message ?? GENERIC_ERROR_MSG}
+            </p>
+          )}
           <div className="flex justify-end gap-3 border-t border-gray-100 pt-4 dark:border-gray-700">
             <button
               type="button"
@@ -281,9 +289,17 @@ function ManualAddForm({ isOpen, onClose }) {
             </button>
             <button
               type="submit"
-              className="rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              disabled={isPending}
+              className="flex items-center gap-2 rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-60"
             >
-              Add Application
+              {isPending ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                  Creating…
+                </>
+              ) : (
+                "Add Application"
+              )}
             </button>
           </div>
         </form>

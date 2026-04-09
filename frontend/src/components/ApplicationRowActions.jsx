@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 
+import Loader2 from "lucide-react/dist/esm/icons/loader-2";
 import MoreHorizontal from "lucide-react/dist/esm/icons/more-horizontal";
 
 import { STAGE_COLORS } from "../lib/constants";
@@ -141,11 +142,12 @@ export function BulkDeleteConfirmModal({ count, onConfirm, onCancel }) {
 
 const STAGE_OPTIONS = Object.keys(STAGE_COLORS);
 
-export function BulkActionBar({ selectedCount, onMoveToStage, onDeleteSelected }) {
+export function BulkActionBar({ selectedCount, onMoveToStage, onDeleteSelected, isDeleting = false, isMoving = false }) {
   const [selectedStage, setSelectedStage] = useState("");
+  const isBusy = isDeleting || isMoving;
 
   function handleMove() {
-    if (!selectedStage) return;
+    if (!selectedStage || isBusy) return;
     onMoveToStage(selectedStage);
     setSelectedStage("");
   }
@@ -162,7 +164,8 @@ export function BulkActionBar({ selectedCount, onMoveToStage, onDeleteSelected }
           aria-label="Move to stage"
           value={selectedStage}
           onChange={(e) => setSelectedStage(e.target.value)}
-          className="rounded border border-gray-300 px-2 py-1 text-sm text-gray-700"
+          disabled={isBusy}
+          className="rounded border border-gray-300 px-2 py-1 text-sm text-gray-700 disabled:opacity-50"
         >
           <option value="">Move to stage…</option>
           {STAGE_OPTIONS.map((s) => (
@@ -171,17 +174,20 @@ export function BulkActionBar({ selectedCount, onMoveToStage, onDeleteSelected }
         </select>
         <button
           type="button"
-          disabled={!selectedStage}
+          disabled={!selectedStage || isBusy}
           onClick={handleMove}
-          className="rounded bg-blue-600 px-3 py-1 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+          className="flex items-center gap-1 rounded bg-blue-600 px-3 py-1 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
         >
+          {isMoving ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" /> : null}
           Move
         </button>
         <button
           type="button"
+          disabled={isBusy}
           onClick={onDeleteSelected}
-          className="rounded bg-red-600 px-3 py-1 text-sm font-medium text-white hover:bg-red-700"
+          className="flex items-center gap-1 rounded bg-red-600 px-3 py-1 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
         >
+          {isDeleting ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" /> : null}
           Delete selected
         </button>
       </div>

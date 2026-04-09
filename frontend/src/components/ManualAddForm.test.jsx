@@ -176,6 +176,44 @@ describe("ManualAddForm", () => {
     expect(onClose).toHaveBeenCalledOnce();
   });
 
+  it("should disable submit button while mutation is pending", async () => {
+    // Arrange — slow response so mutation stays in-flight
+    server.use(http.post("/api/applications", () => new Promise(() => {})));
+    render(<ManualAddForm isOpen onClose={() => {}} />, { wrapper: makeWrapper() });
+
+    // Act
+    await userEvent.type(screen.getByRole("textbox", { name: /role title/i }), "Software Engineer");
+    await userEvent.type(screen.getByRole("textbox", { name: /company/i }), "Acme Corp");
+    await userEvent.click(screen.getByRole("button", { name: /add application/i }));
+
+    // Assert — button becomes disabled with "Creating…" text
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: /creating/i })).toBeDisabled();
+    });
+  });
+
+  it("should show generic error message inside form on non-duplicate mutation failure", async () => {
+    // Arrange
+    server.use(
+      http.post("/api/applications", () =>
+        HttpResponse.json(
+          { error: { code: "SERVER_ERROR", message: "Internal server error" } },
+          { status: 500 }
+        )
+      )
+    );
+    render(<ManualAddForm isOpen onClose={() => {}} />, { wrapper: makeWrapper() });
+
+    // Act
+    await userEvent.type(screen.getByRole("textbox", { name: /role title/i }), "Software Engineer");
+    await userEvent.type(screen.getByRole("textbox", { name: /company/i }), "Acme Corp");
+    await userEvent.click(screen.getByRole("button", { name: /add application/i }));
+
+    // Assert
+    await screen.findByRole("alert");
+    expect(screen.getByRole("alert")).toHaveTextContent(/internal server error/i);
+  });
+
   it("should move focus to the first focusable element when modal opens", async () => {
     // Arrange / Act
     render(<ManualAddForm isOpen onClose={() => {}} />, { wrapper: makeWrapper() });

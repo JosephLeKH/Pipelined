@@ -1,6 +1,6 @@
 /** Tests for ApplicationList — row rendering, stale indicator, onSelect, sort params, empty state. */
 
-import { render, screen, within } from "@testing-library/react";
+import { render, screen, within, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
@@ -209,6 +209,28 @@ describe("ApplicationList", () => {
 
     // Assert — bulk action bar shows count matching app count
     expect(screen.getByText("2 selected")).toBeInTheDocument();
+  });
+
+  it("should disable bulk action buttons while bulk delete mutation is pending", async () => {
+    // Arrange — suspend bulk delete so mutation stays in-flight
+    server.use(
+      http.delete("/api/applications/bulk", () => new Promise(() => {}))
+    );
+    render(<ApplicationList onSelect={() => {}} />, { wrapper: makeWrapper() });
+    await screen.findByText("Acme Corp");
+
+    // Act — select a row, open bulk delete confirm, confirm deletion
+    await userEvent.click(screen.getByLabelText("Select Acme Corp"));
+    await userEvent.click(screen.getByRole("button", { name: /delete selected/i }));
+    // Confirm modal appears — click Confirm
+    const confirmBtn = await screen.findByRole("button", { name: /delete 1/i });
+    await userEvent.click(confirmBtn);
+
+    // Assert — bulk action buttons are disabled while pending
+    await waitFor(() => {
+      const deleteBtn = screen.getByRole("button", { name: /delete selected/i });
+      expect(deleteBtn).toBeDisabled();
+    });
   });
 
   it("should clear selection when select-all is clicked again while all are selected", async () => {
