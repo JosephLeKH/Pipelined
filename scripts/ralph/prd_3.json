@@ -204,7 +204,7 @@
         "npm test passes in /extension"
       ],
       "priority": 11,
-      "passes": false,
+      "passes": true,
       "notes": "Wellfound is the primary destination for startup jobs. Dice is heavily used for enterprise/government tech roles. Both are high-traffic sources for Pipelined's target users."
     },
     {

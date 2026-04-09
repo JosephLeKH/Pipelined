@@ -163,3 +163,21 @@ Commit: d266cdc
 - Frontend: 194 passed (25 test files)
 - Backend: 192 passed
 - Build: clean
+
+## US-070 — Wellfound (AngelList) and Dice extension board support
+Status: PASSED
+Commit: b155abc
+
+### What was done
+- Created `extension/content/boards/wellfound.js`: BOARD_ID='wellfound', isJobPage() checks wellfound.com/jobs/ URL + h1.job-title, extractFields() reads h1.job-title, [data-test='company-name'], [data-test='job-location'], company_type fixed as 'startup'
+- Created `extension/content/boards/dice.js`: BOARD_ID='dice', isJobPage() checks www.dice.com/job-detail/ URL + h1.jobTitle, extractFields() reads h1.jobTitle, .employerInfo .employer-name, .job-overview-location, .salary-range
+- Updated `extension/manifest.json`: added *://wellfound.com/jobs/* and *://www.dice.com/job-detail/* to content_scripts matches
+- Updated `extension/content/content.js`: imported wellfound and dice, added to BOARDS array
+- Created `extension/tests/fixtures/wellfound-swe-posting.html` and `dice-swe-posting.html` minimal DOM fixtures
+- Created `extension/tests/test_wellfound.js`: 11 JSDOM tests (BOARD_ID, isJobPage, extractFields including hybrid/null remote_status, null fallbacks, no-throw)
+- Created `extension/tests/test_dice.js`: 12 JSDOM tests (BOARD_ID, isJobPage, extractFields including compensation extraction, hybrid/null remote_status, null fallbacks, no-throw)
+
+### Test results
+- Extension: 191 passed (13 test suites)
+- Frontend: 194 passed (no regression)
+- Build: clean
