@@ -51,12 +51,14 @@ beforeAll(async () => {
   // Dynamic import ensures module-level code runs after globals are set
   const mod = await import("../content/content.js");
   injectBanner = mod.injectBanner;
-  dismiss = mod.dismiss;
-  BANNER_AUTO_DISMISS_MS = mod.BANNER_AUTO_DISMISS_MS;
-  FADE_DURATION_MS = mod.FADE_DURATION_MS;
   initAutoSave = mod.initAutoSave;
   AUTO_SAVE_DEBOUNCE_MS = mod.AUTO_SAVE_DEBOUNCE_MS;
   clearSavedUrls = mod.clearSavedUrls;
+
+  const helpers = await import("../content/banner_helpers.js");
+  dismiss = helpers.dismiss;
+  BANNER_AUTO_DISMISS_MS = helpers.BANNER_AUTO_DISMISS_MS;
+  FADE_DURATION_MS = helpers.FADE_DURATION_MS;
 });
 
 beforeEach(() => {

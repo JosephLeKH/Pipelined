@@ -5,6 +5,7 @@ const API_BASE = "https://api.pipelined.app";
 
 const MSG = {
   SAVE_APPLICATION: "SAVE_APPLICATION",
+  SAVE_CONTACT: "SAVE_CONTACT",
   SAVE_RESULT: "SAVE_RESULT",
   GET_AUTH_STATUS: "GET_AUTH_STATUS",
   AUTH_STATUS: "AUTH_STATUS",
@@ -119,6 +120,25 @@ async function executeSave(payload) {
   return { status: "success", application: response.data };
 }
 
+async function executeContactSave(payload) {
+  const { fields, sourceUrl } = payload;
+  const body = {
+    name: fields.name,
+    headline: fields.headline,
+    company: fields.company,
+    linkedin_url: fields.linkedin_url || sourceUrl,
+    source: "extension",
+  };
+  const response = await fetchWithAuth("/api/contacts", {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+  if (!response.data) {
+    return { status: "error", message: response.error?.message || "Save failed" };
+  }
+  return { status: "success", contact: response.data };
+}
+
 async function handleSave(payload) {
   const taskPromise = saveQueue.then(() =>
     executeSave(payload).catch((err) => {
@@ -137,6 +157,11 @@ export { handleSave };
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   if (message.type === MSG.SAVE_APPLICATION) {
     handleSave(message.payload).then(sendResponse);
+    return true;
+  }
+
+  if (message.type === MSG.SAVE_CONTACT) {
+    executeContactSave(message.payload).then(sendResponse);
     return true;
   }
 
