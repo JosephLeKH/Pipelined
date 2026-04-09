@@ -5,6 +5,7 @@ import { CSS } from "@dnd-kit/utilities";
 
 import { STALE_APPLICATION_DAYS } from "../lib/constants";
 import { formatRelative } from "../lib/dateUtils";
+import FitBadge from "./FitBadge";
 
 const MS_PER_DAY = 86_400_000;
 
@@ -54,9 +55,12 @@ function KanbanCard({ application, onSelect }) {
       <p className="mt-0.5 truncate text-sm text-gray-600 dark:text-gray-400">
         {application.role_title}
       </p>
-      <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
-        {formatRelative(application.date_applied)}
-      </p>
+      <div className="mt-1 flex items-center justify-between">
+        <p className="text-xs text-gray-400 dark:text-gray-500">
+          {formatRelative(application.date_applied)}
+        </p>
+        <FitBadge score={application.ai_analysis?.fit_score ?? null} />
+      </div>
     </div>
   );
 }

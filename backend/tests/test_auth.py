@@ -417,3 +417,92 @@ async def test_patch_me_updates_timezone(client):
     # Assert
     assert response.status_code == 200
     assert response.json()["data"]["timezone"] == "America/Los_Angeles"
+
+
+# ── Resume endpoints ──────────────────────────────────────────────────────────
+
+def _minimal_pdf() -> bytes:
+    """Return a minimal PDF with extractable text for testing."""
+    return (
+        b"%PDF-1.4\n"
+        b"1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n\n"
+        b"2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n\n"
+        b"3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792]\n"
+        b"   /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>\nendobj\n\n"
+        b"4 0 obj\n<< /Length 44 >>\nstream\n"
+        b"BT /F1 12 Tf 72 720 Td (Hello World) Tj ET\n"
+        b"endstream\nendobj\n\n"
+        b"5 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\nendobj\n\n"
+        b"xref\n0 6\n"
+        b"0000000000 65535 f \n"
+        b"0000000009 00000 n \n"
+        b"0000000058 00000 n \n"
+        b"0000000115 00000 n \n"
+        b"0000000266 00000 n \n"
+        b"0000000360 00000 n \n\n"
+        b"trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n441\n%%EOF"
+    )
+
+
+async def test_upload_resume_sets_has_resume(client):
+    # Arrange
+    reg = await client.post("/api/auth/register", json=REGISTER_PAYLOAD)
+    cookies = dict(reg.cookies)
+
+    # Act
+    response = await client.post(
+        "/api/auth/resume",
+        files={"file": ("resume.pdf", _minimal_pdf(), "application/pdf")},
+        cookies=cookies,
+    )
+
+    # Assert
+    assert response.status_code == 200
+    me = await client.get("/api/auth/me", cookies=cookies)
+    assert me.json()["data"]["has_resume"] is True
+
+
+async def test_upload_resume_rejects_non_pdf(client):
+    # Arrange
+    reg = await client.post("/api/auth/register", json=REGISTER_PAYLOAD)
+    cookies = dict(reg.cookies)
+
+    # Act
+    response = await client.post(
+        "/api/auth/resume",
+        files={"file": ("resume.txt", b"plain text", "text/plain")},
+        cookies=cookies,
+    )
+
+    # Assert
+    assert response.status_code == 400
+
+
+async def test_delete_resume_clears_has_resume(client):
+    # Arrange
+    reg = await client.post("/api/auth/register", json=REGISTER_PAYLOAD)
+    cookies = dict(reg.cookies)
+    await client.post(
+        "/api/auth/resume",
+        files={"file": ("resume.pdf", _minimal_pdf(), "application/pdf")},
+        cookies=cookies,
+    )
+
+    # Act
+    response = await client.delete("/api/auth/resume", cookies=cookies)
+
+    # Assert
+    assert response.status_code == 204
+    me = await client.get("/api/auth/me", cookies=cookies)
+    assert me.json()["data"]["has_resume"] is False
+
+
+async def test_upload_resume_requires_auth(client):
+    # Act
+    response = await client.post(
+        "/api/auth/resume",
+        files={"file": ("resume.pdf", _minimal_pdf(), "application/pdf")},
+    )
+
+    # Assert
+    assert response.status_code == 401

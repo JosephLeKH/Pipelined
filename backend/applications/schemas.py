@@ -27,6 +27,14 @@ class StageHistoryEntry(BaseModel):
     transitioned_at: datetime
 
 
+class AiFitAnalysis(BaseModel):
+    fit_score: int | None = None
+    matched_skills: list[str] = Field(default_factory=list)
+    missing_skills: list[str] = Field(default_factory=list)
+    summary: str | None = None
+    scored_at: datetime | None = None
+
+
 class ApplicationCreate(BaseModel):
     model_config = ConfigDict(strict=True)
 
@@ -76,6 +84,7 @@ class ApplicationResponse(BaseModel):
     archived_at: datetime | None = None
     deleted: bool = False
     deleted_at: datetime | None = None
+    ai_analysis: AiFitAnalysis | None = None
 
     @classmethod
     def from_doc(cls, doc: dict) -> "ApplicationResponse":

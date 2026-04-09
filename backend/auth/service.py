@@ -234,6 +234,26 @@ async def update_user_profile(
     return user
 
 
+async def save_resume_text(user_id: str, resume_text: str) -> None:
+    """Store extracted resume text on the user document."""
+    users = get_collection("users")
+    await users.update_one(
+        {"_id": ObjectId(user_id)},
+        {"$set": {"resume_text": resume_text}},
+    )
+    logger.info("resume_saved", user_id=user_id, chars=len(resume_text))
+
+
+async def clear_resume_text(user_id: str) -> None:
+    """Remove stored resume text from the user document."""
+    users = get_collection("users")
+    await users.update_one(
+        {"_id": ObjectId(user_id)},
+        {"$unset": {"resume_text": ""}},
+    )
+    logger.info("resume_cleared", user_id=user_id)
+
+
 async def reset_password(token: str, new_password: str) -> None:
     """Validate the reset token and update the user's password.
 

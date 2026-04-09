@@ -1,5 +1,6 @@
 """Application CRUD, duplicate guard, and stage transition logic."""
 
+import asyncio
 import csv
 import io
 from datetime import datetime, timedelta, timezone
@@ -18,6 +19,7 @@ from applications.schemas import (
 )
 from auth.service import get_user_by_id
 from database import get_client, get_collection
+from parsing.fit_scorer import score_fit
 from parsing.openai_client import parse_with_openai
 
 logger = structlog.get_logger()
@@ -37,6 +39,7 @@ LIST_PROJECTION = {
     "tags": 1,
     "archived": 1,
     "archived_at": 1,
+    "ai_analysis.fit_score": 1,
 }
 
 CSV_EXPORT_COLUMNS = (
@@ -195,6 +198,20 @@ async def _apply_openai_fallback(body: ApplicationCreate) -> ApplicationCreate:
     return body.model_copy(update=updates)
 
 
+async def _score_and_update(app_id: str, resume_text: str, job_description: str) -> None:
+    """Score fit in background and persist ai_analysis on the application."""
+    result = await score_fit(resume_text, job_description)
+    if result.get("fit_score") is None:
+        return
+    apps = get_collection("applications")
+    ai_analysis = {**result, "scored_at": datetime.now(timezone.utc)}
+    await apps.update_one(
+        {"_id": ObjectId(app_id)},
+        {"$set": {"ai_analysis": ai_analysis}},
+    )
+    logger.info("fit_score_saved", app_id=app_id, fit_score=result["fit_score"])
+
+
 async def create(user_id: str, body: ApplicationCreate) -> dict:
     """Create a new application. Raises DuplicateApplicationError on (user_id, company, role_title) collision.
 
@@ -240,6 +257,17 @@ async def create(user_id: str, body: ApplicationCreate) -> dict:
     result = await apps.insert_one(doc)
     doc["_id"] = result.inserted_id
     logger.info("application_created", user_id=user_id, app_id=str(result.inserted_id))
+
+    user = await get_user_by_id(user_id)
+    resume_text = user.get("resume_text", "") if user else ""
+    if resume_text:
+        job_description = " ".join(
+            filter(None, [body.role_title, body.company, body.page_text])
+        )
+        asyncio.create_task(
+            _score_and_update(str(result.inserted_id), resume_text, job_description)
+        )
+
     return doc
 
 

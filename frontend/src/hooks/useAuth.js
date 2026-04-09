@@ -2,7 +2,7 @@
 
 import { useMutation } from "@tanstack/react-query";
 
-import { loginWithEmail, registerWithEmail, googleAuth, logoutUser, forgotPassword, resetPassword, updateCurrentUser } from "../api/auth";
+import { loginWithEmail, registerWithEmail, googleAuth, logoutUser, forgotPassword, resetPassword, updateCurrentUser, uploadResume, deleteResume, fetchCurrentUser } from "../api/auth";
 import { useAuth } from "../context/AuthContext";
 
 export function useLogin() {
@@ -48,6 +48,28 @@ export function useUpdateUser() {
     mutationFn: (body) => updateCurrentUser(body),
     onSuccess: (data) => {
       updateUser(data);
+    },
+  });
+}
+
+export function useUploadResume() {
+  const { updateUser } = useAuth();
+  return useMutation({
+    mutationFn: (file) => uploadResume(file),
+    onSuccess: async () => {
+      const updated = await fetchCurrentUser();
+      updateUser(updated);
+    },
+  });
+}
+
+export function useDeleteResume() {
+  const { updateUser } = useAuth();
+  return useMutation({
+    mutationFn: deleteResume,
+    onSuccess: async () => {
+      const updated = await fetchCurrentUser();
+      updateUser(updated);
     },
   });
 }

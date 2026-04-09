@@ -28,12 +28,14 @@ import NavBar from "../components/NavBar";
 import SharePipeline from "../components/SharePipeline";
 import TimezoneSelector from "../components/TimezoneSelector";
 import { useAuth } from "../context/AuthContext";
-import { useUpdateUser } from "../hooks/useAuth";
+import { useDeleteResume, useUpdateUser, useUploadResume } from "../hooks/useAuth";
 
 const STAGE_NAME_MAX_LENGTH = 40;
 const STAGES_MIN_COUNT = 2;
 const STAGES_MAX_COUNT = 10;
 const GENERIC_ERROR = "Failed to save stages. Please try again.";
+const RESUME_ACCEPT = ".pdf";
+const RESUME_MAX_MB = 2;
 
 function SortableStageItem({ id, value, onRename, onRemove, canRemove }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
@@ -216,6 +218,10 @@ function Settings() {
   const { mutateAsync, isPending, error: mutationError } = useUpdateUser();
   const { mutateAsync: mutateTz, isPending: isTzPending, error: tzError } = useUpdateUser();
   const { mutateAsync: mutateDigest, isPending: isDigestPending } = useUpdateUser();
+  const { mutate: uploadResume, isPending: isUploading } = useUploadResume();
+  const { mutate: deleteResume, isPending: isDeleting } = useDeleteResume();
+  const [resumeError, setResumeError] = useState(null);
+  const [resumeSuccess, setResumeSuccess] = useState(false);
   const [savedStages, setSavedStages] = useState(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [timezone, setTimezone] = useState(
@@ -242,6 +248,31 @@ function Settings() {
     setTzSaved(false);
     try { await mutateTz({ timezone }); setTzSaved(true); } catch { /* tzError surfaced */ }
   }, [timezone, mutateTz]);
+
+  const handleResumeUpload = useCallback((e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setResumeError(null);
+    setResumeSuccess(false);
+    if (file.size > RESUME_MAX_MB * 1024 * 1024) {
+      setResumeError(`File must be ${RESUME_MAX_MB} MB or smaller.`);
+      return;
+    }
+    uploadResume(file, {
+      onSuccess: () => setResumeSuccess(true),
+      onError: (err) => setResumeError(err?.message ?? "Upload failed. Please try again."),
+    });
+    // Reset input so the same file can be re-selected after removal
+    e.target.value = "";
+  }, [uploadResume]);
+
+  const handleResumeDelete = useCallback(() => {
+    setResumeError(null);
+    setResumeSuccess(false);
+    deleteResume(undefined, {
+      onError: (err) => setResumeError(err?.message ?? "Failed to remove resume."),
+    });
+  }, [deleteResume]);
 
   const handleDigestToggle = useCallback(async (enabled) => {
     setDigestEnabled(enabled);
@@ -316,6 +347,53 @@ function Settings() {
         <div className="mt-6">
           <SharePipeline />
         </div>
+
+        <section className="mt-6 rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+          <h2 className="mb-1 text-base font-semibold text-gray-900 dark:text-gray-100">
+            Resume
+          </h2>
+          <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">
+            Upload your resume (PDF, max {RESUME_MAX_MB} MB) to enable AI fit scoring on new applications.
+          </p>
+          {resumeSuccess && (
+            <p role="alert" className="mb-4 rounded bg-green-50 px-3 py-2 text-sm text-green-700 dark:bg-green-900/30 dark:text-green-300">
+              Resume uploaded successfully.
+            </p>
+          )}
+          {resumeError && (
+            <p role="alert" className="mb-4 text-sm text-red-600 dark:text-red-400">{resumeError}</p>
+          )}
+          <div className="flex flex-wrap items-center gap-3">
+            <label className="flex cursor-pointer items-center gap-2 rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-2 disabled:opacity-60">
+              {isUploading && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
+              {user?.has_resume ? "Replace resume" : "Upload resume"}
+              <input
+                type="file"
+                accept={RESUME_ACCEPT}
+                className="sr-only"
+                onChange={handleResumeUpload}
+                disabled={isUploading || isDeleting}
+                aria-label="Upload resume PDF"
+              />
+            </label>
+            {user?.has_resume && (
+              <button
+                type="button"
+                onClick={handleResumeDelete}
+                disabled={isUploading || isDeleting}
+                className="flex items-center gap-2 rounded border border-gray-300 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+              >
+                {isDeleting && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
+                Remove resume
+              </button>
+            )}
+          </div>
+          {user?.has_resume && !resumeSuccess && (
+            <p className="mt-3 text-xs text-gray-400 dark:text-gray-500">
+              A resume is currently on file. New applications will be scored automatically.
+            </p>
+          )}
+        </section>
 
         <section className="mt-6 rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
           <h2 className="mb-1 text-base font-semibold text-gray-900 dark:text-gray-100">

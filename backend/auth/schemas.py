@@ -36,6 +36,7 @@ class UserResponse(BaseModel):
     default_stages: list[str]
     timezone: str
     digest_enabled: bool
+    has_resume: bool = False
 
     @classmethod
     def from_doc(cls, doc: dict) -> "UserResponse":
@@ -46,6 +47,7 @@ class UserResponse(BaseModel):
             default_stages=doc["default_stages"],
             timezone=doc.get("timezone", DEFAULT_TIMEZONE),
             digest_enabled=doc.get("digest_enabled", True),
+            has_resume=bool(doc.get("resume_text")),
         )
 
 

@@ -7,6 +7,7 @@ import Pencil from "lucide-react/dist/esm/icons/pencil";
 import { STAGE_COLORS, DEFAULT_STAGE_COLOR, STALE_APPLICATION_DAYS } from "../lib/constants";
 import { formatDate } from "../lib/dateUtils";
 import { RowMenu } from "./ApplicationRowActions";
+import FitBadge from "./FitBadge";
 
 const MS_PER_DAY = 86_400_000;
 
@@ -85,6 +86,7 @@ function ApplicationRow({
         {application.role_title}
       </span>
       <StagePill stage={application.current_stage} />
+      <FitBadge score={application.ai_analysis?.fit_score ?? null} />
       <span className="w-28 text-sm text-gray-500 dark:text-gray-400">{dateApplied}</span>
       <SourceIcon className="h-4 w-4 shrink-0 text-gray-400 dark:text-gray-500" aria-label={application.source} />
       <RowMenu

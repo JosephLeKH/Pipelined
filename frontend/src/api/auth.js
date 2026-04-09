@@ -33,3 +33,15 @@ export async function resetPassword(token, new_password) {
 export async function updateCurrentUser(body) {
   return client.patch("/auth/me", body);
 }
+
+export async function uploadResume(file) {
+  const form = new FormData();
+  form.append("file", file);
+  return client.post("/auth/resume", form, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+}
+
+export async function deleteResume() {
+  return client.delete("/auth/resume");
+}
