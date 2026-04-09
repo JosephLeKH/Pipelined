@@ -8,7 +8,7 @@ from pydantic import AnyHttpUrl, BaseModel, ConfigDict, Field
 ValidSource = Literal["extension", "board", "manual"]
 ValidCompanyType = Literal["startup", "mid", "enterprise", "gov", "nonprofit", "other"]
 ValidRemoteStatus = Literal["remote", "hybrid", "onsite", "unknown"]
-ValidSortField = Literal["date_applied", "company", "current_stage", "updated_at"]
+ValidSortField = Literal["date_applied", "company", "current_stage", "updated_at", "follow_up_date"]
 ValidSortOrder = Literal["asc", "desc"]
 
 DEFAULT_QUERY_LIMIT = 25
@@ -63,8 +63,9 @@ class ApplicationUpdate(BaseModel):
     company_type: ValidCompanyType | None = None
     location: str | None = Field(None, max_length=MAX_LOCATION_LENGTH)
     remote_status: ValidRemoteStatus | None = None
-    date_applied: datetime | None = None
+    date_applied: datetime | None = Field(None, strict=False)
     tags: list[str] | None = None
+    follow_up_date: datetime | None = Field(None, strict=False)
 
 
 class ApplicationResponse(BaseModel):
@@ -86,6 +87,7 @@ class ApplicationResponse(BaseModel):
     deleted_at: datetime | None = None
     ai_analysis: AiFitAnalysis | None = None
     company_domain: str | None = None
+    follow_up_date: datetime | None = None
 
     @classmethod
     def from_doc(cls, doc: dict) -> "ApplicationResponse":
@@ -118,6 +120,7 @@ class StatsResponse(BaseModel):
     stale_count: int = 0
     applied_this_week: int = 0
     current_streak: int = 0
+    follow_ups_due: int = 0
 
 
 class StageAddRequest(BaseModel):

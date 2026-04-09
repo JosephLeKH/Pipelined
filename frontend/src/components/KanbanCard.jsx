@@ -2,6 +2,7 @@
 
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import Bell from "lucide-react/dist/esm/icons/bell";
 
 import { STALE_APPLICATION_DAYS } from "../lib/constants";
 import { formatRelative } from "../lib/dateUtils";
@@ -12,6 +13,11 @@ const MS_PER_DAY = 86_400_000;
 
 function isStale(updatedAt) {
   return Date.now() - new Date(updatedAt).getTime() > STALE_APPLICATION_DAYS * MS_PER_DAY;
+}
+
+function isFollowUpOverdue(followUpDate) {
+  if (!followUpDate) return false;
+  return new Date(followUpDate) < new Date(new Date().toDateString());
 }
 
 function KanbanCard({ application, onSelect }) {
@@ -30,6 +36,7 @@ function KanbanCard({ application, onSelect }) {
   };
 
   const stale = isStale(application.updated_at);
+  const followUpOverdue = isFollowUpOverdue(application.follow_up_date);
 
   return (
     <div
@@ -48,6 +55,13 @@ function KanbanCard({ application, onSelect }) {
           className="absolute right-2 top-2 h-2 w-2 rounded-full bg-amber-400"
           aria-label="Stale application — no updates in 14+ days"
           data-testid="stale-indicator"
+        />
+      )}
+      {followUpOverdue && (
+        <span
+          className="absolute right-6 top-2 h-2 w-2 rounded-full bg-yellow-400"
+          aria-label="Follow-up overdue"
+          data-testid="follow-up-indicator"
         />
       )}
       <div className="flex items-center gap-2 pr-4">

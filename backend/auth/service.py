@@ -214,8 +214,9 @@ async def update_user_profile(
     stages: list[str] | None,
     timezone: str | None,
     digest_enabled: bool | None,
+    weekly_goal: int | None = None,
 ) -> dict:
-    """Update the user's default_stages, timezone, and/or digest_enabled; return the updated document."""
+    """Update the user's default_stages, timezone, digest_enabled, and/or weekly_goal; return the updated document."""
     users = get_collection("users")
     update_fields: dict = {}
     if stages is not None:
@@ -224,6 +225,8 @@ async def update_user_profile(
         update_fields["timezone"] = timezone
     if digest_enabled is not None:
         update_fields["digest_enabled"] = digest_enabled
+    if weekly_goal is not None:
+        update_fields["weekly_goal"] = weekly_goal
     if update_fields:
         await users.update_one(
             {"_id": ObjectId(user_id)},

@@ -6,6 +6,7 @@ from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 _VALID_TIMEZONES: frozenset[str] = frozenset(available_timezones())
 DEFAULT_TIMEZONE = "America/New_York"
+DEFAULT_WEEKLY_GOAL = 5
 
 
 class RegisterRequest(BaseModel):
@@ -37,6 +38,7 @@ class UserResponse(BaseModel):
     timezone: str
     digest_enabled: bool
     has_resume: bool = False
+    weekly_goal: int = DEFAULT_WEEKLY_GOAL
 
     @classmethod
     def from_doc(cls, doc: dict) -> "UserResponse":
@@ -48,6 +50,7 @@ class UserResponse(BaseModel):
             timezone=doc.get("timezone", DEFAULT_TIMEZONE),
             digest_enabled=doc.get("digest_enabled", True),
             has_resume=bool(doc.get("resume_text")),
+            weekly_goal=doc.get("weekly_goal", DEFAULT_WEEKLY_GOAL),
         )
 
 
@@ -73,6 +76,8 @@ class ResetPasswordRequest(BaseModel):
 STAGES_MIN_COUNT = 2
 STAGES_MAX_COUNT = 10
 STAGE_NAME_MAX_LENGTH = 40
+WEEKLY_GOAL_MIN = 1
+WEEKLY_GOAL_MAX = 50
 
 
 class UpdateUserRequest(BaseModel):
@@ -85,6 +90,7 @@ class UpdateUserRequest(BaseModel):
     )
     timezone: str | None = None
     digest_enabled: bool | None = None
+    weekly_goal: int | None = Field(None, ge=WEEKLY_GOAL_MIN, le=WEEKLY_GOAL_MAX)
 
     def model_post_init(self, __context: object) -> None:
         if self.default_stages is not None:

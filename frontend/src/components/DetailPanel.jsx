@@ -6,6 +6,7 @@ import Plus from "lucide-react/dist/esm/icons/plus";
 import Trash2 from "lucide-react/dist/esm/icons/trash-2";
 import X from "lucide-react/dist/esm/icons/x";
 import ExternalLink from "lucide-react/dist/esm/icons/external-link";
+import AlertTriangle from "lucide-react/dist/esm/icons/alert-triangle";
 
 import { useDeleteApplication, useRestoreApplication, useUpdateApplication } from "../hooks/useApplications";
 import { useApplicationEvents, useDeleteEvent } from "../hooks/useCalendar";
@@ -118,7 +119,48 @@ function PanelHeader({ application, onClose, onDelete }) {
   );
 }
 
-function PanelBody({ application, handleStageChange, onAddEvent }) {
+function FollowUpSection({ application, onUpdate }) {
+  const rawDate = application.follow_up_date;
+  const dateValue = rawDate ? rawDate.slice(0, 10) : "";
+  const isOverdue = rawDate && new Date(rawDate) < new Date(new Date().toDateString());
+  const overdueDays = isOverdue
+    ? Math.floor((Date.now() - new Date(rawDate).getTime()) / 86_400_000)
+    : 0;
+
+  return (
+    <div className="flex flex-col gap-1.5">
+      <label className="text-xs font-medium uppercase text-gray-400 dark:text-gray-500" htmlFor="follow-up-date">
+        Follow up
+      </label>
+      {isOverdue && (
+        <div className="flex items-center gap-1.5 rounded bg-yellow-50 px-2 py-1.5 text-xs text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400">
+          <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
+          Follow-up overdue by {overdueDays} day{overdueDays !== 1 ? "s" : ""}
+        </div>
+      )}
+      <div className="flex items-center gap-2">
+        <input
+          id="follow-up-date"
+          type="date"
+          value={dateValue}
+          onChange={(e) => onUpdate({ follow_up_date: e.target.value || null })}
+          className="flex-1 rounded border border-gray-300 px-3 py-1.5 text-sm text-gray-800 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
+        />
+        {dateValue && (
+          <button
+            type="button"
+            onClick={() => onUpdate({ follow_up_date: null })}
+            className="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+          >
+            Clear
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function PanelBody({ application, handleStageChange, handleUpdate, onAddEvent }) {
   const { user } = useAuth();
   const stageOptions = user?.default_stages ?? [];
   const dateApplied = formatDate(application.date_applied);
@@ -163,6 +205,7 @@ function PanelBody({ application, handleStageChange, onAddEvent }) {
           )}
         </select>
       </div>
+      <FollowUpSection application={application} onUpdate={handleUpdate} />
       <NotesEditor applicationId={application.id} initialValue={application.notes} />
       <ApplicationTimeline stageHistory={application.stage_history} applicationId={application.id} />
       <CalendarEventsList applicationId={application.id} onAddEvent={onAddEvent} />
@@ -296,6 +339,11 @@ function DetailPanel({ application, onClose, onAddEvent }) {
     [cachedApp, updateApp]
   );
 
+  const handleUpdate = useCallback(
+    (body) => { if (cachedApp) updateApp({ id: cachedApp.id, body }); },
+    [cachedApp, updateApp]
+  );
+
   const displayApp = application ?? cachedApp;
   const isOpen = Boolean(application) || Boolean(undoPendingId);
 
@@ -324,6 +372,7 @@ function DetailPanel({ application, onClose, onAddEvent }) {
             <PanelBody
               application={displayApp}
               handleStageChange={handleStageChange}
+              handleUpdate={handleUpdate}
               onAddEvent={onAddEvent}
             />
           </div>

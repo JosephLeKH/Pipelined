@@ -87,8 +87,8 @@ describe("Dashboard", () => {
     // Arrange / Act
     render(<Dashboard />, { wrapper: makeWrapper() });
 
-    // Assert
-    expect(await screen.findByText("Acme Corp")).toBeInTheDocument();
+    // Assert — findBy* throws if not found, which is sufficient; no toBeInTheDocument needed
+    await screen.findByText("Acme Corp");
     expect(screen.getByText("Software Engineer")).toBeInTheDocument();
   });
 

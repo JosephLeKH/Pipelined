@@ -9,6 +9,7 @@ import List from "lucide-react/dist/esm/icons/list";
 import Loader2 from "lucide-react/dist/esm/icons/loader-2";
 
 import FilterBar from "../components/FilterBar";
+import FollowUpBanner from "../components/FollowUpBanner";
 import GoalProgress from "../components/GoalProgress";
 import NavBar from "../components/NavBar";
 import StatsBar from "../components/StatsBar";
@@ -18,7 +19,7 @@ import CsvImportModal from "../components/CsvImportModal";
 import DetailPanel from "../components/DetailPanel";
 import ManualAddForm from "../components/ManualAddForm";
 import OnboardingChecklist from "../components/OnboardingChecklist";
-import { useApplication } from "../hooks/useApplications";
+import { useApplication, useApplicationStats } from "../hooks/useApplications";
 import { exportApplicationsCsv } from "../api/applications";
 import { VIEW_MODE_STORAGE_KEY } from "../lib/constants";
 
@@ -42,6 +43,7 @@ function Dashboard() {
   // Selected application ID from URL
   const selectedId = searchParams.get("selected") ?? "";
   const { data: selectedApp } = useApplication(selectedId);
+  const { data: stats } = useApplicationStats();
 
   const filters = useMemo(() => {
     const f = {};
@@ -88,6 +90,12 @@ function Dashboard() {
     setViewMode(mode);
     localStorage.setItem(VIEW_MODE_STORAGE_KEY, mode);
   }, []);
+
+  const handleViewFollowUps = useCallback(() => {
+    const next = new URLSearchParams(searchParams);
+    next.set("follow_up_due", "true");
+    setSearchParams(next, { replace: true });
+  }, [searchParams, setSearchParams]);
 
   const shortcutsEnabled = !isModalOpen && !isImportOpen;
   useHotkeys("a", () => setIsModalOpen(true), { enabled: shortcutsEnabled });
@@ -155,6 +163,7 @@ function Dashboard() {
           </div>
         </div>
         <OnboardingChecklist onAdd={() => setIsModalOpen(true)} />
+        <FollowUpBanner followUpsDue={stats?.follow_ups_due ?? 0} onView={handleViewFollowUps} />
         <GoalProgress />
         <StatsBar />
         <FilterBar />

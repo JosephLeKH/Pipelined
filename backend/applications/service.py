@@ -41,6 +41,7 @@ LIST_PROJECTION = {
     "archived": 1,
     "archived_at": 1,
     "ai_analysis.fit_score": 1,
+    "follow_up_date": 1,
 }
 
 CSV_EXPORT_COLUMNS = (
@@ -328,12 +329,17 @@ async def update(user_id: str, app_id: str, updates: ApplicationUpdate) -> dict 
     apps = get_collection("applications")
     now = datetime.now(timezone.utc)
 
-    set_fields = {k: v for k, v in updates.model_dump(exclude_none=True).items()}
+    explicitly_set = updates.model_fields_set
+    dumped = updates.model_dump()
+    set_fields = {k: v for k, v in dumped.items() if k in explicitly_set and v is not None}
+    unset_fields = {k: "" for k, v in dumped.items() if k in explicitly_set and v is None}
     if "source_url" in set_fields:
         set_fields["source_url"] = str(set_fields["source_url"])
     set_fields["updated_at"] = now
 
     update_doc: dict = {"$set": set_fields}
+    if unset_fields:
+        update_doc["$unset"] = unset_fields
     if "current_stage" in set_fields:
         update_doc["$push"] = {
             "stage_history": {"stage": set_fields["current_stage"], "transitioned_at": now}
@@ -608,6 +614,7 @@ async def compute_stats(user_id: str) -> dict:
     col = get_collection("applications")
     stale_cutoff = datetime.now(timezone.utc) - timedelta(days=STALE_DAYS)
 
+    today = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
     pipeline = [
         {"$match": {"user_id": uid}},
         {"$facet": {
@@ -642,6 +649,14 @@ async def compute_stats(user_id: str) -> dict:
                 {"$match": {"deleted": {"$ne": True}}},
                 {"$project": {"_id": 0, "date_applied": 1}},
             ],
+            "follow_ups_due": [
+                {"$match": {
+                    "archived": {"$ne": True},
+                    "deleted": {"$ne": True},
+                    "follow_up_date": {"$ne": None, "$lte": today},
+                }},
+                {"$count": "count"},
+            ],
         }},
     ]
 
@@ -658,6 +673,7 @@ async def compute_stats(user_id: str) -> dict:
     stale = raw["stale"][0]["count"] if raw["stale"] else 0
     dates = [_extract_date_str(d.get("date_applied")) for d in raw["date_applied_list"]]
     applied_this_week, current_streak = _compute_weekly_stats(dates, weekly_goal)
+    follow_ups_due = raw["follow_ups_due"][0]["count"] if raw["follow_ups_due"] else 0
 
     return {
         "total_applied": total,
@@ -667,6 +683,7 @@ async def compute_stats(user_id: str) -> dict:
         "stale_count": stale,
         "applied_this_week": applied_this_week,
         "current_streak": current_streak,
+        "follow_ups_due": follow_ups_due,
     }
 
 

@@ -1209,3 +1209,118 @@ async def test_stats_applied_this_week_excludes_last_week_applications(client, t
     # Assert
     data = response.json()["data"]
     assert data["applied_this_week"] == 0
+
+
+# ---------------------------------------------------------------------------
+# Follow-up date field tests
+# ---------------------------------------------------------------------------
+
+
+async def test_update_application_sets_follow_up_date(client, test_user):
+    # Arrange
+    _, cookies = test_user
+    create_resp = await client.post("/api/applications", json=APP_PAYLOAD, cookies=cookies)
+    app_id = create_resp.json()["data"]["id"]
+
+    # Act
+    response = await client.patch(
+        f"/api/applications/{app_id}",
+        json={"follow_up_date": "2026-04-15T00:00:00Z"},
+        cookies=cookies,
+    )
+
+    # Assert
+    assert response.status_code == 200
+    data = response.json()["data"]
+    assert data["follow_up_date"] is not None
+    assert "2026-04-15" in data["follow_up_date"]
+
+
+async def test_update_application_clears_follow_up_date(client, test_user):
+    # Arrange
+    _, cookies = test_user
+    create_resp = await client.post("/api/applications", json=APP_PAYLOAD, cookies=cookies)
+    app_id = create_resp.json()["data"]["id"]
+    await client.patch(
+        f"/api/applications/{app_id}",
+        json={"follow_up_date": "2026-04-15T00:00:00Z"},
+        cookies=cookies,
+    )
+
+    # Act — explicitly set to null to clear
+    response = await client.patch(
+        f"/api/applications/{app_id}",
+        json={"follow_up_date": None},
+        cookies=cookies,
+    )
+
+    # Assert
+    assert response.status_code == 200
+    data = response.json()["data"]
+    assert data["follow_up_date"] is None
+
+
+async def test_stats_follow_ups_due_counts_overdue_applications(client, test_user):
+    # Arrange — create an app with follow_up_date in the past
+    user, cookies = test_user
+    from bson import ObjectId
+
+    yesterday = datetime.now(timezone.utc) - timedelta(days=1)
+    col = get_collection("applications")
+    await col.insert_one({
+        "user_id": ObjectId(user["id"]),
+        "role_title": "Follow-Up Role",
+        "company": "Reminder Corp",
+        "normalised_company": "reminder corp",
+        "normalised_role": "follow-up role",
+        "source": "manual",
+        "current_stage": "Applied",
+        "stages": ["Applied"],
+        "stage_history": [{"stage": "Applied", "transitioned_at": yesterday}],
+        "date_applied": yesterday,
+        "created_at": yesterday,
+        "updated_at": yesterday,
+        "follow_up_date": yesterday,
+        "tags": [],
+        "archived": False,
+    })
+
+    # Act
+    response = await client.get("/api/applications/stats", cookies=cookies)
+
+    # Assert
+    data = response.json()["data"]
+    assert data["follow_ups_due"] >= 1
+
+
+async def test_stats_follow_ups_due_excludes_archived_applications(client, test_user):
+    # Arrange — archived app with past follow_up_date should not count
+    user, cookies = test_user
+    from bson import ObjectId
+
+    yesterday = datetime.now(timezone.utc) - timedelta(days=1)
+    col = get_collection("applications")
+    await col.insert_one({
+        "user_id": ObjectId(user["id"]),
+        "role_title": "Archived Follow-Up",
+        "company": "Old Corp",
+        "normalised_company": "old corp",
+        "normalised_role": "archived follow-up",
+        "source": "manual",
+        "current_stage": "Applied",
+        "stages": ["Applied"],
+        "stage_history": [{"stage": "Applied", "transitioned_at": yesterday}],
+        "date_applied": yesterday,
+        "created_at": yesterday,
+        "updated_at": yesterday,
+        "follow_up_date": yesterday,
+        "tags": [],
+        "archived": True,
+    })
+
+    # Act
+    response = await client.get("/api/applications/stats", cookies=cookies)
+
+    # Assert — follow_ups_due count should not include archived app
+    data = response.json()["data"]
+    assert "follow_ups_due" in data

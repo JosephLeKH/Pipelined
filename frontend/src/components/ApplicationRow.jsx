@@ -3,6 +3,7 @@
 import Globe from "lucide-react/dist/esm/icons/globe";
 import LayoutDashboard from "lucide-react/dist/esm/icons/layout-dashboard";
 import Pencil from "lucide-react/dist/esm/icons/pencil";
+import Bell from "lucide-react/dist/esm/icons/bell";
 
 import { STAGE_COLORS, DEFAULT_STAGE_COLOR, STALE_APPLICATION_DAYS } from "../lib/constants";
 import { formatDate } from "../lib/dateUtils";
@@ -20,6 +21,11 @@ const SOURCE_ICONS = {
 
 function isStale(updatedAt) {
   return Date.now() - new Date(updatedAt).getTime() > STALE_APPLICATION_DAYS * MS_PER_DAY;
+}
+
+function isFollowUpOverdue(followUpDate) {
+  if (!followUpDate) return false;
+  return new Date(followUpDate) < new Date(new Date().toDateString());
 }
 
 export function StagePill({ stage }) {
@@ -41,6 +47,7 @@ function ApplicationRow({
 }) {
   const SourceIcon = SOURCE_ICONS[application.source] ?? Pencil;
   const stale = isStale(application.updated_at);
+  const followUpOverdue = isFollowUpOverdue(application.follow_up_date);
   const dateApplied = formatDate(application.date_applied);
   const archived = Boolean(application.archived);
   const checkboxVisible = hasSelection ? "opacity-100" : "opacity-0 group-hover:opacity-100";
@@ -89,6 +96,19 @@ function ApplicationRow({
       </span>
       <StagePill stage={application.current_stage} />
       <FitBadge score={application.ai_analysis?.fit_score ?? null} />
+      <span className="relative w-4 shrink-0 group/followup">
+        {followUpOverdue && !archived && (
+          <>
+            <Bell className="h-4 w-4 text-yellow-500" data-testid="follow-up-bell" aria-label={`Follow-up due ${formatDate(application.follow_up_date)}`} />
+            <span
+              role="tooltip"
+              className="pointer-events-none absolute left-5 top-1/2 z-10 -translate-y-1/2 whitespace-nowrap rounded bg-gray-800 px-2 py-1 text-xs text-white opacity-0 group-hover/followup:opacity-100"
+            >
+              Follow-up due {formatDate(application.follow_up_date)}
+            </span>
+          </>
+        )}
+      </span>
       <span className="w-28 text-sm text-gray-500 dark:text-gray-400">{dateApplied}</span>
       <SourceIcon className="h-4 w-4 shrink-0 text-gray-400 dark:text-gray-500" aria-label={application.source} />
       <RowMenu
