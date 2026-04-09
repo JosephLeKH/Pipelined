@@ -140,7 +140,7 @@
         "npm run build passes"
       ],
       "priority": 8,
-      "passes": false,
+      "passes": true,
       "notes": "Current layout is desktop-only. With StatsBar in a row of 4 and ApplicationList + DetailPanel side-by-side, the UI is unusable on a 390px phone screen."
     },
     {

@@ -114,3 +114,12 @@ Commit: bce638f
 ### Learnings
 - `isLoading` vs `isFetching`: isLoading=true only on first fetch (no cached data); isFetching=true on any in-flight request including background refresh. Using both gives precise UX control.
 - CalendarGrid uses `weeks` (derived from month/year props) even during loading, so SkeletonCalendarCells can be rendered in the correct grid layout without waiting for data.
+
+## US-067: Mobile-responsive layout pass
+- NavBar.jsx: Added hamburger toggle (mobileMenuOpen state), hidden desktop links on mobile (md:hidden/md:flex), mobile slide-down menu with data-testid="mobile-nav-menu"
+- DetailPanel.jsx: Converted to bottom sheet on mobile (fixed inset-x-0 bottom-0 h-[90vh] rounded-t-xl, translate-y-full when closed) with md: overrides for desktop right panel
+- FilterBar.jsx: Added overflow-x-auto on filter container, shrink-0 on all fieldsets for horizontal scroll on mobile
+- CalendarGrid.jsx: DayCell min-height reduced to min-h-[48px] md:min-h-[80px]; EventChip shows colored dot on mobile (md:hidden span) and full label on desktop (hidden md:inline)
+- constants.js: Added dot property to all EVENT_TYPE_COLORS entries and DEFAULT_EVENT_COLOR
+- NavBar.test.jsx: New test file with 8 tests covering hamburger toggle, mobile menu visibility, nav links, close on link click, icon switching
+- 182 tests pass, build succeeds
