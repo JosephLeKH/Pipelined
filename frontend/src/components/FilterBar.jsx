@@ -14,7 +14,7 @@ const REMOTE_STATUS_OPTIONS = ["remote", "hybrid", "onsite", "unknown"];
 
 function CheckboxGroup({ label, groupKey, options, selected, onChange }) {
   return (
-    <fieldset className="flex flex-col gap-1">
+    <fieldset className="flex shrink-0 flex-col gap-1">
       <legend className="mb-1 text-xs font-medium uppercase text-gray-500 dark:text-gray-400">{label}</legend>
       {options.map((opt) => {
         const inputId = `filter-${groupKey}-${opt}`;
@@ -99,8 +99,8 @@ function FilterBar() {
           <span>Uncheck &ldquo;Show archived&rdquo; to return to active view.</span>
         </div>
       )}
-      <div className="flex flex-wrap gap-6 rounded-lg bg-white p-4 shadow-sm dark:bg-gray-800">
-        <fieldset className="flex flex-col gap-1">
+      <div className="flex gap-6 overflow-x-auto rounded-lg bg-white p-4 shadow-sm dark:bg-gray-800 md:flex-wrap">
+        <fieldset className="flex shrink-0 flex-col gap-1">
           <legend className="mb-1 text-xs font-medium uppercase text-gray-500 dark:text-gray-400">Search</legend>
           <div className="relative flex items-center">
             <SearchIcon className="absolute left-2 h-4 w-4 text-gray-400" aria-hidden="true" />
@@ -135,7 +135,7 @@ function FilterBar() {
           selected={remoteStatuses}
           onChange={(val) => updateFilter("remote_status", val)}
         />
-        <fieldset className="flex flex-col gap-1">
+        <fieldset className="flex shrink-0 flex-col gap-1">
           <legend className="mb-1 text-xs font-medium uppercase text-gray-500 dark:text-gray-400">Date Range</legend>
           <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
             From
@@ -158,7 +158,7 @@ function FilterBar() {
             />
           </label>
         </fieldset>
-        <fieldset className="flex flex-col gap-1">
+        <fieldset className="flex shrink-0 flex-col gap-1">
           <legend className="mb-1 text-xs font-medium uppercase text-gray-500 dark:text-gray-400">Archive</legend>
           <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
             <input

@@ -47,7 +47,9 @@ function EventChip({ event, onEventClick }) {
       title={label}
       aria-label={label}
     >
-      {label}
+      {/* Mobile: colored dot only; Desktop: full label */}
+      <span className={`inline-block h-2 w-2 rounded-full md:hidden ${colors.dot}`} aria-hidden="true" />
+      <span className="hidden md:inline">{label}</span>
     </button>
   );
 }
@@ -64,7 +66,7 @@ function DayCell({ date, isCurrentMonth, events, onDayClick, onEventClick }) {
       onClick={() => onDayClick(date)}
       onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") onDayClick(date); }}
       aria-label={formatDateLong(date)}
-      className={`min-h-[80px] cursor-pointer border border-gray-100 p-1.5 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 dark:border-gray-700 dark:hover:bg-gray-700 ${
+      className={`min-h-[48px] cursor-pointer border border-gray-100 p-1.5 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 dark:border-gray-700 dark:hover:bg-gray-700 md:min-h-[80px] ${
         isCurrentMonth ? "bg-white dark:bg-gray-800" : "bg-gray-50 dark:bg-gray-900"
       }`}
     >

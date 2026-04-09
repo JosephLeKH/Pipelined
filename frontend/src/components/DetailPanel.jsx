@@ -308,7 +308,11 @@ function DetailPanel({ application, onClose, onAddEvent }) {
     >
       <div
         ref={panelRef}
-        className={`fixed right-0 top-0 h-full w-full bg-white shadow-xl transition-transform duration-[250ms] md:w-[480px] dark:bg-gray-800 ${isOpen ? "translate-x-0" : "translate-x-full"}`}
+        className={`fixed inset-x-0 bottom-0 h-[90vh] rounded-t-xl bg-white shadow-xl transition-transform duration-[250ms] md:inset-x-auto md:bottom-auto md:right-0 md:top-0 md:h-full md:w-[480px] md:rounded-none dark:bg-gray-800 ${
+          isOpen
+            ? "translate-y-0 md:translate-x-0"
+            : "translate-y-full md:translate-y-0 md:translate-x-full"
+        }`}
         role="dialog"
         aria-modal="true"
         aria-label="Application details"
