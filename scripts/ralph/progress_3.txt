@@ -181,3 +181,19 @@ Commit: b155abc
 - Extension: 191 passed (13 test suites)
 - Frontend: 194 passed (no regression)
 - Build: clean
+
+## US-071 — Extension popup redesign with richer save history and stage badges
+Status: PASSED
+Commit: cc364a8
+
+### What was done
+- Updated `backend/auth/router.py`: extension-token endpoint now returns display_name alongside token
+- Updated `extension/background/background.js`: refreshToken() stores display_name in chrome.storage.local; GET_AUTH_STATUS now includes display_name in response
+- Rewrote `extension/popup/popup.html`: added #user-name span, #sign-out button in header; unauthenticated button text → "Sign in to Pipelined"
+- Rewrote `extension/popup/popup.js`: added STAGE_COLORS constant (applied=blue, phone screen=purple, onsite=orange, offer=green, rejected=red), relativeTime() helper, updated renderSaves() with stage badge (.stage-badge), relative time (.save-time), "Open →" link (.open-link, href=DASHBOARD_URL?highlight={id}), added signOut() export, updated init() to show display_name and sign-out button
+- Rewrote `extension/popup/popup.css`: body min-height 480px, header layout with .user-name/.btn-sign-out, .stage-badge pill, .save-top/.save-bottom layout, .open-link, .save-time
+- Updated `extension/tests/test_popup.js`: new POPUP_HTML with #user-name/#sign-out, updated chrome mock to include storage.session.clear, added tests for: stage badge rendering, open-in-dashboard link href, display_name in header, signOut() clears session, relativeTime() helper
+
+### Test results
+- Extension: 202 passed (13 test suites)
+- Frontend build: clean

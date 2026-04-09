@@ -223,7 +223,7 @@
         "npm test passes in /extension"
       ],
       "priority": 12,
-      "passes": false,
+      "passes": true,
       "notes": "Current popup is minimal — just a list of save titles. The redesign makes the extension feel like a polished product, not a utility. Companies and stage badges are stored in chrome.storage.local already."
     },
     {
