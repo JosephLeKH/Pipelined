@@ -193,13 +193,25 @@ async def sync_github_repos() -> None:
     logger.info("github_sync_completed")
 
 
+DIGEST_SEND_HOUR_UTC: int = 8
+DIGEST_SEND_DAY_OF_WEEK: str = "mon"
+
+
 def create_scheduler() -> AsyncIOScheduler:
-    """Build an AsyncIOScheduler that runs sync_github_repos daily at the configured UTC hour."""
+    """Build an AsyncIOScheduler with GitHub sync and weekly digest jobs."""
+    from notifications.digest import send_all_digests  # noqa: PLC0415 — avoid circular at module level
+
     scheduler = AsyncIOScheduler()
     scheduler.add_job(
         sync_github_repos,
         trigger=CronTrigger(hour=settings.github_sync_hour_utc, timezone="UTC"),
         id="github_sync",
+        replace_existing=True,
+    )
+    scheduler.add_job(
+        send_all_digests,
+        trigger=CronTrigger(day_of_week=DIGEST_SEND_DAY_OF_WEEK, hour=DIGEST_SEND_HOUR_UTC, timezone="UTC"),
+        id="weekly_digest",
         replace_existing=True,
     )
     return scheduler

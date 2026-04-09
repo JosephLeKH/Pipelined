@@ -35,6 +35,7 @@ class UserResponse(BaseModel):
     display_name: str
     default_stages: list[str]
     timezone: str
+    digest_enabled: bool
 
     @classmethod
     def from_doc(cls, doc: dict) -> "UserResponse":
@@ -44,6 +45,7 @@ class UserResponse(BaseModel):
             display_name=doc["display_name"],
             default_stages=doc["default_stages"],
             timezone=doc.get("timezone", DEFAULT_TIMEZONE),
+            digest_enabled=doc.get("digest_enabled", True),
         )
 
 
@@ -80,6 +82,7 @@ class UpdateUserRequest(BaseModel):
         max_length=STAGES_MAX_COUNT,
     )
     timezone: str | None = None
+    digest_enabled: bool | None = None
 
     def model_post_init(self, __context: object) -> None:
         if self.default_stages is not None:

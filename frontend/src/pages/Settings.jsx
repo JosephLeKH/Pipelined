@@ -214,12 +214,14 @@ function Settings() {
   const { user } = useAuth();
   const { mutateAsync, isPending, error: mutationError } = useUpdateUser();
   const { mutateAsync: mutateTz, isPending: isTzPending, error: tzError } = useUpdateUser();
+  const { mutateAsync: mutateDigest, isPending: isDigestPending } = useUpdateUser();
   const [savedStages, setSavedStages] = useState(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [timezone, setTimezone] = useState(
     () => user?.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone ?? "America/New_York"
   );
   const [tzSaved, setTzSaved] = useState(false);
+  const [digestEnabled, setDigestEnabled] = useState(() => user?.digest_enabled ?? true);
 
   const handleSave = useCallback(
     async (stages) => {
@@ -239,6 +241,11 @@ function Settings() {
     setTzSaved(false);
     try { await mutateTz({ timezone }); setTzSaved(true); } catch { /* tzError surfaced */ }
   }, [timezone, mutateTz]);
+
+  const handleDigestToggle = useCallback(async (enabled) => {
+    setDigestEnabled(enabled);
+    try { await mutateDigest({ digest_enabled: enabled }); } catch { setDigestEnabled(!enabled); }
+  }, [mutateDigest]);
 
   const currentStages = savedStages ?? user?.default_stages ?? [];
   const saveError = mutationError ? (mutationError.message ?? GENERIC_ERROR) : null;
@@ -303,6 +310,33 @@ function Settings() {
               Save timezone
             </button>
           </div>
+        </section>
+
+        <section className="mt-6 rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+          <h2 className="mb-1 text-base font-semibold text-gray-900 dark:text-gray-100">
+            Weekly digest email
+          </h2>
+          <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">
+            Receive a weekly summary of your job search activity every Monday morning.
+          </p>
+          <label className="flex cursor-pointer items-center gap-3">
+            <button
+              type="button"
+              role="switch"
+              aria-checked={digestEnabled}
+              aria-label="Weekly digest email"
+              disabled={isDigestPending}
+              onClick={() => handleDigestToggle(!digestEnabled)}
+              className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-60 ${digestEnabled ? "bg-blue-600" : "bg-gray-300 dark:bg-gray-600"}`}
+            >
+              <span
+                className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${digestEnabled ? "translate-x-6" : "translate-x-1"}`}
+              />
+            </button>
+            <span className="text-sm text-gray-700 dark:text-gray-300">
+              {digestEnabled ? "Enabled" : "Disabled"}
+            </span>
+          </label>
         </section>
       </main>
     </div>

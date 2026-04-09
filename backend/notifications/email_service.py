@@ -57,5 +57,19 @@ class EmailService:
         await loop.run_in_executor(None, self._send_smtp, to_email, message)
         logger.info("password_reset_email_sent", to=to_email)
 
+    async def send_text_email(self, to_email: str, subject: str, body: str) -> None:
+        """Send a plain-text email. Logs only when smtp_host is unset (dev/test mode)."""
+        if not settings.smtp_host or settings.smtp_host == "localhost":
+            logger.info("email_suppressed_dev_mode", to=to_email, subject=subject)
+            return
+        msg = MIMEMultipart("alternative")
+        msg["Subject"] = subject
+        msg["From"] = settings.smtp_from_email
+        msg["To"] = to_email
+        msg.attach(MIMEText(body, "plain"))
+        loop = asyncio.get_running_loop()
+        await loop.run_in_executor(None, self._send_smtp, to_email, msg)
+        logger.info("text_email_sent", to=to_email, subject=subject)
+
 
 email_service = EmailService()

@@ -94,6 +94,7 @@ async def create_user(email: str, password: str, display_name: str) -> dict:
         "display_name": display_name,
         "default_stages": DEFAULT_STAGES,
         "timezone": DEFAULT_TIMEZONE,
+        "digest_enabled": True,
         "created_at": datetime.now(timezone.utc),
     }
     result = await users.insert_one(doc)
@@ -168,6 +169,7 @@ async def get_or_create_google_user(
         "password_hash": None,
         "default_stages": DEFAULT_STAGES,
         "timezone": DEFAULT_TIMEZONE,
+        "digest_enabled": True,
         "created_at": datetime.now(timezone.utc),
     }
     result = await users.insert_one(doc)
@@ -211,14 +213,17 @@ async def update_user_profile(
     user_id: str,
     stages: list[str] | None,
     timezone: str | None,
+    digest_enabled: bool | None,
 ) -> dict:
-    """Update the user's default_stages and/or timezone; return the updated document."""
+    """Update the user's default_stages, timezone, and/or digest_enabled; return the updated document."""
     users = get_collection("users")
     update_fields: dict = {}
     if stages is not None:
         update_fields["default_stages"] = stages
     if timezone is not None:
         update_fields["timezone"] = timezone
+    if digest_enabled is not None:
+        update_fields["digest_enabled"] = digest_enabled
     if update_fields:
         await users.update_one(
             {"_id": ObjectId(user_id)},
