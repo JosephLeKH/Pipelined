@@ -197,3 +197,74 @@ Commit: cc364a8
 ### Test results
 - Extension: 202 passed (13 test suites)
 - Frontend build: clean
+
+---
+US-072: CSRF protection for all cookie-authenticated mutations
+Commit: 6ad6472
+Backend tests: 201 passed
+Frontend tests: 194 passed
+Files changed:
+  - backend/middleware/csrf.py (new) — double-submit cookie middleware, CSRFMiddleware class
+  - backend/main.py — registers CSRFMiddleware
+  - backend/auth/router.py — GET /me now sets pipelined_csrf cookie
+  - backend/tests/conftest.py — test client pre-set with matching CSRF token+header
+  - backend/tests/test_csrf.py (new) — 9 CSRF tests
+  - frontend/src/api/client.js — request interceptor reads pipelined_csrf cookie, sets X-CSRF-Token header
+
+## US-073 — Timezone-aware calendar events with user timezone preference
+Status: PASSED
+Commit: 96de7d1
+
+### What was done
+- Added `timezone` field (IANA string, default `America/New_York`) to user documents in backend and `UserResponse`
+- Added IANA timezone validation in `UpdateUserRequest.model_post_init` using `zoneinfo.available_timezones()` frozenset
+- `update_user_stages` renamed to `update_user_profile` to handle both `default_stages` and `timezone`
+- Added `formatTime(timeStr)` export to `dateUtils.js` (replaces local helper in CalendarEventDetail)
+- Updated `formatDateTime(isoString, timezone?)` to accept explicit timezone parameter
+- Created `TimezoneSelector.jsx` — grouped IANA `<select>` using `Intl.supportedValuesOf("timeZone")`
+- Added Timezone section to `Settings.jsx` with save button and success/error feedback
+- `CalendarGrid.jsx` event chips now show time via `formatTime`
+- `CalendarEventDetail.jsx` shows event time with `(user_timezone)` note via `useAuth`
+- Backend: 2 new tests (invalid timezone → 422, valid timezone update)
+- Frontend: `formatTime` tests, `formatDateTime` with explicit timezone test
+- Tests: 203 backend / 198 frontend, build clean
+
+## US-074 — Weekly email digest with job search summary and stale application nudges
+Status: PASSED
+Commit: b1df862
+
+### What was done
+- Created `backend/notifications/digest.py`: `build_weekly_digest(user_id)` runs 5 MongoDB queries concurrently via `asyncio.gather()` (user doc, new apps count, active apps count, stale apps list, upcoming events); `WeeklyDigest`, `StaleApp`, `UpcomingEvent` dataclasses; `_build_digest_body()` renders plain-text email; `send_weekly_digest(user_id)` builds + sends + logs; `send_all_digests()` iterates opted-in users
+- Added `send_text_email(to, subject, body)` to `EmailService`: suppresses in dev/test mode when `smtp_host` is unset or `localhost`; uses `loop.run_in_executor` for blocking SMTP in async context
+- Added `digest_enabled: bool` to `UserResponse.from_doc` (defaults True for existing users); added `digest_enabled: bool | None` to `UpdateUserRequest`
+- `PATCH /api/auth/me` now persists `digest_enabled` via `update_user_profile()`; new users created with `digest_enabled: True`
+- APScheduler in `jobs/sync.py`: added second job `weekly_digest` running Monday 8am UTC (`send_all_digests`)
+- Settings page: added "Weekly digest email" section with accessible toggle switch (`role="switch"`, `aria-checked`), optimistic UI update with rollback on error
+- Created `backend/tests/test_digest.py`: 4 tests — stale app count, upcoming events filtering, email_service called with correct args, missing user returns False
+- Fixed: `datetime.date` cannot be encoded by BSON — digest now uses `datetime.datetime.combine(date.today(), time.min, utc)` for the events query window
+
+### Test results
+- Backend: 207 passed
+- Frontend: 198 passed
+- Build: clean
+
+## US-075 - Salary insights: distribution chart in Analytics and range filter on job board
+- Status: PASSED
+- Commit: c9df41d
+- Backend: Added salary_distribution bucketing in applications/service.py; _parse_compensation regex helper; asyncio.gather for concurrent pipeline execution; SalaryBucket schema and salary_distribution field in AnalyticsResponse; salary_max param in jobs/router.py and jobs/service.py filter
+- Frontend: Compensation Distribution BarChart in Analytics.jsx; SalaryInput + JobFilters extracted to components/JobFilters.jsx; salary_min/salary_max URL params wired in JobBoard.jsx; constants in lib/constants.js
+- Tests: 209 backend passed, 198 frontend passed, build clean
+
+## US-076 — Undo delete and undo archive with 5-second toast
+- Status: PASSED
+- Commit: ced1ac9
+- Backend: Soft-delete pattern (deleted=True/deleted_at on DELETE); POST /applications/{id}/restore endpoint; purge_stale_deleted_applications background job (APScheduler, daily 4 AM UTC); GET list excludes deleted docs; test_applications.py tests for soft-delete behavior
+- Frontend: UndoToast component (countdown progress bar via double RAF + CSS transition, aria-live, data-testid); ApplicationList shows UndoToast after delete/archive; DetailPanel shows delete button in PanelHeader + UndoToast with cachedApp pattern to keep panel open during undo; ApplicationRow extracted from ApplicationList; NotesEditor extracted from DetailPanel; useRestoreApplication hook + restoreApplication API fn
+- Tests: 212 backend passed, 204 frontend passed, build clean
+
+## US-077 — Application sharing — generate a read-only public link to your pipeline
+- Status: PASSED
+- Commit: 993acc2
+- Backend: New sharing module (sharing/schemas.py, service.py, router.py, __init__.py); POST /api/sharing/create (generates 16-char hex slug, deactivates prior share, 30-day TTL); GET /api/sharing/my (active share or null); DELETE /api/sharing/revoke; GET /api/public/{slug} (no auth, returns display_name+stats+sanitised apps list); MongoDB TTL index on expires_at + unique index on slug; database.py updated with shares collection indexes; main.py registers sharing router; 11 new backend tests in test_sharing.py
+- Frontend: api/sharing.js (getMyShare handles null interceptor edge case); hooks/useSharing.js (useMyShare, useCreateShare, useRevokeShare, usePublicPipeline); SharePipeline component (Settings section with generate/revoke toggle, copy-to-clipboard, expiry countdown); PublicPipeline page (/pipeline/:slug, read-only stats + app list + Join CTA); Settings.jsx adds SharePipeline section; App.jsx adds /pipeline/:slug route
+- Tests: 223 backend passed, 204 frontend passed, build clean
