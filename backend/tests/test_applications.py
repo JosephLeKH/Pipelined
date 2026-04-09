@@ -1098,3 +1098,62 @@ async def test_import_csv_truncates_at_row_cap(client, test_user):
     data = response.json()["data"]
     assert data["imported"] == 500
     assert data["warning"] is not None
+
+
+# ---------------------------------------------------------------------------
+# Soft-delete: DELETE sets deleted flag, restore resets it, list excludes deleted
+# ---------------------------------------------------------------------------
+
+
+async def test_delete_sets_deleted_flag_not_hard_deletes(client, test_user):
+    # Arrange
+    _, cookies = test_user
+    resp = await client.post("/api/applications", json=APP_PAYLOAD, cookies=cookies)
+    app_id = resp.json()["data"]["id"]
+
+    # Act
+    del_resp = await client.delete(f"/api/applications/{app_id}", cookies=cookies)
+
+    # Assert — DELETE returns 204
+    assert del_resp.status_code == 204
+
+    # Doc still exists in DB with deleted=True
+    col = get_collection("applications")
+    from bson import ObjectId
+    doc = await col.find_one({"_id": ObjectId(app_id)})
+    assert doc is not None
+    assert doc["deleted"] is True
+    assert doc["deleted_at"] is not None
+
+
+async def test_restore_resets_deleted_fields(client, test_user):
+    # Arrange
+    _, cookies = test_user
+    resp = await client.post("/api/applications", json=APP_PAYLOAD, cookies=cookies)
+    app_id = resp.json()["data"]["id"]
+    await client.delete(f"/api/applications/{app_id}", cookies=cookies)
+
+    # Act
+    restore_resp = await client.post(f"/api/applications/{app_id}/restore", cookies=cookies)
+
+    # Assert
+    assert restore_resp.status_code == 200
+    data = restore_resp.json()["data"]
+    assert data["deleted"] is False
+    assert data["deleted_at"] is None
+
+
+async def test_deleted_applications_excluded_from_list(client, test_user):
+    # Arrange
+    _, cookies = test_user
+    resp = await client.post("/api/applications", json=APP_PAYLOAD, cookies=cookies)
+    app_id = resp.json()["data"]["id"]
+    await client.delete(f"/api/applications/{app_id}", cookies=cookies)
+
+    # Act
+    list_resp = await client.get("/api/applications", cookies=cookies)
+
+    # Assert
+    assert list_resp.status_code == 200
+    ids = [a["id"] for a in list_resp.json()["data"]]
+    assert app_id not in ids
