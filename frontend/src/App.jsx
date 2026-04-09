@@ -15,6 +15,7 @@ const Register = lazy(() => import("./pages/Register"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const Settings = lazy(() => import("./pages/Settings"));
+const PublicPipeline = lazy(() => import("./pages/PublicPipeline"));
 
 function LoadingSpinner() {
   return (
@@ -42,6 +43,7 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/jobs" element={<JobBoard />} />
+        <Route path="/pipeline/:slug" element={<PublicPipeline />} />
         <Route
           path="/dashboard"
           element={

@@ -25,6 +25,7 @@ import Plus from "lucide-react/dist/esm/icons/plus";
 import Trash2 from "lucide-react/dist/esm/icons/trash-2";
 
 import NavBar from "../components/NavBar";
+import SharePipeline from "../components/SharePipeline";
 import TimezoneSelector from "../components/TimezoneSelector";
 import { useAuth } from "../context/AuthContext";
 import { useUpdateUser } from "../hooks/useAuth";
@@ -311,6 +312,10 @@ function Settings() {
             </button>
           </div>
         </section>
+
+        <div className="mt-6">
+          <SharePipeline />
+        </div>
 
         <section className="mt-6 rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
           <h2 className="mb-1 text-base font-semibold text-gray-900 dark:text-gray-100">

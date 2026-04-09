@@ -54,6 +54,7 @@ async def ensure_indexes() -> None:
     events = get_collection("calendar_events")
     listings = get_collection("job_listings")
     users = get_collection("users")
+    shares = get_collection("shares")
 
     await asyncio.gather(
         apps.create_index([("user_id", 1), ("date_applied", -1)], name="user_date"),
@@ -80,4 +81,6 @@ async def ensure_indexes() -> None:
         ),
         users.create_index("email", unique=True, name="email"),
         users.create_index("google_id", unique=True, sparse=True, name="google_id"),
+        shares.create_index("slug", unique=True, name="slug_unique"),
+        shares.create_index("expires_at", expireAfterSeconds=0, name="expires_at_ttl"),
     )

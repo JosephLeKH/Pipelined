@@ -14,6 +14,7 @@ from applications.router import router as applications_router
 from auth.router import router as auth_router
 from cal.router import router as calendar_router
 from jobs.router import router as jobs_router
+from sharing.router import router as sharing_router
 from jobs.sync import create_scheduler
 from config import settings, validate_production_secrets
 from database import connect, disconnect, ensure_indexes
@@ -99,6 +100,7 @@ def create_app(*, testing: bool = False) -> FastAPI:
     app.include_router(applications_router)
     app.include_router(calendar_router)
     app.include_router(jobs_router)
+    app.include_router(sharing_router)
 
     return app
 
