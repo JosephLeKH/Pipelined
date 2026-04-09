@@ -69,3 +69,31 @@ Commit: bb94481
 - The `useCreateApplication` hook already returned `isPending` — it just wasn't being destructured or used in the component
 - BulkActionBar needed new props threaded from ApplicationList since it doesn't have direct access to mutation state
 - sonner's toast.success() works as a no-op in Vitest tests (no Toaster mounted in test wrappers) without needing mocking
+
+## US-065 - Centralized date formatting utility and consistent date display
+
+**Status:** DONE
+
+**Summary:**
+Created `frontend/src/lib/dateUtils.js` with four exports:
+- `formatDate(isoString)` → 'Apr 7, 2026'
+- `formatDateTime(isoString)` → 'Apr 7, 2026 at 3:00 PM'
+- `formatRelative(isoString)` → 'Today', 'Yesterday', 'N days ago', or falls back to formatDate
+- `toISODate(date)` → 'YYYY-MM-DD' (for calendar key generation, form inputs)
+- `formatDateLong(date)` → 'Wednesday, April 7, 2026' (for aria-labels)
+
+**Components updated (8 files):**
+- ApplicationList.jsx — replaced bare toLocaleDateString()
+- DetailPanel.jsx — replaced bare toLocaleDateString()
+- ApplicationTimeline.jsx — removed local formatDate(), imported from dateUtils
+- CalendarGrid.jsx — removed local toISODate(), replaced aria-label call with formatDateLong()
+- NewEventForm.jsx — removed local toISODate(), imported from dateUtils
+- CalendarEventDetail.jsx — removed local formatDate(), imported from dateUtils
+- JobRow.jsx — replaced bare toLocaleDateString()
+- JobCard.jsx — replaced bare toLocaleDateString()
+
+**Tests:** 11 new tests in dateUtils.test.js; all 172 frontend tests pass.
+
+**Learnings:**
+- Date-only strings ('YYYY-MM-DD') must be parsed as `new Date(y, m-1, d)` (local time), not `new Date(isoString)` (UTC midnight), to prevent timezone-offset display shifts.
+- Exporting `toISODate` from dateUtils keeps the duplicate helper pattern DRY across CalendarGrid and NewEventForm.
