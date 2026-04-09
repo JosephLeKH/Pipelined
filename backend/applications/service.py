@@ -32,6 +32,7 @@ DELETED_PURGE_DAYS = 1
 LIST_PROJECTION = {
     "role_title": 1,
     "company": 1,
+    "company_domain": 1,
     "current_stage": 1,
     "date_applied": 1,
     "source": 1,
@@ -198,6 +199,18 @@ async def _apply_openai_fallback(body: ApplicationCreate) -> ApplicationCreate:
     return body.model_copy(update=updates)
 
 
+def _derive_company_domain(source_url: str | None, company: str | None) -> str | None:
+    """Return best-guess company domain from source_url netloc or company name slug."""
+    if source_url:
+        from urllib.parse import urlparse  # noqa: PLC0415
+        netloc = urlparse(source_url).netloc
+        return netloc.removeprefix("www.") or None
+    if company:
+        slug = company.lower().replace(" ", "").replace(",", "").replace(".", "")
+        return f"{slug}.com" if slug else None
+    return None
+
+
 async def _score_and_update(app_id: str, resume_text: str, job_description: str) -> None:
     """Score fit in background and persist ai_analysis on the application."""
     result = await score_fit(resume_text, job_description)
@@ -241,6 +254,7 @@ async def create(user_id: str, body: ApplicationCreate) -> dict:
     body_dict = body.model_dump(exclude={"page_text"})
     body_dict["source_url"] = str(body.source_url) if body.source_url else None
 
+    company_domain = _derive_company_domain(body_dict.get("source_url"), body.company)
     doc: dict = {
         **body_dict,
         "user_id": uid,
@@ -252,6 +266,7 @@ async def create(user_id: str, body: ApplicationCreate) -> dict:
         "date_applied": body_dict.get("date_applied") or now,
         "created_at": now,
         "updated_at": now,
+        "company_domain": company_domain,
     }
 
     result = await apps.insert_one(doc)

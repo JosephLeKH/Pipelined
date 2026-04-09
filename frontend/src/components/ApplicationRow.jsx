@@ -7,6 +7,7 @@ import Pencil from "lucide-react/dist/esm/icons/pencil";
 import { STAGE_COLORS, DEFAULT_STAGE_COLOR, STALE_APPLICATION_DAYS } from "../lib/constants";
 import { formatDate } from "../lib/dateUtils";
 import { RowMenu } from "./ApplicationRowActions";
+import CompanyLogo from "./CompanyLogo";
 import FitBadge from "./FitBadge";
 
 const MS_PER_DAY = 86_400_000;
@@ -79,7 +80,8 @@ function ApplicationRow({
           </>
         )}
       </span>
-      <span className={`w-40 truncate font-medium ${archived ? "text-gray-400 line-through" : "text-gray-900 dark:text-gray-100"}`}>
+      <CompanyLogo company_domain={application.company_domain ?? null} company={application.company ?? ""} size={24} />
+      <span className={`w-36 truncate font-medium ${archived ? "text-gray-400 line-through" : "text-gray-900 dark:text-gray-100"}`}>
         {application.company}
       </span>
       <span className={`flex-1 truncate text-sm ${archived ? "text-gray-400" : "text-gray-700 dark:text-gray-300"}`}>

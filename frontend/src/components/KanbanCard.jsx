@@ -5,6 +5,7 @@ import { CSS } from "@dnd-kit/utilities";
 
 import { STALE_APPLICATION_DAYS } from "../lib/constants";
 import { formatRelative } from "../lib/dateUtils";
+import CompanyLogo from "./CompanyLogo";
 import FitBadge from "./FitBadge";
 
 const MS_PER_DAY = 86_400_000;
@@ -49,9 +50,12 @@ function KanbanCard({ application, onSelect }) {
           data-testid="stale-indicator"
         />
       )}
-      <p className="truncate pr-4 font-semibold text-gray-900 dark:text-gray-100">
-        {application.company}
-      </p>
+      <div className="flex items-center gap-2 pr-4">
+        <CompanyLogo company_domain={application.company_domain ?? null} company={application.company ?? ""} size={20} />
+        <p className="truncate font-semibold text-gray-900 dark:text-gray-100">
+          {application.company}
+        </p>
+      </div>
       <p className="mt-0.5 truncate text-sm text-gray-600 dark:text-gray-400">
         {application.role_title}
       </p>

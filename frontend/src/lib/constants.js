@@ -80,3 +80,16 @@ export const EVENT_TYPE_OPTIONS = [
   { value: "offer", label: "Offer" },
   { value: "other", label: "Other" },
 ];
+
+export const CLEARBIT_LOGO_BASE_URL = "https://logo.clearbit.com";
+
+export const COMPANY_LOGO_FALLBACK_COLORS = [
+  "bg-blue-500",
+  "bg-emerald-500",
+  "bg-violet-500",
+  "bg-rose-500",
+  "bg-amber-500",
+  "bg-cyan-500",
+  "bg-pink-500",
+  "bg-teal-500",
+];

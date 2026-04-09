@@ -11,6 +11,7 @@ import { useDeleteApplication, useRestoreApplication, useUpdateApplication } fro
 import { useApplicationEvents, useDeleteEvent } from "../hooks/useCalendar";
 import { useHotkeys } from "../hooks/useHotkeys";
 import ApplicationTimeline from "./ApplicationTimeline";
+import CompanyLogo from "./CompanyLogo";
 import FitBadge from "./FitBadge";
 import NotesEditor from "./NotesEditor";
 import UndoToast from "./UndoToast";
@@ -88,9 +89,12 @@ function CalendarEventsList({ applicationId, onAddEvent }) {
 function PanelHeader({ application, onClose, onDelete }) {
   return (
     <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4 dark:border-gray-700">
-      <div>
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{application.role_title}</h2>
-        <p className="text-sm text-gray-500 dark:text-gray-400">{application.company}</p>
+      <div className="flex items-center gap-3">
+        <CompanyLogo company_domain={application.company_domain ?? null} company={application.company ?? ""} size={32} />
+        <div>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{application.role_title}</h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400">{application.company}</p>
+        </div>
       </div>
       <div className="flex items-center gap-1">
         <button

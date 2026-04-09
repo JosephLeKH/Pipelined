@@ -85,6 +85,7 @@ class ApplicationResponse(BaseModel):
     deleted: bool = False
     deleted_at: datetime | None = None
     ai_analysis: AiFitAnalysis | None = None
+    company_domain: str | None = None
 
     @classmethod
     def from_doc(cls, doc: dict) -> "ApplicationResponse":
@@ -115,6 +116,8 @@ class StatsResponse(BaseModel):
     response_rate: float
     avg_days_to_first_response: float | None = None
     stale_count: int = 0
+    applied_this_week: int = 0
+    current_streak: int = 0
 
 
 class StageAddRequest(BaseModel):
