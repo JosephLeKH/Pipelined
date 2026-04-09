@@ -56,6 +56,7 @@ async def ensure_indexes() -> None:
     users = get_collection("users")
     shares = get_collection("shares")
     contacts = get_collection("contacts")
+    notifications = get_collection("notifications")
 
     await asyncio.gather(
         apps.create_index([("user_id", 1), ("date_applied", -1)], name="user_date"),
@@ -86,4 +87,7 @@ async def ensure_indexes() -> None:
         shares.create_index("expires_at", expireAfterSeconds=0, name="expires_at_ttl"),
         contacts.create_index([("user_id", 1), ("name", 1)], name="contact_user_name"),
         contacts.create_index([("user_id", 1), ("company", 1)], name="contact_user_company"),
+        notifications.create_index([("user_id", 1), ("created_at", -1)], name="notif_user_date"),
+        notifications.create_index([("user_id", 1), ("read", 1)], name="notif_user_read"),
+        notifications.create_index("created_at", expireAfterSeconds=30 * 24 * 3600, name="notif_ttl"),
     )

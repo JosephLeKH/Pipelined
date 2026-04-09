@@ -16,6 +16,7 @@ import X from "lucide-react/dist/esm/icons/x";
 
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
+import NotificationBell from "./NotificationBell";
 
 const NAV_LINKS = [
   { to: "/dashboard", label: "Dashboard", Icon: LayoutDashboard },
@@ -73,6 +74,7 @@ function NavBar() {
 
         {/* Desktop theme + logout — hidden on mobile */}
         <div className="ml-auto hidden items-center gap-2 md:flex">
+          <NotificationBell />
           <button
             type="button"
             onClick={cycleTheme}
