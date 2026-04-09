@@ -5,7 +5,7 @@ import { useState, useRef, useEffect } from "react";
 import Loader2 from "lucide-react/dist/esm/icons/loader-2";
 import MoreHorizontal from "lucide-react/dist/esm/icons/more-horizontal";
 
-import { STAGE_COLORS } from "../lib/constants";
+import { useAuth } from "../context/AuthContext";
 
 export function RowMenu({ application, onArchive, onUnarchive, onDelete }) {
   const [open, setOpen] = useState(false);
@@ -140,9 +140,9 @@ export function BulkDeleteConfirmModal({ count, onConfirm, onCancel }) {
   );
 }
 
-const STAGE_OPTIONS = Object.keys(STAGE_COLORS);
-
 export function BulkActionBar({ selectedCount, onMoveToStage, onDeleteSelected, isDeleting = false, isMoving = false }) {
+  const { user } = useAuth();
+  const stageOptions = user?.default_stages ?? [];
   const [selectedStage, setSelectedStage] = useState("");
   const isBusy = isDeleting || isMoving;
 
@@ -168,7 +168,7 @@ export function BulkActionBar({ selectedCount, onMoveToStage, onDeleteSelected, 
           className="rounded border border-gray-300 px-2 py-1 text-sm text-gray-700 disabled:opacity-50"
         >
           <option value="">Move to stage…</option>
-          {STAGE_OPTIONS.map((s) => (
+          {stageOptions.map((s) => (
             <option key={s} value={s}>{s}</option>
           ))}
         </select>

@@ -317,3 +317,70 @@ async def test_reset_password_returns_400_for_expired_token(client):
     # Assert
     assert response.status_code == 400
     assert response.json()["detail"]["code"] == "TOKEN_EXPIRED"
+
+
+# ---------------------------------------------------------------------------
+# PATCH /api/auth/me — update default_stages
+# ---------------------------------------------------------------------------
+
+
+async def test_patch_me_updates_default_stages(client):
+    # Arrange
+    reg = await client.post("/api/auth/register", json=REGISTER_PAYLOAD)
+    cookies = dict(reg.cookies)
+
+    # Act
+    response = await client.patch(
+        "/api/auth/me",
+        json={"default_stages": ["Applied", "Technical", "Final Round", "Offer", "Rejected"]},
+        cookies=cookies,
+    )
+
+    # Assert
+    assert response.status_code == 200
+    data = response.json()["data"]
+    assert data["default_stages"] == ["Applied", "Technical", "Final Round", "Offer", "Rejected"]
+
+
+async def test_patch_me_returns_422_for_more_than_10_stages(client):
+    # Arrange
+    reg = await client.post("/api/auth/register", json=REGISTER_PAYLOAD)
+    cookies = dict(reg.cookies)
+    too_many = [f"Stage {i}" for i in range(11)]
+
+    # Act
+    response = await client.patch(
+        "/api/auth/me",
+        json={"default_stages": too_many},
+        cookies=cookies,
+    )
+
+    # Assert
+    assert response.status_code == 422
+
+
+async def test_patch_me_returns_422_for_fewer_than_2_stages(client):
+    # Arrange
+    reg = await client.post("/api/auth/register", json=REGISTER_PAYLOAD)
+    cookies = dict(reg.cookies)
+
+    # Act
+    response = await client.patch(
+        "/api/auth/me",
+        json={"default_stages": ["OnlyOne"]},
+        cookies=cookies,
+    )
+
+    # Assert
+    assert response.status_code == 422
+
+
+async def test_patch_me_returns_401_without_auth(client):
+    # Act
+    response = await client.patch(
+        "/api/auth/me",
+        json={"default_stages": ["Applied", "Rejected"]},
+    )
+
+    # Assert
+    assert response.status_code == 401

@@ -204,6 +204,18 @@ async def create_password_reset_token(email: str) -> tuple[str, dict | None]:
     return raw_token, user
 
 
+async def update_user_stages(user_id: str, stages: list[str]) -> dict:
+    """Update the user's default_stages and return the updated document."""
+    users = get_collection("users")
+    await users.update_one(
+        {"_id": ObjectId(user_id)},
+        {"$set": {"default_stages": stages}},
+    )
+    user = await users.find_one({"_id": ObjectId(user_id)})
+    logger.info("user_stages_updated", user_id=user_id, count=len(stages))
+    return user
+
+
 async def reset_password(token: str, new_password: str) -> None:
     """Validate the reset token and update the user's password.
 

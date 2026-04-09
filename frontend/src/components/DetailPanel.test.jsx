@@ -8,6 +8,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter } from "react-router-dom";
 import { describe, it, expect, vi, beforeAll, afterAll, afterEach } from "vitest";
 
+import { AuthProvider } from "../context/AuthContext";
 import DetailPanel from "./DetailPanel";
 
 const APP = {
@@ -32,7 +33,17 @@ const APP = {
 
 const server = setupServer(
   http.patch("/api/applications/:id", () => HttpResponse.json({ data: APP })),
-  http.get("/api/calendar/events", () => HttpResponse.json({ data: [], meta: { count: 0 } }))
+  http.get("/api/calendar/events", () => HttpResponse.json({ data: [], meta: { count: 0 } })),
+  http.get("/api/auth/me", () =>
+    HttpResponse.json({
+      data: {
+        id: "u1",
+        email: "test@example.com",
+        display_name: "Test User",
+        default_stages: ["Applied", "Phone Screen", "Onsite", "Offer", "Rejected"],
+      },
+    })
+  )
 );
 
 beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
@@ -45,7 +56,9 @@ function makeWrapper() {
   });
   return ({ children }) => (
     <QueryClientProvider client={queryClient}>
-      <MemoryRouter>{children}</MemoryRouter>
+      <MemoryRouter>
+        <AuthProvider>{children}</AuthProvider>
+      </MemoryRouter>
     </QueryClientProvider>
   );
 }
@@ -150,8 +163,11 @@ describe("DetailPanel", () => {
     );
     render(<DetailPanel application={APP} onClose={() => {}} />, { wrapper: makeWrapper() });
 
-    // Act
+    // Wait for auth to load so stage options are populated
     const select = screen.getByRole("combobox", { name: /stage/i });
+    await waitFor(() => expect(select.options.length).toBeGreaterThan(1));
+
+    // Act
     await userEvent.selectOptions(select, "Phone Screen");
 
     // Assert

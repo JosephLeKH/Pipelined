@@ -12,6 +12,7 @@ from auth.schemas import (
     LoginRequest,
     RegisterRequest,
     ResetPasswordRequest,
+    UpdateUserRequest,
     UserResponse,
 )
 from auth.service import (
@@ -25,6 +26,7 @@ from auth.service import (
     create_refresh_token,
     decode_token,
     reset_password,
+    update_user_stages,
     verify_password,
 )
 from notifications.email_service import email_service
@@ -120,6 +122,17 @@ async def logout(response: Response) -> None:
 async def me(user: dict = Depends(get_current_user)) -> dict:
     """Return the currently authenticated user's profile."""
     return {"data": UserResponse.from_doc(user)}
+
+
+@router.patch("/me", status_code=200)
+async def update_me(
+    body: UpdateUserRequest,
+    user: dict = Depends(get_current_user),
+) -> dict:
+    """Update the current user's profile settings (e.g. default_stages)."""
+    updated = await update_user_stages(str(user["_id"]), body.default_stages)
+    logger.info("user_profile_updated", user_id=str(user["_id"]))
+    return {"data": UserResponse.from_doc(updated)}
 
 
 @router.post("/refresh", status_code=200)

@@ -9,6 +9,7 @@ import LayoutDashboard from "lucide-react/dist/esm/icons/layout-dashboard";
 import LogOut from "lucide-react/dist/esm/icons/log-out";
 import Menu from "lucide-react/dist/esm/icons/menu";
 import Moon from "lucide-react/dist/esm/icons/moon";
+import Settings from "lucide-react/dist/esm/icons/settings";
 import Sun from "lucide-react/dist/esm/icons/sun";
 import Monitor from "lucide-react/dist/esm/icons/monitor";
 import X from "lucide-react/dist/esm/icons/x";
@@ -20,6 +21,7 @@ const NAV_LINKS = [
   { to: "/dashboard", label: "Dashboard", Icon: LayoutDashboard },
   { to: "/calendar", label: "Calendar", Icon: CalendarDays },
   { to: "/analytics", label: "Analytics", Icon: BarChart2 },
+  { to: "/settings", label: "Settings", Icon: Settings },
 ];
 
 const THEME_ICONS = { system: Monitor, light: Sun, dark: Moon };

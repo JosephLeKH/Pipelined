@@ -7,6 +7,7 @@ import X from "lucide-react/dist/esm/icons/x";
 
 import { useCreateApplication } from "../hooks/useApplications";
 import { REMOTE_STATUS_OPTIONS, COMPANY_TYPE_OPTIONS } from "../lib/constants";
+import { useAuth } from "../context/AuthContext";
 
 const GENERIC_ERROR_MSG = "Something went wrong. Please try again.";
 
@@ -34,11 +35,14 @@ function ManualAddForm({ isOpen, onClose }) {
   const overlayRef = useRef(null);
   const dialogRef = useRef(null);
   const { mutate, isPending, error: mutationError, reset } = useCreateApplication();
+  const { user } = useAuth();
+  const stageOptions = user?.default_stages ?? [];
 
   const [roleTitle, setRoleTitle] = useState("");
   const [company, setCompany] = useState("");
   const [sourceUrl, setSourceUrl] = useState("");
   const [dateApplied, setDateApplied] = useState(getTodayString);
+  const [stage, setStage] = useState("");
   const [compensation, setCompensation] = useState("");
   const [location, setLocation] = useState("");
   const [remoteStatus, setRemoteStatus] = useState("");
@@ -54,6 +58,7 @@ function ManualAddForm({ isOpen, onClose }) {
     setCompany("");
     setSourceUrl("");
     setDateApplied(getTodayString());
+    setStage("");
     setCompensation("");
     setLocation("");
     setRemoteStatus("");
@@ -123,6 +128,7 @@ function ManualAddForm({ isOpen, onClose }) {
         company: company.trim(),
         source: MANUAL_SOURCE,
         date_applied: dateApplied,
+        ...(stage && { current_stage: stage }),
         ...(sourceUrl.trim() && { source_url: sourceUrl.trim() }),
         ...(compensation.trim() && { compensation: compensation.trim() }),
         ...(location.trim() && { location: location.trim() }),
@@ -134,7 +140,7 @@ function ManualAddForm({ isOpen, onClose }) {
       mutate(body, { onSuccess: handleClose });
     },
     [
-      roleTitle, company, sourceUrl, dateApplied, compensation,
+      roleTitle, company, sourceUrl, dateApplied, stage, compensation,
       location, remoteStatus, companyType, tags, mutate, handleClose,
     ]
   );
@@ -236,6 +242,21 @@ function ManualAddForm({ isOpen, onClose }) {
               className="rounded border border-gray-300 px-3 py-1.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
             />
           </FormField>
+          {stageOptions.length > 0 && (
+            <FormField label="Initial Stage" htmlFor="initial-stage">
+              <select
+                id="initial-stage"
+                value={stage}
+                onChange={(e) => setStage(e.target.value)}
+                className="rounded border border-gray-300 px-3 py-1.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
+              >
+                <option value="">Default ({stageOptions[0]})</option>
+                {stageOptions.map((s) => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+              </select>
+            </FormField>
+          )}
           <div className="grid grid-cols-2 gap-3">
             <FormField label="Remote Status" htmlFor="remote-status">
               <select

@@ -29,3 +29,7 @@ export async function forgotPassword(email) {
 export async function resetPassword(token, new_password) {
   return client.post("/auth/reset-password", { token, new_password });
 }
+
+export async function updateCurrentUser(body) {
+  return client.patch("/auth/me", body);
+}

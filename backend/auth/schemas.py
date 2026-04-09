@@ -57,3 +57,24 @@ class ResetPasswordRequest(BaseModel):
 
     token: str = Field(min_length=1)
     new_password: str = Field(min_length=8, max_length=128)
+
+
+STAGES_MIN_COUNT = 2
+STAGES_MAX_COUNT = 10
+STAGE_NAME_MAX_LENGTH = 40
+
+
+class UpdateUserRequest(BaseModel):
+    model_config = ConfigDict(strict=True)
+
+    default_stages: list[str] = Field(
+        min_length=STAGES_MIN_COUNT,
+        max_length=STAGES_MAX_COUNT,
+    )
+
+    def model_post_init(self, __context: object) -> None:
+        for stage in self.default_stages:
+            if not stage or len(stage) > STAGE_NAME_MAX_LENGTH:
+                raise ValueError(
+                    f"Each stage must be 1–{STAGE_NAME_MAX_LENGTH} characters."
+                )

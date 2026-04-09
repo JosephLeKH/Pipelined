@@ -8,6 +8,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter } from "react-router-dom";
 import { describe, it, expect, vi, beforeAll, afterAll, afterEach } from "vitest";
 
+import { AuthProvider } from "../context/AuthContext";
 import ApplicationList from "./ApplicationList";
 
 const NOW = new Date("2026-03-25T00:00:00Z");
@@ -38,6 +39,16 @@ const APPS = [
 const server = setupServer(
   http.get("/api/applications", () =>
     HttpResponse.json({ data: APPS, meta: { count: APPS.length, next_cursor: null } })
+  ),
+  http.get("/api/auth/me", () =>
+    HttpResponse.json({
+      data: {
+        id: "u1",
+        email: "test@example.com",
+        display_name: "Test User",
+        default_stages: ["Applied", "Phone Screen", "Onsite", "Offer", "Rejected"],
+      },
+    })
   )
 );
 
@@ -54,7 +65,9 @@ function makeWrapper(initialEntries = ["/"]) {
   });
   return ({ children }) => (
     <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={initialEntries}>{children}</MemoryRouter>
+      <MemoryRouter initialEntries={initialEntries}>
+        <AuthProvider>{children}</AuthProvider>
+      </MemoryRouter>
     </QueryClientProvider>
   );
 }

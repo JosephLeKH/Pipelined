@@ -12,14 +12,12 @@ import { useUpdateApplication } from "../hooks/useApplications";
 import { useApplicationEvents, useDeleteEvent } from "../hooks/useCalendar";
 import ApplicationTimeline from "./ApplicationTimeline";
 import {
-  STAGE_COLORS,
   EVENT_TYPE_COLORS,
   DEFAULT_EVENT_COLOR,
   NOTES_MAX_LENGTH,
 } from "../lib/constants";
 import { formatDate } from "../lib/dateUtils";
-
-const STAGE_OPTIONS = Object.keys(STAGE_COLORS);
+import { useAuth } from "../context/AuthContext";
 
 const FOCUSABLE_SELECTORS = 'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
@@ -206,6 +204,8 @@ function PanelHeader({ application, onClose }) {
 }
 
 function PanelBody({ application, handleStageChange, onAddEvent }) {
+  const { user } = useAuth();
+  const stageOptions = user?.default_stages ?? [];
   const dateApplied = formatDate(application.date_applied);
   return (
     <div className="flex flex-col gap-4 px-6 py-4">
@@ -238,9 +238,14 @@ function PanelBody({ application, handleStageChange, onAddEvent }) {
           value={application.current_stage}
           onChange={handleStageChange}
         >
-          {STAGE_OPTIONS.map((s) => (
+          {stageOptions.map((s) => (
             <option key={s} value={s}>{s}</option>
           ))}
+          {!stageOptions.includes(application.current_stage) && (
+            <option key={application.current_stage} value={application.current_stage}>
+              {application.current_stage}
+            </option>
+          )}
         </select>
       </div>
       <NotesEditor applicationId={application.id} initialValue={application.notes} />
