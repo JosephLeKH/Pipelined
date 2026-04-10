@@ -13,6 +13,7 @@ import {
   useBulkDeleteApplications,
   useBulkUpdateApplicationStage,
   useDeleteApplication,
+  useMergeApplications,
   useRestoreApplication,
   useUnarchiveApplication,
 } from "../hooks/useApplications";
@@ -22,6 +23,7 @@ import ApiErrorMessage from "./ApiErrorMessage";
 import ApplicationRow from "./ApplicationRow";
 import { BulkActionBar, BulkDeleteConfirmModal } from "./ApplicationRowActions";
 import EmptyState from "./EmptyState";
+import MergeDialog from "./MergeDialog";
 import SkeletonRow from "./SkeletonRow";
 import UndoToast from "./UndoToast";
 
@@ -44,6 +46,7 @@ function ApplicationList({ onSelect, filters = {}, onAdd, onImportCsv, shortcuts
   const [undoAction, setUndoAction] = useState(null);
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [bulkDeletePending, setBulkDeletePending] = useState(false);
+  const [mergeDialogOpen, setMergeDialogOpen] = useState(false);
   const [focusedIdx, setFocusedIdx] = useState(-1);
   const listRef = useRef(null);
 
@@ -65,6 +68,7 @@ function ApplicationList({ onSelect, filters = {}, onAdd, onImportCsv, shortcuts
   const restoreMutation = useRestoreApplication();
   const bulkDeleteMutation = useBulkDeleteApplications();
   const bulkStageMutation = useBulkUpdateApplicationStage();
+  const mergeMutation = useMergeApplications();
 
   const handleSort = useCallback(
     (field) => {
@@ -130,6 +134,16 @@ function ApplicationList({ onSelect, filters = {}, onAdd, onImportCsv, shortcuts
       },
     });
   }, [bulkDeleteMutation, selectedIds]);
+
+  const handleMergeConfirm = useCallback((payload) => {
+    mergeMutation.mutate(payload, {
+      onSuccess: () => {
+        setSelectedIds(new Set());
+        setMergeDialogOpen(false);
+        toast.success("Applications merged successfully");
+      },
+    });
+  }, [mergeMutation]);
 
   const handleBulkMoveToStage = useCallback((stage) => {
     const count = selectedIds.size;
@@ -224,6 +238,10 @@ function ApplicationList({ onSelect, filters = {}, onAdd, onImportCsv, shortcuts
 
   const undoMessage = undoAction?.type === "delete" ? "Application deleted." : "Application archived.";
 
+  const mergeApps = mergeDialogOpen
+    ? applications.filter((a) => selectedIds.has(a.id))
+    : null;
+
   return (
     <>
       {bulkDeletePending && (
@@ -231,6 +249,14 @@ function ApplicationList({ onSelect, filters = {}, onAdd, onImportCsv, shortcuts
           count={selectedIds.size}
           onConfirm={handleBulkDeleteConfirm}
           onCancel={() => setBulkDeletePending(false)}
+        />
+      )}
+      {mergeDialogOpen && mergeApps?.length === 2 && (
+        <MergeDialog
+          apps={mergeApps}
+          onConfirm={handleMergeConfirm}
+          onCancel={() => setMergeDialogOpen(false)}
+          isPending={mergeMutation.isPending}
         />
       )}
       {undoAction && (
@@ -246,8 +272,10 @@ function ApplicationList({ onSelect, filters = {}, onAdd, onImportCsv, shortcuts
             selectedCount={selectedIds.size}
             onMoveToStage={handleBulkMoveToStage}
             onDeleteSelected={() => setBulkDeletePending(true)}
+            onMerge={() => setMergeDialogOpen(true)}
             isDeleting={bulkDeleteMutation.isPending}
             isMoving={bulkStageMutation.isPending}
+            isMerging={mergeMutation.isPending}
           />
         )}
         <div className="relative flex flex-col">

@@ -29,6 +29,11 @@ INACTIVE_STAGES = ["Rejected", "Offer"]
 STALE_DAYS = 14
 DELETED_PURGE_DAYS = 1
 
+MERGEABLE_FIELDS = (
+    "role_title", "company", "current_stage", "location",
+    "compensation", "remote_status", "source_url", "company_type", "notes", "tags",
+)
+
 LIST_PROJECTION = {
     "role_title": 1,
     "company": 1,
@@ -892,3 +897,71 @@ async def import_applications(user_id: str, csv_bytes: bytes) -> ImportResult:
 
     skipped = len([e for e in errors if "Duplicate" in e.reason])
     return ImportResult(imported=imported, skipped=skipped, errors=errors, warning=warning)
+
+
+def _is_empty(value: object) -> bool:
+    """Return True if value is None, empty string, or empty list."""
+    if value is None:
+        return True
+    if isinstance(value, str) and value == "":
+        return True
+    if isinstance(value, list) and len(value) == 0:
+        return True
+    return False
+
+
+async def merge_applications(user_id: str, source_id: str, target_id: str) -> dict | None:
+    """Merge source into target. For each field: keep target's value unless empty, then use source's.
+
+    stage_history arrays are concatenated and sorted by transitioned_at.
+    Calendar events linked to source are re-linked to target.
+    Source is hard-deleted. Returns updated target doc, or None if either not found.
+    """
+    uid = ObjectId(user_id)
+    src_oid = ObjectId(source_id)
+    tgt_oid = ObjectId(target_id)
+    apps = get_collection("applications")
+    events = get_collection("calendar_events")
+
+    source, target = await asyncio.gather(
+        apps.find_one({"_id": src_oid, "user_id": uid}),
+        apps.find_one({"_id": tgt_oid, "user_id": uid}),
+    )
+    if source is None or target is None:
+        return None
+
+    updates: dict = {}
+    for field in MERGEABLE_FIELDS:
+        tgt_val = target.get(field)
+        src_val = source.get(field)
+        if _is_empty(tgt_val) and not _is_empty(src_val):
+            updates[field] = src_val
+
+    combined = sorted(
+        target.get("stage_history", []) + source.get("stage_history", []),
+        key=lambda e: e["transitioned_at"],
+    )
+    updates["stage_history"] = combined
+    updates["updated_at"] = datetime.now(timezone.utc)
+
+    db_client = get_client()
+    async with await db_client.start_session() as session:
+        async with session.start_transaction():
+            await events.update_many(
+                {"application_id": src_oid},
+                {"$set": {"application_id": tgt_oid}},
+                session=session,
+            )
+            # Delete source before updating target to avoid unique index conflicts
+            # when target adopts fields that match source's values.
+            await apps.delete_one({"_id": src_oid}, session=session)
+            result = await apps.find_one_and_update(
+                {"_id": tgt_oid, "user_id": uid},
+                {"$set": updates},
+                return_document=ReturnDocument.AFTER,
+                session=session,
+            )
+
+    if result:
+        logger.info("applications_merged", user_id=user_id, source_id=source_id, target_id=target_id)
+    return result

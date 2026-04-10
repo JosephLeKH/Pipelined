@@ -13,6 +13,7 @@ import {
   fetchApplications,
   fetchStats,
   importApplicationsCsv,
+  mergeApplications,
   restoreApplication,
   unarchiveApplication,
   updateApplication,
@@ -170,6 +171,18 @@ export function useImportApplications() {
     mutationFn: (file) => importApplicationsCsv(file),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: KEYS.lists() });
+      queryClient.invalidateQueries({ queryKey: KEYS.stats });
+    },
+  });
+}
+
+/** Merge source application into target. */
+export function useMergeApplications() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (body) => mergeApplications(body),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: KEYS.all });
       queryClient.invalidateQueries({ queryKey: KEYS.stats });
     },
   });

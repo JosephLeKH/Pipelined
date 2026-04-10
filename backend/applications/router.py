@@ -15,6 +15,7 @@ from applications.schemas import (
     BulkDeleteRequest,
     BulkStageUpdateRequest,
     ImportResult,
+    MergeApplicationsRequest,
     StageAddRequest,
     StatsResponse,
     ValidCompanyType,
@@ -179,6 +180,19 @@ async def import_applications_csv(
         )
     result = await app_service.import_applications(user_id, csv_bytes)
     return {"data": result.model_dump()}
+
+
+@router.post("/merge", status_code=200)
+async def merge_applications_endpoint(
+    body: MergeApplicationsRequest,
+    user: dict = Depends(get_current_user),
+) -> dict:
+    """Merge source application into target. Returns updated target document."""
+    user_id = str(user["_id"])
+    result = await app_service.merge_applications(user_id, body.source_id, body.target_id)
+    if result is None:
+        raise HTTPException(status_code=404, detail=APP_NOT_FOUND_DETAIL)
+    return {"data": ApplicationResponse.from_doc(result)}
 
 
 @router.get("/{app_id}", status_code=200)

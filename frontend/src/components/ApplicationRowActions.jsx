@@ -140,11 +140,19 @@ export function BulkDeleteConfirmModal({ count, onConfirm, onCancel }) {
   );
 }
 
-export function BulkActionBar({ selectedCount, onMoveToStage, onDeleteSelected, isDeleting = false, isMoving = false }) {
+export function BulkActionBar({
+  selectedCount,
+  onMoveToStage,
+  onDeleteSelected,
+  onMerge,
+  isDeleting = false,
+  isMoving = false,
+  isMerging = false,
+}) {
   const { user } = useAuth();
   const stageOptions = user?.default_stages ?? [];
   const [selectedStage, setSelectedStage] = useState("");
-  const isBusy = isDeleting || isMoving;
+  const isBusy = isDeleting || isMoving || isMerging;
 
   function handleMove() {
     if (!selectedStage || isBusy) return;
@@ -181,6 +189,17 @@ export function BulkActionBar({ selectedCount, onMoveToStage, onDeleteSelected, 
           {isMoving ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" /> : null}
           Move
         </button>
+        {selectedCount === 2 && (
+          <button
+            type="button"
+            disabled={isBusy}
+            onClick={onMerge}
+            className="flex items-center gap-1 rounded bg-purple-600 px-3 py-1 text-sm font-medium text-white hover:bg-purple-700 disabled:opacity-50"
+          >
+            {isMerging ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" /> : null}
+            Merge
+          </button>
+        )}
         <button
           type="button"
           disabled={isBusy}

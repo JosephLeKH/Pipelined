@@ -20,6 +20,7 @@ MAX_COMPENSATION_LENGTH = 100
 MAX_LOCATION_LENGTH = 200
 MAX_STAGE_LENGTH = 50
 MAX_PAGE_TEXT_LENGTH = 3200
+MAX_NOTES_LENGTH = 5000  # SYNC: frontend/src/lib/constants.js NOTES_MAX_LENGTH
 
 
 class StageHistoryEntry(BaseModel):
@@ -66,6 +67,7 @@ class ApplicationUpdate(BaseModel):
     date_applied: datetime | None = Field(None, strict=False)
     tags: list[str] | None = None
     follow_up_date: datetime | None = Field(None, strict=False)
+    notes: str | None = Field(None, max_length=MAX_NOTES_LENGTH)
 
 
 class ApplicationResponse(BaseModel):
@@ -88,6 +90,7 @@ class ApplicationResponse(BaseModel):
     ai_analysis: AiFitAnalysis | None = None
     company_domain: str | None = None
     follow_up_date: datetime | None = None
+    notes: str | None = None
 
     @classmethod
     def from_doc(cls, doc: dict) -> "ApplicationResponse":
@@ -197,3 +200,10 @@ class ImportResult(BaseModel):
     skipped: int
     errors: list[ImportRowError]
     warning: str | None = None
+
+
+class MergeApplicationsRequest(BaseModel):
+    model_config = ConfigDict(strict=True)
+
+    source_id: str
+    target_id: str

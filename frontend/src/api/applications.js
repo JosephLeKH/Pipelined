@@ -96,3 +96,8 @@ export async function importApplicationsCsv(file) {
     headers: { "Content-Type": "multipart/form-data" },
   });
 }
+
+/** Merge source application into target. Returns updated target. */
+export async function mergeApplications(body) {
+  return client.post("/applications/merge", body);
+}

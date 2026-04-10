@@ -1324,3 +1324,202 @@ async def test_stats_follow_ups_due_excludes_archived_applications(client, test_
     # Assert — follow_ups_due count should not include archived app
     data = response.json()["data"]
     assert "follow_ups_due" in data
+
+
+# ---------------------------------------------------------------------------
+# POST /api/applications/merge
+# ---------------------------------------------------------------------------
+
+
+async def test_merge_merges_fields_correctly(client, test_user):
+    # Arrange — source has company but no location; target has location but no company
+    _, cookies = test_user
+
+    source_resp = await client.post("/api/applications", json={
+        "role_title": "Engineer",
+        "company": "Source Corp",
+        "source": "manual",
+    }, cookies=cookies)
+    target_resp = await client.post("/api/applications", json={
+        "role_title": "Engineer",
+        "source": "manual",
+        "location": "San Francisco",
+    }, cookies=cookies)
+    source_id = source_resp.json()["data"]["id"]
+    target_id = target_resp.json()["data"]["id"]
+
+    # Act
+    response = await client.post("/api/applications/merge", json={
+        "source_id": source_id,
+        "target_id": target_id,
+    }, cookies=cookies)
+
+    # Assert — target now has source's company and its own location
+    assert response.status_code == 200
+    data = response.json()["data"]
+    assert data["id"] == target_id
+    assert data["company"] == "Source Corp"
+    assert data["location"] == "San Francisco"
+
+
+async def test_merge_stage_history_combined_and_sorted(client, test_user):
+    # Arrange — two apps each with stage history entries
+    _, cookies = test_user
+
+    source_resp = await client.post("/api/applications", json={
+        "role_title": "Dev Stage A",
+        "company": "Alpha",
+        "source": "manual",
+    }, cookies=cookies)
+    target_resp = await client.post("/api/applications", json={
+        "role_title": "Dev Stage B",
+        "company": "Alpha",
+        "source": "manual",
+    }, cookies=cookies)
+    source_id = source_resp.json()["data"]["id"]
+    target_id = target_resp.json()["data"]["id"]
+
+    # Move source to Interview stage so it gets a history entry
+    await client.patch(f"/api/applications/{source_id}", json={
+        "current_stage": "Interview",
+    }, cookies=cookies)
+
+    # Act
+    response = await client.post("/api/applications/merge", json={
+        "source_id": source_id,
+        "target_id": target_id,
+    }, cookies=cookies)
+
+    # Assert — merged target has combined stage_history (at least 2 entries)
+    assert response.status_code == 200
+    data = response.json()["data"]
+    assert len(data["stage_history"]) >= 2
+
+
+async def test_merge_calendar_events_relinked(client, test_user):
+    # Arrange — create apps and a calendar event linked to source
+    from bson import ObjectId
+
+    user, cookies = test_user
+
+    source_resp = await client.post("/api/applications", json={
+        "role_title": "PM Source",
+        "company": "EventCo",
+        "source": "manual",
+    }, cookies=cookies)
+    target_resp = await client.post("/api/applications", json={
+        "role_title": "PM Target",
+        "company": "EventCo",
+        "source": "manual",
+    }, cookies=cookies)
+    source_id = source_resp.json()["data"]["id"]
+    target_id = target_resp.json()["data"]["id"]
+
+    events_col = get_collection("calendar_events")
+    await events_col.insert_one({
+        "user_id": ObjectId(user["id"]),
+        "application_id": ObjectId(source_id),
+        "title": "Onsite Interview",
+        "start": datetime.now(timezone.utc),
+        "end": datetime.now(timezone.utc) + timedelta(hours=1),
+        "type": "interview",
+    })
+
+    # Act
+    await client.post("/api/applications/merge", json={
+        "source_id": source_id,
+        "target_id": target_id,
+    }, cookies=cookies)
+
+    # Assert — event is now linked to target_id
+    event = await events_col.find_one({"title": "Onsite Interview"})
+    assert event is not None
+    assert str(event["application_id"]) == target_id
+
+
+async def test_merge_source_is_deleted(client, test_user):
+    # Arrange
+    _, cookies = test_user
+
+    source_resp = await client.post("/api/applications", json={
+        "role_title": "QA Source",
+        "company": "DelCo",
+        "source": "manual",
+    }, cookies=cookies)
+    target_resp = await client.post("/api/applications", json={
+        "role_title": "QA Target",
+        "company": "DelCo",
+        "source": "manual",
+    }, cookies=cookies)
+    source_id = source_resp.json()["data"]["id"]
+    target_id = target_resp.json()["data"]["id"]
+
+    # Act
+    response = await client.post("/api/applications/merge", json={
+        "source_id": source_id,
+        "target_id": target_id,
+    }, cookies=cookies)
+
+    # Assert — source no longer exists; target does
+    assert response.status_code == 200
+    source_check = await client.get(f"/api/applications/{source_id}", cookies=cookies)
+    assert source_check.status_code == 404
+    target_check = await client.get(f"/api/applications/{target_id}", cookies=cookies)
+    assert target_check.status_code == 200
+
+
+async def test_merge_invalid_id_returns_404(client, test_user):
+    # Arrange — target is a valid app; source is a nonexistent id
+    _, cookies = test_user
+
+    target_resp = await client.post("/api/applications", json={
+        "role_title": "Dev",
+        "company": "Corp",
+        "source": "manual",
+    }, cookies=cookies)
+    target_id = target_resp.json()["data"]["id"]
+    fake_id = "000000000000000000000001"
+
+    # Act
+    response = await client.post("/api/applications/merge", json={
+        "source_id": fake_id,
+        "target_id": target_id,
+    }, cookies=cookies)
+
+    # Assert
+    assert response.status_code == 404
+
+
+async def test_merge_across_users_returns_404(client, test_user):
+    # Arrange — source belongs to another user
+    _, cookies = test_user
+
+    resp_other = await client.post("/api/auth/register", json={
+        "email": "mergeother@example.com",
+        "password": "OtherPass123!",
+        "display_name": "Other User",
+    })
+    other_cookies = dict(resp_other.cookies)
+
+    other_resp = await client.post("/api/applications", json={
+        "role_title": "Dev",
+        "company": "OtherCo",
+        "source": "manual",
+    }, cookies=other_cookies)
+    other_id = other_resp.json()["data"]["id"]
+
+    target_resp = await client.post("/api/applications", json={
+        "role_title": "Dev",
+        "company": "MyCo",
+        "source": "manual",
+    }, cookies=cookies)
+    target_id = target_resp.json()["data"]["id"]
+
+    # Act — try to merge other user's app as source
+    response = await client.post("/api/applications/merge", json={
+        "source_id": other_id,
+        "target_id": target_id,
+    }, cookies=cookies)
+
+    # Assert — cannot see other user's app; returns 404
+    assert response.status_code == 404
