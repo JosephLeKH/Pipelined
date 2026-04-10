@@ -349,7 +349,7 @@
         "npm run build passes"
       ],
       "priority": 14,
-      "passes": false,
+      "passes": true,
       "notes": "Duplicate applications are inevitable with multiple input channels (extension, manual, CSV import). The merge flow is the correct solution \u2014 not just deleting one, because each may have unique notes, tags, stage history, or linked events. The transactional merge prevents data loss. This is a power-user feature but critical for data hygiene."
     },
     {
@@ -375,7 +375,7 @@
         "npm run build passes"
       ],
       "priority": 15,
-      "passes": false,
+      "passes": true,
       "notes": "Saved searches transform the job board from passive browsing to active monitoring. The new_matches_count is incremented during the existing GitHub sync APScheduler job, so there's no new cron job needed. The 10-search limit prevents abuse and keeps the sync job fast."
     }
   ]

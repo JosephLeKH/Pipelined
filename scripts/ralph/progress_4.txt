@@ -196,3 +196,34 @@ US-090 | Extension LinkedIn profile contact save | PASSED | 2026-04-09
 - Modified extension/tests/test_content.js: changed dismiss, BANNER_AUTO_DISMISS_MS, FADE_DURATION_MS imports to come from banner_helpers.js directly (no barrel re-export through content.js)
 - Created extension/tests/test_linkedin_profile.js: 11 tests for isJobPage() (rejects non-profile URL, feed URL, missing heading; accepts profile with heading) and extractFields() (type="contact", name extraction, null fallbacks, headline, linkedin_url)
 - Tests: 218/218 pass | Commit: a81ee24
+
+## US-091: Application duplicate merge with conflict resolution
+- Backend: POST /api/applications/merge endpoint added to router.py
+- Service: merge_applications() with Motor session transaction; delete source before updating target to avoid unique index conflict
+- Schema: MergeApplicationsRequest model; ApplicationUpdate/Response now include notes field
+- Backend tests: 6 tests covering happy path, stage history merge, calendar re-link, source deletion, invalid id 404, cross-user 404
+- Frontend: mergeApplications() API fn, useMergeApplications() hook, MergeDialog.jsx component, BulkActionBar Merge button (visible only when 2 selected)
+- Frontend test: MergeDialog.test.jsx - 7 tests all passing
+- All 73 application backend tests pass; 294 frontend tests pass; build succeeds
+- Committed: 5907cac feat: US-091 - Application duplicate merge with conflict resolution
+
+## US-092: Job board saved searches with new listing alerts
+Status: PASSED
+Commit: 5938893
+
+### What was built
+- `backend/saved_searches/` module: schemas.py (SavedSearchCreate, SavedSearchResponse, SavedSearchFilters), service.py (create/list/delete/get_results/update_match_counts_after_sync), router.py (4 endpoints)
+- POST /api/saved-searches → 201; GET /api/saved-searches; DELETE /api/saved-searches/{id} → 204; GET /api/saved-searches/{id}/results → 200 with meta
+- Max 10 saved searches per user (SavedSearchLimitError → 409)
+- Results fetch resets new_matches_count to 0 and sets last_checked_at
+- `backend/jobs/sync.py`: calls update_match_counts_after_sync() after each GitHub sync; creates notification when new matches found
+- `frontend/src/api/savedSearches.js`: createSavedSearch, fetchSavedSearches, deleteSavedSearch, fetchSavedSearchResults
+- `frontend/src/hooks/useSavedSearches.js`: useSavedSearches, useCreateSavedSearch, useDeleteSavedSearch with React Query
+- `frontend/src/pages/JobBoard.jsx`: SaveSearchPopover (name input, creates saved search), SavedSearchesSidebar (list with new_matches_count badges, delete per item, apply on click), "Save this search" button shown when any filter active
+
+### Tests
+- 12 backend integration tests (test_saved_searches.py): CRUD, 401 auth guards, 409 limit, isolation between users, results reset, 404 for missing/foreign
+- 7 frontend Vitest tests (JobBoard.test.jsx): save button visibility, popover open, sidebar render, badge presence/absence
+
+### Key fix
+- Axios interceptor unwraps `body.data` for non-meta responses, so useSavedSearches().data IS the array directly. Fixed SavedSearchesSidebar: `const { data: searches = [] } = useSavedSearches()` (not `envelope?.data`).
