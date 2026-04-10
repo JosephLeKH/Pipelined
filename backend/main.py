@@ -17,6 +17,7 @@ from cal.router import router as calendar_router
 from jobs.router import router as jobs_router
 from activity.router import router as activity_router
 from notifications.router import router as notifications_router
+from saved_searches.router import router as saved_searches_router
 from sharing.router import router as sharing_router
 from jobs.sync import create_scheduler
 from config import settings, validate_production_secrets
@@ -106,6 +107,7 @@ def create_app(*, testing: bool = False) -> FastAPI:
     app.include_router(sharing_router)
     app.include_router(contacts_router)
     app.include_router(notifications_router)
+    app.include_router(saved_searches_router)
     app.include_router(activity_router)
 
     return app

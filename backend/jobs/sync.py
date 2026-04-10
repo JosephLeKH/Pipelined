@@ -190,6 +190,8 @@ async def sync_github_repos() -> None:
         )
 
     await _mark_stale_listings(col)
+    from saved_searches.service import update_match_counts_after_sync  # noqa: PLC0415
+    await update_match_counts_after_sync()
     logger.info("github_sync_completed")
 
 
