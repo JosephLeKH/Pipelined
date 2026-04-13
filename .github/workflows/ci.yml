@@ -1,9 +1,8 @@
 # CI pipeline for Pipelined
-# Runs lint, type-check, and tests on every pull_request to main.
+# Runs on every push to main and every pull request targeting main.
 #
-# Branch protection: require all three jobs (backend, frontend, extension) to pass
-# before a PR can be merged. Configure in GitHub -> Settings -> Branches -> main ->
-# "Require status checks to pass before merging" and add:
+# Recommended branch protection (Settings -> Branches -> main ->
+# "Require status checks to pass before merging"):
 #   - backend
 #   - frontend
 #   - extension
@@ -11,6 +10,9 @@
 name: CI
 
 on:
+  push:
+    branches:
+      - main
   pull_request:
     branches:
       - main
@@ -19,6 +21,13 @@ jobs:
   backend:
     name: backend
     runs-on: ubuntu-latest
+
+    services:
+      mongo:
+        image: mongo:7
+        ports:
+          - 27017:27017
+
     steps:
       - uses: actions/checkout@v4
 
@@ -27,6 +36,13 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Cache pip dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('backend/requirements.txt') }}
+          restore-keys: ${{ runner.os }}-pip-
+
       - name: Install dependencies
         working-directory: backend
         run: pip install -r requirements.txt
@@ -34,12 +50,16 @@ jobs:
       - name: Run tests
         working-directory: backend
         env:
-          MONGO_URI: ${{ secrets.TEST_MONGO_URI }}
-        run: pytest tests/
+          MONGO_URI: mongodb://localhost:27017/pipelined_test
+          OPENAI_API_KEY: test-key
+          JWT_SECRET: test-secret-for-ci
+          DEBUG: "true"
+        run: pytest tests/ --tb=short -q
 
   frontend:
     name: frontend
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
@@ -47,20 +67,39 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: "npm"
-          cache-dependency-path: frontend/package-lock.json
+
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: frontend/node_modules
+          key: ${{ runner.os }}-frontend-npm-${{ hashFiles('frontend/package-lock.json') }}
+          restore-keys: ${{ runner.os }}-frontend-npm-
 
       - name: Install dependencies
         working-directory: frontend
         run: npm ci
 
+      - name: Lint (if eslint configured)
+        working-directory: frontend
+        run: |
+          if [ -f ".eslintrc*" ] || [ -f "eslint.config*" ]; then
+            npx eslint src/ --max-warnings=0
+          else
+            echo "ESLint not configured, skipping lint step"
+          fi
+
       - name: Build
         working-directory: frontend
         run: npm run build
 
+      - name: Test
+        working-directory: frontend
+        run: npm test -- --reporter=verbose
+
   extension:
     name: extension
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
@@ -68,8 +107,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: "npm"
-          cache-dependency-path: extension/package-lock.json
+
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: extension/node_modules
+          key: ${{ runner.os }}-extension-npm-${{ hashFiles('extension/package-lock.json') }}
+          restore-keys: ${{ runner.os }}-extension-npm-
 
       - name: Install dependencies
         working-directory: extension

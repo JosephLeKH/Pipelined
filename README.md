@@ -1,5 +1,7 @@
 # Pipelined
 
+[![CI](https://github.com/josephle/Pipelined/actions/workflows/ci.yml/badge.svg)](https://github.com/josephle/Pipelined/actions/workflows/ci.yml)
+
 Job application tracking platform for students and job seekers. Capture applications with a one-click Chrome extension, track them through a pipeline dashboard, view interviews on a calendar, and browse a curated job board.
 
 **Stack:** FastAPI · React 18 + Vite · MongoDB Atlas · Chrome Extension MV3 · TailwindCSS · AWS ECS Fargate
@@ -227,3 +229,18 @@ Key rules:
 - Python type annotations required on every function signature
 - `structlog` for logging — no `print()` or bare `logging`
 - Tests use real MongoDB (backend) and MSW (frontend) — no mocking the DB
+
+
+---
+
+## CI / Branch Protection
+
+Every push to `main` and every pull request runs the CI pipeline automatically via GitHub Actions.
+
+**Recommended branch protection rules** (Settings → Branches → main → Add rule):
+- Check **Require status checks to pass before merging**
+- Add these required status checks:
+  - `backend`
+  - `frontend`
+  - `extension`
+- Optionally enable **Require branches to be up to date before merging**
