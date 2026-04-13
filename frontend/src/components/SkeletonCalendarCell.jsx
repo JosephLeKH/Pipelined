@@ -1,5 +1,7 @@
 /** Skeleton placeholder for a calendar day cell — animated shimmer matching DayCell layout. */
 
+const SHIMMER = "bg-gradient-to-r from-slate-200 via-slate-100 to-slate-200 dark:from-slate-700 dark:via-slate-600 dark:to-slate-700 bg-[length:200%_100%] animate-shimmer";
+
 function SkeletonCalendarCell() {
   return (
     <div
@@ -8,10 +10,10 @@ function SkeletonCalendarCell() {
       aria-hidden="true"
     >
       {/* Day number placeholder */}
-      <span className="inline-flex h-6 w-6 animate-pulse rounded-full bg-gray-200 dark:bg-gray-700" />
+      <span className={`inline-flex h-6 w-6 rounded-full ${SHIMMER}`} />
       {/* Event chip placeholder */}
       <div className="mt-1 flex flex-col gap-0.5">
-        <span className="h-4 w-full animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+        <span className={`h-4 w-full rounded ${SHIMMER}`} />
       </div>
     </div>
   );

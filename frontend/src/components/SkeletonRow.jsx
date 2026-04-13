@@ -1,5 +1,7 @@
 /** Skeleton placeholder row for ApplicationList — animated shimmer bars matching column layout. */
 
+const SHIMMER = "bg-gradient-to-r from-slate-200 via-slate-100 to-slate-200 dark:from-slate-700 dark:via-slate-600 dark:to-slate-700 bg-[length:200%_100%] animate-shimmer";
+
 function SkeletonRow() {
   return (
     <div
@@ -8,21 +10,21 @@ function SkeletonRow() {
       aria-hidden="true"
     >
       {/* Checkbox */}
-      <span className="h-4 w-4 shrink-0 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+      <span className={`h-4 w-4 shrink-0 rounded ${SHIMMER}`} />
       {/* Stale indicator placeholder */}
       <span className="w-2 shrink-0" />
       {/* Company */}
-      <span className="h-4 w-40 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+      <span className={`h-4 w-40 rounded ${SHIMMER}`} />
       {/* Role */}
-      <span className="h-4 flex-1 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+      <span className={`h-4 flex-1 rounded ${SHIMMER}`} />
       {/* Stage pill */}
-      <span className="h-5 w-20 animate-pulse rounded-full bg-gray-200 dark:bg-gray-700" />
+      <span className={`h-5 w-20 rounded-full ${SHIMMER}`} />
       {/* Date */}
-      <span className="h-4 w-28 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+      <span className={`h-4 w-28 rounded ${SHIMMER}`} />
       {/* Source icon */}
-      <span className="h-4 w-4 shrink-0 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+      <span className={`h-4 w-4 shrink-0 rounded ${SHIMMER}`} />
       {/* Row menu */}
-      <span className="h-4 w-4 shrink-0 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+      <span className={`h-4 w-4 shrink-0 rounded ${SHIMMER}`} />
     </div>
   );
 }

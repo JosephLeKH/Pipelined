@@ -192,8 +192,8 @@ function FeaturesSection() {
         {FEATURES.map(({ icon: Icon, title, description }, i) => (
           <div
             key={title}
-            style={{ transitionDelay: `${i * 80}ms`, opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(1rem)", transition: "opacity 0.4s, transform 0.4s" }}
-            className="flex flex-col gap-3 rounded-xl border border-slate-200/60 bg-white p-6 shadow-card hover:shadow-card-hover transition-shadow dark:border-slate-700 dark:bg-slate-800"
+            className={`scroll-reveal${visible ? " in-view" : ""} flex flex-col gap-3 rounded-xl border border-slate-200/60 bg-white p-6 shadow-card hover:shadow-card-hover transition-shadow dark:border-slate-700 dark:bg-slate-800`}
+            style={{ transitionDelay: `${i * 80}ms` }}
           >
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-brand-50 dark:bg-brand-900/30">
               <Icon className="h-5 w-5 text-brand-600 dark:text-brand-400" aria-hidden="true" />
@@ -232,8 +232,8 @@ function HowItWorksSection() {
         {STEPS.map(({ num, icon: Icon, title, desc }, i) => (
           <div
             key={num}
-            style={{ transitionDelay: `${i * 120}ms`, opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(1rem)", transition: "opacity 0.4s, transform 0.4s" }}
-            className="flex flex-col items-center gap-3 text-center"
+            className={`scroll-reveal${visible ? " in-view" : ""} flex flex-col items-center gap-3 text-center`}
+            style={{ transitionDelay: `${i * 120}ms` }}
           >
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-100 text-sm font-bold text-brand-700 dark:bg-brand-900/40 dark:text-brand-300">
               {num}

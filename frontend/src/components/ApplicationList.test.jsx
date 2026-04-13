@@ -161,7 +161,7 @@ describe("ApplicationList", () => {
     render(<ApplicationList onSelect={() => {}} />, { wrapper: makeWrapper() });
 
     // Assert
-    const skeletons = document.querySelectorAll(".animate-pulse");
+    const skeletons = document.querySelectorAll(".animate-shimmer");
     expect(skeletons.length).toBeGreaterThan(0);
   });
 

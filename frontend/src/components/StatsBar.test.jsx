@@ -55,9 +55,9 @@ describe("StatsBar", () => {
 
     // Assert
     expect(await screen.findByText("42")).toBeInTheDocument();
-    expect(screen.getByText("30")).toBeInTheDocument();
-    expect(screen.getByText("25.0%")).toBeInTheDocument();
-    expect(screen.getByText("5.3")).toBeInTheDocument();
+    expect(await screen.findByText("30")).toBeInTheDocument();
+    expect(await screen.findByText("25.0%")).toBeInTheDocument();
+    expect(await screen.findByText("5.3")).toBeInTheDocument();
   });
 
   it("should display — for avg_days_to_first_response when null", async () => {
@@ -96,6 +96,6 @@ describe("StatsBar", () => {
 
     // Assert
     expect(await screen.findByText("7")).toBeInTheDocument();
-    expect(screen.getByLabelText(/needs follow-up: 7/i)).toBeInTheDocument();
+    expect(await screen.findByLabelText(/needs follow-up: 7/i)).toBeInTheDocument();
   });
 });

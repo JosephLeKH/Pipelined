@@ -155,7 +155,7 @@ function ManualAddForm({ isOpen, onClose }) {
     >
       <div
         ref={dialogRef}
-        className={`relative w-full max-w-lg bg-white rounded-2xl shadow-modal dark:bg-slate-800 dark:border dark:border-slate-700`}
+        className="relative w-full max-w-lg bg-white rounded-2xl shadow-modal animate-scaleIn dark:bg-slate-800 dark:border dark:border-slate-700"
         role="dialog"
         aria-modal="true"
         aria-label="Add application"

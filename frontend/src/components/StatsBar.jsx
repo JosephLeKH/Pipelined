@@ -1,4 +1,7 @@
-/** Displays 5 key pipeline metrics with colored left-border accent cards. */
+/** Displays 5 key pipeline metrics with colored left-border accent cards.
+ *  Numbers count up from 0 on first load using requestAnimationFrame. */
+
+import { useEffect, useRef, useState } from "react";
 
 import TrendingUp from "lucide-react/dist/esm/icons/trending-up";
 import Activity from "lucide-react/dist/esm/icons/activity";
@@ -9,6 +12,8 @@ import Bell from "lucide-react/dist/esm/icons/bell";
 import { useApplicationStats } from "../hooks/useApplications";
 import ApiErrorMessage from "./ApiErrorMessage";
 
+const COUNT_UP_DURATION_MS = 400;
+
 const METRIC_CONFIG = [
   { key: "total_applied", label: "Total Applied", Icon: TrendingUp, accent: "border-brand-500", iconBg: "bg-brand-50 text-brand-600 dark:bg-brand-900/30 dark:text-brand-400" },
   { key: "active_count", label: "Active", Icon: Activity, accent: "border-violet-500", iconBg: "bg-violet-50 text-violet-600 dark:bg-violet-900/30 dark:text-violet-400" },
@@ -17,18 +22,56 @@ const METRIC_CONFIG = [
   { key: "stale_count", label: "Needs follow-up", Icon: Bell, accent: "border-rose-500", iconBg: "bg-rose-50 text-rose-600 dark:bg-rose-900/30 dark:text-rose-400" },
 ];
 
-function formatValue(key, stats) {
-  if (!stats) return "—";
-  if (key === "response_rate") return `${(stats.response_rate * 100).toFixed(1)}%`;
-  if (key === "avg_days_to_first_response") {
-    return stats.avg_days_to_first_response != null
-      ? stats.avg_days_to_first_response.toFixed(1)
-      : "—";
-  }
-  return stats[key] ?? "—";
+function getRawValue(key, stats) {
+  if (key === "response_rate") return stats.response_rate ?? null;
+  if (key === "avg_days_to_first_response") return stats.avg_days_to_first_response ?? null;
+  return stats[key] ?? null;
 }
 
-function MetricCard({ label, value, isLoading, Icon, accent, iconBg }) {
+function formatCounted(key, current, stats) {
+  if (!stats) return "—";
+  if (key === "response_rate") return `${(current * 100).toFixed(1)}%`;
+  if (key === "avg_days_to_first_response") {
+    return stats.avg_days_to_first_response != null ? current.toFixed(1) : "—";
+  }
+  return String(Math.round(current));
+}
+
+/** Counts from 0 to target over COUNT_UP_DURATION_MS on initial mount only — not on refetch.
+ *  Skips animation if the user prefers reduced motion (also skips in test environments). */
+function useCountUp(target) {
+  const [current, setCurrent] = useState(0);
+  const hasAnimated = useRef(false);
+
+  useEffect(() => {
+    if (hasAnimated.current || typeof target !== "number") return;
+    hasAnimated.current = true;
+
+    const prefersMotion = window.matchMedia?.("(prefers-reduced-motion: no-preference)").matches ?? false;
+    if (!prefersMotion) {
+      setCurrent(target);
+      return;
+    }
+
+    const start = performance.now();
+    function tick(now) {
+      const t = Math.min((now - start) / COUNT_UP_DURATION_MS, 1);
+      const eased = 1 - (1 - t) ** 3; // ease-out cubic
+      setCurrent(target * eased);
+      if (t < 1) requestAnimationFrame(tick);
+      else setCurrent(target);
+    }
+    requestAnimationFrame(tick);
+  }, [target]);
+
+  return current;
+}
+
+function MetricCard({ metricKey, label, stats, isLoading, Icon, accent, iconBg }) {
+  const rawValue = stats ? getRawValue(metricKey, stats) : null;
+  const counted = useCountUp(rawValue);
+  const displayValue = stats ? formatCounted(metricKey, counted, stats) : "—";
+
   if (isLoading) {
     return (
       <div
@@ -45,13 +88,13 @@ function MetricCard({ label, value, isLoading, Icon, accent, iconBg }) {
   return (
     <div
       className={`flex flex-col gap-2 border-l-[3px] p-4 bg-white rounded-card shadow-card border border-slate-200/60 dark:bg-slate-800 dark:border-slate-700 ${accent}`}
-      aria-label={`${label}: ${value}`}
+      aria-label={`${label}: ${displayValue}`}
     >
       <div className={`flex h-9 w-9 items-center justify-center rounded-lg ${iconBg}`}>
         <Icon className="h-5 w-5" aria-hidden="true" />
       </div>
       <span className="text-sm text-slate-500 dark:text-slate-400">{label}</span>
-      <span className="text-2xl font-bold text-slate-900 dark:text-slate-100">{value}</span>
+      <span className="text-2xl font-bold text-slate-900 dark:text-slate-100">{displayValue}</span>
     </div>
   );
 }
@@ -66,8 +109,9 @@ function StatsBar() {
       {METRIC_CONFIG.map(({ key, label, Icon, accent, iconBg }) => (
         <MetricCard
           key={key}
+          metricKey={key}
           label={label}
-          value={formatValue(key, stats)}
+          stats={stats ?? null}
           isLoading={isLoading}
           Icon={Icon}
           accent={accent}

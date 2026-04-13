@@ -38,12 +38,12 @@ function KanbanCard({ application, onSelect }) {
       onClick={() => onSelect(application)}
       data-testid="kanban-card"
       className={`relative cursor-pointer border-l-[3px] p-3 transition-all duration-150 hover:-translate-y-px hover:shadow-card-hover ${CARD_BASE} ${color.border} ${
-        isDragging ? "rotate-[2deg] scale-105 opacity-80 shadow-lg" : ""
+        isDragging ? "rotate-[2deg] scale-[1.05] opacity-80 shadow-xl transition-transform" : ""
       }`}
     >
       {stale && (
         <span
-          className="absolute right-2 top-2 h-2 w-2 animate-pulse rounded-full bg-amber-400"
+          className="absolute right-2 top-2 h-2 w-2 animate-pulse-dot rounded-full bg-amber-400"
           aria-label="Stale application — no updates in 14+ days"
           data-testid="stale-indicator"
         />

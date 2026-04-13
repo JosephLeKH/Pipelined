@@ -283,7 +283,7 @@ function DetailPanel({ application, onClose, onAddEvent }) {
         onKeyDown={handlePanelKeyDown}
       >
         {displayApp && (
-          <div key={displayApp.id} className="flex h-full flex-col overflow-y-auto">
+          <div key={displayApp.id} className="flex h-full flex-col overflow-y-auto animate-slideInRight">
             <PanelHeader application={displayApp} onClose={onClose} onDelete={handleDelete} />
             <PanelBody
               application={displayApp}

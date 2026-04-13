@@ -40,10 +40,10 @@ export const INPUT_BASE =
 /** Badge / pill base — pill shape, small text. Combine with stage-specific color classes. */
 export const BADGE_BASE = "rounded-badge text-xs font-medium px-2.5 py-1 inline-flex items-center gap-1";
 
-/** Modal backdrop — semi-transparent black with blur. */
-export const MODAL_BACKDROP = "fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4";
+/** Modal backdrop — semi-transparent black with blur; fades in on mount. */
+export const MODAL_BACKDROP = "fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fadeIn";
 
-/** Modal card — large rounded, modal shadow, white bg with dark variant. */
+/** Modal card — large rounded, modal shadow, white bg with dark variant; scales in on mount. */
 export const MODAL_CARD =
-  "bg-white rounded-2xl shadow-modal w-full max-w-lg mx-auto relative " +
+  "bg-white rounded-2xl shadow-modal w-full max-w-lg mx-auto relative animate-scaleIn " +
   "dark:bg-slate-800 dark:border dark:border-slate-700";

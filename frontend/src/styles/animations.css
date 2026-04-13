@@ -1,0 +1,54 @@
+/* animations.css — purposeful micro-interaction system.
+   All animations wrapped in prefers-reduced-motion for accessibility.
+   Users who prefer reduced motion see no animation; content is always visible. */
+
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  @keyframes slideInRight {
+    from { transform: translateX(16px); opacity: 0; }
+    to   { transform: translateX(0);    opacity: 1; }
+  }
+
+  @keyframes slideInUp {
+    from { transform: translateY(8px); opacity: 0; }
+    to   { transform: translateY(0);   opacity: 1; }
+  }
+
+  @keyframes scaleIn {
+    from { transform: scale(0.95); opacity: 0; }
+    to   { transform: scale(1);    opacity: 1; }
+  }
+
+  @keyframes shimmer {
+    from { background-position: -200% 0; }
+    to   { background-position:  200% 0; }
+  }
+
+  @keyframes pulse-dot {
+    0%,  100% { transform: scale(1);   opacity: 1;   }
+    50%       { transform: scale(1.3); opacity: 0.7; }
+  }
+
+  .animate-fadeIn      { animation: fadeIn      150ms ease        both; }
+  .animate-slideInRight{ animation: slideInRight 200ms ease-out   both; }
+  .animate-slideInUp   { animation: slideInUp   150ms ease-out    both; }
+  .animate-scaleIn     { animation: scaleIn     150ms ease-out    both; }
+  .animate-shimmer     { animation: shimmer     1.5s  linear  infinite; }
+  .animate-pulse-dot   { animation: pulse-dot   2s    ease     infinite; }
+
+  /* Scroll-reveal — start hidden, transition in when .in-view is added via IntersectionObserver */
+  .scroll-reveal {
+    opacity: 0;
+    transform: translateY(1rem);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+
+  .scroll-reveal.in-view {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

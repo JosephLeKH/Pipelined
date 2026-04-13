@@ -75,6 +75,11 @@ function ProtectedRoute({ children }) {
   return children;
 }
 
+/** Wraps page content with a fade-in transition on mount. */
+function PageWrapper({ children }) {
+  return <div className="animate-fadeIn">{children}</div>;
+}
+
 function App() {
   return (
     <Suspense fallback={<LoadingSpinner />}>
@@ -82,18 +87,18 @@ function App() {
       <ShortcutHelp />
       <GlobalChordShortcuts />
       <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/jobs" element={<JobBoard />} />
-        <Route path="/pipeline/:slug" element={<PublicPipeline />} />
+        <Route path="/" element={<PageWrapper><LandingPage /></PageWrapper>} />
+        <Route path="/login" element={<PageWrapper><Login /></PageWrapper>} />
+        <Route path="/register" element={<PageWrapper><Register /></PageWrapper>} />
+        <Route path="/forgot-password" element={<PageWrapper><ForgotPassword /></PageWrapper>} />
+        <Route path="/reset-password" element={<PageWrapper><ResetPassword /></PageWrapper>} />
+        <Route path="/jobs" element={<PageWrapper><JobBoard /></PageWrapper>} />
+        <Route path="/pipeline/:slug" element={<PageWrapper><PublicPipeline /></PageWrapper>} />
         <Route
           path="/dashboard"
           element={
             <ProtectedRoute>
-              <Dashboard />
+              <PageWrapper><Dashboard /></PageWrapper>
             </ProtectedRoute>
           }
         />
@@ -101,7 +106,7 @@ function App() {
           path="/calendar"
           element={
             <ProtectedRoute>
-              <Calendar />
+              <PageWrapper><Calendar /></PageWrapper>
             </ProtectedRoute>
           }
         />
@@ -109,7 +114,7 @@ function App() {
           path="/analytics"
           element={
             <ProtectedRoute>
-              <Analytics />
+              <PageWrapper><Analytics /></PageWrapper>
             </ProtectedRoute>
           }
         />
@@ -117,7 +122,7 @@ function App() {
           path="/activity"
           element={
             <ProtectedRoute>
-              <ActivityPage />
+              <PageWrapper><ActivityPage /></PageWrapper>
             </ProtectedRoute>
           }
         />
@@ -125,7 +130,7 @@ function App() {
           path="/settings"
           element={
             <ProtectedRoute>
-              <Settings />
+              <PageWrapper><Settings /></PageWrapper>
             </ProtectedRoute>
           }
         />

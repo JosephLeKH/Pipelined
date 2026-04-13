@@ -13,6 +13,7 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import App from "./App";
 import { QUERY_STALE_TIME_MS } from "./lib/constants";
 import "./index.css";
+import "./styles/animations.css";
 
 const queryClient = new QueryClient({
   defaultOptions: {
