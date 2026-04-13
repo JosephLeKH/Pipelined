@@ -5,6 +5,7 @@ from datetime import datetime, timedelta, timezone
 import pytest
 
 from database import get_collection
+from tests.conftest import verify_user_by_id
 
 # Use session-scoped event loop for all tests so Motor's connection pool
 # (bound to the session loop in the `app` fixture) is reachable from test bodies.
@@ -195,12 +196,14 @@ async def test_list_applications_scoped_to_current_user(client):
         json={"email": "a@test.com", "password": "TestPass123!", "display_name": "A"},
     )
     cookies_a = dict(resp_a.cookies)
+    await verify_user_by_id(resp_a.json()["data"]["id"])
 
     resp_b = await client.post(
         "/api/auth/register",
         json={"email": "b@test.com", "password": "TestPass123!", "display_name": "B"},
     )
     cookies_b = dict(resp_b.cookies)
+    await verify_user_by_id(resp_b.json()["data"]["id"])
 
     await client.post("/api/applications", json=APP_PAYLOAD, cookies=cookies_a)
     await client.post(
@@ -345,12 +348,14 @@ async def test_get_application_returns_404_for_wrong_user(client):
         json={"email": "owner@test.com", "password": "TestPass123!", "display_name": "Owner"},
     )
     cookies_a = dict(resp_a.cookies)
+    await verify_user_by_id(resp_a.json()["data"]["id"])
 
     resp_b = await client.post(
         "/api/auth/register",
         json={"email": "other@test.com", "password": "TestPass123!", "display_name": "Other"},
     )
     cookies_b = dict(resp_b.cookies)
+    await verify_user_by_id(resp_b.json()["data"]["id"])
 
     create_resp = await client.post("/api/applications", json=APP_PAYLOAD, cookies=cookies_a)
     app_id = create_resp.json()["data"]["id"]
@@ -800,6 +805,7 @@ async def test_bulk_delete_only_deletes_own_applications(client, test_user):
         "display_name": "Other User",
     })
     other_cookies = dict(resp_other.cookies)
+    await verify_user_by_id(resp_other.json()["data"]["id"])
     r_other = await client.post("/api/applications", json=APP_PAYLOAD, cookies=other_cookies)
     other_id = r_other.json()["data"]["id"]
 
@@ -888,6 +894,7 @@ async def test_bulk_stage_update_only_updates_own_applications(client, test_user
         "display_name": "Other User 2",
     })
     other_cookies = dict(resp_other.cookies)
+    await verify_user_by_id(resp_other.json()["data"]["id"])
     r_other = await client.post("/api/applications", json=APP_PAYLOAD, cookies=other_cookies)
     other_id = r_other.json()["data"]["id"]
 
@@ -1500,6 +1507,7 @@ async def test_merge_across_users_returns_404(client, test_user):
         "display_name": "Other User",
     })
     other_cookies = dict(resp_other.cookies)
+    await verify_user_by_id(resp_other.json()["data"]["id"])
 
     other_resp = await client.post("/api/applications", json={
         "role_title": "Dev",

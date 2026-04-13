@@ -1,12 +1,13 @@
 /** App shell: defines routes, lazy-loads pages, protects authenticated routes. */
 
 import { lazy, Suspense, useEffect, useRef } from "react";
-import { Routes, Route, Navigate, useNavigate, useLocation } from "react-router-dom";
+import { Routes, Route, Navigate, useNavigate, useLocation, useSearchParams } from "react-router-dom";
 
 import { trackEvent } from "./lib/analytics";
 
 import { useAuth } from "./context/AuthContext";
 import CommandPalette from "./components/CommandPalette";
+import EmailVerificationBanner from "./components/EmailVerificationBanner";
 import ShortcutHelp from "./components/ShortcutHelp";
 import { CHORD_TIMEOUT_MS } from "./lib/shortcuts";
 
@@ -60,6 +61,14 @@ const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const ActivityPage = lazy(() => import("./pages/Activity"));
 const Settings = lazy(() => import("./pages/Settings"));
 const PublicPipeline = lazy(() => import("./pages/PublicPipeline"));
+const VerifyEmailPending = lazy(() => import("./pages/VerifyEmailPending"));
+const VerifyEmailConfirm = lazy(() => import("./pages/VerifyEmailConfirm"));
+
+/** Renders the confirmation page when ?token= is present, otherwise the pending page. */
+function VerifyEmailRoute() {
+  const [searchParams] = useSearchParams();
+  return searchParams.get("token") ? <VerifyEmailConfirm /> : <VerifyEmailPending />;
+}
 
 function LoadingSpinner() {
   return (
@@ -95,6 +104,7 @@ function App() {
   return (
     <Suspense fallback={<LoadingSpinner />}>
       <PageTracker />
+      <EmailVerificationBanner />
       <CommandPalette />
       <ShortcutHelp />
       <GlobalChordShortcuts />
@@ -104,6 +114,7 @@ function App() {
         <Route path="/register" element={<PageWrapper><Register /></PageWrapper>} />
         <Route path="/forgot-password" element={<PageWrapper><ForgotPassword /></PageWrapper>} />
         <Route path="/reset-password" element={<PageWrapper><ResetPassword /></PageWrapper>} />
+        <Route path="/verify-email" element={<PageWrapper><VerifyEmailRoute /></PageWrapper>} />
         <Route path="/jobs" element={<PageWrapper><JobBoard /></PageWrapper>} />
         <Route path="/pipeline/:slug" element={<PageWrapper><PublicPipeline /></PageWrapper>} />
         <Route

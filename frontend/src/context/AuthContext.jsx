@@ -4,7 +4,7 @@ import { createContext, useContext, useState, useCallback, useEffect } from "rea
 
 import { fetchCurrentUser } from "../api/auth";
 
-const AuthContext = createContext(null);
+export const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);

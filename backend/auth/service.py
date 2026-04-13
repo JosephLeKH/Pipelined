@@ -95,6 +95,7 @@ async def create_user(email: str, password: str, display_name: str) -> dict:
         "default_stages": DEFAULT_STAGES,
         "timezone": DEFAULT_TIMEZONE,
         "digest_enabled": True,
+        "email_verified": False,
         "created_at": datetime.now(timezone.utc),
     }
     result = await users.insert_one(doc)
@@ -170,6 +171,7 @@ async def get_or_create_google_user(
         "default_stages": DEFAULT_STAGES,
         "timezone": DEFAULT_TIMEZONE,
         "digest_enabled": True,
+        "email_verified": True,
         "created_at": datetime.now(timezone.utc),
     }
     result = await users.insert_one(doc)

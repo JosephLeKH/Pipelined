@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from auth.dependencies import get_current_user
+from auth.dependencies import get_verified_user as get_current_user
 from notifications import notification_service as svc
 from notifications.schemas import NotificationResponse, UnreadCountResponse
 

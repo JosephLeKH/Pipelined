@@ -5,7 +5,7 @@ import datetime as dt
 import structlog
 from fastapi import APIRouter, Depends, HTTPException, Query, Response
 
-from auth.dependencies import get_current_user
+from auth.dependencies import get_verified_user as get_current_user
 from cal import service as cal_service
 from cal.schemas import EventCreate, EventResponse, EventUpdate
 from cal.service import ApplicationNotFoundError, CalendarEventNotFoundError, MAX_DATE_RANGE_DAYS

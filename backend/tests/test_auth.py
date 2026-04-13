@@ -506,3 +506,117 @@ async def test_upload_resume_requires_auth(client):
 
     # Assert
     assert response.status_code == 401
+
+
+# ---------------------------------------------------------------------------
+# Email verification — POST /api/auth/verify-email
+# ---------------------------------------------------------------------------
+
+
+async def test_register_sets_email_verified_false(client):
+    # Act
+    response = await client.post("/api/auth/register", json=REGISTER_PAYLOAD)
+
+    # Assert
+    assert response.status_code == 201
+    assert response.json()["data"]["email_verified"] is False
+
+
+async def test_verify_email_with_valid_token(client):
+    # Arrange
+    reg = await client.post("/api/auth/register", json=REGISTER_PAYLOAD)
+    user_id = reg.json()["data"]["id"]
+    users = database.get_collection("users")
+    from bson import ObjectId
+    user_doc = await users.find_one({"_id": ObjectId(user_id)})
+    raw_token_hash = user_doc["verification_token_hash"]
+
+    # Find the raw token by generating a new one via create_verification_token
+    # We read the token hash directly and call the service to get the raw token
+    import hashlib, secrets
+    raw = secrets.token_hex(32)
+    token_hash = hashlib.sha256(raw.encode()).hexdigest()
+    await users.update_one(
+        {"_id": ObjectId(user_id)},
+        {"$set": {"verification_token_hash": token_hash}},
+    )
+
+    # Act
+    response = await client.post("/api/auth/verify-email", json={"token": raw})
+
+    # Assert
+    assert response.status_code == 200
+    assert response.json()["data"]["message"] == "Email verified"
+    doc = await users.find_one({"_id": ObjectId(user_id)})
+    assert doc["email_verified"] is True
+    assert "verification_token_hash" not in doc
+
+
+async def test_verify_email_with_invalid_token(client):
+    # Act
+    response = await client.post("/api/auth/verify-email", json={"token": "a" * 64})
+
+    # Assert
+    assert response.status_code == 400
+    assert response.json()["detail"]["code"] == "TOKEN_INVALID"
+
+
+async def test_verify_email_with_expired_token(client):
+    # Arrange
+    from datetime import datetime, timedelta, timezone
+    from bson import ObjectId
+    import hashlib, secrets
+
+    reg = await client.post("/api/auth/register", json=REGISTER_PAYLOAD)
+    user_id = reg.json()["data"]["id"]
+    users = database.get_collection("users")
+    raw = secrets.token_hex(32)
+    token_hash = hashlib.sha256(raw.encode()).hexdigest()
+    expired_at = datetime.now(timezone.utc) - timedelta(hours=1)
+    await users.update_one(
+        {"_id": ObjectId(user_id)},
+        {"$set": {"verification_token_hash": token_hash, "verification_token_expires_at": expired_at}},
+    )
+
+    # Act
+    response = await client.post("/api/auth/verify-email", json={"token": raw})
+
+    # Assert
+    assert response.status_code == 400
+    assert response.json()["detail"]["code"] == "TOKEN_EXPIRED"
+
+
+async def test_unverified_user_blocked_from_applications(client):
+    # Arrange
+    reg = await client.post("/api/auth/register", json=REGISTER_PAYLOAD)
+    cookies = dict(reg.cookies)
+
+    # Act — unverified user tries to list applications
+    response = await client.get("/api/applications", cookies=cookies)
+
+    # Assert
+    assert response.status_code == 403
+    assert response.json()["detail"]["code"] == "EMAIL_NOT_VERIFIED"
+
+
+async def test_resend_verification_rate_limit(client):
+    # Arrange
+    from bson import ObjectId
+    from datetime import datetime, timezone
+
+    reg = await client.post("/api/auth/register", json=REGISTER_PAYLOAD)
+    cookies = dict(reg.cookies)
+    user_id = reg.json()["data"]["id"]
+
+    # Exhaust the rate limit in the DB directly
+    users = database.get_collection("users")
+    await users.update_one(
+        {"_id": ObjectId(user_id)},
+        {"$set": {"verification_resend_count": 3, "verification_resend_window_start": datetime.now(timezone.utc)}},
+    )
+
+    # Act
+    response = await client.post("/api/auth/resend-verification", cookies=cookies)
+
+    # Assert
+    assert response.status_code == 429

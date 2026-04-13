@@ -12,6 +12,7 @@ from config import settings
 logger = structlog.get_logger()
 
 RESET_EMAIL_SUBJECT = "Reset your Pipelined password"
+VERIFICATION_EMAIL_SUBJECT = "Verify your Pipelined account"
 
 
 class EmailService:
@@ -49,8 +50,44 @@ class EmailService:
                 smtp.login(settings.smtp_username, settings.smtp_password)
             smtp.sendmail(settings.smtp_from_email, to_email, message.as_string())
 
+    def _build_verification_message(self, to_email: str, verify_link: str) -> MIMEMultipart:
+        """Construct the email verification message as a MIMEMultipart message."""
+        msg = MIMEMultipart("alternative")
+        msg["Subject"] = VERIFICATION_EMAIL_SUBJECT
+        msg["From"] = settings.smtp_from_email
+        msg["To"] = to_email
+
+        text_body = (
+            "Welcome to Pipelined! Please verify your email address.\n\n"
+            f"Click the link below to verify your account (valid for 24 hours):\n\n"
+            f"{verify_link}\n\n"
+            "If you did not create a Pipelined account, you can safely ignore this email."
+        )
+        html_body = (
+            "<p>Welcome to Pipelined! Please verify your email address.</p>"
+            f"<p><a href='{verify_link}'>Verify your account</a> (valid for 24 hours)</p>"
+            "<p>If you did not create a Pipelined account, you can safely ignore this email.</p>"
+        )
+        msg.attach(MIMEText(text_body, "plain"))
+        msg.attach(MIMEText(html_body, "html"))
+        return msg
+
+    async def send_verification_email(self, to_email: str, raw_token: str) -> None:
+        """Send an email verification link to the user."""
+        if not settings.smtp_host or settings.smtp_host == "localhost":
+            logger.info("email_suppressed_dev_mode", to=to_email, subject=VERIFICATION_EMAIL_SUBJECT)
+            return
+        verify_link = f"{settings.frontend_url}/verify-email?token={raw_token}"
+        message = self._build_verification_message(to_email, verify_link)
+        loop = asyncio.get_running_loop()
+        await loop.run_in_executor(None, self._send_smtp, to_email, message)
+        logger.info("verification_email_sent", to=to_email)
+
     async def send_password_reset_email(self, to_email: str, raw_token: str) -> None:
         """Send a password reset email with the raw token link."""
+        if not settings.smtp_host or settings.smtp_host == "localhost":
+            logger.info("email_suppressed_dev_mode", to=to_email, subject=RESET_EMAIL_SUBJECT)
+            return
         reset_link = f"{settings.frontend_url}/reset-password?token={raw_token}"
         message = self._build_reset_message(to_email, reset_link)
         loop = asyncio.get_running_loop()

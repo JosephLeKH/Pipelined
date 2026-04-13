@@ -3,6 +3,8 @@
 import pytest
 import pytest_asyncio
 
+from tests.conftest import verify_user_by_id
+
 
 @pytest_asyncio.fixture(loop_scope="session")
 async def test_user(client):
@@ -14,6 +16,7 @@ async def test_user(client):
     })
     user = response.json()["data"]
     cookies = dict(response.cookies)
+    await verify_user_by_id(user["id"])
     return user, cookies
 
 

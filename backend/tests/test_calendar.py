@@ -5,6 +5,7 @@ import datetime as dt
 import pytest
 
 from database import get_collection
+from tests.conftest import verify_user_by_id
 
 pytestmark = pytest.mark.asyncio(loop_scope="session")
 
@@ -87,12 +88,14 @@ async def test_create_event_returns_404_for_other_users_application(client):
         json={"email": "owner@test.com", "password": "TestPass123!", "display_name": "Owner"},
     )
     cookies_a = dict(resp_a.cookies)
+    await verify_user_by_id(resp_a.json()["data"]["id"])
 
     resp_b = await client.post(
         "/api/auth/register",
         json={"email": "other@test.com", "password": "TestPass123!", "display_name": "Other"},
     )
     cookies_b = dict(resp_b.cookies)
+    await verify_user_by_id(resp_b.json()["data"]["id"])
 
     app_id = await _create_app(client, cookies_a)
 
@@ -173,12 +176,14 @@ async def test_list_events_scoped_to_current_user(client):
         json={"email": "a@test.com", "password": "TestPass123!", "display_name": "A"},
     )
     cookies_a = dict(resp_a.cookies)
+    await verify_user_by_id(resp_a.json()["data"]["id"])
 
     resp_b = await client.post(
         "/api/auth/register",
         json={"email": "b@test.com", "password": "TestPass123!", "display_name": "B"},
     )
     cookies_b = dict(resp_b.cookies)
+    await verify_user_by_id(resp_b.json()["data"]["id"])
 
     app_a = await _create_app(client, cookies_a)
     app_b = await _create_app(client, cookies_b)
@@ -203,12 +208,14 @@ async def test_list_events_returns_empty_for_other_users_application_id(client):
         json={"email": "list_a@test.com", "password": "TestPass123!", "display_name": "ListA"},
     )
     cookies_a = dict(resp_a.cookies)
+    await verify_user_by_id(resp_a.json()["data"]["id"])
 
     resp_b = await client.post(
         "/api/auth/register",
         json={"email": "list_b@test.com", "password": "TestPass123!", "display_name": "ListB"},
     )
     cookies_b = dict(resp_b.cookies)
+    await verify_user_by_id(resp_b.json()["data"]["id"])
 
     app_id_a = await _create_app(client, cookies_a)
     await _create_event(client, cookies_a, app_id_a)
@@ -232,12 +239,14 @@ async def test_delete_event_returns_404_for_other_users_event(client):
         json={"email": "del_a@test.com", "password": "TestPass123!", "display_name": "DelA"},
     )
     cookies_a = dict(resp_a.cookies)
+    await verify_user_by_id(resp_a.json()["data"]["id"])
 
     resp_b = await client.post(
         "/api/auth/register",
         json={"email": "del_b@test.com", "password": "TestPass123!", "display_name": "DelB"},
     )
     cookies_b = dict(resp_b.cookies)
+    await verify_user_by_id(resp_b.json()["data"]["id"])
 
     app_id_a = await _create_app(client, cookies_a)
     event_body = await _create_event(client, cookies_a, app_id_a)

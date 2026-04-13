@@ -13,6 +13,7 @@ from slowapi.middleware import SlowAPIMiddleware
 from applications.router import router as applications_router
 from contacts.router import router as contacts_router
 from auth.router import router as auth_router
+from auth.verification_router import router as verification_router
 from cal.router import router as calendar_router
 from jobs.router import router as jobs_router
 from activity.router import router as activity_router
@@ -103,6 +104,7 @@ def create_app(*, testing: bool = False) -> FastAPI:
         return {"status": "ok"}
 
     app.include_router(auth_router)
+    app.include_router(verification_router)
     app.include_router(applications_router)
     app.include_router(calendar_router)
     app.include_router(jobs_router)

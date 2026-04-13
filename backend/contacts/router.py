@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 
-from auth.dependencies import get_current_user
+from auth.dependencies import get_verified_user as get_current_user
 from contacts import service as contact_service
 from contacts.schemas import (
     ContactCreate,

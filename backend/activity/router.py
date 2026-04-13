@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter, Depends, Query
 
-from auth.dependencies import get_current_user
+from auth.dependencies import get_verified_user as get_current_user
 from activity import service as svc
 
 router = APIRouter(prefix="/api/activity", tags=["activity"])

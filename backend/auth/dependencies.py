@@ -2,12 +2,17 @@
 
 import jwt
 import structlog
-from fastapi import Cookie, HTTPException
+from fastapi import Cookie, Depends, HTTPException
 
 from auth import service as auth_service
 from auth.service import ACCESS_TOKEN_TYPE, decode_token
 
 logger = structlog.get_logger()
+
+EMAIL_NOT_VERIFIED_DETAIL = {
+    "code": "EMAIL_NOT_VERIFIED",
+    "message": "Please verify your email address",
+}
 
 
 async def get_current_user(
@@ -41,4 +46,14 @@ async def get_current_user(
             detail={"code": "USER_NOT_FOUND", "message": "User no longer exists."},
         )
 
+    return user
+
+
+async def get_verified_user(user: dict = Depends(get_current_user)) -> dict:
+    """Extend get_current_user by also requiring email_verified=True.
+
+    Raises 403 EMAIL_NOT_VERIFIED if the user hasn't confirmed their email.
+    """
+    if not user.get("email_verified"):
+        raise HTTPException(status_code=403, detail=EMAIL_NOT_VERIFIED_DETAIL)
     return user

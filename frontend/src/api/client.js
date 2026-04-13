@@ -68,6 +68,10 @@ client.interceptors.response.use(
       }
     }
 
-    return Promise.reject(error.response?.data?.error ?? error);
+    const apiError = error.response?.data?.error ?? error;
+    if (error.response?.status === 403 && apiError?.code === "EMAIL_NOT_VERIFIED") {
+      window.dispatchEvent(new CustomEvent("pipelined:email_not_verified"));
+    }
+    return Promise.reject(apiError);
   }
 );

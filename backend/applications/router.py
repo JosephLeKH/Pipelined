@@ -27,7 +27,7 @@ from applications.schemas import (
     MAX_QUERY_LIMIT,
 )
 from applications.service import ActiveStageError, ApplicationNotFoundError, DuplicateApplicationError, InvalidCursorError
-from auth.dependencies import get_current_user
+from auth.dependencies import get_verified_user as get_current_user
 from config import settings
 from middleware.rate_limit import limiter
 

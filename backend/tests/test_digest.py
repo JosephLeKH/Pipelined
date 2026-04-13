@@ -13,6 +13,7 @@ from notifications.digest import (
     build_weekly_digest,
     send_weekly_digest,
 )
+from tests.conftest import verify_user_by_id
 
 REGISTER_PAYLOAD = {
     "email": "digest_user@example.com",
@@ -27,6 +28,7 @@ async def registered_user(client):
     resp = await client.post("/api/auth/register", json=REGISTER_PAYLOAD)
     assert resp.status_code == 201
     uid = resp.json()["data"]["id"]
+    await verify_user_by_id(uid)
     return uid, REGISTER_PAYLOAD["email"]
 
 

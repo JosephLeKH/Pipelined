@@ -54,7 +54,7 @@ function Register() {
           application_count: 0,
           referral_source: user.referral_source ?? null,
         });
-        navigate("/dashboard", { replace: true });
+        navigate("/verify-email", { replace: true });
       } catch (err) {
         setError(err?.message ?? "Registration failed. Please try again.");
       }

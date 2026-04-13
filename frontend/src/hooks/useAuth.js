@@ -2,7 +2,7 @@
 
 import { useMutation } from "@tanstack/react-query";
 
-import { loginWithEmail, registerWithEmail, googleAuth, logoutUser, forgotPassword, resetPassword, updateCurrentUser, uploadResume, deleteResume, fetchCurrentUser } from "../api/auth";
+import { loginWithEmail, registerWithEmail, googleAuth, logoutUser, forgotPassword, resetPassword, updateCurrentUser, uploadResume, deleteResume, fetchCurrentUser, verifyEmail, resendVerification } from "../api/auth";
 import { useAuth } from "../context/AuthContext";
 
 export function useLogin() {
@@ -71,5 +71,17 @@ export function useDeleteResume() {
       const updated = await fetchCurrentUser();
       updateUser(updated);
     },
+  });
+}
+
+export function useVerifyEmail() {
+  return useMutation({
+    mutationFn: ({ token }) => verifyEmail(token),
+  });
+}
+
+export function useResendVerification() {
+  return useMutation({
+    mutationFn: resendVerification,
   });
 }

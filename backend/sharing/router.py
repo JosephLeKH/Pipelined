@@ -3,7 +3,7 @@
 import structlog
 from fastapi import APIRouter, Depends, HTTPException, Request
 
-from auth.dependencies import get_current_user
+from auth.dependencies import get_verified_user as get_current_user
 from config import settings
 from middleware.rate_limit import limiter
 from sharing import service as sharing_service

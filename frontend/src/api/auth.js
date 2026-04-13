@@ -45,3 +45,11 @@ export async function uploadResume(file) {
 export async function deleteResume() {
   return client.delete("/auth/resume");
 }
+
+export async function verifyEmail(token) {
+  return client.post("/auth/verify-email", { token });
+}
+
+export async function resendVerification() {
+  return client.post("/auth/resend-verification");
+}

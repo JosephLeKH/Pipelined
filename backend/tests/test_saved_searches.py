@@ -2,6 +2,8 @@
 
 import pytest
 
+from tests.conftest import verify_user_by_id
+
 pytestmark = pytest.mark.asyncio(loop_scope="session")
 
 SEARCH_PAYLOAD = {
@@ -103,6 +105,7 @@ async def test_list_saved_searches_does_not_return_other_users_searches(client, 
         "display_name": "Second User",
     })
     second_cookies = dict(reg_resp.cookies)
+    await verify_user_by_id(reg_resp.json()["data"]["id"])
 
     # Act — second user lists their searches
     response = await client.get("/api/saved-searches", cookies=second_cookies)
@@ -159,6 +162,7 @@ async def test_delete_saved_search_returns_404_for_other_users_search(client, te
         "display_name": "Thief",
     })
     thief_cookies = dict(reg_resp.cookies)
+    await verify_user_by_id(reg_resp.json()["data"]["id"])
 
     # Act — second user tries to delete first user's search
     response = await client.delete(f"/api/saved-searches/{search_id}", cookies=thief_cookies)

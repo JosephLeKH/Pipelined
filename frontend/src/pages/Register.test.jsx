@@ -112,8 +112,24 @@ describe("Register", () => {
     );
   });
 
-  it("should redirect to dashboard on successful registration", async () => {
-    render(<Register />, { wrapper: makeWrapper() });
+  it("should redirect to verify-email page on successful registration", async () => {
+    const qc = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } });
+    function WrapperWithVerify({ children }) {
+      return (
+        <QueryClientProvider client={qc}>
+          <MemoryRouter initialEntries={["/register"]}>
+            <AuthProvider>
+              <Routes>
+                <Route path="/register" element={children} />
+                <Route path="/verify-email" element={<div>VerifyEmail</div>} />
+              </Routes>
+            </AuthProvider>
+          </MemoryRouter>
+        </QueryClientProvider>
+      );
+    }
+
+    render(<Register />, { wrapper: WrapperWithVerify });
 
     await userEvent.type(screen.getByLabelText("Name"), "Bob");
     await userEvent.type(screen.getByLabelText("Email"), "bob@example.com");
@@ -121,7 +137,7 @@ describe("Register", () => {
     await userEvent.click(screen.getByRole("button", { name: "Create account" }));
 
     await waitFor(() => {
-      expect(screen.getByText("Dashboard")).toBeInTheDocument();
+      expect(screen.getByText("VerifyEmail")).toBeInTheDocument();
     });
   });
 });

@@ -39,6 +39,7 @@ class UserResponse(BaseModel):
     digest_enabled: bool
     has_resume: bool = False
     weekly_goal: int = DEFAULT_WEEKLY_GOAL
+    email_verified: bool = False
 
     @classmethod
     def from_doc(cls, doc: dict) -> "UserResponse":
@@ -51,6 +52,7 @@ class UserResponse(BaseModel):
             digest_enabled=doc.get("digest_enabled", True),
             has_resume=bool(doc.get("resume_text")),
             weekly_goal=doc.get("weekly_goal", DEFAULT_WEEKLY_GOAL),
+            email_verified=bool(doc.get("email_verified", False)),
         )
 
 
@@ -71,6 +73,12 @@ class ResetPasswordRequest(BaseModel):
 
     token: str = Field(min_length=1)
     new_password: str = Field(min_length=8, max_length=128)
+
+
+class VerifyEmailRequest(BaseModel):
+    model_config = ConfigDict(strict=True)
+
+    token: str = Field(min_length=1)
 
 
 STAGES_MIN_COUNT = 2

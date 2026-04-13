@@ -9,6 +9,7 @@ from fastapi import APIRouter, Cookie, Depends, File, HTTPException, Request, Re
 
 from auth import service as auth_service
 from auth.dependencies import get_current_user
+from auth.email_verification import create_verification_token
 from auth.schemas import (
     ForgotPasswordRequest,
     GoogleAuthRequest,
@@ -82,7 +83,7 @@ async def register(
     body: RegisterRequest,
     response: Response,
 ) -> dict:
-    """Register a new user and set auth cookies."""
+    """Register a new user, send verification email, and set auth cookies."""
     try:
         user = await auth_service.create_user(body.email, body.password, body.display_name)
     except DuplicateEmailError as exc:
@@ -94,6 +95,8 @@ async def register(
             },
         )
 
+    raw_token = await create_verification_token(str(user["_id"]))
+    await email_service.send_verification_email(body.email, raw_token)
     _set_auth_cookies(response, str(user["_id"]))
     logger.info("user_registered", user_id=str(user["_id"]))
     return {"data": UserResponse.from_doc(user)}

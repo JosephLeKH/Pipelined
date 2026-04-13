@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from auth.dependencies import get_current_user
+from auth.dependencies import get_verified_user as get_current_user
 from jobs.schemas import JobListingResponse
 from saved_searches.schemas import SavedSearchCreate, SavedSearchResponse
 from saved_searches.service import (

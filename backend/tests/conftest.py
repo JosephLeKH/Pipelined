@@ -2,6 +2,7 @@
 
 import pytest
 import pytest_asyncio
+from bson import ObjectId
 from httpx import ASGITransport, AsyncClient
 
 import database
@@ -49,9 +50,18 @@ async def client(app):
         yield c
 
 
+async def verify_user_by_id(user_id: str) -> None:
+    """Set email_verified=True for a user document (test helper, not a fixture)."""
+    if database.db is not None:
+        await database.db["users"].update_one(
+            {"_id": ObjectId(user_id)},
+            {"$set": {"email_verified": True}},
+        )
+
+
 @pytest_asyncio.fixture(loop_scope="session")
 async def test_user(client):
-    """Register a user via /api/auth/register and return (user_doc, cookies)."""
+    """Register a user via /api/auth/register, auto-verify, and return (user_doc, cookies)."""
     response = await client.post("/api/auth/register", json={
         "email": "test@example.com",
         "password": "TestPass123!",
@@ -59,4 +69,5 @@ async def test_user(client):
     })
     user = response.json()["data"]
     cookies = dict(response.cookies)
+    await verify_user_by_id(user["id"])
     return user, cookies
