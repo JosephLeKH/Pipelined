@@ -18,6 +18,8 @@ TEST_CSRF_TOKEN = "a" * 64  # 32-byte equivalent; matches cookie + header
 async def app():
     """Create the FastAPI app, wipe all collections once, then connect."""
     limiter.enabled = False
+    from config import settings as _settings
+    _settings.disable_tier_limits = True
     application = create_app(testing=True)
     await connect()
     await ensure_indexes()

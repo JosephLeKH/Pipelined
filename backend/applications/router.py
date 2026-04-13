@@ -30,12 +30,18 @@ from applications.service import ActiveStageError, ApplicationNotFoundError, Dup
 from auth.dependencies import get_verified_user as get_current_user
 from config import settings
 from middleware.rate_limit import limiter
+from middleware.tier_check import TierLimitExceeded, check_tier_limit
 
 logger = structlog.get_logger()
 
 router = APIRouter(prefix="/api/applications", tags=["applications"])
 
 APP_NOT_FOUND_DETAIL = {"code": "APP_NOT_FOUND", "message": "Application not found."}
+
+TIER_LIMIT_EXCEEDED_DETAIL = {
+    "code": "TIER_LIMIT_EXCEEDED",
+    "message": "Free plan limit reached. Upgrade to Pro for unlimited access.",
+}
 
 
 @router.post("", status_code=201)
@@ -48,7 +54,17 @@ async def create_application(
     """Create a new application for the current user."""
     user_id = str(user["_id"])
     try:
+        await check_tier_limit("max_applications", user_id)
         doc = await app_service.create(user_id, body)
+    except TierLimitExceeded as exc:
+        raise HTTPException(
+            status_code=403,
+            detail={**TIER_LIMIT_EXCEEDED_DETAIL, "details": {
+                "limit_name": exc.resource,
+                "current_usage": exc.current_count,
+                "max_allowed": exc.max_allowed,
+            }},
+        )
     except DuplicateApplicationError as exc:
         raise HTTPException(
             status_code=409,
@@ -172,6 +188,17 @@ async def import_applications_csv(
 ) -> dict:
     """Import applications from a CSV file. Returns {imported, skipped, errors}."""
     user_id = str(user["_id"])
+    try:
+        await check_tier_limit("max_applications", user_id)
+    except TierLimitExceeded as exc:
+        raise HTTPException(
+            status_code=403,
+            detail={**TIER_LIMIT_EXCEEDED_DETAIL, "details": {
+                "limit_name": exc.resource,
+                "current_usage": exc.current_count,
+                "max_allowed": exc.max_allowed,
+            }},
+        )
     csv_bytes = await file.read(MAX_IMPORT_FILE_SIZE_BYTES + 1)
     if len(csv_bytes) > MAX_IMPORT_FILE_SIZE_BYTES:
         raise HTTPException(

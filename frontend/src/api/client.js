@@ -68,9 +68,13 @@ client.interceptors.response.use(
       }
     }
 
+    const detail = error.response?.data?.detail;
     const apiError = error.response?.data?.error ?? error;
     if (error.response?.status === 403 && apiError?.code === "EMAIL_NOT_VERIFIED") {
       window.dispatchEvent(new CustomEvent("pipelined:email_not_verified"));
+    }
+    if (error.response?.status === 403 && detail?.code === "TIER_LIMIT_EXCEEDED") {
+      window.dispatchEvent(new CustomEvent("pipelined:tier_limit_exceeded", { detail: detail.details ?? {} }));
     }
     return Promise.reject(apiError);
   }

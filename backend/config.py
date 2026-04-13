@@ -97,7 +97,36 @@ class Settings(BaseSettings):
     # Environment
     debug: bool = False
 
+    # Tier limits — set to True in tests to bypass enforcement
+    disable_tier_limits: bool = False
+
     model_config = {"env_file": ".env"}
 
+
+UNLIMITED = -1
+
+FREE_TIER_LIMITS: dict[str, int | bool] = {
+    "max_applications": 100,
+    "max_contacts": 50,
+    "max_saved_searches": 5,
+    "max_csv_import_rows": 100,
+    "ai_fit_scores_per_day": 10,
+    "share_link_enabled": True,
+}
+
+PRO_TIER_LIMITS: dict[str, int | bool] = {
+    "max_applications": UNLIMITED,
+    "max_contacts": UNLIMITED,
+    "max_saved_searches": 25,
+    "max_csv_import_rows": 1000,
+    "ai_fit_scores_per_day": 100,
+    "share_link_enabled": True,
+    "priority_support": True,
+}
+
+TIER_LIMITS: dict[str, dict[str, int | bool]] = {
+    "free": FREE_TIER_LIMITS,
+    "pro": PRO_TIER_LIMITS,
+}
 
 settings = Settings()

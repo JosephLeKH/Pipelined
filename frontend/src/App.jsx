@@ -9,6 +9,7 @@ import { useAuth } from "./context/AuthContext";
 import CommandPalette from "./components/CommandPalette";
 import EmailVerificationBanner from "./components/EmailVerificationBanner";
 import ShortcutHelp from "./components/ShortcutHelp";
+import UpgradePlanModal from "./components/UpgradePlanModal";
 import { CHORD_TIMEOUT_MS } from "./lib/shortcuts";
 
 const CHORD_DESTINATIONS = { d: "/dashboard", c: "/calendar", a: "/analytics", j: "/jobs" };
@@ -64,6 +65,7 @@ const PublicPipeline = lazy(() => import("./pages/PublicPipeline"));
 const VerifyEmailPending = lazy(() => import("./pages/VerifyEmailPending"));
 const VerifyEmailConfirm = lazy(() => import("./pages/VerifyEmailConfirm"));
 const GithubCallback = lazy(() => import("./pages/GithubCallback"));
+const Pricing = lazy(() => import("./pages/Pricing"));
 
 /** Renders the confirmation page when ?token= is present, otherwise the pending page. */
 function VerifyEmailRoute() {
@@ -106,6 +108,7 @@ function App() {
     <Suspense fallback={<LoadingSpinner />}>
       <PageTracker />
       <EmailVerificationBanner />
+      <UpgradePlanModal />
       <CommandPalette />
       <ShortcutHelp />
       <GlobalChordShortcuts />
@@ -119,6 +122,7 @@ function App() {
         <Route path="/auth/github/callback" element={<GithubCallback />} />
         <Route path="/jobs" element={<PageWrapper><JobBoard /></PageWrapper>} />
         <Route path="/pipeline/:slug" element={<PageWrapper><PublicPipeline /></PageWrapper>} />
+        <Route path="/pricing" element={<PageWrapper><Pricing /></PageWrapper>} />
         <Route
           path="/dashboard"
           element={

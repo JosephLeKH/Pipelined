@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from auth.dependencies import get_verified_user as get_current_user
 from jobs.schemas import JobListingResponse
+from middleware.tier_check import TierLimitExceeded, check_tier_limit
 from saved_searches.schemas import SavedSearchCreate, SavedSearchResponse
 from saved_searches.service import (
     SavedSearchLimitError,
@@ -24,6 +25,10 @@ SEARCH_NOT_FOUND_DETAIL = {
     "code": "SEARCH_NOT_FOUND",
     "message": "Saved search not found.",
 }
+TIER_LIMIT_EXCEEDED_DETAIL = {
+    "code": "TIER_LIMIT_EXCEEDED",
+    "message": "Free plan limit reached. Upgrade to Pro for unlimited access.",
+}
 
 
 @router.post("", status_code=201)
@@ -31,9 +36,20 @@ async def create_saved_search_endpoint(
     body: SavedSearchCreate,
     user: dict = Depends(get_current_user),
 ) -> dict:
-    """Create a saved search. Returns 409 if the 10-search limit is reached."""
+    """Create a saved search. Returns 403 at tier limit or 409 at hard limit."""
+    user_id = str(user["_id"])
     try:
-        doc = await create_saved_search(str(user["_id"]), body)
+        await check_tier_limit("max_saved_searches", user_id)
+        doc = await create_saved_search(user_id, body)
+    except TierLimitExceeded as exc:
+        raise HTTPException(
+            status_code=403,
+            detail={**TIER_LIMIT_EXCEEDED_DETAIL, "details": {
+                "limit_name": exc.resource,
+                "current_usage": exc.current_count,
+                "max_allowed": exc.max_allowed,
+            }},
+        )
     except SavedSearchLimitError:
         raise HTTPException(status_code=409, detail=SEARCH_LIMIT_DETAIL)
     return {"data": SavedSearchResponse.from_doc(doc)}

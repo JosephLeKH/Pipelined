@@ -1,9 +1,10 @@
 """Contact CRUD route handlers."""
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query  # noqa: F401
 
 from auth.dependencies import get_verified_user as get_current_user
 from contacts import service as contact_service
+from middleware.tier_check import TierLimitExceeded, check_tier_limit
 from contacts.schemas import (
     ContactCreate,
     ContactResponse,
@@ -16,12 +17,29 @@ from contacts.service import ApplicationNotFoundError, ContactNotFoundError
 
 router = APIRouter(prefix="/api/contacts", tags=["contacts"])
 
+TIER_LIMIT_EXCEEDED_DETAIL = {
+    "code": "TIER_LIMIT_EXCEEDED",
+    "message": "Free plan limit reached. Upgrade to Pro for unlimited access.",
+}
+
 
 @router.post("/", status_code=201)
 async def create_contact(
     body: ContactCreate,
     user: dict = Depends(get_current_user),
 ) -> dict:
+    user_id = str(user["_id"])
+    try:
+        await check_tier_limit("max_contacts", user_id)
+    except TierLimitExceeded as exc:
+        raise HTTPException(
+            status_code=403,
+            detail={**TIER_LIMIT_EXCEEDED_DETAIL, "details": {
+                "limit_name": exc.resource,
+                "current_usage": exc.current_count,
+                "max_allowed": exc.max_allowed,
+            }},
+        )
     doc = await contact_service.create(user["_id"], body)
     return {"data": ContactResponse.from_doc(doc)}
 
