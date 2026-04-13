@@ -1,8 +1,17 @@
 /** Displays AI-powered resume fit analysis with score, summary, and skill matching. */
 
+import { useEffect } from "react";
+
 import FitBadge from "./FitBadge";
+import { trackEvent } from "../lib/analytics";
 
 function ResumeFitSection({ analysis }) {
+  useEffect(() => {
+    if (analysis.fit_score != null) {
+      trackEvent("fit_score_viewed", { score: analysis.fit_score });
+    }
+  }, [analysis.fit_score]);
+
   return (
     <div className="flex flex-col gap-3">
       <span className="text-xs font-medium uppercase text-gray-400 dark:text-gray-500">Resume Fit</span>

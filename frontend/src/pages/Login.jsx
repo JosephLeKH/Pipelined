@@ -8,6 +8,7 @@ import { useLogin } from "../hooks/useAuth";
 import AuthLayout from "../components/AuthLayout";
 import GoogleAuthButton from "../components/GoogleAuthButton";
 import { INPUT_BASE, BUTTON_PRIMARY } from "../lib/designTokens";
+import { identifyUser } from "../lib/analytics";
 
 function Login() {
   const navigate = useNavigate();
@@ -35,6 +36,14 @@ function Login() {
       try {
         const user = await signIn({ email: email.trim(), password });
         login(user);
+        identifyUser(user.id, {
+          email: user.email,
+          created_at: user.created_at,
+          tier: user.tier ?? "free",
+          has_resume: Boolean(user.resume_filename),
+          application_count: user.application_count ?? 0,
+          referral_source: user.referral_source ?? null,
+        });
         navigate("/dashboard", { replace: true });
       } catch (err) {
         setError(err?.message ?? "Incorrect email or password.");

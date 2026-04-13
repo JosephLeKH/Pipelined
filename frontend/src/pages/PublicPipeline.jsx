@@ -1,10 +1,12 @@
 /** Read-only public pipeline view for a shared slug. */
 
+import { useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 
 import { STAGE_COLORS, DEFAULT_STAGE_COLOR } from "../lib/constants";
 import { formatDate } from "../lib/dateUtils";
 import { usePublicPipeline } from "../hooks/useSharing";
+import { trackEvent } from "../lib/analytics";
 
 function StagePill({ stage }) {
   const color = STAGE_COLORS[stage] ?? DEFAULT_STAGE_COLOR;
@@ -76,6 +78,10 @@ function NotFoundState() {
 function PublicPipeline() {
   const { slug } = useParams();
   const { data, isLoading, isError } = usePublicPipeline(slug);
+
+  useEffect(() => {
+    trackEvent("share_link_viewed");
+  }, []);
 
   if (isLoading) return <LoadingState />;
   if (isError || !data) return <NotFoundState />;

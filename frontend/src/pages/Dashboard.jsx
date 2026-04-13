@@ -22,6 +22,7 @@ import OnboardingChecklist from "../components/OnboardingChecklist";
 import { useApplication, useApplicationStats } from "../hooks/useApplications";
 import { exportApplicationsCsv } from "../api/applications";
 import { VIEW_MODE_STORAGE_KEY } from "../lib/constants";
+import { trackEvent } from "../lib/analytics";
 
 function Dashboard() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -81,10 +82,11 @@ function Dashboard() {
       a.download = "applications.csv";
       a.click();
       URL.revokeObjectURL(url);
+      trackEvent("csv_exported", { count: stats?.data?.total_applied ?? 0 });
     } finally {
       setIsExporting(false);
     }
-  }, [includeArchived]);
+  }, [includeArchived, stats]);
 
   const handleSetViewMode = useCallback((mode) => {
     setViewMode(mode);

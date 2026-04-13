@@ -20,6 +20,7 @@ import ResumeFitSection from "./ResumeFitSection";
 import UndoToast from "./UndoToast";
 import { formatDate } from "../lib/dateUtils";
 import { useAuth } from "../context/AuthContext";
+import { trackEvent } from "../lib/analytics";
 
 const FOCUSABLE_SELECTORS = 'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
@@ -251,7 +252,13 @@ function DetailPanel({ application, onClose, onAddEvent }) {
   );
 
   const handleStageChange = useCallback(
-    (e) => { if (cachedApp) updateApp({ id: cachedApp.id, body: { current_stage: e.target.value } }); },
+    (e) => {
+      if (!cachedApp) return;
+      const from_stage = cachedApp.current_stage;
+      const to_stage = e.target.value;
+      updateApp({ id: cachedApp.id, body: { current_stage: to_stage } });
+      trackEvent("application_stage_changed", { from_stage, to_stage });
+    },
     [cachedApp, updateApp]
   );
 

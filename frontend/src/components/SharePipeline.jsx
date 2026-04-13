@@ -9,6 +9,7 @@ import Link2Off from "lucide-react/dist/esm/icons/link-2-off";
 import Loader2 from "lucide-react/dist/esm/icons/loader-2";
 
 import { useCreateShare, useMyShare, useRevokeShare } from "../hooks/useSharing";
+import { trackEvent } from "../lib/analytics";
 
 const BASE_URL = window.location.origin;
 const COPY_RESET_MS = 2000;
@@ -98,6 +99,12 @@ function SharePipeline() {
   const { mutate: createShare, isPending: isCreating } = useCreateShare();
   const { mutate: revokeShare, isPending: isRevoking } = useRevokeShare();
 
+  const handleCreateShare = () => {
+    createShare(undefined, {
+      onSuccess: () => trackEvent("share_link_created"),
+    });
+  };
+
   return (
     <section aria-labelledby="share-heading" className="flex flex-col gap-3 rounded-card border border-slate-200 p-4 dark:border-slate-700">
       <h2 id="share-heading" className="text-sm font-semibold text-slate-800 dark:text-slate-100">
@@ -108,7 +115,7 @@ function SharePipeline() {
       ) : share ? (
         <ActiveShare share={share} onRevoke={revokeShare} isRevoking={isRevoking} />
       ) : (
-        <NoShare onCreate={createShare} isCreating={isCreating} />
+        <NoShare onCreate={handleCreateShare} isCreating={isCreating} />
       )}
     </section>
   );

@@ -1,7 +1,9 @@
 /** App shell: defines routes, lazy-loads pages, protects authenticated routes. */
 
 import { lazy, Suspense, useEffect, useRef } from "react";
-import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import { Routes, Route, Navigate, useNavigate, useLocation } from "react-router-dom";
+
+import { trackEvent } from "./lib/analytics";
 
 import { useAuth } from "./context/AuthContext";
 import CommandPalette from "./components/CommandPalette";
@@ -80,9 +82,19 @@ function PageWrapper({ children }) {
   return <div className="animate-fadeIn">{children}</div>;
 }
 
+/** Fires a page_viewed event on every route change. */
+function PageTracker() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    trackEvent("page_viewed", { page_name: pathname });
+  }, [pathname]);
+  return null;
+}
+
 function App() {
   return (
     <Suspense fallback={<LoadingSpinner />}>
+      <PageTracker />
       <CommandPalette />
       <ShortcutHelp />
       <GlobalChordShortcuts />

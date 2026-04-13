@@ -17,6 +17,7 @@ import X from "lucide-react/dist/esm/icons/x";
 
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
+import { resetUser, trackEvent } from "../lib/analytics";
 import NotificationBell from "./NotificationBell";
 
 const NAV_LINKS = [
@@ -36,7 +37,13 @@ function NavBar() {
   const { theme, cycleTheme } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  const handleCycleTheme = useCallback(() => {
+    cycleTheme();
+    trackEvent("feature_used", { feature: "dark_mode" });
+  }, [cycleTheme]);
+
   const handleLogout = useCallback(async () => {
+    resetUser();
     await logout();
   }, [logout]);
 
@@ -79,7 +86,7 @@ function NavBar() {
           <NotificationBell />
           <button
             type="button"
-            onClick={cycleTheme}
+            onClick={handleCycleTheme}
             aria-label={THEME_LABELS[theme]}
             className="rounded-md p-1.5 text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-100"
           >
@@ -136,7 +143,7 @@ function NavBar() {
           <div className="mt-2 flex items-center gap-2 border-t border-gray-100 pt-2 dark:border-gray-700">
             <button
               type="button"
-              onClick={cycleTheme}
+              onClick={handleCycleTheme}
               aria-label={THEME_LABELS[theme]}
               className="rounded-md p-1.5 text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-100"
             >

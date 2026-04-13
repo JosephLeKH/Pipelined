@@ -8,6 +8,7 @@ import Circle from "lucide-react/dist/esm/icons/circle";
 
 import { useAuth } from "../context/AuthContext";
 import { useApplications } from "../hooks/useApplications";
+import { trackEvent } from "../lib/analytics";
 import {
   ONBOARDING_CONFETTI_DISMISS_MS,
   ONBOARDING_DISMISSED_KEY,
@@ -65,9 +66,23 @@ function OnboardingChecklist({ onAdd }) {
     return () => clearTimeout(t);
   }, [allDone, dismissed]);
 
+  const completedSteps = [
+    hasExtensionApp && "install_extension",
+    hasAddedApp && "add_application",
+    hasCustomStages && "customize_stages",
+  ].filter(Boolean);
+
+  useEffect(() => {
+    completedSteps.forEach((step) => {
+      trackEvent("onboarding_step_completed", { step });
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasExtensionApp, hasAddedApp, hasCustomStages]);
+
   const handleDismiss = () => {
     localStorage.setItem(ONBOARDING_DISMISSED_KEY, "true");
     setDismissed(true);
+    trackEvent("onboarding_dismissed", { completed_steps: completedSteps.length });
   };
 
   if (dismissed) return null;

@@ -8,6 +8,7 @@ import X from "lucide-react/dist/esm/icons/x";
 
 import { useImportApplications } from "../hooks/useApplications";
 import { BUTTON_PRIMARY, BUTTON_SECONDARY, MODAL_CARD } from "../lib/designTokens";
+import { trackEvent } from "../lib/analytics";
 
 const ACCEPTED_MIME = "text/csv,.csv";
 const MAX_FILE_BYTES = 2 * 1024 * 1024;
@@ -38,7 +39,12 @@ function CsvImportModal({ isOpen, onClose }) {
     setResult(null);
     try {
       const res = await mutateAsync(file);
-      setResult(res?.data ?? res);
+      const resultData = res?.data ?? res;
+      setResult(resultData);
+      trackEvent("csv_imported", {
+        count: resultData?.imported ?? 0,
+        skipped: resultData?.skipped ?? 0,
+      });
       setFile(null);
       if (fileRef.current) fileRef.current.value = "";
     } catch (err) {

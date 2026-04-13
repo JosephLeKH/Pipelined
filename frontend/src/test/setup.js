@@ -2,6 +2,14 @@
 
 import "@testing-library/jest-dom";
 
+// Mock analytics module so tests never fire real PostHog events.
+vi.mock("../lib/analytics", () => ({
+  initAnalytics: vi.fn(),
+  trackEvent: vi.fn(),
+  identifyUser: vi.fn(),
+  resetUser: vi.fn(),
+}));
+
 // recharts ResponsiveContainer relies on ResizeObserver which is not in JSDOM.
 global.ResizeObserver = class ResizeObserver {
   observe() {}

@@ -1,6 +1,7 @@
 /** React Query hooks for application data. */
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { trackEvent } from "../lib/analytics";
 
 import {
   archiveApplication,
@@ -89,6 +90,7 @@ export function useDeleteApplication() {
   return useMutation({
     mutationFn: (id) => deleteApplication(id),
     onSuccess: () => {
+      trackEvent("application_deleted");
       queryClient.invalidateQueries({ queryKey: KEYS.all });
       queryClient.invalidateQueries({ queryKey: KEYS.stats });
     },
@@ -182,6 +184,7 @@ export function useMergeApplications() {
   return useMutation({
     mutationFn: (body) => mergeApplications(body),
     onSuccess: () => {
+      trackEvent("application_merged");
       queryClient.invalidateQueries({ queryKey: KEYS.all });
       queryClient.invalidateQueries({ queryKey: KEYS.stats });
     },

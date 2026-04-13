@@ -8,6 +8,7 @@ import { useRegister } from "../hooks/useAuth";
 import AuthLayout from "../components/AuthLayout";
 import GoogleAuthButton from "../components/GoogleAuthButton";
 import { INPUT_BASE, BUTTON_PRIMARY } from "../lib/designTokens";
+import { identifyUser } from "../lib/analytics";
 import { PASSWORD_MIN_LENGTH } from "../lib/constants";
 
 function Register() {
@@ -45,6 +46,14 @@ function Register() {
           display_name: displayName.trim(),
         });
         login(user);
+        identifyUser(user.id, {
+          email: user.email,
+          created_at: user.created_at,
+          tier: user.tier ?? "free",
+          has_resume: Boolean(user.resume_filename),
+          application_count: 0,
+          referral_source: user.referral_source ?? null,
+        });
         navigate("/dashboard", { replace: true });
       } catch (err) {
         setError(err?.message ?? "Registration failed. Please try again.");

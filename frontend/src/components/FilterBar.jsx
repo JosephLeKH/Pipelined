@@ -3,6 +3,7 @@
 import { useCallback, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import SearchIcon from "lucide-react/dist/esm/icons/search";
+import { trackEvent } from "../lib/analytics";
 
 const SEARCH_DEBOUNCE_MS = 300;
 
@@ -73,6 +74,9 @@ function FilterBar() {
       if (debounceRef.current) clearTimeout(debounceRef.current);
       debounceRef.current = setTimeout(() => {
         updateFilter("q", val);
+        if (val.trim()) {
+          trackEvent("search_performed", { type: "applications", query_length: val.trim().length });
+        }
       }, SEARCH_DEBOUNCE_MS);
     },
     [updateFilter]

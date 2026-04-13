@@ -7,6 +7,7 @@ import X from "lucide-react/dist/esm/icons/x";
 
 import { useCreateApplication } from "../hooks/useApplications";
 import { REMOTE_STATUS_OPTIONS, COMPANY_TYPE_OPTIONS } from "../lib/constants";
+import { trackEvent } from "../lib/analytics";
 import { useAuth } from "../context/AuthContext";
 import { BUTTON_PRIMARY, BUTTON_SECONDARY, INPUT_BASE, MODAL_BACKDROP, MODAL_CARD } from "../lib/designTokens";
 
@@ -138,7 +139,12 @@ function ManualAddForm({ isOpen, onClose }) {
         tags: tags.split(",").map((t) => t.trim()).filter(Boolean),
       };
 
-      mutate(body, { onSuccess: handleClose });
+      mutate(body, {
+        onSuccess: () => {
+          trackEvent("application_created", { source: "manual" });
+          handleClose();
+        },
+      });
     },
     [
       roleTitle, company, sourceUrl, dateApplied, stage, compensation,

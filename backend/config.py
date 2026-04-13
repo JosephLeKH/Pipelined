@@ -88,6 +88,9 @@ class Settings(BaseSettings):
     smtp_password: str = ""
     smtp_from_email: str = "noreply@pipelined.app"
 
+    # Analytics
+    posthog_api_key: str = ""
+
     # Environment
     debug: bool = False
 
