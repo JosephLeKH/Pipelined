@@ -222,3 +222,33 @@ Added a comprehensive animation system using pure CSS + minimal JS — no third-
 - `vi.mock` in setup.js (not in individual test files) provides a global analytics mock that prevents any test from accidentally triggering real PostHog calls
 - `handleCreateShare` wrapper pattern (wrapping mutation with onSuccess callback) avoids polluting the `NoShare` component with analytics imports
 - 301/301 tests pass, build passes (19 files changed, 210 insertions)
+
+## US-104 — Email verification on signup (PASSED)
+
+**Backend:**
+- `auth/email_verification.py`: SHA256-hashed token generation, 24h expiry, create/verify/resend domain logic, `DuplicateApplicationError`-style domain exceptions
+- `auth/verification_router.py`: `POST /api/auth/verify-email` and `POST /api/auth/resend-verification` endpoints
+- `auth/service.py`: `email_verified=False` on register, triggers `send_verification_email`
+- `auth/dependencies.py`: `get_verified_user` dependency raises 403 `EMAIL_NOT_VERIFIED` for unverified users
+- `auth/schemas.py`: `email_verified: bool` on `UserResponse`, `VerifyEmailRequest`
+- All feature routers switched from `get_current_user` to `get_verified_user`
+- `email_service.py`: dev-mode SMTP guard added to `send_verification_email` / `send_password_reset_email`
+- `conftest.py`: `verify_user_by_id` async helper; all inline-register tests in 6 files updated
+
+**Frontend:**
+- `api/auth.js` + `hooks/useAuth.js`: `verifyEmail` and `resendVerification` mutations
+- `api/client.js`: 403 `EMAIL_NOT_VERIFIED` interceptor dispatches custom DOM event `pipelined:email_not_verified`
+- `pages/VerifyEmailPending.jsx`: Post-register "check your email" page with 60s resend cooldown
+- `pages/VerifyEmailConfirm.jsx`: Token confirmation page, auto-redirects to dashboard after 2s
+- `components/EmailVerificationBanner.jsx`: Persistent amber banner; shows when user.email_verified===false OR custom event fires
+- `App.jsx`: `VerifyEmailRoute` dispatcher (`?token=` → confirm vs pending), `EmailVerificationBanner`, lazy routes
+- `Register.jsx`: Redirects to `/verify-email` after successful registration
+- `AuthContext.jsx`: Exported `AuthContext` for direct test injection
+
+**Tests:** 24 Vitest tests across 4 new/modified files. 165 backend tests pass. Pre-existing loop-scope issue in full suite run is unrelated to this change.
+
+**Key learnings:**
+- Single `/verify-email` route with `?token=` param dispatcher eliminates the need for a separate `/verify-email/confirm` route — matches the backend email link format
+- Custom DOM event (`pipelined:email_not_verified`) bridges the Axios interceptor (outside React tree) to the `EmailVerificationBanner` component without prop drilling or shared state
+- Dev-mode SMTP guard (`smtp_host == "localhost"`) must be added to all email-sending methods, not just the text helper, to prevent `ConnectionRefusedError` in tests
+- Session-scope pytest-asyncio fixtures from multiple test files sharing the same event loop can produce "attached to a different loop" errors in full-suite runs — individual file runs are the reliable indicator; this was pre-existing

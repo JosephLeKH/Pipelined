@@ -7,6 +7,7 @@ import { useAuth } from "../context/AuthContext";
 import { useLogin } from "../hooks/useAuth";
 import AuthLayout from "../components/AuthLayout";
 import GoogleAuthButton from "../components/GoogleAuthButton";
+import GithubAuthButton from "../components/GithubAuthButton";
 import { INPUT_BASE, BUTTON_PRIMARY } from "../lib/designTokens";
 import { identifyUser } from "../lib/analytics";
 
@@ -70,6 +71,10 @@ function Login() {
         onSuccess={handleGoogleSuccess}
         onError={handleGoogleError}
       />
+
+      <div className="mt-3">
+        <GithubAuthButton label="Continue with GitHub" />
+      </div>
 
       <div className="my-5 flex items-center gap-3">
         <hr className="flex-1 border-slate-200 dark:border-slate-700" />

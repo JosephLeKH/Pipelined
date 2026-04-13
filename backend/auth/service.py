@@ -1,19 +1,30 @@
-"""Auth business logic: password hashing, JWT creation and decoding, user CRUD."""
+"""Auth business logic: password hashing, JWT creation and decoding, user CRUD.
 
-import asyncio
+OAuth logic (Google, GitHub) lives in auth/oauth_service.py.
+"""
+
 import hashlib
 import secrets
 from datetime import datetime, timedelta, timezone
 
 import bcrypt
-import httpx
 import jwt
 import structlog
 from bson import ObjectId
 
+from auth.constants import DEFAULT_STAGES, DEFAULT_TIMEZONE  # noqa: F401
 from auth.schemas import TokenPayload
 from config import settings
 from database import get_collection
+
+# Re-exported for router backward compatibility.
+from auth.oauth_service import (  # noqa: F401
+    GithubCodeError,
+    GoogleTokenError,
+    get_or_create_google_user,
+    google_verify_id_token,
+    github_auth,
+)
 
 logger = structlog.get_logger()
 
@@ -21,8 +32,6 @@ BCRYPT_WORK_FACTOR = 12
 ACCESS_TOKEN_TYPE = "access"
 REFRESH_TOKEN_TYPE = "refresh"
 JWT_ALGORITHM = "HS256"
-DEFAULT_STAGES = ["Applied", "Phone Screen", "Onsite", "Offer", "Rejected"]
-DEFAULT_TIMEZONE = "America/New_York"
 RESET_TOKEN_BYTES = 32
 RESET_TOKEN_TTL_HOURS = 1
 
@@ -115,69 +124,6 @@ async def get_user_by_id(user_id: str) -> dict | None:
     """Return the user document matching user_id, or None if not found."""
     users = get_collection("users")
     return await users.find_one({"_id": ObjectId(user_id)})
-
-
-GOOGLE_TOKENINFO_URL = "https://oauth2.googleapis.com/tokeninfo"
-
-
-class GoogleTokenError(Exception):
-    """Raised when Google ID token verification fails."""
-
-
-async def google_verify_id_token(id_token: str) -> dict:
-    """Verify a Google ID token and return its claims.
-
-    Raises GoogleTokenError if the token is invalid or Google returns non-200.
-    """
-    async with httpx.AsyncClient() as http_client:
-        response = await http_client.get(
-            GOOGLE_TOKENINFO_URL, params={"id_token": id_token}
-        )
-    if response.status_code != 200:
-        raise GoogleTokenError("Google token verification failed")
-    return response.json()
-
-
-async def get_or_create_google_user(
-    google_id: str, email: str, display_name: str
-) -> dict:
-    """Return an existing user (looked up by google_id or email) or create one.
-
-    If an existing user is found by email but lacks google_id, the field is linked.
-    """
-    users = get_collection("users")
-
-    user, email_user = await asyncio.gather(
-        users.find_one({"google_id": google_id}),
-        users.find_one({"email": email}),
-    )
-
-    if user is not None:
-        return user
-
-    if email_user is not None:
-        if not email_user.get("google_id"):
-            await users.update_one(
-                {"_id": email_user["_id"]}, {"$set": {"google_id": google_id}}
-            )
-            email_user["google_id"] = google_id
-        return email_user
-
-    doc: dict = {
-        "email": email,
-        "google_id": google_id,
-        "display_name": display_name,
-        "password_hash": None,
-        "default_stages": DEFAULT_STAGES,
-        "timezone": DEFAULT_TIMEZONE,
-        "digest_enabled": True,
-        "email_verified": True,
-        "created_at": datetime.now(timezone.utc),
-    }
-    result = await users.insert_one(doc)
-    doc["_id"] = result.inserted_id
-    logger.info("google_user_created", user_id=str(result.inserted_id), email=email)
-    return doc
 
 
 def _ensure_utc(dt: datetime) -> datetime:

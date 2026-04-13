@@ -31,9 +31,28 @@ const NAV_LINKS = [
 const THEME_ICONS = { system: Monitor, light: Sun, dark: Moon };
 const THEME_LABELS = { system: "System theme", light: "Light theme", dark: "Dark theme" };
 
+function UserAvatar({ user }) {
+  if (user?.avatar_url) {
+    return (
+      <img
+        src={user.avatar_url}
+        alt={user.display_name ?? "Profile"}
+        className="h-8 w-8 rounded-full object-cover"
+      />
+    );
+  }
+  const seed = user?.display_name ?? user?.email ?? "U";
+  const initial = (seed[0] ?? "U").toUpperCase();
+  return (
+    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-xs font-semibold text-white">
+      {initial}
+    </span>
+  );
+}
+
 function NavBar() {
   const { pathname } = useLocation();
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
   const { theme, cycleTheme } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -92,6 +111,7 @@ function NavBar() {
           >
             <ThemeIcon className="h-4 w-4" />
           </button>
+          <UserAvatar user={user} />
           <button
             type="button"
             onClick={handleLogout}

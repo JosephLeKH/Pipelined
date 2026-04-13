@@ -30,9 +30,15 @@ class GoogleAuthRequest(BaseModel):
     id_token: str = Field(min_length=1)
 
 
+class GithubAuthRequest(BaseModel):
+    model_config = ConfigDict(strict=True)
+
+    code: str = Field(min_length=1)
+
+
 class UserResponse(BaseModel):
     id: str
-    email: str
+    email: str | None
     display_name: str
     default_stages: list[str]
     timezone: str
@@ -40,12 +46,13 @@ class UserResponse(BaseModel):
     has_resume: bool = False
     weekly_goal: int = DEFAULT_WEEKLY_GOAL
     email_verified: bool = False
+    avatar_url: str | None = None
 
     @classmethod
     def from_doc(cls, doc: dict) -> "UserResponse":
         return cls(
             id=str(doc["_id"]),
-            email=doc["email"],
+            email=doc.get("email"),
             display_name=doc["display_name"],
             default_stages=doc["default_stages"],
             timezone=doc.get("timezone", DEFAULT_TIMEZONE),
@@ -53,6 +60,7 @@ class UserResponse(BaseModel):
             has_resume=bool(doc.get("resume_text")),
             weekly_goal=doc.get("weekly_goal", DEFAULT_WEEKLY_GOAL),
             email_verified=bool(doc.get("email_verified", False)),
+            avatar_url=doc.get("avatar_url"),
         )
 
 

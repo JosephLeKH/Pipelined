@@ -1,17 +1,15 @@
 """Auth route handlers: register, login, logout, me, and token refresh."""
 
-import io
-
 import jwt
-import pdfplumber
 import structlog
-from fastapi import APIRouter, Cookie, Depends, File, HTTPException, Request, Response, UploadFile
+from fastapi import APIRouter, Cookie, Depends, HTTPException, Request, Response
 
 from auth import service as auth_service
 from auth.dependencies import get_current_user
 from auth.email_verification import create_verification_token
 from auth.schemas import (
     ForgotPasswordRequest,
+    GithubAuthRequest,
     GoogleAuthRequest,
     LoginRequest,
     RegisterRequest,
@@ -19,19 +17,21 @@ from auth.schemas import (
     UpdateUserRequest,
     UserResponse,
 )
-from auth.service import (
+from auth.oauth_service import (
+    GithubCodeError,
     GoogleTokenError,
+    github_auth as github_auth_service,
+)
+from auth.service import (
     REFRESH_TOKEN_TYPE,
     DuplicateEmailError,
     TokenExpiredError,
     TokenInvalidError,
-    clear_resume_text,
     create_access_token,
     create_password_reset_token,
     create_refresh_token,
     decode_token,
     reset_password,
-    save_resume_text,
     update_user_profile,
     verify_password,
 )
@@ -47,8 +47,6 @@ router = APIRouter(prefix="/api/auth", tags=["auth"])
 ACCESS_COOKIE = "access_token"
 REFRESH_COOKIE = "refresh_token"
 ACCESS_MAX_AGE = settings.jwt_access_ttl_minutes * 60
-RESUME_MAX_SIZE_BYTES = 2 * 1024 * 1024  # 2 MB
-RESUME_CONTENT_TYPE = "application/pdf"
 REFRESH_MAX_AGE = settings.jwt_refresh_ttl_days * 24 * 60 * 60
 
 
@@ -231,6 +229,26 @@ async def google_auth(body: GoogleAuthRequest, response: Response) -> dict:
     return {"data": UserResponse.from_doc(user)}
 
 
+@router.post("/github", status_code=200)
+async def github_auth(body: GithubAuthRequest, response: Response) -> dict:
+    """Sign in or register with a GitHub OAuth authorization code."""
+    try:
+        user = await github_auth_service(body.code)
+    except GithubCodeError as exc:
+        logger.warning("github_auth_failed", error=str(exc))
+        raise HTTPException(
+            status_code=401,
+            detail={
+                "code": "INVALID_GITHUB_CODE",
+                "message": "GitHub authentication failed.",
+            },
+        )
+
+    _set_auth_cookies(response, str(user["_id"]))
+    logger.info("github_user_authenticated", user_id=str(user["_id"]))
+    return {"data": UserResponse.from_doc(user)}
+
+
 RESET_LINK_SENT_MESSAGE = "If that email is registered, a reset link has been sent."
 
 
@@ -262,43 +280,3 @@ async def reset_password_endpoint(body: ResetPasswordRequest) -> dict:
     return {"data": {"message": "Password reset successfully."}}
 
 
-@router.post("/resume", status_code=200)
-async def upload_resume(
-    file: UploadFile = File(...),
-    user: dict = Depends(get_current_user),
-) -> dict:
-    """Upload a PDF resume; extract text and store it on the user document."""
-    if file.content_type != RESUME_CONTENT_TYPE:
-        raise HTTPException(
-            status_code=400,
-            detail={"code": "INVALID_FILE_TYPE", "message": "Only PDF files are accepted."},
-        )
-
-    raw = await file.read()
-    if len(raw) > RESUME_MAX_SIZE_BYTES:
-        raise HTTPException(
-            status_code=413,
-            detail={"code": "FILE_TOO_LARGE", "message": "Resume must be 2 MB or smaller."},
-        )
-
-    try:
-        with pdfplumber.open(io.BytesIO(raw)) as pdf:
-            pages_text = [page.extract_text() or "" for page in pdf.pages]
-        resume_text = "\n".join(pages_text).strip()
-    except (ValueError, TypeError, AttributeError) as exc:
-        logger.warning("pdf_extraction_failed", error=str(exc), user_id=str(user["_id"]))
-        raise HTTPException(
-            status_code=422,
-            detail={"code": "PDF_PARSE_ERROR", "message": "Could not extract text from PDF."},
-        )
-
-    await save_resume_text(str(user["_id"]), resume_text)
-    logger.info("resume_uploaded", user_id=str(user["_id"]), chars=len(resume_text))
-    return {"data": {"chars_extracted": len(resume_text)}}
-
-
-@router.delete("/resume", status_code=204)
-async def delete_resume(user: dict = Depends(get_current_user)) -> None:
-    """Remove the stored resume text for the current user."""
-    await clear_resume_text(str(user["_id"]))
-    logger.info("resume_deleted", user_id=str(user["_id"]))

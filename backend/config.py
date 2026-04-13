@@ -44,6 +44,8 @@ class Settings(BaseSettings):
     jwt_access_ttl_minutes: int = 15
     jwt_refresh_ttl_days: int = 7
     google_client_id: str = ""
+    github_client_id: str = ""
+    github_client_secret: str = ""
 
     # OpenAI
     openai_api_key: str = ""

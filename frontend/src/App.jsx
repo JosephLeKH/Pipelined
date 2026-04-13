@@ -63,6 +63,7 @@ const Settings = lazy(() => import("./pages/Settings"));
 const PublicPipeline = lazy(() => import("./pages/PublicPipeline"));
 const VerifyEmailPending = lazy(() => import("./pages/VerifyEmailPending"));
 const VerifyEmailConfirm = lazy(() => import("./pages/VerifyEmailConfirm"));
+const GithubCallback = lazy(() => import("./pages/GithubCallback"));
 
 /** Renders the confirmation page when ?token= is present, otherwise the pending page. */
 function VerifyEmailRoute() {
@@ -115,6 +116,7 @@ function App() {
         <Route path="/forgot-password" element={<PageWrapper><ForgotPassword /></PageWrapper>} />
         <Route path="/reset-password" element={<PageWrapper><ResetPassword /></PageWrapper>} />
         <Route path="/verify-email" element={<PageWrapper><VerifyEmailRoute /></PageWrapper>} />
+        <Route path="/auth/github/callback" element={<GithubCallback />} />
         <Route path="/jobs" element={<PageWrapper><JobBoard /></PageWrapper>} />
         <Route path="/pipeline/:slug" element={<PageWrapper><PublicPipeline /></PageWrapper>} />
         <Route

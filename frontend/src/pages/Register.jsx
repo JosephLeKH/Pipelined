@@ -7,6 +7,7 @@ import { useAuth } from "../context/AuthContext";
 import { useRegister } from "../hooks/useAuth";
 import AuthLayout from "../components/AuthLayout";
 import GoogleAuthButton from "../components/GoogleAuthButton";
+import GithubAuthButton from "../components/GithubAuthButton";
 import { INPUT_BASE, BUTTON_PRIMARY } from "../lib/designTokens";
 import { identifyUser } from "../lib/analytics";
 import { PASSWORD_MIN_LENGTH } from "../lib/constants";
@@ -80,6 +81,10 @@ function Register() {
         onSuccess={handleGoogleSuccess}
         onError={handleGoogleError}
       />
+
+      <div className="mt-3">
+        <GithubAuthButton label="Sign up with GitHub" />
+      </div>
 
       <div className="my-5 flex items-center gap-3">
         <hr className="flex-1 border-slate-200 dark:border-slate-700" />

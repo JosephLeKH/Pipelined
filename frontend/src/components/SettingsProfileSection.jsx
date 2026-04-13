@@ -57,16 +57,24 @@ function SettingsProfileSection() {
 
       <div className="flex flex-col gap-5">
         <div className="flex items-center gap-4">
-          <div
-            className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-full text-2xl font-semibold text-white ${color}`}
-            aria-hidden="true"
-          >
-            {initial}
-          </div>
+          {user?.avatar_url ? (
+            <img
+              src={user.avatar_url}
+              alt={user.display_name ?? "Profile"}
+              className="h-16 w-16 shrink-0 rounded-full object-cover"
+            />
+          ) : (
+            <div
+              className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-full text-2xl font-semibold text-white ${color}`}
+              aria-hidden="true"
+            >
+              {initial}
+            </div>
+          )}
           <div>
             <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Profile picture</p>
             <p className="text-xs text-slate-400 dark:text-slate-500">
-              Initials avatar · GitHub avatar available with GitHub login
+              {user?.avatar_url ? "GitHub avatar" : "Initials avatar · GitHub avatar available with GitHub login"}
             </p>
           </div>
         </div>

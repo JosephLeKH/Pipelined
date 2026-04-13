@@ -14,6 +14,10 @@ export async function googleAuth(id_token) {
   return client.post("/auth/google", { id_token });
 }
 
+export async function githubAuth(code) {
+  return client.post("/auth/github", { code });
+}
+
 export async function logoutUser() {
   return client.post("/auth/logout");
 }
