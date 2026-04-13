@@ -178,3 +178,47 @@ Added a comprehensive animation system using pure CSS + minimal JS — no third-
 
 ### Test results
 218/218 tests pass (npm test in /extension)
+
+## US-103 — Product analytics with PostHog (2026-04-13)
+
+### Status: PASSED
+### Commit: b21ce16
+
+### What was implemented
+
+**Frontend analytics module (`frontend/src/lib/analytics.js`):**
+- `initAnalytics()`, `trackEvent()`, `identifyUser()`, `resetUser()` — all no-ops when `VITE_POSTHOG_KEY` is unset
+- Every posthog call wrapped in try-catch to prevent analytics failures from breaking the app
+- `autocapture: false`, `capture_pageview: false` — only explicit events
+
+**Event tracking across 19 files:**
+- `page_viewed` — `App.jsx`: `PageTracker` component using `useLocation`, fires on every pathname change
+- `application_created { source: "manual" }` — `ManualAddForm.jsx` onSuccess
+- `application_stage_changed { from_stage, to_stage }` — `DetailPanel.jsx` handleStageChange
+- `application_deleted` — `useApplications.js` useDeleteApplication onSuccess
+- `application_merged` — `useApplications.js` useMergeApplications onSuccess
+- `search_performed { type, query_length }` — `FilterBar.jsx` debounced search (only when non-empty)
+- `fit_score_viewed { score }` — `ResumeFitSection.jsx` useEffect on fit_score change
+- `csv_exported { count }` — `Dashboard.jsx` handleExport after download
+- `csv_imported { count, skipped }` — `CsvImportModal.jsx` handleImport success
+- `share_link_created` — `SharePipeline.jsx` handleCreateShare onSuccess
+- `share_link_viewed` — `PublicPipeline.jsx` useEffect on mount
+- `feature_used { feature: "dark_mode" }` — `NavBar.jsx` handleCycleTheme
+- `onboarding_step_completed { step }` — `OnboardingChecklist.jsx` useEffect per completed step
+- `onboarding_dismissed { completed_steps }` — `OnboardingChecklist.jsx` handleDismiss
+- `identifyUser` with email/tier/has_resume/application_count/referral_source traits — `Login.jsx` + `Register.jsx`
+- `resetUser()` before logout — `NavBar.jsx` handleLogout
+
+**Backend:**
+- `backend/config.py`: Added `posthog_api_key: str = ""` field
+- `backend/analytics.py`: `track_server_event(event, user_id, properties)` using httpx fire-and-forget POST to PostHog `/capture/` endpoint; covers `digest_email_sent`, `notification_generated`, `job_sync_completed`, `ai_fit_score_computed`
+
+**Test setup:**
+- `frontend/src/test/setup.js`: Added `vi.mock('../lib/analytics', ...)` globally mocking all 4 functions as `vi.fn()`
+
+### Key learnings
+- No-op guard pattern (checking `!POSTHOG_KEY` at top of each function) is the cleanest way to make analytics safe in dev/test — simpler than conditional imports
+- `capture_pageview: false` is required; otherwise PostHog fires a duplicate on init. The `PageTracker` component handles page views explicitly
+- `vi.mock` in setup.js (not in individual test files) provides a global analytics mock that prevents any test from accidentally triggering real PostHog calls
+- `handleCreateShare` wrapper pattern (wrapping mutation with onSuccess callback) avoids polluting the `NoShare` component with analytics imports
+- 301/301 tests pass, build passes (19 files changed, 210 insertions)

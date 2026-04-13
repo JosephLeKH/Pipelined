@@ -239,7 +239,7 @@
         "npm test passes"
       ],
       "priority": 11,
-      "passes": false,
+      "passes": true,
       "notes": "PostHog over Mixpanel/Amplitude because: (1) generous free tier (1M events/month), (2) self-hostable on a $20/mo VPS if costs grow, (3) open-source ethos aligns with the project. The event taxonomy here covers the full user funnel: signup \u2192 first save \u2192 engagement \u2192 retention. The `feature_used` event is critical for knowing which features to invest in vs. deprecate. Keep the analytics module thin \u2014 it's a wrapper, not a framework."
     },
     {
