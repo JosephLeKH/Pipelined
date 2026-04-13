@@ -9,6 +9,14 @@ global.ResizeObserver = class ResizeObserver {
   disconnect() {}
 };
 
+// IntersectionObserver is not implemented in JSDOM — provide a stub.
+global.IntersectionObserver = class IntersectionObserver {
+  constructor(callback) { this._callback = callback; }
+  observe(el) { this._callback([{ isIntersecting: true, target: el }]); }
+  unobserve() {}
+  disconnect() {}
+};
+
 // matchMedia is not implemented in jsdom — provide a default stub.
 if (!window.matchMedia) {
   Object.defineProperty(window, "matchMedia", {
