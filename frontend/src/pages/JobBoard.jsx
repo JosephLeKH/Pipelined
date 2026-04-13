@@ -67,6 +67,13 @@ function JobBoard() {
     q || roleType || experienceLevel || remoteStatus || companyType || salaryMin || salaryMax
   );
 
+  useEffect(() => {
+    document.title = "Job Board — Pipelined";
+    return () => {
+      document.title = "Pipelined — Job Application Tracker for Students & Engineers";
+    };
+  }, []);
+
   // Reset load-more count when filter params change
   const filterKey = [q, roleType, experienceLevel, remoteStatus, companyType, salaryMin, salaryMax].join("|||");
   useEffect(() => {

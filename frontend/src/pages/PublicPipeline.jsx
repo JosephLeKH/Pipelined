@@ -83,6 +83,18 @@ function PublicPipeline() {
     trackEvent("share_link_viewed");
   }, []);
 
+  useEffect(() => {
+    if (!data) return;
+    const pipeline = data?.data ?? data;
+    const title = `${pipeline.display_name}'s Pipeline — Pipelined`;
+    document.title = title;
+    const ogTitle = document.querySelector('meta[property="og:title"]');
+    if (ogTitle) ogTitle.setAttribute("content", title);
+    return () => {
+      document.title = "Pipelined — Job Application Tracker for Students & Engineers";
+    };
+  }, [data]);
+
   if (isLoading) return <LoadingState />;
   if (isError || !data) return <NotFoundState />;
 
