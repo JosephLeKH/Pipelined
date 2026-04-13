@@ -262,7 +262,7 @@
         "npm test passes"
       ],
       "priority": 12,
-      "passes": false,
+      "passes": true,
       "notes": "Email verification is a hard requirement before sending any marketing/digest emails (CAN-SPAM compliance). It also prevents bot signups and ensures the user base is real. The 24-hour expiry is generous enough for people who don't check email immediately. Auto-verification for OAuth users is critical UX \u2014 don't make Google/GitHub users verify again."
     },
     {
