@@ -432,7 +432,7 @@
         "All three jobs pass on the current codebase (fix any failing tests if needed, but don't change test behavior \u2014 only fix environmental issues like missing env vars)"
       ],
       "priority": 20,
-      "passes": false,
+      "passes": true,
       "notes": "CI is non-negotiable for production software. Without it, a single broken test can go unnoticed for weeks. The parallel job structure mirrors the monorepo: backend, frontend, extension are independent and can fail independently. The MongoDB service container is the cleanest way to get a real Mongo instance in CI \u2014 matches the project's 'never mock the database' rule. GitHub Actions is essentially free for this use case."
     }
   ]
