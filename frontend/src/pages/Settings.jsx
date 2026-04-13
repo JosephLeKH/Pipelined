@@ -1,161 +1,172 @@
-/** Settings page — pipeline stage configuration and user preferences. */
+/** Settings page — sidebar-navigated settings with organized card sections. */
 
-import { useState, useCallback } from "react";
+import { useState } from "react";
 
-import Loader2 from "lucide-react/dist/esm/icons/loader-2";
+import BarChart2 from "lucide-react/dist/esm/icons/bar-chart-2";
+import Bell from "lucide-react/dist/esm/icons/bell";
+import CalendarIcon from "lucide-react/dist/esm/icons/calendar";
+import FileText from "lucide-react/dist/esm/icons/file-text";
+import Layers from "lucide-react/dist/esm/icons/layers";
+import Settings2 from "lucide-react/dist/esm/icons/settings-2";
+import Share2 from "lucide-react/dist/esm/icons/share-2";
+import User from "lucide-react/dist/esm/icons/user";
 
 import NavBar from "../components/NavBar";
-import PipelineStagesEditor from "../components/PipelineStagesEditor";
-import WeeklyGoalSection from "../components/WeeklyGoalSection";
-import ResumeSection from "../components/ResumeSection";
-import DigestSection from "../components/DigestSection";
+import SettingsAccountSection from "../components/SettingsAccountSection";
+import SettingsNotificationsSection from "../components/SettingsNotificationsSection";
+import SettingsPipelineSection from "../components/SettingsPipelineSection";
+import SettingsProfileSection from "../components/SettingsProfileSection";
+import SettingsResumeSection from "../components/SettingsResumeSection";
+import SettingsUsageSection from "../components/SettingsUsageSection";
 import SharePipeline from "../components/SharePipeline";
 import TimezoneSelector from "../components/TimezoneSelector";
 import { useAuth } from "../context/AuthContext";
-import { useDeleteResume, useUpdateUser, useUploadResume } from "../hooks/useAuth";
+import { useUpdateUser } from "../hooks/useAuth";
 
-const GENERIC_ERROR = "Failed to save stages. Please try again.";
-const DEFAULT_WEEKLY_GOAL = 5;
+const SIDEBAR_ITEMS = [
+  { id: "pipeline", label: "Pipeline", icon: Layers },
+  { id: "profile", label: "Profile", icon: User },
+  { id: "calendar", label: "Calendar", icon: CalendarIcon },
+  { id: "notifications", label: "Notifications", icon: Bell },
+  { id: "resume", label: "Resume & AI", icon: FileText },
+  { id: "sharing", label: "Sharing", icon: Share2 },
+  { id: "usage", label: "Usage & Plan", icon: BarChart2 },
+  { id: "account", label: "Account", icon: Settings2 },
+];
 
-function Settings() {
+function CalendarSection() {
   const { user } = useAuth();
-  const { mutateAsync, isPending, error: mutationError } = useUpdateUser();
-  const { mutateAsync: mutateTz, isPending: isTzPending, error: tzError } = useUpdateUser();
-  const { mutateAsync: mutateDigest, isPending: isDigestPending } = useUpdateUser();
-  const { mutateAsync: mutateGoal, isPending: isGoalPending } = useUpdateUser();
-  const { mutate: uploadResume, isPending: isUploading } = useUploadResume();
-  const { mutate: deleteResume, isPending: isDeleting } = useDeleteResume();
-
-  const [savedStages, setSavedStages] = useState(null);
-  const [saveSuccess, setSaveSuccess] = useState(false);
+  const { mutateAsync, isPending } = useUpdateUser();
   const [timezone, setTimezone] = useState(
     () => user?.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone ?? "America/New_York"
   );
-  const [tzSaved, setTzSaved] = useState(false);
-  const [digestEnabled, setDigestEnabled] = useState(() => user?.digest_enabled ?? true);
-  const [weeklyGoal, setWeeklyGoal] = useState(() => user?.weekly_goal ?? DEFAULT_WEEKLY_GOAL);
+  const [saved, setSaved] = useState(false);
+  const [error, setError] = useState(null);
 
-  const handleSave = useCallback(
-    async (stages) => {
-      setSaveSuccess(false);
-      try {
-        const data = await mutateAsync({ default_stages: stages });
-        setSavedStages(data?.default_stages ?? stages);
-        setSaveSuccess(true);
-      } catch {
-        // error surfaced via mutationError
-      }
-    },
-    [mutateAsync]
-  );
-
-  const handleSaveTz = useCallback(async () => {
-    setTzSaved(false);
-    try { await mutateTz({ timezone }); setTzSaved(true); } catch { /* tzError surfaced */ }
-  }, [timezone, mutateTz]);
-
-  const handleDigestToggle = useCallback(async (enabled) => {
-    setDigestEnabled(enabled);
-    try { await mutateDigest({ digest_enabled: enabled }); } catch { setDigestEnabled(!enabled); }
-  }, [mutateDigest]);
-
-  const handleSaveGoal = useCallback(
-    async (val) => {
-      setWeeklyGoal(val);
-      await mutateGoal({ weekly_goal: val });
-    },
-    [mutateGoal]
-  );
-
-  const currentStages = savedStages ?? user?.default_stages ?? [];
-  const saveError = mutationError ? (mutationError.message ?? GENERIC_ERROR) : null;
+  const handleSave = async () => {
+    setSaved(false);
+    setError(null);
+    try {
+      await mutateAsync({ timezone });
+      setSaved(true);
+    } catch (err) {
+      setError(err?.message ?? "Failed to save timezone.");
+    }
+  };
 
   return (
-    <div className="flex min-h-screen flex-col bg-gray-50 dark:bg-gray-900">
+    <div className="rounded-card border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800">
+      <h2 className="mb-1 text-lg font-semibold text-slate-900 dark:text-slate-100">Calendar</h2>
+      <p className="mb-5 text-sm text-slate-500 dark:text-slate-400">
+        Calendar events will display times in your selected timezone.
+      </p>
+      <TimezoneSelector value={timezone} onChange={setTimezone} />
+      {saved && !isPending && (
+        <p role="alert" className="mt-4 rounded bg-green-50 px-3 py-2 text-sm text-green-700 dark:bg-green-900/30 dark:text-green-300">
+          Timezone saved.
+        </p>
+      )}
+      {error && (
+        <p role="alert" className="mt-4 text-sm text-red-600 dark:text-red-400">{error}</p>
+      )}
+      <div className="mt-4 flex justify-end">
+        <button
+          type="button"
+          onClick={handleSave}
+          disabled={isPending}
+          className="rounded-button bg-gradient-to-r from-brand-600 to-brand-500 px-4 py-2 text-sm font-medium text-white hover:from-brand-700 hover:to-brand-600 active:scale-[0.98] transition-all duration-150 disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:ring-offset-2"
+        >
+          Save timezone
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function SharingSection() {
+  return (
+    <div className="rounded-card border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800">
+      <h2 className="mb-1 text-lg font-semibold text-slate-900 dark:text-slate-100">Sharing</h2>
+      <p className="mb-5 text-sm text-slate-500 dark:text-slate-400">
+        Generate a read-only public link to share your pipeline with recruiters or friends.
+      </p>
+      <SharePipeline />
+    </div>
+  );
+}
+
+function renderSection(activeSection, user) {
+  switch (activeSection) {
+    case "profile": return <SettingsProfileSection />;
+    case "pipeline": return <SettingsPipelineSection />;
+    case "calendar": return <CalendarSection />;
+    case "notifications": return <SettingsNotificationsSection />;
+    case "resume": return <SettingsResumeSection />;
+    case "sharing": return <SharingSection />;
+    case "usage": return <SettingsUsageSection user={user} />;
+    case "account": return <SettingsAccountSection />;
+    default: return null;
+  }
+}
+
+function Settings() {
+  const { user } = useAuth();
+  const [activeSection, setActiveSection] = useState("pipeline");
+
+  return (
+    <div className="flex min-h-screen flex-col bg-slate-50 dark:bg-slate-900">
       <NavBar />
-      <main className="mx-auto w-full max-w-2xl flex-1 px-6 py-8">
-        <h1 className="mb-6 text-2xl font-bold text-gray-900 dark:text-gray-100">Settings</h1>
 
-        <section className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
-          <h2 className="mb-1 text-base font-semibold text-gray-900 dark:text-gray-100">
-            Pipeline Stages
-          </h2>
-          <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">
-            Customize the stages for your job search pipeline. Drag to reorder.
-          </p>
+      {/* Mobile tab bar */}
+      <div className="flex overflow-x-auto border-b border-slate-200 bg-white px-4 dark:border-slate-700 dark:bg-slate-800 md:hidden">
+        {SIDEBAR_ITEMS.map(({ id, label, icon: Icon }) => (
+          <button
+            key={id}
+            type="button"
+            onClick={() => setActiveSection(id)}
+            className={`flex shrink-0 items-center gap-1.5 whitespace-nowrap px-3 py-3 text-sm font-medium border-b-2 transition-colors ${
+              activeSection === id
+                ? "border-brand-600 text-brand-700 dark:border-brand-400 dark:text-brand-300"
+                : "border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+            }`}
+          >
+            <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
+            {label}
+          </button>
+        ))}
+      </div>
 
-          {saveSuccess && !isPending && (
-            <p role="alert" className="mb-4 rounded bg-green-50 px-3 py-2 text-sm text-green-700 dark:bg-green-900/30 dark:text-green-300">
-              Stages saved successfully.
-            </p>
-          )}
+      <div className="mx-auto w-full max-w-5xl flex-1 px-6 py-8">
+        <h1 className="mb-6 text-2xl font-bold text-slate-900 dark:text-slate-100">Settings</h1>
 
-          {currentStages.length > 0 && (
-            <PipelineStagesEditor
-              key={currentStages.join(",")}
-              initialStages={currentStages}
-              onSave={handleSave}
-              isSaving={isPending}
-              saveError={saveError}
-            />
-          )}
-        </section>
+        <div className="flex gap-8">
+          {/* Sidebar */}
+          <aside className="hidden w-56 shrink-0 md:block">
+            <nav className="flex flex-col gap-0.5">
+              {SIDEBAR_ITEMS.map(({ id, label, icon: Icon }) => (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => setActiveSection(id)}
+                  className={`flex w-full items-center gap-2.5 rounded-button px-3 py-2 text-sm font-medium transition-colors ${
+                    activeSection === id
+                      ? "bg-brand-50 text-brand-700 dark:bg-brand-900/20 dark:text-brand-300"
+                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-100"
+                  }`}
+                >
+                  <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
+                  {label}
+                </button>
+              ))}
+            </nav>
+          </aside>
 
-        <WeeklyGoalSection
-          weeklyGoal={weeklyGoal}
-          isGoalPending={isGoalPending}
-          onSaveGoal={handleSaveGoal}
-        />
-
-        <section className="mt-6 rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
-          <h2 className="mb-1 text-base font-semibold text-gray-900 dark:text-gray-100">
-            Timezone
-          </h2>
-          <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">
-            Calendar events will display times in this timezone.
-          </p>
-          {tzSaved && !isTzPending && (
-            <p role="alert" className="mb-4 rounded bg-green-50 px-3 py-2 text-sm text-green-700 dark:bg-green-900/30 dark:text-green-300">
-              Timezone saved.
-            </p>
-          )}
-          {tzError && (
-            <p role="alert" className="mb-4 text-sm text-red-600 dark:text-red-400">
-              {tzError.message ?? GENERIC_ERROR}
-            </p>
-          )}
-          <TimezoneSelector value={timezone} onChange={setTimezone} />
-          <div className="mt-4 flex justify-end">
-            <button
-              type="button"
-              onClick={handleSaveTz}
-              disabled={isTzPending}
-              className="flex items-center gap-2 rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-            >
-              {isTzPending && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
-              Save timezone
-            </button>
-          </div>
-        </section>
-
-        <div className="mt-6">
-          <SharePipeline />
+          {/* Content */}
+          <main className="min-w-0 flex-1">
+            {renderSection(activeSection, user)}
+          </main>
         </div>
-
-        <ResumeSection
-          hasResume={user?.has_resume}
-          isUploading={isUploading}
-          isDeleting={isDeleting}
-          onResumeUpload={uploadResume}
-          onResumeDelete={deleteResume}
-        />
-
-        <DigestSection
-          digestEnabled={digestEnabled}
-          isDigestPending={isDigestPending}
-          onDigestToggle={handleDigestToggle}
-        />
-      </main>
+      </div>
     </div>
   );
 }
