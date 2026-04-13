@@ -280,3 +280,73 @@ Implementation was already committed in a prior iteration (commit 8cd86ae); this
 - `_fetch_github_profile` uses `asyncio.gather()` to fetch profile + emails in parallel (preventing waterfall)
 - `get_or_create_github_user` does two sequential queries (github_id then email) since email query is conditional on email being present — can't be gathered without knowing email
 - `vi.stubEnv` + `vi.resetModules()` pattern required for env-dependent module tests since `import.meta.env` is captured at module load time
+
+## US-106 — OpenAI cost controls: response caching, per-user daily quotas, and budget enforcement
+
+**Status:** COMPLETE
+
+**Backend:**
+- `parsing/ai_cache.py`: MongoDB-backed 3-layer cost control system
+  - SHA256 cache keying on model + prompt fragment (30-day TTL via MongoDB TTL index)
+  - Per-user daily quota: `ai_usage.fit_scores_today` + `ai_usage.last_reset_date` in user doc
+  - Monthly budget cap: `ai_budget` collection tracking `total_cost_usd` per month
+  - All DB ops wrapped in try/except RuntimeError for graceful test degradation
+- `parsing/fit_scorer.py`: integrated cache check → budget check → quota check → OpenAI call → store
+- `config.py`: `ai_fit_scores_daily_limit=20`, `openai_monthly_budget_usd=50.0`
+- `database.py`: TTL index on `ai_cache.created_at`, unique indexes on `cache_key` and `month`
+- `applications/service.py`: catches `QuotaExceededError`, logs and returns early
+- `auth/schemas.py`: `UserResponse` includes `ai_scores_remaining_today`
+
+**Frontend:**
+- `ResumeFitSection.jsx`: shows "Daily limit reached. Resets tomorrow." in amber when exhausted
+
+**Tests:**
+- `tests/test_ai_cache.py`: 11 tests — cache key determinism, cache miss/hit, TTL expiry, daily quota reset, 21st call raises, scores remaining, budget cap, budget under limit
+
+**Key learnings:**
+- `pytestmark = pytest.mark.asyncio(loop_scope="session")` must be used WITHOUT individual `@pytest.mark.asyncio` decorators — individual decorators override the module-level mark and default to function scope, causing Motor event loop conflicts
+- Motor raises `RuntimeError: Future attached to a different loop` — try/except RuntimeError must wrap BOTH `get_collection()` AND the subsequent await calls in the same block
+
+## US-107 — SEO optimization: meta tags, OG image, sitemap, robots.txt, structured data
+
+**Status:** COMPLETE
+
+**Frontend:**
+- `index.html`: title, meta description, meta keywords, theme-color #4F46E5, canonical URL, OG tags (title/description/image/url/type/site_name), Twitter card (summary_large_image), JSON-LD SoftwareApplication structured data
+- `frontend/public/og-image.png`: 1200×630 static OG image with gradient background and pipeline visualization
+- `PublicPipeline.jsx`: sets `document.title` to `{display_name}'s Pipeline — Pipelined` on load, resets on unmount; updates og:title meta tag
+- `JobBoard.jsx`: sets `document.title` to `Job Board — Pipelined` on load, resets on unmount
+
+**Backend:**
+- `seo/router.py`: `GET /robots.txt` (plain text, disallows /dashboard /settings /calendar /analytics /activity, includes Sitemap directive), `GET /sitemap.xml` (XML with /, /login, /register, /jobs, /pipeline/{slug} for all active shares — priorities 1.0/0.3/0.3/0.8/0.5)
+- `main.py`: registered seo_router
+
+**Tests:**
+- `tests/test_seo.py`: 8 tests — robots.txt 200, allows /, disallows auth pages, includes sitemap; sitemap.xml 200, valid XML, required URLs, has priorities
+
+**Test results:** 8/8 pass, build passes cleanly.
+
+## US-108 — Freemium tier limits with upgrade flow
+
+**Status:** COMPLETE
+
+**Backend:**
+- `config.py`: Added `UNLIMITED = -1`, `FREE_TIER_LIMITS`, `PRO_TIER_LIMITS`, `TIER_LIMITS` dicts; added `disable_tier_limits: bool = False` to Settings
+- `middleware/tier_check.py`: `TierLimitExceeded` exception (resource, current_count, max_allowed); `check_tier_limit(resource, user_id)` async fn; `_get_user_tier()` looks up user.tier; `_count_resource()` counts MongoDB docs; early-return when `disable_tier_limits=True` or resource is UNLIMITED
+- `applications/router.py`: check_tier_limit on POST /api/applications and POST /api/applications/import → 403 TIER_LIMIT_EXCEEDED
+- `contacts/router.py`: check_tier_limit on POST /api/contacts → 403
+- `saved_searches/router.py`: check_tier_limit on POST /api/saved-searches → 403 (before SavedSearchLimitError 409)
+- `tests/conftest.py`: `_settings.disable_tier_limits = True` in app fixture so all existing tests bypass tier checking
+
+**Frontend:**
+- `api/client.js`: intercepts 403 with `detail.code === "TIER_LIMIT_EXCEEDED"`, dispatches `pipelined:tier_limit_exceeded` custom event with limit details
+- `components/UpgradePlanModal.jsx`: listens for event, shows modal with Zap icon, 'You've reached a free plan limit', resource:current/max info, 'Upgrade to Pro' gradient button (→/pricing), 'Got it' dismiss button
+- `pages/Pricing.jsx`: Free vs Pro two-column comparison, feature rows with check/X icons, Pro highlighted with gradient border and 'Most popular' badge; 'coming soon' on upgrade button
+- `App.jsx`: added UpgradePlanModal, added /pricing route
+
+**Tests:** 4/4 tier_check tests pass; 325/325 frontend tests pass; build passes cleanly.
+
+**Key learnings:**
+- ApplicationCreate requires `source` field (no default); test was missing it → 422
+- `date_applied` is strict datetime (not just date); omit it rather than send ISO date string without time
+- FastAPI wraps HTTPException detail in `{"detail": ...}` not `{"error": ...}`; test must assert `error["detail"]["code"]`
