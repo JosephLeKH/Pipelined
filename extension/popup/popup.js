@@ -5,14 +5,14 @@ const MAX_RECENT = 5;
 
 // Stage badge colors (hex values match the frontend stage constants)
 const STAGE_COLORS = {
-  applied: { bg: "#dbeafe", text: "#1d4ed8", label: "Applied" },
-  "phone screen": { bg: "#ede9fe", text: "#6d28d9", label: "Phone Screen" },
-  onsite: { bg: "#ffedd5", text: "#c2410c", label: "Onsite" },
-  offer: { bg: "#dcfce7", text: "#15803d", label: "Offer" },
-  rejected: { bg: "#fee2e2", text: "#b91c1c", label: "Rejected" },
+  applied: { bg: "#dbeafe", text: "#1d4ed8", bar: "#3b82f6", label: "Applied" },
+  "phone screen": { bg: "#ede9fe", text: "#6d28d9", bar: "#8b5cf6", label: "Phone Screen" },
+  onsite: { bg: "#ffedd5", text: "#c2410c", bar: "#f97316", label: "Onsite" },
+  offer: { bg: "#dcfce7", text: "#15803d", bar: "#22c55e", label: "Offer" },
+  rejected: { bg: "#fee2e2", text: "#b91c1c", bar: "#ef4444", label: "Rejected" },
 };
 
-const DEFAULT_STAGE_COLOR = { bg: "#f1f5f9", text: "#475569", label: "Applied" };
+const DEFAULT_STAGE_COLOR = { bg: "#f1f5f9", text: "#475569", bar: "#94a3b8", label: "Applied" };
 
 const MSG = {
   GET_AUTH_STATUS: "GET_AUTH_STATUS",
@@ -62,62 +62,86 @@ export function show(id) {
 
 export function renderSaves(saves) {
   const list = document.getElementById("saves-list");
+  const emptyState = document.getElementById("empty-state");
 
   if (!saves.length) {
-    const empty = document.createElement("li");
-    empty.className = "empty";
-    empty.textContent = "No saved applications yet.";
-    list.appendChild(empty);
+    // New popup.html: use #empty-state div if present
+    if (emptyState) {
+      emptyState.classList.remove("hidden");
+      if (list) list.classList.add("hidden");
+    } else {
+      // Legacy fallback for test environment (POPUP_HTML fixture without #empty-state)
+      const empty = document.createElement("li");
+      empty.className = "empty";
+      empty.textContent = "No saved applications yet.";
+      list.appendChild(empty);
+    }
     return;
   }
+
+  if (emptyState) emptyState.classList.add("hidden");
+  if (list) list.classList.remove("hidden");
 
   saves.slice(0, MAX_RECENT).forEach((s) => {
     const item = document.createElement("li");
     item.className = "save-item";
 
-    const top = document.createElement("div");
-    top.className = "save-top";
+    const stageKey = (s.stage || "").toLowerCase();
+    const stageStyle = STAGE_COLORS[stageKey] || DEFAULT_STAGE_COLOR;
+
+    // Left colored bar (3px, stage-colored)
+    const bar = document.createElement("div");
+    bar.className = "card-bar";
+    bar.style.background = stageStyle.bar;
+
+    // Card body: info (left) + meta (right)
+    const body = document.createElement("div");
+    body.className = "card-body";
+
+    const info = document.createElement("div");
+    info.className = "card-info";
 
     const company = document.createElement("span");
     company.className = "company";
     company.textContent = s.company || "";
 
-    const stageKey = (s.stage || "").toLowerCase();
-    const stageStyle = STAGE_COLORS[stageKey] || DEFAULT_STAGE_COLOR;
+    const role = document.createElement("span");
+    role.className = "role";
+    role.textContent = s.role_title || "";
+
+    info.appendChild(company);
+    info.appendChild(role);
+
+    const meta = document.createElement("div");
+    meta.className = "card-meta";
+
     const badge = document.createElement("span");
     badge.className = "stage-badge";
     badge.textContent = stageStyle.label;
     badge.style.background = stageStyle.bg;
     badge.style.color = stageStyle.text;
 
-    top.appendChild(company);
-    top.appendChild(badge);
-
-    const role = document.createElement("span");
-    role.className = "role";
-    role.textContent = s.role_title || "";
-
-    const bottom = document.createElement("div");
-    bottom.className = "save-bottom";
-
     const time = document.createElement("span");
     time.className = "save-time";
     time.textContent = relativeTime(s.date_applied || s.saved_at || null);
 
+    meta.appendChild(badge);
+    meta.appendChild(time);
+
+    body.appendChild(info);
+    body.appendChild(meta);
+
+    // Overlay link — covers full card, opens dashboard with highlight param
     const link = document.createElement("a");
     link.className = "open-link";
-    link.textContent = "Open \u2192";
     link.href = `${DASHBOARD_URL}?highlight=${encodeURIComponent(s.id || "")}`;
     link.target = "_blank";
     link.rel = "noopener noreferrer";
     link.dataset.appId = s.id || "";
 
-    bottom.appendChild(time);
-    bottom.appendChild(link);
-
-    item.appendChild(top);
-    item.appendChild(role);
-    item.appendChild(bottom);
+    item.appendChild(bar);
+    item.appendChild(body);
+    item.appendChild(link);
     list.appendChild(item);
   });
 }

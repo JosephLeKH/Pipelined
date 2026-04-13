@@ -13,21 +13,43 @@
       <button id="sign-out" class="btn-sign-out hidden">Sign out</button>
     </header>
 
+    <div id="auto-save-row" class="auto-save-row hidden">
+      <span class="auto-save-label">Auto-save</span>
+      <button id="auto-save-toggle" class="auto-save-btn" aria-pressed="false">OFF</button>
+    </div>
+
     <main id="app">
-      <div id="loading" class="state">Loading...</div>
+      <div id="loading" class="state loading-state">Loading...</div>
+
       <div id="unauthenticated" class="state hidden">
-        <p class="sign-in-prompt">Sign in to Pipelined to start tracking applications.</p>
-        <button id="open-dashboard" class="btn btn-primary">Sign in to Pipelined</button>
+        <div class="unauth-content">
+          <svg class="unauth-icon" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect width="20" height="14" x="2" y="7" rx="2" ry="2"/>
+            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+          </svg>
+          <h2 class="unauth-heading">Sign in to start tracking</h2>
+          <p class="unauth-desc">Track applications across 10 job boards</p>
+          <button id="open-dashboard" class="btn btn-primary">Sign In</button>
+        </div>
       </div>
+
       <div id="authenticated" class="state hidden">
         <ul id="saves-list"></ul>
-        <div id="auto-save-row" class="auto-save-row hidden">
-          <span class="auto-save-label">Auto-save</span>
-          <button id="auto-save-toggle" class="auto-save-btn" aria-pressed="false">OFF</button>
+        <div id="empty-state" class="empty-state hidden">
+          <svg class="empty-icon" xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect width="20" height="14" x="2" y="7" rx="2" ry="2"/>
+            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+          </svg>
+          <p class="empty-heading">No applications saved yet</p>
+          <p class="empty-desc">Visit a job posting to get started</p>
         </div>
-        <button id="open-dashboard-auth" class="btn btn-secondary">Open Dashboard</button>
       </div>
     </main>
+
+    <footer class="footer">
+      <button id="open-dashboard-auth" class="footer-link">Open Dashboard &rarr;</button>
+      <span class="version">v1.0.0</span>
+    </footer>
 
     <script src="popup.js"></script>
   </body>
