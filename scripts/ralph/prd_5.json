@@ -199,7 +199,7 @@
         "npm test passes"
       ],
       "priority": 9,
-      "passes": false,
+      "passes": true,
       "notes": "Animations are the difference between 'built by a developer' and 'designed by a product team'. Each animation is max 200ms (fast enough to feel instant, slow enough to be perceived). The prefers-reduced-motion check is a hard requirement for accessibility. The count-up stat numbers are a simple trick that makes the dashboard feel alive on load. Use will-change: transform on animated elements for GPU acceleration."
     },
     {

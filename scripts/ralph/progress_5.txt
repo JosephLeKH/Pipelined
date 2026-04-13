@@ -134,3 +134,28 @@ Aligned Calendar, Analytics, and Activity pages with the brand design system.
 ### Learnings
 - recharts `Tooltip content={<CustomTooltip />}` pattern allows full custom tooltip rendering without extra Tooltip props clashing
 - Tailwind `gray: colors.slate` alias in config means `bg-gray-*` and `bg-slate-*` are equivalent — safe to migrate references either direction
+
+## US-101: Micro-interactions and animation system (2026-04-13)
+
+### Summary
+Added a comprehensive animation system using pure CSS + minimal JS — no third-party animation libraries.
+
+### Changes
+- **frontend/src/styles/animations.css**: New file with 6 @keyframes (fadeIn, slideInRight, slideInUp, scaleIn, shimmer, pulse-dot) and corresponding utility classes (.animate-*), all wrapped in `@media (prefers-reduced-motion: no-preference)`. Also `.scroll-reveal` / `.scroll-reveal.in-view` for IntersectionObserver scroll reveals
+- **main.jsx**: Imported `./styles/animations.css` after index.css
+- **SkeletonRow.jsx / SkeletonCalendarCell.jsx**: Replaced `animate-pulse` shimmer with `bg-gradient-to-r from-slate-200 via-slate-100 to-slate-200 bg-[length:200%_100%] animate-shimmer`
+- **KanbanCard.jsx**: Stale dot `animate-pulse` → `animate-pulse-dot`; drag state adds `shadow-xl transition-transform`
+- **DetailPanel.jsx**: Inner content div gets `animate-slideInRight` (key={displayApp.id} causes re-mount per selection)
+- **designTokens.js**: `MODAL_BACKDROP` gets `animate-fadeIn`; `MODAL_CARD` gets `animate-scaleIn`
+- **ManualAddForm.jsx**: Dialog div gets `animate-scaleIn`
+- **UndoToast.jsx**: Toast container gets `animate-slideInUp`
+- **App.jsx**: Added `PageWrapper` component wrapping all 12 routes with `animate-fadeIn`
+- **StatsBar.jsx**: Full rewrite to add `useCountUp` hook (rAF, ease-out cubic, 400ms, initial mount only via `hasAnimated` ref). Respects `prefers-reduced-motion: no-preference` — skips animation in tests (matchMedia returns false) and for users with reduced motion
+- **LandingPage.jsx**: FeaturesSection and HowItWorksSection converted from inline-style scroll reveals to class-based `.scroll-reveal` / `.in-view` via IntersectionObserver
+
+### Test results
+301/301 tests pass across 41 test files. Production build passes.
+
+### Learnings
+- `useCountUp` must check `window.matchMedia('(prefers-reduced-motion: no-preference)')` in JS (not just CSS `@media`) — test environments stub matchMedia to return `matches: false`, so this correctly skips animation in tests while running it in production
+- Custom CSS animation classes defined in an imported .css file are not Tailwind-generated, so they won't be purged by Tailwind JIT — they come through as-is
