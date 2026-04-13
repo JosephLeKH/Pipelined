@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import { useCreateContact, useLinkContact } from "../hooks/useContacts";
 import { RELATIONSHIP_OPTIONS } from "../lib/constants";
+import { BUTTON_PRIMARY, BUTTON_GHOST, INPUT_BASE } from "../lib/designTokens";
 
 const INITIAL_FORM = {
   name: "",
@@ -55,10 +56,10 @@ function ContactForm({ applicationId, onDone }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-3 rounded border border-gray-200 px-3 py-3 dark:border-gray-700">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-3 rounded-card border border-slate-200 px-3 py-3 dark:border-slate-700">
       <div className="grid grid-cols-2 gap-2">
         <div className="col-span-2 flex flex-col gap-1">
-          <label className="text-xs font-medium text-gray-600 dark:text-gray-400" htmlFor="contact-name">
+          <label className="text-xs font-medium text-slate-600 dark:text-slate-400" htmlFor="contact-name">
             Name <span className="text-red-500">*</span>
           </label>
           <input
@@ -68,12 +69,12 @@ function ContactForm({ applicationId, onDone }) {
             onChange={handleChange}
             required
             maxLength={200}
-            className="rounded border border-gray-300 px-2 py-1 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
+            className={`${INPUT_BASE}`}
             placeholder="Jane Smith"
           />
         </div>
         <div className="flex flex-col gap-1">
-          <label className="text-xs font-medium text-gray-600 dark:text-gray-400" htmlFor="contact-company">
+          <label className="text-xs font-medium text-slate-600 dark:text-slate-400" htmlFor="contact-company">
             Company
           </label>
           <input
@@ -82,12 +83,12 @@ function ContactForm({ applicationId, onDone }) {
             value={form.company}
             onChange={handleChange}
             maxLength={200}
-            className="rounded border border-gray-300 px-2 py-1 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
+            className={`${INPUT_BASE}`}
             placeholder="Acme Corp"
           />
         </div>
         <div className="flex flex-col gap-1">
-          <label className="text-xs font-medium text-gray-600 dark:text-gray-400" htmlFor="contact-role">
+          <label className="text-xs font-medium text-slate-600 dark:text-slate-400" htmlFor="contact-role">
             Role
           </label>
           <input
@@ -96,12 +97,12 @@ function ContactForm({ applicationId, onDone }) {
             value={form.role}
             onChange={handleChange}
             maxLength={200}
-            className="rounded border border-gray-300 px-2 py-1 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
+            className={`${INPUT_BASE}`}
             placeholder="Recruiter"
           />
         </div>
         <div className="flex flex-col gap-1">
-          <label className="text-xs font-medium text-gray-600 dark:text-gray-400" htmlFor="contact-email">
+          <label className="text-xs font-medium text-slate-600 dark:text-slate-400" htmlFor="contact-email">
             Email
           </label>
           <input
@@ -111,12 +112,12 @@ function ContactForm({ applicationId, onDone }) {
             value={form.email}
             onChange={handleChange}
             maxLength={254}
-            className="rounded border border-gray-300 px-2 py-1 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
+            className={`${INPUT_BASE}`}
             placeholder="jane@acme.com"
           />
         </div>
         <div className="flex flex-col gap-1">
-          <label className="text-xs font-medium text-gray-600 dark:text-gray-400" htmlFor="contact-relationship">
+          <label className="text-xs font-medium text-slate-600 dark:text-slate-400" htmlFor="contact-relationship">
             Relationship
           </label>
           <select
@@ -124,7 +125,7 @@ function ContactForm({ applicationId, onDone }) {
             name="relationship"
             value={form.relationship}
             onChange={handleChange}
-            className="rounded border border-gray-300 px-2 py-1 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
+            className={`${INPUT_BASE}`}
           >
             {RELATIONSHIP_OPTIONS.map((r) => (
               <option key={r} value={r}>
@@ -139,14 +140,14 @@ function ContactForm({ applicationId, onDone }) {
         <button
           type="submit"
           disabled={isPending || !form.name.trim()}
-          className="rounded bg-blue-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 disabled:opacity-50"
+          className="bg-gradient-to-r from-brand-600 to-brand-500 text-white rounded-button shadow-sm hover:from-brand-700 hover:to-brand-600 active:scale-[0.98] transition-all duration-150 font-medium text-xs px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-brand-500/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none"
         >
           {isPending ? "Saving…" : "Add Contact"}
         </button>
         <button
           type="button"
           onClick={() => onDone?.()}
-          className="rounded px-3 py-1.5 text-xs font-medium text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-1 dark:hover:bg-gray-700"
+          className="text-slate-500 hover:bg-slate-100 rounded-button active:scale-[0.98] transition-all duration-150 font-medium text-xs px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:text-slate-400 dark:hover:bg-slate-700"
         >
           Cancel
         </button>

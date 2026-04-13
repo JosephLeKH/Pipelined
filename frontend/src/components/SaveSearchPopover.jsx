@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { useCreateSavedSearch } from "../hooks/useSavedSearches";
+import { BUTTON_PRIMARY, BUTTON_GHOST, INPUT_BASE } from "../lib/designTokens";
 
 const MAX_SAVE_NAME_LENGTH = 100;
 
@@ -32,16 +33,16 @@ export default function SaveSearchPopover({ currentFilters, onClose }) {
     <div
       role="dialog"
       aria-label="Save this search"
-      className="absolute right-0 top-10 z-30 w-64 rounded-lg border border-gray-200 bg-white p-4 shadow-xl dark:border-gray-700 dark:bg-gray-800"
+      className="absolute right-0 top-10 z-30 w-64 rounded-card border border-slate-200 bg-white p-4 shadow-card dark:border-slate-700 dark:bg-slate-800"
     >
-      <p className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Name this search</p>
+      <p className="mb-2 text-sm font-medium text-slate-700 dark:text-slate-300">Name this search</p>
       <input
         type="text"
         aria-label="Saved search name"
         value={name}
         onChange={(e) => setName(e.target.value.slice(0, MAX_SAVE_NAME_LENGTH))}
         placeholder="e.g. SWE Intern Remote"
-        className="w-full rounded border border-gray-300 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
+        className={INPUT_BASE}
         onKeyDown={(e) => e.key === "Enter" && handleSave()}
         autoFocus
       />
@@ -49,7 +50,7 @@ export default function SaveSearchPopover({ currentFilters, onClose }) {
         <button
           type="button"
           onClick={onClose}
-          className="rounded px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+          className="text-slate-600 hover:bg-slate-100 rounded-button active:scale-[0.98] transition-all duration-150 font-medium text-sm px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:text-slate-300 dark:hover:bg-slate-700"
         >
           Cancel
         </button>
@@ -57,7 +58,7 @@ export default function SaveSearchPopover({ currentFilters, onClose }) {
           type="button"
           onClick={handleSave}
           disabled={!name.trim() || createMutation.isPending}
-          className="rounded bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+          className="bg-gradient-to-r from-brand-600 to-brand-500 text-white rounded-button shadow-sm hover:from-brand-700 hover:to-brand-600 active:scale-[0.98] transition-all duration-150 font-medium text-sm px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-brand-500/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none"
         >
           Save
         </button>

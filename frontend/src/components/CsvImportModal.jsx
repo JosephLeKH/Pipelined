@@ -7,6 +7,7 @@ import Loader2 from "lucide-react/dist/esm/icons/loader-2";
 import X from "lucide-react/dist/esm/icons/x";
 
 import { useImportApplications } from "../hooks/useApplications";
+import { BUTTON_PRIMARY, BUTTON_SECONDARY, MODAL_CARD } from "../lib/designTokens";
 
 const ACCEPTED_MIME = "text/csv,.csv";
 const MAX_FILE_BYTES = 2 * 1024 * 1024;
@@ -64,17 +65,17 @@ function CsvImportModal({ isOpen, onClose }) {
     >
       <div
         data-testid="import-overlay"
-        className="absolute inset-0 bg-black/50"
+        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
         onClick={handleClose}
       />
-      <div className="relative z-10 w-full max-w-md rounded-lg bg-white p-6 shadow-xl dark:bg-gray-800">
+      <div className={`relative z-10 w-full max-w-md p-6 ${MODAL_CARD}`}>
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">Import CSV</h2>
+          <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">Import CSV</h2>
           <button
             type="button"
             onClick={handleClose}
             aria-label="Close import modal"
-            className="rounded p-1 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:hover:text-gray-200"
+            className="rounded-button p-1 text-slate-400 hover:text-slate-600 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:hover:text-slate-200"
           >
             <X className="h-4 w-4" />
           </button>
@@ -122,7 +123,7 @@ function CsvImportModal({ isOpen, onClose }) {
           <button
             type="button"
             onClick={handleClose}
-            className="rounded border border-gray-300 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+            className={`${BUTTON_SECONDARY} text-sm`}
           >
             Close
           </button>
@@ -131,7 +132,7 @@ function CsvImportModal({ isOpen, onClose }) {
             onClick={handleImport}
             disabled={!file || isPending}
             aria-label="Import CSV"
-            className="flex items-center gap-2 rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className={`${BUTTON_PRIMARY} text-sm flex items-center gap-2`}
           >
             {isPending ? (
               <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />

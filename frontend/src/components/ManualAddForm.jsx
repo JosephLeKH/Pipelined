@@ -8,6 +8,7 @@ import X from "lucide-react/dist/esm/icons/x";
 import { useCreateApplication } from "../hooks/useApplications";
 import { REMOTE_STATUS_OPTIONS, COMPANY_TYPE_OPTIONS } from "../lib/constants";
 import { useAuth } from "../context/AuthContext";
+import { BUTTON_PRIMARY, BUTTON_SECONDARY, INPUT_BASE, MODAL_BACKDROP, MODAL_CARD } from "../lib/designTokens";
 
 const GENERIC_ERROR_MSG = "Something went wrong. Please try again.";
 
@@ -22,7 +23,7 @@ function getTodayString() {
 function FormField({ label, htmlFor, children, error }) {
   return (
     <div className="flex flex-col gap-1">
-      <label className="text-sm font-medium text-gray-700 dark:text-gray-300" htmlFor={htmlFor}>
+      <label className="text-sm font-medium text-slate-700 dark:text-slate-300" htmlFor={htmlFor}>
         {label}
       </label>
       {children}
@@ -149,23 +150,23 @@ function ManualAddForm({ isOpen, onClose }) {
     <div
       ref={overlayRef}
       data-testid="modal-overlay"
-      className={`fixed inset-0 z-50 flex items-center justify-center bg-black/40 transition-opacity duration-200 ${isOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"}`}
+      className={`fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm transition-opacity duration-200 ${isOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"}`}
       onClick={handleOverlayClick}
     >
       <div
         ref={dialogRef}
-        className="relative w-full max-w-lg rounded-lg bg-white shadow-xl dark:bg-gray-800"
+        className={`relative w-full max-w-lg bg-white rounded-2xl shadow-modal dark:bg-slate-800 dark:border dark:border-slate-700`}
         role="dialog"
         aria-modal="true"
         aria-label="Add application"
         onKeyDown={handleDialogKeyDown}
       >
-        <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4 dark:border-gray-700">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Add Application</h2>
+        <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4 dark:border-slate-700">
+          <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Add Application</h2>
           <button
             type="button"
             onClick={handleClose}
-            className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
+            className="rounded-button p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 focus:outline-none focus:ring-2 focus:ring-brand-500/30"
             aria-label="Close modal"
           >
             <X className="h-5 w-5" />
@@ -189,7 +190,7 @@ function ManualAddForm({ isOpen, onClose }) {
               type="text"
               value={roleTitle}
               onChange={(e) => setRoleTitle(e.target.value)}
-              className="rounded border border-gray-300 px-3 py-1.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
+              className={`${INPUT_BASE}`}
               aria-required="true"
             />
           </FormField>
@@ -199,7 +200,7 @@ function ManualAddForm({ isOpen, onClose }) {
               type="text"
               value={company}
               onChange={(e) => setCompany(e.target.value)}
-              className="rounded border border-gray-300 px-3 py-1.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
+              className={`${INPUT_BASE}`}
               aria-required="true"
             />
           </FormField>
@@ -209,7 +210,7 @@ function ManualAddForm({ isOpen, onClose }) {
               type="url"
               value={sourceUrl}
               onChange={(e) => setSourceUrl(e.target.value)}
-              className="rounded border border-gray-300 px-3 py-1.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
+              className={`${INPUT_BASE}`}
             />
           </FormField>
           <div className="grid grid-cols-2 gap-3">
@@ -219,7 +220,7 @@ function ManualAddForm({ isOpen, onClose }) {
                 type="date"
                 value={dateApplied}
                 onChange={(e) => setDateApplied(e.target.value)}
-                className="rounded border border-gray-300 px-3 py-1.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
+                className={`${INPUT_BASE}`}
               />
             </FormField>
             <FormField label="Compensation" htmlFor="compensation">
@@ -228,7 +229,7 @@ function ManualAddForm({ isOpen, onClose }) {
                 type="text"
                 value={compensation}
                 onChange={(e) => setCompensation(e.target.value)}
-                className="rounded border border-gray-300 px-3 py-1.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
+                className={`${INPUT_BASE}`}
                 placeholder="e.g. $150k"
               />
             </FormField>
@@ -239,7 +240,7 @@ function ManualAddForm({ isOpen, onClose }) {
               type="text"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
-              className="rounded border border-gray-300 px-3 py-1.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
+              className={`${INPUT_BASE}`}
             />
           </FormField>
           {stageOptions.length > 0 && (
@@ -248,7 +249,7 @@ function ManualAddForm({ isOpen, onClose }) {
                 id="initial-stage"
                 value={stage}
                 onChange={(e) => setStage(e.target.value)}
-                className="rounded border border-gray-300 px-3 py-1.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
+                className={`${INPUT_BASE}`}
               >
                 <option value="">Default ({stageOptions[0]})</option>
                 {stageOptions.map((s) => (
@@ -263,7 +264,7 @@ function ManualAddForm({ isOpen, onClose }) {
                 id="remote-status"
                 value={remoteStatus}
                 onChange={(e) => setRemoteStatus(e.target.value)}
-                className="rounded border border-gray-300 px-3 py-1.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
+                className={`${INPUT_BASE}`}
               >
                 <option value="">Select...</option>
                 {REMOTE_STATUS_OPTIONS.map((o) => (
@@ -276,7 +277,7 @@ function ManualAddForm({ isOpen, onClose }) {
                 id="company-type"
                 value={companyType}
                 onChange={(e) => setCompanyType(e.target.value)}
-                className="rounded border border-gray-300 px-3 py-1.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
+                className={`${INPUT_BASE}`}
               >
                 <option value="">Select...</option>
                 {COMPANY_TYPE_OPTIONS.map((o) => (
@@ -291,7 +292,7 @@ function ManualAddForm({ isOpen, onClose }) {
               type="text"
               value={tags}
               onChange={(e) => setTags(e.target.value)}
-              className="rounded border border-gray-300 px-3 py-1.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
+              className={`${INPUT_BASE}`}
               placeholder="Comma-separated, e.g. python, remote"
             />
           </FormField>
@@ -300,18 +301,18 @@ function ManualAddForm({ isOpen, onClose }) {
               {mutationError.message ?? GENERIC_ERROR_MSG}
             </p>
           )}
-          <div className="flex justify-end gap-3 border-t border-gray-100 pt-4 dark:border-gray-700">
+          <div className="flex justify-end gap-3 border-t border-slate-100 pt-4 dark:border-slate-700">
             <button
               type="button"
               onClick={handleClose}
-              className="rounded px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 dark:text-gray-300 dark:hover:bg-gray-700"
+              className={`${BUTTON_SECONDARY} text-sm`}
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isPending}
-              className="flex items-center gap-2 rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-60"
+              className={`${BUTTON_PRIMARY} text-sm flex items-center gap-2`}
             >
               {isPending ? (
                 <>

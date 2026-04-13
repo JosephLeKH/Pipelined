@@ -7,6 +7,7 @@ import X from "lucide-react/dist/esm/icons/x";
 import ExternalLink from "lucide-react/dist/esm/icons/external-link";
 import AlertTriangle from "lucide-react/dist/esm/icons/alert-triangle";
 
+import { INPUT_BASE } from "../lib/designTokens";
 import { useDeleteApplication, useRestoreApplication, useUpdateApplication } from "../hooks/useApplications";
 import { useHotkeys } from "../hooks/useHotkeys";
 import ApplicationTimeline from "./ApplicationTimeline";
@@ -25,27 +26,27 @@ function DetailField({ label, value }) {
   if (!value) return null;
   return (
     <div className="flex flex-col gap-0.5">
-      <span className="text-xs font-medium uppercase text-gray-400 dark:text-gray-500">{label}</span>
-      <span className="text-sm text-gray-800 dark:text-gray-200">{value}</span>
+      <span className="text-xs font-medium uppercase text-slate-400 dark:text-slate-500">{label}</span>
+      <span className="text-sm text-slate-800 dark:text-slate-200">{value}</span>
     </div>
   );
 }
 
 function PanelHeader({ application, onClose, onDelete }) {
   return (
-    <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4 dark:border-gray-700">
+    <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4 dark:border-slate-700">
       <div className="flex items-center gap-3">
         <CompanyLogo company_domain={application.company_domain ?? null} company={application.company ?? ""} size={32} />
         <div>
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{application.role_title}</h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400">{application.company}</p>
+          <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{application.role_title}</h2>
+          <p className="text-sm text-slate-500 dark:text-slate-400">{application.company}</p>
         </div>
       </div>
       <div className="flex items-center gap-1">
         <button
           type="button"
           onClick={onClose}
-          className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 dark:hover:bg-gray-700 dark:hover:text-gray-300"
+          className="rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-1 dark:hover:bg-slate-700 dark:hover:text-slate-300"
           aria-label="Close panel"
         >
           <X className="h-5 w-5" />
@@ -73,7 +74,7 @@ function FollowUpSection({ application, onUpdate }) {
 
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-xs font-medium uppercase text-gray-400 dark:text-gray-500" htmlFor="follow-up-date">
+      <label className="text-xs font-medium uppercase text-slate-400 dark:text-slate-500" htmlFor="follow-up-date">
         Follow up
       </label>
       {isOverdue && (
@@ -88,13 +89,13 @@ function FollowUpSection({ application, onUpdate }) {
           type="date"
           value={dateValue}
           onChange={(e) => onUpdate({ follow_up_date: e.target.value || null })}
-          className="flex-1 rounded border border-gray-300 px-3 py-1.5 text-sm text-gray-800 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
+          className={`flex-1 ${INPUT_BASE}`}
         />
         {dateValue && (
           <button
             type="button"
             onClick={() => onUpdate({ follow_up_date: null })}
-            className="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+            className="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
           >
             Clear
           </button>
@@ -122,7 +123,7 @@ function PanelBody({ application, handleStageChange, handleUpdate, onAddEvent })
           href={application.source_url}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-1 text-sm text-blue-600 hover:underline"
+          className="flex items-center gap-1 text-sm text-brand-600 hover:underline"
           aria-label="Job posting"
         >
           <ExternalLink className="h-3.5 w-3.5" />
@@ -130,12 +131,12 @@ function PanelBody({ application, handleStageChange, handleUpdate, onAddEvent })
         </a>
       )}
       <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-medium uppercase text-gray-400 dark:text-gray-500" htmlFor="stage-select">
+        <label className="text-xs font-medium uppercase text-slate-400 dark:text-slate-500" htmlFor="stage-select">
           Stage
         </label>
         <select
           id="stage-select"
-          className="rounded border border-gray-300 px-3 py-1.5 text-sm text-gray-800 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
+          className={INPUT_BASE}
           value={application.current_stage}
           onChange={handleStageChange}
         >
@@ -255,12 +256,12 @@ function DetailPanel({ application, onClose, onAddEvent }) {
     <div
       ref={overlayRef}
       data-testid="panel-overlay"
-      className={`fixed inset-0 z-40 bg-black/20 transition-opacity duration-200 ${isOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"}`}
+      className={`fixed inset-0 z-40 bg-black/30 transition-opacity duration-200 ${isOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"}`}
       onClick={handleOverlayClick}
     >
       <div
         ref={panelRef}
-        className={`fixed inset-x-0 bottom-0 h-[90vh] rounded-t-xl bg-white shadow-xl transition-transform duration-[250ms] md:inset-x-auto md:bottom-auto md:right-0 md:top-0 md:h-full md:w-[480px] md:rounded-none dark:bg-gray-800 ${
+        className={`fixed inset-x-0 bottom-0 h-[90vh] rounded-t-xl bg-white shadow-xl transition-transform duration-[250ms] md:inset-x-auto md:bottom-auto md:right-0 md:top-0 md:h-full md:w-[480px] md:rounded-none dark:bg-slate-800 ${
           isOpen
             ? "translate-y-0 md:translate-x-0"
             : "translate-y-full md:translate-y-0 md:translate-x-full"

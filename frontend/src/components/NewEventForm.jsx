@@ -8,6 +8,7 @@ import { useApplications } from "../hooks/useApplications";
 import { useCreateEvent } from "../hooks/useCalendar";
 import { EVENT_TYPE_OPTIONS } from "../lib/constants";
 import { toISODate } from "../lib/dateUtils";
+import { BUTTON_PRIMARY, BUTTON_SECONDARY, INPUT_BASE, MODAL_CARD } from "../lib/designTokens";
 
 function AppSelector({ apps, applicationId, onApplicationChange }) {
   const [appSearch, setAppSearch] = useState("");
@@ -48,7 +49,7 @@ function AppSelector({ apps, applicationId, onApplicationChange }) {
 
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-xs font-medium uppercase text-gray-400" htmlFor="app-search">
+      <label className="text-xs font-medium uppercase text-slate-400" htmlFor="app-search">
         Application
       </label>
       <input
@@ -57,13 +58,13 @@ function AppSelector({ apps, applicationId, onApplicationChange }) {
         placeholder="Search by company or role…"
         value={appSearch}
         onChange={handleSearchChange}
-        className="rounded border border-gray-300 px-3 py-1.5 text-sm"
+        className={`${INPUT_BASE}`}
         autoComplete="off"
       />
       <select
         value={applicationId}
         onChange={handleSelectChange}
-        className="rounded border border-gray-300 px-2 py-1.5 text-sm text-gray-800"
+        className={`${INPUT_BASE}`}
         aria-label="Select application"
         size={Math.min(filteredApps.length || 1, 5)}
       >
@@ -147,21 +148,21 @@ function NewEventForm({ initialDate, initialApplicationId, onClose }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/20"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
       onClick={handleOverlayClick}
     >
       <div
-        className="relative w-full max-w-md rounded-lg bg-white p-6 shadow-xl"
+        className={`relative w-full max-w-md p-6 ${MODAL_CARD}`}
         role="dialog"
         aria-modal="true"
         aria-label="New calendar event"
       >
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-900">New Event</h2>
+          <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">New Event</h2>
           <button
             type="button"
             onClick={onClose}
-            className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+            className="rounded-button p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
             aria-label="Close form"
           >
             <X className="h-5 w-5" />
@@ -174,14 +175,14 @@ function NewEventForm({ initialDate, initialApplicationId, onClose }) {
             onApplicationChange={setApplicationId}
           />
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-medium uppercase text-gray-400" htmlFor="event-type">
+            <label className="text-xs font-medium uppercase text-slate-400" htmlFor="event-type">
               Event Type
             </label>
             <select
               id="event-type"
               value={eventType}
               onChange={(e) => setEventType(e.target.value)}
-              className="rounded border border-gray-300 px-3 py-1.5 text-sm text-gray-800"
+              className={`${INPUT_BASE}`}
             >
               {EVENT_TYPE_OPTIONS.map((t) => (
                 <option key={t.value} value={t.value}>{t.label}</option>
@@ -189,7 +190,7 @@ function NewEventForm({ initialDate, initialApplicationId, onClose }) {
             </select>
           </div>
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-medium uppercase text-gray-400" htmlFor="event-date">
+            <label className="text-xs font-medium uppercase text-slate-400" htmlFor="event-date">
               Date
             </label>
             <input
@@ -197,33 +198,33 @@ function NewEventForm({ initialDate, initialApplicationId, onClose }) {
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="rounded border border-gray-300 px-3 py-1.5 text-sm"
+              className={`${INPUT_BASE}`}
               required
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-medium uppercase text-gray-400" htmlFor="event-time">
+            <label className="text-xs font-medium uppercase text-slate-400" htmlFor="event-time">
               Time{" "}
-              <span className="font-normal normal-case text-gray-400">(optional)</span>
+              <span className="font-normal normal-case text-slate-400">(optional)</span>
             </label>
             <input
               id="event-time"
               type="time"
               value={time}
               onChange={(e) => setTime(e.target.value)}
-              className="rounded border border-gray-300 px-3 py-1.5 text-sm"
+              className={`${INPUT_BASE}`}
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-medium uppercase text-gray-400" htmlFor="event-notes">
+            <label className="text-xs font-medium uppercase text-slate-400" htmlFor="event-notes">
               Notes{" "}
-              <span className="font-normal normal-case text-gray-400">(optional)</span>
+              <span className="font-normal normal-case text-slate-400">(optional)</span>
             </label>
             <textarea
               id="event-notes"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="min-h-[80px] resize-y rounded border border-gray-300 px-3 py-2 text-sm"
+              className={`min-h-[80px] resize-y ${INPUT_BASE}`}
             />
           </div>
           {formError && <p className="text-sm text-red-600">{formError}</p>}
@@ -231,14 +232,14 @@ function NewEventForm({ initialDate, initialApplicationId, onClose }) {
             <button
               type="button"
               onClick={onClose}
-              className="rounded border border-gray-300 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+              className={`${BUTTON_SECONDARY} text-sm`}
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isPending}
-              className="rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+              className={`${BUTTON_PRIMARY} text-sm`}
             >
               {isPending ? "Saving…" : "Save Event"}
             </button>

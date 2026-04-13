@@ -10,6 +10,7 @@ import { useApplications, KEYS } from "../hooks/useApplications";
 import { useTheme } from "../context/ThemeContext";
 import { fetchApplications, exportApplicationsCsv } from "../api/applications";
 import { STAGE_COLORS, DEFAULT_STAGE_COLOR, QUERY_STALE_TIME_MS } from "../lib/constants";
+import { BADGE_BASE } from "../lib/designTokens";
 import ManualAddForm from "./ManualAddForm";
 
 const PALETTE_DEBOUNCE_MS = 200;
@@ -27,7 +28,7 @@ const NAV_ITEMS = [
 
 function SectionHeader({ label }) {
   return (
-    <p className="px-3 pt-2 pb-1 text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+    <p className="px-3 pt-2 pb-1 text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">
       {label}
     </p>
   );
@@ -35,7 +36,7 @@ function SectionHeader({ label }) {
 
 function StageBadge({ stage }) {
   const c = STAGE_COLORS[stage] ?? DEFAULT_STAGE_COLOR;
-  return <span className={`shrink-0 rounded px-1.5 py-0.5 text-xs ${c.bg} ${c.text}`}>{stage}</span>;
+  return <span className={`shrink-0 ${BADGE_BASE} ${c.bg} ${c.text}`}>{stage}</span>;
 }
 
 export function CommandPalette() {
@@ -128,11 +129,11 @@ export function CommandPalette() {
       type="button"
       onClick={() => activate(item)}
       className={`flex w-full items-center gap-2 px-3 py-2 text-left text-sm transition-colors ${
-        idx === i ? "bg-blue-50 dark:bg-blue-900/30" : "hover:bg-gray-50 dark:hover:bg-gray-700"
+        idx === i ? "bg-brand-50 dark:bg-brand-900/30" : "hover:bg-slate-50 dark:hover:bg-slate-700"
       }`}
     >
       {content}
-      {hint && <span className="ml-auto shrink-0 text-xs text-gray-400 dark:text-gray-500">{hint}</span>}
+      {hint && <span className="ml-auto shrink-0 text-xs text-slate-400 dark:text-slate-500">{hint}</span>}
     </button>
   );
 
@@ -146,17 +147,17 @@ export function CommandPalette() {
             role="dialog"
             aria-modal="true"
             aria-label="Command palette"
-            className="fixed left-1/2 top-[20%] z-50 w-full max-w-xl -translate-x-1/2 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-2xl dark:border-gray-700 dark:bg-gray-800"
+            className="fixed left-1/2 top-[20%] z-50 w-full max-w-xl -translate-x-1/2 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-modal dark:border-slate-700 dark:bg-slate-800"
           >
-            <div className="flex items-center gap-2 border-b border-gray-200 px-3 dark:border-gray-700">
-              <SearchIcon className="h-4 w-4 shrink-0 text-gray-400" />
+            <div className="flex items-center gap-2 border-b border-slate-200 px-3 dark:border-slate-700">
+              <SearchIcon className="h-4 w-4 shrink-0 text-slate-400" />
               <input
                 autoFocus
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search applications or type a command…"
-                className="w-full bg-transparent py-3 text-sm text-gray-900 placeholder-gray-400 outline-none dark:text-gray-100"
+                className="w-full bg-transparent py-3 text-sm text-slate-900 placeholder:text-slate-400 outline-none dark:text-slate-100"
               />
             </div>
             <div className="max-h-80 overflow-y-auto py-1">
@@ -164,14 +165,14 @@ export function CommandPalette() {
                 <>
                   <SectionHeader label="Applications" />
                   {filteredApps.length === 0
-                    ? <p className="px-3 py-2 text-sm text-gray-400 dark:text-gray-500">No results.</p>
+                    ? <p className="px-3 py-2 text-sm text-slate-400 dark:text-slate-500">No results.</p>
                     : filteredApps.map((app, i) =>
                         row(
                           { type: "app", ...app },
                           i,
                           <>
-                            <span className="font-semibold text-gray-900 dark:text-gray-100">{app.company}</span>
-                            <span className="min-w-0 truncate text-gray-500 dark:text-gray-400">{app.role_title}</span>
+                            <span className="font-semibold text-slate-900 dark:text-slate-100">{app.company}</span>
+                            <span className="min-w-0 truncate text-slate-500 dark:text-slate-400">{app.role_title}</span>
                             <StageBadge stage={app.current_stage} />
                           </>
                         )
@@ -181,11 +182,11 @@ export function CommandPalette() {
                 <>
                   <SectionHeader label="Navigation" />
                   {NAV_ITEMS.map((item, i) =>
-                    row(item, i, <span className="text-gray-900 dark:text-gray-100">{item.label}</span>, item.hint)
+                    row(item, i, <span className="text-slate-900 dark:text-slate-100">{item.label}</span>, item.hint)
                   )}
                   <SectionHeader label="Actions" />
                   {actions.map((item, i) =>
-                    row(item, NAV_ITEMS.length + i, <span className="text-gray-900 dark:text-gray-100">{item.label}</span>)
+                    row(item, NAV_ITEMS.length + i, <span className="text-slate-900 dark:text-slate-100">{item.label}</span>)
                   )}
                 </>
               )}

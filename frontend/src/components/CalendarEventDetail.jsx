@@ -8,6 +8,7 @@ import X from "lucide-react/dist/esm/icons/x";
 
 import { useUpdateEvent } from "../hooks/useCalendar";
 import { EVENT_TYPE_COLORS, DEFAULT_EVENT_COLOR, PREP_NOTES_MAX_LENGTH, PREP_NOTES_DEBOUNCE_MS } from "../lib/constants";
+import { INPUT_BASE } from "../lib/designTokens";
 import { formatDate, formatTime } from "../lib/dateUtils";
 import { useAuth } from "../context/AuthContext";
 
@@ -21,12 +22,12 @@ function ChecklistItem({ item, onToggle, onDelete }) {
         id={`checklist-item-${item.id}`}
         checked={item.checked}
         onChange={() => onToggle(item.id)}
-        className="mt-0.5 h-4 w-4 flex-shrink-0 cursor-pointer rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+        className="mt-0.5 h-4 w-4 flex-shrink-0 cursor-pointer rounded border-slate-300 text-brand-600 focus:ring-brand-500"
         aria-label={item.text}
       />
       <label
         htmlFor={`checklist-item-${item.id}`}
-        className={`flex-1 cursor-pointer text-sm ${item.checked ? "text-gray-400 line-through" : "text-gray-700"}`}
+        className={`flex-1 cursor-pointer text-sm ${item.checked ? "text-slate-400 line-through" : "text-slate-700"}`}
       >
         {item.text}
       </label>
@@ -58,14 +59,14 @@ function AddChecklistItem({ onAdd }) {
 
   return (
     <div className="flex items-center gap-2 pt-1">
-      <Plus className="h-4 w-4 flex-shrink-0 text-gray-400" />
+      <Plus className="h-4 w-4 flex-shrink-0 text-slate-400" />
       <input
         type="text"
         value={text}
         onChange={(e) => setText(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder="Add item and press Enter"
-        className="flex-1 rounded border border-gray-200 px-2 py-1 text-sm text-gray-700 placeholder-gray-400 focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
+        className={`flex-1 border border-slate-200 bg-white rounded-input px-2 py-1 text-sm text-slate-700 placeholder:text-slate-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none transition-colors dark:bg-slate-800 dark:border-slate-600 dark:text-slate-100`}
         aria-label="New checklist item"
         maxLength={200}
       />
@@ -149,7 +150,7 @@ function CalendarEventDetail({ event, onClose }) {
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 z-30 bg-black/20"
+        className="fixed inset-0 z-30 bg-black/40 backdrop-blur-sm"
         onClick={onClose}
         aria-hidden="true"
       />
@@ -159,20 +160,20 @@ function CalendarEventDetail({ event, onClose }) {
         ref={panelRef}
         role="complementary"
         aria-label="Event details"
-        className="fixed inset-y-0 right-0 z-40 flex w-full max-w-md flex-col overflow-y-auto bg-white shadow-xl"
+        className="fixed inset-y-0 right-0 z-40 flex w-full max-w-md flex-col overflow-y-auto bg-white shadow-modal dark:bg-slate-800"
       >
         {/* Header */}
-        <div className="flex items-start justify-between border-b border-gray-100 px-6 py-4">
+        <div className="flex items-start justify-between border-b border-slate-100 dark:border-slate-700 px-6 py-4">
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2">
-              <span className={`rounded px-2 py-0.5 text-xs font-medium ${colors.bg} ${colors.text}`}>
+              <span className={`rounded-badge px-2 py-0.5 text-xs font-medium ${colors.bg} ${colors.text}`}>
                 {eventTypeLabel}
               </span>
             </div>
-            <h2 className="text-lg font-semibold text-gray-900">
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
               {event.title || eventTypeLabel}
             </h2>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-slate-500 dark:text-slate-400">
               {formatDate(
                 typeof event.date === "string" ? event.date.slice(0, 10) : event.date
               )}
@@ -182,7 +183,7 @@ function CalendarEventDetail({ event, onClose }) {
           <button
             type="button"
             onClick={onClose}
-            className="ml-4 rounded p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="ml-4 rounded p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 focus:outline-none focus:ring-2 focus:ring-brand-500"
             aria-label="Close event details"
           >
             <X className="h-5 w-5" />
@@ -191,19 +192,19 @@ function CalendarEventDetail({ event, onClose }) {
 
         {/* Application info */}
         {(event.company || event.role_title) && (
-          <div className="border-b border-gray-100 px-6 py-3">
-            <span className="text-xs font-medium uppercase text-gray-400">Application</span>
-            <p className="mt-1 text-sm font-medium text-gray-800">
+          <div className="border-b border-slate-100 dark:border-slate-700 px-6 py-3">
+            <span className="text-xs font-medium uppercase text-slate-400">Application</span>
+            <p className="mt-1 text-sm font-medium text-slate-800 dark:text-slate-200">
               {event.company && <span>{event.company}</span>}
-              {event.company && event.role_title && <span className="text-gray-400"> · </span>}
+              {event.company && event.role_title && <span className="text-slate-400"> · </span>}
               {event.role_title && <span>{event.role_title}</span>}
             </p>
           </div>
         )}
 
         {/* Prep notes */}
-        <div className="border-b border-gray-100 px-6 py-4">
-          <label htmlFor="prep-notes" className="text-xs font-medium uppercase text-gray-400">
+        <div className="border-b border-slate-100 dark:border-slate-700 px-6 py-4">
+          <label htmlFor="prep-notes" className="text-xs font-medium uppercase text-slate-400">
             Prep Notes
           </label>
           <textarea
@@ -213,16 +214,16 @@ function CalendarEventDetail({ event, onClose }) {
             maxLength={PREP_NOTES_MAX_LENGTH}
             placeholder="Add your prep notes here…"
             rows={4}
-            className="mt-2 w-full resize-none rounded border border-gray-200 px-3 py-2 text-sm text-gray-700 placeholder-gray-400 focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
+            className={`mt-2 w-full resize-none border border-slate-200 bg-white rounded-input px-3 py-2 text-sm text-slate-700 placeholder:text-slate-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none transition-colors dark:bg-slate-800 dark:border-slate-600 dark:text-slate-100`}
           />
-          <p className="mt-1 text-right text-xs text-gray-400">
+          <p className="mt-1 text-right text-xs text-slate-400">
             {localNotes.length} / {PREP_NOTES_MAX_LENGTH}
           </p>
         </div>
 
         {/* Checklist */}
         <div className="flex-1 px-6 py-4">
-          <span className="text-xs font-medium uppercase text-gray-400">Prep Checklist</span>
+          <span className="text-xs font-medium uppercase text-slate-400">Prep Checklist</span>
           <div className="mt-2 flex flex-col gap-0.5">
             {checklist.map((item) => (
               <ChecklistItem

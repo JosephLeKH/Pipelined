@@ -37,7 +37,7 @@ function UndoToast({ message, onUndo, onDismiss, duration = TOAST_DURATION_MS })
         <button
           type="button"
           onClick={() => onUndoRef.current()}
-          className="shrink-0 rounded px-2 py-1 text-sm font-medium text-blue-400 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          className="shrink-0 rounded px-2 py-1 text-sm font-medium text-brand-400 hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400"
         >
           Undo
         </button>
@@ -45,7 +45,7 @@ function UndoToast({ message, onUndo, onDismiss, duration = TOAST_DURATION_MS })
       <div className="h-1 overflow-hidden rounded-b-lg bg-gray-700">
         <div
           data-testid="undo-progress-bar"
-          className="h-full bg-blue-500"
+          className="h-full bg-brand-500"
           style={{
             width: `${barWidth}%`,
             transition: barWidth === 0 ? `width ${duration}ms linear` : "none",

@@ -37,11 +37,11 @@ function ResumeSection({ hasResume, isUploading, isDeleting, onResumeUpload, onR
   }, [onResumeDelete]);
 
   return (
-    <section className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
-      <h2 className="mb-1 text-base font-semibold text-gray-900 dark:text-gray-100">
+    <section className="rounded-card border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800">
+      <h2 className="mb-1 text-base font-semibold text-slate-900 dark:text-slate-100">
         Resume
       </h2>
-      <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">
+      <p className="mb-4 text-sm text-slate-500 dark:text-slate-400">
         Upload your resume (PDF, max {RESUME_MAX_MB} MB) to enable AI fit scoring on new applications.
       </p>
       {resumeSuccess && (
@@ -53,7 +53,7 @@ function ResumeSection({ hasResume, isUploading, isDeleting, onResumeUpload, onR
         <p role="alert" className="mb-4 text-sm text-red-600 dark:text-red-400">{resumeError}</p>
       )}
       <div className="flex flex-wrap items-center gap-3">
-        <label className="flex cursor-pointer items-center gap-2 rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-2 disabled:opacity-60">
+        <label className="flex cursor-pointer items-center gap-2 rounded-button bg-gradient-to-r from-brand-600 to-brand-500 px-4 py-2 text-sm font-medium text-white hover:from-brand-700 hover:to-brand-600 focus-within:ring-2 focus-within:ring-brand-500/30 focus-within:ring-offset-2 active:scale-[0.98] transition-all duration-150">
           {isUploading && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
           {hasResume ? "Replace resume" : "Upload resume"}
           <input
@@ -70,7 +70,7 @@ function ResumeSection({ hasResume, isUploading, isDeleting, onResumeUpload, onR
             type="button"
             onClick={handleResumeDelete}
             disabled={isUploading || isDeleting}
-            className="flex items-center gap-2 rounded border border-gray-300 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+            className="flex items-center gap-2 rounded-button border border-slate-300 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
           >
             {isDeleting && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
             Remove resume
@@ -78,7 +78,7 @@ function ResumeSection({ hasResume, isUploading, isDeleting, onResumeUpload, onR
         )}
       </div>
       {hasResume && !resumeSuccess && (
-        <p className="mt-3 text-xs text-gray-400 dark:text-gray-500">
+        <p className="mt-3 text-xs text-slate-400 dark:text-slate-500">
           A resume is currently on file. New applications will be scored automatically.
         </p>
       )}

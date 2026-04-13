@@ -32,14 +32,14 @@ class ErrorBoundary extends Component {
           role="alert"
           className="flex flex-col items-center gap-4 py-16 text-center"
         >
-          <p className="text-lg font-semibold text-gray-900">Something went wrong</p>
-          <p className="text-sm text-gray-500">
+          <p className="text-lg font-semibold text-slate-900">Something went wrong</p>
+          <p className="text-sm text-slate-500">
             {this.state.error?.message || "An unexpected error occurred."}
           </p>
           <button
             type="button"
             onClick={this.handleReset}
-            className="flex items-center gap-2 rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+            className="flex items-center gap-2 rounded-button bg-gradient-to-r from-brand-600 to-brand-500 px-4 py-2 text-sm font-medium text-white hover:from-brand-700 hover:to-brand-600 active:scale-[0.98] transition-all duration-150"
           >
             <RefreshCw className="h-4 w-4" />
             Try again

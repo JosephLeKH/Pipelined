@@ -15,11 +15,11 @@ const REMOTE_STATUS_OPTIONS = ["remote", "hybrid", "onsite", "unknown"];
 function CheckboxGroup({ label, groupKey, options, selected, onChange }) {
   return (
     <fieldset className="flex shrink-0 flex-col gap-1">
-      <legend className="mb-1 text-xs font-medium uppercase text-gray-500 dark:text-gray-400">{label}</legend>
+      <legend className="mb-1 text-xs font-medium uppercase text-slate-500 dark:text-slate-400">{label}</legend>
       {options.map((opt) => {
         const inputId = `filter-${groupKey}-${opt}`;
         return (
-          <label key={opt} htmlFor={inputId} className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+          <label key={opt} htmlFor={inputId} className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
             <input
               id={inputId}
               type="checkbox"
@@ -99,18 +99,18 @@ function FilterBar() {
           <span>Uncheck &ldquo;Show archived&rdquo; to return to active view.</span>
         </div>
       )}
-      <div className="flex gap-6 overflow-x-auto rounded-lg bg-white p-4 shadow-sm dark:bg-gray-800 md:flex-wrap">
+      <div className="flex gap-6 overflow-x-auto rounded-card bg-white p-4 shadow-card border border-slate-200/60 dark:bg-slate-800 dark:border-slate-700 md:flex-wrap">
         <fieldset className="flex shrink-0 flex-col gap-1">
-          <legend className="mb-1 text-xs font-medium uppercase text-gray-500 dark:text-gray-400">Search</legend>
+          <legend className="mb-1 text-xs font-medium uppercase text-slate-500 dark:text-slate-400">Search</legend>
           <div className="relative flex items-center">
-            <SearchIcon className="absolute left-2 h-4 w-4 text-gray-400" aria-hidden="true" />
+            <SearchIcon className="absolute left-2 h-4 w-4 text-slate-400" aria-hidden="true" />
             <input
               type="text"
               aria-label="search applications"
               value={searchValue}
               onChange={handleSearchChange}
               placeholder="Title, company, notes..."
-              className="rounded border border-gray-300 pl-8 pr-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 dark:placeholder-gray-400"
+              className="border border-slate-300 bg-white rounded-input pl-8 pr-2 py-1.5 text-sm placeholder:text-slate-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none transition-colors dark:bg-slate-800 dark:border-slate-600 dark:text-slate-100 dark:placeholder:text-slate-500"
             />
           </div>
         </fieldset>
@@ -136,31 +136,31 @@ function FilterBar() {
           onChange={(val) => updateFilter("remote_status", val)}
         />
         <fieldset className="flex shrink-0 flex-col gap-1">
-          <legend className="mb-1 text-xs font-medium uppercase text-gray-500 dark:text-gray-400">Date Range</legend>
-          <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+          <legend className="mb-1 text-xs font-medium uppercase text-slate-500 dark:text-slate-400">Date Range</legend>
+          <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
             From
             <input
               type="date"
               value={dateFrom}
               aria-label="date from"
               onChange={(e) => updateFilter("date_from", e.target.value)}
-              className="rounded border border-gray-300 px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
+              className="border border-slate-300 bg-white rounded-input px-2 py-1.5 text-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none transition-colors dark:bg-slate-800 dark:border-slate-600 dark:text-slate-100"
             />
           </label>
-          <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+          <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
             To
             <input
               type="date"
               value={dateTo}
               aria-label="date to"
               onChange={(e) => updateFilter("date_to", e.target.value)}
-              className="rounded border border-gray-300 px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
+              className="border border-slate-300 bg-white rounded-input px-2 py-1.5 text-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none transition-colors dark:bg-slate-800 dark:border-slate-600 dark:text-slate-100"
             />
           </label>
         </fieldset>
         <fieldset className="flex shrink-0 flex-col gap-1">
-          <legend className="mb-1 text-xs font-medium uppercase text-gray-500 dark:text-gray-400">Archive</legend>
-          <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+          <legend className="mb-1 text-xs font-medium uppercase text-slate-500 dark:text-slate-400">Archive</legend>
+          <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
             <input
               type="checkbox"
               aria-label="Show archived"

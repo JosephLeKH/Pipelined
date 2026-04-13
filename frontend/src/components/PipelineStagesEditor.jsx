@@ -42,14 +42,14 @@ function SortableStageItem({ id, value, onRename, onRemove, canRemove }) {
     <div
       ref={setNodeRef}
       style={style}
-      className="flex items-center gap-2 rounded border border-gray-200 bg-white px-3 py-2 dark:border-gray-600 dark:bg-gray-700"
+      className="flex items-center gap-2 rounded-card border border-slate-200 bg-white px-3 py-2 dark:border-slate-600 dark:bg-slate-700"
     >
       <button
         type="button"
         {...attributes}
         {...listeners}
         aria-label="Drag to reorder"
-        className="cursor-grab text-gray-400 hover:text-gray-600 focus:outline-none dark:text-gray-500 dark:hover:text-gray-300"
+        className="cursor-grab text-slate-400 hover:text-slate-600 focus:outline-none dark:text-slate-500 dark:hover:text-slate-300"
       >
         <GripVertical className="h-4 w-4" />
       </button>
@@ -58,7 +58,7 @@ function SortableStageItem({ id, value, onRename, onRemove, canRemove }) {
         value={value}
         maxLength={STAGE_NAME_MAX_LENGTH}
         onChange={(e) => onRename(id, e.target.value)}
-        className="flex-1 rounded border-0 bg-transparent text-sm text-gray-800 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:text-gray-200"
+        className="flex-1 rounded border-0 bg-transparent text-sm text-slate-800 focus:outline-none focus:ring-1 focus:ring-brand-500/30 dark:text-slate-200"
         aria-label={`Stage name: ${value}`}
       />
       {canRemove && (
@@ -66,7 +66,7 @@ function SortableStageItem({ id, value, onRename, onRemove, canRemove }) {
           type="button"
           onClick={() => onRemove(id)}
           aria-label={`Remove stage ${value}`}
-          className="text-gray-300 hover:text-red-500 focus:outline-none focus:ring-2 focus:ring-red-400 dark:text-gray-500 dark:hover:text-red-400"
+          className="text-slate-300 hover:text-red-500 focus:outline-none focus:ring-2 focus:ring-red-400 dark:text-slate-500 dark:hover:text-red-400"
         >
           <Trash2 className="h-4 w-4" />
         </button>
@@ -167,14 +167,14 @@ function PipelineStagesEditor({ initialStages, onSave, isSaving, saveError }) {
             placeholder="New stage name"
             maxLength={STAGE_NAME_MAX_LENGTH}
             aria-label="New stage name"
-            className="flex-1 rounded border border-gray-300 px-3 py-1.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
+            className="flex-1 rounded-input border border-slate-300 px-3 py-1.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500/20 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200"
           />
           <button
             type="button"
             onClick={handleAdd}
             disabled={!newStageName.trim()}
             aria-label="Add stage"
-            className="flex items-center gap-1 rounded bg-gray-100 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-200 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+            className="flex items-center gap-1 rounded-button bg-slate-100 px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-200 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600"
           >
             <Plus className="h-4 w-4" />
             Add
@@ -186,15 +186,15 @@ function PipelineStagesEditor({ initialStages, onSave, isSaving, saveError }) {
         <p role="alert" className="text-sm text-red-600 dark:text-red-400">{errorMessage}</p>
       )}
 
-      <div className="flex items-center justify-between border-t border-gray-100 pt-3 dark:border-gray-700">
-        <p className="text-xs text-gray-400">
+      <div className="flex items-center justify-between border-t border-slate-100 pt-3 dark:border-slate-700">
+        <p className="text-xs text-slate-400">
           {stages.length} / {STAGES_MAX_COUNT} stages
         </p>
         <button
           type="button"
           onClick={handleSave}
           disabled={isSaving}
-          className="flex items-center gap-2 rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          className="flex items-center gap-2 rounded-button bg-gradient-to-r from-brand-600 to-brand-500 px-4 py-2 text-sm font-medium text-white hover:from-brand-700 hover:to-brand-600 active:scale-[0.98] transition-all duration-150 disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:ring-offset-2"
         >
           {isSaving && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
           Save stages

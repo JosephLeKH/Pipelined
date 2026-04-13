@@ -5,6 +5,7 @@ import { useState, useRef, useEffect } from "react";
 import Loader2 from "lucide-react/dist/esm/icons/loader-2";
 import MoreHorizontal from "lucide-react/dist/esm/icons/more-horizontal";
 
+import { BUTTON_SECONDARY, MODAL_CARD } from "../lib/designTokens";
 import { useAuth } from "../context/AuthContext";
 
 export function RowMenu({ application, onArchive, onUnarchive, onDelete }) {
@@ -25,7 +26,7 @@ export function RowMenu({ application, onArchive, onUnarchive, onDelete }) {
       <button
         type="button"
         aria-label="Application actions"
-        className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500"
         onClick={() => setOpen((v) => !v)}
       >
         <MoreHorizontal className="h-4 w-4" />
@@ -33,13 +34,13 @@ export function RowMenu({ application, onArchive, onUnarchive, onDelete }) {
       {open && (
         <div
           role="menu"
-          className="absolute right-0 z-20 mt-1 w-36 rounded-md border border-gray-200 bg-white shadow-lg"
+          className="absolute right-0 z-20 mt-1 w-36 rounded-card border border-slate-200 bg-white shadow-card dark:bg-slate-800 dark:border-slate-700"
         >
           {application.archived ? (
             <button
               role="menuitem"
               type="button"
-              className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50"
+              className="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-700"
               onClick={() => { setOpen(false); onUnarchive(application.id); }}
             >
               Unarchive
@@ -48,7 +49,7 @@ export function RowMenu({ application, onArchive, onUnarchive, onDelete }) {
             <button
               role="menuitem"
               type="button"
-              className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50"
+              className="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-700"
               onClick={() => { setOpen(false); onArchive(application.id); }}
             >
               Archive
@@ -74,11 +75,11 @@ export function DeleteConfirmModal({ appId, onConfirm, onCancel }) {
       role="dialog"
       aria-modal="true"
       aria-label="Confirm delete"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
     >
-      <div className="w-80 rounded-lg bg-white p-6 shadow-xl">
-        <h2 className="mb-2 text-base font-semibold text-gray-900">Delete application?</h2>
-        <p className="mb-6 text-sm text-gray-600">
+      <div className={`w-80 p-6 ${MODAL_CARD}`}>
+        <h2 className="mb-2 text-base font-semibold text-slate-900 dark:text-slate-100">Delete application?</h2>
+        <p className="mb-6 text-sm text-slate-600 dark:text-slate-400">
           This will permanently delete the application and cannot be undone.
           Consider archiving instead.
         </p>
@@ -86,7 +87,7 @@ export function DeleteConfirmModal({ appId, onConfirm, onCancel }) {
           <button
             type="button"
             onClick={onCancel}
-            className="rounded border border-gray-300 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50"
+            className={`${BUTTON_SECONDARY} text-sm`}
           >
             Cancel
           </button>
@@ -110,20 +111,20 @@ export function BulkDeleteConfirmModal({ count, onConfirm, onCancel }) {
       role="dialog"
       aria-modal="true"
       aria-label="Confirm bulk delete"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
     >
-      <div className="w-80 rounded-lg bg-white p-6 shadow-xl">
-        <h2 className="mb-2 text-base font-semibold text-gray-900">
+      <div className={`w-80 p-6 ${MODAL_CARD}`}>
+        <h2 className="mb-2 text-base font-semibold text-slate-900 dark:text-slate-100">
           Delete {count} {label}?
         </h2>
-        <p className="mb-6 text-sm text-gray-600">
+        <p className="mb-6 text-sm text-slate-600 dark:text-slate-400">
           This will permanently delete {count} {label} and cannot be undone.
         </p>
         <div className="flex justify-end gap-3">
           <button
             type="button"
             onClick={onCancel}
-            className="rounded border border-gray-300 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50"
+            className={`${BUTTON_SECONDARY} text-sm`}
           >
             Cancel
           </button>
@@ -164,16 +165,16 @@ export function BulkActionBar({
     <div
       role="toolbar"
       aria-label="Bulk actions"
-      className="flex items-center gap-3 rounded-md border border-blue-200 bg-blue-50 px-4 py-2 text-sm"
+      className="flex items-center gap-3 rounded-md border border-brand-200 bg-brand-50 px-4 py-2 text-sm dark:bg-brand-900/20 dark:border-brand-700"
     >
-      <span className="font-medium text-blue-800">{selectedCount} selected</span>
+      <span className="font-medium text-brand-800 dark:text-brand-200">{selectedCount} selected</span>
       <div className="ml-auto flex items-center gap-2">
         <select
           aria-label="Move to stage"
           value={selectedStage}
           onChange={(e) => setSelectedStage(e.target.value)}
           disabled={isBusy}
-          className="rounded border border-gray-300 px-2 py-1 text-sm text-gray-700 disabled:opacity-50"
+          className="border border-slate-300 bg-white rounded-input px-2 py-1 text-sm text-slate-700 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none transition-colors disabled:opacity-50 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-200"
         >
           <option value="">Move to stage…</option>
           {stageOptions.map((s) => (
@@ -184,7 +185,7 @@ export function BulkActionBar({
           type="button"
           disabled={!selectedStage || isBusy}
           onClick={handleMove}
-          className="flex items-center gap-1 rounded bg-blue-600 px-3 py-1 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+          className="flex items-center gap-1 bg-gradient-to-r from-brand-600 to-brand-500 text-white rounded-button shadow-sm hover:from-brand-700 hover:to-brand-600 active:scale-[0.98] transition-all duration-150 font-medium text-sm px-3 py-1 focus:outline-none focus:ring-2 focus:ring-brand-500/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none"
         >
           {isMoving ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" /> : null}
           Move

@@ -175,21 +175,21 @@ describe("CommandPalette", () => {
 
     // First item (Dashboard) should be highlighted
     const dashboardBtn = screen.getByText("Dashboard").closest("button");
-    expect(dashboardBtn).toHaveClass("bg-blue-50");
+    expect(dashboardBtn).toHaveClass("bg-brand-50");
 
     // Act — move down (fires on focused input, bubbles to document listener)
     await user.keyboard("{ArrowDown}");
 
     // Assert — Calendar is now highlighted
     const calendarBtn = screen.getByText("Calendar").closest("button");
-    expect(calendarBtn).toHaveClass("bg-blue-50");
-    expect(dashboardBtn).not.toHaveClass("bg-blue-50");
+    expect(calendarBtn).toHaveClass("bg-brand-50");
+    expect(dashboardBtn).not.toHaveClass("bg-brand-50");
 
     // Act — move back up
     await user.keyboard("{ArrowUp}");
 
     // Assert — Dashboard is highlighted again
-    expect(dashboardBtn).toHaveClass("bg-blue-50");
+    expect(dashboardBtn).toHaveClass("bg-brand-50");
   });
 
   it("should close palette after Enter triggers navigation", () => {

@@ -37,7 +37,7 @@ function CopyButton({ url }) {
     <button
       type="button"
       onClick={handleCopy}
-      className="flex items-center gap-1.5 rounded px-2 py-1 text-xs text-blue-600 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 dark:hover:bg-blue-900/30"
+      className="flex items-center gap-1.5 rounded px-2 py-1 text-xs text-brand-600 hover:bg-brand-50 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-1 dark:hover:bg-brand-900/30"
       aria-label={copied ? "Link copied" : "Copy share link"}
     >
       {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
@@ -75,14 +75,14 @@ function ActiveShare({ share, onRevoke, isRevoking }) {
 function NoShare({ onCreate, isCreating }) {
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-sm text-gray-500 dark:text-gray-400">
+      <p className="text-sm text-slate-500 dark:text-slate-400">
         Generate a read-only public link to your pipeline. Anyone with the link can view your applications.
       </p>
       <button
         type="button"
         onClick={onCreate}
         disabled={isCreating}
-        className="flex items-center gap-1.5 self-start rounded bg-blue-600 px-3 py-1.5 text-sm text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 disabled:opacity-50"
+        className="flex items-center gap-1.5 self-start rounded-button bg-gradient-to-r from-brand-600 to-brand-500 px-3 py-1.5 text-sm text-white hover:from-brand-700 hover:to-brand-600 active:scale-[0.98] transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:ring-offset-1 disabled:opacity-50"
       >
         {isCreating
           ? <Loader2 className="h-4 w-4 animate-spin" />
@@ -99,12 +99,12 @@ function SharePipeline() {
   const { mutate: revokeShare, isPending: isRevoking } = useRevokeShare();
 
   return (
-    <section aria-labelledby="share-heading" className="flex flex-col gap-3 rounded-lg border border-gray-200 p-4 dark:border-gray-700">
-      <h2 id="share-heading" className="text-sm font-semibold text-gray-800 dark:text-gray-100">
+    <section aria-labelledby="share-heading" className="flex flex-col gap-3 rounded-card border border-slate-200 p-4 dark:border-slate-700">
+      <h2 id="share-heading" className="text-sm font-semibold text-slate-800 dark:text-slate-100">
         Share Your Pipeline
       </h2>
       {isLoading ? (
-        <Loader2 className="h-5 w-5 animate-spin text-gray-400" aria-label="Loading" />
+        <Loader2 className="h-5 w-5 animate-spin text-slate-400" aria-label="Loading" />
       ) : share ? (
         <ActiveShare share={share} onRevoke={revokeShare} isRevoking={isRevoking} />
       ) : (

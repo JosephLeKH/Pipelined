@@ -5,6 +5,7 @@ import { CSS } from "@dnd-kit/utilities";
 import Bell from "lucide-react/dist/esm/icons/bell";
 
 import { formatRelative, isStale, isFollowUpOverdue } from "../lib/dateUtils";
+import { CARD_BASE } from "../lib/designTokens";
 import CompanyLogo from "./CompanyLogo";
 import FitBadge from "./FitBadge";
 
@@ -34,7 +35,7 @@ function KanbanCard({ application, onSelect }) {
       {...listeners}
       onClick={() => onSelect(application)}
       data-testid="kanban-card"
-      className={`relative cursor-pointer rounded-lg bg-white p-3 shadow-sm ring-1 ring-gray-200 hover:shadow-md dark:bg-gray-800 dark:ring-gray-700 ${
+      className={`relative cursor-pointer p-3 transition-all duration-150 hover:shadow-card-hover ${CARD_BASE} ${
         isDragging ? "opacity-40" : ""
       }`}
     >
@@ -54,15 +55,15 @@ function KanbanCard({ application, onSelect }) {
       )}
       <div className="flex items-center gap-2 pr-4">
         <CompanyLogo company_domain={application.company_domain ?? null} company={application.company ?? ""} size={20} />
-        <p className="truncate font-semibold text-gray-900 dark:text-gray-100">
+        <p className="truncate font-semibold text-slate-900 dark:text-slate-100">
           {application.company}
         </p>
       </div>
-      <p className="mt-0.5 truncate text-sm text-gray-600 dark:text-gray-400">
+      <p className="mt-0.5 truncate text-sm text-slate-600 dark:text-slate-400">
         {application.role_title}
       </p>
       <div className="mt-1 flex items-center justify-between">
-        <p className="text-xs text-gray-400 dark:text-gray-500">
+        <p className="text-xs text-slate-400 dark:text-slate-500">
           {formatRelative(application.date_applied)}
         </p>
         <FitBadge score={application.ai_analysis?.fit_score ?? null} />
