@@ -131,7 +131,7 @@
         "npm run build passes"
       ],
       "priority": 6,
-      "passes": false,
+      "passes": true,
       "notes": "The job board is a key acquisition page (publicly accessible). It should feel like a polished marketplace (think Wellfound's job board or Y Combinator's Work at a Startup). The slide-in detail panel avoids full page navigation, keeping the user in browse mode. Salary in emerald-600 makes it pop — salary is the #1 thing job seekers scan for."
     },
     {

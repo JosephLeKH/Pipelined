@@ -69,3 +69,22 @@ Changes:
 - All pages use INPUT_BASE and BUTTON_PRIMARY from designTokens.js
 - All existing test assertions preserved (label text, role names, alert roles)
 - All 301 tests pass, build passes
+
+---
+US-098: Job board redesign — curated marketplace feel with rich cards and slide-in detail
+Status: PASSED
+Commit: 86e7ab5
+
+Changes:
+- New JobDetailPanel.jsx: slide-in panel from right (z-40 fixed, backdrop blur), 48px CompanyLogo + company name + role title header, MetaRow with location/remote/experience/salary (emerald-600 with DollarSign), description prose + requirements bullet list, "Apply on Company Site" gradient button + "Save to Pipeline" secondary button, stale badge, posted date
+- JobCard.jsx redesigned: CARD_BASE + hover:shadow-card-hover, absolute "May be expired" amber badge top-right, top row with CompanyLogo 32px + company name + formatRelative timestamp, text-lg font-semibold role title, horizontal pill tags (location+MapPin, remote, experience, company_type), salary in emerald-600 + DollarSign, Apply link + Bookmark button at bottom; onSelect prop triggers detail panel
+- JobFilters.jsx redesigned: horizontal scrollable chip row (overflow-x-auto), brand-600 active chips, slate-100 inactive chips, 4 filter groups (Role/Experience/Remote/Company), toggle-on-click replaces select dropdowns
+- JobBoard.jsx redesigned: removed ViewToggle and list mode (FixedSizeList dropped), perPage local state with useEffect reset on filter change for "load more" behavior, flex layout (hidden lg:block saved searches sidebar + flex-1 content area), "Showing X of Y results" count, 1/md:2/lg:3 grid, EmptyState with Search lucide + "No jobs match your search" + Clear Filters ghost button, "Load more" centered button
+- SavedSearchesSidebar.jsx: badge color updated from blue-100/blue-700 to brand-100/brand-700, container and row colors migrated to slate-*
+
+Key learnings:
+- formatRelative() from dateUtils gives "X days ago" for recent dates, falls back to formatDate for older ones — perfect for card timestamps
+- Keeping the same aria-label on saved search badges ("5 new matches") preserved all JobBoard tests despite layout and color changes
+- useEffect with JSON-serialized filter key correctly resets perPage when any filter param changes
+- Per-page growth approach (fetch N items directly) is simpler than true infinite query for "load more" at prototype scale
+- All 301 tests pass, build passes
