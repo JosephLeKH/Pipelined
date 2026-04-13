@@ -4,6 +4,8 @@ import { useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 
 import { useForgotPassword } from "../hooks/useAuth";
+import AuthLayout from "../components/AuthLayout";
+import { INPUT_BASE, BUTTON_PRIMARY } from "../lib/designTokens";
 
 function ForgotPassword() {
   const { mutateAsync: sendReset, isPending } = useForgotPassword();
@@ -33,57 +35,51 @@ function ForgotPassword() {
   );
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-8 bg-gray-50">
-      <div className="w-full max-w-sm rounded-xl border border-gray-200 bg-white p-8 shadow-sm">
-        <h1 className="mb-2 text-2xl font-bold text-gray-900">Forgot password?</h1>
-        <p className="mb-6 text-sm text-gray-500">
-          Enter your email and we&apos;ll send you a reset link.
+    <AuthLayout>
+      <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Forgot password?</h1>
+      <p className="mt-1 mb-6 text-sm text-slate-500 dark:text-slate-400">
+        Enter your email and we&apos;ll send you a reset link.
+      </p>
+
+      {submitted ? (
+        <p role="status" className="rounded-lg bg-emerald-50 border border-emerald-200 px-3 py-3 text-sm text-emerald-800 dark:bg-emerald-900/20 dark:border-emerald-800 dark:text-emerald-300">
+          If that email is registered, a reset link has been sent. Check your inbox.
         </p>
+      ) : (
+        <form onSubmit={handleSubmit} noValidate>
+          <div className="mb-5">
+            <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
+              Email
+            </label>
+            <input
+              id="email"
+              type="email"
+              autoComplete="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className={INPUT_BASE}
+              placeholder="you@example.com"
+            />
+          </div>
 
-        {submitted ? (
-          <p role="status" className="rounded-lg bg-green-50 px-3 py-3 text-sm text-green-700">
-            If that email is registered, a reset link has been sent. Check your inbox.
-          </p>
-        ) : (
-          <form onSubmit={handleSubmit} noValidate>
-            <div className="mb-5">
-              <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-gray-700">
-                Email
-              </label>
-              <input
-                id="email"
-                type="email"
-                autoComplete="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                placeholder="you@example.com"
-              />
-            </div>
+          {error && (
+            <p role="alert" className="mb-4 rounded-lg bg-rose-50 border border-rose-200 px-3 py-2 text-sm text-rose-800 dark:bg-rose-900/20 dark:border-rose-800 dark:text-rose-300">
+              {error}
+            </p>
+          )}
 
-            {error && (
-              <p role="alert" className="mb-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
-                {error}
-              </p>
-            )}
+          <button type="submit" disabled={isPending} className={`w-full ${BUTTON_PRIMARY}`}>
+            {isPending ? "Sending…" : "Send reset link"}
+          </button>
+        </form>
+      )}
 
-            <button
-              type="submit"
-              disabled={isPending}
-              className="w-full rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-60"
-            >
-              {isPending ? "Sending…" : "Send reset link"}
-            </button>
-          </form>
-        )}
-
-        <p className="mt-5 text-center text-sm text-gray-500">
-          <Link to="/login" className="font-medium text-blue-600 hover:underline">
-            Back to sign in
-          </Link>
-        </p>
-      </div>
-    </main>
+      <p className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
+        <Link to="/login" className="font-medium text-brand-600 hover:underline">
+          Back to sign in
+        </Link>
+      </p>
+    </AuthLayout>
   );
 }
 
