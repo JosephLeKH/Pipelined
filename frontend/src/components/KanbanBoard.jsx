@@ -1,6 +1,6 @@
 /** Kanban board view: one droppable column per stage, draggable application cards. */
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, memo } from "react";
 import {
   DndContext,
   DragOverlay,
@@ -186,4 +186,4 @@ function KanbanBoard({ filters = {}, onSelect }) {
   );
 }
 
-export default KanbanBoard;
+export default memo(KanbanBoard);

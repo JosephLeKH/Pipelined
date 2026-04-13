@@ -1,6 +1,6 @@
 /** Virtualized application list with sortable columns, stale indicators, archive/delete, and bulk selection. */
 
-import { useMemo, useCallback, useState, useRef, useEffect } from "react";
+import { useMemo, useCallback, useState, useRef, useEffect, memo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { FixedSizeList } from "react-window";
 import { toast } from "sonner";
@@ -311,4 +311,4 @@ function ApplicationList({ onSelect, filters = {}, onAdd, onImportCsv, shortcuts
   );
 }
 
-export default ApplicationList;
+export default memo(ApplicationList);

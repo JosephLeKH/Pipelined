@@ -6,6 +6,7 @@ from typing import AsyncGenerator
 import structlog
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
@@ -26,6 +27,7 @@ from seo.router import router as seo_router
 from jobs.sync import create_scheduler
 from config import settings, validate_production_secrets
 from database import connect, disconnect, ensure_indexes
+from middleware.cache_control import CacheControlMiddleware
 from middleware.csrf import CSRFMiddleware
 from middleware.rate_limit import limiter
 from middleware.security_headers import SecurityHeadersMiddleware
@@ -100,7 +102,9 @@ def create_app(*, testing: bool = False) -> FastAPI:
         allow_headers=["*"],
     )
     app.add_middleware(SecurityHeadersMiddleware)
+    app.add_middleware(CacheControlMiddleware)
     app.add_middleware(CSRFMiddleware)
+    app.add_middleware(GZipMiddleware, minimum_size=500)
 
     @app.get("/health")
     async def health() -> dict:
