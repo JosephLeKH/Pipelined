@@ -1,3 +1,11 @@
 # Ralph Progress Log
 Started: Mon Apr 13 01:07:08 PDT 2026
 ---
+
+## US-093 — Design system foundation (PASSED)
+- Extended tailwind.config.js with full brand palette (indigo-to-violet, brand-50 through brand-950), semantic colors (accent/success/warning/danger/info), gray→slate alias, Inter font family, custom shadows (card/card-hover/modal/glow), and border-radius tokens (card/button/badge/input).
+- Added Inter Google Fonts link to index.html (weights 400,500,600,700).
+- Created frontend/src/lib/designTokens.js with 8 exported class string constants: CARD_BASE, BUTTON_PRIMARY, BUTTON_SECONDARY, BUTTON_GHOST, INPUT_BASE, BADGE_BASE, MODAL_BACKDROP, MODAL_CARD.
+- Updated constants.js STAGE_COLORS (Applied→brand, Phone Screen→violet, Offer→emerald, Rejected→rose), EVENT_TYPE_COLORS, RELATIONSHIP_COLORS, DEFAULT_STAGE_COLOR, DEFAULT_EVENT_COLOR all migrated from blue/green/gray/red to brand palette + slate neutrals.
+- Build passes (vite build clean). All 41 test files, 301 tests pass.
+- Key learning: Tailwind custom color alias (colors.gray = colors.slate) is the most impactful single change — all existing gray-* utilities in components instantly pick up the warmer slate palette without any component edits.
