@@ -88,3 +88,27 @@ Key learnings:
 - useEffect with JSON-serialized filter key correctly resets perPage when any filter param changes
 - Per-page growth approach (fetch N items directly) is simpler than true infinite query for "load more" at prototype scale
 - All 301 tests pass, build passes
+
+---
+## US-099 — Settings page redesign — sidebar navigation with organized card sections
+**Status:** Complete
+**Commit:** 439b737
+
+### Summary
+Redesigned the Settings page from a flat scroll layout to a two-column sidebar-navigated design. 
+
+**New files created:**
+- `SettingsPipelineSection.jsx` — stages editor + weekly goal + streak, extracted from Settings.jsx
+- `SettingsProfileSection.jsx` — avatar (deterministic color by initial), display name, email (read-only), timezone
+- `SettingsNotificationsSection.jsx` — custom toggle switches for stale alerts, interview reminders, follow-up, weekly digest
+- `SettingsUsageSection.jsx` — Free Plan badge, usage meters (apps/contacts/AI scores) with progress bars, upgrade teaser
+- `SettingsAccountSection.jsx` — change password form + danger zone with delete confirmation modal
+- `SettingsResumeSection.jsx` — drag-and-drop upload zone (native HTML5), file display with remove, AI usage meter
+
+**Settings.jsx:** Rewritten to two-column layout (w-56 sidebar + flex-1 content). Mobile: horizontal scrollable tab bar. Default active section: "pipeline" (preserves all existing tests). Sidebar uses brand-50/brand-700 active state and slate-100 hover.
+
+### Learnings
+- Default active section must be "pipeline" to keep existing tests passing (they test pipeline elements without setting active section)
+- `alert-triangle` and `triangle-alert` both exist as icon names in this version of lucide-react
+- Extracting state-heavy sections to self-contained components significantly reduces main page complexity
+- Pre-existing 17 async errors in test suite are unrelated to this change (from other test files, network mocking)

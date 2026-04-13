@@ -1,42 +1,42 @@
 {
   "project": "Pipelined",
   "branchName": "ralph/pipelined-v5",
-  "description": "Pipelined v5 — Two goals: (1) Commercial viability infrastructure — product analytics, email verification, GitHub OAuth, OpenAI cost controls, SEO, freemium tier scaffolding, referrals, feedback collection, CI pipeline, and performance optimization. (2) Full UI redesign — replace the generic AI-generated Tailwind look with a branded design system, polished component library, and modern page layouts across landing, dashboard, auth, job board, settings, calendar, analytics, and extension popup. All UI stories MUST use the `ui-ux-pro-max` skill and/or the 21st.dev Magic MCP tool (mcp__magic__21st_magic_component_builder) to generate professional-grade React components. The app is free at launch; tier limits are generous to grow the user base. Cost controls prevent runaway OpenAI spend.",
-  "uiDesignNotes": "Every UI story must produce components that do NOT look AI-generated. Key principles: (1) Custom brand palette — no default Tailwind blue-500 anywhere, use indigo-to-violet gradient identity. (2) Depth and hierarchy — subtle shadows with color tint, layered card elevations, not flat boxes. (3) Whitespace — generous padding, never cramped. (4) Typography — Inter font, clear size hierarchy (display, heading, subheading, body, caption). (5) Micro-interactions — hover lifts, smooth transitions, skeleton shimmer, slide-in panels. (6) Personality — gradient accents, branded empty states, considered dark mode (slate-900, not black). Use the 21st.dev Magic component builder MCP tool or ui-ux-pro-max skill to generate component designs before implementing.",
+  "description": "Pipelined v5 \u2014 Two goals: (1) Commercial viability infrastructure \u2014 product analytics, email verification, GitHub OAuth, OpenAI cost controls, SEO, freemium tier scaffolding, referrals, feedback collection, CI pipeline, and performance optimization. (2) Full UI redesign \u2014 replace the generic AI-generated Tailwind look with a branded design system, polished component library, and modern page layouts across landing, dashboard, auth, job board, settings, calendar, analytics, and extension popup. All UI stories MUST use the `ui-ux-pro-max` skill and/or the 21st.dev Magic MCP tool (mcp__magic__21st_magic_component_builder) to generate professional-grade React components. The app is free at launch; tier limits are generous to grow the user base. Cost controls prevent runaway OpenAI spend.",
+  "uiDesignNotes": "Every UI story must produce components that do NOT look AI-generated. Key principles: (1) Custom brand palette \u2014 no default Tailwind blue-500 anywhere, use indigo-to-violet gradient identity. (2) Depth and hierarchy \u2014 subtle shadows with color tint, layered card elevations, not flat boxes. (3) Whitespace \u2014 generous padding, never cramped. (4) Typography \u2014 Inter font, clear size hierarchy (display, heading, subheading, body, caption). (5) Micro-interactions \u2014 hover lifts, smooth transitions, skeleton shimmer, slide-in panels. (6) Personality \u2014 gradient accents, branded empty states, considered dark mode (slate-900, not black). Use the 21st.dev Magic component builder MCP tool or ui-ux-pro-max skill to generate component designs before implementing.",
   "userStories": [
     {
       "id": "US-093",
-      "title": "Design system foundation — Tailwind theme, brand tokens, and shared style constants",
+      "title": "Design system foundation \u2014 Tailwind theme, brand tokens, and shared style constants",
       "description": "Replace the empty Tailwind theme with a full Pipelined brand identity. This single change cascades to every component and is the foundation for the entire UI redesign. No more default blue-500.",
       "acceptanceCriteria": [
-        "tailwind.config.js `theme.extend` defines a custom color palette: `brand` scale (50-950) based on indigo — brand-500: #6366F1, brand-600: #4F46E5, brand-700: #4338CA. These replace all generic blue-* usage in primary actions, links, and accents",
+        "tailwind.config.js `theme.extend` defines a custom color palette: `brand` scale (50-950) based on indigo \u2014 brand-500: #6366F1, brand-600: #4F46E5, brand-700: #4338CA. These replace all generic blue-* usage in primary actions, links, and accents",
         "Additional semantic colors in theme: `accent` (amber-500 #F59E0B for CTAs and highlights), `success` (emerald-500), `warning` (amber-500), `danger` (rose-500), `info` (sky-500)",
         "Neutral palette override: all gray-* classes throughout the app should use slate-* instead (configure Tailwind `colors.gray` to alias slate). This gives warmer, more professional neutrals",
         "Typography: add Inter font via `<link>` in index.html (Google Fonts CDN, weights 400,500,600,700). Set `fontFamily.sans` in Tailwind config to `['Inter', ...defaultTheme.fontFamily.sans]`",
         "Custom shadows in theme: `card` = '0 1px 3px 0 rgb(0 0 0 / 0.06), 0 1px 2px -1px rgb(0 0 0 / 0.06)', `card-hover` = '0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.07)', `modal` = '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.08)', `glow` = '0 0 20px -5px rgb(99 102 241 / 0.3)'",
         "Custom border-radius tokens: `card` = '0.75rem', `button` = '0.5rem', `badge` = '9999px', `input` = '0.5rem'",
-        "Create `frontend/src/lib/designTokens.js` exporting reusable class string constants: CARD_BASE (bg + rounded + shadow + border + dark variants), BUTTON_PRIMARY (gradient bg + text + rounded + shadow + hover + focus ring + transition), BUTTON_SECONDARY, BUTTON_GHOST, INPUT_BASE, BADGE_BASE, MODAL_BACKDROP, MODAL_CARD — these are consumed by components to ensure visual consistency without class duplication",
+        "Create `frontend/src/lib/designTokens.js` exporting reusable class string constants: CARD_BASE (bg + rounded + shadow + border + dark variants), BUTTON_PRIMARY (gradient bg + text + rounded + shadow + hover + focus ring + transition), BUTTON_SECONDARY, BUTTON_GHOST, INPUT_BASE, BADGE_BASE, MODAL_BACKDROP, MODAL_CARD \u2014 these are consumed by components to ensure visual consistency without class duplication",
         "Update `frontend/src/lib/constants.js` STAGE_COLORS to use brand palette: Applied = brand (indigo), Phone Screen = violet, Onsite = amber, Offer = emerald, Rejected = rose. Update all bg/text/dot values to the new palette. Same for EVENT_TYPE_COLORS and RELATIONSHIP_COLORS",
         "Dark mode tokens: dark backgrounds use slate-900 (page), slate-800 (cards), slate-700 (borders), slate-400 (secondary text). NEVER use pure black (#000) anywhere",
-        "All existing components continue to render (additive config changes, no component file edits in this story — those come in subsequent stories)",
+        "All existing components continue to render (additive config changes, no component file edits in this story \u2014 those come in subsequent stories)",
         "npm run build passes",
         "npm test passes"
       ],
       "priority": 1,
       "passes": true,
-      "notes": "This is the SINGLE MOST IMPORTANT story in the PRD. Every subsequent UI story depends on these tokens. The brand identity is indigo-to-violet with amber accents — this combination reads as modern, trustworthy, and distinct from competitors (Huntr uses green, Teal uses teal, Simplify uses blue). Inter is the standard SaaS font (used by Linear, Vercel, Tailwind UI). Do NOT skip the designTokens.js file — it prevents class string duplication across 60+ components."
+      "notes": "This is the SINGLE MOST IMPORTANT story in the PRD. Every subsequent UI story depends on these tokens. The brand identity is indigo-to-violet with amber accents \u2014 this combination reads as modern, trustworthy, and distinct from competitors (Huntr uses green, Teal uses teal, Simplify uses blue). Inter is the standard SaaS font (used by Linear, Vercel, Tailwind UI). Do NOT skip the designTokens.js file \u2014 it prevents class string duplication across 60+ components."
     },
     {
       "id": "US-094",
-      "title": "Core component library refresh — buttons, inputs, cards, badges, modals, and toasts",
-      "description": "Redesign every atomic UI primitive using the new design tokens. These components appear hundreds of times across the app — upgrading them once lifts the entire visual quality.",
+      "title": "Core component library refresh \u2014 buttons, inputs, cards, badges, modals, and toasts",
+      "description": "Redesign every atomic UI primitive using the new design tokens. These components appear hundreds of times across the app \u2014 upgrading them once lifts the entire visual quality.",
       "acceptanceCriteria": [
         "Use the 21st.dev Magic component builder MCP tool (mcp__magic__21st_magic_component_builder) or ui-ux-pro-max skill to generate professional component designs before implementing",
         "Update ALL button elements across the codebase to use designTokens: primary buttons use `bg-gradient-to-r from-brand-600 to-brand-500 text-white shadow-sm hover:from-brand-700 hover:to-brand-600 active:scale-[0.98] transition-all duration-150 rounded-button font-medium px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-500/30`. Secondary buttons: `bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 rounded-button`. Ghost buttons: `text-slate-600 hover:bg-slate-100 rounded-button`",
         "Update ALL text inputs, selects, and textareas: `border border-slate-300 bg-white rounded-input px-3 py-2 text-sm placeholder:text-slate-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none transition-colors dark:bg-slate-800 dark:border-slate-600 dark:text-slate-100`",
-        "Update ALL card containers (ManualAddForm modal card, FilterBar dropdowns, CommandPalette, stat cards, job cards, contact cards): use CARD_BASE from designTokens — `bg-white rounded-card shadow-card border border-slate-200/60 dark:bg-slate-800 dark:border-slate-700`",
+        "Update ALL card containers (ManualAddForm modal card, FilterBar dropdowns, CommandPalette, stat cards, job cards, contact cards): use CARD_BASE from designTokens \u2014 `bg-white rounded-card shadow-card border border-slate-200/60 dark:bg-slate-800 dark:border-slate-700`",
         "Update ALL badge/pill elements (stage badges, relationship badges, event type badges): `rounded-badge text-xs font-medium px-2.5 py-1` with stage-specific colors from the updated STAGE_COLORS constants",
-        "Update ALL modal overlays: backdrop uses `bg-black/40 backdrop-blur-sm`, modal card uses `rounded-2xl shadow-modal max-w-lg mx-auto` with `animate-in` CSS (scale from 0.95 to 1, opacity 0 to 1, 150ms ease-out). Close button in top-right with × icon",
+        "Update ALL modal overlays: backdrop uses `bg-black/40 backdrop-blur-sm`, modal card uses `rounded-2xl shadow-modal max-w-lg mx-auto` with `animate-in` CSS (scale from 0.95 to 1, opacity 0 to 1, 150ms ease-out). Close button in top-right with \u00d7 icon",
         "Update Sonner toast styling via the Toaster component props: use brand colors, rounded-card, shadow-card",
         "Disabled state for all interactive elements: `opacity-50 cursor-not-allowed pointer-events-none`",
         "All updated components support dark mode using the slate-based dark tokens",
@@ -50,18 +50,18 @@
     },
     {
       "id": "US-095",
-      "title": "Landing page redesign — modern SaaS hero, feature showcase, social proof, and gradient CTAs",
+      "title": "Landing page redesign \u2014 modern SaaS hero, feature showcase, social proof, and gradient CTAs",
       "description": "The landing page is the first impression for every prospective user. It needs to instantly communicate professionalism, value, and trust. The current page is a generic centered-text layout. Replace it with a modern SaaS landing page with visual depth and personality.",
       "acceptanceCriteria": [
         "Use the 21st.dev Magic component builder MCP tool to generate initial landing page section designs",
-        "HERO SECTION: two-column layout on desktop (text left, visual right), stacked on mobile. Left: headline 'Track your job search like a pro' in text-5xl font-bold with gradient text (bg-gradient-to-r from-brand-600 to-violet-500 bg-clip-text text-transparent). Subheadline in text-lg text-slate-600 max-w-lg. Two CTAs side-by-side: 'Get Started Free' (primary gradient button with arrow icon, large: px-8 py-3.5 text-base) and 'Install Extension' (secondary button with Chrome icon). Right: a stylized product screenshot of the dashboard — use a div mockup with rounded-2xl shadow-2xl border overflow-hidden showing a simplified dashboard layout (colored rectangles representing stats, list rows, stage badges) rotated slightly with perspective-[1200px] rotateY(-5deg). Add a subtle gradient glow behind the mockup (absolute positioned blur-3xl bg-brand-500/10 rounded-full)",
-        "LOGOS/TRUST BAR: below the hero, a subtle section: 'Trusted by students at top universities' in text-sm text-slate-400 uppercase tracking-wider, followed by a row of 5 university names in text-slate-300 font-semibold spaced evenly (Stanford, MIT, UC Berkeley, Carnegie Mellon, Georgia Tech) — text only, no images needed. This section has bg-slate-50/dark:bg-slate-800/50",
-        "FEATURES GRID: section heading 'Everything you need to land the job' (text-3xl font-bold text-center). 6 feature cards in a 3×2 grid (responsive: 1 col mobile, 2 tablet, 3 desktop). Each card: rounded-xl border bg-white p-6 hover:shadow-card-hover transition-shadow. Icon in a 40px rounded-lg bg-brand-50 container (brand-colored icon), title (font-semibold text-lg), description (text-slate-600 text-sm leading-relaxed). Features: (1) One-Click Capture / Chrome extension on 10 job boards, (2) AI Resume Scoring / see how well you match each role, (3) Pipeline Dashboard / Kanban and list views with drag-and-drop, (4) Interview Calendar / schedule prep and track every round, (5) Smart Notifications / follow-up reminders and stale alerts, (6) Share Your Pipeline / public link for mentors and career coaches",
+        "HERO SECTION: two-column layout on desktop (text left, visual right), stacked on mobile. Left: headline 'Track your job search like a pro' in text-5xl font-bold with gradient text (bg-gradient-to-r from-brand-600 to-violet-500 bg-clip-text text-transparent). Subheadline in text-lg text-slate-600 max-w-lg. Two CTAs side-by-side: 'Get Started Free' (primary gradient button with arrow icon, large: px-8 py-3.5 text-base) and 'Install Extension' (secondary button with Chrome icon). Right: a stylized product screenshot of the dashboard \u2014 use a div mockup with rounded-2xl shadow-2xl border overflow-hidden showing a simplified dashboard layout (colored rectangles representing stats, list rows, stage badges) rotated slightly with perspective-[1200px] rotateY(-5deg). Add a subtle gradient glow behind the mockup (absolute positioned blur-3xl bg-brand-500/10 rounded-full)",
+        "LOGOS/TRUST BAR: below the hero, a subtle section: 'Trusted by students at top universities' in text-sm text-slate-400 uppercase tracking-wider, followed by a row of 5 university names in text-slate-300 font-semibold spaced evenly (Stanford, MIT, UC Berkeley, Carnegie Mellon, Georgia Tech) \u2014 text only, no images needed. This section has bg-slate-50/dark:bg-slate-800/50",
+        "FEATURES GRID: section heading 'Everything you need to land the job' (text-3xl font-bold text-center). 6 feature cards in a 3\u00d72 grid (responsive: 1 col mobile, 2 tablet, 3 desktop). Each card: rounded-xl border bg-white p-6 hover:shadow-card-hover transition-shadow. Icon in a 40px rounded-lg bg-brand-50 container (brand-colored icon), title (font-semibold text-lg), description (text-slate-600 text-sm leading-relaxed). Features: (1) One-Click Capture / Chrome extension on 10 job boards, (2) AI Resume Scoring / see how well you match each role, (3) Pipeline Dashboard / Kanban and list views with drag-and-drop, (4) Interview Calendar / schedule prep and track every round, (5) Smart Notifications / follow-up reminders and stale alerts, (6) Share Your Pipeline / public link for mentors and career coaches",
         "STATS BAR: full-width bg-brand-600 dark:bg-brand-700 section with 3 stats in a row (white text): '10,000+ Applications Tracked', '500+ Active Users', '10 Job Boards Supported'. Each stat: number in text-3xl font-bold, label in text-brand-200 text-sm",
         "HOW IT WORKS: 3-step horizontal flow (vertical on mobile). Step 1: 'Install the Extension' with puzzle icon, Step 2: 'Browse & Apply' with globe icon, Step 3: 'Track Everything' with chart icon. Each step has a number badge (rounded-full bg-brand-100 text-brand-700 w-8 h-8), title, and one-line description. Steps connected by a dashed line on desktop",
         "BOTTOM CTA: full-width section with bg-gradient-to-r from-brand-600 to-violet-600, centered white text: 'Start tracking your applications today' (text-3xl font-bold), 'Free forever. No credit card required.' (text-brand-200), 'Get Started Free' button (bg-white text-brand-700 font-semibold rounded-button px-8 py-3.5 hover:bg-brand-50 shadow-lg)",
-        "FOOTER: bg-slate-900 text-slate-400, 3-column grid (Product links: Dashboard, Job Board, Extension; Company links: About, Blog placeholder, Careers placeholder; Legal: Privacy Policy placeholder, Terms of Service placeholder). Bottom row: Pipelined logo text + © 2026. Links are text-slate-400 hover:text-white transition-colors",
-        "NAVIGATION: sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/60 dark:bg-slate-900/80. Left: Pipelined text logo with a small pipeline/flow icon (use GitBranch or Workflow lucide icon). Center/right: nav links (Features, Job Board — anchor links) + 'Log in' ghost button + 'Get Started' primary small button. Mobile: hamburger menu",
+        "FOOTER: bg-slate-900 text-slate-400, 3-column grid (Product links: Dashboard, Job Board, Extension; Company links: About, Blog placeholder, Careers placeholder; Legal: Privacy Policy placeholder, Terms of Service placeholder). Bottom row: Pipelined logo text + \u00a9 2026. Links are text-slate-400 hover:text-white transition-colors",
+        "NAVIGATION: sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/60 dark:bg-slate-900/80. Left: Pipelined text logo with a small pipeline/flow icon (use GitBranch or Workflow lucide icon). Center/right: nav links (Features, Job Board \u2014 anchor links) + 'Log in' ghost button + 'Get Started' primary small button. Mobile: hamburger menu",
         "SCROLL ANIMATIONS: feature cards and how-it-works steps fade in + slide up on scroll using IntersectionObserver (no animation library). Each card starts as opacity-0 translate-y-4, transitions to opacity-100 translate-y-0 when intersecting. Stagger: each card delays 100ms more than the previous. Use a small useInView hook or inline observer",
         "Full responsive design (mobile-first), full dark mode support",
         "Vitest test: landing page renders hero, features grid, stats, CTA sections",
@@ -69,20 +69,20 @@
       ],
       "priority": 3,
       "passes": true,
-      "notes": "The current landing page is the textbook 'AI-generated Tailwind page' — centered text, blue-600 buttons, gray-50 background, no visual depth. The redesign introduces: gradient text, perspective mockups, backdrop blur, scroll animations, and a branded color story. These are the hallmarks of a hand-crafted SaaS page. Study Linear.app, Vercel.com, and Resend.com for inspiration. The university trust bar is social proof that works even without real logos — text names of prestigious schools establish credibility. The stats are aspirational but motivational."
+      "notes": "The current landing page is the textbook 'AI-generated Tailwind page' \u2014 centered text, blue-600 buttons, gray-50 background, no visual depth. The redesign introduces: gradient text, perspective mockups, backdrop blur, scroll animations, and a branded color story. These are the hallmarks of a hand-crafted SaaS page. Study Linear.app, Vercel.com, and Resend.com for inspiration. The university trust bar is social proof that works even without real logos \u2014 text names of prestigious schools establish credibility. The stats are aspirational but motivational."
     },
     {
       "id": "US-096",
-      "title": "Dashboard redesign — refined stats, application rows, kanban cards, and detail panel",
+      "title": "Dashboard redesign \u2014 refined stats, application rows, kanban cards, and detail panel",
       "description": "The dashboard is where users spend 80% of their time. Every element needs visual polish: stat cards with colored accents, application rows with better hierarchy, kanban cards with stage-colored borders, and a detail panel that feels like a native app.",
       "acceptanceCriteria": [
         "Use the 21st.dev Magic component builder MCP tool for stat card and application row component designs",
         "STATS BAR: each stat card uses CARD_BASE styling + a 3px left border accent colored by metric type (brand for total apps, violet for active, emerald for response rate, amber for avg days, rose for stale/follow-up). Layout: colored icon in a 36px rounded-lg tinted container (top-left), metric value (text-2xl font-bold text-slate-900 dark:text-white), label (text-sm text-slate-500). GoalProgress ring integrates seamlessly as a 5th card. Cards use grid-cols-2 on mobile, grid-cols-3 on tablet, grid-cols-5 on desktop",
-        "FILTER BAR: clean horizontal bar with bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 px-4 py-3. Search input: prominent with search icon prefix, w-64. Active filters render as pills: rounded-full bg-brand-50 text-brand-700 dark:bg-brand-900/30 dark:text-brand-300 text-xs font-medium px-3 py-1 with × dismiss button. View toggle (list/kanban) uses pill-group: two buttons sharing a rounded border, active one has bg-brand-600 text-white. 'Add Application' button is primary gradient (right side)",
-        "APPLICATION ROW: more spacious py-3.5 px-4. Layout: CompanyLogo (24px) → company name (font-medium text-slate-900) + role title (text-slate-600) stacked → stage badge (new rounded-badge style) → FitBadge if present → relative date (text-sm text-slate-400 right-aligned). Row hover: bg-slate-50 dark:bg-slate-700/30 transition-colors duration-100. Selected row: bg-brand-50 dark:bg-brand-900/20 border-l-2 border-brand-500. Stale amber dot pulses (CSS animation). Follow-up bell icon uses amber-500",
+        "FILTER BAR: clean horizontal bar with bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 px-4 py-3. Search input: prominent with search icon prefix, w-64. Active filters render as pills: rounded-full bg-brand-50 text-brand-700 dark:bg-brand-900/30 dark:text-brand-300 text-xs font-medium px-3 py-1 with \u00d7 dismiss button. View toggle (list/kanban) uses pill-group: two buttons sharing a rounded border, active one has bg-brand-600 text-white. 'Add Application' button is primary gradient (right side)",
+        "APPLICATION ROW: more spacious py-3.5 px-4. Layout: CompanyLogo (24px) \u2192 company name (font-medium text-slate-900) + role title (text-slate-600) stacked \u2192 stage badge (new rounded-badge style) \u2192 FitBadge if present \u2192 relative date (text-sm text-slate-400 right-aligned). Row hover: bg-slate-50 dark:bg-slate-700/30 transition-colors duration-100. Selected row: bg-brand-50 dark:bg-brand-900/20 border-l-2 border-brand-500. Stale amber dot pulses (CSS animation). Follow-up bell icon uses amber-500",
         "KANBAN CARD: CARD_BASE + left border 3px colored by stage (brand for Applied, violet for Phone Screen, amber for Onsite, emerald for Offer, rose for Rejected). Content: CompanyLogo (20px) + company name (font-medium text-sm) top row, role title (text-xs text-slate-500) below, FitBadge (bottom-right, small). Hover: translate-y-[-1px] shadow-card-hover transition-all duration-150. Drag state: opacity-80 rotate-[2deg] scale-105 shadow-lg",
         "KANBAN BOARD COLUMNS: header is font-medium text-sm text-slate-500 with count badge (rounded-full bg-slate-100 dark:bg-slate-700 text-xs px-2 py-0.5). Column separator: thin border-r border-slate-200 dark:border-slate-700. Empty column: dashed border rounded-lg text-slate-400 text-sm text-center py-8 'Drop applications here'",
-        "DETAIL PANEL: slides in from right with shadow-2xl, width w-[420px] on desktop, full-width on mobile. Header: CompanyLogo (40px) + company name (text-lg font-semibold) + role title (text-slate-500) + external link icon. Stage selector: horizontal pill group (not a dropdown) — each stage is a rounded-full px-3 py-1 button, active stage is filled with stage color, others are outline. Sections (Notes, Timeline, Contacts, Calendar Events) separated by border-b border-slate-100 dark:border-slate-700 with collapsible headers. Close button: absolute top-right, rounded-full bg-slate-100 hover:bg-slate-200",
+        "DETAIL PANEL: slides in from right with shadow-2xl, width w-[420px] on desktop, full-width on mobile. Header: CompanyLogo (40px) + company name (text-lg font-semibold) + role title (text-slate-500) + external link icon. Stage selector: horizontal pill group (not a dropdown) \u2014 each stage is a rounded-full px-3 py-1 button, active stage is filled with stage color, others are outline. Sections (Notes, Timeline, Contacts, Calendar Events) separated by border-b border-slate-100 dark:border-slate-700 with collapsible headers. Close button: absolute top-right, rounded-full bg-slate-100 hover:bg-slate-200",
         "DASHBOARD HEADER: 'My Pipeline' in text-xl font-semibold + application count in text-slate-500, right side has view toggle + add button",
         "All changes support dark mode (slate-based)",
         "Vitest: all existing dashboard/application tests pass",
@@ -90,16 +90,16 @@
       ],
       "priority": 4,
       "passes": true,
-      "notes": "The dashboard redesign is the highest-impact visual change because users see it every session. Key differences from the current AI-generated look: (1) colored left borders on cards/rows create visual rhythm, (2) the horizontal stage pill selector in DetailPanel replaces the generic dropdown with something tactile, (3) kanban cards have subtle lift on hover, (4) the filter pills are a modern pattern (copied from Linear). Use the design tokens from US-093 religiously — no inline color values."
+      "notes": "The dashboard redesign is the highest-impact visual change because users see it every session. Key differences from the current AI-generated look: (1) colored left borders on cards/rows create visual rhythm, (2) the horizontal stage pill selector in DetailPanel replaces the generic dropdown with something tactile, (3) kanban cards have subtle lift on hover, (4) the filter pills are a modern pattern (copied from Linear). Use the design tokens from US-093 religiously \u2014 no inline color values."
     },
     {
       "id": "US-097",
-      "title": "Auth pages redesign — split layout with gradient branding panel",
+      "title": "Auth pages redesign \u2014 split layout with gradient branding panel",
       "description": "Login and register are the conversion gates. They need to feel trustworthy, polished, and branded. Replace the centered card layout with a modern split-screen design.",
       "acceptanceCriteria": [
         "Use the 21st.dev Magic component builder MCP tool for auth page layout design",
-        "LOGIN PAGE: split layout — left panel (55% width) contains the form on a clean white/dark bg, right panel (45%) is a branding area with bg-gradient-to-br from-brand-600 via-brand-700 to-violet-700 with decorative elements (subtle dot grid pattern using CSS radial-gradient, or abstract shape SVGs at partial opacity)",
-        "Right branding panel content (white text): Pipelined logo (text-2xl font-bold), tagline 'Your job search, organized.' (text-xl), 3 small feature highlights with check icons: 'Track 10+ job boards', 'AI-powered resume fit', 'Free forever'. A subtle testimonial quote at the bottom: '\"Pipelined helped me land my internship at Google.\" — Stanford CS, 2026' (italic, text-brand-200)",
+        "LOGIN PAGE: split layout \u2014 left panel (55% width) contains the form on a clean white/dark bg, right panel (45%) is a branding area with bg-gradient-to-br from-brand-600 via-brand-700 to-violet-700 with decorative elements (subtle dot grid pattern using CSS radial-gradient, or abstract shape SVGs at partial opacity)",
+        "Right branding panel content (white text): Pipelined logo (text-2xl font-bold), tagline 'Your job search, organized.' (text-xl), 3 small feature highlights with check icons: 'Track 10+ job boards', 'AI-powered resume fit', 'Free forever'. A subtle testimonial quote at the bottom: '\"Pipelined helped me land my internship at Google.\" \u2014 Stanford CS, 2026' (italic, text-brand-200)",
         "On mobile (< lg breakpoint): hide the right branding panel entirely; form takes full width with a small Pipelined logo at top center and a subtle brand-50 background tint",
         "Form area: max-w-sm mx-auto, centered vertically. 'Welcome back' heading (text-2xl font-bold), 'Sign in to your account' subheading (text-slate-500). OAuth buttons first (Google, then GitHub from US-105 if implemented): full-width, white bg, border, icon on left, font-medium. Then an 'or' divider: horizontal line with 'or' text centered in a bg-white dark:bg-slate-900 pill. Then email + password inputs (new styling from US-094). 'Forgot password?' link (text-sm text-brand-600) right-aligned below password. 'Sign In' primary gradient button full-width. Bottom: 'Don't have an account? Sign up' link",
         "Form validation: inline error messages below each input in text-sm text-rose-600 with a small alert-circle icon. API errors show in a rounded-lg bg-rose-50 border border-rose-200 text-rose-800 p-3 block above the submit button",
@@ -112,17 +112,17 @@
       ],
       "priority": 5,
       "passes": true,
-      "notes": "The split-screen auth pattern is used by every premium SaaS (Notion, Linear, Vercel, Stripe). The branding panel serves two purposes: (1) it makes the login page feel branded and trustworthy, (2) it provides marketing surface for features the user might not know about. The testimonial quote is social proof at the decision point. On mobile, skip the panel entirely — mobile users need a fast, focused form."
+      "notes": "The split-screen auth pattern is used by every premium SaaS (Notion, Linear, Vercel, Stripe). The branding panel serves two purposes: (1) it makes the login page feel branded and trustworthy, (2) it provides marketing surface for features the user might not know about. The testimonial quote is social proof at the decision point. On mobile, skip the panel entirely \u2014 mobile users need a fast, focused form."
     },
     {
       "id": "US-098",
-      "title": "Job board redesign — curated marketplace feel with rich cards and slide-in detail",
+      "title": "Job board redesign \u2014 curated marketplace feel with rich cards and slide-in detail",
       "description": "The job board should feel like browsing a curated marketplace, not reading a spreadsheet. Rich cards with company logos, salary highlights, and a slide-in detail panel.",
       "acceptanceCriteria": [
         "JOB CARD: CARD_BASE + hover:shadow-card-hover transition. Layout: top row: CompanyLogo (32px) + company name (font-medium) + 'X days ago' timestamp (text-xs text-slate-400 right-aligned). Title: role_title (text-lg font-semibold text-slate-900) below company. Tags row: location pill + remote status pill + experience level pill (all rounded-full bg-slate-100 text-slate-600 text-xs px-2.5 py-1). Salary: if present, rendered in text-emerald-600 font-semibold text-sm with dollar icon. Bottom: 'Apply' primary small button + bookmark/save icon button. Stale listings show an amber 'May be expired' badge top-right",
-        "GRID LAYOUT: responsive grid gap-4 — 1 col on mobile (stacked full-width cards), 2 on md, 3 on lg. Cards have equal height within rows (grid items stretch)",
+        "GRID LAYOUT: responsive grid gap-4 \u2014 1 col on mobile (stacked full-width cards), 2 on md, 3 on lg. Cards have equal height within rows (grid items stretch)",
         "SEARCH HEADER: large prominent search input (text-base py-3, w-full) with search icon prefix, 'Search roles, companies, locations...' placeholder. Below: horizontal scrollable filter chips (role type, experience, remote, company type, salary range). Active filters highlighted as brand-colored pills. Saved searches dropdown on the right",
-        "SAVED SEARCHES SIDEBAR: collapsible left panel (hidden on mobile). Each saved search item: name, filter summary text, new_matches_count badge (brand rounded-full if > 0). Click to apply filters. Delete with × on hover",
+        "SAVED SEARCHES SIDEBAR: collapsible left panel (hidden on mobile). Each saved search item: name, filter summary text, new_matches_count badge (brand rounded-full if > 0). Click to apply filters. Delete with \u00d7 on hover",
         "JOB DETAIL PANEL: clicking a card opens a slide-in panel from the right (like dashboard DetailPanel) with: company logo large (48px) + company name + role title header. Full description text (prose formatting). Requirements list. Location, salary, remote status, experience. 'Apply on Company Site' primary gradient button (opens source_url in new tab). 'Save to Pipeline' secondary button (creates an application). Posted date + stale indicator if applicable",
         "EMPTY STATE: centered layout with a search illustration icon (Search lucide), 'No jobs match your search' heading, 'Try adjusting your filters or search terms' body, 'Clear Filters' ghost button",
         "PAGINATION: 'Load more' centered button below grid (not numbered pagination). Shows 'Showing X of Y results' count above",
@@ -132,40 +132,40 @@
       ],
       "priority": 6,
       "passes": true,
-      "notes": "The job board is a key acquisition page (publicly accessible). It should feel like a polished marketplace (think Wellfound's job board or Y Combinator's Work at a Startup). The slide-in detail panel avoids full page navigation, keeping the user in browse mode. Salary in emerald-600 makes it pop — salary is the #1 thing job seekers scan for."
+      "notes": "The job board is a key acquisition page (publicly accessible). It should feel like a polished marketplace (think Wellfound's job board or Y Combinator's Work at a Startup). The slide-in detail panel avoids full page navigation, keeping the user in browse mode. Salary in emerald-600 makes it pop \u2014 salary is the #1 thing job seekers scan for."
     },
     {
       "id": "US-099",
-      "title": "Settings page redesign — sidebar navigation with organized card sections",
+      "title": "Settings page redesign \u2014 sidebar navigation with organized card sections",
       "description": "Settings pages reflect app quality. Replace the flat layout with a sidebar-navigated, card-based settings page.",
       "acceptanceCriteria": [
-        "LAYOUT: two-column on desktop — left sidebar (w-56) with section links, right content area with card sections. On mobile: sidebar collapses to a horizontal scrollable tab bar at top",
+        "LAYOUT: two-column on desktop \u2014 left sidebar (w-56) with section links, right content area with card sections. On mobile: sidebar collapses to a horizontal scrollable tab bar at top",
         "SIDEBAR ITEMS: Profile, Pipeline, Calendar, Notifications, Resume & AI, Sharing, Usage & Plan, Account. Each item: text-sm font-medium, hover:bg-slate-100 dark:hover:bg-slate-700 rounded-button px-3 py-2. Active item: bg-brand-50 text-brand-700 dark:bg-brand-900/20 dark:text-brand-300",
-        "Each section is a CARD_BASE container with: section heading (text-lg font-semibold), description (text-sm text-slate-500), and controls below. Sections are separated by spacing (not rendered all at once — show the active sidebar section only)",
+        "Each section is a CARD_BASE container with: section heading (text-lg font-semibold), description (text-sm text-slate-500), and controls below. Sections are separated by spacing (not rendered all at once \u2014 show the active sidebar section only)",
         "PROFILE: avatar circle (64px, colored with first initial using deterministic color, or GitHub avatar from US-105 if available) + display name input + email (read-only, gray bg) + timezone selector (searchable dropdown)",
-        "PIPELINE: drag-reorder stages with handle icons (GripVertical lucide), each stage as a rounded-lg border py-2 px-3 flex with stage color dot + name text. Add stage: input with + button below. Remove: × button on each stage (confirmation if applications exist with that stage). Brand-colored drag handle",
-        "NOTIFICATIONS: toggle switches (custom styled, not browser default — use a rounded-full w-10 h-6 bg-slate-300 with a sliding white circle, brand-500 when ON) for each notification type: stale app alerts, interview reminders, follow-up due, weekly digest. Each toggle has a label (font-medium) + description (text-sm text-slate-500)",
+        "PIPELINE: drag-reorder stages with handle icons (GripVertical lucide), each stage as a rounded-lg border py-2 px-3 flex with stage color dot + name text. Add stage: input with + button below. Remove: \u00d7 button on each stage (confirmation if applications exist with that stage). Brand-colored drag handle",
+        "NOTIFICATIONS: toggle switches (custom styled, not browser default \u2014 use a rounded-full w-10 h-6 bg-slate-300 with a sliding white circle, brand-500 when ON) for each notification type: stale app alerts, interview reminders, follow-up due, weekly digest. Each toggle has a label (font-medium) + description (text-sm text-slate-500)",
         "RESUME & AI: drag-and-drop upload zone (dashed border-2 border-slate-300 rounded-xl p-8, hover:border-brand-500 transition, accepts .pdf). If resume uploaded: show filename + size + 'Remove' danger ghost button. AI daily usage indicator: 'X / Y fit scores used today' with a thin progress bar",
         "SHARING: toggle to enable share link. When enabled: share URL in a read-only input with copy button (Clipboard icon, shows 'Copied!' for 2s). Expiry countdown. 'Regenerate Link' ghost button",
         "USAGE & PLAN: current tier badge ('Free Plan' in brand-50 rounded-badge). Usage meters: applications (progress bar, 'X / 100'), contacts ('X / 50'), AI scores today ('X / 10'). Each meter: label, fraction text, and a thin rounded-full h-2 progress bar (brand-500 fill, slate-200 track). 'Upgrade to Pro' teaser button (disabled, says 'Coming soon')",
         "ACCOUNT: change password (current + new + confirm), danger zone card (bg-rose-50 border border-rose-200 rounded-card): 'Delete Account' with warning text and confirmation modal",
-        "Weekly goal: input with – / + stepper buttons, current streak display (flame icon + count)",
+        "Weekly goal: input with \u2013 / + stepper buttons, current streak display (flame icon + count)",
         "All sections support dark mode",
         "Vitest: existing settings tests pass",
         "npm run build passes"
       ],
       "priority": 7,
-      "passes": false,
-      "notes": "The sidebar pattern is used by GitHub, Linear, and Notion for settings. It prevents a scroll-of-doom and makes each section focused. The custom toggle switches are a must — browser default checkboxes scream 'prototype'. The usage meters set the stage for future freemium conversion without being pushy."
+      "passes": true,
+      "notes": "The sidebar pattern is used by GitHub, Linear, and Notion for settings. It prevents a scroll-of-doom and makes each section focused. The custom toggle switches are a must \u2014 browser default checkboxes scream 'prototype'. The usage meters set the stage for future freemium conversion without being pushy."
     },
     {
       "id": "US-100",
-      "title": "Calendar and Analytics visual refresh — branded charts, refined grid, and timeline polish",
-      "description": "Align Calendar, Analytics, and Activity pages with the new design system. These pages are already functional — they just need visual consistency.",
+      "title": "Calendar and Analytics visual refresh \u2014 branded charts, refined grid, and timeline polish",
+      "description": "Align Calendar, Analytics, and Activity pages with the new design system. These pages are already functional \u2014 they just need visual consistency.",
       "acceptanceCriteria": [
         "CALENDAR GRID: day cells use rounded-lg border (slate-200 dark:slate-700). Today's cell has a ring-2 ring-brand-500 highlight. Event chips are compact pills with left-colored dot (by event type) + truncated title. Hover on chip shows full title tooltip. Month navigation arrows: ghost buttons with ChevronLeft/ChevronRight. Month/year heading: text-xl font-semibold. Empty days have subtle bg-slate-50/dark:bg-slate-800/30. Day numbers: text-sm font-medium, today's number in a brand-500 circle bg",
         "CALENDAR EVENT DETAIL: panel slides in from right (slideInRight animation). Header: event type colored badge + event title. Sections: date/time (formatted in user timezone), linked application (clickable card), prep notes textarea (clean styling), prep checklist (custom checkboxes: rounded-md border-2, checked = brand-500 fill with white check icon). Add checklist item: inline input with Enter to add",
-        "ANALYTICS CHARTS: recharts color palette override — use [brand-500 (#6366F1), violet-500, emerald-500, amber-500, rose-500, sky-500] for chart colors (replace default blue). Chart containers: CARD_BASE with padding. Chart tooltips: bg-slate-900 text-white rounded-lg shadow-lg text-sm px-3 py-2. Date range selector: pill toggle group (Last 30d / 90d / 180d / All) using the same pill-group pattern as the dashboard view toggle",
+        "ANALYTICS CHARTS: recharts color palette override \u2014 use [brand-500 (#6366F1), violet-500, emerald-500, amber-500, rose-500, sky-500] for chart colors (replace default blue). Chart containers: CARD_BASE with padding. Chart tooltips: bg-slate-900 text-white rounded-lg shadow-lg text-sm px-3 py-2. Date range selector: pill toggle group (Last 30d / 90d / 180d / All) using the same pill-group pattern as the dashboard view toggle",
         "ANALYTICS PAGE: heading 'Analytics' text-xl font-semibold, charts in a 2-column grid on desktop (1 col mobile). Each chart card has a title (font-medium) and description (text-sm text-slate-500) above the chart. Empty state when < 3 apps: branded illustration + message",
         "ACTIVITY TIMELINE: vertical line (w-0.5 bg-slate-200 dark:bg-slate-700) with colored dots by event type (brand for applied, violet for stage change, amber for events). Each entry: small dot (w-3 h-3 rounded-full) on the line, content card to the right with: event description, relative time (text-xs text-slate-400), clickable to navigate. Hover: bg-slate-50 transition. Time range selector uses pill toggle group",
         "All dark mode, responsive",
@@ -174,23 +174,23 @@
       ],
       "priority": 8,
       "passes": false,
-      "notes": "These are quick wins — the pages already work, they just need the new color palette applied and card styling updated. The custom recharts color palette is critical: default recharts blue (#8884d8) looks amateurish. The pill toggle for date ranges is reusable (extract to a PillToggle component if time permits)."
+      "notes": "These are quick wins \u2014 the pages already work, they just need the new color palette applied and card styling updated. The custom recharts color palette is critical: default recharts blue (#8884d8) looks amateurish. The pill toggle for date ranges is reusable (extract to a PillToggle component if time permits)."
     },
     {
       "id": "US-101",
-      "title": "Micro-interactions and animation system — transitions, skeleton shimmer, and motion polish",
-      "description": "Static UIs feel dead. Add subtle, purposeful animations that make the app feel responsive and crafted. No animation library — pure CSS + minimal JS.",
+      "title": "Micro-interactions and animation system \u2014 transitions, skeleton shimmer, and motion polish",
+      "description": "Static UIs feel dead. Add subtle, purposeful animations that make the app feel responsive and crafted. No animation library \u2014 pure CSS + minimal JS.",
       "acceptanceCriteria": [
-        "Create `frontend/src/styles/animations.css` with @keyframes definitions: `fadeIn` (opacity 0→1, 150ms ease), `slideInRight` (translateX(16px)→0 + opacity 0→1, 200ms ease-out), `slideInUp` (translateY(8px)→0 + opacity 0→1, 150ms ease-out), `scaleIn` (scale(0.95)→1 + opacity 0→1, 150ms ease-out), `shimmer` (background-position -200% → 200%, 1.5s linear infinite), `pulse-dot` (scale 1→1.3→1 + opacity 1→0.7→1, 2s ease infinite)",
+        "Create `frontend/src/styles/animations.css` with @keyframes definitions: `fadeIn` (opacity 0\u21921, 150ms ease), `slideInRight` (translateX(16px)\u21920 + opacity 0\u21921, 200ms ease-out), `slideInUp` (translateY(8px)\u21920 + opacity 0\u21921, 150ms ease-out), `scaleIn` (scale(0.95)\u21921 + opacity 0\u21921, 150ms ease-out), `shimmer` (background-position -200% \u2192 200%, 1.5s linear infinite), `pulse-dot` (scale 1\u21921.3\u21921 + opacity 1\u21920.7\u21921, 2s ease infinite)",
         "Import animations.css in main.jsx (or index.css)",
-        "All animations wrapped in `@media (prefers-reduced-motion: no-preference)` — users who prefer reduced motion see no animation",
+        "All animations wrapped in `@media (prefers-reduced-motion: no-preference)` \u2014 users who prefer reduced motion see no animation",
         "DETAIL PANEL: animate-slideInRight on open",
         "MODALS: animate-scaleIn on open, backdrop animate-fadeIn",
         "TOASTS: animate-slideInUp on appear",
         "PAGE TRANSITIONS: each page route wraps content in animate-fadeIn (apply class on mount)",
         "BUTTONS: primary buttons have `active:scale-[0.98] transition-transform duration-100`. Hover: subtle shadow increase",
         "STALE DOT: uses animate-pulse-dot (custom, not Tailwind's built-in pulse which is too aggressive)",
-        "SKELETON LOADERS: update SkeletonRow and SkeletonCalendarCell to use shimmer animation — `bg-gradient-to-r from-slate-200 via-slate-100 to-slate-200 dark:from-slate-700 dark:via-slate-600 dark:to-slate-700 bg-[length:200%_100%] animate-shimmer`",
+        "SKELETON LOADERS: update SkeletonRow and SkeletonCalendarCell to use shimmer animation \u2014 `bg-gradient-to-r from-slate-200 via-slate-100 to-slate-200 dark:from-slate-700 dark:via-slate-600 dark:to-slate-700 bg-[length:200%_100%] animate-shimmer`",
         "KANBAN CARD DRAG: dragging card gets `rotate-[2deg] scale-[1.05] opacity-80 shadow-xl transition-transform`",
         "STATS NUMBERS: on first load, stat values count up from 0 to actual value over 400ms (use a simple requestAnimationFrame counter, ~15 lines). No library needed. Only on initial mount, not on refetch",
         "SCROLL ANIMATIONS (landing page from US-095): elements use IntersectionObserver to add an 'in-view' class that triggers opacity + translateY transition",
@@ -204,26 +204,26 @@
     },
     {
       "id": "US-102",
-      "title": "Extension popup redesign — branded mini-dashboard with polished cards",
+      "title": "Extension popup redesign \u2014 branded mini-dashboard with polished cards",
       "description": "The extension popup is a brand touchpoint every time users interact with it. Make it feel like a native app, not a prototype.",
       "acceptanceCriteria": [
         "POPUP DIMENSIONS: 360px wide, max 500px tall",
-        "HEADER: h-12 bg-gradient-to-r from-brand-600 to-brand-500, Pipelined text logo in white (font-semibold text-sm), user display_name on right (text-white/80 text-xs). Below header: auto-save toggle row (py-2 px-3 border-b border-slate-200 bg-slate-50): custom toggle switch (same style as settings toggles — rounded-full, brand-500 when ON) with 'Auto-save' label (text-xs font-medium)",
+        "HEADER: h-12 bg-gradient-to-r from-brand-600 to-brand-500, Pipelined text logo in white (font-semibold text-sm), user display_name on right (text-white/80 text-xs). Below header: auto-save toggle row (py-2 px-3 border-b border-slate-200 bg-slate-50): custom toggle switch (same style as settings toggles \u2014 rounded-full, brand-500 when ON) with 'Auto-save' label (text-xs font-medium)",
         "AUTHENTICATED STATE: recent saves list (last 5) as compact cards. Each card: py-2.5 px-3 border-b border-slate-100 hover:bg-slate-50 cursor-pointer transition-colors. Layout: small colored left bar (3px, colored by stage). Company name (font-medium text-sm text-slate-900) + role title (text-xs text-slate-500) stacked. Right side: stage badge (rounded-full text-[10px] font-medium px-2 py-0.5, stage-colored) + relative time (text-[10px] text-slate-400). Clicking opens dashboard with highlight param",
         "UNAUTHENTICATED STATE: centered layout, Pipelined logo icon (larger), 'Sign in to start tracking' heading (font-semibold), 'Track applications across 10 job boards' description (text-xs text-slate-500), 'Sign In' brand gradient button (full width within px-6)",
         "EMPTY STATE (authenticated, no saves): centered icon (Briefcase, text-slate-300), 'No applications saved yet' (font-medium text-sm), 'Visit a job posting to get started' (text-xs text-slate-400)",
-        "FOOTER: py-2 px-3 border-t border-slate-100 bg-slate-50. 'Open Dashboard →' link (text-xs text-brand-600 font-medium), version text right (text-[10px] text-slate-300 'v1.0.0')",
+        "FOOTER: py-2 px-3 border-t border-slate-100 bg-slate-50. 'Open Dashboard \u2192' link (text-xs text-brand-600 font-medium), version text right (text-[10px] text-slate-300 'v1.0.0')",
         "Popup CSS uses the same brand color values as the frontend (define as CSS custom properties at top of popup.css: --brand-500: #6366F1, --brand-600: #4F46E5, etc.)",
         "Extension tests: existing popup tests pass",
         "npm test passes in /extension"
       ],
       "priority": 10,
       "passes": false,
-      "notes": "The popup is tiny real estate — every pixel counts. The gradient header immediately brands it. The left-colored bar per card creates the same visual rhythm as the dashboard application rows. Stage badge colors must match the frontend exactly. No rounded-lg everywhere — use tight 4px radius on inner elements, 8px on the popup container (matches Chrome extension conventions)."
+      "notes": "The popup is tiny real estate \u2014 every pixel counts. The gradient header immediately brands it. The left-colored bar per card creates the same visual rhythm as the dashboard application rows. Stage badge colors must match the frontend exactly. No rounded-lg everywhere \u2014 use tight 4px radius on inner elements, 8px on the popup container (matches Chrome extension conventions)."
     },
     {
       "id": "US-103",
-      "title": "Product analytics with PostHog — track feature usage, retention, and conversion funnel",
+      "title": "Product analytics with PostHog \u2014 track feature usage, retention, and conversion funnel",
       "description": "Can't improve what you can't measure. Instrument key user actions to understand retention, feature adoption, drop-off points, and which features drive engagement. PostHog is open-source and self-hostable to control costs.",
       "acceptanceCriteria": [
         "Install `posthog-js` as a frontend dependency (npm install posthog-js)",
@@ -240,11 +240,11 @@
       ],
       "priority": 11,
       "passes": false,
-      "notes": "PostHog over Mixpanel/Amplitude because: (1) generous free tier (1M events/month), (2) self-hostable on a $20/mo VPS if costs grow, (3) open-source ethos aligns with the project. The event taxonomy here covers the full user funnel: signup → first save → engagement → retention. The `feature_used` event is critical for knowing which features to invest in vs. deprecate. Keep the analytics module thin — it's a wrapper, not a framework."
+      "notes": "PostHog over Mixpanel/Amplitude because: (1) generous free tier (1M events/month), (2) self-hostable on a $20/mo VPS if costs grow, (3) open-source ethos aligns with the project. The event taxonomy here covers the full user funnel: signup \u2192 first save \u2192 engagement \u2192 retention. The `feature_used` event is critical for knowing which features to invest in vs. deprecate. Keep the analytics module thin \u2014 it's a wrapper, not a framework."
     },
     {
       "id": "US-104",
-      "title": "Email verification on signup — real users, better deliverability, trust signal",
+      "title": "Email verification on signup \u2014 real users, better deliverability, trust signal",
       "description": "Fake accounts and typo emails hurt email deliverability (digest, password reset) and inflate metrics. Require email verification before granting full access. This is table-stakes for any production SaaS.",
       "acceptanceCriteria": [
         "Backend: on POST /api/auth/register, set `email_verified: false` on the new user document. Generate a 32-byte hex verification token, store `verification_token_hash` (SHA256) and `verification_token_expires_at` (24 hours from now) on the user document. Send verification email via existing email service with subject 'Verify your Pipelined account' containing a link: {FRONTEND_URL}/verify-email?token={raw_token}",
@@ -258,24 +258,24 @@
         "Frontend: if any API call returns EMAIL_NOT_VERIFIED, show a persistent top banner (bg-amber-50 border-b border-amber-200): 'Please verify your email to continue' with 'Resend' link. Banner is dismissable but returns on next API failure",
         "Backend test: test_auth.py adds tests for: register sets email_verified=false, verify-email with valid token, verify-email with expired token, resend rate limit, unverified user blocked from applications endpoint",
         "Vitest test: verify-email page renders states correctly, banner shows on 403",
-        "All existing tests pass — update conftest.py to auto-set email_verified=true on test users so existing tests aren't affected",
+        "All existing tests pass \u2014 update conftest.py to auto-set email_verified=true on test users so existing tests aren't affected",
         "npm test passes"
       ],
       "priority": 12,
       "passes": false,
-      "notes": "Email verification is a hard requirement before sending any marketing/digest emails (CAN-SPAM compliance). It also prevents bot signups and ensures the user base is real. The 24-hour expiry is generous enough for people who don't check email immediately. Auto-verification for OAuth users is critical UX — don't make Google/GitHub users verify again."
+      "notes": "Email verification is a hard requirement before sending any marketing/digest emails (CAN-SPAM compliance). It also prevents bot signups and ensures the user base is real. The 24-hour expiry is generous enough for people who don't check email immediately. Auto-verification for OAuth users is critical UX \u2014 don't make Google/GitHub users verify again."
     },
     {
       "id": "US-105",
-      "title": "GitHub OAuth login — the natural auth provider for CS students",
+      "title": "GitHub OAuth login \u2014 the natural auth provider for CS students",
       "description": "Most of Pipelined's target users (CS students, early-career engineers) have GitHub accounts and are comfortable using GitHub for auth. Adding GitHub OAuth reduces signup friction and signals that Pipelined is built for engineers.",
       "acceptanceCriteria": [
         "Backend: POST /api/auth/github accepts { code: str } (OAuth authorization code from GitHub's callback redirect)",
         "Backend: exchanges code for access token via POST https://github.com/login/oauth/access_token (with client_id, client_secret, code). Then fetches user profile via GET https://api.github.com/user and GET https://api.github.com/user/emails (for primary verified email)",
-        "Backend auth logic: (1) if a user with matching github_id exists → log them in, (2) if a user with matching email exists but no github_id → link the GitHub account to existing user (set github_id and avatar_url), (3) otherwise → create new user with email_verified=true, github_id, avatar_url, display_name from GitHub profile name or login",
+        "Backend auth logic: (1) if a user with matching github_id exists \u2192 log them in, (2) if a user with matching email exists but no github_id \u2192 link the GitHub account to existing user (set github_id and avatar_url), (3) otherwise \u2192 create new user with email_verified=true, github_id, avatar_url, display_name from GitHub profile name or login",
         "Backend: user schema adds: github_id: str | None = None (unique sparse index), avatar_url: str | None = None",
         "Backend: GET /api/auth/me response includes avatar_url (used for profile display in NavBar and Settings)",
-        "Backend: config.py adds GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET env vars (both optional — GitHub OAuth button hidden if not configured)",
+        "Backend: config.py adds GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET env vars (both optional \u2014 GitHub OAuth button hidden if not configured)",
         "Frontend: Login and Register pages add 'Continue with GitHub' button: dark bg (#24292e) with GitHub octocat SVG icon (inline SVG, 16px), white text, full-width, rounded-button. Positioned below Google OAuth button, above the 'or' divider",
         "Frontend: clicking GitHub button redirects to `https://github.com/login/oauth/authorize?client_id={VITE_GITHUB_CLIENT_ID}&redirect_uri={FRONTEND_URL}/auth/github/callback&scope=user:email`",
         "Frontend: create /auth/github/callback route that reads `code` from URL params, calls POST /api/auth/github, and redirects to /dashboard on success or shows error",
@@ -288,19 +288,19 @@
       ],
       "priority": 13,
       "passes": false,
-      "notes": "GitHub OAuth is trivially cheap (free, no API limits for auth). The octocat button in dark mode is an iconic visual that instantly signals 'this is a developer tool'. Scope user:email is the minimum needed — don't request repo access. The avatar_url from GitHub is a nice bonus that makes the app feel more personal."
+      "notes": "GitHub OAuth is trivially cheap (free, no API limits for auth). The octocat button in dark mode is an iconic visual that instantly signals 'this is a developer tool'. Scope user:email is the minimum needed \u2014 don't request repo access. The avatar_url from GitHub is a nice bonus that makes the app feel more personal."
     },
     {
       "id": "US-106",
-      "title": "OpenAI cost controls — response caching, per-user daily quotas, and budget enforcement",
+      "title": "OpenAI cost controls \u2014 response caching, per-user daily quotas, and budget enforcement",
       "description": "AI features (fit scoring, job parsing) call OpenAI on every trigger with no caching or limits. At scale, this is an unbounded cost center. Add a 3-layer cost control: cache repeated calls, limit per-user daily usage, and enforce a monthly budget cap.",
       "acceptanceCriteria": [
-        "LAYER 1 — RESPONSE CACHING: create `backend/parsing/ai_cache.py` with a MongoDB-backed cache. Collection `ai_cache`: { cache_key: str (unique index), response: dict, model: str, estimated_cost_usd: float, created_at: datetime }. TTL index on created_at (30 days auto-expire)",
-        "Cache key computation: SHA256 hash of (model_name + truncated_prompt). For fit scoring: hash(model + resume_text[:500] + role_title + company). Truncation avoids huge keys while keeping enough uniqueness — two applications at the same company with the same resume will cache-hit",
-        "fit_scorer.py and openai_client.py: check cache before calling OpenAI. On hit: return cached response, log cache hit. On miss: call OpenAI, compute estimated cost (input_tokens × $0.15/1M + output_tokens × $0.60/1M for gpt-4o-mini), store response + cost in cache, return response",
-        "LAYER 2 — PER-USER DAILY QUOTA: user document adds `ai_usage: { fit_scores_today: int = 0, last_reset_date: str (ISO date) }`. On each fit score request: if last_reset_date != today, reset fit_scores_today to 0. Then check: fit_scores_today < AI_FIT_SCORES_DAILY_LIMIT (config.py, default 20). If exceeded: return 429 with code AI_QUOTA_EXCEEDED and message 'Daily AI scoring limit reached ({limit} per day). Resets at midnight UTC.'",
+        "LAYER 1 \u2014 RESPONSE CACHING: create `backend/parsing/ai_cache.py` with a MongoDB-backed cache. Collection `ai_cache`: { cache_key: str (unique index), response: dict, model: str, estimated_cost_usd: float, created_at: datetime }. TTL index on created_at (30 days auto-expire)",
+        "Cache key computation: SHA256 hash of (model_name + truncated_prompt). For fit scoring: hash(model + resume_text[:500] + role_title + company). Truncation avoids huge keys while keeping enough uniqueness \u2014 two applications at the same company with the same resume will cache-hit",
+        "fit_scorer.py and openai_client.py: check cache before calling OpenAI. On hit: return cached response, log cache hit. On miss: call OpenAI, compute estimated cost (input_tokens \u00d7 $0.15/1M + output_tokens \u00d7 $0.60/1M for gpt-4o-mini), store response + cost in cache, return response",
+        "LAYER 2 \u2014 PER-USER DAILY QUOTA: user document adds `ai_usage: { fit_scores_today: int = 0, last_reset_date: str (ISO date) }`. On each fit score request: if last_reset_date != today, reset fit_scores_today to 0. Then check: fit_scores_today < AI_FIT_SCORES_DAILY_LIMIT (config.py, default 20). If exceeded: return 429 with code AI_QUOTA_EXCEEDED and message 'Daily AI scoring limit reached ({limit} per day). Resets at midnight UTC.'",
         "Frontend: when fit score API returns AI_QUOTA_EXCEEDED, show in the ResumeFitSection: 'Daily limit reached. Resets tomorrow.' (text-amber-600, no retry button)",
-        "LAYER 3 — MONTHLY BUDGET CAP: collection `ai_budget`: { month: str ('2026-04'), total_cost_usd: float, call_count: int }. After each OpenAI call, upsert the current month's record (increment cost + count). Before each call: check total_cost_usd < OPENAI_MONTHLY_BUDGET_USD (config.py, default 50.0). If exceeded: skip AI call, return graceful fallback (fit_score=None), log critical alert via structlog",
+        "LAYER 3 \u2014 MONTHLY BUDGET CAP: collection `ai_budget`: { month: str ('2026-04'), total_cost_usd: float, call_count: int }. After each OpenAI call, upsert the current month's record (increment cost + count). Before each call: check total_cost_usd < OPENAI_MONTHLY_BUDGET_USD (config.py, default 50.0). If exceeded: skip AI call, return graceful fallback (fit_score=None), log critical alert via structlog",
         "Backend: the GitHub sync job's OpenAI parsing also goes through the cache layer",
         "Backend: GET /api/auth/me response adds ai_scores_remaining_today: int (daily_limit - fit_scores_today) for the frontend usage display",
         "Backend test: test_ai_cache.py tests: cache miss calls OpenAI, cache hit returns without calling OpenAI, TTL expiry, daily quota enforcement (21st call returns 429), budget cap enforcement (returns None when over budget)",
@@ -309,32 +309,32 @@
       ],
       "priority": 14,
       "passes": false,
-      "notes": "The three layers work together: caching reduces calls by ~60% (many students apply to the same companies), daily quotas prevent any single user from burning the budget, and the monthly cap is the absolute ceiling. At $50/month budget with gpt-4o-mini pricing (~$0.0003 per fit score call), that's ~166,000 scoring calls per month — more than enough for early growth. The cache is the biggest lever: if 100 users all apply to 'Google SWE Intern' with similar resumes, only the first call hits OpenAI."
+      "notes": "The three layers work together: caching reduces calls by ~60% (many students apply to the same companies), daily quotas prevent any single user from burning the budget, and the monthly cap is the absolute ceiling. At $50/month budget with gpt-4o-mini pricing (~$0.0003 per fit score call), that's ~166,000 scoring calls per month \u2014 more than enough for early growth. The cache is the biggest lever: if 100 users all apply to 'Google SWE Intern' with similar resumes, only the first call hits OpenAI."
     },
     {
       "id": "US-107",
-      "title": "SEO optimization — meta tags, Open Graph, sitemap, structured data, and robots.txt",
+      "title": "SEO optimization \u2014 meta tags, Open Graph, sitemap, structured data, and robots.txt",
       "description": "Organic search is free user acquisition. The landing page, job board, and public pipeline pages need proper SEO to rank for 'job application tracker', 'job search organizer', etc.",
       "acceptanceCriteria": [
-        "Frontend index.html: title 'Pipelined — Job Application Tracker for Students & Engineers', meta description 'Track every job application from click to offer. One-click Chrome extension, AI resume scoring, pipeline dashboard, and interview calendar. Free forever.', meta keywords (job tracker, application tracker, job search organizer, internship tracker), theme-color #4F46E5, canonical URL",
-        "Open Graph tags in index.html: og:title, og:description, og:image (create a 1200×630 social preview — a simple HTML-rendered card with gradient bg, Pipelined logo, tagline, and dashboard mockup, exported as a static PNG in public/og-image.png), og:url, og:type=website, og:site_name='Pipelined'",
+        "Frontend index.html: title 'Pipelined \u2014 Job Application Tracker for Students & Engineers', meta description 'Track every job application from click to offer. One-click Chrome extension, AI resume scoring, pipeline dashboard, and interview calendar. Free forever.', meta keywords (job tracker, application tracker, job search organizer, internship tracker), theme-color #4F46E5, canonical URL",
+        "Open Graph tags in index.html: og:title, og:description, og:image (create a 1200\u00d7630 social preview \u2014 a simple HTML-rendered card with gradient bg, Pipelined logo, tagline, and dashboard mockup, exported as a static PNG in public/og-image.png), og:url, og:type=website, og:site_name='Pipelined'",
         "Twitter card meta: twitter:card=summary_large_image, twitter:title, twitter:description, twitter:image",
         "Backend: GET /robots.txt returns: User-agent: * / Allow: / / Disallow: /dashboard / Disallow: /settings / Disallow: /calendar / Disallow: /analytics / Disallow: /activity / Sitemap: {BASE_URL}/sitemap.xml",
         "Backend: GET /sitemap.xml returns XML sitemap with: / (landing), /login, /register, /jobs (with lastmod from most recent job listing ingested_at), /pipeline/{slug} for all active non-expired public shares. Priority: / = 1.0, /jobs = 0.8, /pipeline/* = 0.5, auth pages = 0.3",
         "Landing page semantic HTML: single h1 for main heading, h2 for section headings, alt text on all images/icons (even decorative ones get alt=''), proper heading hierarchy. Add JSON-LD structured data (script type=application/ld+json) for SoftwareApplication schema: name, description, applicationCategory='BusinessApplication', operatingSystem='Web', offers (free)",
-        "Public pipeline pages (/pipeline/{slug}): dynamically set document.title to '{display_name}'s Pipeline — Pipelined' and update og:title meta tag on mount (using a small useDocumentTitle hook or direct DOM manipulation)",
-        "Job board page: document.title = 'Job Board — Pipelined'",
+        "Public pipeline pages (/pipeline/{slug}): dynamically set document.title to '{display_name}'s Pipeline \u2014 Pipelined' and update og:title meta tag on mount (using a small useDocumentTitle hook or direct DOM manipulation)",
+        "Job board page: document.title = 'Job Board \u2014 Pipelined'",
         "Backend test: test for /sitemap.xml returns valid XML with expected URLs, /robots.txt returns expected content",
         "npm run build passes"
       ],
       "priority": 15,
       "passes": false,
-      "notes": "SEO is a long game but costs $0 in ongoing spend. The key search terms to target: 'job application tracker', 'job search tracker for students', 'internship application tracker', 'free job tracker'. The OG image is critical for social sharing — when someone shares Pipelined on Twitter/LinkedIn, the preview card should look professional. The sitemap ensures Google indexes the public job board and shared pipelines, which drives organic traffic."
+      "notes": "SEO is a long game but costs $0 in ongoing spend. The key search terms to target: 'job application tracker', 'job search tracker for students', 'internship application tracker', 'free job tracker'. The OG image is critical for social sharing \u2014 when someone shares Pipelined on Twitter/LinkedIn, the preview card should look professional. The sitemap ensures Google indexes the public job board and shared pipelines, which drives organic traffic."
     },
     {
       "id": "US-108",
-      "title": "Usage tier infrastructure — free limits baked in, upgrade prompts, and /pricing page",
-      "description": "Set up the entire freemium infrastructure without charging yet. Bake generous free limits into the architecture so flipping on paid tiers later requires only a Stripe integration and a tier update query — no architectural changes.",
+      "title": "Usage tier infrastructure \u2014 free limits baked in, upgrade prompts, and /pricing page",
+      "description": "Set up the entire freemium infrastructure without charging yet. Bake generous free limits into the architecture so flipping on paid tiers later requires only a Stripe integration and a tier update query \u2014 no architectural changes.",
       "acceptanceCriteria": [
         "Backend: user document adds `tier: str = 'free'` field",
         "Backend: config.py defines FREE_TIER_LIMITS dict: { max_applications: 100, max_contacts: 50, max_saved_searches: 5, max_csv_import_rows: 100, ai_fit_scores_per_day: 10, share_link_enabled: true }. Also define PRO_TIER_LIMITS (not enforced yet): { max_applications: -1 (unlimited), max_contacts: -1, max_saved_searches: 25, max_csv_import_rows: 1000, ai_fit_scores_per_day: 100, share_link_enabled: true, priority_support: true }",
@@ -343,18 +343,18 @@
         "Frontend: when any API returns TIER_LIMIT_EXCEEDED, show a branded modal: Pipelined logo, 'You've reached a free plan limit' heading, specific limit info ('{resource}: {current}/{max}'), 'Upgrade to Pro' primary gradient button (links to /pricing), 'Got it' ghost dismiss button",
         "Frontend: create /pricing page with Free vs Pro comparison table. Two-column card layout: Free card (white bg, 'Free' badge, '$0 / forever', feature list with check icons: up to 100 applications, 50 contacts, 5 saved searches, 10 AI scores/day, Chrome extension, public sharing) and Pro card (brand gradient border highlight, 'Pro' badge, '$8 / month' with 'Coming soon' overlay, feature list: unlimited everything, priority support, advanced analytics, custom integrations). Bottom: 'Questions? Reach out at hello@pipelined.app'",
         "Frontend: Settings page 'Usage & Plan' section shows current tier and usage meters (from US-099)",
-        "The free limits are GENEROUS — 100 applications covers 95% of job seekers for a full search cycle. The limits exist to establish the tier infrastructure, not to frustrate users",
+        "The free limits are GENEROUS \u2014 100 applications covers 95% of job seekers for a full search cycle. The limits exist to establish the tier infrastructure, not to frustrate users",
         "Backend test: test_tier_check.py tests: under limit passes, at limit blocks with correct error, different tiers have different limits",
-        "All existing tests pass — update conftest.py to set test users to 'free' tier with high limits or add a test helper to bypass tier checks",
+        "All existing tests pass \u2014 update conftest.py to set test users to 'free' tier with high limits or add a test helper to bypass tier checks",
         "npm test passes"
       ],
       "priority": 16,
       "passes": false,
-      "notes": "The pricing is NOT active yet — Pipelined is free at launch. But the infrastructure must be in place so that enabling payments later is a Stripe integration, not an architecture redesign. The $8/month Pro price is a placeholder that positions Pipelined as affordable for students (cheaper than Huntr's $30/month). The 100-app free limit is generous because: (1) most job searches involve 50-80 applications, (2) users who hit 100 are power users who've gotten enough value to pay, (3) it's better to acquire users generously and convert later than to gate aggressively and lose them."
+      "notes": "The pricing is NOT active yet \u2014 Pipelined is free at launch. But the infrastructure must be in place so that enabling payments later is a Stripe integration, not an architecture redesign. The $8/month Pro price is a placeholder that positions Pipelined as affordable for students (cheaper than Huntr's $30/month). The 100-app free limit is generous because: (1) most job searches involve 50-80 applications, (2) users who hit 100 are power users who've gotten enough value to pay, (3) it's better to acquire users generously and convert later than to gate aggressively and lose them."
     },
     {
       "id": "US-109",
-      "title": "Referral system — invite friends, track signups, unlock future perks",
+      "title": "Referral system \u2014 invite friends, track signups, unlock future perks",
       "description": "Word of mouth is the cheapest user acquisition channel. Give every user a unique referral link and track who they bring in. Referral perks (extended limits, Pro trial) can be layered on later.",
       "acceptanceCriteria": [
         "Backend: on user registration, generate a unique `referral_code` (8-char alphanumeric, using secrets.token_urlsafe(6) which gives 8 base64 chars). Store on user document. Add unique index on users.referral_code",
@@ -365,7 +365,7 @@
         "Frontend: Register page reads `ref` query param from URL, stores in a hidden field, sends with registration payload",
         "Frontend: after a referred user completes registration, show a welcome toast: 'Welcome! You were invited by a Pipelined user.'",
         "Analytics (US-103): track `referral_signup` event with { referrer_code } and `referral_link_copied` event",
-        "Backend: future-proof — add a comment in the referral_count increment code: '# TODO: trigger perks at referral_count thresholds (e.g., 3 referrals = 1 month Pro trial)'",
+        "Backend: future-proof \u2014 add a comment in the referral_count increment code: '# TODO: trigger perks at referral_count thresholds (e.g., 3 referrals = 1 month Pro trial)'",
         "Backend test: test_auth.py adds tests for: referral_code generated on register, valid referral increments count, invalid referral code silently ignored, GET /me returns referral data",
         "npm test passes"
       ],
@@ -376,13 +376,13 @@
     {
       "id": "US-110",
       "title": "In-app feedback widget and one-time NPS survey",
-      "description": "Direct user feedback is critical for knowing what to build next. Don't wait for users to find a feedback form — bring it to them. Add a persistent feedback button and a one-time Net Promoter Score survey after the first week.",
+      "description": "Direct user feedback is critical for knowing what to build next. Don't wait for users to find a feedback form \u2014 bring it to them. Add a persistent feedback button and a one-time Net Promoter Score survey after the first week.",
       "acceptanceCriteria": [
         "Frontend: create `frontend/src/components/FeedbackWidget.jsx`: a small floating button fixed at bottom-right of all authenticated pages (z-30, below modals). Button: 40px circle, bg-brand-600 text-white shadow-lg hover:bg-brand-700 hover:shadow-xl transition-all, MessageCircle lucide icon (20px). Hover tooltip: 'Send feedback'",
         "Clicking opens a compact popover (CARD_BASE, w-80, animate-slideInUp from bottom-right): 'How can we improve?' label, textarea (max 500 chars, 4 rows), email pre-filled from auth (editable), category dropdown (Bug, Feature Request, General), 'Send' primary button. On success: popover closes, toast 'Thanks for your feedback!'",
         "Backend: POST /api/feedback accepts { message: str, email: str | None, category: str, page: str (current URL path) }. Stores in a `feedback` collection: { _id, user_id, message, email, category, page, created_at }. Returns 201. No auth required for the endpoint (but user_id attached if authenticated)",
-        "NPS SURVEY: after 7+ days since account creation (check user.created_at), show a one-time top banner (not modal — banners are less intrusive): 'How likely are you to recommend Pipelined to a friend?' with 0-10 number buttons in a row (each is a small rounded square, hover highlights in brand gradient). Selecting a number dismisses the banner and stores the response as feedback with category='nps' and message='{score}'",
-        "NPS banner shows max 1 time, tracked via localStorage key 'pipelined_nps_dismissed'. Banner also has a small × dismiss button",
+        "NPS SURVEY: after 7+ days since account creation (check user.created_at), show a one-time top banner (not modal \u2014 banners are less intrusive): 'How likely are you to recommend Pipelined to a friend?' with 0-10 number buttons in a row (each is a small rounded square, hover highlights in brand gradient). Selecting a number dismisses the banner and stores the response as feedback with category='nps' and message='{score}'",
+        "NPS banner shows max 1 time, tracked via localStorage key 'pipelined_nps_dismissed'. Banner also has a small \u00d7 dismiss button",
         "Analytics (US-103): track `feedback_submitted` { category } and `nps_responded` { score }",
         "FeedbackWidget and NPS support dark mode",
         "Backend test: test for feedback creation endpoint",
@@ -391,11 +391,11 @@
       ],
       "priority": 18,
       "passes": false,
-      "notes": "The floating feedback button is used by Intercom, Canny, and every serious SaaS. It collects micro-feedback at the moment of friction (user encounters a bug → immediately clicks feedback → describes issue with context). NPS after 7 days catches users who've had enough time to form an opinion. Category tags on feedback make it trivially sortable later. Total backend cost: one small MongoDB collection, zero ongoing compute."
+      "notes": "The floating feedback button is used by Intercom, Canny, and every serious SaaS. It collects micro-feedback at the moment of friction (user encounters a bug \u2192 immediately clicks feedback \u2192 describes issue with context). NPS after 7 days catches users who've had enough time to form an opinion. Category tags on feedback make it trivially sortable later. Total backend cost: one small MongoDB collection, zero ongoing compute."
     },
     {
       "id": "US-111",
-      "title": "Performance optimization — bundle splitting, preconnect hints, and caching headers",
+      "title": "Performance optimization \u2014 bundle splitting, preconnect hints, and caching headers",
       "description": "A fast app feels professional. Slow loads erode trust and increase bounce rate. Optimize the critical rendering path, reduce bundle size, and add proper cache headers.",
       "acceptanceCriteria": [
         "Vite config: add `build.rollupOptions.output.manualChunks` to split the bundle: 'vendor' chunk (react, react-dom, react-router-dom), 'query' chunk (@tanstack/react-query), 'charts' chunk (recharts), 'dnd' chunk (@dnd-kit/*). This prevents re-downloading the entire bundle when app code changes",
@@ -404,20 +404,20 @@
         "Frontend: add `<link rel='dns-prefetch' href='{API_URL}'>` for API domain",
         "Backend: add a response middleware that sets Cache-Control headers: for /api/* responses: 'private, no-cache' (React Query handles caching). For /api/public/* (shared pipelines): 'public, max-age=300' (5 min). For /sitemap.xml and /robots.txt: 'public, max-age=86400' (1 day)",
         "Backend: enable gzip compression middleware (GZipMiddleware from Starlette) for API responses above 500 bytes",
-        "Frontend: verify React.StrictMode is present in development but does not cause double-renders in production (it shouldn't — StrictMode only affects dev, but verify)",
-        "Frontend: audit for unnecessary re-renders — ensure expensive list components (ApplicationList, KanbanBoard) are wrapped in React.memo() where appropriate",
+        "Frontend: verify React.StrictMode is present in development but does not cause double-renders in production (it shouldn't \u2014 StrictMode only affects dev, but verify)",
+        "Frontend: audit for unnecessary re-renders \u2014 ensure expensive list components (ApplicationList, KanbanBoard) are wrapped in React.memo() where appropriate",
         "Run `npx vite-bundle-visualizer` (or `source-map-explorer`) and log the output. Target: total JS < 350KB gzipped. If recharts is too large (it usually is ~180KB), consider lazy-loading it only on the Analytics page",
         "npm run build passes",
         "npm test passes"
       ],
       "priority": 19,
       "passes": false,
-      "notes": "The single biggest perf win is bundle splitting — without it, every user downloads recharts (180KB) even if they never visit Analytics. Preconnect hints save 100-200ms on first load by parallelizing DNS lookups and TLS handshakes. GZip on the backend typically reduces response size by 70%. These are zero-ongoing-cost optimizations — set and forget."
+      "notes": "The single biggest perf win is bundle splitting \u2014 without it, every user downloads recharts (180KB) even if they never visit Analytics. Preconnect hints save 100-200ms on first load by parallelizing DNS lookups and TLS handshakes. GZip on the backend typically reduces response size by 70%. These are zero-ongoing-cost optimizations \u2014 set and forget."
     },
     {
       "id": "US-112",
-      "title": "GitHub Actions CI pipeline — automated testing on every push",
-      "description": "Manual testing doesn't scale. Every push should be automatically verified. GitHub Actions is free for public repos and has 2000 min/month for private repos — essentially zero cost.",
+      "title": "GitHub Actions CI pipeline \u2014 automated testing on every push",
+      "description": "Manual testing doesn't scale. Every push should be automatically verified. GitHub Actions is free for public repos and has 2000 min/month for private repos \u2014 essentially zero cost.",
       "acceptanceCriteria": [
         "Create `.github/workflows/ci.yml` triggered on: push to main, pull_request to main",
         "Three jobs running in parallel (independent codebases): `backend`, `frontend`, `extension`",
@@ -428,12 +428,12 @@
         "Add a lint step to frontend job: if eslint is configured, run npx eslint src/ --max-warnings=0. If not configured, skip (don't add eslint config in this story)",
         "Workflow should complete in under 5 minutes total (parallel jobs, cached deps)",
         "Update README.md: add CI status badge at the top using the GitHub Actions badge URL format",
-        "Document recommended branch protection rules in README (require ci to pass before merge) — don't enforce automatically, just document",
-        "All three jobs pass on the current codebase (fix any failing tests if needed, but don't change test behavior — only fix environmental issues like missing env vars)"
+        "Document recommended branch protection rules in README (require ci to pass before merge) \u2014 don't enforce automatically, just document",
+        "All three jobs pass on the current codebase (fix any failing tests if needed, but don't change test behavior \u2014 only fix environmental issues like missing env vars)"
       ],
       "priority": 20,
       "passes": false,
-      "notes": "CI is non-negotiable for production software. Without it, a single broken test can go unnoticed for weeks. The parallel job structure mirrors the monorepo: backend, frontend, extension are independent and can fail independently. The MongoDB service container is the cleanest way to get a real Mongo instance in CI — matches the project's 'never mock the database' rule. GitHub Actions is essentially free for this use case."
+      "notes": "CI is non-negotiable for production software. Without it, a single broken test can go unnoticed for weeks. The parallel job structure mirrors the monorepo: backend, frontend, extension are independent and can fail independently. The MongoDB service container is the cleanest way to get a real Mongo instance in CI \u2014 matches the project's 'never mock the database' rule. GitHub Actions is essentially free for this use case."
     }
   ]
 }
