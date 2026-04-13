@@ -6,6 +6,13 @@ import structlog
 from openai import AsyncOpenAI, OpenAIError
 
 from config import settings
+from parsing.ai_cache import (
+    check_and_increment_quota,
+    check_budget,
+    compute_cache_key,
+    get_cached_response,
+    store_response,
+)
 
 logger = structlog.get_logger()
 
@@ -40,12 +47,19 @@ def _get_client() -> AsyncOpenAI:
     return _client
 
 
-async def score_fit(resume_text: str, job_description: str) -> dict:
-    """Call GPT-4o mini to score how well a resume matches a job description.
+async def score_fit(
+    resume_text: str,
+    job_description: str,
+    user_id: str | None = None,
+    role_title: str = "",
+    company: str = "",
+) -> dict:
+    """Score how well a resume matches a job description using GPT-4o mini.
 
-    Returns a dict with fit_score (int 0-100), matched_skills (list),
-    missing_skills (list), and summary (str).
-    On any error, returns all null values.
+    Checks the cache before calling OpenAI. Enforces per-user daily quotas and
+    the global monthly budget cap. On any error or exceeded limit, returns null values.
+
+    Raises QuotaExceededError if user_id is provided and the daily limit is reached.
     """
     null_result: dict = {field: None for field in FIT_SCORE_FIELDS}
 
@@ -55,6 +69,23 @@ async def score_fit(resume_text: str, job_description: str) -> dict:
 
     if not resume_text or not job_description:
         return null_result
+
+    cache_key = compute_cache_key(
+        settings.openai_model,
+        resume_text[:500] + role_title + company,
+    )
+
+    cached = await get_cached_response(cache_key)
+    if cached is not None:
+        return cached
+
+    # Check monthly budget before calling OpenAI
+    if not await check_budget():
+        return null_result
+
+    # Check per-user daily quota (cache hits don't count)
+    if user_id:
+        await check_and_increment_quota(user_id)
 
     client = _get_client()
     user_content = f"RESUME:\n{resume_text}\n\nJOB DESCRIPTION:\n{job_description}"
@@ -87,9 +118,16 @@ async def score_fit(resume_text: str, job_description: str) -> dict:
     matched = parsed.get("matched_skills") or []
     missing = parsed.get("missing_skills") or []
 
-    return {
+    result = {
         "fit_score": fit_score,
         "matched_skills": matched[:MAX_MATCHED_SKILLS],
         "missing_skills": missing[:MAX_MISSING_SKILLS],
         "summary": parsed.get("summary"),
     }
+
+    usage = response.usage
+    input_tokens = usage.prompt_tokens if usage else 0
+    output_tokens = usage.completion_tokens if usage else 0
+    await store_response(cache_key, result, settings.openai_model, input_tokens, output_tokens)
+
+    return result

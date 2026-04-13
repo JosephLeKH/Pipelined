@@ -167,8 +167,11 @@ function PanelBody({ application, handleStageChange, handleUpdate, onAddEvent })
       <ApplicationTimeline stageHistory={application.stage_history} applicationId={application.id} />
       <CalendarEventsList applicationId={application.id} onAddEvent={onAddEvent} />
       <ContactsSection applicationId={application.id} />
-      {application.ai_analysis && (
-        <ResumeFitSection analysis={application.ai_analysis} />
+      {(application.ai_analysis || user?.ai_scores_remaining_today === 0) && user?.has_resume && (
+        <ResumeFitSection
+          analysis={application.ai_analysis}
+          aiScoresRemainingToday={user?.ai_scores_remaining_today}
+        />
       )}
     </div>
   );

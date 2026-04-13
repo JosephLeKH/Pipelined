@@ -52,6 +52,7 @@ class Settings(BaseSettings):
     openai_model: str = "gpt-4o-mini"
     openai_timeout_seconds: int = 5
     openai_monthly_budget_usd: float = 50.0
+    ai_fit_scores_daily_limit: int = 20
 
     # GitHub Sync
     github_token: str = ""

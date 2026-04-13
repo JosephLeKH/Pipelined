@@ -6,6 +6,12 @@ import structlog
 from openai import AsyncOpenAI, OpenAIError
 
 from config import settings
+from parsing.ai_cache import (
+    check_budget,
+    compute_cache_key,
+    get_cached_response,
+    store_response,
+)
 
 logger = structlog.get_logger()
 
@@ -39,6 +45,7 @@ def _get_client() -> AsyncOpenAI:
 async def parse_with_openai(page_text: str) -> dict:
     """Call GPT-4o mini to extract job fields from raw page text.
 
+    Checks the cache before calling OpenAI and enforces the monthly budget cap.
     Returns a dict with all 6 expected keys. Any field that could not be
     determined or in case of failure is set to None.
     """
@@ -46,6 +53,15 @@ async def parse_with_openai(page_text: str) -> dict:
 
     if not settings.openai_api_key:
         logger.warning("openai_api_key_missing")
+        return null_result
+
+    cache_key = compute_cache_key(settings.openai_model, page_text[:500])
+
+    cached = await get_cached_response(cache_key)
+    if cached is not None:
+        return cached
+
+    if not await check_budget():
         return null_result
 
     client = _get_client()
@@ -70,4 +86,11 @@ async def parse_with_openai(page_text: str) -> dict:
         logger.warning("openai_response_missing_fields", keys=list(parsed.keys()))
         return null_result
 
-    return {field: parsed.get(field) for field in EXPECTED_FIELDS}
+    result = {field: parsed.get(field) for field in EXPECTED_FIELDS}
+
+    usage = response.usage
+    input_tokens = usage.prompt_tokens if usage else 0
+    output_tokens = usage.completion_tokens if usage else 0
+    await store_response(cache_key, result, settings.openai_model, input_tokens, output_tokens)
+
+    return result

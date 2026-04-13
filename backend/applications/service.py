@@ -20,6 +20,7 @@ from applications.schemas import (
 )
 from auth.service import get_user_by_id
 from database import get_client, get_collection
+from parsing.ai_cache import QuotaExceededError
 from parsing.fit_scorer import score_fit
 from parsing.openai_client import parse_with_openai
 
@@ -220,9 +221,26 @@ def _derive_company_domain(source_url: str | None, company: str | None) -> str |
     return None
 
 
-async def _score_and_update(app_id: str, resume_text: str, job_description: str) -> None:
+async def _score_and_update(
+    app_id: str,
+    user_id: str,
+    resume_text: str,
+    job_description: str,
+    role_title: str = "",
+    company: str = "",
+) -> None:
     """Score fit in background and persist ai_analysis on the application."""
-    result = await score_fit(resume_text, job_description)
+    try:
+        result = await score_fit(
+            resume_text,
+            job_description,
+            user_id=user_id,
+            role_title=role_title,
+            company=company,
+        )
+    except QuotaExceededError as exc:
+        logger.info("fit_score_skipped_quota", app_id=app_id, user_id=user_id, limit=exc.limit)
+        return
     if result.get("fit_score") is None:
         return
     apps = get_collection("applications")
@@ -289,7 +307,14 @@ async def create(user_id: str, body: ApplicationCreate) -> dict:
             filter(None, [body.role_title, body.company, body.page_text])
         )
         asyncio.create_task(
-            _score_and_update(str(result.inserted_id), resume_text, job_description)
+            _score_and_update(
+                str(result.inserted_id),
+                user_id,
+                resume_text,
+                job_description,
+                role_title=body.role_title or "",
+                company=body.company or "",
+            )
         )
 
     return doc

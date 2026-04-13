@@ -5,12 +5,29 @@ import { useEffect } from "react";
 import FitBadge from "./FitBadge";
 import { trackEvent } from "../lib/analytics";
 
-function ResumeFitSection({ analysis }) {
+function ResumeFitSection({ analysis, aiScoresRemainingToday }) {
   useEffect(() => {
-    if (analysis.fit_score != null) {
+    if (analysis?.fit_score != null) {
       trackEvent("fit_score_viewed", { score: analysis.fit_score });
     }
-  }, [analysis.fit_score]);
+  }, [analysis?.fit_score]);
+
+  const quotaExceeded = aiScoresRemainingToday === 0 && !analysis?.fit_score;
+
+  if (quotaExceeded) {
+    return (
+      <div className="flex flex-col gap-3">
+        <span className="text-xs font-medium uppercase text-gray-400 dark:text-gray-500">Resume Fit</span>
+        <p className="text-sm text-amber-600 dark:text-amber-500">
+          Daily limit reached. Resets tomorrow.
+        </p>
+      </div>
+    );
+  }
+
+  if (!analysis) {
+    return null;
+  }
 
   return (
     <div className="flex flex-col gap-3">

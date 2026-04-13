@@ -47,9 +47,11 @@ class UserResponse(BaseModel):
     weekly_goal: int = DEFAULT_WEEKLY_GOAL
     email_verified: bool = False
     avatar_url: str | None = None
+    ai_scores_remaining_today: int = 20
 
     @classmethod
     def from_doc(cls, doc: dict) -> "UserResponse":
+        from parsing.ai_cache import get_ai_scores_remaining  # deferred to avoid import cycle
         return cls(
             id=str(doc["_id"]),
             email=doc.get("email"),
@@ -61,6 +63,7 @@ class UserResponse(BaseModel):
             weekly_goal=doc.get("weekly_goal", DEFAULT_WEEKLY_GOAL),
             email_verified=bool(doc.get("email_verified", False)),
             avatar_url=doc.get("avatar_url"),
+            ai_scores_remaining_today=get_ai_scores_remaining(doc),
         )
 
 
