@@ -287,7 +287,7 @@
         "npm test passes"
       ],
       "priority": 13,
-      "passes": false,
+      "passes": true,
       "notes": "GitHub OAuth is trivially cheap (free, no API limits for auth). The octocat button in dark mode is an iconic visual that instantly signals 'this is a developer tool'. Scope user:email is the minimum needed \u2014 don't request repo access. The avatar_url from GitHub is a nice bonus that makes the app feel more personal."
     },
     {

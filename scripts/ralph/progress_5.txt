@@ -252,3 +252,31 @@ Added a comprehensive animation system using pure CSS + minimal JS — no third-
 - Custom DOM event (`pipelined:email_not_verified`) bridges the Axios interceptor (outside React tree) to the `EmailVerificationBanner` component without prop drilling or shared state
 - Dev-mode SMTP guard (`smtp_host == "localhost"`) must be added to all email-sending methods, not just the text helper, to prevent `ConnectionRefusedError` in tests
 - Session-scope pytest-asyncio fixtures from multiple test files sharing the same event loop can produce "attached to a different loop" errors in full-suite runs — individual file runs are the reliable indicator; this was pre-existing
+
+## US-105 — GitHub OAuth login (PASSED)
+
+Implementation was already committed in a prior iteration (commit 8cd86ae); this iteration verified quality and marked passes=true.
+
+**Backend:**
+- `POST /api/auth/github` in `auth/router.py` — exchanges code for session cookies
+- `auth/oauth_service.py`: `_exchange_github_code`, `_fetch_github_profile`, `get_or_create_github_user`, `github_auth` — full 3-path auth logic (new user / email link / existing github_id)
+- `auth/schemas.py`: `GithubAuthRequest`, `UserResponse` includes `avatar_url`
+- `config.py`: `github_client_id`, `github_client_secret` (optional, empty string default)
+- `tests/test_auth_github.py`: 8 tests covering all flows — all pass
+
+**Frontend:**
+- `GithubAuthButton.jsx`: dark #24292e bg, inline octocat SVG, hidden when `VITE_GITHUB_CLIENT_ID` unset
+- `GithubCallback.jsx`: reads `?code=` param, calls `POST /api/auth/github`, redirects to dashboard or `/login?error=`
+- `/auth/github/callback` route registered in `App.jsx` (lazy loaded)
+- `useGithubAuth` hook in `hooks/useAuth.js`, `githubAuth` in `api/auth.js`
+- Login and Register pages both include `GithubAuthButton` below Google button, above `or` divider
+- `NavBar.jsx`: shows `avatar_url` as 32px rounded-full img
+- `SettingsProfileSection.jsx`: shows `avatar_url` as 64px rounded-full img
+- `GithubAuthButton.test.jsx` + `GithubCallback.test.jsx`: full coverage
+
+**Test results:** 325/325 frontend tests pass, 8/8 backend GitHub auth tests pass.
+
+**Key learnings:**
+- `_fetch_github_profile` uses `asyncio.gather()` to fetch profile + emails in parallel (preventing waterfall)
+- `get_or_create_github_user` does two sequential queries (github_id then email) since email query is conditional on email being present — can't be gathered without knowing email
+- `vi.stubEnv` + `vi.resetModules()` pattern required for env-dependent module tests since `import.meta.env` is captured at module load time
