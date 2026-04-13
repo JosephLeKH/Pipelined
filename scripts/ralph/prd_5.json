@@ -173,7 +173,7 @@
         "npm run build passes"
       ],
       "priority": 8,
-      "passes": false,
+      "passes": true,
       "notes": "These are quick wins \u2014 the pages already work, they just need the new color palette applied and card styling updated. The custom recharts color palette is critical: default recharts blue (#8884d8) looks amateurish. The pill toggle for date ranges is reusable (extract to a PillToggle component if time permits)."
     },
     {

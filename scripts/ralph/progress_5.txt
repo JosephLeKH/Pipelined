@@ -112,3 +112,25 @@ Redesigned the Settings page from a flat scroll layout to a two-column sidebar-n
 - `alert-triangle` and `triangle-alert` both exist as icon names in this version of lucide-react
 - Extracting state-heavy sections to self-contained components significantly reduces main page complexity
 - Pre-existing 17 async errors in test suite are unrelated to this change (from other test files, network mocking)
+
+---
+## US-100: Calendar and Analytics visual refresh (2026-04-13)
+
+### Summary
+Aligned Calendar, Analytics, and Activity pages with the brand design system.
+
+### Changes
+- **tailwind.config.js**: Added `slideInRight` keyframe + `animate-slide-in-right` utility
+- **Analytics.jsx**: Added `CHART_COLORS` array (brand-500/violet/emerald/amber/rose/sky hex values), custom `CustomTooltip` component (bg-slate-900 dark tooltip), migrated to `CARD_BASE` card containers, chart descriptions, `text-xl font-semibold` heading, pill-group date range selector using `bg-brand-600` active state
+- **Activity.jsx**: Updated `TYPE_STYLES` to brand/violet/amber, pill-group time range selector with brand-600 active, hover transitions on timeline entries, vertical line via `border-l border-slate-200`, `text-xl font-semibold` heading
+- **CalendarGrid.jsx**: `EventChip` now shows colored dot + truncated label (rounded-full pill), removed md:hidden/hidden separation, `text-xl font-semibold` month/year heading
+- **CalendarEventDetail.jsx**: Added `animate-slide-in-right` to the drawer aside
+- **Calendar.jsx**: `text-xl font-semibold` heading, `bg-slate-50` background
+- **Analytics.test.jsx**: Updated class assertions from `bg-blue-600` → `bg-brand-600`
+
+### Test results
+22/22 tests pass across 4 test files. Production build passes.
+
+### Learnings
+- recharts `Tooltip content={<CustomTooltip />}` pattern allows full custom tooltip rendering without extra Tooltip props clashing
+- Tailwind `gray: colors.slate` alias in config means `bg-gray-*` and `bg-slate-*` are equivalent — safe to migrate references either direction
