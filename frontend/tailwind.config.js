@@ -41,6 +41,15 @@ export default {
         modal: "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.08)",
         glow: "0 0 20px -5px rgb(99 102 241 / 0.3)",
       },
+      keyframes: {
+        slideInRight: {
+          from: { transform: "translateX(100%)" },
+          to: { transform: "translateX(0)" },
+        },
+      },
+      animation: {
+        "slide-in-right": "slideInRight 0.25s ease-out",
+      },
       borderRadius: {
         card: "0.75rem",
         button: "0.5rem",

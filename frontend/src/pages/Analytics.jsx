@@ -14,11 +14,14 @@ import { Tooltip } from "recharts/es6/component/Tooltip";
 import { Legend } from "recharts/es6/component/Legend";
 import { ResponsiveContainer } from "recharts/es6/component/ResponsiveContainer";
 
+import { CARD_BASE } from "../lib/designTokens";
 import { useAnalytics } from "../hooks/useApplications";
 import EmptyState from "../components/EmptyState";
 import NavBar from "../components/NavBar";
 
 const EMPTY_STATE_THRESHOLD = 3;
+
+const CHART_COLORS = ["#6366F1", "#8B5CF6", "#10B981", "#F59E0B", "#F43F5E", "#0EA5E9"];
 
 const DATE_RANGES = [
   { label: "Last 30 days", value: 30 },
@@ -27,20 +30,29 @@ const DATE_RANGES = [
   { label: "All time", value: null },
 ];
 
-const STAGE_COLOR_MAP = {
-  Applied: "#3b82f6",
-  "Phone Screen": "#8b5cf6",
-  Onsite: "#f59e0b",
-  Offer: "#10b981",
-  Rejected: "#ef4444",
-};
-
-const DEFAULT_BAR_COLOR = "#6b7280";
-
-function ChartCard({ title, children }) {
+function CustomTooltip({ active, payload, label, formatter }) {
+  if (!active || !payload?.length) return null;
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-      <h2 className="mb-4 text-sm font-semibold text-gray-700 dark:text-gray-300">{title}</h2>
+    <div className="rounded-lg bg-slate-900 px-3 py-2 shadow-lg text-sm">
+      {label != null && <p className="mb-1 text-xs text-slate-400">{label}</p>}
+      {payload.map((entry) => (
+        <p key={entry.dataKey} className="text-white">
+          {entry.name}: {formatter ? formatter(entry.value) : entry.value}
+        </p>
+      ))}
+    </div>
+  );
+}
+
+function ChartCard({ title, description, children }) {
+  return (
+    <div className={`${CARD_BASE} p-5`}>
+      <div className="mb-4">
+        <h2 className="text-sm font-medium text-slate-900 dark:text-slate-100">{title}</h2>
+        {description && (
+          <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">{description}</p>
+        )}
+      </div>
       {children}
     </div>
   );
@@ -56,10 +68,10 @@ function Analytics() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen flex-col bg-gray-50 dark:bg-gray-900">
+      <div className="flex min-h-screen flex-col bg-slate-50 dark:bg-slate-900">
         <NavBar />
         <main className="flex flex-1 items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-500 border-t-transparent" />
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-brand-500 border-t-transparent" />
         </main>
       </div>
     );
@@ -67,29 +79,29 @@ function Analytics() {
 
   if (error) {
     return (
-      <div className="flex min-h-screen flex-col bg-gray-50 dark:bg-gray-900">
+      <div className="flex min-h-screen flex-col bg-slate-50 dark:bg-slate-900">
         <NavBar />
-        <main className="p-6 text-center text-red-600">Failed to load analytics.</main>
+        <main className="p-6 text-center text-rose-600">Failed to load analytics.</main>
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-gray-50 dark:bg-gray-900">
+    <div className="flex min-h-screen flex-col bg-slate-50 dark:bg-slate-900">
       <NavBar />
       <main className="flex-1 p-6">
-        <div className="mb-6 flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Analytics</h1>
-          <div className="flex items-center gap-2">
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+          <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Analytics</h1>
+          <div className="flex items-center gap-1 rounded-full border border-slate-200 bg-white p-1 dark:border-slate-700 dark:bg-slate-800">
             {DATE_RANGES.map(({ label, value }) => (
               <button
                 key={label}
                 type="button"
                 onClick={() => setDays(value)}
-                className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+                className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
                   days === value
-                    ? "bg-blue-600 text-white"
-                    : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+                    ? "bg-brand-600 text-white"
+                    : "text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-700"
                 }`}
               >
                 {label}
@@ -106,68 +118,63 @@ function Analytics() {
           />
         ) : (
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-            <ChartCard title="Applications per Week">
+            <ChartCard
+              title="Applications per Week"
+              description="How many applications you submitted each week"
+            >
               <ResponsiveContainer width="100%" height={240}>
                 <BarChart data={analytics.applications_by_week}>
-                  <CartesianGrid strokeDasharray="3 3" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                   <XAxis dataKey="week" tick={{ fontSize: 11 }} />
                   <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
-                  <Tooltip />
-                  <Bar dataKey="count" name="Applications" fill="#3b82f6" radius={[3, 3, 0, 0]} />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Bar dataKey="count" name="Applications" fill={CHART_COLORS[0]} radius={[3, 3, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </ChartCard>
 
-            <ChartCard title="Stage Funnel">
+            <ChartCard
+              title="Stage Funnel"
+              description="Distribution of applications across pipeline stages"
+            >
               <ResponsiveContainer width="100%" height={240}>
                 <BarChart data={analytics.stage_funnel} layout="vertical">
-                  <CartesianGrid strokeDasharray="3 3" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                   <XAxis type="number" allowDecimals={false} tick={{ fontSize: 11 }} />
                   <YAxis type="category" dataKey="stage" tick={{ fontSize: 11 }} width={90} />
-                  <Tooltip />
-                  <Bar
-                    dataKey="count"
-                    name="Applications"
-                    radius={[0, 3, 3, 0]}
-                    fill={DEFAULT_BAR_COLOR}
-                  />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Bar dataKey="count" name="Applications" fill={CHART_COLORS[1]} radius={[0, 3, 3, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </ChartCard>
 
-            <ChartCard title="Response Rate by Month">
+            <ChartCard
+              title="Response Rate by Month"
+              description="Percentage of applications that received a response"
+            >
               <ResponsiveContainer width="100%" height={240}>
                 <LineChart data={analytics.response_rate_by_month}>
-                  <CartesianGrid strokeDasharray="3 3" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                   <XAxis dataKey="month" tick={{ fontSize: 11 }} />
                   <YAxis domain={[0, 1]} tickFormatter={(v) => `${Math.round(v * 100)}%`} tick={{ fontSize: 11 }} />
-                  <Tooltip formatter={(v) => `${Math.round(v * 100)}%`} />
+                  <Tooltip content={<CustomTooltip formatter={(v) => `${Math.round(v * 100)}%`} />} />
                   <Legend />
-                  <Line type="monotone" dataKey="rate" name="Response Rate" stroke="#8b5cf6" dot={false} strokeWidth={2} />
+                  <Line type="monotone" dataKey="rate" name="Response Rate" stroke={CHART_COLORS[2]} dot={false} strokeWidth={2} />
                 </LineChart>
               </ResponsiveContainer>
             </ChartCard>
 
-            <ChartCard title="Top 10 Companies Applied To">
+            <ChartCard
+              title="Top 10 Companies Applied To"
+              description="Companies you've applied to most frequently"
+            >
               <ResponsiveContainer width="100%" height={240}>
                 <BarChart data={analytics.top_companies} layout="vertical">
-                  <CartesianGrid strokeDasharray="3 3" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                   <XAxis type="number" allowDecimals={false} tick={{ fontSize: 11 }} />
                   <YAxis type="category" dataKey="company" tick={{ fontSize: 11 }} width={100} />
-                  <Tooltip />
-                  <Bar dataKey="count" name="Applications" fill="#10b981" radius={[0, 3, 3, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </ChartCard>
-
-            <ChartCard title="Compensation Distribution">
-              <ResponsiveContainer width="100%" height={240}>
-                <BarChart data={analytics.salary_distribution}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="bucket" tick={{ fontSize: 11 }} />
-                  <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
-                  <Tooltip />
-                  <Bar dataKey="count" name="Applications" fill="#f59e0b" radius={[3, 3, 0, 0]} />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Bar dataKey="count" name="Applications" fill={CHART_COLORS[3]} radius={[0, 3, 3, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </ChartCard>

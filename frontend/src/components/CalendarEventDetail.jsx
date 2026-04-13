@@ -160,7 +160,7 @@ function CalendarEventDetail({ event, onClose }) {
         ref={panelRef}
         role="complementary"
         aria-label="Event details"
-        className="fixed inset-y-0 right-0 z-40 flex w-full max-w-md flex-col overflow-y-auto bg-white shadow-modal dark:bg-slate-800"
+        className="fixed inset-y-0 right-0 z-40 flex w-full max-w-md flex-col overflow-y-auto bg-white shadow-modal dark:bg-slate-800 animate-slide-in-right"
       >
         {/* Header */}
         <div className="flex items-start justify-between border-b border-slate-100 dark:border-slate-700 px-6 py-4">

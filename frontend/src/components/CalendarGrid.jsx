@@ -44,13 +44,12 @@ function EventChip({ event, onEventClick }) {
     <button
       type="button"
       onClick={(e) => { e.stopPropagation(); onEventClick(event); }}
-      className={`w-full truncate rounded px-1 py-0.5 text-left text-xs font-medium ${colors.bg} ${colors.text} hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-brand-500`}
+      className={`flex w-full items-center gap-1 truncate rounded-full px-1.5 py-0.5 text-left text-xs font-medium ${colors.bg} ${colors.text} hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-brand-500`}
       title={label}
       aria-label={label}
     >
-      {/* Mobile: colored dot only; Desktop: full label */}
-      <span className={`inline-block h-2 w-2 rounded-full md:hidden ${colors.dot}`} aria-hidden="true" />
-      <span className="hidden md:inline">{label}</span>
+      <span className={`inline-block h-2 w-2 flex-shrink-0 rounded-full ${colors.dot}`} aria-hidden="true" />
+      <span className="truncate">{label}</span>
     </button>
   );
 }
@@ -94,7 +93,7 @@ function DayCell({ date, isCurrentMonth, events, onDayClick, onEventClick }) {
 function CalendarHeader({ month, year, onPrev, onNext, onToday }) {
   return (
     <div className="flex items-center justify-between px-4 py-3">
-      <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+      <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100">
         {MONTH_NAMES[month - 1]} {year}
       </h2>
       <div className="flex items-center gap-2">
