@@ -6,6 +6,7 @@ import Bell from "lucide-react/dist/esm/icons/bell";
 
 import { formatRelative, isStale, isFollowUpOverdue } from "../lib/dateUtils";
 import { CARD_BASE } from "../lib/designTokens";
+import { STAGE_COLORS, DEFAULT_STAGE_COLOR } from "../lib/constants";
 import CompanyLogo from "./CompanyLogo";
 import FitBadge from "./FitBadge";
 
@@ -26,6 +27,7 @@ function KanbanCard({ application, onSelect }) {
 
   const stale = isStale(application.updated_at);
   const followUpOverdue = isFollowUpOverdue(application.follow_up_date);
+  const color = STAGE_COLORS[application.current_stage] ?? DEFAULT_STAGE_COLOR;
 
   return (
     <div
@@ -35,20 +37,20 @@ function KanbanCard({ application, onSelect }) {
       {...listeners}
       onClick={() => onSelect(application)}
       data-testid="kanban-card"
-      className={`relative cursor-pointer p-3 transition-all duration-150 hover:shadow-card-hover ${CARD_BASE} ${
-        isDragging ? "opacity-40" : ""
+      className={`relative cursor-pointer border-l-[3px] p-3 transition-all duration-150 hover:-translate-y-px hover:shadow-card-hover ${CARD_BASE} ${color.border} ${
+        isDragging ? "rotate-[2deg] scale-105 opacity-80 shadow-lg" : ""
       }`}
     >
       {stale && (
         <span
-          className="absolute right-2 top-2 h-2 w-2 rounded-full bg-amber-400"
+          className="absolute right-2 top-2 h-2 w-2 animate-pulse rounded-full bg-amber-400"
           aria-label="Stale application — no updates in 14+ days"
           data-testid="stale-indicator"
         />
       )}
       {followUpOverdue && (
         <span
-          className="absolute right-6 top-2 h-2 w-2 rounded-full bg-yellow-400"
+          className="absolute right-6 top-2 h-2 w-2 rounded-full bg-amber-500"
           aria-label="Follow-up overdue"
           data-testid="follow-up-indicator"
         />

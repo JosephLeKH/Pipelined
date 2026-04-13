@@ -1,6 +1,6 @@
 /** Tests for DetailPanel — field display, notes blur, stage change, close on Escape/click-outside. */
 
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
@@ -163,12 +163,12 @@ describe("DetailPanel", () => {
     );
     render(<DetailPanel application={APP} onClose={() => {}} />, { wrapper: makeWrapper() });
 
-    // Wait for auth to load so stage options are populated
-    const select = screen.getByRole("combobox", { name: /stage/i });
-    await waitFor(() => expect(select.options.length).toBeGreaterThan(1));
+    // Wait for auth to load so stage pill buttons are populated
+    const stageGroup = screen.getByRole("group", { name: /stage/i });
+    await waitFor(() => expect(within(stageGroup).getAllByRole("button").length).toBeGreaterThan(1));
 
     // Act
-    await userEvent.selectOptions(select, "Phone Screen");
+    await userEvent.click(within(stageGroup).getByRole("button", { name: "Phone Screen" }));
 
     // Assert
     await waitFor(() => expect(patchBody).toEqual({ current_stage: "Phone Screen" }));

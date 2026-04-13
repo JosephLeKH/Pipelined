@@ -30,11 +30,11 @@ function KanbanColumn({ stage, applications, onSelect }) {
       data-testid={`kanban-column-${stage}`}
       aria-label={`${stage} column`}
     >
-      <div className={`flex items-center gap-2 rounded-t-lg px-3 py-2 ${color.bg}`}>
-        <span className={`text-sm font-semibold ${color.text}`}>{stage}</span>
+      <div className="flex items-center gap-2 px-3 py-2">
+        <span className={`h-2 w-2 rounded-full ${color.dot}`} aria-hidden="true" />
+        <span className="text-sm font-medium text-slate-500 dark:text-slate-400">{stage}</span>
         <span
-          className={`rounded-full px-1.5 py-0.5 text-xs font-medium ${color.bg} ${color.text}`}
-          style={{ opacity: 0.7 }}
+          className="rounded-full bg-slate-100 px-1.5 py-0.5 text-xs font-medium text-slate-500 dark:bg-slate-700 dark:text-slate-400"
           aria-label={`${applications.length} applications`}
         >
           {applications.length}
@@ -43,14 +43,14 @@ function KanbanColumn({ stage, applications, onSelect }) {
       <div
         ref={setNodeRef}
         style={{ maxHeight: COLUMN_MAX_HEIGHT_PX }}
-        className={`flex flex-col gap-2 overflow-y-auto rounded-b-lg bg-gray-100 p-2 transition-colors dark:bg-gray-800 ${
-          isOver ? "bg-blue-50 dark:bg-blue-900/20" : ""
+        className={`flex flex-col gap-2 overflow-y-auto rounded-lg bg-slate-50 p-2 transition-colors dark:bg-slate-800/50 ${
+          isOver ? "bg-brand-50 dark:bg-brand-900/20" : ""
         }`}
       >
         <SortableContext items={cardIds} strategy={verticalListSortingStrategy}>
           {applications.length === 0 ? (
             <div
-              className="flex h-16 items-center justify-center rounded border-2 border-dashed border-gray-300 text-sm text-gray-400 dark:border-gray-600 dark:text-gray-500"
+              className="flex h-16 items-center justify-center rounded-lg border-2 border-dashed border-slate-300 text-sm text-slate-400 dark:border-slate-600 dark:text-slate-500"
               aria-label="No applications"
             >
               No applications
@@ -112,7 +112,7 @@ function KanbanBoard({ filters = {}, onSelect }) {
   };
 
   if (isLoading) {
-    return <div className="py-16 text-center text-gray-500">Loading…</div>;
+    return <div className="py-16 text-center text-slate-500">Loading…</div>;
   }
 
   return (
@@ -124,7 +124,7 @@ function KanbanBoard({ filters = {}, onSelect }) {
     >
       {/* Mobile: horizontal scrollable tab bar */}
       <div
-        className="flex overflow-x-auto border-b border-gray-200 dark:border-gray-700 md:hidden"
+        className="flex overflow-x-auto border-b border-slate-200 dark:border-slate-700 md:hidden"
         role="tablist"
         aria-label="Stage tabs"
       >
@@ -137,12 +137,12 @@ function KanbanBoard({ filters = {}, onSelect }) {
             onClick={() => setMobileStage(stage)}
             className={`shrink-0 px-4 py-2 text-sm font-medium transition-colors ${
               mobileStage === stage
-                ? "border-b-2 border-blue-600 text-blue-600"
-                : "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                ? "border-b-2 border-brand-600 text-brand-600"
+                : "text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
             }`}
           >
             {stage}
-            <span className="ml-1 text-xs text-gray-400">
+            <span className="ml-1 text-xs text-slate-400">
               ({(byStage[stage] ?? []).length})
             </span>
           </button>
@@ -172,11 +172,11 @@ function KanbanBoard({ filters = {}, onSelect }) {
 
       <DragOverlay>
         {activeApp ? (
-          <div className="rotate-1 rounded-lg bg-white p-3 opacity-90 shadow-lg ring-1 ring-gray-300 dark:bg-gray-800 dark:ring-gray-600">
-            <p className="truncate font-semibold text-gray-900 dark:text-gray-100">
+          <div className="rotate-1 rounded-card bg-white p-3 opacity-90 shadow-lg ring-1 ring-slate-300 dark:bg-slate-800 dark:ring-slate-600">
+            <p className="truncate font-semibold text-slate-900 dark:text-slate-100">
               {activeApp.company}
             </p>
-            <p className="mt-0.5 truncate text-sm text-gray-600 dark:text-gray-400">
+            <p className="mt-0.5 truncate text-sm text-slate-600 dark:text-slate-400">
               {activeApp.role_title}
             </p>
           </div>

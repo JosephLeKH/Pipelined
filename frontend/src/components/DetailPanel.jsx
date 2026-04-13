@@ -8,6 +8,7 @@ import ExternalLink from "lucide-react/dist/esm/icons/external-link";
 import AlertTriangle from "lucide-react/dist/esm/icons/alert-triangle";
 
 import { INPUT_BASE } from "../lib/designTokens";
+import { STAGE_COLORS, DEFAULT_STAGE_COLOR } from "../lib/constants";
 import { useDeleteApplication, useRestoreApplication, useUpdateApplication } from "../hooks/useApplications";
 import { useHotkeys } from "../hooks/useHotkeys";
 import ApplicationTimeline from "./ApplicationTimeline";
@@ -46,15 +47,15 @@ function PanelHeader({ application, onClose, onDelete }) {
         <button
           type="button"
           onClick={onClose}
-          className="rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-1 dark:hover:bg-slate-700 dark:hover:text-slate-300"
+          className="rounded-full bg-slate-100 p-1.5 text-slate-500 hover:bg-slate-200 hover:text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-1 dark:bg-slate-700 dark:hover:bg-slate-600 dark:text-slate-400"
           aria-label="Close panel"
         >
-          <X className="h-5 w-5" />
+          <X className="h-4 w-4" />
         </button>
         <button
           type="button"
           onClick={onDelete}
-          className="rounded p-1 text-gray-400 hover:bg-red-50 hover:text-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1 dark:hover:bg-red-900/30"
+          className="rounded-full p-1.5 text-slate-400 hover:bg-rose-50 hover:text-rose-500 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-1 dark:hover:bg-rose-900/30"
           aria-label="Delete application"
         >
           <Trash2 className="h-4 w-4" />
@@ -131,24 +132,34 @@ function PanelBody({ application, handleStageChange, handleUpdate, onAddEvent })
         </a>
       )}
       <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-medium uppercase text-slate-400 dark:text-slate-500" htmlFor="stage-select">
+        <span className="text-xs font-medium uppercase text-slate-400 dark:text-slate-500">
           Stage
-        </label>
-        <select
-          id="stage-select"
-          className={INPUT_BASE}
-          value={application.current_stage}
-          onChange={handleStageChange}
+        </span>
+        <div
+          role="group"
+          aria-label="Stage"
+          className="flex flex-wrap gap-1.5"
         >
-          {stageOptions.map((s) => (
-            <option key={s} value={s}>{s}</option>
-          ))}
-          {!stageOptions.includes(application.current_stage) && (
-            <option key={application.current_stage} value={application.current_stage}>
-              {application.current_stage}
-            </option>
-          )}
-        </select>
+          {[...stageOptions, ...(stageOptions.includes(application.current_stage) ? [] : [application.current_stage])].map((s) => {
+            const active = s === application.current_stage;
+            const color = STAGE_COLORS[s] ?? DEFAULT_STAGE_COLOR;
+            return (
+              <button
+                key={s}
+                type="button"
+                onClick={() => handleStageChange({ target: { value: s } })}
+                aria-pressed={active}
+                className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
+                  active
+                    ? `${color.activeBg} border-transparent text-white`
+                    : `border-slate-300 bg-white text-slate-600 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700`
+                }`}
+              >
+                {s}
+              </button>
+            );
+          })}
+        </div>
       </div>
       <FollowUpSection application={application} onUpdate={handleUpdate} />
       <NotesEditor applicationId={application.id} initialValue={application.notes} />

@@ -45,7 +45,7 @@ function ApplicationRow({
   return (
     <div
       style={style}
-      className={`group flex cursor-pointer items-center gap-4 border-b border-slate-100 px-4 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-brand-500 dark:border-slate-700 dark:hover:bg-slate-700 ${archived ? "opacity-60" : ""} ${isFocused ? "bg-brand-50 ring-2 ring-inset ring-brand-400 dark:bg-brand-900/20 dark:ring-brand-500" : ""}`}
+      className={`group flex cursor-pointer items-center gap-4 border-b border-slate-100 px-4 py-3.5 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-brand-500 dark:border-slate-700 dark:hover:bg-slate-700 ${archived ? "opacity-60" : ""} ${isFocused ? "border-l-2 border-l-brand-500 bg-brand-50 dark:bg-brand-900/20" : ""}`}
       onClick={() => onSelect(application)}
       onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") onSelect(application); }}
       role="row"
@@ -64,7 +64,7 @@ function ApplicationRow({
         {stale && !archived && (
           <>
             <span
-              className="block h-2 w-2 rounded-full bg-amber-400"
+              className="block h-2 w-2 animate-pulse rounded-full bg-amber-400"
               data-testid="stale-indicator"
               aria-label="Stale application — no updates in 14+ days"
             />
@@ -89,7 +89,7 @@ function ApplicationRow({
       <span className="relative w-4 shrink-0 group/followup">
         {followUpOverdue && !archived && (
           <>
-            <Bell className="h-4 w-4 text-yellow-500" data-testid="follow-up-bell" aria-label={`Follow-up due ${formatDate(application.follow_up_date)}`} />
+            <Bell className="h-4 w-4 text-amber-500" data-testid="follow-up-bell" aria-label={`Follow-up due ${formatDate(application.follow_up_date)}`} />
             <span
               role="tooltip"
               className="pointer-events-none absolute left-5 top-1/2 z-10 -translate-y-1/2 whitespace-nowrap rounded bg-gray-800 px-2 py-1 text-xs text-white opacity-0 group-hover/followup:opacity-100"
