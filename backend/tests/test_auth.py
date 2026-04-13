@@ -620,3 +620,83 @@ async def test_resend_verification_rate_limit(client):
 
     # Assert
     assert response.status_code == 429
+
+
+# ---------------------------------------------------------------------------
+# Referral system — US-109
+# ---------------------------------------------------------------------------
+
+
+async def test_register_returns_referral_code(client):
+    # Act
+    response = await client.post("/api/auth/register", json=REGISTER_PAYLOAD)
+
+    # Assert
+    assert response.status_code == 201
+    data = response.json()["data"]
+    assert data["referral_code"] is not None
+    assert len(data["referral_code"]) > 0
+    assert data["referral_count"] == 0
+
+
+async def test_register_with_valid_referral_code_increments_referrer(client):
+    # Arrange — register referrer first to get their code
+    referrer_resp = await client.post(
+        "/api/auth/register",
+        json={"email": "referrer@example.com", "password": "TestPass123!", "display_name": "Referrer"},
+    )
+    assert referrer_resp.status_code == 201
+    referrer_code = referrer_resp.json()["data"]["referral_code"]
+    referrer_cookies = dict(referrer_resp.cookies)
+
+    # Act — register a new user using the referrer's code
+    response = await client.post(
+        "/api/auth/register",
+        json={
+            "email": "referred@example.com",
+            "password": "TestPass123!",
+            "display_name": "Referred User",
+            "referral_code": referrer_code,
+        },
+    )
+
+    # Assert — new user created
+    assert response.status_code == 201
+
+    # Assert — referrer's count incremented
+    me_resp = await client.get("/api/auth/me", cookies=referrer_cookies)
+    assert me_resp.json()["data"]["referral_count"] == 1
+
+
+async def test_register_with_invalid_referral_code_silently_ignored(client):
+    # Act — provide a referral code that doesn't exist
+    response = await client.post(
+        "/api/auth/register",
+        json={
+            "email": "new@example.com",
+            "password": "TestPass123!",
+            "display_name": "New User",
+            "referral_code": "BADCODE99",
+        },
+    )
+
+    # Assert — registration still succeeds
+    assert response.status_code == 201
+    data = response.json()["data"]
+    assert data["referral_count"] == 0
+
+
+async def test_me_returns_referral_fields(client):
+    # Arrange
+    reg = await client.post("/api/auth/register", json=REGISTER_PAYLOAD)
+    cookies = dict(reg.cookies)
+
+    # Act
+    response = await client.get("/api/auth/me", cookies=cookies)
+
+    # Assert
+    assert response.status_code == 200
+    data = response.json()["data"]
+    assert "referral_code" in data
+    assert "referral_count" in data
+    assert data["referral_count"] == 0

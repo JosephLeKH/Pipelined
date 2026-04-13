@@ -9,12 +9,16 @@ DEFAULT_TIMEZONE = "America/New_York"
 DEFAULT_WEEKLY_GOAL = 5
 
 
+REFERRAL_CODE_MAX_LENGTH = 12
+
+
 class RegisterRequest(BaseModel):
     model_config = ConfigDict(strict=True)
 
     email: EmailStr
     password: str = Field(min_length=8, max_length=128)
     display_name: str = Field(min_length=1, max_length=100)
+    referral_code: str | None = Field(None, max_length=REFERRAL_CODE_MAX_LENGTH)
 
 
 class LoginRequest(BaseModel):
@@ -48,6 +52,8 @@ class UserResponse(BaseModel):
     email_verified: bool = False
     avatar_url: str | None = None
     ai_scores_remaining_today: int = 20
+    referral_code: str | None = None
+    referral_count: int = 0
 
     @classmethod
     def from_doc(cls, doc: dict) -> "UserResponse":
@@ -64,6 +70,8 @@ class UserResponse(BaseModel):
             email_verified=bool(doc.get("email_verified", False)),
             avatar_url=doc.get("avatar_url"),
             ai_scores_remaining_today=get_ai_scores_remaining(doc),
+            referral_code=doc.get("referral_code"),
+            referral_count=doc.get("referral_count", 0),
         )
 
 

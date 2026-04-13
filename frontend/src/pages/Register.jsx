@@ -1,7 +1,8 @@
 /** Register page: split-screen layout with brand panel and sign-up form. */
 
 import { useState, useCallback } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { toast } from "sonner";
 
 import { useAuth } from "../context/AuthContext";
 import { useRegister } from "../hooks/useAuth";
@@ -9,11 +10,13 @@ import AuthLayout from "../components/AuthLayout";
 import GoogleAuthButton from "../components/GoogleAuthButton";
 import GithubAuthButton from "../components/GithubAuthButton";
 import { INPUT_BASE, BUTTON_PRIMARY } from "../lib/designTokens";
-import { identifyUser } from "../lib/analytics";
+import { identifyUser, trackEvent } from "../lib/analytics";
 import { PASSWORD_MIN_LENGTH } from "../lib/constants";
 
 function Register() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const refCode = searchParams.get("ref") ?? null;
   const { login } = useAuth();
   const { mutateAsync: signUp, isPending } = useRegister();
 
@@ -45,6 +48,7 @@ function Register() {
           email: email.trim(),
           password,
           display_name: displayName.trim(),
+          referral_code: refCode,
         });
         login(user);
         identifyUser(user.id, {
@@ -55,6 +59,10 @@ function Register() {
           application_count: 0,
           referral_source: user.referral_source ?? null,
         });
+        if (refCode) {
+          trackEvent("referral_signup", { referral_code: refCode });
+          toast.success("Welcome! You were invited by a Pipelined user.");
+        }
         navigate("/verify-email", { replace: true });
       } catch (err) {
         setError(err?.message ?? "Registration failed. Please try again.");

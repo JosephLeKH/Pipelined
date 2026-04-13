@@ -85,10 +85,20 @@ def decode_token(token: str) -> TokenPayload:
     return TokenPayload(sub=data["sub"], exp=data["exp"], type=data["type"])
 
 
-async def create_user(email: str, password: str, display_name: str) -> dict:
+REFERRAL_CODE_BYTES = 6  # secrets.token_urlsafe(6) → 8 base64 chars
+
+
+async def create_user(
+    email: str,
+    password: str,
+    display_name: str,
+    referral_code: str | None = None,
+) -> dict:
     """Insert a new user into the users collection and return the document.
 
     Raises DuplicateEmailError if a user with that email already exists.
+    If referral_code is provided and matches an existing user, set referred_by
+    and atomically increment that user's referral_count.
     """
     users = get_collection("users")
 
@@ -96,7 +106,8 @@ async def create_user(email: str, password: str, display_name: str) -> dict:
     if existing:
         raise DuplicateEmailError(email)
 
-    password_hash = hash_password(password)
+    password_hash = hash_password(plain=password)
+    new_code = secrets.token_urlsafe(REFERRAL_CODE_BYTES)
     doc: dict = {
         "email": email,
         "password_hash": password_hash,
@@ -106,7 +117,22 @@ async def create_user(email: str, password: str, display_name: str) -> dict:
         "digest_enabled": True,
         "email_verified": False,
         "created_at": datetime.now(timezone.utc),
+        "referral_code": new_code,
+        "referral_count": 0,
+        "referred_by": None,
     }
+
+    if referral_code:
+        referrer = await users.find_one({"referral_code": referral_code})
+        if referrer is not None:
+            doc["referred_by"] = referral_code
+            # TODO: trigger perks at referral_count thresholds (e.g., 3 referrals = 1 month Pro trial)
+            await users.update_one(
+                {"referral_code": referral_code},
+                {"$inc": {"referral_count": 1}},
+            )
+            logger.info("referral_applied", referrer_id=str(referrer["_id"]))
+
     result = await users.insert_one(doc)
     doc["_id"] = result.inserted_id
 

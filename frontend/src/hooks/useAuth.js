@@ -13,8 +13,8 @@ export function useLogin() {
 
 export function useRegister() {
   return useMutation({
-    mutationFn: ({ email, password, display_name }) =>
-      registerWithEmail(email, password, display_name),
+    mutationFn: ({ email, password, display_name, referral_code }) =>
+      registerWithEmail(email, password, display_name, referral_code),
   });
 }
 

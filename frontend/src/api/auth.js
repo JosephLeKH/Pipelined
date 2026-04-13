@@ -6,8 +6,10 @@ export async function loginWithEmail(email, password) {
   return client.post("/auth/login", { email, password });
 }
 
-export async function registerWithEmail(email, password, display_name) {
-  return client.post("/auth/register", { email, password, display_name });
+export async function registerWithEmail(email, password, display_name, referral_code = null) {
+  const body = { email, password, display_name };
+  if (referral_code) body.referral_code = referral_code;
+  return client.post("/auth/register", body);
 }
 
 export async function googleAuth(id_token) {

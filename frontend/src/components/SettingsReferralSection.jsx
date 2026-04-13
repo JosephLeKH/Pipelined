@@ -1,0 +1,91 @@
+/** Settings referral section — invite link, copy button, referral count, and super-referrer badge. */
+
+import { useState, useCallback } from "react";
+import { toast } from "sonner";
+
+import CheckCircle from "lucide-react/dist/esm/icons/check-circle";
+import Copy from "lucide-react/dist/esm/icons/copy";
+import Gift from "lucide-react/dist/esm/icons/gift";
+import Star from "lucide-react/dist/esm/icons/star";
+
+import { trackEvent } from "../lib/analytics";
+
+const SUPER_REFERRER_THRESHOLD = 3;
+
+function SettingsReferralSection({ user }) {
+  const [copied, setCopied] = useState(false);
+
+  const referralCode = user?.referral_code ?? null;
+  const referralCount = user?.referral_count ?? 0;
+  const referralLink = referralCode
+    ? `${window.location.origin}/register?ref=${referralCode}`
+    : null;
+  const isSuperReferrer = referralCount >= SUPER_REFERRER_THRESHOLD;
+
+  const handleCopy = useCallback(async () => {
+    if (!referralLink) return;
+    try {
+      await navigator.clipboard.writeText(referralLink);
+      setCopied(true);
+      trackEvent("referral_link_copied", { referral_code: referralCode });
+      toast.success("Referral link copied!");
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast.error("Failed to copy link.");
+    }
+  }, [referralLink, referralCode]);
+
+  return (
+    <div className="rounded-card border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800">
+      <div className="mb-4 flex items-center gap-2">
+        <Gift className="h-5 w-5 text-brand-500" aria-hidden="true" />
+        <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Invite Friends</h2>
+        {isSuperReferrer && (
+          <span className="ml-auto flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">
+            <Star className="h-3 w-3" aria-hidden="true" />
+            Super Referrer
+          </span>
+        )}
+      </div>
+      <p className="mb-5 text-sm text-slate-500 dark:text-slate-400">
+        Share your referral link. Every friend who signs up is counted toward your referral total.
+      </p>
+
+      {referralLink ? (
+        <div className="flex items-center gap-2">
+          <input
+            readOnly
+            value={referralLink}
+            aria-label="Referral link"
+            className="flex-1 rounded-button border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200"
+          />
+          <button
+            type="button"
+            onClick={handleCopy}
+            aria-label="Copy referral link"
+            className="flex items-center gap-1.5 rounded-button border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 active:scale-[0.97] dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600"
+          >
+            {copied ? (
+              <CheckCircle className="h-4 w-4 text-green-500" aria-hidden="true" />
+            ) : (
+              <Copy className="h-4 w-4" aria-hidden="true" />
+            )}
+            {copied ? "Copied" : "Copy"}
+          </button>
+        </div>
+      ) : (
+        <p className="text-sm text-slate-400 dark:text-slate-500">No referral code available.</p>
+      )}
+
+      <p className="mt-4 text-sm text-slate-600 dark:text-slate-400">
+        <span className="font-semibold text-slate-900 dark:text-slate-100">{referralCount}</span>{" "}
+        {referralCount === 1 ? "friend" : "friends"} joined using your link
+        {isSuperReferrer && (
+          <span className="ml-1 text-amber-600 dark:text-amber-400">— You're a Super Referrer!</span>
+        )}
+      </p>
+    </div>
+  );
+}
+
+export default SettingsReferralSection;

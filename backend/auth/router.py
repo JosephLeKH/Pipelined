@@ -83,7 +83,7 @@ async def register(
 ) -> dict:
     """Register a new user, send verification email, and set auth cookies."""
     try:
-        user = await auth_service.create_user(body.email, body.password, body.display_name)
+        user = await auth_service.create_user(body.email, body.password, body.display_name, body.referral_code)
     except DuplicateEmailError as exc:
         raise HTTPException(
             status_code=409,
