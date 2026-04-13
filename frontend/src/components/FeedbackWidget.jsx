@@ -1,0 +1,214 @@
+/** Floating feedback button and NPS survey banner for authenticated pages. */
+
+import { useState, useRef, useEffect, useCallback } from "react";
+import { useLocation } from "react-router-dom";
+import { toast } from "sonner";
+
+import MessageCircle from "lucide-react/dist/esm/icons/message-circle";
+import X from "lucide-react/dist/esm/icons/x";
+import Send from "lucide-react/dist/esm/icons/send";
+
+import { client } from "../api/client";
+import { trackEvent } from "../lib/analytics";
+import { useAuth } from "../context/AuthContext";
+import { CARD_BASE, BUTTON_PRIMARY, BUTTON_GHOST } from "../lib/designTokens";
+
+const FEEDBACK_MESSAGE_MAX = 500;
+const FEEDBACK_CATEGORIES = ["Bug", "Feature Request", "General"];
+const NPS_DISMISSED_KEY = "pipelined_nps_dismissed";
+const NPS_DAYS_THRESHOLD = 7;
+const NPS_SCORES = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+async function postFeedback(payload) {
+  return client.post("/feedback", payload);
+}
+
+function NPSBanner({ user, onDismiss }) {
+  const createdAt = user?.created_at ? new Date(user.created_at) : null;
+  const daysSinceJoin = createdAt
+    ? (Date.now() - createdAt.getTime()) / (1000 * 60 * 60 * 24)
+    : 0;
+  const alreadyDismissed = localStorage.getItem(NPS_DISMISSED_KEY);
+
+  if (alreadyDismissed || daysSinceJoin < NPS_DAYS_THRESHOLD) return null;
+
+  const handleScore = async (score) => {
+    localStorage.setItem(NPS_DISMISSED_KEY, "1");
+    trackEvent("nps_responded", { score });
+    try {
+      await postFeedback({ message: String(score), email: user?.email ?? null, category: "nps", page: window.location.pathname });
+    } catch {
+      // silently ignore — NPS is best-effort
+    }
+    onDismiss();
+    toast.success("Thanks for your feedback!");
+  };
+
+  const handleDismiss = () => {
+    localStorage.setItem(NPS_DISMISSED_KEY, "1");
+    onDismiss();
+  };
+
+  return (
+    <div
+      role="banner"
+      aria-label="NPS survey"
+      className="fixed top-0 inset-x-0 z-40 flex items-center justify-between gap-4 bg-white px-4 py-3 shadow-md dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700"
+    >
+      <p className="text-sm font-medium text-slate-700 dark:text-slate-200 shrink-0">
+        How likely are you to recommend Pipelined to a friend?
+      </p>
+      <div className="flex items-center gap-1">
+        {NPS_SCORES.map((score) => (
+          <button
+            key={score}
+            type="button"
+            onClick={() => handleScore(score)}
+            className="h-8 w-8 rounded text-xs font-semibold text-slate-600 hover:bg-brand-500 hover:text-white transition-colors dark:text-slate-300 dark:hover:text-white border border-slate-200 dark:border-slate-600"
+          >
+            {score}
+          </button>
+        ))}
+      </div>
+      <button
+        type="button"
+        onClick={handleDismiss}
+        aria-label="Dismiss survey"
+        className="shrink-0 rounded p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+      >
+        <X className="h-4 w-4" />
+      </button>
+    </div>
+  );
+}
+
+function FeedbackPopover({ user, page, onClose }) {
+  const [message, setMessage] = useState("");
+  const [email, setEmail] = useState(user?.email ?? "");
+  const [category, setCategory] = useState("General");
+  const [submitting, setSubmitting] = useState(false);
+  const textareaRef = useRef(null);
+
+  useEffect(() => {
+    textareaRef.current?.focus();
+  }, []);
+
+  const handleSubmit = useCallback(async (e) => {
+    e.preventDefault();
+    if (!message.trim()) return;
+    setSubmitting(true);
+    try {
+      await postFeedback({ message: message.trim(), email: email.trim() || null, category, page });
+      trackEvent("feedback_submitted", { category });
+      onClose();
+      toast.success("Thanks for your feedback!");
+    } catch {
+      toast.error("Failed to send. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  }, [message, email, category, page, onClose]);
+
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Send feedback"
+      className={`${CARD_BASE} absolute bottom-14 right-0 w-80 p-4 animate-slideInUp shadow-modal`}
+    >
+      <div className="mb-3 flex items-center justify-between">
+        <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">How can we improve?</h2>
+        <button type="button" onClick={onClose} aria-label="Close" className="rounded p-0.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+          <X className="h-4 w-4" />
+        </button>
+      </div>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+        <div>
+          <label htmlFor="fb-category" className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">
+            Category
+          </label>
+          <select
+            id="fb-category"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className="w-full rounded-button border border-slate-200 bg-white px-2.5 py-1.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200"
+          >
+            {FEEDBACK_CATEGORIES.map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label htmlFor="fb-message" className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">
+            Message
+          </label>
+          <textarea
+            id="fb-message"
+            ref={textareaRef}
+            rows={4}
+            maxLength={FEEDBACK_MESSAGE_MAX}
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder="Describe your feedback…"
+            className="w-full resize-none rounded-button border border-slate-200 bg-white px-2.5 py-1.5 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200"
+          />
+          <p className="mt-0.5 text-right text-xs text-slate-400">{message.length}/{FEEDBACK_MESSAGE_MAX}</p>
+        </div>
+        <div>
+          <label htmlFor="fb-email" className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">
+            Email (optional)
+          </label>
+          <input
+            id="fb-email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="you@example.com"
+            className="w-full rounded-button border border-slate-200 bg-white px-2.5 py-1.5 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200"
+          />
+        </div>
+        <button
+          type="submit"
+          disabled={submitting || !message.trim()}
+          className={`flex items-center justify-center gap-2 ${BUTTON_PRIMARY} disabled:opacity-60`}
+        >
+          <Send className="h-3.5 w-3.5" aria-hidden="true" />
+          {submitting ? "Sending…" : "Send"}
+        </button>
+      </form>
+    </div>
+  );
+}
+
+function FeedbackWidget() {
+  const { user } = useAuth();
+  const { pathname } = useLocation();
+  const [open, setOpen] = useState(false);
+  const [npsVisible, setNpsVisible] = useState(true);
+
+  const handleClose = useCallback(() => setOpen(false), []);
+
+  if (!user) return null;
+
+  return (
+    <>
+      {npsVisible && <NPSBanner user={user} onDismiss={() => setNpsVisible(false)} />}
+      <div className="fixed bottom-6 right-6 z-30">
+        {open && (
+          <FeedbackPopover user={user} page={pathname} onClose={handleClose} />
+        )}
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          aria-label="Send feedback"
+          title="Send feedback"
+          className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-600 text-white shadow-lg hover:bg-brand-700 hover:shadow-xl transition-all duration-150 active:scale-95"
+        >
+          <MessageCircle className="h-5 w-5" aria-hidden="true" />
+        </button>
+      </div>
+    </>
+  );
+}
+
+export default FeedbackWidget;

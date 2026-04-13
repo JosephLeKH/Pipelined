@@ -8,6 +8,7 @@ import { trackEvent } from "./lib/analytics";
 import { useAuth } from "./context/AuthContext";
 import CommandPalette from "./components/CommandPalette";
 import EmailVerificationBanner from "./components/EmailVerificationBanner";
+import FeedbackWidget from "./components/FeedbackWidget";
 import ShortcutHelp from "./components/ShortcutHelp";
 import UpgradePlanModal from "./components/UpgradePlanModal";
 import { CHORD_TIMEOUT_MS } from "./lib/shortcuts";
@@ -112,6 +113,7 @@ function App() {
       <CommandPalette />
       <ShortcutHelp />
       <GlobalChordShortcuts />
+      <FeedbackWidget />
       <Routes>
         <Route path="/" element={<PageWrapper><LandingPage /></PageWrapper>} />
         <Route path="/login" element={<PageWrapper><Login /></PageWrapper>} />
