@@ -148,6 +148,7 @@ async def _generate_interview_tomorrow_notifications() -> None:
     tomorrow_start = dt.datetime.combine(tomorrow, dt.time.min, tzinfo=dt.timezone.utc)
     tomorrow_end = dt.datetime.combine(tomorrow, dt.time.max, tzinfo=dt.timezone.utc)
 
+    # SYSTEM: intentional cross-user query for batch notification generation (extracts user_id from documents)
     cursor = events_col.find(
         {"date": {"$gte": tomorrow_start, "$lte": tomorrow_end}},
         {"_id": 1, "user_id": 1, "company": 1, "role_title": 1, "event_type": 1},
@@ -173,6 +174,7 @@ async def _generate_follow_up_due_notifications() -> None:
     apps_col = get_collection("applications")
     today_start = dt.datetime.combine(dt.date.today(), dt.time.min, tzinfo=dt.timezone.utc)
 
+    # SYSTEM: intentional cross-user query for batch notification generation (extracts user_id from documents)
     cursor = apps_col.find(
         {
             "archived": {"$ne": True},

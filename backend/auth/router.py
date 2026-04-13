@@ -29,7 +29,6 @@ from auth.service import (
     create_password_reset_token,
     create_refresh_token,
     decode_token,
-    get_user_by_id,
     reset_password,
     save_resume_text,
     update_user_profile,
@@ -283,7 +282,7 @@ async def upload_resume(
         with pdfplumber.open(io.BytesIO(raw)) as pdf:
             pages_text = [page.extract_text() or "" for page in pdf.pages]
         resume_text = "\n".join(pages_text).strip()
-    except Exception as exc:
+    except (ValueError, TypeError, AttributeError) as exc:
         logger.warning("pdf_extraction_failed", error=str(exc), user_id=str(user["_id"]))
         raise HTTPException(
             status_code=422,

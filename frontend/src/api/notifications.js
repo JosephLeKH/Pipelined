@@ -1,26 +1,20 @@
-import axios from "axios";
+/** API functions for /api/notifications. */
+
+import { client } from "./client";
 
 export async function fetchNotifications({ unreadOnly = false } = {}) {
   const params = unreadOnly ? { unread_only: true } : {};
-  const { data } = await axios.get("/api/notifications", { params, withCredentials: true });
-  return data.data;
+  return client.get("/notifications", { params });
 }
 
 export async function fetchUnreadCount() {
-  const { data } = await axios.get("/api/notifications/unread-count", { withCredentials: true });
-  return data.data;
+  return client.get("/notifications/unread-count");
 }
 
 export async function markNotificationRead(notificationId) {
-  const { data } = await axios.patch(
-    `/api/notifications/${notificationId}/read`,
-    {},
-    { withCredentials: true },
-  );
-  return data.data;
+  return client.patch(`/notifications/${notificationId}/read`);
 }
 
 export async function markAllNotificationsRead() {
-  const { data } = await axios.patch("/api/notifications/read-all", {}, { withCredentials: true });
-  return data.data;
+  return client.patch("/notifications/read-all");
 }

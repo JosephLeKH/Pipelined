@@ -11,9 +11,8 @@ import { AuthProvider } from "./context/AuthContext";
 import { ThemeProvider } from "./context/ThemeContext";
 import ErrorBoundary from "./components/ErrorBoundary";
 import App from "./App";
+import { QUERY_STALE_TIME_MS } from "./lib/constants";
 import "./index.css";
-
-const QUERY_STALE_TIME_MS = 30_000;
 
 const queryClient = new QueryClient({
   defaultOptions: {

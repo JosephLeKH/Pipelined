@@ -1,8 +1,11 @@
 /** Centralised date formatting utilities for consistent display across the app. */
 
+import { STALE_APPLICATION_DAYS, STALE_CONTACT_DAYS } from "./constants";
+
 const LOCALE = "en-US";
 const TIMEZONE =
   Intl.DateTimeFormat().resolvedOptions().timeZone || "America/New_York";
+const MS_PER_DAY = 86_400_000;
 
 /**
  * Parse an ISO string to a Date, treating date-only strings (YYYY-MM-DD) as
@@ -101,4 +104,28 @@ export function formatDateLong(date) {
     month: "long",
     day: "numeric",
   });
+}
+
+/**
+ * Check if an application is stale (no updates within STALE_APPLICATION_DAYS).
+ */
+export function isStale(updatedAt) {
+  return Date.now() - new Date(updatedAt).getTime() > STALE_APPLICATION_DAYS * MS_PER_DAY;
+}
+
+/**
+ * Check if a follow-up is overdue (follow-up date is in the past).
+ */
+export function isFollowUpOverdue(followUpDate) {
+  if (!followUpDate) return false;
+  return new Date(followUpDate) < new Date(new Date().toDateString());
+}
+
+/**
+ * Check if a contact is stale (no contact within STALE_CONTACT_DAYS).
+ */
+export function isStaleContact(lastContactedAt) {
+  if (!lastContactedAt) return true;
+  const diffDays = (Date.now() - new Date(lastContactedAt).getTime()) / MS_PER_DAY;
+  return diffDays > STALE_CONTACT_DAYS;
 }

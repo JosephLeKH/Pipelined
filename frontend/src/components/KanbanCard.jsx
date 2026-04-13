@@ -4,21 +4,9 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import Bell from "lucide-react/dist/esm/icons/bell";
 
-import { STALE_APPLICATION_DAYS } from "../lib/constants";
-import { formatRelative } from "../lib/dateUtils";
+import { formatRelative, isStale, isFollowUpOverdue } from "../lib/dateUtils";
 import CompanyLogo from "./CompanyLogo";
 import FitBadge from "./FitBadge";
-
-const MS_PER_DAY = 86_400_000;
-
-function isStale(updatedAt) {
-  return Date.now() - new Date(updatedAt).getTime() > STALE_APPLICATION_DAYS * MS_PER_DAY;
-}
-
-function isFollowUpOverdue(followUpDate) {
-  if (!followUpDate) return false;
-  return new Date(followUpDate) < new Date(new Date().toDateString());
-}
 
 function KanbanCard({ application, onSelect }) {
   const {

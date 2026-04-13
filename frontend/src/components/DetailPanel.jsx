@@ -2,28 +2,20 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 
-import Plus from "lucide-react/dist/esm/icons/plus";
 import Trash2 from "lucide-react/dist/esm/icons/trash-2";
 import X from "lucide-react/dist/esm/icons/x";
 import ExternalLink from "lucide-react/dist/esm/icons/external-link";
 import AlertTriangle from "lucide-react/dist/esm/icons/alert-triangle";
 
 import { useDeleteApplication, useRestoreApplication, useUpdateApplication } from "../hooks/useApplications";
-import { useApplicationEvents, useDeleteEvent } from "../hooks/useCalendar";
-import { useApplicationContacts } from "../hooks/useContacts";
 import { useHotkeys } from "../hooks/useHotkeys";
 import ApplicationTimeline from "./ApplicationTimeline";
+import CalendarEventsList from "./CalendarEventsList";
 import CompanyLogo from "./CompanyLogo";
-import ContactCard from "./ContactCard";
-import ContactForm from "./ContactForm";
-import ContactLinkDropdown from "./ContactLinkDropdown";
-import FitBadge from "./FitBadge";
+import ContactsSection from "./ContactsSection";
 import NotesEditor from "./NotesEditor";
+import ResumeFitSection from "./ResumeFitSection";
 import UndoToast from "./UndoToast";
-import {
-  EVENT_TYPE_COLORS,
-  DEFAULT_EVENT_COLOR,
-} from "../lib/constants";
 import { formatDate } from "../lib/dateUtils";
 import { useAuth } from "../context/AuthContext";
 
@@ -35,114 +27,6 @@ function DetailField({ label, value }) {
     <div className="flex flex-col gap-0.5">
       <span className="text-xs font-medium uppercase text-gray-400 dark:text-gray-500">{label}</span>
       <span className="text-sm text-gray-800 dark:text-gray-200">{value}</span>
-    </div>
-  );
-}
-
-
-const CONTACTS_ADD_MODE_NEW = "new";
-const CONTACTS_ADD_MODE_LINK = "link";
-
-function ContactsSection({ applicationId }) {
-  const { data, isLoading } = useApplicationContacts(applicationId);
-  const [addMode, setAddMode] = useState(null);
-
-  const contacts = Array.isArray(data) ? data : (data?.data ?? []);
-  const linkedIds = contacts.map((c) => c.id);
-
-  return (
-    <div className="flex flex-col gap-2">
-      <div className="flex items-center justify-between">
-        <span className="text-xs font-medium uppercase text-gray-400 dark:text-gray-500">Contacts</span>
-        {!addMode && (
-          <div className="flex items-center gap-1">
-            <button
-              type="button"
-              onClick={() => setAddMode(CONTACTS_ADD_MODE_LINK)}
-              className="rounded px-2 py-1 text-xs text-blue-600 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 dark:hover:bg-blue-900/30"
-            >
-              Link
-            </button>
-            <button
-              type="button"
-              onClick={() => setAddMode(CONTACTS_ADD_MODE_NEW)}
-              className="flex items-center gap-1 rounded px-2 py-1 text-xs text-blue-600 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 dark:hover:bg-blue-900/30"
-              aria-label="Add contact"
-            >
-              <Plus className="h-3.5 w-3.5" />
-              New
-            </button>
-          </div>
-        )}
-      </div>
-      {isLoading && <p className="text-xs text-gray-400">Loading…</p>}
-      {!isLoading && contacts.length === 0 && !addMode && (
-        <p className="text-xs text-gray-400">No contacts yet.</p>
-      )}
-      {contacts.map((contact) => (
-        <ContactCard key={contact.id} contact={contact} applicationId={applicationId} />
-      ))}
-      {addMode === CONTACTS_ADD_MODE_NEW && (
-        <ContactForm applicationId={applicationId} onDone={() => setAddMode(null)} />
-      )}
-      {addMode === CONTACTS_ADD_MODE_LINK && (
-        <ContactLinkDropdown
-          applicationId={applicationId}
-          linkedIds={linkedIds}
-          onDone={() => setAddMode(null)}
-        />
-      )}
-    </div>
-  );
-}
-
-function CalendarEventsList({ applicationId, onAddEvent }) {
-  const { data, isLoading } = useApplicationEvents(applicationId);
-  const { mutate: deleteEvent } = useDeleteEvent();
-
-  const events = Array.isArray(data) ? data : (data?.data ?? []);
-
-  return (
-    <div className="flex flex-col gap-2">
-      <div className="flex items-center justify-between">
-        <span className="text-xs font-medium uppercase text-gray-400 dark:text-gray-500">Interviews & Events</span>
-        <button
-          type="button"
-          onClick={() => onAddEvent(applicationId)}
-          className="flex items-center gap-1 rounded px-2 py-1 text-xs text-blue-600 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 dark:hover:bg-blue-900/30"
-          aria-label="Add event"
-        >
-          <Plus className="h-3.5 w-3.5" />
-          Add Event
-        </button>
-      </div>
-      {isLoading && <p className="text-xs text-gray-400">Loading…</p>}
-      {!isLoading && events.length === 0 && (
-        <p className="text-xs text-gray-400">No events yet.</p>
-      )}
-      {events.map((ev) => {
-        const colors = EVENT_TYPE_COLORS[ev.event_type] ?? DEFAULT_EVENT_COLOR;
-        return (
-          <div key={ev.id} className="flex items-center justify-between rounded border border-gray-100 px-3 py-2 dark:border-gray-700">
-            <div className="flex flex-col gap-0.5">
-              <span className={`inline-block rounded px-1.5 py-0.5 text-xs font-medium ${colors.bg} ${colors.text}`}>
-                {ev.event_type.replace("_", " ")}
-              </span>
-              <span className="text-xs text-gray-500 dark:text-gray-400">
-                {ev.date}{ev.time ? ` · ${ev.time}` : ""}
-              </span>
-            </div>
-            <button
-              type="button"
-              onClick={() => deleteEvent(ev.id)}
-              className="rounded p-1 text-gray-300 hover:bg-red-50 hover:text-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1"
-              aria-label="Delete event"
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-            </button>
-          </div>
-        );
-      })}
     </div>
   );
 }
@@ -272,47 +156,6 @@ function PanelBody({ application, handleStageChange, handleUpdate, onAddEvent })
       <ContactsSection applicationId={application.id} />
       {application.ai_analysis && (
         <ResumeFitSection analysis={application.ai_analysis} />
-      )}
-    </div>
-  );
-}
-
-function ResumeFitSection({ analysis }) {
-  return (
-    <div className="flex flex-col gap-3">
-      <span className="text-xs font-medium uppercase text-gray-400 dark:text-gray-500">Resume Fit</span>
-      <div className="flex items-center gap-2">
-        <span className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-          {analysis.fit_score ?? "—"}
-        </span>
-        <FitBadge score={analysis.fit_score} />
-      </div>
-      {analysis.summary && (
-        <p className="text-sm text-gray-600 dark:text-gray-400">{analysis.summary}</p>
-      )}
-      {analysis.matched_skills?.length > 0 && (
-        <div className="flex flex-col gap-1">
-          <span className="text-xs font-medium text-gray-400 dark:text-gray-500">Matched skills</span>
-          <div className="flex flex-wrap gap-1">
-            {analysis.matched_skills.map((skill) => (
-              <span key={skill} className="rounded-full bg-green-100 px-2 py-0.5 text-xs text-green-700 dark:bg-green-900/40 dark:text-green-400">
-                {skill}
-              </span>
-            ))}
-          </div>
-        </div>
-      )}
-      {analysis.missing_skills?.length > 0 && (
-        <div className="flex flex-col gap-1">
-          <span className="text-xs font-medium text-gray-400 dark:text-gray-500">Missing skills</span>
-          <div className="flex flex-wrap gap-1">
-            {analysis.missing_skills.map((skill) => (
-              <span key={skill} className="rounded-full bg-red-100 px-2 py-0.5 text-xs text-red-700 dark:bg-red-900/40 dark:text-red-400">
-                {skill}
-              </span>
-            ))}
-          </div>
-        </div>
       )}
     </div>
   );

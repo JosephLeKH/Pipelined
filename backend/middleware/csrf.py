@@ -9,6 +9,10 @@ Exempt paths (handled by auth or browser-initiated flows):
   /api/auth/login
   /api/auth/register
   /api/auth/google
+  /api/auth/logout
+  /api/auth/refresh
+  /api/auth/forgot-password
+  /api/auth/reset-password
 """
 
 import secrets
@@ -28,6 +32,10 @@ _EXEMPT_PATHS = {
     "/api/auth/login",
     "/api/auth/register",
     "/api/auth/google",
+    "/api/auth/logout",
+    "/api/auth/refresh",
+    "/api/auth/forgot-password",
+    "/api/auth/reset-password",
 }
 
 

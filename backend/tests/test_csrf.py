@@ -15,7 +15,7 @@ async def test_post_without_csrf_token_returns_403(app):
     transport = ASGITransport(app=app)
 
     async with AsyncClient(transport=transport, base_url="http://test") as c:
-        response = await c.post("/api/auth/logout")
+        response = await c.post("/api/applications")
 
     assert response.status_code == 403
     body = response.json()
@@ -29,12 +29,12 @@ async def test_post_with_matching_csrf_token_passes(app):
     async with AsyncClient(transport=transport, base_url="http://test") as c:
         c.cookies.set(CSRF_COOKIE_NAME, _CSRF_TOKEN)
         response = await c.post(
-            "/api/auth/logout",
+            "/api/applications",
             headers={CSRF_HEADER_NAME: _CSRF_TOKEN},
         )
 
-    # logout is 204 even without auth cookies; confirms CSRF check passed
-    assert response.status_code == 204
+    # Expect 401 (auth required), NOT 403 — proves CSRF check passed
+    assert response.status_code == 401
 
 
 async def test_post_with_mismatched_csrf_token_returns_403(app):
@@ -44,7 +44,7 @@ async def test_post_with_mismatched_csrf_token_returns_403(app):
     async with AsyncClient(transport=transport, base_url="http://test") as c:
         c.cookies.set(CSRF_COOKIE_NAME, "correct-token-aaaa")
         response = await c.post(
-            "/api/auth/logout",
+            "/api/applications",
             headers={CSRF_HEADER_NAME: "wrong-token-bbbb"},
         )
 
@@ -58,7 +58,7 @@ async def test_post_with_header_only_no_cookie_returns_403(app):
 
     async with AsyncClient(transport=transport, base_url="http://test") as c:
         response = await c.post(
-            "/api/auth/logout",
+            "/api/applications",
             headers={CSRF_HEADER_NAME: _CSRF_TOKEN},
         )
 

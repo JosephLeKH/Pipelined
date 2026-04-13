@@ -24,6 +24,7 @@ from config import settings, validate_production_secrets
 from database import connect, disconnect, ensure_indexes
 from middleware.csrf import CSRFMiddleware
 from middleware.rate_limit import limiter
+from middleware.security_headers import SecurityHeadersMiddleware
 
 logger = structlog.get_logger()
 
@@ -94,6 +95,7 @@ def create_app(*, testing: bool = False) -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+    app.add_middleware(SecurityHeadersMiddleware)
     app.add_middleware(CSRFMiddleware)
 
     @app.get("/health")

@@ -1,76 +1,28 @@
 /** Job board page: browse curated listings in card grid or compact list view. */
 
-import { useState, useMemo, useCallback, useRef } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import { FixedSizeList } from "react-window";
-import { toast } from "sonner";
 
 import Bookmark from "lucide-react/dist/esm/icons/bookmark";
 import ChevronLeft from "lucide-react/dist/esm/icons/chevron-left";
 import ChevronRight from "lucide-react/dist/esm/icons/chevron-right";
 import LayoutGrid from "lucide-react/dist/esm/icons/layout-grid";
 import List from "lucide-react/dist/esm/icons/list";
-import SearchIcon from "lucide-react/dist/esm/icons/search";
-import Trash2 from "lucide-react/dist/esm/icons/trash-2";
 
 import ApiErrorMessage from "../components/ApiErrorMessage";
 import JobCard from "../components/JobCard";
-import { JobFilters } from "../components/JobFilters";
 import JobRow from "../components/JobRow";
+import JobSearchInput from "../components/JobSearchInput";
+import SaveSearchPopover from "../components/SaveSearchPopover";
+import SavedSearchesSidebar from "../components/SavedSearchesSidebar";
+import { JobFilters } from "../components/JobFilters";
 import { useJobs } from "../hooks/useJobs";
-import {
-  useCreateSavedSearch,
-  useDeleteSavedSearch,
-  useSavedSearches,
-} from "../hooks/useSavedSearches";
 
 const DEFAULT_VIEW = "grid";
 const ROW_HEIGHT = 72;
 const LIST_HEIGHT = 600;
 const DEFAULT_PER_PAGE = 30;
-const SEARCH_DEBOUNCE_MS = 300;
-const MAX_SAVE_NAME_LENGTH = 100;
-
-function JobSearchInput() {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [searchValue, setSearchValue] = useState(searchParams.get("q") ?? "");
-  const debounceRef = useRef(null);
-
-  const handleChange = useCallback(
-    (e) => {
-      const val = e.target.value;
-      setSearchValue(val);
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-      debounceRef.current = setTimeout(() => {
-        const next = new URLSearchParams(searchParams);
-        if (val) {
-          next.set("q", val);
-        } else {
-          next.delete("q");
-        }
-        next.set("page", "1");
-        setSearchParams(next, { replace: true });
-      }, SEARCH_DEBOUNCE_MS);
-    },
-    [searchParams, setSearchParams]
-  );
-
-  return (
-    <div className="flex items-center rounded-lg bg-white px-4 py-3 shadow-sm dark:bg-gray-800">
-      <div className="relative flex items-center">
-        <SearchIcon className="absolute left-2 h-4 w-4 text-gray-400" aria-hidden="true" />
-        <input
-          type="text"
-          aria-label="search jobs"
-          value={searchValue}
-          onChange={handleChange}
-          placeholder="Role, company, description..."
-          className="rounded border border-gray-300 pl-8 pr-3 py-1.5 text-sm w-72 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 dark:placeholder-gray-400"
-        />
-      </div>
-    </div>
-  );
-}
 
 function ViewToggle({ view, onToggle }) {
   return (
@@ -100,6 +52,7 @@ function ViewToggle({ view, onToggle }) {
     </div>
   );
 }
+
 
 function Pagination({ page, totalPages, onPageChange }) {
   if (totalPages <= 1) return null;
@@ -150,119 +103,6 @@ function LoadingSkeleton({ view }) {
   );
 }
 
-function SaveSearchPopover({ currentFilters, onClose }) {
-  const [name, setName] = useState("");
-  const createMutation = useCreateSavedSearch();
-
-  function handleSave() {
-    if (!name.trim()) return;
-    const { page: _p, per_page: _pp, q, ...filterFields } = currentFilters;
-    createMutation.mutate(
-      { name: name.trim(), query: q ?? "", filters: filterFields },
-      {
-        onSuccess: () => {
-          toast.success(`Saved search "${name.trim()}"`);
-          onClose();
-        },
-        onError: (err) => {
-          const msg = err?.response?.data?.detail ?? "Failed to save search.";
-          toast.error(msg);
-        },
-      }
-    );
-  }
-
-  return (
-    <div
-      role="dialog"
-      aria-label="Save this search"
-      className="absolute right-0 top-10 z-30 w-64 rounded-lg border border-gray-200 bg-white p-4 shadow-xl dark:border-gray-700 dark:bg-gray-800"
-    >
-      <p className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Name this search</p>
-      <input
-        type="text"
-        aria-label="Saved search name"
-        value={name}
-        onChange={(e) => setName(e.target.value.slice(0, MAX_SAVE_NAME_LENGTH))}
-        placeholder="e.g. SWE Intern Remote"
-        className="w-full rounded border border-gray-300 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
-        onKeyDown={(e) => e.key === "Enter" && handleSave()}
-        autoFocus
-      />
-      <div className="mt-3 flex justify-end gap-2">
-        <button
-          type="button"
-          onClick={onClose}
-          className="rounded px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
-        >
-          Cancel
-        </button>
-        <button
-          type="button"
-          onClick={handleSave}
-          disabled={!name.trim() || createMutation.isPending}
-          className="rounded bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
-        >
-          Save
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function SavedSearchesSidebar({ onApply }) {
-  const { data: searches = [] } = useSavedSearches();
-  const deleteMutation = useDeleteSavedSearch();
-
-  if (searches.length === 0) return null;
-
-  function handleDelete(e, id) {
-    e.stopPropagation();
-    deleteMutation.mutate(id, {
-      onSuccess: () => toast.success("Saved search deleted"),
-    });
-  }
-
-  return (
-    <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-      <h2 className="mb-3 text-sm font-semibold text-gray-700 dark:text-gray-300">Saved Searches</h2>
-      <ul className="flex flex-col gap-1" aria-label="Saved searches list">
-        {searches.map((s) => (
-          <li
-            key={s.id}
-            className="flex cursor-pointer items-center justify-between rounded px-2 py-1.5 text-sm hover:bg-gray-50 dark:hover:bg-gray-700"
-            onClick={() => onApply(s)}
-          >
-            <div className="flex flex-col">
-              <span className="font-medium text-gray-800 dark:text-gray-200">{s.name}</span>
-              {s.query && (
-                <span className="text-xs text-gray-500 dark:text-gray-400">"{s.query}"</span>
-              )}
-            </div>
-            <div className="flex items-center gap-2">
-              {s.new_matches_count > 0 && (
-                <span
-                  className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-700 dark:bg-blue-900 dark:text-blue-300"
-                  aria-label={`${s.new_matches_count} new matches`}
-                >
-                  {s.new_matches_count}
-                </span>
-              )}
-              <button
-                type="button"
-                aria-label="Delete saved search"
-                onClick={(e) => handleDelete(e, s.id)}
-                className="rounded p-0.5 text-gray-400 hover:text-red-500"
-              >
-                <Trash2 className="h-3.5 w-3.5" />
-              </button>
-            </div>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
 
 function JobBoard() {
   const [searchParams, setSearchParams] = useSearchParams();

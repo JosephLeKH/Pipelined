@@ -2,7 +2,7 @@
 
 from datetime import datetime
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class SavedSearchFilters(BaseModel):
@@ -14,6 +14,8 @@ class SavedSearchFilters(BaseModel):
 
 
 class SavedSearchCreate(BaseModel):
+    model_config = ConfigDict(strict=True)
+
     name: str = Field(..., min_length=1, max_length=100)
     query: str = Field(default="")
     filters: SavedSearchFilters = Field(default_factory=SavedSearchFilters)

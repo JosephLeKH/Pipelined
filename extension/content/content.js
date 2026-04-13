@@ -31,6 +31,8 @@ const AUTO_SAVE_DEBOUNCE_MS = 2000;
 const AUTO_SAVE_SUCCESS_DISMISS_MS = 3000;
 
 const savedUrls = new Set();
+// MSG constants are duplicated across background.js, content.js, and contact_banner.js
+// because content scripts don't support ES modules. Keep these in sync manually.
 const MSG = { SAVE_APPLICATION: "SAVE_APPLICATION" };
 
 async function init() {
@@ -142,10 +144,9 @@ export async function initAutoSave(fields, boardId) {
 
   const url = window.location.href;
   if (savedUrls.has(url)) return false;
+  savedUrls.add(url);
 
   const timer = setTimeout(async () => {
-    if (savedUrls.has(url)) return;
-    savedUrls.add(url);
     const { host, shadow } = createBannerHost("Auto-saving\u2026");
     document.body.appendChild(host);
     const needsPageText = boardId === "workday" || (!fields.role_title && !fields.company_name);

@@ -3,6 +3,7 @@
 import asyncio
 import base64
 import hashlib
+import json
 import re
 from datetime import datetime, timedelta, timezone
 
@@ -171,7 +172,7 @@ async def _sync_repo(client: httpx.AsyncClient, repo: str, col) -> None:
         logger.info("repo_parsed", repo=repo, listing_count=len(listings))
         for listing in listings:
             await _upsert_listing(col, listing)
-    except Exception:
+    except (httpx.HTTPError, json.JSONDecodeError, KeyError):
         logger.exception("repo_sync_failed", repo=repo)
 
 

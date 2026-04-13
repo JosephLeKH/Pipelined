@@ -6,6 +6,8 @@ import {
   dismiss,
 } from "./banner_helpers.js";
 
+// MSG constants are duplicated across background.js, content.js, and contact_banner.js
+// because content scripts don't support ES modules. Keep these in sync manually.
 const MSG_SAVE_CONTACT = "SAVE_CONTACT";
 
 export function injectContactBanner(fields) {

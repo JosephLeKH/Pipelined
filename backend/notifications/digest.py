@@ -5,6 +5,7 @@ from dataclasses import dataclass, field
 
 import structlog
 from bson import ObjectId
+from bson.errors import InvalidId
 
 from config import settings
 from database import get_collection
@@ -168,7 +169,7 @@ async def send_weekly_digest(user_id: str) -> bool:
         await email_service.send_text_email(user["email"], DIGEST_SUBJECT, body)
         logger.info("weekly_digest_sent", user_id=user_id)
         return True
-    except Exception:
+    except (ValueError, TypeError, InvalidId, KeyError, OSError):
         logger.exception("weekly_digest_failed", user_id=user_id)
         return False
 

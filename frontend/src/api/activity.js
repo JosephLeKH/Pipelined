@@ -3,13 +3,12 @@
  * @module api/activity
  */
 
-import axios from "axios";
+import { client } from "./client";
 
 /**
  * @param {{ days?: number }} [opts]
- * @returns {Promise<{ data: Array<object>, meta: { total: number, days: number } }>}
+ * @returns {Promise<Array<object>>}
  */
 export async function fetchActivityFeed({ days = 30 } = {}) {
-  const res = await axios.get("/api/activity", { params: { days } });
-  return res.data;
+  return client.get("/activity", { params: { days } });
 }

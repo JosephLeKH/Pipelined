@@ -1,11 +1,13 @@
 """Route handlers for pipeline sharing: create, fetch, revoke, and public view."""
 
 import structlog
-from fastapi import APIRouter, Depends, HTTPException, Response
+from fastapi import APIRouter, Depends, HTTPException, Request
 
 from auth.dependencies import get_current_user
+from config import settings
+from middleware.rate_limit import limiter
 from sharing import service as sharing_service
-from sharing.schemas import PublicPipelineResponse, ShareResponse
+from sharing.schemas import ShareResponse
 from sharing.service import ShareNotFoundError
 
 logger = structlog.get_logger()
@@ -37,7 +39,6 @@ async def get_my_share(user: dict = Depends(get_current_user)) -> dict:
 @router.delete("/api/sharing/revoke", status_code=204)
 async def revoke_share(
     user: dict = Depends(get_current_user),
-    response: Response = None,
 ) -> None:
     """Revoke the caller's active share link."""
     user_id = str(user["_id"])
@@ -45,7 +46,8 @@ async def revoke_share(
 
 
 @router.get("/api/public/{slug}", status_code=200)
-async def get_public_pipeline(slug: str) -> dict:
+@limiter.limit(settings.rate_limit_standard)
+async def get_public_pipeline(slug: str, request: Request) -> dict:
     """Return a read-only public snapshot of a user's pipeline (no auth required)."""
     try:
         data = await sharing_service.get_public_pipeline(slug)

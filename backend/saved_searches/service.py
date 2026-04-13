@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 
 import structlog
 from bson import ObjectId
+from bson.errors import InvalidId
 
 from database import get_collection
 from saved_searches.schemas import SavedSearchCreate
@@ -59,7 +60,7 @@ async def delete_saved_search(user_id: str, search_id: str) -> None:
     uid = ObjectId(user_id)
     try:
         oid = ObjectId(search_id)
-    except Exception:
+    except (ValueError, TypeError, InvalidId):
         raise SavedSearchNotFoundError()
     result = await col.delete_one({"_id": oid, "user_id": uid})
     if result.deleted_count == 0:
@@ -91,7 +92,7 @@ async def get_saved_search_results(
     uid = ObjectId(user_id)
     try:
         oid = ObjectId(search_id)
-    except Exception:
+    except (ValueError, TypeError, InvalidId):
         raise SavedSearchNotFoundError()
 
     search = await col.find_one({"_id": oid, "user_id": uid})
@@ -134,7 +135,7 @@ async def update_match_counts_after_sync() -> None:
     for search in searches:
         try:
             await _update_single_search_count(search, col, jobs_col, create_notification)
-        except Exception:
+        except (TypeError, KeyError, asyncio.TimeoutError):
             logger.exception("saved_search_count_update_failed", search_id=str(search["_id"]))
 
 

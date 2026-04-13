@@ -33,7 +33,7 @@ async def mark_read(
 ) -> dict:
     updated = await svc.mark_read(user["_id"], notification_id)
     if not updated:
-        raise HTTPException(404, detail={"code": "NOTIFICATION_NOT_FOUND", "message": "Notification not found."})
+        raise HTTPException(status_code=404, detail={"error": {"code": "NOTIFICATION_NOT_FOUND", "message": "Notification not found."}})
     return {"data": {"ok": True}}
 
 

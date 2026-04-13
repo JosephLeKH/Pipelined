@@ -1,17 +1,17 @@
 /** App-wide constants: stage colors, breakpoints, timings. */
 
 export const STAGE_COLORS = {
-  Applied: { bg: "bg-blue-100", text: "text-blue-800", dot: "bg-blue-500" },
-  "Phone Screen": { bg: "bg-purple-100", text: "text-purple-800", dot: "bg-purple-500" },
+  Applied: { bg: "bg-brand-100", text: "text-brand-800", dot: "bg-brand-500" },
+  "Phone Screen": { bg: "bg-violet-100", text: "text-violet-800", dot: "bg-violet-500" },
   Onsite: { bg: "bg-amber-100", text: "text-amber-800", dot: "bg-amber-500" },
-  Offer: { bg: "bg-green-100", text: "text-green-800", dot: "bg-green-500" },
-  Rejected: { bg: "bg-red-100", text: "text-red-800", dot: "bg-red-500" },
+  Offer: { bg: "bg-emerald-100", text: "text-emerald-800", dot: "bg-emerald-500" },
+  Rejected: { bg: "bg-rose-100", text: "text-rose-800", dot: "bg-rose-500" },
 };
 
 export const DEFAULT_STAGE_COLOR = {
-  bg: "bg-gray-100",
-  text: "text-gray-800",
-  dot: "bg-gray-500",
+  bg: "bg-slate-100",
+  text: "text-slate-800",
+  dot: "bg-slate-500",
 };
 
 export const STALE_APPLICATION_DAYS = 14;
@@ -33,15 +33,15 @@ export const SKELETON_ROW_COUNT = 8;
 export const COMPANY_TYPE_OPTIONS = ["startup", "mid", "enterprise", "gov", "nonprofit", "other"];
 
 export const EVENT_TYPE_COLORS = {
-  phone_screen: { bg: "bg-purple-100", text: "text-purple-800", dot: "bg-purple-500" },
-  technical: { bg: "bg-blue-100", text: "text-blue-800", dot: "bg-blue-500" },
+  phone_screen: { bg: "bg-violet-100", text: "text-violet-800", dot: "bg-violet-500" },
+  technical: { bg: "bg-brand-100", text: "text-brand-800", dot: "bg-brand-500" },
   onsite: { bg: "bg-amber-100", text: "text-amber-800", dot: "bg-amber-500" },
-  behavioral: { bg: "bg-teal-100", text: "text-teal-800", dot: "bg-teal-500" },
-  offer: { bg: "bg-green-100", text: "text-green-800", dot: "bg-green-500" },
-  other: { bg: "bg-gray-100", text: "text-gray-800", dot: "bg-gray-500" },
+  behavioral: { bg: "bg-sky-100", text: "text-sky-800", dot: "bg-sky-500" },
+  offer: { bg: "bg-emerald-100", text: "text-emerald-800", dot: "bg-emerald-500" },
+  other: { bg: "bg-slate-100", text: "text-slate-800", dot: "bg-slate-500" },
 };
 
-export const DEFAULT_EVENT_COLOR = { bg: "bg-gray-100", text: "text-gray-800", dot: "bg-gray-500" };
+export const DEFAULT_EVENT_COLOR = { bg: "bg-slate-100", text: "text-slate-800", dot: "bg-slate-500" };
 
 export const CALENDAR_STALE_TIME_MS = 60_000;
 
@@ -86,12 +86,12 @@ export const STALE_CONTACT_DAYS = 14;
 export const RELATIONSHIP_OPTIONS = ["recruiter", "referral", "mentor", "peer", "hiring_manager", "other"];
 
 export const RELATIONSHIP_COLORS = {
-  recruiter: { bg: "bg-blue-100", text: "text-blue-700" },
-  referral: { bg: "bg-green-100", text: "text-green-700" },
-  mentor: { bg: "bg-purple-100", text: "text-purple-700" },
-  peer: { bg: "bg-teal-100", text: "text-teal-700" },
+  recruiter: { bg: "bg-brand-100", text: "text-brand-700" },
+  referral: { bg: "bg-emerald-100", text: "text-emerald-700" },
+  mentor: { bg: "bg-violet-100", text: "text-violet-700" },
+  peer: { bg: "bg-sky-100", text: "text-sky-700" },
   hiring_manager: { bg: "bg-amber-100", text: "text-amber-700" },
-  other: { bg: "bg-gray-100", text: "text-gray-700" },
+  other: { bg: "bg-slate-100", text: "text-slate-700" },
 };
 
 export const CLEARBIT_LOGO_BASE_URL = "https://logo.clearbit.com";

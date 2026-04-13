@@ -1,6 +1,7 @@
 """Job listings query and retrieval logic."""
 
 from bson import ObjectId
+from bson.errors import InvalidId
 
 import structlog
 
@@ -97,6 +98,6 @@ async def get_listing(listing_id: str) -> dict | None:
     col = get_collection("job_listings")
     try:
         oid = ObjectId(listing_id)
-    except Exception:
+    except (ValueError, TypeError, InvalidId):
         return None
     return await col.find_one({"_id": oid})

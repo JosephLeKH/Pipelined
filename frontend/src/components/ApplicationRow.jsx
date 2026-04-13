@@ -5,28 +5,17 @@ import LayoutDashboard from "lucide-react/dist/esm/icons/layout-dashboard";
 import Pencil from "lucide-react/dist/esm/icons/pencil";
 import Bell from "lucide-react/dist/esm/icons/bell";
 
-import { STAGE_COLORS, DEFAULT_STAGE_COLOR, STALE_APPLICATION_DAYS } from "../lib/constants";
-import { formatDate } from "../lib/dateUtils";
+import { STAGE_COLORS, DEFAULT_STAGE_COLOR } from "../lib/constants";
+import { formatDate, isStale, isFollowUpOverdue } from "../lib/dateUtils";
 import { RowMenu } from "./ApplicationRowActions";
 import CompanyLogo from "./CompanyLogo";
 import FitBadge from "./FitBadge";
-
-const MS_PER_DAY = 86_400_000;
 
 const SOURCE_ICONS = {
   extension: Globe,
   board: LayoutDashboard,
   manual: Pencil,
 };
-
-function isStale(updatedAt) {
-  return Date.now() - new Date(updatedAt).getTime() > STALE_APPLICATION_DAYS * MS_PER_DAY;
-}
-
-function isFollowUpOverdue(followUpDate) {
-  if (!followUpDate) return false;
-  return new Date(followUpDate) < new Date(new Date().toDateString());
-}
 
 export function StagePill({ stage }) {
   const color = STAGE_COLORS[stage] ?? DEFAULT_STAGE_COLOR;

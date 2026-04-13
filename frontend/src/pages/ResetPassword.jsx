@@ -4,6 +4,9 @@ import { useState, useCallback } from "react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 
 import { useResetPassword } from "../hooks/useAuth";
+import { PASSWORD_MIN_LENGTH } from "../lib/constants";
+
+const RESET_SUCCESS_REDIRECT_MS = 2000;
 
 function ResetPassword() {
   const [searchParams] = useSearchParams();
@@ -29,8 +32,8 @@ function ResetPassword() {
         setError("New password is required.");
         return;
       }
-      if (newPassword.length < 8) {
-        setError("Password must be at least 8 characters.");
+      if (newPassword.length < PASSWORD_MIN_LENGTH) {
+        setError(`Password must be at least ${PASSWORD_MIN_LENGTH} characters.`);
         return;
       }
       if (newPassword !== confirmPassword) {
@@ -41,7 +44,7 @@ function ResetPassword() {
       try {
         await doReset({ token, new_password: newPassword });
         setSuccess(true);
-        setTimeout(() => navigate("/login", { replace: true }), 2000);
+        setTimeout(() => navigate("/login", { replace: true }), RESET_SUCCESS_REDIRECT_MS);
       } catch (err) {
         if (err?.code === "TOKEN_EXPIRED") {
           setError("This reset link has expired. Please request a new one.");

@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from auth.router import get_current_user
+from auth.dependencies import get_current_user
 from jobs.schemas import JobListingResponse
 from saved_searches.schemas import SavedSearchCreate, SavedSearchResponse
 from saved_searches.service import (
@@ -16,8 +16,14 @@ from saved_searches.service import (
 
 router = APIRouter(prefix="/api/saved-searches", tags=["saved-searches"])
 
-SEARCH_LIMIT_DETAIL = "Maximum 10 saved searches per user."
-SEARCH_NOT_FOUND_DETAIL = "Saved search not found."
+SEARCH_LIMIT_DETAIL = {
+    "code": "SEARCH_LIMIT_REACHED",
+    "message": "Maximum 10 saved searches per user.",
+}
+SEARCH_NOT_FOUND_DETAIL = {
+    "code": "SEARCH_NOT_FOUND",
+    "message": "Saved search not found.",
+}
 
 
 @router.post("", status_code=201)
@@ -30,7 +36,7 @@ async def create_saved_search_endpoint(
         doc = await create_saved_search(str(user["_id"]), body)
     except SavedSearchLimitError:
         raise HTTPException(status_code=409, detail=SEARCH_LIMIT_DETAIL)
-    return {"data": SavedSearchResponse.from_doc(doc).model_dump()}
+    return {"data": SavedSearchResponse.from_doc(doc)}
 
 
 @router.get("")
@@ -39,7 +45,7 @@ async def list_saved_searches_endpoint(
 ) -> dict:
     """List all saved searches for the current user."""
     docs = await list_saved_searches(str(user["_id"]))
-    return {"data": [SavedSearchResponse.from_doc(d).model_dump() for d in docs]}
+    return {"data": [SavedSearchResponse.from_doc(d) for d in docs]}
 
 
 @router.delete("/{search_id}", status_code=204)
@@ -65,6 +71,6 @@ async def get_saved_search_results_endpoint(
     except SavedSearchNotFoundError:
         raise HTTPException(status_code=404, detail=SEARCH_NOT_FOUND_DETAIL)
     return {
-        "data": [JobListingResponse.from_doc(d).model_dump() for d in docs],
+        "data": [JobListingResponse.from_doc(d) for d in docs],
         "meta": {"total": total},
     }

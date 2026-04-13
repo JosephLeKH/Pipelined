@@ -63,7 +63,7 @@ if [ -n "$PRD_NAME" ]; then
     PRD_FILE="$SCRIPT_DIR/${PRD_NAME}.json"
   fi
 else
-  PRD_FILE="$SCRIPT_DIR/prd_4.json"
+  PRD_FILE="$SCRIPT_DIR/prd_5.json"
 fi
 
 # Derive progress file name from the PRD file name (prd_2.json -> progress_2.txt, prd.json -> progress.txt)

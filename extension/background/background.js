@@ -3,6 +3,8 @@
 const TOKEN_KEY = "pipelined_auth_token";
 const API_BASE = "https://api.pipelined.app";
 
+// MSG constants are duplicated across background.js, content.js, and contact_banner.js
+// because content scripts don't support ES modules. Keep these in sync manually.
 const MSG = {
   SAVE_APPLICATION: "SAVE_APPLICATION",
   SAVE_CONTACT: "SAVE_CONTACT",
@@ -46,10 +48,11 @@ async function refreshToken() {
   } catch {
     // Refresh failed — user must log in again
   }
+  await clearToken();
   return false;
 }
 
-async function fetchWithAuth(path, options = {}) {
+async function fetchWithAuth(path, options = {}, _retried = false) {
   const token = await getToken();
   if (!token) {
     return { ok: false, status: 401, error: "NOT_AUTHENTICATED" };
@@ -65,15 +68,23 @@ async function fetchWithAuth(path, options = {}) {
   });
 
   if (response.status === 401) {
+    if (_retried) {
+      await clearToken();
+      return { ok: false, status: 401, error: "SESSION_EXPIRED" };
+    }
     const refreshed = await refreshToken();
     if (refreshed) {
-      return fetchWithAuth(path, options);
+      return fetchWithAuth(path, options, true);
     }
     await clearToken();
     return { ok: false, status: 401, error: "SESSION_EXPIRED" };
   }
 
-  return response.json();
+  try {
+    return await response.json();
+  } catch {
+    return { error: { code: "INVALID_RESPONSE", message: "Server returned invalid JSON" } };
+  }
 }
 
 // ── Save logic ────────────────────────────────────────────────────────────────

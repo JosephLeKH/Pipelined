@@ -7,6 +7,7 @@ from datetime import date, datetime, timedelta, timezone
 
 import structlog
 from bson import ObjectId
+from bson.errors import InvalidId
 from pymongo import ReturnDocument
 
 from applications.schemas import (
@@ -127,7 +128,7 @@ def _build_filter(uid: ObjectId, query: ApplicationListQuery) -> dict:
         sort_order = 1 if query.sort_order == "asc" else -1
         try:
             cursor_id = ObjectId(query.cursor)
-        except Exception as exc:
+        except (ValueError, TypeError, InvalidId) as exc:
             raise InvalidCursorError("Invalid pagination cursor") from exc
         f["_id"] = {"$lt": cursor_id} if sort_order == -1 else {"$gt": cursor_id}
 
@@ -148,7 +149,7 @@ async def _list_with_text_search(
             score_str, id_str = query.cursor.rsplit(TEXT_SEARCH_CURSOR_SEP, 1)
             cursor_score = float(score_str)
             cursor_id = ObjectId(id_str)
-        except Exception as exc:
+        except (ValueError, TypeError, InvalidId) as exc:
             raise InvalidCursorError("Invalid pagination cursor") from exc
         pipeline.append({"$match": {"$or": [
             {"score": {"$lt": cursor_score}},
@@ -182,6 +183,8 @@ async def _apply_openai_fallback(body: ApplicationCreate) -> ApplicationCreate:
     try:
         parsed = await parse_with_openai(page_text)
     except Exception:
+        # Catch all exceptions from OpenAI calls (network timeouts, API errors, etc.)
+        # parse_with_openai already handles and returns None for most errors, so this is a fallback
         logger.warning("openai_fallback_error")
         return body
 
@@ -523,7 +526,7 @@ async def bulk_delete(user_id: str, ids: list[str]) -> int:
     uid = ObjectId(user_id)
     try:
         oid_list = [ObjectId(i) for i in ids]
-    except Exception:
+    except (ValueError, TypeError, InvalidId):
         return 0
 
     db_client = get_client()
@@ -550,7 +553,7 @@ async def bulk_update_stage(user_id: str, ids: list[str], stage: str) -> int:
     uid = ObjectId(user_id)
     try:
         oid_list = [ObjectId(i) for i in ids]
-    except Exception:
+    except (ValueError, TypeError, InvalidId):
         return 0
 
     apps = get_collection("applications")
@@ -715,7 +718,7 @@ def _parse_compensation(text: str) -> int | None:
     return None
 
 
-async def _get_salary_distribution(uid: ObjectId, col, base_filter: dict) -> list[dict]:
+async def _get_salary_distribution(col, base_filter: dict) -> list[dict]:
     """Parse compensation strings and return salary bucket counts."""
     docs = await col.find(
         {**base_filter, "compensation": {"$nin": [None, ""]}},
@@ -794,7 +797,7 @@ async def get_analytics(user_id: str, days: int | None = None) -> dict:
 
     raw_result, salary_dist = await asyncio.gather(
         col.aggregate(pipeline).to_list(length=1),
-        _get_salary_distribution(uid, col, base_filter),
+        _get_salary_distribution(col, base_filter),
     )
     raw = raw_result[0]
 

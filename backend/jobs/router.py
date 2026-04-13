@@ -1,5 +1,7 @@
 """Job listings route handlers: browse and detail."""
 
+from datetime import datetime
+
 import structlog
 from fastapi import APIRouter, Cookie, Depends, HTTPException, Query
 
@@ -51,8 +53,6 @@ async def list_jobs(
     user: dict | None = Depends(_optional_user),
 ) -> dict:
     """Return paginated job listings with optional filters."""
-    from datetime import datetime
-
     query = JobListQuery(
         q=q,
         role_type=role_type,

@@ -6,15 +6,8 @@ import PhoneCall from "lucide-react/dist/esm/icons/phone-call";
 import Unlink from "lucide-react/dist/esm/icons/unlink";
 
 import { usePingContact, useUnlinkContact } from "../hooks/useContacts";
-import { RELATIONSHIP_COLORS, STALE_CONTACT_DAYS } from "../lib/constants";
-
-const MS_PER_DAY = 86_400_000;
-
-function isStale(lastContactedAt) {
-  if (!lastContactedAt) return true;
-  const diffDays = (Date.now() - new Date(lastContactedAt).getTime()) / MS_PER_DAY;
-  return diffDays > STALE_CONTACT_DAYS;
-}
+import { RELATIONSHIP_COLORS } from "../lib/constants";
+import { isStaleContact } from "../lib/dateUtils";
 
 function RelationshipBadge({ relationship }) {
   const colors = RELATIONSHIP_COLORS[relationship] ?? { bg: "bg-gray-100", text: "text-gray-700" };
@@ -30,7 +23,7 @@ function ContactCard({ contact, applicationId }) {
   const { mutate: ping, isPending: pinging } = usePingContact();
   const { mutate: unlink, isPending: unlinking } = useUnlinkContact();
 
-  const stale = isStale(contact.last_contacted_at);
+  const stale = isStaleContact(contact.last_contacted_at);
   const lastContactedLabel = contact.last_contacted_at
     ? formatDistanceToNow(new Date(contact.last_contacted_at), { addSuffix: true })
     : "Never contacted";
