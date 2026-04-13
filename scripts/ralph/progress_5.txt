@@ -9,3 +9,63 @@ Started: Mon Apr 13 01:07:08 PDT 2026
 - Updated constants.js STAGE_COLORS (Applied→brand, Phone Screen→violet, Offer→emerald, Rejected→rose), EVENT_TYPE_COLORS, RELATIONSHIP_COLORS, DEFAULT_STAGE_COLOR, DEFAULT_EVENT_COLOR all migrated from blue/green/gray/red to brand palette + slate neutrals.
 - Build passes (vite build clean). All 41 test files, 301 tests pass.
 - Key learning: Tailwind custom color alias (colors.gray = colors.slate) is the most impactful single change — all existing gray-* utilities in components instantly pick up the warmer slate palette without any component edits.
+
+## US-095 — Landing page redesign (PASSED)
+- Full rewrite of LandingPage.jsx (~290 lines): sticky nav with backdrop-blur-md, GitBranch icon, ghost Log In + primary gradient Get Started button.
+- Hero: two-column layout, gradient text headline (brand-600→violet-500 bg-clip-text text-transparent), perspective product mockup (rotateY(-8deg) rotateX(2deg)), glow behind mockup, Get Started Free + Install Extension CTAs.
+- Trust bar: slate-50/slate-800 bg, 5 university names (Stanford, MIT, UC Berkeley, Carnegie Mellon, Georgia Tech).
+- Features grid: 6 cards 3×2, IntersectionObserver scroll animation with 80ms stagger delay per card, rounded-xl CARD_BASE, brand-50 icon containers.
+- Stats bar: bg-brand-600, 3 stats (10,000+ Applications Tracked, 500+ Active Users, 10 Job Boards Supported).
+- How it works: 3-step IntersectionObserver fade-in flow.
+- Bottom CTA: bg-gradient-to-r from-brand-600 to-violet-600, white Get Started Free button.
+- Footer: bg-slate-900, 3-column links (Product, Company, Legal).
+- Added IntersectionObserver mock to frontend/src/test/setup.js (JSDOM stub that immediately fires isIntersecting: true).
+- Build passes (vite build clean). All 41 test files, 301 tests pass.
+
+## US-094 — Core component library refresh (PASSED)
+- Updated 30 component files: ManualAddForm, CsvImportModal, MergeDialog, ShortcutHelp, NewEventForm, ContactForm, CommandPalette, FilterBar, StatsBar, JobCard, KanbanCard, ContactCard, ApplicationRow, CalendarEventDetail, DetailPanel, ApplicationRowActions, EmptyState, SaveSearchPopover, NotesEditor, DigestSection, ResumeSection, WeeklyGoalSection, PipelineStagesEditor, NotificationBell, SharePipeline, UndoToast, JobRow, ErrorBoundary, CalendarGrid.
+- All button elements migrated to brand gradient (BUTTON_PRIMARY) or BUTTON_SECONDARY/BUTTON_GHOST tokens with active:scale-[0.98] micro-interactions and focus:ring-brand-500/30.
+- All text inputs/selects/textareas migrated to INPUT_BASE (rounded-input, brand focus ring, slate borders, dark mode).
+- All card containers use CARD_BASE (rounded-card, shadow-card, slate-200/60 border, dark:slate-800).
+- All badge/pill elements use BADGE_BASE (rounded-badge, text-xs, px-2.5 py-1).
+- All modal overlays upgraded: bg-black/40 backdrop-blur-sm backdrop + MODAL_CARD (rounded-2xl shadow-modal).
+- gray-* → slate-* throughout; blue-* → brand-* for interactive elements.
+- Updated CommandPalette.test.jsx assertion bg-blue-50 → bg-brand-50 to match new highlight color.
+- Build passes (vite build clean). All 41 test files, 301 tests pass.
+
+---
+US-096: Dashboard redesign — stat cards with colored accents, stage-colored kanban, spacious rows, and pill stage selector
+Status: PASSED
+Commit: e1ceb2f
+
+Changes:
+- StatsBar: 5 lucide icons (TrendingUp/Activity/CheckCircle/Clock/Bell), METRIC_CONFIG array with per-metric accent border + icon bg classes, MetricCard with border-l-[3px], 36px rounded-lg icon container, text-2xl font-bold values, grid-cols-2/3/5 responsive
+- constants.js: Added `border` (Tailwind border-color class) and `activeBg` (solid fill bg class) to all STAGE_COLORS and DEFAULT_STAGE_COLOR
+- KanbanCard: border-l-[3px] ${color.border} left border per stage, hover:-translate-y-px hover:shadow-card-hover, rotate-[2deg] scale-105 drag state, animate-pulse stale dot, amber-500 follow-up dot
+- KanbanBoard: column header with color.dot + count badge (rounded-full bg-slate-100), bg-slate-50/slate-800/50 column body, brand-50/brand-900/20 isOver state, brand-600 mobile tab active state, empty placeholder "No applications" with dashed border
+- ApplicationRow: py-3.5 spacious rows, border-l-2 border-l-brand-500 focused row indicator, animate-pulse stale dot, amber-500 bell
+- DetailPanel: rounded-full close button with bg-slate-100 hover:bg-slate-200, rounded-full delete button with hover:bg-rose-50, stage <select> replaced with div[role="group"] of pill buttons using color.activeBg when active
+- DetailPanel.test.jsx: Updated stage change test from combobox/selectOptions to group/button/click pattern; added `within` import
+
+Test fixes:
+- KanbanBoard empty column text reverted from "Drop applications here" back to "No applications" to match existing test assertion
+- DetailPanel stage test updated to click pill button instead of selecting from combobox
+- All 301 tests pass, build passes
+
+---
+US-097: Auth pages redesign — split layout with gradient brand panel
+Status: PASSED
+Commit: c3c5723
+
+Changes:
+- New AuthLayout.jsx component: flex min-h-screen split layout — left 55% form panel (white/dark:slate-900) + right 45% brand panel (hidden on mobile with lg:flex)
+- Brand panel: bg-gradient-to-br from-brand-600 via-brand-700 to-violet-700, "Pipelined" text-2xl font-bold logo, "Your job search, organized." tagline, 3 feature bullets with Check icons in white/20 circles, testimonial quote in text-brand-200
+- Mobile: brand panel hidden (hidden lg:flex), Pipelined logo shown above form (lg:hidden)
+- Login.jsx: "Welcome back" heading, "Sign in to your account" subheading, Google OAuth first, or divider, email/password inputs with INPUT_BASE tokens, "Forgot password?" brand-600 link, BUTTON_PRIMARY gradient submit, "Sign up" link
+- Register.jsx: "Create your account" heading, same OAuth+form pattern, "Log in" link
+- ForgotPassword.jsx: "Forgot password?" heading, email input, emerald success state
+- ResetPassword.jsx: "Set new password" heading, new + confirm password fields, emerald success state
+- All error states: rose-50 bg border border-rose-200 text-rose-800 (with dark variants)
+- All pages use INPUT_BASE and BUTTON_PRIMARY from designTokens.js
+- All existing test assertions preserved (label text, role names, alert roles)
+- All 301 tests pass, build passes

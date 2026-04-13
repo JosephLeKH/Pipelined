@@ -21,25 +21,25 @@ export default function SavedSearchesSidebar({ onApply }) {
   }
 
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-      <h2 className="mb-3 text-sm font-semibold text-gray-700 dark:text-gray-300">Saved Searches</h2>
+    <div className="rounded-card border border-slate-200/60 bg-white p-4 shadow-card dark:border-slate-700 dark:bg-slate-800">
+      <h2 className="mb-3 text-sm font-semibold text-slate-700 dark:text-slate-300">Saved Searches</h2>
       <ul className="flex flex-col gap-1" aria-label="Saved searches list">
         {searches.map((s) => (
           <li
             key={s.id}
-            className="flex cursor-pointer items-center justify-between rounded px-2 py-1.5 text-sm hover:bg-gray-50 dark:hover:bg-gray-700"
+            className="flex cursor-pointer items-center justify-between rounded px-2 py-1.5 text-sm hover:bg-slate-50 dark:hover:bg-slate-700"
             onClick={() => onApply(s)}
           >
             <div className="flex flex-col">
-              <span className="font-medium text-gray-800 dark:text-gray-200">{s.name}</span>
+              <span className="font-medium text-slate-800 dark:text-slate-200">{s.name}</span>
               {s.query && (
-                <span className="text-xs text-gray-500 dark:text-gray-400">"{s.query}"</span>
+                <span className="text-xs text-slate-500 dark:text-slate-400">"{s.query}"</span>
               )}
             </div>
             <div className="flex items-center gap-2">
               {s.new_matches_count > 0 && (
                 <span
-                  className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-700 dark:bg-blue-900 dark:text-blue-300"
+                  className="rounded-full bg-brand-100 px-2 py-0.5 text-xs font-semibold text-brand-700 dark:bg-brand-900/30 dark:text-brand-300"
                   aria-label={`${s.new_matches_count} new matches`}
                 >
                   {s.new_matches_count}

@@ -45,7 +45,7 @@
         "npm run build passes"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "This is a mass find-and-replace with judgment. Search for patterns like `bg-blue-600`, `rounded-lg`, `shadow-sm`, `border-gray-` across all component files and replace with the design token equivalents. The key behavioral additions are: hover lift on buttons (active:scale-[0.98]), focus rings (ring-2 ring-brand-500/30), and modal backdrop blur. These micro-interactions are what separate a polished app from an AI-generated one."
     },
     {
@@ -68,7 +68,7 @@
         "npm run build passes"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "notes": "The current landing page is the textbook 'AI-generated Tailwind page' — centered text, blue-600 buttons, gray-50 background, no visual depth. The redesign introduces: gradient text, perspective mockups, backdrop blur, scroll animations, and a branded color story. These are the hallmarks of a hand-crafted SaaS page. Study Linear.app, Vercel.com, and Resend.com for inspiration. The university trust bar is social proof that works even without real logos — text names of prestigious schools establish credibility. The stats are aspirational but motivational."
     },
     {
@@ -89,7 +89,7 @@
         "npm run build passes"
       ],
       "priority": 4,
-      "passes": false,
+      "passes": true,
       "notes": "The dashboard redesign is the highest-impact visual change because users see it every session. Key differences from the current AI-generated look: (1) colored left borders on cards/rows create visual rhythm, (2) the horizontal stage pill selector in DetailPanel replaces the generic dropdown with something tactile, (3) kanban cards have subtle lift on hover, (4) the filter pills are a modern pattern (copied from Linear). Use the design tokens from US-093 religiously — no inline color values."
     },
     {
@@ -111,7 +111,7 @@
         "npm run build passes"
       ],
       "priority": 5,
-      "passes": false,
+      "passes": true,
       "notes": "The split-screen auth pattern is used by every premium SaaS (Notion, Linear, Vercel, Stripe). The branding panel serves two purposes: (1) it makes the login page feel branded and trustworthy, (2) it provides marketing surface for features the user might not know about. The testimonial quote is social proof at the decision point. On mobile, skip the panel entirely — mobile users need a fast, focused form."
     },
     {
