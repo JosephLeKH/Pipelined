@@ -411,7 +411,7 @@
         "npm test passes"
       ],
       "priority": 19,
-      "passes": false,
+      "passes": true,
       "notes": "The single biggest perf win is bundle splitting \u2014 without it, every user downloads recharts (180KB) even if they never visit Analytics. Preconnect hints save 100-200ms on first load by parallelizing DNS lookups and TLS handshakes. GZip on the backend typically reduces response size by 70%. These are zero-ongoing-cost optimizations \u2014 set and forget."
     },
     {
