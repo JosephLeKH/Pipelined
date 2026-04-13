@@ -218,7 +218,7 @@
         "npm test passes in /extension"
       ],
       "priority": 10,
-      "passes": false,
+      "passes": true,
       "notes": "The popup is tiny real estate \u2014 every pixel counts. The gradient header immediately brands it. The left-colored bar per card creates the same visual rhythm as the dashboard application rows. Stage badge colors must match the frontend exactly. No rounded-lg everywhere \u2014 use tight 4px radius on inner elements, 8px on the popup container (matches Chrome extension conventions)."
     },
     {

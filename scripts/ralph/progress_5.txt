@@ -159,3 +159,22 @@ Added a comprehensive animation system using pure CSS + minimal JS — no third-
 ### Learnings
 - `useCountUp` must check `window.matchMedia('(prefers-reduced-motion: no-preference)')` in JS (not just CSS `@media`) — test environments stub matchMedia to return `matches: false`, so this correctly skips animation in tests while running it in production
 - Custom CSS animation classes defined in an imported .css file are not Tailwind-generated, so they won't be purged by Tailwind JIT — they come through as-is
+
+## US-102 — Extension popup redesign — branded mini-dashboard with polished cards
+
+**Status:** COMPLETE
+**Date:** 2026-04-13
+
+### What was implemented
+- **popup.html**: Full structural redesign — gradient header (brand-600→brand-500), auto-save toggle row below header (separate from #authenticated), unauthenticated centered layout with briefcase icon + heading + desc + sign-in button, #empty-state div inside #authenticated for authenticated-but-no-saves state, footer with "Open Dashboard →" link and v1.0.0 version badge.
+- **popup.css**: Complete rewrite with CSS custom properties (--brand-400/500/600/700, --slate-50 through --slate-900). 360px wide, max 500px tall body. Toggle switch via button pseudo-element (font-size:0 hides ON/OFF text visually while preserving textContent for tests). Left-bar cards with absolute-positioned .open-link overlay for full-card click. Stage badges as rounded-full pills at 10px.
+- **popup.js**: Added `bar` color to STAGE_COLORS entries. Updated renderSaves to build new card structure (card-bar, card-body, card-info, card-meta). Added #empty-state awareness — shows div if present, falls back to .empty li for test DOM compat. All exported function signatures unchanged.
+
+### Key decisions
+- Preserved all element IDs and CSS class names (.save-item, .company, .role, .stage-badge, .open-link, .empty) that the 218 existing tests check — tests use their own POPUP_HTML fixture, not popup.html, so structural changes to HTML don't break tests.
+- `#open-dashboard-auth` moved to footer; `#open-dashboard` kept in unauthenticated state — satisfies popup.js event listener attachments.
+- Auto-save toggle button uses font-size:0 + ::after pseudo-element for visual toggle appearance while keeping textContent="ON"/"OFF" for test assertions.
+- .open-link is position:absolute; inset:0 (invisible overlay) making the whole card clickable via the link.
+
+### Test results
+218/218 tests pass (npm test in /extension)
