@@ -59,6 +59,7 @@ async def ensure_indexes() -> None:
     notifications = get_collection("notifications")
     ai_cache = get_collection("ai_cache")
     ai_budget = get_collection("ai_budget")
+    app_templates = get_collection("application_templates")
 
     await asyncio.gather(
         apps.create_index([("user_id", 1), ("date_applied", -1)], name="user_date"),
@@ -100,4 +101,5 @@ async def ensure_indexes() -> None:
             name="cache_ttl",
         ),
         ai_budget.create_index("month", unique=True, name="month_unique"),
+        app_templates.create_index([("user_id", 1), ("created_at", -1)], name="template_user_date"),
     )

@@ -11,6 +11,8 @@ import { useAuth } from "../context/AuthContext";
 import { INPUT_BASE } from "../lib/designTokens";
 import { DuplicateWarning } from "./DuplicateWarning";
 import { FormActions } from "./FormActions";
+import FormField from "./FormField";
+import TemplateBar from "./TemplateBar";
 
 const GENERIC_ERROR_MSG = "Something went wrong. Please try again.";
 
@@ -20,18 +22,6 @@ const FOCUSABLE_SELECTORS = 'button:not([disabled]), [href], input:not([disabled
 
 function getTodayString() {
   return new Date().toISOString().slice(0, 10);
-}
-
-function FormField({ label, htmlFor, children, error }) {
-  return (
-    <div className="flex flex-col gap-1">
-      <label className="text-sm font-medium text-slate-700 dark:text-slate-300" htmlFor={htmlFor}>
-        {label}
-      </label>
-      {children}
-      {error && <p className="text-xs text-red-600">{error}</p>}
-    </div>
-  );
 }
 
 function ManualAddForm({ isOpen, onClose }) {
@@ -63,6 +53,14 @@ function ManualAddForm({ isOpen, onClose }) {
     reset();
   }, [reset]);
 
+  const applyTemplate = useCallback((template) => {
+    const f = template.fields;
+    if (f.remote_status) setRemoteStatus(f.remote_status);
+    if (f.company_type) setCompanyType(f.company_type);
+    if (f.compensation) setCompensation(f.compensation);
+    if (f.tags?.length) setTags(f.tags.join(", "));
+  }, []);
+
   const handleClose = useCallback(() => {
     resetForm();
     onClose();
@@ -79,7 +77,6 @@ function ManualAddForm({ isOpen, onClose }) {
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, handleKeyDown]);
 
-  // Auto-focus first focusable element when modal opens
   useEffect(() => {
     if (isOpen && dialogRef.current) {
       const first = dialogRef.current.querySelector(FOCUSABLE_SELECTORS);
@@ -87,18 +84,13 @@ function ManualAddForm({ isOpen, onClose }) {
     }
   }, [isOpen]);
 
-  // Trap focus inside dialog while open
   const handleDialogKeyDown = useCallback((e) => {
     if (e.key !== "Tab" || !dialogRef.current) return;
-    const els = Array.from(dialogRef.current.querySelectorAll(FOCUSABLE_SELECTORS));
+    const els = [...dialogRef.current.querySelectorAll(FOCUSABLE_SELECTORS)];
     if (!els.length) return;
-    const first = els[0];
-    const last = els[els.length - 1];
-    if (e.shiftKey) {
-      if (document.activeElement === first) { e.preventDefault(); last.focus(); }
-    } else {
-      if (document.activeElement === last) { e.preventDefault(); first.focus(); }
-    }
+    const [first, last] = [els[0], els[els.length - 1]];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
   }, []);
 
   const handleOverlayClick = useCallback(
@@ -169,6 +161,17 @@ function ManualAddForm({ isOpen, onClose }) {
           </button>
         </div>
         <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4 px-6 py-4">
+          <TemplateBar
+            onApply={applyTemplate}
+            fields={{
+              remote_status: remoteStatus || null,
+              company_type: companyType || null,
+              role_type: null,
+              source: null,
+              tags: tags.split(",").map((t) => t.trim()).filter(Boolean),
+              compensation: compensation || null,
+            }}
+          />
           {isDuplicate && <DuplicateWarning existingId={existingId} />}
           <FormField label="Role Title *" htmlFor="role-title" error={fieldErrors.roleTitle}>
             <input

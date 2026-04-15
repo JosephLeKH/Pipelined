@@ -24,6 +24,7 @@ from saved_searches.router import router as saved_searches_router
 from sharing.router import router as sharing_router
 from feedback.router import router as feedback_router
 from seo.router import router as seo_router
+from templates.router import router as templates_router
 from jobs.sync import create_scheduler
 from config import settings, validate_production_secrets
 from database import connect, disconnect, ensure_indexes
@@ -123,6 +124,7 @@ def create_app(*, testing: bool = False) -> FastAPI:
     app.include_router(activity_router)
     app.include_router(seo_router)
     app.include_router(feedback_router)
+    app.include_router(templates_router)
 
     return app
 

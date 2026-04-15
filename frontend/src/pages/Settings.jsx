@@ -7,6 +7,7 @@ import Bell from "lucide-react/dist/esm/icons/bell";
 import CalendarIcon from "lucide-react/dist/esm/icons/calendar";
 import FileText from "lucide-react/dist/esm/icons/file-text";
 import Gift from "lucide-react/dist/esm/icons/gift";
+import LayoutTemplate from "lucide-react/dist/esm/icons/layout-template";
 import Layers from "lucide-react/dist/esm/icons/layers";
 import Settings2 from "lucide-react/dist/esm/icons/settings-2";
 import Share2 from "lucide-react/dist/esm/icons/share-2";
@@ -18,6 +19,7 @@ import SettingsNotificationsSection from "../components/SettingsNotificationsSec
 import SettingsPipelineSection from "../components/SettingsPipelineSection";
 import SettingsProfileSection from "../components/SettingsProfileSection";
 import SettingsResumeSection from "../components/SettingsResumeSection";
+import SettingsTemplatesSection from "../components/SettingsTemplatesSection";
 import SettingsReferralSection from "../components/SettingsReferralSection";
 import SettingsUsageSection from "../components/SettingsUsageSection";
 import SharePipeline from "../components/SharePipeline";
@@ -31,6 +33,7 @@ const SIDEBAR_ITEMS = [
   { id: "calendar", label: "Calendar", icon: CalendarIcon },
   { id: "notifications", label: "Notifications", icon: Bell },
   { id: "resume", label: "Resume & AI", icon: FileText },
+  { id: "templates", label: "Templates", icon: LayoutTemplate },
   { id: "sharing", label: "Sharing", icon: Share2 },
   { id: "referral", label: "Invite Friends", icon: Gift },
   { id: "usage", label: "Usage & Plan", icon: BarChart2 },
@@ -105,6 +108,7 @@ function renderSection(activeSection, user) {
     case "calendar": return <CalendarSection />;
     case "notifications": return <SettingsNotificationsSection />;
     case "resume": return <SettingsResumeSection />;
+    case "templates": return <SettingsTemplatesSection />;
     case "sharing": return <SharingSection />;
     case "referral": return <SettingsReferralSection user={user} />;
     case "usage": return <SettingsUsageSection user={user} />;
