@@ -6,6 +6,7 @@ import Pencil from "lucide-react/dist/esm/icons/pencil";
 
 import { useUpdateApplication } from "../hooks/useApplications";
 import { NOTES_MAX_LENGTH } from "../lib/constants";
+import MarkdownEditor from "./MarkdownEditor";
 
 const AMBER_PCT = 0.8;
 
@@ -50,6 +51,10 @@ function NotesEditor({ applicationId, initialValue, onDirtyChange }) {
     );
   };
 
+  const charPct = draft.length / NOTES_MAX_LENGTH;
+  const charCls =
+    charPct >= 1 ? "text-rose-600" : charPct >= AMBER_PCT ? "text-amber-600" : "text-slate-400";
+
   return (
     <div className="flex flex-col gap-1.5" data-testid="notes-editor">
       <div className="flex items-center justify-between">
@@ -75,20 +80,14 @@ function NotesEditor({ applicationId, initialValue, onDirtyChange }) {
       )}
       {isEditing ? (
         <>
-          <textarea
+          <MarkdownEditor
             id="notes-textarea"
-            className="min-h-[120px] resize-y border border-slate-300 bg-white rounded-input px-3 py-2 text-sm placeholder:text-slate-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none transition-colors dark:bg-slate-800 dark:border-slate-600 dark:text-slate-100"
-            aria-label="Notes"
             value={draft}
-            onChange={(e) => setDraft(e.target.value)}
+            onChange={setDraft}
             maxLength={NOTES_MAX_LENGTH}
           />
           <div className="flex items-center justify-between">
-            {(() => {
-              const pct = draft.length / NOTES_MAX_LENGTH;
-              const cls = pct >= 1 ? "text-rose-600" : pct >= AMBER_PCT ? "text-amber-600" : "text-slate-400";
-              return <span className={`text-xs ${cls}`}>{draft.length}/{NOTES_MAX_LENGTH}</span>;
-            })()}
+            <span className={`text-xs ${charCls}`}>{draft.length}/{NOTES_MAX_LENGTH}</span>
             <div className="flex gap-2">
               <button
                 type="button"
