@@ -1,0 +1,80 @@
+# Ralph Progress Log
+Started: Wed Apr 15 15:22:57 PDT 2026
+---
+
+## US-113 — Codebase quality: split oversized files and fix list rendering bugs
+**Status:** PASSED
+**Commit:** 403bf80
+
+### New files created
+- `frontend/src/hooks/useWindowHeight.js` — debounced (100ms) resize hook returning `window.innerHeight`
+- `frontend/src/hooks/useWindowHeight.test.js` — smoke tests (mount, debounce, rapid resize)
+- `frontend/src/components/DetailPanelHeader.jsx` — extracted from DetailPanel.jsx (logo, role/company, close/delete buttons)
+- `frontend/src/components/DetailPanelNotes.jsx` — thin wrapper around NotesEditor
+- `frontend/src/components/DetailPanelTimeline.jsx` — wraps ApplicationTimeline + CalendarEventsList
+- `frontend/src/components/DuplicateWarning.jsx` — extracted inline duplicate warning from ManualAddForm
+- `frontend/src/components/FormActions.jsx` — extracted Cancel/submit button row from ManualAddForm
+- Smoke tests added for all 6 new components/hooks
+
+### Files reduced under 300 lines
+- `DetailPanel.jsx`: 319 → 283 lines (removed PanelHeader fn + 3 imports, added 3 sub-component imports)
+- `ManualAddForm.jsx`: 340 → 297 lines (extracted DuplicateWarning + FormActions, condensed resetForm + deps)
+- `ApplicationList.jsx`: 314 → 291 lines (condensed useHotkeys + handleArchive/Delete, added windowHeight + clear filters)
+- `KanbanBoard.jsx`: 189 → 203 lines (skeleton loading state, still under 300)
+
+### Behavior fixes
+- `ApplicationList`: FixedSizeList height now `Math.max(300, windowHeight - LIST_OFFSET_PX)` (LIST_OFFSET_PX=280)
+- `KanbanBoard`: loading state shows 3 SkeletonRow placeholders per column (KANBAN_SKELETON_COUNT=3)
+- `ApplicationList`: filtered empty state includes "Clear all filters" button (calls `onClearFilters` from Dashboard)
+- `Dashboard`: added `handleClearFilters` callback that deletes all filter keys from searchParams
+
+### Test results
+- 343 tests passed across 53 test files (all pre-existing tests pass)
+
+## US-114: Optimistic UI for Kanban drag-drop and stage changes
+**Status:** COMPLETE
+**Commit:** 9db8c86
+
+### Changes
+- `KanbanBoard.jsx`: Added `useQueryClient`+`KEYS`+`toast` imports; added `queryClient`/`queryKey`; `handleDragEnd` snapshots cache, optimistically moves card via `setQueryData`, shows undo toast on success, rolls back + error toast on failure
+- `DetailPanel.jsx`: `handleStageChange` optimistically sets `cachedApp.current_stage` before PATCH; reverts `from_stage` on `onError`
+- `ApplicationList.jsx`: Added `useQueryClient`+`KEYS` imports; `handleArchive`/`handleDelete` snapshot + filter rows via `setQueryData` before mutation; rollback on error; condensed 3 bulk callbacks to stay under 300 lines
+- New tests: `KanbanBoard.optimistic.test.jsx` (4 tests), `DetailPanel.optimistic.test.jsx` (3 tests)
+
+### Test results
+- 350 tests pass (up from 343), 55 test files pass
+
+=== US-115 COMPLETE ===
+Commit: e7c6858
+Date: 2026-04-15
+Files: CsvImportModal.jsx, DetailPanel.jsx, DetailPanelNotes.jsx, FormActions.jsx, FormActions.test.jsx, ManualAddForm.test.jsx, NotesEditor.jsx
+Changes:
+- FormActions: 'Saving…' label + Loader2 spinner while isPending
+- NotesEditor: char count with amber@80%/rose@100% colors, dirty-state propagation via useEffect
+- DetailPanel: window.confirm unsaved-notes guard on close (confirmClose callback)
+- CsvImportModal: collapsible error list (>5 errors), Copy errors button, explicit file size banner
+- Tests: updated /creating/i → /saving/i in FormActions.test.jsx and ManualAddForm.test.jsx
+Test result: 350 passed, 55 files
+
+=== US-116 COMPLETE ===
+Commit: 77fc16d
+Date: 2026-04-15
+Files: App.jsx, KanbanCard.jsx, CsvImportModal.jsx, MergeDialog.jsx, ApplicationRowActions.jsx, DetailPanelHeader.jsx, DetailPanel.jsx, a11y.test.jsx (new), Dashboard.test.jsx
+Changes:
+- App.jsx: skip link (sr-only, visible on focus) + <main id='main-content'> wrapper
+- KanbanCard: Enter/Space keydown opens detail panel; date text-slate-400→text-slate-500
+- All modals: aria-label→aria-labelledby pointing to h2 with explicit id
+- DetailPanelHeader: id='detail-panel-heading' on h2; DetailPanel: aria-labelledby
+- a11y.test.jsx: axe-core WCAG AA tests on KanbanCard, CsvImportModal, MergeDialog, skip link
+- Dashboard.test.jsx: updated dialog name query after aria-label removal
+Test result: 356 passed, 56 files
+
+## US-117 — Interview prep tracker on calendar events
+- PrepData schema (notes, checklist, questions) added to cal/schemas.py
+- service.update_event expands prep_data to flat MongoDB fields (prep_notes, prep_checklist, prep_questions)
+- PATCH /api/calendar/{id} now accepts prep_data body; from_doc reads flat fields for backward compat
+- PrepSection.jsx: collapsible component with notes textarea, checklist (with 3 starter suggestions), practice questions list
+- CalendarEventDetail: removed old flat prep state/handlers, renders PrepSection only for INTERVIEW_EVENT_TYPES
+- CalendarGrid EventChip: book icon badge when event.prep_data is non-empty
+- CalendarEventDetail.test.jsx: updated for prep_data shape and collapsible open-before-assert pattern
+Test result: 356 passed, 56 files
