@@ -499,3 +499,33 @@ async def test_update_event_sets_prep_checklist_and_notes(client, test_user):
     assert data["prep_checklist"][0]["checked"] is False
     assert data["prep_checklist"][1]["text"] == "Review system design concepts"
     assert data["prep_checklist"][1]["checked"] is True
+
+
+@pytest.mark.asyncio
+async def test_update_event_sets_prep_data(client, test_user):
+    # Arrange
+    _, cookies = test_user
+    app_id = await _create_app(client, cookies)
+    event_body = await _create_event(client, cookies, app_id)
+    event_id = event_body["data"]["id"]
+
+    prep_data = {
+        "notes": "Review system design",
+        "checklist": [{"id": "q1", "text": "Research company", "checked": False}],
+        "questions": ["Tell me about yourself", "Why this role?"],
+    }
+
+    # Act
+    resp = await client.patch(
+        f"/api/calendar/events/{event_id}",
+        json={"prep_data": prep_data},
+        cookies=cookies,
+    )
+
+    # Assert
+    assert resp.status_code == 200
+    data = resp.json()["data"]
+    assert data["prep_data"]["notes"] == "Review system design"
+    assert len(data["prep_data"]["checklist"]) == 1
+    assert data["prep_data"]["checklist"][0]["text"] == "Research company"
+    assert data["prep_data"]["questions"] == ["Tell me about yourself", "Why this role?"]

@@ -2,6 +2,7 @@
 
 import { useCallback, useMemo } from "react";
 
+import BookOpen from "lucide-react/dist/esm/icons/book-open";
 import ChevronLeft from "lucide-react/dist/esm/icons/chevron-left";
 import ChevronRight from "lucide-react/dist/esm/icons/chevron-right";
 
@@ -40,6 +41,11 @@ function EventChip({ event, onEventClick }) {
   const colors = EVENT_TYPE_COLORS[event.event_type] ?? DEFAULT_EVENT_COLOR;
   const timeStr = event.time ? ` · ${formatTime(event.time)}` : "";
   const label = `${event.company ?? "Unknown"} · ${event.event_type.replace(/_/g, " ")}${timeStr}`;
+  const hasPrepData = Boolean(
+    event.prep_data?.notes?.trim() ||
+    event.prep_data?.checklist?.length ||
+    event.prep_data?.questions?.length
+  );
   return (
     <button
       type="button"
@@ -50,6 +56,9 @@ function EventChip({ event, onEventClick }) {
     >
       <span className={`inline-block h-2 w-2 flex-shrink-0 rounded-full ${colors.dot}`} aria-hidden="true" />
       <span className="truncate">{label}</span>
+      {hasPrepData && (
+        <BookOpen className="h-3 w-3 flex-shrink-0 ml-auto" aria-label="Has prep data" />
+      )}
     </button>
   );
 }

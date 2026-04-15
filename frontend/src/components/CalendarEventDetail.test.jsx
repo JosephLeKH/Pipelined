@@ -38,8 +38,9 @@ const server = setupServer(
         title: "Technical Interview",
         company: "Acme Corp",
         role_title: "Software Engineer",
-        prep_notes: body.prep_notes ?? "Initial notes",
-        prep_checklist: body.prep_checklist ?? [],
+        prep_notes: body.prep_data?.notes ?? "Initial notes",
+        prep_checklist: body.prep_data?.checklist ?? [],
+        prep_data: body.prep_data ?? { notes: "Initial notes", checklist: [], questions: [] },
       },
     });
   })
@@ -58,11 +59,14 @@ const BASE_EVENT = {
   title: "Technical Interview",
   company: "Acme Corp",
   role_title: "Software Engineer",
-  prep_notes: "Initial notes",
-  prep_checklist: [
-    { id: "item-1", text: "Research company culture", checked: false },
-    { id: "item-2", text: "Review system design", checked: true },
-  ],
+  prep_data: {
+    notes: "Initial notes",
+    checklist: [
+      { id: "item-1", text: "Research company culture", checked: false },
+      { id: "item-2", text: "Review system design", checked: true },
+    ],
+    questions: [],
+  },
 };
 
 function makeWrapper() {
@@ -79,12 +83,16 @@ function makeWrapper() {
 }
 
 describe("CalendarEventDetail", () => {
-  it("should render prep notes and checklist items", () => {
+  it("should render prep notes and checklist items", async () => {
     // Arrange / Act
+    const user = userEvent.setup();
     render(
       <CalendarEventDetail event={BASE_EVENT} onClose={vi.fn()} />,
       { wrapper: makeWrapper() }
     );
+
+    // Open the collapsible prep section
+    await user.click(screen.getByRole("button", { name: /interview prep/i }));
 
     // Assert — notes textarea shows saved value
     const notesTextarea = screen.getByRole("textbox", { name: /prep notes/i });
@@ -103,9 +111,15 @@ describe("CalendarEventDetail", () => {
     // Arrange
     const user = userEvent.setup();
     render(
-      <CalendarEventDetail event={{ ...BASE_EVENT, prep_checklist: [] }} onClose={vi.fn()} />,
+      <CalendarEventDetail
+        event={{ ...BASE_EVENT, prep_data: { notes: "", checklist: [], questions: [] } }}
+        onClose={vi.fn()}
+      />,
       { wrapper: makeWrapper() }
     );
+
+    // Open the collapsible prep section
+    await user.click(screen.getByRole("button", { name: /interview prep/i }));
 
     // Act
     const input = screen.getByRole("textbox", { name: /new checklist item/i });
@@ -115,13 +129,15 @@ describe("CalendarEventDetail", () => {
     // Assert — item appears in the list
     expect(await screen.findByText("Prepare STAR stories")).toBeInTheDocument();
 
-    // Assert — PATCH was called with the new checklist
+    // Assert — PATCH was called with the new checklist in prep_data
     await waitFor(() => {
       expect(PATCH_HANDLER).toHaveBeenCalledWith(
         expect.objectContaining({
-          prep_checklist: expect.arrayContaining([
-            expect.objectContaining({ text: "Prepare STAR stories", checked: false }),
-          ]),
+          prep_data: expect.objectContaining({
+            checklist: expect.arrayContaining([
+              expect.objectContaining({ text: "Prepare STAR stories", checked: false }),
+            ]),
+          }),
         })
       );
     });
@@ -135,17 +151,22 @@ describe("CalendarEventDetail", () => {
       { wrapper: makeWrapper() }
     );
 
+    // Open the collapsible prep section
+    await user.click(screen.getByRole("button", { name: /interview prep/i }));
+
     // Act — toggle the unchecked first item
     const checkbox = screen.getByRole("checkbox", { name: /research company culture/i });
     await user.click(checkbox);
 
-    // Assert — PATCH was called with the toggled item (now checked: true)
+    // Assert — PATCH was called with prep_data containing the toggled item (now checked: true)
     await waitFor(() => {
       expect(PATCH_HANDLER).toHaveBeenCalledWith(
         expect.objectContaining({
-          prep_checklist: expect.arrayContaining([
-            expect.objectContaining({ id: "item-1", text: "Research company culture", checked: true }),
-          ]),
+          prep_data: expect.objectContaining({
+            checklist: expect.arrayContaining([
+              expect.objectContaining({ id: "item-1", text: "Research company culture", checked: true }),
+            ]),
+          }),
         })
       );
     });

@@ -136,7 +136,11 @@ async def update_event(user_id: str, event_id: str, updates: EventUpdate) -> dic
     raw = updates.model_dump(exclude_none=True)
     set_fields: dict = {}
     for k, v in raw.items():
-        if isinstance(v, dt.date) and not isinstance(v, dt.datetime):
+        if k == "prep_data":
+            set_fields["prep_notes"] = v.get("notes", "")
+            set_fields["prep_checklist"] = v.get("checklist", [])
+            set_fields["prep_questions"] = v.get("questions", [])
+        elif isinstance(v, dt.date) and not isinstance(v, dt.datetime):
             set_fields[k] = _date_to_datetime(v)
         elif isinstance(v, dt.time):
             set_fields[k] = v.isoformat()

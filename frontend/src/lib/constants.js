@@ -58,6 +58,15 @@ export const NOTES_MAX_LENGTH = 5000;
 export const PREP_NOTES_MAX_LENGTH = 3000;
 export const PREP_CHECKLIST_ITEM_MAX_LENGTH = 200;
 export const PREP_NOTES_DEBOUNCE_MS = 500;
+export const MAX_PREP_QUESTIONS = 20;
+
+export const INTERVIEW_EVENT_TYPES = ["phone_screen", "technical", "onsite", "behavioral"];
+
+export const PREP_CHECKLIST_STARTER_SUGGESTIONS = [
+  "Research the company",
+  "Review the job description",
+  "Prepare STAR stories",
+];
 
 export const JOBS_STALE_TIME_MS = 60_000;
 
