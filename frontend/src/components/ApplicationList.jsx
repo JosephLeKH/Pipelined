@@ -6,6 +6,7 @@ import { FixedSizeList } from "react-window";
 import { toast } from "sonner";
 
 import { useHotkeys } from "../hooks/useHotkeys";
+import { useWindowHeight } from "../hooks/useWindowHeight";
 
 import {
   useApplications,
@@ -17,7 +18,7 @@ import {
   useRestoreApplication,
   useUnarchiveApplication,
 } from "../hooks/useApplications";
-import { SKELETON_ROW_COUNT } from "../lib/constants";
+import { SKELETON_ROW_COUNT, LIST_OFFSET_PX } from "../lib/constants";
 import FolderOpen from "lucide-react/dist/esm/icons/folder-open";
 import ApiErrorMessage from "./ApiErrorMessage";
 import ApplicationRow from "./ApplicationRow";
@@ -41,7 +42,7 @@ function ColumnHeader({ field, label, sortBy, sortOrder, onSort }) {
   );
 }
 
-function ApplicationList({ onSelect, filters = {}, onAdd, onImportCsv, shortcutsEnabled = false }) {
+function ApplicationList({ onSelect, filters = {}, onAdd, onImportCsv, shortcutsEnabled = false, onClearFilters }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [undoAction, setUndoAction] = useState(null);
   const [selectedIds, setSelectedIds] = useState(new Set());
@@ -49,6 +50,7 @@ function ApplicationList({ onSelect, filters = {}, onAdd, onImportCsv, shortcuts
   const [mergeDialogOpen, setMergeDialogOpen] = useState(false);
   const [focusedIdx, setFocusedIdx] = useState(-1);
   const listRef = useRef(null);
+  const windowHeight = useWindowHeight();
 
   const sortBy = searchParams.get("sort_by") ?? "date_applied";
   const sortOrder = searchParams.get("sort_order") ?? "desc";
@@ -100,19 +102,9 @@ function ApplicationList({ onSelect, filters = {}, onAdd, onImportCsv, shortcuts
     }
   }, [selectedIds.size, applications]);
 
-  const handleArchive = useCallback(
-    (id) => archiveMutation.mutate(id, {
-      onSuccess: () => setUndoAction({ type: "archive", id }),
-    }),
-    [archiveMutation]
-  );
+  const handleArchive = useCallback((id) => archiveMutation.mutate(id, { onSuccess: () => setUndoAction({ type: "archive", id }) }), [archiveMutation]);
   const handleUnarchive = useCallback((id) => unarchiveMutation.mutate(id), [unarchiveMutation]);
-  const handleDelete = useCallback(
-    (id) => deleteMutation.mutate(id, {
-      onSuccess: () => setUndoAction({ type: "delete", id }),
-    }),
-    [deleteMutation]
-  );
+  const handleDelete = useCallback((id) => deleteMutation.mutate(id, { onSuccess: () => setUndoAction({ type: "delete", id }) }), [deleteMutation]);
 
   const handleUndo = useCallback(() => {
     if (!undoAction) return;
@@ -158,34 +150,10 @@ function ApplicationList({ onSelect, filters = {}, onAdd, onImportCsv, shortcuts
   // Reset keyboard focus when application list changes
   useEffect(() => { setFocusedIdx(-1); }, [applications.length]);
 
-  useHotkeys("j", () => {
-    setFocusedIdx((prev) => {
-      const next = Math.min(prev + 1, applications.length - 1);
-      listRef.current?.scrollToItem(next, "smart");
-      return next;
-    });
-  }, { enabled: shortcutsEnabled });
-
-  useHotkeys("k", () => {
-    setFocusedIdx((prev) => {
-      const next = Math.max(prev - 1, 0);
-      listRef.current?.scrollToItem(next, "smart");
-      return next;
-    });
-  }, { enabled: shortcutsEnabled });
-
-  useHotkeys("Enter", () => {
-    if (focusedIdx >= 0 && focusedIdx < applications.length) {
-      onSelect(applications[focusedIdx]);
-    }
-  }, { enabled: shortcutsEnabled });
-
-  useHotkeys("x", () => {
-    if (focusedIdx >= 0 && focusedIdx < applications.length) {
-      handleToggle(applications[focusedIdx].id);
-    }
-  }, { enabled: shortcutsEnabled });
-
+  useHotkeys("j", () => { setFocusedIdx((prev) => { const n = Math.min(prev + 1, applications.length - 1); listRef.current?.scrollToItem(n, "smart"); return n; }); }, { enabled: shortcutsEnabled });
+  useHotkeys("k", () => { setFocusedIdx((prev) => { const n = Math.max(prev - 1, 0); listRef.current?.scrollToItem(n, "smart"); return n; }); }, { enabled: shortcutsEnabled });
+  useHotkeys("Enter", () => { if (focusedIdx >= 0 && focusedIdx < applications.length) onSelect(applications[focusedIdx]); }, { enabled: shortcutsEnabled });
+  useHotkeys("x", () => { if (focusedIdx >= 0 && focusedIdx < applications.length) handleToggle(applications[focusedIdx].id); }, { enabled: shortcutsEnabled });
   useHotkeys("Escape", () => setFocusedIdx(-1), { enabled: shortcutsEnabled && focusedIdx >= 0 });
 
   if (isLoading) {
@@ -203,7 +171,16 @@ function ApplicationList({ onSelect, filters = {}, onAdd, onImportCsv, shortcuts
   if (!applications.length) {
     const hasFilters = Object.keys(filters).length > 0;
     if (hasFilters) {
-      return <div className="py-16 text-center text-gray-500">No applications match your filters.</div>;
+      return (
+        <div className="py-16 text-center text-gray-500">
+          <p>No applications match your filters.</p>
+          {onClearFilters && (
+            <button type="button" onClick={onClearFilters} className="mt-3 text-sm text-brand-600 hover:underline">
+              Clear all filters
+            </button>
+          )}
+        </div>
+      );
     }
     const actionButtons = [
       ...(onAdd ? [{ label: "Add Application", onClick: onAdd }] : []),
@@ -302,7 +279,7 @@ function ApplicationList({ onSelect, filters = {}, onAdd, onImportCsv, shortcuts
             <ColumnHeader field="current_stage" label="Stage" sortBy={sortBy} sortOrder={sortOrder} onSort={handleSort} />
             <ColumnHeader field="date_applied" label="Date Applied" sortBy={sortBy} sortOrder={sortOrder} onSort={handleSort} />
           </div>
-          <FixedSizeList ref={listRef} height={600} itemCount={applications.length} itemSize={64} width="100%">
+          <FixedSizeList ref={listRef} height={Math.max(300, windowHeight - LIST_OFFSET_PX)} itemCount={applications.length} itemSize={64} width="100%">
             {Row}
           </FixedSizeList>
         </div>

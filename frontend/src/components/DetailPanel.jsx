@@ -2,8 +2,6 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 
-import Trash2 from "lucide-react/dist/esm/icons/trash-2";
-import X from "lucide-react/dist/esm/icons/x";
 import ExternalLink from "lucide-react/dist/esm/icons/external-link";
 import AlertTriangle from "lucide-react/dist/esm/icons/alert-triangle";
 
@@ -11,11 +9,10 @@ import { INPUT_BASE } from "../lib/designTokens";
 import { STAGE_COLORS, DEFAULT_STAGE_COLOR } from "../lib/constants";
 import { useDeleteApplication, useRestoreApplication, useUpdateApplication } from "../hooks/useApplications";
 import { useHotkeys } from "../hooks/useHotkeys";
-import ApplicationTimeline from "./ApplicationTimeline";
-import CalendarEventsList from "./CalendarEventsList";
-import CompanyLogo from "./CompanyLogo";
 import ContactsSection from "./ContactsSection";
-import NotesEditor from "./NotesEditor";
+import { DetailPanelHeader } from "./DetailPanelHeader";
+import { DetailPanelNotes } from "./DetailPanelNotes";
+import { DetailPanelTimeline } from "./DetailPanelTimeline";
 import ResumeFitSection from "./ResumeFitSection";
 import UndoToast from "./UndoToast";
 import { formatDate } from "../lib/dateUtils";
@@ -34,37 +31,6 @@ function DetailField({ label, value }) {
   );
 }
 
-function PanelHeader({ application, onClose, onDelete }) {
-  return (
-    <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4 dark:border-slate-700">
-      <div className="flex items-center gap-3">
-        <CompanyLogo company_domain={application.company_domain ?? null} company={application.company ?? ""} size={32} />
-        <div>
-          <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{application.role_title}</h2>
-          <p className="text-sm text-slate-500 dark:text-slate-400">{application.company}</p>
-        </div>
-      </div>
-      <div className="flex items-center gap-1">
-        <button
-          type="button"
-          onClick={onClose}
-          className="rounded-full bg-slate-100 p-1.5 text-slate-500 hover:bg-slate-200 hover:text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-1 dark:bg-slate-700 dark:hover:bg-slate-600 dark:text-slate-400"
-          aria-label="Close panel"
-        >
-          <X className="h-4 w-4" />
-        </button>
-        <button
-          type="button"
-          onClick={onDelete}
-          className="rounded-full p-1.5 text-slate-400 hover:bg-rose-50 hover:text-rose-500 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-1 dark:hover:bg-rose-900/30"
-          aria-label="Delete application"
-        >
-          <Trash2 className="h-4 w-4" />
-        </button>
-      </div>
-    </div>
-  );
-}
 
 function FollowUpSection({ application, onUpdate }) {
   const rawDate = application.follow_up_date;
@@ -163,9 +129,8 @@ function PanelBody({ application, handleStageChange, handleUpdate, onAddEvent })
         </div>
       </div>
       <FollowUpSection application={application} onUpdate={handleUpdate} />
-      <NotesEditor applicationId={application.id} initialValue={application.notes} />
-      <ApplicationTimeline stageHistory={application.stage_history} applicationId={application.id} />
-      <CalendarEventsList applicationId={application.id} onAddEvent={onAddEvent} />
+      <DetailPanelNotes applicationId={application.id} initialValue={application.notes} />
+      <DetailPanelTimeline stageHistory={application.stage_history} applicationId={application.id} onAddEvent={onAddEvent} />
       <ContactsSection applicationId={application.id} />
       {(application.ai_analysis || user?.ai_scores_remaining_today === 0) && user?.has_resume && (
         <ResumeFitSection
@@ -294,7 +259,7 @@ function DetailPanel({ application, onClose, onAddEvent }) {
       >
         {displayApp && (
           <div key={displayApp.id} className="flex h-full flex-col overflow-y-auto animate-slideInRight">
-            <PanelHeader application={displayApp} onClose={onClose} onDelete={handleDelete} />
+            <DetailPanelHeader application={displayApp} onClose={onClose} onDelete={handleDelete} />
             <PanelBody
               application={displayApp}
               handleStageChange={handleStageChange}

@@ -14,8 +14,9 @@ import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable"
 
 import { useApplications, useUpdateApplication } from "../hooks/useApplications";
 import { useAuth } from "../context/AuthContext";
-import { STAGES, STAGE_COLORS, DEFAULT_STAGE_COLOR } from "../lib/constants";
+import { STAGES, STAGE_COLORS, DEFAULT_STAGE_COLOR, KANBAN_SKELETON_COUNT } from "../lib/constants";
 import KanbanCard from "./KanbanCard";
+import SkeletonRow from "./SkeletonRow";
 
 const COLUMN_MAX_HEIGHT_PX = 600;
 
@@ -112,7 +113,20 @@ function KanbanBoard({ filters = {}, onSelect }) {
   };
 
   if (isLoading) {
-    return <div className="py-16 text-center text-slate-500">Loading…</div>;
+    return (
+      <div className="flex gap-4 overflow-x-auto pb-4" aria-busy="true">
+        {stages.map((stage) => (
+          <div key={stage} className="flex min-w-[240px] flex-1 flex-col rounded-lg">
+            <div className="flex items-center gap-2 px-3 py-2">
+              <span className="text-sm font-medium text-slate-500 dark:text-slate-400">{stage}</span>
+            </div>
+            <div className="flex flex-col gap-2 rounded-lg bg-slate-50 p-2 dark:bg-slate-800/50">
+              {Array.from({ length: KANBAN_SKELETON_COUNT }, (_, i) => <SkeletonRow key={i} />)}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
   }
 
   return (

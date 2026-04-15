@@ -108,3 +108,7 @@ export const COMPANY_LOGO_FALLBACK_COLORS = [
   "bg-pink-500",
   "bg-teal-500",
 ];
+
+export const LIST_OFFSET_PX = 280;
+
+export const KANBAN_SKELETON_COUNT = 3;

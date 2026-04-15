@@ -93,6 +93,12 @@ function Dashboard() {
     localStorage.setItem(VIEW_MODE_STORAGE_KEY, mode);
   }, []);
 
+  const handleClearFilters = useCallback(() => {
+    const next = new URLSearchParams(searchParams);
+    ["stage", "company_type", "remote_status", "date_from", "date_to", "include_archived"].forEach((k) => next.delete(k));
+    setSearchParams(next, { replace: true });
+  }, [searchParams, setSearchParams]);
+
   const handleViewFollowUps = useCallback(() => {
     const next = new URLSearchParams(searchParams);
     next.set("follow_up_due", "true");
@@ -178,6 +184,7 @@ function Dashboard() {
             onAdd={() => setIsModalOpen(true)}
             onImportCsv={() => setIsImportOpen(true)}
             shortcutsEnabled={shortcutsEnabled}
+            onClearFilters={handleClearFilters}
           />
         )}
         <DetailPanel application={selectedApp ?? null} onClose={handleClosePanel} />

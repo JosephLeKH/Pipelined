@@ -2,14 +2,15 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 
-import Loader2 from "lucide-react/dist/esm/icons/loader-2";
 import X from "lucide-react/dist/esm/icons/x";
 
 import { useCreateApplication } from "../hooks/useApplications";
 import { REMOTE_STATUS_OPTIONS, COMPANY_TYPE_OPTIONS } from "../lib/constants";
 import { trackEvent } from "../lib/analytics";
 import { useAuth } from "../context/AuthContext";
-import { BUTTON_PRIMARY, BUTTON_SECONDARY, INPUT_BASE, MODAL_BACKDROP, MODAL_CARD } from "../lib/designTokens";
+import { INPUT_BASE } from "../lib/designTokens";
+import { DuplicateWarning } from "./DuplicateWarning";
+import { FormActions } from "./FormActions";
 
 const GENERIC_ERROR_MSG = "Something went wrong. Please try again.";
 
@@ -56,16 +57,8 @@ function ManualAddForm({ isOpen, onClose }) {
   const existingId = mutationError?.details?.existing_id;
 
   const resetForm = useCallback(() => {
-    setRoleTitle("");
-    setCompany("");
-    setSourceUrl("");
-    setDateApplied(getTodayString());
-    setStage("");
-    setCompensation("");
-    setLocation("");
-    setRemoteStatus("");
-    setCompanyType("");
-    setTags("");
+    setRoleTitle(""); setCompany(""); setSourceUrl(""); setDateApplied(getTodayString());
+    setStage(""); setCompensation(""); setLocation(""); setRemoteStatus(""); setCompanyType(""); setTags("");
     setFieldErrors({});
     reset();
   }, [reset]);
@@ -146,10 +139,7 @@ function ManualAddForm({ isOpen, onClose }) {
         },
       });
     },
-    [
-      roleTitle, company, sourceUrl, dateApplied, stage, compensation,
-      location, remoteStatus, companyType, tags, mutate, handleClose,
-    ]
+    [roleTitle, company, sourceUrl, dateApplied, stage, compensation, location, remoteStatus, companyType, tags, mutate, handleClose]
   );
 
   return (
@@ -179,17 +169,7 @@ function ManualAddForm({ isOpen, onClose }) {
           </button>
         </div>
         <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4 px-6 py-4">
-          {isDuplicate && (
-            <div className="rounded border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-800">
-              An application for this role and company already exists.{" "}
-              <a
-                href={`/dashboard?application=${existingId}`}
-                className="font-medium underline hover:text-amber-900"
-              >
-                View existing application
-              </a>
-            </div>
-          )}
+          {isDuplicate && <DuplicateWarning existingId={existingId} />}
           <FormField label="Role Title *" htmlFor="role-title" error={fieldErrors.roleTitle}>
             <input
               id="role-title"
@@ -307,29 +287,7 @@ function ManualAddForm({ isOpen, onClose }) {
               {mutationError.message ?? GENERIC_ERROR_MSG}
             </p>
           )}
-          <div className="flex justify-end gap-3 border-t border-slate-100 pt-4 dark:border-slate-700">
-            <button
-              type="button"
-              onClick={handleClose}
-              className={`${BUTTON_SECONDARY} text-sm`}
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={isPending}
-              className={`${BUTTON_PRIMARY} text-sm flex items-center gap-2`}
-            >
-              {isPending ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-                  Creating…
-                </>
-              ) : (
-                "Add Application"
-              )}
-            </button>
-          </div>
+          <FormActions isPending={isPending} onCancel={handleClose} />
         </form>
       </div>
     </div>
