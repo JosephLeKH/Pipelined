@@ -102,8 +102,8 @@
         "All monetary fields are formatted as currency (USD, locale-aware) in the comparison table"
       ],
       "priority": 6,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "offer_details subdocument (10 fields) added to ApplicationUpdate/ApplicationResponse schemas; LIST_PROJECTION updated; OfferDetailsSection.jsx collapsible inline-edit panel in DetailPanel when stage=Offer; OfferComparison.jsx horizontal table with canvas-confetti winner flow; NavBar conditional Offers link; all monetary fields Intl.NumberFormat USD."
     },
     {
       "id": "US-119",

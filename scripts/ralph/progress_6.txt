@@ -78,3 +78,26 @@ Test result: 356 passed, 56 files
 - CalendarGrid EventChip: book icon badge when event.prep_data is non-empty
 - CalendarEventDetail.test.jsx: updated for prep_data shape and collapsible open-before-assert pattern
 Test result: 356 passed, 56 files
+
+## US-118 — Offer comparison page
+**Status:** PASSED
+**Commit:** bbfc497
+
+### Backend changes
+- `backend/applications/schemas.py`: OfferDetails model (10 optional fields: base_salary, total_comp, equity, signing_bonus, benefits, start_date, location, remote_policy, deadline, notes); added to ApplicationUpdate + ApplicationResponse
+- `backend/applications/service.py`: added `"offer_details": 1` to LIST_PROJECTION
+- `backend/tests/test_applications.py`: 2 new tests (store offer_details, clear offer_details with None)
+
+### Frontend changes
+- `frontend/src/lib/constants.js`: OFFER_STAGE + OFFER_FIELDS constants (10 field descriptors with type: currency/text)
+- `frontend/src/components/OfferDetailsSection.jsx`: collapsible emerald-themed section in DetailPanel; click-to-edit fields; currency fields use Intl.NumberFormat USD; onUpdate merges into existing offer_details subdocument
+- `frontend/src/components/OfferDetailsSection.test.jsx`: 6 tests (render, collapse/expand, edit mode, currency blur, clear→null, placeholders)
+- `frontend/src/pages/OfferComparison.jsx`: horizontal table; useApplications({ stage: 'Offer', limit: 100 }); EditableCell inline-edit; handleMarkWinner sets winnerId state + canvas-confetti animation; Trophy icon winner badge in column header; USD formatting
+- `frontend/src/pages/OfferComparison.test.jsx`: 6 tests (loading, empty state, table render, OFFER_FIELDS labels, confetti+winner, updateApp on cell edit)
+- `frontend/src/App.jsx`: lazy-loaded /offers route with ProtectedRoute
+- `frontend/src/components/NavBar.jsx`: conditional Offers link using useApplications({ stage: 'Offer', limit: 1 }) — hidden when no offers
+- `frontend/src/components/DetailPanel.jsx`: renders OfferDetailsSection when current_stage === 'Offer'
+- `canvas-confetti` installed as npm dependency
+
+### Test results
+- 368 tests passed, 58 files (pre-existing MSW unhandled rejections in DetailPanel.test.jsx are unrelated)
