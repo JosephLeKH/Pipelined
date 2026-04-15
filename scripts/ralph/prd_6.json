@@ -137,7 +137,7 @@
         "Every query on application_templates includes user_id in the filter"
       ],
       "priority": 8,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {

@@ -118,3 +118,24 @@ Test result: 356 passed, 56 files
 - `aria-label` on a textarea overrides `htmlFor` label associations — removing it allowed DetailPanel integration tests (which query by label name "Notes") to keep passing
 - Adding `role="tabpanel"` directly to a `<textarea>` replaces the implicit textbox role, breaking ARIA queries; wrapper divs are correct for panels
 - DOMPurify strips `<script>` tags and inline event handlers (onerror, onclick) but preserves safe text content — verified in tests
+
+---
+
+## US-120: Application templates
+
+**Status:** PASSED
+
+### What was built
+- **Backend:** `backend/templates/` module (router/service/schemas split), `application_templates` MongoDB collection with user-scoped queries, 10-template limit, CRUD endpoints (POST 201, GET, PATCH, DELETE 204)
+- **Frontend:** `api/templates.js`, `hooks/useTemplates.js` (useTemplates, useCreateTemplate, useUpdateTemplate, useDeleteTemplate), `TemplateBar.jsx` (self-contained, owns save modal state), `TemplateSaveModal.jsx`, `SettingsTemplatesSection.jsx` with inline rename and delete
+- `ManualAddForm.jsx` updated with TemplateBar integration and `applyTemplate` callback; extracted `FormField` to its own file to stay ≤300 lines
+- Settings page: "Templates" sidebar item with LayoutTemplate icon, renders SettingsTemplatesSection
+
+### Quality checks
+- 13/13 backend template tests pass in isolation
+- 376/376 frontend tests pass; build succeeds
+- Full-suite 101 failures are pre-existing (verified via stash)
+- Every MongoDB query on `application_templates` includes `user_id` filter (verified in `test_every_query_includes_user_id_filter`)
+
+### Commit
+`feat: US-120 - Application templates`
