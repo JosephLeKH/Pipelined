@@ -121,3 +121,18 @@ export const COMPANY_LOGO_FALLBACK_COLORS = [
 export const LIST_OFFSET_PX = 280;
 
 export const KANBAN_SKELETON_COUNT = 3;
+
+export const OFFER_STAGE = "Offer";
+
+export const OFFER_FIELDS = [
+  { key: "base_salary", label: "Base Salary", type: "currency" },
+  { key: "total_comp", label: "Total Comp", type: "currency" },
+  { key: "equity", label: "Equity", type: "text" },
+  { key: "signing_bonus", label: "Signing Bonus", type: "currency" },
+  { key: "benefits", label: "Benefits", type: "text" },
+  { key: "start_date", label: "Start Date", type: "text" },
+  { key: "location", label: "Location", type: "text" },
+  { key: "remote_policy", label: "Remote Policy", type: "text" },
+  { key: "deadline", label: "Deadline", type: "text" },
+  { key: "notes", label: "Notes", type: "text" },
+];

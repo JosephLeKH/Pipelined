@@ -67,6 +67,7 @@ const VerifyEmailPending = lazy(() => import("./pages/VerifyEmailPending"));
 const VerifyEmailConfirm = lazy(() => import("./pages/VerifyEmailConfirm"));
 const GithubCallback = lazy(() => import("./pages/GithubCallback"));
 const Pricing = lazy(() => import("./pages/Pricing"));
+const OfferComparison = lazy(() => import("./pages/OfferComparison"));
 
 /** Renders the confirmation page when ?token= is present, otherwise the pending page. */
 function VerifyEmailRoute() {
@@ -170,6 +171,14 @@ function App() {
           element={
             <ProtectedRoute>
               <PageWrapper><Settings /></PageWrapper>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/offers"
+          element={
+            <ProtectedRoute>
+              <PageWrapper><OfferComparison /></PageWrapper>
             </ProtectedRoute>
           }
         />

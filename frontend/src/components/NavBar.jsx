@@ -12,12 +12,15 @@ import Menu from "lucide-react/dist/esm/icons/menu";
 import Moon from "lucide-react/dist/esm/icons/moon";
 import Settings from "lucide-react/dist/esm/icons/settings";
 import Sun from "lucide-react/dist/esm/icons/sun";
+import Trophy from "lucide-react/dist/esm/icons/trophy";
 import Monitor from "lucide-react/dist/esm/icons/monitor";
 import X from "lucide-react/dist/esm/icons/x";
 
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import { resetUser, trackEvent } from "../lib/analytics";
+import { useApplications } from "../hooks/useApplications";
+import { OFFER_STAGE } from "../lib/constants";
 import NotificationBell from "./NotificationBell";
 
 const NAV_LINKS = [
@@ -55,6 +58,12 @@ function NavBar() {
   const { user, logout } = useAuth();
   const { theme, cycleTheme } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { data: offersData } = useApplications({ stage: OFFER_STAGE, limit: 1 });
+  const hasOffers = (offersData?.data?.length ?? 0) > 0;
+  const offersLink = { to: "/offers", label: "Offers", Icon: Trophy };
+  const navLinks = hasOffers
+    ? [NAV_LINKS[0], offersLink, ...NAV_LINKS.slice(1)]
+    : NAV_LINKS;
 
   const handleCycleTheme = useCallback(() => {
     cycleTheme();
@@ -80,7 +89,7 @@ function NavBar() {
 
         {/* Desktop nav links — hidden on mobile */}
         <div className="hidden items-center gap-1 md:flex">
-          {NAV_LINKS.map(({ to, label, Icon }) => {
+          {navLinks.map(({ to, label, Icon }) => {
             const active = pathname === to;
             return (
               <Link
@@ -141,7 +150,7 @@ function NavBar() {
           data-testid="mobile-nav-menu"
           className="flex flex-col gap-1 border-t border-gray-200 bg-white px-4 py-3 dark:border-gray-700 dark:bg-gray-800 md:hidden"
         >
-          {NAV_LINKS.map(({ to, label, Icon }) => {
+          {navLinks.map(({ to, label, Icon }) => {
             const active = pathname === to;
             return (
               <Link

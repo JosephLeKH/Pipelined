@@ -13,6 +13,7 @@ import ContactsSection from "./ContactsSection";
 import { DetailPanelHeader } from "./DetailPanelHeader";
 import { DetailPanelNotes } from "./DetailPanelNotes";
 import { DetailPanelTimeline } from "./DetailPanelTimeline";
+import OfferDetailsSection from "./OfferDetailsSection";
 import ResumeFitSection from "./ResumeFitSection";
 import UndoToast from "./UndoToast";
 import { formatDate } from "../lib/dateUtils";
@@ -129,6 +130,9 @@ function PanelBody({ application, handleStageChange, handleUpdate, onAddEvent, o
         </div>
       </div>
       <FollowUpSection application={application} onUpdate={handleUpdate} />
+      {application.current_stage === "Offer" && (
+        <OfferDetailsSection application={application} onUpdate={handleUpdate} />
+      )}
       <DetailPanelNotes applicationId={application.id} initialValue={application.notes} onDirtyChange={onDirtyChange} />
       <DetailPanelTimeline stageHistory={application.stage_history} applicationId={application.id} onAddEvent={onAddEvent} />
       <ContactsSection applicationId={application.id} />

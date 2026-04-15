@@ -1,0 +1,206 @@
+/** Offer comparison page: side-by-side table for all Offer-stage applications. */
+
+import { useState, useCallback } from "react";
+import confetti from "canvas-confetti";
+import Trophy from "lucide-react/dist/esm/icons/trophy";
+
+import NavBar from "../components/NavBar";
+import { useApplications } from "../hooks/useApplications";
+import { useUpdateApplication } from "../hooks/useApplications";
+import { OFFER_FIELDS, OFFER_STAGE } from "../lib/constants";
+import { INPUT_BASE } from "../lib/designTokens";
+
+const USD = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+  maximumFractionDigits: 0,
+});
+
+function fmtCell(fieldType, value) {
+  if (value == null || value === "") return null;
+  return fieldType === "currency" ? USD.format(value) : String(value);
+}
+
+function EditableCell({ appId, fieldKey, fieldType, value, offerDetails, onSave }) {
+  const [editing, setEditing] = useState(false);
+
+  const handleBlur = useCallback(
+    (e) => {
+      const raw = e.target.value;
+      let newVal = null;
+      if (raw !== "") {
+        if (fieldType === "currency") {
+          const n = parseInt(raw, 10);
+          newVal = isNaN(n) ? null : n;
+        } else {
+          newVal = raw;
+        }
+      }
+      onSave(appId, fieldKey, newVal, offerDetails);
+      setEditing(false);
+    },
+    [appId, fieldKey, fieldType, offerDetails, onSave]
+  );
+
+  const display = fmtCell(fieldType, value);
+
+  if (editing) {
+    return (
+      <input
+        type={fieldType === "currency" ? "number" : "text"}
+        defaultValue={value ?? ""}
+        autoFocus
+        onBlur={handleBlur}
+        className={`w-full ${INPUT_BASE}`}
+        aria-label={fieldKey}
+      />
+    );
+  }
+  return (
+    <button
+      type="button"
+      onClick={() => setEditing(true)}
+      className="w-full text-left text-sm text-slate-700 hover:underline dark:text-slate-300"
+    >
+      {display ?? <span className="italic text-slate-400">—</span>}
+    </button>
+  );
+}
+
+function EmptyState() {
+  return (
+    <>
+      <NavBar />
+      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-3 text-slate-500 dark:text-slate-400">
+        <Trophy className="h-12 w-12 text-slate-300 dark:text-slate-600" />
+        <p className="text-lg font-medium">No offers yet</p>
+        <p className="text-sm">
+          Move an application to the Offer stage to compare packages here.
+        </p>
+      </div>
+    </>
+  );
+}
+
+function OfferComparison() {
+  const { data, isLoading, error } = useApplications({ stage: OFFER_STAGE, limit: 100 });
+  const { mutate: updateApp } = useUpdateApplication();
+  const [winnerId, setWinnerId] = useState(null);
+
+  const handleSave = useCallback(
+    (appId, fieldKey, newVal, currentOfferDetails) => {
+      updateApp({
+        id: appId,
+        body: { offer_details: { ...currentOfferDetails, [fieldKey]: newVal } },
+      });
+    },
+    [updateApp]
+  );
+
+  const handleMarkWinner = useCallback((appId) => {
+    setWinnerId(appId);
+    confetti({ particleCount: 150, spread: 80, origin: { y: 0.5 } });
+  }, []);
+
+  if (isLoading) {
+    return (
+      <>
+        <NavBar />
+        <div className="flex min-h-[60vh] items-center justify-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-emerald-500 border-t-transparent" />
+        </div>
+      </>
+    );
+  }
+
+  if (error) {
+    return (
+      <>
+        <NavBar />
+        <div className="flex min-h-[60vh] items-center justify-center text-rose-600">
+          Failed to load offers.
+        </div>
+      </>
+    );
+  }
+
+  const apps = data?.data ?? [];
+  if (apps.length === 0) return <EmptyState />;
+
+  return (
+    <>
+      <NavBar />
+      <main className="px-6 py-8">
+        <h1 className="mb-6 text-2xl font-bold text-slate-900 dark:text-slate-100">
+          Offer Comparison
+        </h1>
+        <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700">
+          <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
+            <thead className="bg-slate-50 dark:bg-slate-800">
+              <tr>
+                <th className="w-36 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                  Field
+                </th>
+                {apps.map((app) => (
+                  <th key={app.id} className="min-w-[180px] px-4 py-3 text-left">
+                    <div className="flex flex-col gap-1">
+                      <div className="flex items-center gap-1.5">
+                        {winnerId === app.id && (
+                          <Trophy className="h-4 w-4 text-amber-500" aria-label="Winner" />
+                        )}
+                        <span className="truncate text-sm font-semibold text-slate-900 dark:text-slate-100">
+                          {app.company ?? "Unknown"}
+                        </span>
+                      </div>
+                      <span className="truncate text-xs text-slate-500 dark:text-slate-400">
+                        {app.role_title ?? ""}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => handleMarkWinner(app.id)}
+                        className={`mt-1 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium transition-colors ${
+                          winnerId === app.id
+                            ? "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300"
+                            : "bg-slate-100 text-slate-600 hover:bg-emerald-100 hover:text-emerald-700 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-emerald-900/40 dark:hover:text-emerald-300"
+                        }`}
+                      >
+                        <Trophy className="h-3 w-3" />
+                        {winnerId === app.id ? "Winner!" : "Mark winner"}
+                      </button>
+                    </div>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 bg-white dark:divide-slate-800 dark:bg-slate-900">
+              {OFFER_FIELDS.map((field) => (
+                <tr key={field.key} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                  <td className="px-4 py-3 text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                    {field.label}
+                  </td>
+                  {apps.map((app) => {
+                    const offerDetails = app.offer_details ?? {};
+                    return (
+                      <td key={app.id} className="px-4 py-3">
+                        <EditableCell
+                          appId={app.id}
+                          fieldKey={field.key}
+                          fieldType={field.type}
+                          value={offerDetails[field.key] ?? null}
+                          offerDetails={offerDetails}
+                          onSave={handleSave}
+                        />
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </main>
+    </>
+  );
+}
+
+export default OfferComparison;

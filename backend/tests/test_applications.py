@@ -433,6 +433,65 @@ async def test_update_application_returns_401_without_auth(client, test_user):
     assert response.status_code == 401
 
 
+async def test_update_application_stores_offer_details(client, test_user):
+    # Arrange
+    _, cookies = test_user
+    create_resp = await client.post("/api/applications", json=APP_PAYLOAD, cookies=cookies)
+    app_id = create_resp.json()["data"]["id"]
+
+    # Act
+    offer_payload = {
+        "offer_details": {
+            "base_salary": 130000,
+            "total_comp": 160000,
+            "equity": "0.25%",
+            "signing_bonus": 10000,
+            "benefits": "Medical, dental, vision",
+            "start_date": "2026-07-01",
+            "location": "San Francisco, CA",
+            "remote_policy": "Hybrid",
+            "deadline": "2026-05-01",
+            "notes": "Strong team",
+        }
+    }
+    response = await client.patch(
+        f"/api/applications/{app_id}",
+        json=offer_payload,
+        cookies=cookies,
+    )
+
+    # Assert
+    assert response.status_code == 200
+    data = response.json()["data"]
+    assert data["offer_details"]["base_salary"] == 130000
+    assert data["offer_details"]["equity"] == "0.25%"
+    assert data["offer_details"]["signing_bonus"] == 10000
+
+
+async def test_update_application_clears_offer_details(client, test_user):
+    # Arrange
+    _, cookies = test_user
+    create_resp = await client.post("/api/applications", json=APP_PAYLOAD, cookies=cookies)
+    app_id = create_resp.json()["data"]["id"]
+    await client.patch(
+        f"/api/applications/{app_id}",
+        json={"offer_details": {"base_salary": 100000}},
+        cookies=cookies,
+    )
+
+    # Act
+    response = await client.patch(
+        f"/api/applications/{app_id}",
+        json={"offer_details": None},
+        cookies=cookies,
+    )
+
+    # Assert
+    assert response.status_code == 200
+    data = response.json()["data"]
+    assert data.get("offer_details") is None
+
+
 # ---------------------------------------------------------------------------
 # DELETE /api/applications/{app_id}
 # ---------------------------------------------------------------------------

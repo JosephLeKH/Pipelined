@@ -52,6 +52,24 @@ class ApplicationCreate(BaseModel):
     page_text: str | None = Field(None, max_length=MAX_PAGE_TEXT_LENGTH)
 
 
+MAX_OFFER_TEXT_FIELD_LENGTH = 500
+
+
+class OfferDetails(BaseModel):
+    """Structured offer package details for Offer-stage applications."""
+
+    base_salary: int | None = None
+    total_comp: int | None = None
+    equity: str | None = Field(None, max_length=MAX_OFFER_TEXT_FIELD_LENGTH)
+    signing_bonus: int | None = None
+    benefits: str | None = Field(None, max_length=MAX_OFFER_TEXT_FIELD_LENGTH)
+    start_date: str | None = Field(None, max_length=50)
+    location: str | None = Field(None, max_length=MAX_LOCATION_LENGTH)
+    remote_policy: str | None = Field(None, max_length=MAX_OFFER_TEXT_FIELD_LENGTH)
+    deadline: str | None = Field(None, max_length=50)
+    notes: str | None = Field(None, max_length=MAX_OFFER_TEXT_FIELD_LENGTH)
+
+
 class ApplicationUpdate(BaseModel):
     model_config = ConfigDict(strict=True)
 
@@ -68,6 +86,7 @@ class ApplicationUpdate(BaseModel):
     tags: list[str] | None = None
     follow_up_date: datetime | None = Field(None, strict=False)
     notes: str | None = Field(None, max_length=MAX_NOTES_LENGTH)
+    offer_details: OfferDetails | None = None
 
 
 class ApplicationResponse(BaseModel):
@@ -91,6 +110,7 @@ class ApplicationResponse(BaseModel):
     company_domain: str | None = None
     follow_up_date: datetime | None = None
     notes: str | None = None
+    offer_details: OfferDetails | None = None
 
     @classmethod
     def from_doc(cls, doc: dict) -> "ApplicationResponse":
