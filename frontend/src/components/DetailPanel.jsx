@@ -73,7 +73,7 @@ function FollowUpSection({ application, onUpdate }) {
   );
 }
 
-function PanelBody({ application, handleStageChange, handleUpdate, onAddEvent }) {
+function PanelBody({ application, handleStageChange, handleUpdate, onAddEvent, onDirtyChange }) {
   const { user } = useAuth();
   const stageOptions = user?.default_stages ?? [];
   const dateApplied = formatDate(application.date_applied);
@@ -129,7 +129,7 @@ function PanelBody({ application, handleStageChange, handleUpdate, onAddEvent })
         </div>
       </div>
       <FollowUpSection application={application} onUpdate={handleUpdate} />
-      <DetailPanelNotes applicationId={application.id} initialValue={application.notes} />
+      <DetailPanelNotes applicationId={application.id} initialValue={application.notes} onDirtyChange={onDirtyChange} />
       <DetailPanelTimeline stageHistory={application.stage_history} applicationId={application.id} onAddEvent={onAddEvent} />
       <ContactsSection applicationId={application.id} />
       {(application.ai_analysis || user?.ai_scores_remaining_today === 0) && user?.has_resume && (
@@ -147,6 +147,7 @@ function DetailPanel({ application, onClose, onAddEvent }) {
   const panelRef = useRef(null);
   const [undoPendingId, setUndoPendingId] = useState(null);
   const [cachedApp, setCachedApp] = useState(application);
+  const [notesDirty, setNotesDirty] = useState(false);
   const { mutate: updateApp } = useUpdateApplication();
   const { mutate: deleteApp } = useDeleteApplication();
   const { mutate: restoreApp } = useRestoreApplication();
@@ -175,9 +176,15 @@ function DetailPanel({ application, onClose, onAddEvent }) {
     onClose();
   }, [onClose]);
 
+  const confirmClose = useCallback(() => {
+    if (notesDirty && !window.confirm("Discard unsaved notes?")) return;
+    setNotesDirty(false);
+    onClose();
+  }, [notesDirty, onClose]);
+
   const handleKeyDown = useCallback(
-    (e) => { if (e.key === "Escape") onClose(); },
-    [onClose]
+    (e) => { if (e.key === "Escape") confirmClose(); },
+    [confirmClose]
   );
 
   useEffect(() => {
@@ -215,8 +222,8 @@ function DetailPanel({ application, onClose, onAddEvent }) {
   }, []);
 
   const handleOverlayClick = useCallback(
-    (e) => { if (e.target === overlayRef.current) onClose(); },
-    [onClose]
+    (e) => { if (e.target === overlayRef.current) confirmClose(); },
+    [confirmClose]
   );
 
   const handleStageChange = useCallback(
@@ -262,12 +269,13 @@ function DetailPanel({ application, onClose, onAddEvent }) {
       >
         {displayApp && (
           <div key={displayApp.id} className="flex h-full flex-col overflow-y-auto animate-slideInRight">
-            <DetailPanelHeader application={displayApp} onClose={onClose} onDelete={handleDelete} />
+            <DetailPanelHeader application={displayApp} onClose={confirmClose} onDelete={handleDelete} />
             <PanelBody
               application={displayApp}
               handleStageChange={handleStageChange}
               handleUpdate={handleUpdate}
               onAddEvent={onAddEvent}
+              onDirtyChange={setNotesDirty}
             />
           </div>
         )}

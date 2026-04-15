@@ -23,6 +23,6 @@ describe("FormActions", () => {
   it("should disable submit and show spinner when isPending", () => {
     render(<FormActions isPending={true} onCancel={vi.fn()} />);
 
-    expect(screen.getByRole("button", { name: /creating/i })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /saving/i })).toBeDisabled();
   });
 });

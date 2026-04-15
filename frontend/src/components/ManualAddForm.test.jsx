@@ -201,7 +201,7 @@ describe("ManualAddForm", () => {
 
     // Assert — button becomes disabled with "Creating…" text
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /creating/i })).toBeDisabled();
+      expect(screen.getByRole("button", { name: /saving/i })).toBeDisabled();
     });
   });
 

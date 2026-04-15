@@ -2,6 +2,6 @@
 
 import NotesEditor from "./NotesEditor";
 
-export function DetailPanelNotes({ applicationId, initialValue }) {
-  return <NotesEditor applicationId={applicationId} initialValue={initialValue} />;
+export function DetailPanelNotes({ applicationId, initialValue, onDirtyChange }) {
+  return <NotesEditor applicationId={applicationId} initialValue={initialValue} onDirtyChange={onDirtyChange} />;
 }

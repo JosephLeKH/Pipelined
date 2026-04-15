@@ -1,18 +1,24 @@
 /** Inline notes editor for an application in the detail panel. */
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import Pencil from "lucide-react/dist/esm/icons/pencil";
 
 import { useUpdateApplication } from "../hooks/useApplications";
 import { NOTES_MAX_LENGTH } from "../lib/constants";
 
-function NotesEditor({ applicationId, initialValue }) {
+const AMBER_PCT = 0.8;
+
+function NotesEditor({ applicationId, initialValue, onDirtyChange }) {
   const { mutate: updateApp } = useUpdateApplication();
   const [isEditing, setIsEditing] = useState(false);
   const [savedValue, setSavedValue] = useState(initialValue ?? "");
   const [draft, setDraft] = useState(initialValue ?? "");
   const [errorMsg, setErrorMsg] = useState(null);
+
+  useEffect(() => {
+    onDirtyChange?.(isEditing && draft !== savedValue);
+  }, [isEditing, draft, savedValue, onDirtyChange]);
 
   const handleEdit = () => {
     setDraft(savedValue);
@@ -78,9 +84,11 @@ function NotesEditor({ applicationId, initialValue }) {
             maxLength={NOTES_MAX_LENGTH}
           />
           <div className="flex items-center justify-between">
-            <span className="text-xs text-slate-400">
-              {draft.length}/{NOTES_MAX_LENGTH}
-            </span>
+            {(() => {
+              const pct = draft.length / NOTES_MAX_LENGTH;
+              const cls = pct >= 1 ? "text-rose-600" : pct >= AMBER_PCT ? "text-amber-600" : "text-slate-400";
+              return <span className={`text-xs ${cls}`}>{draft.length}/{NOTES_MAX_LENGTH}</span>;
+            })()}
             <div className="flex gap-2">
               <button
                 type="button"

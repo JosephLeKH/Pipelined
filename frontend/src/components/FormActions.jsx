@@ -14,7 +14,7 @@ export function FormActions({ isPending, onCancel }) {
         {isPending ? (
           <>
             <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-            Creating…
+            Saving…
           </>
         ) : (
           "Add Application"

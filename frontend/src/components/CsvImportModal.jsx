@@ -12,6 +12,8 @@ import { trackEvent } from "../lib/analytics";
 
 const ACCEPTED_MIME = "text/csv,.csv";
 const MAX_FILE_BYTES = 2 * 1024 * 1024;
+const MAX_FILE_MB = MAX_FILE_BYTES / 1024 / 1024;
+const ERRORS_COLLAPSE_THRESHOLD = 5;
 const SAMPLE_HEADERS = "company,role_title,location,remote_status,compensation,company_type,date_applied";
 
 function CsvImportModal({ isOpen, onClose }) {
@@ -19,6 +21,7 @@ function CsvImportModal({ isOpen, onClose }) {
   const [file, setFile] = useState(null);
   const [result, setResult] = useState(null);
   const [localError, setLocalError] = useState(null);
+  const [errorsExpanded, setErrorsExpanded] = useState(false);
   const { mutateAsync, isPending } = useImportApplications();
 
   function handleFileChange(e) {
@@ -26,7 +29,8 @@ function CsvImportModal({ isOpen, onClose }) {
     setResult(null);
     setLocalError(null);
     if (selected && selected.size > MAX_FILE_BYTES) {
-      setLocalError("File exceeds 2 MB limit.");
+      const fileMb = (selected.size / 1024 / 1024).toFixed(1);
+      setLocalError(`${MAX_FILE_MB} MB max — this file is ${fileMb} MB.`);
       setFile(null);
     } else {
       setFile(selected);
@@ -46,6 +50,7 @@ function CsvImportModal({ isOpen, onClose }) {
         skipped: resultData?.skipped ?? 0,
       });
       setFile(null);
+      setErrorsExpanded(false);
       if (fileRef.current) fileRef.current.value = "";
     } catch (err) {
       setLocalError(err?.response?.data?.error?.message ?? "Import failed. Please try again.");
@@ -115,12 +120,24 @@ function CsvImportModal({ isOpen, onClose }) {
             <p><strong>{result.imported}</strong> imported, <strong>{result.skipped}</strong> skipped.</p>
             {result.warning && <p className="mt-1 text-xs">{result.warning}</p>}
             {result.errors?.length > 0 && (
-              <ul className="mt-1 list-inside list-disc text-xs text-red-600 dark:text-red-400">
-                {result.errors.slice(0, 5).map((e) => (
-                  <li key={e.row}>Row {e.row}: {e.reason}</li>
-                ))}
-                {result.errors.length > 5 && <li>…and {result.errors.length - 5} more</li>}
-              </ul>
+              <div className="mt-2">
+                <div className="flex items-center gap-2">
+                  {result.errors.length > ERRORS_COLLAPSE_THRESHOLD && (
+                    <button type="button" onClick={() => setErrorsExpanded((p) => !p)} className="text-xs text-red-600 underline dark:text-red-400">
+                      {errorsExpanded ? "Hide errors" : `Show all ${result.errors.length} errors`}
+                    </button>
+                  )}
+                  <button type="button" onClick={() => navigator.clipboard.writeText(result.errors.map((e) => `Row ${e.row}: ${e.reason}`).join("\n"))} className="text-xs text-slate-500 underline dark:text-slate-400">
+                    Copy errors
+                  </button>
+                </div>
+                <ul className="mt-1 list-inside list-disc text-xs text-red-600 dark:text-red-400">
+                  {(errorsExpanded || result.errors.length <= ERRORS_COLLAPSE_THRESHOLD
+                    ? result.errors
+                    : result.errors.slice(0, ERRORS_COLLAPSE_THRESHOLD)
+                  ).map((e) => <li key={e.row}>Row {e.row}: {e.reason}</li>)}
+                </ul>
+              </div>
             )}
           </div>
         )}
