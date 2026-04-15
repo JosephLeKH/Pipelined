@@ -3,6 +3,7 @@
 import { useMemo, useCallback, useState, useRef, useEffect, memo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { FixedSizeList } from "react-window";
+import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import { useHotkeys } from "../hooks/useHotkeys";
@@ -17,6 +18,7 @@ import {
   useMergeApplications,
   useRestoreApplication,
   useUnarchiveApplication,
+  KEYS,
 } from "../hooks/useApplications";
 import { SKELETON_ROW_COUNT, LIST_OFFSET_PX } from "../lib/constants";
 import FolderOpen from "lucide-react/dist/esm/icons/folder-open";
@@ -64,6 +66,7 @@ function ApplicationList({ onSelect, filters = {}, onAdd, onImportCsv, shortcuts
   const applications = envelope?.data ?? [];
   const hasSelection = selectedIds.size > 0;
 
+  const queryClient = useQueryClient();
   const archiveMutation = useArchiveApplication();
   const unarchiveMutation = useUnarchiveApplication();
   const deleteMutation = useDeleteApplication();
@@ -102,9 +105,29 @@ function ApplicationList({ onSelect, filters = {}, onAdd, onImportCsv, shortcuts
     }
   }, [selectedIds.size, applications]);
 
-  const handleArchive = useCallback((id) => archiveMutation.mutate(id, { onSuccess: () => setUndoAction({ type: "archive", id }) }), [archiveMutation]);
+  const handleArchive = useCallback((id) => {
+    const previousData = queryClient.getQueryData(KEYS.list(queryFilters));
+    queryClient.setQueryData(KEYS.list(queryFilters), (old) =>
+      old ? { ...old, data: old.data.filter((a) => a.id !== id) } : old
+    );
+    archiveMutation.mutate(id, {
+      onSuccess: () => setUndoAction({ type: "archive", id }),
+      onError: () => queryClient.setQueryData(KEYS.list(queryFilters), previousData),
+    });
+  }, [archiveMutation, queryClient, queryFilters]);
+
   const handleUnarchive = useCallback((id) => unarchiveMutation.mutate(id), [unarchiveMutation]);
-  const handleDelete = useCallback((id) => deleteMutation.mutate(id, { onSuccess: () => setUndoAction({ type: "delete", id }) }), [deleteMutation]);
+
+  const handleDelete = useCallback((id) => {
+    const previousData = queryClient.getQueryData(KEYS.list(queryFilters));
+    queryClient.setQueryData(KEYS.list(queryFilters), (old) =>
+      old ? { ...old, data: old.data.filter((a) => a.id !== id) } : old
+    );
+    deleteMutation.mutate(id, {
+      onSuccess: () => setUndoAction({ type: "delete", id }),
+      onError: () => queryClient.setQueryData(KEYS.list(queryFilters), previousData),
+    });
+  }, [deleteMutation, queryClient, queryFilters]);
 
   const handleUndo = useCallback(() => {
     if (!undoAction) return;
@@ -118,33 +141,16 @@ function ApplicationList({ onSelect, filters = {}, onAdd, onImportCsv, shortcuts
 
   const handleBulkDeleteConfirm = useCallback(() => {
     const count = selectedIds.size;
-    bulkDeleteMutation.mutate([...selectedIds], {
-      onSuccess: () => {
-        setSelectedIds(new Set());
-        setBulkDeletePending(false);
-        toast.success(`Deleted ${count} application${count === 1 ? "" : "s"}`);
-      },
-    });
+    bulkDeleteMutation.mutate([...selectedIds], { onSuccess: () => { setSelectedIds(new Set()); setBulkDeletePending(false); toast.success(`Deleted ${count} application${count === 1 ? "" : "s"}`); } });
   }, [bulkDeleteMutation, selectedIds]);
 
   const handleMergeConfirm = useCallback((payload) => {
-    mergeMutation.mutate(payload, {
-      onSuccess: () => {
-        setSelectedIds(new Set());
-        setMergeDialogOpen(false);
-        toast.success("Applications merged successfully");
-      },
-    });
+    mergeMutation.mutate(payload, { onSuccess: () => { setSelectedIds(new Set()); setMergeDialogOpen(false); toast.success("Applications merged successfully"); } });
   }, [mergeMutation]);
 
   const handleBulkMoveToStage = useCallback((stage) => {
     const count = selectedIds.size;
-    bulkStageMutation.mutate({ ids: [...selectedIds], stage }, {
-      onSuccess: () => {
-        setSelectedIds(new Set());
-        toast.success(`Moved ${count} application${count === 1 ? "" : "s"} to ${stage}`);
-      },
-    });
+    bulkStageMutation.mutate({ ids: [...selectedIds], stage }, { onSuccess: () => { setSelectedIds(new Set()); toast.success(`Moved ${count} application${count === 1 ? "" : "s"} to ${stage}`); } });
   }, [bulkStageMutation, selectedIds]);
 
   // Reset keyboard focus when application list changes

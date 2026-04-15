@@ -1,6 +1,7 @@
 /** Kanban board view: one droppable column per stage, draggable application cards. */
 
 import { useState, useMemo, memo } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   DndContext,
   DragOverlay,
@@ -11,8 +12,9 @@ import {
   useDroppable,
 } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import { toast } from "sonner";
 
-import { useApplications, useUpdateApplication } from "../hooks/useApplications";
+import { useApplications, useUpdateApplication, KEYS } from "../hooks/useApplications";
 import { useAuth } from "../context/AuthContext";
 import { STAGES, STAGE_COLORS, DEFAULT_STAGE_COLOR, KANBAN_SKELETON_COUNT } from "../lib/constants";
 import KanbanCard from "./KanbanCard";
@@ -74,6 +76,9 @@ function KanbanBoard({ filters = {}, onSelect }) {
   const [mobileStage, setMobileStage] = useState(stages[0] ?? "");
   const [activeId, setActiveId] = useState(null);
 
+  const queryClient = useQueryClient();
+  const queryKey = KEYS.list(filters);
+
   const { data: envelope, isLoading } = useApplications(filters);
   const applications = useMemo(() => envelope?.data ?? [], [envelope]);
   const updateMutation = useUpdateApplication();
@@ -109,7 +114,21 @@ function KanbanBoard({ filters = {}, onSelect }) {
 
     if (!targetStage || srcApp.current_stage === targetStage) return;
 
-    updateMutation.mutate({ id: active.id, body: { current_stage: targetStage } });
+    const previousData = queryClient.getQueryData(queryKey);
+    queryClient.setQueryData(queryKey, (old) =>
+      old ? { ...old, data: old.data.map((a) => a.id === active.id ? { ...a, current_stage: targetStage } : a) } : old
+    );
+
+    updateMutation.mutate({ id: active.id, body: { current_stage: targetStage } }, {
+      onSuccess: () => toast.success(`Moved to ${targetStage}`, {
+        action: { label: "Undo", onClick: () => updateMutation.mutate({ id: active.id, body: { current_stage: srcApp.current_stage } }) },
+        duration: 5000,
+      }),
+      onError: () => {
+        queryClient.setQueryData(queryKey, previousData);
+        toast.error("Move failed — reverted");
+      },
+    });
   };
 
   if (isLoading) {

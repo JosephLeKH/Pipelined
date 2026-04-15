@@ -224,7 +224,10 @@ function DetailPanel({ application, onClose, onAddEvent }) {
       if (!cachedApp) return;
       const from_stage = cachedApp.current_stage;
       const to_stage = e.target.value;
-      updateApp({ id: cachedApp.id, body: { current_stage: to_stage } });
+      setCachedApp((prev) => prev ? { ...prev, current_stage: to_stage } : prev);
+      updateApp({ id: cachedApp.id, body: { current_stage: to_stage } }, {
+        onError: () => setCachedApp((prev) => prev ? { ...prev, current_stage: from_stage } : prev),
+      });
       trackEvent("application_stage_changed", { from_stage, to_stage });
     },
     [cachedApp, updateApp]
