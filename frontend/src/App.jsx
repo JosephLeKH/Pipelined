@@ -106,15 +106,23 @@ function PageTracker() {
 
 function App() {
   return (
-    <Suspense fallback={<LoadingSpinner />}>
-      <PageTracker />
-      <EmailVerificationBanner />
-      <UpgradePlanModal />
-      <CommandPalette />
-      <ShortcutHelp />
-      <GlobalChordShortcuts />
-      <FeedbackWidget />
-      <Routes>
+    <>
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[9999] focus:rounded focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-blue-600 focus:shadow-lg focus:ring-2 focus:ring-blue-500"
+      >
+        Skip to main content
+      </a>
+      <Suspense fallback={<LoadingSpinner />}>
+        <PageTracker />
+        <EmailVerificationBanner />
+        <UpgradePlanModal />
+        <CommandPalette />
+        <ShortcutHelp />
+        <GlobalChordShortcuts />
+        <FeedbackWidget />
+        <main id="main-content">
+        <Routes>
         <Route path="/" element={<PageWrapper><LandingPage /></PageWrapper>} />
         <Route path="/login" element={<PageWrapper><Login /></PageWrapper>} />
         <Route path="/register" element={<PageWrapper><Register /></PageWrapper>} />
@@ -165,8 +173,10 @@ function App() {
             </ProtectedRoute>
           }
         />
-      </Routes>
-    </Suspense>
+        </Routes>
+        </main>
+      </Suspense>
+    </>
   );
 }
 

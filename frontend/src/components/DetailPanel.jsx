@@ -264,7 +264,7 @@ function DetailPanel({ application, onClose, onAddEvent }) {
         }`}
         role="dialog"
         aria-modal="true"
-        aria-label="Application details"
+        aria-labelledby="detail-panel-heading"
         onKeyDown={handlePanelKeyDown}
       >
         {displayApp && (

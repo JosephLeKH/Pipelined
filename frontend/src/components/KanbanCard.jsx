@@ -28,6 +28,7 @@ function KanbanCard({ application, onSelect }) {
   const stale = isStale(application.updated_at);
   const followUpOverdue = isFollowUpOverdue(application.follow_up_date);
   const color = STAGE_COLORS[application.current_stage] ?? DEFAULT_STAGE_COLOR;
+  const dndKeyDown = listeners?.onKeyDown;
 
   return (
     <div
@@ -36,6 +37,10 @@ function KanbanCard({ application, onSelect }) {
       {...attributes}
       {...listeners}
       onClick={() => onSelect(application)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onSelect(application); }
+        dndKeyDown?.(e);
+      }}
       data-testid="kanban-card"
       className={`relative cursor-pointer border-l-[3px] p-3 transition-all duration-150 hover:-translate-y-px hover:shadow-card-hover ${CARD_BASE} ${color.border} ${
         isDragging ? "rotate-[2deg] scale-[1.05] opacity-80 shadow-xl transition-transform" : ""
@@ -65,7 +70,7 @@ function KanbanCard({ application, onSelect }) {
         {application.role_title}
       </p>
       <div className="mt-1 flex items-center justify-between">
-        <p className="text-xs text-slate-400 dark:text-slate-500">
+        <p className="text-xs text-slate-500">
           {formatRelative(application.date_applied)}
         </p>
         <FitBadge score={application.ai_analysis?.fit_score ?? null} />

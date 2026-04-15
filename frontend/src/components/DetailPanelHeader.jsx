@@ -11,7 +11,7 @@ export function DetailPanelHeader({ application, onClose, onDelete }) {
       <div className="flex items-center gap-3">
         <CompanyLogo company_domain={application.company_domain ?? null} company={application.company ?? ""} size={32} />
         <div>
-          <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{application.role_title}</h2>
+          <h2 id="detail-panel-heading" className="text-lg font-semibold text-slate-900 dark:text-slate-100">{application.role_title}</h2>
           <p className="text-sm text-slate-500 dark:text-slate-400">{application.company}</p>
         </div>
       </div>

@@ -79,13 +79,13 @@ export default function MergeDialog({ apps, onConfirm, onCancel, isPending = fal
     <div
       role="dialog"
       aria-modal="true"
-      aria-label="Merge duplicate applications"
+      aria-labelledby="merge-dialog-heading"
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
     >
       <div className={`flex w-full max-w-2xl flex-col ${MODAL_CARD}`}>
         {/* Header */}
         <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4 dark:border-slate-700">
-          <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">
+          <h2 id="merge-dialog-heading" className="text-base font-semibold text-slate-900 dark:text-slate-100">
             Merge duplicate applications
           </h2>
           <button

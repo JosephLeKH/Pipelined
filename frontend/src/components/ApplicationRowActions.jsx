@@ -74,11 +74,11 @@ export function DeleteConfirmModal({ appId, onConfirm, onCancel }) {
     <div
       role="dialog"
       aria-modal="true"
-      aria-label="Confirm delete"
+      aria-labelledby="delete-confirm-heading"
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
     >
       <div className={`w-80 p-6 ${MODAL_CARD}`}>
-        <h2 className="mb-2 text-base font-semibold text-slate-900 dark:text-slate-100">Delete application?</h2>
+        <h2 id="delete-confirm-heading" className="mb-2 text-base font-semibold text-slate-900 dark:text-slate-100">Delete application?</h2>
         <p className="mb-6 text-sm text-slate-600 dark:text-slate-400">
           This will permanently delete the application and cannot be undone.
           Consider archiving instead.
@@ -110,11 +110,11 @@ export function BulkDeleteConfirmModal({ count, onConfirm, onCancel }) {
     <div
       role="dialog"
       aria-modal="true"
-      aria-label="Confirm bulk delete"
+      aria-labelledby="bulk-delete-heading"
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
     >
       <div className={`w-80 p-6 ${MODAL_CARD}`}>
-        <h2 className="mb-2 text-base font-semibold text-slate-900 dark:text-slate-100">
+        <h2 id="bulk-delete-heading" className="mb-2 text-base font-semibold text-slate-900 dark:text-slate-100">
           Delete {count} {label}?
         </h2>
         <p className="mb-6 text-sm text-slate-600 dark:text-slate-400">

@@ -101,7 +101,7 @@ describe("Dashboard", () => {
     await userEvent.click(screen.getByText("Acme Corp").closest("[role='row']"));
 
     // Assert — DetailPanel slide-in panel becomes visible (translate-x-0 class)
-    const panel = await screen.findByRole("dialog", { name: /application details/i });
+    const panel = await screen.findByRole("dialog", { name: /software engineer/i });
     expect(panel).toBeInTheDocument();
   });
 
@@ -119,7 +119,7 @@ describe("Dashboard", () => {
   it("should close DetailPanel and remove ?selected from URL when close is triggered", async () => {
     // Arrange — open with selected param
     render(<Dashboard />, { wrapper: makeWrapper(["/dashboard?selected=app1"]) });
-    await screen.findByRole("dialog", { name: /application details/i });
+    await screen.findByRole("dialog", { name: /software engineer/i });
 
     // Act — press Escape to close
     await userEvent.keyboard("{Escape}");
