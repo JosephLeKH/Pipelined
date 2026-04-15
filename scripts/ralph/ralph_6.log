@@ -26,3 +26,18 @@ US-117 is complete. Summary of what was implemented:
 - Tests updated for new `prep_data` shape and collapsible open-before-assert pattern; 356/356 passing
 
 Ralph: uncommitted changes detected — creating snapshot commit for iteration 1.
+[main 6f09f40] chore(ralph): iteration 1 snapshot (auto-commit)
+ 11 files changed, 333 insertions(+), 16 deletions(-)
+ create mode 100644 scripts/ralph/archive/2026-04-15-pipelined-v5/prd_6.json
+ create mode 100644 scripts/ralph/ralph_6.log
+ create mode 100644 scripts/ralph/ralph_6.pid
+Iteration 1 complete. Continuing...
+
+===============================================================
+  Ralph Iteration 2 of 20 (claude)
+===============================================================
+US-118 housekeeping done. prd_6.json updated (`passes: true`), progress_6.txt appended, committed as `e81e030`.
+
+US-119 through US-127 still have `passes: false`, so `<promise>COMPLETE</promise>` is not output.
+
+Ralph: uncommitted changes detected — creating snapshot commit for iteration 2.
