@@ -26,11 +26,11 @@
       "description": "Drag-and-drop on the Kanban board currently waits for the server round-trip before updating the UI, making it feel sluggish. Add optimistic updates with rollback on error and a brief undo toast.",
       "acceptanceCriteria": [
         "KanbanBoard drag-drop: on drop, immediately call queryClient.setQueryData to move the card to the target column before the PATCH request resolves",
-        "If the PATCH fails, roll back to the pre-drag snapshot and show an error toast ('Move failed — reverted')",
+        "If the PATCH fails, roll back to the pre-drag snapshot and show an error toast ('Move failed \u2014 reverted')",
         "On successful drop, show an undo toast for 5 seconds with an 'Undo' button that re-PATCHes the card back to the original stage",
         "DetailPanel stage pill selector uses the same optimistic pattern: update local state immediately, revert on API error",
         "Archive and delete actions optimistically remove the row/card from the list, revert on error",
-        "No loading spinners are shown during optimistic updates — only on explicit form submissions"
+        "No loading spinners are shown during optimistic updates \u2014 only on explicit form submissions"
       ],
       "priority": 2,
       "passes": true,
@@ -41,12 +41,12 @@
       "title": "Form UX hardening: pending states, char counts, unsaved warnings, CSV error UX",
       "description": "Several forms have poor feedback during submission, missing character limits, and no warnings when leaving unsaved changes. Fix these across ManualAddForm, NotesEditor, and CsvImportModal.",
       "acceptanceCriteria": [
-        "ManualAddForm submit button is disabled while isPending and shows a Loader2 spinner icon with label 'Saving…'",
+        "ManualAddForm submit button is disabled while isPending and shows a Loader2 spinner icon with label 'Saving\u2026'",
         "NotesEditor (notes textarea in DetailPanel) shows a character count '{current}/{max}' below the field; turns amber at 80% of max, rose at 100%",
         "Closing the DetailPanel with unsaved notes changes shows a browser-native confirmation or an inline warning banner asking the user to confirm discard",
         "CsvImportModal error list is collapsed by default when there are more than 5 errors; a 'Show all {N} errors' toggle expands the full list",
         "CsvImportModal has a 'Copy errors' button that copies all error messages to clipboard",
-        "CsvImportModal shows an explicit banner when a file exceeds the size limit (e.g. '10 MB max — this file is 14 MB')",
+        "CsvImportModal shows an explicit banner when a file exceeds the size limit (e.g. '10 MB max \u2014 this file is 14 MB')",
         "All new UI elements follow the existing design token system"
       ],
       "priority": 3,
@@ -59,11 +59,11 @@
       "description": "A review identified multiple WCAG 2.1 AA violations: missing skip link, checkbox not associated with label, modals missing ARIA roles, Kanban cards not keyboard navigable, icon-only buttons missing aria-label, and low-contrast placeholder text.",
       "acceptanceCriteria": [
         "A 'Skip to main content' link is the first focusable element in the DOM; it is sr-only until focused, then becomes visible with a visible focus ring",
-        "Bulk-select checkboxes are native <input type='checkbox'> elements wrapped in a <label> or paired with aria-label — not custom div-based checkboxes",
+        "Bulk-select checkboxes are native <input type='checkbox'> elements wrapped in a <label> or paired with aria-label \u2014 not custom div-based checkboxes",
         "All modal dialogs have role='dialog' aria-modal='true' and aria-labelledby pointing to their heading",
         "KanbanCard has tabIndex={0} role='button' and handles Enter and Space keydown events to open the detail panel",
         "Every icon-only button (e.g. close, archive, delete icons) has an explicit aria-label",
-        "Non-decorative text that currently uses slate-400 (#94a3b8, contrast 2.8:1 on white — FAILS AA) is updated to slate-500 (#64748b, contrast 4.6:1 — PASSES AA)",
+        "Non-decorative text that currently uses slate-400 (#94a3b8, contrast 2.8:1 on white \u2014 FAILS AA) is updated to slate-500 (#64748b, contrast 4.6:1 \u2014 PASSES AA)",
         "No global CSS rule sets outline: none without providing a visible replacement focus style",
         "Run axe-core (npm install --save-dev axe-core) against the main dashboard page in the test suite and assert zero WCAG AA violations"
       ],
@@ -112,7 +112,7 @@
       "acceptanceCriteria": [
         "Install marked (markdown parser) and dompurify (XSS sanitizer) as frontend dependencies",
         "Create MarkdownEditor.jsx with two tabs: 'Write' (textarea) and 'Preview' (rendered HTML)",
-        "Preview renders using marked.parse(value) passed through DOMPurify.sanitize() before being set via dangerouslySetInnerHTML — raw marked output must never be set without sanitization",
+        "Preview renders using marked.parse(value) passed through DOMPurify.sanitize() before being set via dangerouslySetInnerHTML \u2014 raw marked output must never be set without sanitization",
         "Tab key inside the Write textarea inserts 2 spaces instead of moving focus",
         "Prose styles for the preview container are defined in index.css (headings, lists, code blocks, blockquotes) without using @tailwindcss/typography",
         "A 'Markdown supported' help icon next to the tab bar opens a popover with a syntax cheatsheet (bold, italic, heading, list, code, link)",
@@ -120,7 +120,7 @@
         "Tests verify that script tags in user input are stripped from the preview output and do not execute"
       ],
       "priority": 7,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
@@ -166,7 +166,7 @@
         "Swiped row snaps back to closed position after an action is tapped or after a 3-second timeout",
         "DetailPanel renders as a bottom sheet on viewports narrower than the Tailwind 'md' breakpoint (768px): fixed to the bottom of the screen, with a drag handle at the top; dragging down 100px+ dismisses it",
         "KanbanBoard on mobile shows one column at a time with left/right swipe to navigate between columns; page indicator dots are shown below the board",
-        "All swipe interactions are implemented with native touch events (touchstart, touchmove, touchend) — no external gesture library",
+        "All swipe interactions are implemented with native touch events (touchstart, touchmove, touchend) \u2014 no external gesture library",
         "All existing mouse-based interactions still work normally on desktop"
       ],
       "priority": 10,
@@ -182,7 +182,7 @@
         "<link rel='manifest' href='/manifest.json'> is present in index.html",
         "public/sw.js implements cache-first strategy for app shell assets (HTML, JS, CSS bundles); network-only for all /api/* requests",
         "Service worker is registered in main.jsx on first load",
-        "OfflineBanner.jsx listens to the browser online/offline events and renders a persistent top banner ('You are offline — changes may not save') when offline; banner disappears when back online",
+        "OfflineBanner.jsx listens to the browser online/offline events and renders a persistent top banner ('You are offline \u2014 changes may not save') when offline; banner disappears when back online",
         "Lighthouse PWA audit in CI passes the 'Installable' and 'PWA Optimized' categories",
         "Service worker version is bumped when app shell assets change (use Vite build hash in cache key)"
       ],
@@ -216,7 +216,7 @@
         "GET /api/applications/funnel returns per-stage: { stage, entered_count, exited_to_next_count, conversion_rate, avg_days_in_stage, dropped_count }",
         "Computation uses stage_history on each application to determine entries, exits, and time deltas; ordered by user.default_stages stage order",
         "Analytics page adds a horizontal bar chart (recharts BarChart) showing entered_count per stage",
-        "Below the chart, a conversion rate table shows each stage-to-stage transition with color coding: >60% emerald, 30–60% amber, <30% rose",
+        "Below the chart, a conversion rate table shows each stage-to-stage transition with color coding: >60% emerald, 30\u201360% amber, <30% rose",
         "avg_days_in_stage >21 is highlighted in rose in the table",
         "Endpoint is covered by backend tests using the real MongoDB test instance",
         "All queries include user_id in the filter"
@@ -252,7 +252,7 @@
         "PDF includes: cover page with user name, export date, and summary stats (total apps, response rate, interview rate); application table (company, role, stage, applied date, fit score); funnel summary table; weekly goal progress if goals are set",
         "Endpoint is rate-limited to 10 requests per hour per user (use the existing rate-limit infrastructure from US-051)",
         "Settings page has a 'Download Pipeline Report' button with a loading spinner while the PDF is being generated",
-        "The button uses an anchor download pattern (fetch → blob → object URL → click) so the PDF downloads without opening a new tab",
+        "The button uses an anchor download pattern (fetch \u2192 blob \u2192 object URL \u2192 click) so the PDF downloads without opening a new tab",
         "Backend returns 429 with a Retry-After header if the rate limit is exceeded"
       ],
       "priority": 15,

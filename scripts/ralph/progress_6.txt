@@ -101,3 +101,20 @@ Test result: 356 passed, 56 files
 
 ### Test results
 - 368 tests passed, 58 files (pre-existing MSW unhandled rejections in DetailPanel.test.jsx are unrelated)
+
+## US-119: Markdown notes editor with Write/Preview tabs
+**Status:** Complete
+**Commit:** feat: US-119 - Markdown notes editor with Write/Preview tabs
+
+### What was done
+- Installed `marked` (v18) and `dompurify` (v3) as frontend dependencies
+- Created `MarkdownEditor.jsx`: Write/Preview tabs, Tab→2 spaces, cheatsheet popover with 6 syntax entries
+- Preview uses `DOMPurify.sanitize(marked.parse(value))` before `dangerouslySetInnerHTML` — XSS-safe
+- Added prose styles to `index.css` for `.markdown-preview` (headings, lists, code, blockquotes, links, dark mode variants) without @tailwindcss/typography
+- Updated `NotesEditor.jsx` to replace plain `<textarea>` with `<MarkdownEditor>` while preserving char count logic
+- 8 new tests in `MarkdownEditor.test.jsx` verifying XSS stripping (script tags, onerror), tab insertion, tab switching, cheatsheet, onChange
+
+### Learnings
+- `aria-label` on a textarea overrides `htmlFor` label associations — removing it allowed DetailPanel integration tests (which query by label name "Notes") to keep passing
+- Adding `role="tabpanel"` directly to a `<textarea>` replaces the implicit textbox role, breaking ARIA queries; wrapper divs are correct for panels
+- DOMPurify strips `<script>` tags and inline event handlers (onerror, onclick) but preserves safe text content — verified in tests

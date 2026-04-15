@@ -50,3 +50,14 @@ Iteration 2 complete. Continuing...
 ===============================================================
   Ralph Iteration 3 of 20 (claude)
 ===============================================================
+There are still 8 failing stories. Per the stop signal, I must NOT output the completion tag since not all stories have `passes: true`.
+
+US-119 is complete. Summary:
+
+- **`MarkdownEditor.jsx`** — new component with Write/Preview tabs, Tab→2 spaces, DOMPurify+marked XSS-safe preview, cheatsheet popover
+- **`NotesEditor.jsx`** — textarea replaced with `MarkdownEditor`, char count preserved  
+- **`index.css`** — prose styles added for `.markdown-preview` (no typography plugin)
+- **8 tests** — XSS stripping (script tags, onerror handlers), tab insertion, tab switching, cheatsheet visibility, onChange behavior
+- All 376 tests pass, build clean
+
+Ralph: uncommitted changes detected — creating snapshot commit for iteration 3.
