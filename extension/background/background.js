@@ -80,6 +80,15 @@ async function fetchWithAuth(path, options = {}, _retried = false) {
     return { ok: false, status: 401, error: "SESSION_EXPIRED" };
   }
 
+  if (!response.ok) {
+    try {
+      const body = await response.json();
+      return { error: body.error ?? { code: "REQUEST_FAILED", message: `Request failed with status ${response.status}` } };
+    } catch {
+      return { error: { code: "REQUEST_FAILED", message: `Request failed with status ${response.status}` } };
+    }
+  }
+
   try {
     return await response.json();
   } catch {
@@ -177,9 +186,11 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   }
 
   if (message.type === MSG.GET_AUTH_STATUS) {
-    Promise.all([getToken(), chrome.storage.local.get("display_name")]).then(
-      ([token, { display_name = "" }]) => sendResponse({ authenticated: !!token, display_name })
-    );
+    Promise.all([getToken(), chrome.storage.local.get("display_name")])
+      .then(([token, { display_name = "" }]) =>
+        sendResponse({ authenticated: !!token, display_name })
+      )
+      .catch(() => sendResponse({ authenticated: false, display_name: "" }));
     return true;
   }
 
@@ -188,7 +199,8 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
       .get("recent_saves")
       .then(({ recent_saves = [] }) =>
         sendResponse({ type: MSG.RECENT_SAVES, saves: recent_saves })
-      );
+      )
+      .catch(() => sendResponse({ type: MSG.RECENT_SAVES, saves: [] }));
     return true;
   }
 });

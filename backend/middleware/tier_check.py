@@ -30,12 +30,13 @@ class TierLimitExceeded(Exception):
 
 
 async def _get_user_tier(user_id: str) -> str:
-    """Return the user's tier, defaulting to 'free'."""
+    """Return the user's tier, defaulting to 'free' if the lookup fails."""
     try:
         users = get_collection("users")
         doc = await users.find_one({"_id": ObjectId(user_id)}, projection={"tier": 1})
         return (doc or {}).get("tier", "free")
     except Exception:
+        logger.error("tier_lookup_failed", user_id=user_id, exc_info=True)
         return "free"
 
 
@@ -49,6 +50,7 @@ async def _count_resource(user_id: str, resource: str) -> int:
         uid = ObjectId(user_id)
         return await col.count_documents({"user_id": uid, "deleted": {"$ne": True}})
     except Exception:
+        logger.error("resource_count_failed", user_id=user_id, resource=resource, exc_info=True)
         return 0
 
 

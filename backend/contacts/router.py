@@ -62,6 +62,10 @@ async def list_contacts(
     return {"data": [ContactResponse.from_doc(d) for d in docs]}
 
 
+CONTACT_NOT_FOUND_DETAIL = {"code": "CONTACT_NOT_FOUND", "message": "Contact not found."}
+APPLICATION_NOT_FOUND_DETAIL = {"code": "APPLICATION_NOT_FOUND", "message": "Application not found."}
+
+
 @router.get("/{contact_id}")
 async def get_contact(
     contact_id: str,
@@ -69,7 +73,7 @@ async def get_contact(
 ) -> dict:
     doc = await contact_service.get(user["_id"], contact_id)
     if doc is None:
-        raise HTTPException(status_code=404, detail={"error": {"code": "CONTACT_NOT_FOUND", "message": "Contact not found."}})
+        raise HTTPException(status_code=404, detail=CONTACT_NOT_FOUND_DETAIL)
     return {"data": ContactResponse.from_doc(doc)}
 
 
@@ -82,7 +86,7 @@ async def update_contact(
     try:
         doc = await contact_service.update(user["_id"], contact_id, body)
     except ContactNotFoundError:
-        raise HTTPException(status_code=404, detail={"error": {"code": "CONTACT_NOT_FOUND", "message": "Contact not found."}})
+        raise HTTPException(status_code=404, detail=CONTACT_NOT_FOUND_DETAIL)
     return {"data": ContactResponse.from_doc(doc)}
 
 
@@ -94,7 +98,7 @@ async def delete_contact(
     try:
         await contact_service.delete(user["_id"], contact_id)
     except ContactNotFoundError:
-        raise HTTPException(status_code=404, detail={"error": {"code": "CONTACT_NOT_FOUND", "message": "Contact not found."}})
+        raise HTTPException(status_code=404, detail=CONTACT_NOT_FOUND_DETAIL)
 
 
 @router.patch("/{contact_id}/link")
@@ -106,9 +110,9 @@ async def link_application(
     try:
         doc = await contact_service.link_application(user["_id"], contact_id, body.application_id)
     except ContactNotFoundError:
-        raise HTTPException(status_code=404, detail={"error": {"code": "CONTACT_NOT_FOUND", "message": "Contact not found."}})
+        raise HTTPException(status_code=404, detail=CONTACT_NOT_FOUND_DETAIL)
     except ApplicationNotFoundError:
-        raise HTTPException(status_code=404, detail={"error": {"code": "APPLICATION_NOT_FOUND", "message": "Application not found."}})
+        raise HTTPException(status_code=404, detail=APPLICATION_NOT_FOUND_DETAIL)
     return {"data": ContactResponse.from_doc(doc)}
 
 
@@ -121,7 +125,7 @@ async def unlink_application(
     try:
         doc = await contact_service.unlink_application(user["_id"], contact_id, body.application_id)
     except ContactNotFoundError:
-        raise HTTPException(status_code=404, detail={"error": {"code": "CONTACT_NOT_FOUND", "message": "Contact not found."}})
+        raise HTTPException(status_code=404, detail=CONTACT_NOT_FOUND_DETAIL)
     return {"data": ContactResponse.from_doc(doc)}
 
 
@@ -133,5 +137,5 @@ async def ping_contact(
     try:
         doc = await contact_service.ping(user["_id"], contact_id)
     except ContactNotFoundError:
-        raise HTTPException(status_code=404, detail={"error": {"code": "CONTACT_NOT_FOUND", "message": "Contact not found."}})
+        raise HTTPException(status_code=404, detail=CONTACT_NOT_FOUND_DETAIL)
     return {"data": ContactResponse.from_doc(doc)}

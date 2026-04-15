@@ -42,6 +42,7 @@ export function injectContactBanner(fields) {
 
 async function handleContactSave(shadow, host, fields) {
   const button = shadow.querySelector("[data-action='save']");
+  if (!button) return;
   button.disabled = true;
   button.textContent = "Saving\u2026";
 

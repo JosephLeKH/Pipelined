@@ -150,8 +150,9 @@ export function openDashboard() {
   chrome.tabs.create({ url: DASHBOARD_URL });
 }
 
-export function signOut() {
-  chrome.storage.session.clear();
+export async function signOut() {
+  await chrome.storage.session.clear();
+  await chrome.storage.local.remove("display_name");
   show("unauthenticated");
 }
 
@@ -164,6 +165,7 @@ export async function renderAutoSaveToggle() {
     auto_save = result.auto_save ?? false;
   } catch { return; }
   const btn = document.getElementById("auto-save-toggle");
+  if (!btn) return;
   btn.setAttribute("aria-pressed", String(auto_save));
   btn.textContent = auto_save ? "ON" : "OFF";
   row.classList.remove("hidden");

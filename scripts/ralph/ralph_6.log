@@ -1,0 +1,28 @@
+Using CLAUDE.md: /Users/josephle/GitHub/Pipelined/CLAUDE.md (via --append-system-prompt-file)
+Archiving previous run: ralph/pipelined-v5
+   Archived to: /Users/josephle/GitHub/Pipelined/scripts/ralph/archive/2026-04-15-pipelined-v5
+PRD file: /Users/josephle/GitHub/Pipelined/scripts/ralph/prd_6.json
+Progress file: /Users/josephle/GitHub/Pipelined/scripts/ralph/progress_6.txt
+Claude model: sonnet (set RALPH_MODEL to override)
+Sleep between iterations: 2s (RALPH_SLEEP_SEC)
+Starting Ralph - Tool: claude - Max iterations: 20
+
+===============================================================
+  Ralph Iteration 1 of 20 (claude)
+===============================================================
+US-117 is complete. Summary of what was implemented:
+
+**Backend**
+- `PrepData` Pydantic model added to `cal/schemas.py` with `notes`, `checklist`, `questions`
+- `EventUpdate` gains `prep_data: PrepData | None`; `EventResponse` gains `prep_data: PrepData` built from flat DB fields in `from_doc`
+- `service.update_event` expands `prep_data` → flat `prep_notes`/`prep_checklist`/`prep_questions` for backward-compatible MongoDB storage
+- New test `test_update_event_sets_prep_data` verifies the nested PATCH flow end-to-end
+
+**Frontend**
+- `PrepSection.jsx` — collapsible "Interview Prep" panel with debounced notes textarea, checklist (starter suggestions when empty), and practice questions list; calls `onPrepChange(prepData)` on every mutation
+- `CalendarEventDetail.jsx` — simplified to ~110 lines; renders `<PrepSection>` only for `INTERVIEW_EVENT_TYPES` (phone_screen, technical, onsite, behavioral); PATCHes via `{ prep_data: ... }`
+- `CalendarGrid.jsx` `EventChip` — book icon badge when `event.prep_data` is non-empty
+- `constants.js` — `INTERVIEW_EVENT_TYPES`, `PREP_CHECKLIST_STARTER_SUGGESTIONS`, `MAX_PREP_QUESTIONS` added
+- Tests updated for new `prep_data` shape and collapsible open-before-assert pattern; 356/356 passing
+
+Ralph: uncommitted changes detected — creating snapshot commit for iteration 1.

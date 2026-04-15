@@ -141,8 +141,11 @@ async def export_applications_csv(
     """Export the current user's applications as a CSV file download."""
     user_id = str(user["_id"])
     csv_content = await app_service.export_applications(user_id, include_archived)
+    # Yield line by line so the HTTP layer can flush chunks rather than sending one block.
+    # The full CSV is still computed in memory by the service; true streaming would require
+    # the service to be an async generator.
     return StreamingResponse(
-        iter([csv_content]),
+        (line + "\n" for line in csv_content.splitlines()),
         media_type="text/csv",
         headers={"Content-Disposition": "attachment; filename=applications.csv"},
     )

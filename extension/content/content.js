@@ -85,6 +85,7 @@ function injectBanner(fields, boardId) {
 
 async function handleSave(shadow, host, fields, boardId) {
   const button = shadow.querySelector("[data-action='save']");
+  if (!button) return;
   button.disabled = true;
   button.textContent = "Saving\u2026";
 

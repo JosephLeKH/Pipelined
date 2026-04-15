@@ -1,0 +1,263 @@
+{
+  "project": "Pipelined",
+  "branchName": "ralph/pipelined-v6",
+  "description": "Quality-of-life improvements, accessibility fixes, UX hardening, and new convenience features. Prioritizes reducing bugs, improving form UX, accessibility compliance, and adding high-value productivity features before expanding further.",
+  "userStories": [
+    {
+      "id": "US-113",
+      "title": "Codebase quality: split oversized files and fix list rendering bugs",
+      "description": "Several frontend files exceed the 300-line limit and have known rendering bugs. Split them into focused components and fix the FixedSizeList dynamic height, KanbanBoard loading skeleton, and empty-state missing 'Clear filters' button.",
+      "acceptanceCriteria": [
+        "ApplicationList.jsx split: extract BulkActionBar.jsx (bulk action controls) and ApplicationRow.jsx (single row) so ApplicationList.jsx stays under 300 lines",
+        "DetailPanel.jsx split: extract DetailPanelHeader.jsx, DetailPanelNotes.jsx, DetailPanelTimeline.jsx so DetailPanel.jsx stays under 300 lines",
+        "ManualAddForm.jsx split: extract DuplicateWarning.jsx and FormActions.jsx so ManualAddForm.jsx stays under 300 lines",
+        "FixedSizeList height is dynamic: add useWindowHeight hook (returns window.innerHeight with resize listener, debounced 100ms) and compute height = Math.max(300, windowHeight - LIST_OFFSET_PX) where LIST_OFFSET_PX=280 is a named constant",
+        "KanbanBoard loading state renders SkeletonRow placeholders (3 per column) instead of a blank screen",
+        "ApplicationList empty state includes a 'Clear all filters' button that resets all active filters when clicked",
+        "All existing tests pass after the refactor; each new file has at least one smoke test"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-114",
+      "title": "Optimistic UI for Kanban drag-drop and stage changes",
+      "description": "Drag-and-drop on the Kanban board currently waits for the server round-trip before updating the UI, making it feel sluggish. Add optimistic updates with rollback on error and a brief undo toast.",
+      "acceptanceCriteria": [
+        "KanbanBoard drag-drop: on drop, immediately call queryClient.setQueryData to move the card to the target column before the PATCH request resolves",
+        "If the PATCH fails, roll back to the pre-drag snapshot and show an error toast ('Move failed — reverted')",
+        "On successful drop, show an undo toast for 5 seconds with an 'Undo' button that re-PATCHes the card back to the original stage",
+        "DetailPanel stage pill selector uses the same optimistic pattern: update local state immediately, revert on API error",
+        "Archive and delete actions optimistically remove the row/card from the list, revert on error",
+        "No loading spinners are shown during optimistic updates — only on explicit form submissions"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-115",
+      "title": "Form UX hardening: pending states, char counts, unsaved warnings, CSV error UX",
+      "description": "Several forms have poor feedback during submission, missing character limits, and no warnings when leaving unsaved changes. Fix these across ManualAddForm, NotesEditor, and CsvImportModal.",
+      "acceptanceCriteria": [
+        "ManualAddForm submit button is disabled while isPending and shows a Loader2 spinner icon with label 'Saving…'",
+        "NotesEditor (notes textarea in DetailPanel) shows a character count '{current}/{max}' below the field; turns amber at 80% of max, rose at 100%",
+        "Closing the DetailPanel with unsaved notes changes shows a browser-native confirmation or an inline warning banner asking the user to confirm discard",
+        "CsvImportModal error list is collapsed by default when there are more than 5 errors; a 'Show all {N} errors' toggle expands the full list",
+        "CsvImportModal has a 'Copy errors' button that copies all error messages to clipboard",
+        "CsvImportModal shows an explicit banner when a file exceeds the size limit (e.g. '10 MB max — this file is 14 MB')",
+        "All new UI elements follow the existing design token system"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-116",
+      "title": "Accessibility: WCAG 2.1 AA compliance pass",
+      "description": "A review identified multiple WCAG 2.1 AA violations: missing skip link, checkbox not associated with label, modals missing ARIA roles, Kanban cards not keyboard navigable, icon-only buttons missing aria-label, and low-contrast placeholder text.",
+      "acceptanceCriteria": [
+        "A 'Skip to main content' link is the first focusable element in the DOM; it is sr-only until focused, then becomes visible with a visible focus ring",
+        "Bulk-select checkboxes are native <input type='checkbox'> elements wrapped in a <label> or paired with aria-label — not custom div-based checkboxes",
+        "All modal dialogs have role='dialog' aria-modal='true' and aria-labelledby pointing to their heading",
+        "KanbanCard has tabIndex={0} role='button' and handles Enter and Space keydown events to open the detail panel",
+        "Every icon-only button (e.g. close, archive, delete icons) has an explicit aria-label",
+        "Non-decorative text that currently uses slate-400 (#94a3b8, contrast 2.8:1 on white — FAILS AA) is updated to slate-500 (#64748b, contrast 4.6:1 — PASSES AA)",
+        "No global CSS rule sets outline: none without providing a visible replacement focus style",
+        "Run axe-core (npm install --save-dev axe-core) against the main dashboard page in the test suite and assert zero WCAG AA violations"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-117",
+      "title": "Interview prep tracker on calendar events",
+      "description": "Users want a lightweight place to jot prep notes, a checklist, and practice questions directly on a calendar event, without leaving the app. Add a collapsible 'Interview Prep' section to the event detail view.",
+      "acceptanceCriteria": [
+        "calendar_events schema adds optional prep_data: { notes: str, checklist: [{ id: str, text: str, checked: bool }], questions: [str] }",
+        "PATCH /api/calendar/{id} accepts prep_data in the request body and persists it; returns the full updated event",
+        "CalendarEventDetail panel shows a collapsible 'Interview Prep' section only when event.event_type is 'interview' or 'onsite'",
+        "Prep section includes: a textarea for notes (with char count), a checklist with add/remove/check actions, and a practice questions list with add/remove",
+        "Checklist has 3 starter suggestions shown when empty ('Research the company', 'Review the job description', 'Prepare STAR stories')",
+        "CalendarGrid shows a book icon badge on event chips that have non-empty prep_data",
+        "All prep data is persisted via the PATCH endpoint; no data is stored in local state only"
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-118",
+      "title": "Offer comparison page",
+      "description": "When users reach the Offer stage they need to compare packages side by side. Add structured offer fields to applications and a dedicated comparison page.",
+      "acceptanceCriteria": [
+        "Application schema adds optional offer_details: { base_salary: int, total_comp: int, equity: str, signing_bonus: int, benefits: str, start_date: str, location: str, remote_policy: str, deadline: str, notes: str }",
+        "PATCH /api/applications/{id} accepts offer_details; all fields are optional",
+        "DetailPanel shows an 'Offer Details' section (collapsible) when current_stage == 'Offer', with inline-editable fields for each offer_details field",
+        "New /offers route renders an OfferComparison page: a horizontal table with one column per Offer-stage application, rows for each offer_details field, cells are inline-editable",
+        "A 'Mark as winner' button on each column triggers a confetti animation (canvas-confetti, npm install canvas-confetti) and adds a 'winner' badge to that column header",
+        "The NavBar shows an 'Offers' link only when the user has at least one application in the Offer stage",
+        "All monetary fields are formatted as currency (USD, locale-aware) in the comparison table"
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-119",
+      "title": "Markdown notes editor with Write/Preview tabs",
+      "description": "Plain textarea notes are limiting. Replace the notes textarea in DetailPanel with a lightweight Markdown editor that has a Write tab and a Preview tab.",
+      "acceptanceCriteria": [
+        "Install marked (markdown parser) and dompurify (XSS sanitizer) as frontend dependencies",
+        "Create MarkdownEditor.jsx with two tabs: 'Write' (textarea) and 'Preview' (rendered HTML)",
+        "Preview renders using marked.parse(value) passed through DOMPurify.sanitize() before being set via dangerouslySetInnerHTML — raw marked output must never be set without sanitization",
+        "Tab key inside the Write textarea inserts 2 spaces instead of moving focus",
+        "Prose styles for the preview container are defined in index.css (headings, lists, code blocks, blockquotes) without using @tailwindcss/typography",
+        "A 'Markdown supported' help icon next to the tab bar opens a popover with a syntax cheatsheet (bold, italic, heading, list, code, link)",
+        "MarkdownEditor replaces the existing notes textarea in DetailPanelNotes; the existing char count behavior is preserved",
+        "Tests verify that script tags in user input are stripped from the preview output and do not execute"
+      ],
+      "priority": 7,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-120",
+      "title": "Application templates",
+      "description": "Users repeatedly fill in the same fields (remote-only roles, specific role types, referral source). Let them save and reuse templates in ManualAddForm.",
+      "acceptanceCriteria": [
+        "New application_templates collection: { _id, user_id, name, fields: { company_type, remote_status, role_type, source, tags, compensation }, created_at }",
+        "Maximum 10 templates per user; POST /api/templates returns 400 if limit exceeded",
+        "Endpoints: POST /api/templates (create), GET /api/templates (list for current user), PATCH /api/templates/{id} (rename or update fields), DELETE /api/templates/{id}",
+        "ManualAddForm has a 'Use template' dropdown that prefills the matching fields when a template is selected",
+        "ManualAddForm has a 'Save as template' button that opens a small modal to name the template and saves the current field values",
+        "Settings page has a 'Templates' section listing all saved templates with rename and delete actions",
+        "Every query on application_templates includes user_id in the filter"
+      ],
+      "priority": 8,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-121",
+      "title": "Bulk edit: stage, follow-up date, and tags",
+      "description": "Users with many applications need to update multiple records at once. Extend the existing bulk-select flow to support bulk stage change, follow-up date, and tag edits.",
+      "acceptanceCriteria": [
+        "New endpoint: POST /api/applications/bulk-update with body { application_ids: [str] (max 50), update: { current_stage?: str, follow_up_date?: str, tags_add?: [str], tags_remove?: [str] } }",
+        "Endpoint uses Motor update_many with $in on application_ids, filtered by user_id",
+        "Returns { updated_count: int } in the envelope format",
+        "BulkActionBar (from US-113) is extended with: a Stage dropdown (same options as ManualAddForm), a Follow-up date picker, and a Tags multi-select (add/remove)",
+        "Submitting bulk edit shows a loading state on the BulkActionBar and refreshes the application list on success",
+        "Bulk edit is limited to 50 applications; if more are selected, show an inline warning and disable the bulk-edit controls",
+        "Backend returns 400 if application_ids is empty or exceeds 50"
+      ],
+      "priority": 9,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-122",
+      "title": "Mobile touch: swipe actions, bottom sheet detail, Kanban column swipe",
+      "description": "The app has no mobile-specific interactions. Add swipe-to-action on list rows, a bottom sheet for the detail panel on small screens, and swipeable Kanban columns.",
+      "acceptanceCriteria": [
+        "ApplicationRow supports swipe left on touch devices to reveal Archive (rose background) and Follow-up (amber background) action buttons; threshold is 80px horizontal movement in under 300ms with at least 2:1 horizontal-to-vertical ratio to distinguish from scroll",
+        "Swiped row snaps back to closed position after an action is tapped or after a 3-second timeout",
+        "DetailPanel renders as a bottom sheet on viewports narrower than the Tailwind 'md' breakpoint (768px): fixed to the bottom of the screen, with a drag handle at the top; dragging down 100px+ dismisses it",
+        "KanbanBoard on mobile shows one column at a time with left/right swipe to navigate between columns; page indicator dots are shown below the board",
+        "All swipe interactions are implemented with native touch events (touchstart, touchmove, touchend) — no external gesture library",
+        "All existing mouse-based interactions still work normally on desktop"
+      ],
+      "priority": 10,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-123",
+      "title": "PWA: web manifest, service worker, offline banner",
+      "description": "Make the app installable as a PWA and show a graceful offline banner when the network is unavailable.",
+      "acceptanceCriteria": [
+        "public/manifest.json includes: name='Pipelined', short_name='Pipelined', start_url='/', display='standalone', theme_color='#6366F1', background_color='#0F172A', and icons at 192x192 and 512x512",
+        "<link rel='manifest' href='/manifest.json'> is present in index.html",
+        "public/sw.js implements cache-first strategy for app shell assets (HTML, JS, CSS bundles); network-only for all /api/* requests",
+        "Service worker is registered in main.jsx on first load",
+        "OfflineBanner.jsx listens to the browser online/offline events and renders a persistent top banner ('You are offline — changes may not save') when offline; banner disappears when back online",
+        "Lighthouse PWA audit in CI passes the 'Installable' and 'PWA Optimized' categories",
+        "Service worker version is bumped when app shell assets change (use Vite build hash in cache key)"
+      ],
+      "priority": 11,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-124",
+      "title": "Chrome extension: support Wellfound, Handshake, Dice, and RemoteOK",
+      "description": "The extension currently supports a limited set of job boards. Add extractors for four popular boards: Wellfound (startups), Handshake (campus), Dice (tech), and RemoteOK (remote-only).",
+      "acceptanceCriteria": [
+        "Create extension/boards/wellfound.js: matches wellfound.com and angel.co job pages, extracts company, role, location, url; minimum 3-selector fallback chain per field",
+        "Create extension/boards/handshake.js: matches joinhandshake.com job detail pages",
+        "Create extension/boards/dice.js: matches dice.com/job-detail/ pages",
+        "Create extension/boards/remoteok.js: matches remoteok.com/remote-jobs/ pages; hardcodes remote_status='remote' since all listings are remote",
+        "Each extractor exports { BOARD_ID, isJobPage(url), extractFields(document) } following the existing board interface",
+        "BOARDS array in the extension is updated to include all four new extractors",
+        "manifest.json content_scripts matches array is updated to include the URL patterns for all four boards",
+        "Each new board has a corresponding test file with at least 3 test cases (detects job page, extracts fields, handles missing fields gracefully)"
+      ],
+      "priority": 12,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-125",
+      "title": "Stage funnel analytics with conversion rates and time-in-stage",
+      "description": "Add a funnel analytics endpoint and visualization showing how many applications enter each stage, how many convert to the next, conversion rates, and average time spent in each stage.",
+      "acceptanceCriteria": [
+        "GET /api/applications/funnel returns per-stage: { stage, entered_count, exited_to_next_count, conversion_rate, avg_days_in_stage, dropped_count }",
+        "Computation uses stage_history on each application to determine entries, exits, and time deltas; ordered by user.default_stages stage order",
+        "Analytics page adds a horizontal bar chart (recharts BarChart) showing entered_count per stage",
+        "Below the chart, a conversion rate table shows each stage-to-stage transition with color coding: >60% emerald, 30–60% amber, <30% rose",
+        "avg_days_in_stage >21 is highlighted in rose in the table",
+        "Endpoint is covered by backend tests using the real MongoDB test instance",
+        "All queries include user_id in the filter"
+      ],
+      "priority": 13,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-126",
+      "title": "Smart tag input with predefined suggestions and analytics",
+      "description": "The current tag input is a plain text field. Replace it with a combobox that suggests existing and predefined tags, and add tag-level analytics showing offer rates per tag.",
+      "acceptanceCriteria": [
+        "PREDEFINED_TAGS list in backend/config.py: ['referral', 'dream company', 'remote', 'hybrid', 'in-office', 'startup', 'faang', 'contract', 'internship', 'return offer']",
+        "GET /api/applications/tags returns { tags: [{ name, count }] } for the current user's tags, sorted by count descending",
+        "TagInput.jsx is a combobox: typing filters PREDEFINED_TAGS + user's existing tags; arrow keys navigate the dropdown; Enter or click adds the tag; Backspace removes the last chip; each chip has an X button",
+        "TagInput replaces the tag fields in ManualAddForm and DetailPanel",
+        "FilterBar tag filter uses TagInput in multi-select mode with AND logic (applications must have all selected tags)",
+        "GET /api/applications/stats response includes tag_offer_rates: [{ tag, application_count, offer_count, offer_rate }]",
+        "Analytics page has a 'Tags' section showing a table of tag offer rates"
+      ],
+      "priority": 14,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-127",
+      "title": "PDF pipeline report export",
+      "description": "Let users download a formatted PDF summary of their pipeline: stats, application table, funnel, and goal progress.",
+      "acceptanceCriteria": [
+        "Install reportlab as a backend dependency (preferred over weasyprint for Docker compatibility)",
+        "GET /api/applications/report returns a streaming PDF response with Content-Type: application/pdf",
+        "PDF includes: cover page with user name, export date, and summary stats (total apps, response rate, interview rate); application table (company, role, stage, applied date, fit score); funnel summary table; weekly goal progress if goals are set",
+        "Endpoint is rate-limited to 10 requests per hour per user (use the existing rate-limit infrastructure from US-051)",
+        "Settings page has a 'Download Pipeline Report' button with a loading spinner while the PDF is being generated",
+        "The button uses an anchor download pattern (fetch → blob → object URL → click) so the PDF downloads without opening a new tab",
+        "Backend returns 429 with a Retry-After header if the rate limit is exceeded"
+      ],
+      "priority": 15,
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}
