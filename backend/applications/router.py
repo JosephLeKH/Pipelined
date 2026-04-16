@@ -33,7 +33,7 @@ from applications.schemas import (
 from applications.service import ActiveStageError, ApplicationNotFoundError, DuplicateApplicationError, InvalidCursorError
 from auth.dependencies import get_verified_user as get_current_user
 from config import settings
-from middleware.rate_limit import limiter
+from middleware.rate_limit import RATE_REPORT, get_user_key, limiter
 from middleware.tier_check import TierLimitExceeded, check_tier_limit
 
 logger = structlog.get_logger()
@@ -152,6 +152,22 @@ async def export_applications_csv(
         (line + "\n" for line in csv_content.splitlines()),
         media_type="text/csv",
         headers={"Content-Disposition": "attachment; filename=applications.csv"},
+    )
+
+
+@router.get("/report", status_code=200)
+@limiter.limit(RATE_REPORT, key_func=get_user_key)
+async def download_pipeline_report(
+    request: Request,
+    user: dict = Depends(get_current_user),
+) -> StreamingResponse:
+    """Generate and download the user's pipeline as a PDF report."""
+    user_id = str(user["_id"])
+    pdf_bytes = await app_service.generate_pdf_report(user_id)
+    return StreamingResponse(
+        iter([pdf_bytes]),
+        media_type="application/pdf",
+        headers={"Content-Disposition": "attachment; filename=pipeline-report.pdf"},
     )
 
 

@@ -256,7 +256,7 @@
         "Backend returns 429 with a Retry-After header if the rate limit is exceeded"
       ],
       "priority": 15,
-      "passes": false,
+      "passes": true,
       "notes": ""
     }
   ]

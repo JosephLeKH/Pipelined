@@ -2018,3 +2018,54 @@ async def test_stats_tag_offer_rates_zero_when_no_offers(client, test_user):
     rates = {r["tag"]: r for r in data["tag_offer_rates"]}
     assert rates["startup"]["offer_rate"] == 0.0
     assert rates["startup"]["offer_count"] == 0
+
+
+# ---------------------------------------------------------------------------
+# GET /api/applications/report
+# ---------------------------------------------------------------------------
+
+
+async def test_report_returns_pdf_content_type(client, test_user):
+    # Arrange
+    _, cookies = test_user
+    await client.post("/api/applications", json=APP_PAYLOAD, cookies=cookies)
+
+    # Act
+    response = await client.get("/api/applications/report", cookies=cookies)
+
+    # Assert
+    assert response.status_code == 200
+    assert "application/pdf" in response.headers["content-type"]
+
+
+async def test_report_returns_attachment_content_disposition(client, test_user):
+    # Arrange
+    _, cookies = test_user
+
+    # Act
+    response = await client.get("/api/applications/report", cookies=cookies)
+
+    # Assert
+    assert response.status_code == 200
+    assert "attachment" in response.headers.get("content-disposition", "")
+    assert "pipeline-report.pdf" in response.headers.get("content-disposition", "")
+
+
+async def test_report_returns_401_without_auth(client):
+    # Act
+    response = await client.get("/api/applications/report")
+
+    # Assert
+    assert response.status_code == 401
+
+
+async def test_report_body_is_non_empty_bytes(client, test_user):
+    # Arrange
+    _, cookies = test_user
+
+    # Act
+    response = await client.get("/api/applications/report", cookies=cookies)
+
+    # Assert
+    assert response.status_code == 200
+    assert len(response.content) > 0

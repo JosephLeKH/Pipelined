@@ -5,6 +5,7 @@ import { useState } from "react";
 import BarChart2 from "lucide-react/dist/esm/icons/bar-chart-2";
 import Bell from "lucide-react/dist/esm/icons/bell";
 import CalendarIcon from "lucide-react/dist/esm/icons/calendar";
+import Download from "lucide-react/dist/esm/icons/download";
 import FileText from "lucide-react/dist/esm/icons/file-text";
 import Gift from "lucide-react/dist/esm/icons/gift";
 import LayoutTemplate from "lucide-react/dist/esm/icons/layout-template";
@@ -21,6 +22,7 @@ import SettingsProfileSection from "../components/SettingsProfileSection";
 import SettingsResumeSection from "../components/SettingsResumeSection";
 import SettingsTemplatesSection from "../components/SettingsTemplatesSection";
 import SettingsReferralSection from "../components/SettingsReferralSection";
+import SettingsReportSection from "../components/SettingsReportSection";
 import SettingsUsageSection from "../components/SettingsUsageSection";
 import SharePipeline from "../components/SharePipeline";
 import TimezoneSelector from "../components/TimezoneSelector";
@@ -35,6 +37,7 @@ const SIDEBAR_ITEMS = [
   { id: "resume", label: "Resume & AI", icon: FileText },
   { id: "templates", label: "Templates", icon: LayoutTemplate },
   { id: "sharing", label: "Sharing", icon: Share2 },
+  { id: "reports", label: "Reports", icon: Download },
   { id: "referral", label: "Invite Friends", icon: Gift },
   { id: "usage", label: "Usage & Plan", icon: BarChart2 },
   { id: "account", label: "Account", icon: Settings2 },
@@ -110,6 +113,7 @@ function renderSection(activeSection, user) {
     case "resume": return <SettingsResumeSection />;
     case "templates": return <SettingsTemplatesSection />;
     case "sharing": return <SharingSection />;
+    case "reports": return <SettingsReportSection />;
     case "referral": return <SettingsReferralSection user={user} />;
     case "usage": return <SettingsUsageSection user={user} />;
     case "account": return <SettingsAccountSection />;

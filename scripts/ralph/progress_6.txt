@@ -310,3 +310,25 @@ Replaced plain text tag fields with a full combobox TagInput component, added a 
 
 ### Commit
 `feat: US-126 - Smart tag input with predefined suggestions and analytics`
+
+---
+
+## US-127: PDF Pipeline Report Export
+
+### Implementation
+- `backend/requirements.txt`: `reportlab==4.2.5` already present
+- `backend/config.py`: Added `rate_limit_report: str = "10/hour"` setting
+- `backend/middleware/rate_limit.py`: Added `RATE_REPORT` constant and `get_user_key()` function for per-user JWT-based rate limiting
+- `backend/applications/service.py`: Added `generate_pdf_report()` + 6 helper functions (`_fetch_pdf_data`, `_pdf_cover_elements`, `_pdf_apps_elements`, `_pdf_funnel_elements`, `_pdf_goal_elements`, `_build_pdf_bytes`) with indigo brand colors, 100-row app limit, asyncio.gather for parallel DB calls
+- `backend/applications/router.py`: Added `GET /api/applications/report` with `@limiter.limit(RATE_REPORT, key_func=get_user_key)` returning `StreamingResponse` with `application/pdf`
+- `frontend/src/api/applications.js`: Added `downloadPdfReport()` using native fetch, handles 429/Retry-After
+- `frontend/src/components/SettingsReportSection.jsx`: Download button with loading spinner, rate-limit message, error display, anchor download pattern
+- `frontend/src/pages/Settings.jsx`: Added "Reports" sidebar item with Download icon, `case "reports"` in renderSection
+
+### Quality Checks
+- 101/101 backend application tests pass (4 new report tests)
+- 422/422 frontend tests pass (5 new SettingsReportSection tests)
+- Production build succeeds
+
+### Commit
+`feat: US-127 - PDF pipeline report export`

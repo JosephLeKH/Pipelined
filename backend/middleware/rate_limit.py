@@ -9,6 +9,7 @@ Key function reads real client IP from X-Forwarded-For when the connecting
 address is in TRUSTED_PROXIES; falls back to X-Real-IP, then direct IP.
 """
 
+import jwt as pyjwt
 from slowapi import Limiter
 from starlette.requests import Request
 
@@ -17,6 +18,7 @@ from config import settings
 RATE_STANDARD: str = settings.rate_limit_standard
 RATE_AI: str = settings.rate_limit_ai
 RATE_AUTH: str = settings.rate_limit_auth
+RATE_REPORT: str = settings.rate_limit_report
 
 
 def get_client_ip(request: Request) -> str:
@@ -39,6 +41,22 @@ def get_client_ip(request: Request) -> str:
             return real_ip.strip()
 
     return connecting_ip
+
+
+def get_user_key(request: Request) -> str:
+    """Return a user-scoped key for rate limiting by extracting user_id from the JWT cookie.
+
+    Falls back to client IP when the token is absent or invalid.
+    """
+    access_token = request.cookies.get("access_token")
+    if not access_token:
+        return get_client_ip(request)
+    try:
+        payload = pyjwt.decode(access_token, settings.jwt_secret, algorithms=["HS256"])
+        sub = payload.get("sub", "")
+        return f"user:{sub}" if sub else get_client_ip(request)
+    except pyjwt.PyJWTError:
+        return get_client_ip(request)
 
 
 limiter = Limiter(key_func=get_client_ip)

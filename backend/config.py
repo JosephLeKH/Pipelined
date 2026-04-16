@@ -63,6 +63,7 @@ class Settings(BaseSettings):
     rate_limit_standard: str = "60/minute"
     rate_limit_ai: str = "10/minute"
     rate_limit_auth: str = "5/minute"
+    rate_limit_report: str = "10/hour"
     trusted_proxies: list[str] = []
 
     @field_validator("trusted_proxies", mode="before")

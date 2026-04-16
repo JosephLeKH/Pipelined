@@ -116,3 +116,21 @@ export async function fetchFunnel() {
 export async function fetchTags() {
   return client.get("/applications/tags");
 }
+
+/**
+ * Download the pipeline PDF report as a Blob.
+ * Returns { blob, retryAfter } where retryAfter is seconds (number | null).
+ * Throws on non-200/429 errors.
+ */
+export async function downloadPdfReport() {
+  const response = await fetch(`${EXPORT_BASE}/applications/report`, {
+    credentials: "include",
+  });
+  if (response.status === 429) {
+    const retryAfter = Number(response.headers.get("Retry-After")) || null;
+    return { blob: null, retryAfter };
+  }
+  if (!response.ok) throw new Error("Report download failed");
+  const blob = await response.blob();
+  return { blob, retryAfter: null };
+}

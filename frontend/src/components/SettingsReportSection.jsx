@@ -1,0 +1,75 @@
+/** Settings reports section — download pipeline PDF report. */
+
+import { useState } from "react";
+
+import Download from "lucide-react/dist/esm/icons/download";
+import Loader2 from "lucide-react/dist/esm/icons/loader-2";
+
+import { downloadPdfReport } from "../api/applications";
+
+const REPORT_FILENAME = "pipeline-report.pdf";
+
+export default function SettingsReportSection() {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [retryAfter, setRetryAfter] = useState(null);
+
+  const handleDownload = async () => {
+    setIsLoading(true);
+    setError(null);
+    setRetryAfter(null);
+    try {
+      const { blob, retryAfter: after } = await downloadPdfReport();
+      if (after !== null) {
+        setRetryAfter(after);
+        return;
+      }
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = REPORT_FILENAME;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch {
+      setError("Failed to download report. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="rounded-card border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800">
+      <h2 className="mb-1 text-lg font-semibold text-slate-900 dark:text-slate-100">Reports</h2>
+      <p className="mb-5 text-sm text-slate-500 dark:text-slate-400">
+        Export a PDF summary of your pipeline including stats, stage funnel, and application history.
+      </p>
+
+      <button
+        type="button"
+        onClick={handleDownload}
+        disabled={isLoading}
+        className="inline-flex items-center gap-2 rounded-button bg-gradient-to-r from-brand-600 to-brand-500 px-4 py-2 text-sm font-medium text-white hover:from-brand-700 hover:to-brand-600 active:scale-[0.98] transition-all duration-150 disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:ring-offset-2"
+      >
+        {isLoading ? (
+          <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+        ) : (
+          <Download className="h-4 w-4" aria-hidden="true" />
+        )}
+        {isLoading ? "Generating…" : "Download Pipeline Report"}
+      </button>
+
+      {retryAfter !== null && (
+        <p role="alert" className="mt-4 text-sm text-amber-600 dark:text-amber-400">
+          Rate limit reached. Please wait {retryAfter} second{retryAfter !== 1 ? "s" : ""} before trying again.
+        </p>
+      )}
+      {error && (
+        <p role="alert" className="mt-4 text-sm text-red-600 dark:text-red-400">
+          {error}
+        </p>
+      )}
+    </div>
+  );
+}
