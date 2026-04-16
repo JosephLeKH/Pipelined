@@ -49,6 +49,9 @@ const server = setupServer(
         default_stages: ["Applied", "Phone Screen", "Onsite", "Offer", "Rejected"],
       },
     })
+  ),
+  http.post("/api/applications/bulk-update", () =>
+    HttpResponse.json({ data: { updated_count: 1 } })
   )
 );
 
@@ -281,5 +284,47 @@ describe("ApplicationList", () => {
 
     // Assert — bulk action bar is gone
     expect(screen.queryByRole("toolbar", { name: /bulk actions/i })).not.toBeInTheDocument();
+  });
+
+  it("should show bulk edit controls in the bulk action bar", async () => {
+    // Arrange
+    render(<ApplicationList onSelect={() => {}} />, { wrapper: makeWrapper() });
+    await screen.findByText("Acme Corp");
+
+    // Act — select a row
+    await userEvent.click(screen.getByLabelText("Select Acme Corp"));
+
+    // Assert — follow-up date, tags inputs, and Apply button are present
+    const toolbar = screen.getByRole("toolbar", { name: /bulk actions/i });
+    expect(within(toolbar).getByLabelText("Follow-up date")).toBeInTheDocument();
+    expect(within(toolbar).getByLabelText("Tags to add")).toBeInTheDocument();
+    expect(within(toolbar).getByLabelText("Tags to remove")).toBeInTheDocument();
+    expect(within(toolbar).getByRole("button", { name: /apply/i })).toBeInTheDocument();
+  });
+
+  it("should call bulk-update endpoint when Apply is clicked with a follow-up date", async () => {
+    // Arrange
+    let capturedBody = null;
+    server.use(
+      http.post("/api/applications/bulk-update", async ({ request }) => {
+        capturedBody = await request.json();
+        return HttpResponse.json({ data: { updated_count: 1 } });
+      })
+    );
+    render(<ApplicationList onSelect={() => {}} />, { wrapper: makeWrapper() });
+    await screen.findByText("Acme Corp");
+
+    // Act — select a row, fill in follow-up date, click Apply
+    await userEvent.click(screen.getByLabelText("Select Acme Corp"));
+    const toolbar = screen.getByRole("toolbar", { name: /bulk actions/i });
+    await userEvent.type(within(toolbar).getByLabelText("Follow-up date"), "2026-05-01");
+    await userEvent.click(within(toolbar).getByRole("button", { name: /apply/i }));
+
+    // Assert — endpoint was called with the correct payload
+    await waitFor(() => {
+      expect(capturedBody).not.toBeNull();
+    });
+    expect(capturedBody.update.follow_up_date).toBe("2026-05-01");
+    expect(capturedBody.application_ids).toContain("app1");
   });
 });

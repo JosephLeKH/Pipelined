@@ -13,6 +13,7 @@ import {
   useApplications,
   useArchiveApplication,
   useBulkDeleteApplications,
+  useBulkEditApplications,
   useBulkUpdateApplicationStage,
   useDeleteApplication,
   useMergeApplications,
@@ -73,6 +74,7 @@ function ApplicationList({ onSelect, filters = {}, onAdd, onImportCsv, shortcuts
   const restoreMutation = useRestoreApplication();
   const bulkDeleteMutation = useBulkDeleteApplications();
   const bulkStageMutation = useBulkUpdateApplicationStage();
+  const bulkEditMutation = useBulkEditApplications();
   const mergeMutation = useMergeApplications();
 
   const handleSort = useCallback(
@@ -152,6 +154,14 @@ function ApplicationList({ onSelect, filters = {}, onAdd, onImportCsv, shortcuts
     const count = selectedIds.size;
     bulkStageMutation.mutate({ ids: [...selectedIds], stage }, { onSuccess: () => { setSelectedIds(new Set()); toast.success(`Moved ${count} application${count === 1 ? "" : "s"} to ${stage}`); } });
   }, [bulkStageMutation, selectedIds]);
+
+  const handleBulkEdit = useCallback((update) => {
+    const count = selectedIds.size;
+    bulkEditMutation.mutate(
+      { application_ids: [...selectedIds], update },
+      { onSuccess: () => { setSelectedIds(new Set()); toast.success(`Updated ${count} application${count === 1 ? "" : "s"}`); } }
+    );
+  }, [bulkEditMutation, selectedIds]);
 
   // Reset keyboard focus when application list changes
   useEffect(() => { setFocusedIdx(-1); }, [applications.length]);
@@ -256,9 +266,11 @@ function ApplicationList({ onSelect, filters = {}, onAdd, onImportCsv, shortcuts
             onMoveToStage={handleBulkMoveToStage}
             onDeleteSelected={() => setBulkDeletePending(true)}
             onMerge={() => setMergeDialogOpen(true)}
+            onBulkEdit={handleBulkEdit}
             isDeleting={bulkDeleteMutation.isPending}
             isMoving={bulkStageMutation.isPending}
             isMerging={mergeMutation.isPending}
+            isEditing={bulkEditMutation.isPending}
           />
         )}
         <div className="relative flex flex-col">

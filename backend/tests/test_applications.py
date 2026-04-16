@@ -1590,3 +1590,135 @@ async def test_merge_across_users_returns_404(client, test_user):
 
     # Assert — cannot see other user's app; returns 404
     assert response.status_code == 404
+
+
+# ---------------------------------------------------------------------------
+# POST /api/applications/bulk-update
+# ---------------------------------------------------------------------------
+
+
+async def test_bulk_edit_updates_stage_and_returns_count(client, test_user):
+    # Arrange
+    _, cookies = test_user
+    r1 = await client.post("/api/applications", json=APP_PAYLOAD, cookies=cookies)
+    r2 = await client.post(
+        "/api/applications", json={**APP_PAYLOAD, "company": "Beta Inc"}, cookies=cookies
+    )
+    id1 = r1.json()["data"]["id"]
+    id2 = r2.json()["data"]["id"]
+
+    # Act
+    response = await client.post(
+        "/api/applications/bulk-update",
+        json={"application_ids": [id1, id2], "update": {"current_stage": "Onsite"}},
+        cookies=cookies,
+    )
+
+    # Assert
+    assert response.status_code == 200
+    assert response.json()["data"]["updated_count"] == 2
+    detail = await client.get(f"/api/applications/{id1}", cookies=cookies)
+    assert detail.json()["data"]["current_stage"] == "Onsite"
+
+
+async def test_bulk_edit_updates_follow_up_date(client, test_user):
+    # Arrange
+    _, cookies = test_user
+    r1 = await client.post("/api/applications", json=APP_PAYLOAD, cookies=cookies)
+    app_id = r1.json()["data"]["id"]
+
+    # Act
+    response = await client.post(
+        "/api/applications/bulk-update",
+        json={"application_ids": [app_id], "update": {"follow_up_date": "2026-05-01T00:00:00Z"}},
+        cookies=cookies,
+    )
+
+    # Assert
+    assert response.status_code == 200
+    assert response.json()["data"]["updated_count"] == 1
+    detail = await client.get(f"/api/applications/{app_id}", cookies=cookies)
+    assert detail.json()["data"]["follow_up_date"] is not None
+
+
+async def test_bulk_edit_adds_and_removes_tags(client, test_user):
+    # Arrange
+    _, cookies = test_user
+    r1 = await client.post(
+        "/api/applications", json={**APP_PAYLOAD, "tags": ["remote"]}, cookies=cookies
+    )
+    app_id = r1.json()["data"]["id"]
+
+    # Act — add "fintech", remove "remote"
+    response = await client.post(
+        "/api/applications/bulk-update",
+        json={"application_ids": [app_id], "update": {"tags_add": ["fintech"], "tags_remove": ["remote"]}},
+        cookies=cookies,
+    )
+
+    # Assert
+    assert response.status_code == 200
+    detail = await client.get(f"/api/applications/{app_id}", cookies=cookies)
+    tags = detail.json()["data"]["tags"]
+    assert "fintech" in tags
+    assert "remote" not in tags
+
+
+async def test_bulk_edit_returns_400_on_empty_ids(client, test_user):
+    # Arrange
+    _, cookies = test_user
+
+    # Act
+    response = await client.post(
+        "/api/applications/bulk-update",
+        json={"application_ids": [], "update": {"current_stage": "Rejected"}},
+        cookies=cookies,
+    )
+
+    # Assert
+    assert response.status_code == 400
+    assert response.json()["detail"]["code"] == "EMPTY_IDS"
+
+
+async def test_bulk_edit_returns_400_on_too_many_ids(client, test_user):
+    # Arrange
+    _, cookies = test_user
+    fake_ids = [f"6" + str(i).zfill(23) for i in range(51)]
+
+    # Act
+    response = await client.post(
+        "/api/applications/bulk-update",
+        json={"application_ids": fake_ids, "update": {"current_stage": "Rejected"}},
+        cookies=cookies,
+    )
+
+    # Assert
+    assert response.status_code == 400
+    assert response.json()["detail"]["code"] == "TOO_MANY_IDS"
+
+
+async def test_bulk_edit_only_updates_own_applications(client, test_user):
+    # Arrange
+    _, cookies = test_user
+    resp_other = await client.post("/api/auth/register", json={
+        "email": "bulkeditother@example.com",
+        "password": "OtherPass123!",
+        "display_name": "Other BulkEdit",
+    })
+    other_cookies = dict(resp_other.cookies)
+    await verify_user_by_id(resp_other.json()["data"]["id"])
+    r_other = await client.post("/api/applications", json=APP_PAYLOAD, cookies=other_cookies)
+    other_id = r_other.json()["data"]["id"]
+
+    # Act — attempt to bulk-edit another user's application
+    response = await client.post(
+        "/api/applications/bulk-update",
+        json={"application_ids": [other_id], "update": {"current_stage": "Rejected"}},
+        cookies=cookies,
+    )
+
+    # Assert — updated_count is 0; other user's app is untouched
+    assert response.status_code == 200
+    assert response.json()["data"]["updated_count"] == 0
+    verify = await client.get(f"/api/applications/{other_id}", cookies=other_cookies)
+    assert verify.json()["data"]["current_stage"] == "Applied"

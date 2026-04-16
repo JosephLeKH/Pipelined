@@ -101,3 +101,8 @@ export async function importApplicationsCsv(file) {
 export async function mergeApplications(body) {
   return client.post("/applications/merge", body);
 }
+
+/** Bulk-edit stage, follow_up_date, and/or tags for multiple applications. */
+export async function bulkEditApplications(body) {
+  return client.post("/applications/bulk-update", body);
+}

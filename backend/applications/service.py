@@ -14,6 +14,7 @@ from applications.schemas import (
     ApplicationCreate,
     ApplicationListQuery,
     ApplicationUpdate,
+    BulkEditUpdate,
     ImportResult,
     ImportRowError,
     MAX_IMPORT_ROWS,
@@ -595,6 +596,45 @@ async def bulk_update_stage(user_id: str, ids: list[str], stage: str) -> int:
 
     logger.info("bulk_stage_updated", user_id=user_id, stage=stage, count=result.modified_count)
     return result.modified_count
+
+
+async def bulk_edit(user_id: str, application_ids: list[str], update: BulkEditUpdate) -> int:
+    """Apply bulk edits (stage, follow_up_date, tags) to multiple applications. Returns modified_count."""
+    uid = ObjectId(user_id)
+    try:
+        oid_list = [ObjectId(i) for i in application_ids]
+    except (ValueError, TypeError, InvalidId):
+        return 0
+
+    apps = get_collection("applications")
+    now = datetime.now(timezone.utc)
+
+    q: dict = {"_id": {"$in": oid_list}, "user_id": uid}
+    set_fields: dict = {"updated_at": now}
+    if update.current_stage is not None:
+        set_fields["current_stage"] = update.current_stage
+    if update.follow_up_date is not None:
+        set_fields["follow_up_date"] = update.follow_up_date
+
+    update_doc: dict = {"$set": set_fields}
+    if update.current_stage is not None:
+        update_doc["$push"] = {
+            "stage_history": {"stage": update.current_stage, "transitioned_at": now}
+        }
+    if update.tags_add:
+        update_doc["$addToSet"] = {"tags": {"$each": update.tags_add}}
+    # $pull cannot coexist with $addToSet on the same field — run as a second call when both present
+    if update.tags_remove and not update.tags_add:
+        update_doc["$pull"] = {"tags": {"$in": update.tags_remove}}
+
+    result = await apps.update_many(q, update_doc)
+    modified_count = result.modified_count
+
+    if update.tags_add and update.tags_remove:
+        await apps.update_many(q, {"$pull": {"tags": {"$in": update.tags_remove}}})
+
+    logger.info("bulk_edit_applied", user_id=user_id, count=modified_count)
+    return modified_count
 
 
 STREAK_LOOKBACK_WEEKS = 52

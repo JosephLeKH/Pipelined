@@ -6,6 +6,7 @@ import { trackEvent } from "../lib/analytics";
 import {
   archiveApplication,
   bulkDeleteApplications,
+  bulkEditApplications,
   bulkUpdateApplicationStage,
   createApplication,
   deleteApplication,
@@ -187,6 +188,17 @@ export function useMergeApplications() {
       trackEvent("application_merged");
       queryClient.invalidateQueries({ queryKey: KEYS.all });
       queryClient.invalidateQueries({ queryKey: KEYS.stats });
+    },
+  });
+}
+
+/** Bulk-edit stage, follow_up_date, and/or tags for multiple applications. */
+export function useBulkEditApplications() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (body) => bulkEditApplications(body),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: KEYS.all });
     },
   });
 }

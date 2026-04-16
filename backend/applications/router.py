@@ -13,6 +13,7 @@ from applications.schemas import (
     ApplicationResponse,
     ApplicationUpdate,
     BulkDeleteRequest,
+    BulkEditRequest,
     BulkStageUpdateRequest,
     ImportResult,
     MergeApplicationsRequest,
@@ -23,6 +24,7 @@ from applications.schemas import (
     ValidSortField,
     ValidSortOrder,
     DEFAULT_QUERY_LIMIT,
+    MAX_BULK_EDIT_IDS,
     MAX_IMPORT_FILE_SIZE_BYTES,
     MAX_QUERY_LIMIT,
 )
@@ -181,6 +183,27 @@ async def bulk_update_application_stage(
     """Update stage for multiple applications, appending stage_history entry."""
     user_id = str(user["_id"])
     updated_count = await app_service.bulk_update_stage(user_id, body.ids, body.stage)
+    return {"data": {"updated_count": updated_count}}
+
+
+@router.post("/bulk-update", status_code=200)
+async def bulk_edit_applications(
+    body: BulkEditRequest,
+    user: dict = Depends(get_current_user),
+) -> dict:
+    """Bulk-edit stage, follow-up date, and/or tags for up to 50 applications."""
+    if not body.application_ids:
+        raise HTTPException(
+            status_code=400,
+            detail={"code": "EMPTY_IDS", "message": "application_ids must not be empty."},
+        )
+    if len(body.application_ids) > MAX_BULK_EDIT_IDS:
+        raise HTTPException(
+            status_code=400,
+            detail={"code": "TOO_MANY_IDS", "message": f"Bulk edit is limited to {MAX_BULK_EDIT_IDS} applications."},
+        )
+    user_id = str(user["_id"])
+    updated_count = await app_service.bulk_edit(user_id, body.application_ids, body.update)
     return {"data": {"updated_count": updated_count}}
 
 

@@ -7,6 +7,7 @@ import MoreHorizontal from "lucide-react/dist/esm/icons/more-horizontal";
 
 import { BUTTON_SECONDARY, MODAL_CARD } from "../lib/designTokens";
 import { useAuth } from "../context/AuthContext";
+import { BULK_EDIT_MAX_IDS } from "../lib/constants";
 
 export function RowMenu({ application, onArchive, onUnarchive, onDelete }) {
   const [open, setOpen] = useState(false);
@@ -146,14 +147,20 @@ export function BulkActionBar({
   onMoveToStage,
   onDeleteSelected,
   onMerge,
+  onBulkEdit,
   isDeleting = false,
   isMoving = false,
   isMerging = false,
+  isEditing = false,
 }) {
   const { user } = useAuth();
   const stageOptions = user?.default_stages ?? [];
   const [selectedStage, setSelectedStage] = useState("");
-  const isBusy = isDeleting || isMoving || isMerging;
+  const [followUpDate, setFollowUpDate] = useState("");
+  const [tagsAdd, setTagsAdd] = useState("");
+  const [tagsRemove, setTagsRemove] = useState("");
+  const isBusy = isDeleting || isMoving || isMerging || isEditing;
+  const overLimit = selectedCount > BULK_EDIT_MAX_IDS;
 
   function handleMove() {
     if (!selectedStage || isBusy) return;
@@ -161,14 +168,32 @@ export function BulkActionBar({
     setSelectedStage("");
   }
 
+  function handleApply() {
+    if (isBusy || overLimit) return;
+    const update = {};
+    if (followUpDate) update.follow_up_date = followUpDate;
+    const addList = tagsAdd.split(",").map((t) => t.trim()).filter(Boolean);
+    const removeList = tagsRemove.split(",").map((t) => t.trim()).filter(Boolean);
+    if (addList.length) update.tags_add = addList;
+    if (removeList.length) update.tags_remove = removeList;
+    if (!Object.keys(update).length) return;
+    onBulkEdit(update);
+    setFollowUpDate("");
+    setTagsAdd("");
+    setTagsRemove("");
+  }
+
   return (
     <div
       role="toolbar"
       aria-label="Bulk actions"
-      className="flex items-center gap-3 rounded-md border border-brand-200 bg-brand-50 px-4 py-2 text-sm dark:bg-brand-900/20 dark:border-brand-700"
+      className="flex flex-wrap items-center gap-3 rounded-md border border-brand-200 bg-brand-50 px-4 py-2 text-sm dark:bg-brand-900/20 dark:border-brand-700"
     >
       <span className="font-medium text-brand-800 dark:text-brand-200">{selectedCount} selected</span>
-      <div className="ml-auto flex items-center gap-2">
+      {overLimit && (
+        <span className="text-amber-700 dark:text-amber-400">Select {BULK_EDIT_MAX_IDS} or fewer to use bulk edit</span>
+      )}
+      <div className="ml-auto flex flex-wrap items-center gap-2">
         <select
           aria-label="Move to stage"
           value={selectedStage}
@@ -189,6 +214,41 @@ export function BulkActionBar({
         >
           {isMoving ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" /> : null}
           Move
+        </button>
+        <input
+          type="date"
+          aria-label="Follow-up date"
+          value={followUpDate}
+          onChange={(e) => setFollowUpDate(e.target.value)}
+          disabled={isBusy || overLimit}
+          className="border border-slate-300 bg-white rounded-input px-2 py-1 text-sm text-slate-700 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none transition-colors disabled:opacity-50 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-200"
+        />
+        <input
+          type="text"
+          aria-label="Tags to add"
+          placeholder="Tags to add…"
+          value={tagsAdd}
+          onChange={(e) => setTagsAdd(e.target.value)}
+          disabled={isBusy || overLimit}
+          className="w-36 border border-slate-300 bg-white rounded-input px-2 py-1 text-sm text-slate-700 placeholder-slate-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none transition-colors disabled:opacity-50 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-200"
+        />
+        <input
+          type="text"
+          aria-label="Tags to remove"
+          placeholder="Tags to remove…"
+          value={tagsRemove}
+          onChange={(e) => setTagsRemove(e.target.value)}
+          disabled={isBusy || overLimit}
+          className="w-36 border border-slate-300 bg-white rounded-input px-2 py-1 text-sm text-slate-700 placeholder-slate-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none transition-colors disabled:opacity-50 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-200"
+        />
+        <button
+          type="button"
+          disabled={isBusy || overLimit}
+          onClick={handleApply}
+          className="flex items-center gap-1 rounded border border-brand-600 px-3 py-1 text-sm font-medium text-brand-700 hover:bg-brand-50 disabled:opacity-50 disabled:cursor-not-allowed dark:border-brand-400 dark:text-brand-300"
+        >
+          {isEditing ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" /> : null}
+          Apply
         </button>
         {selectedCount === 2 && (
           <button

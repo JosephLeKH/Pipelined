@@ -169,6 +169,25 @@ class BulkStageUpdateRequest(BaseModel):
     stage: str = Field(min_length=1, max_length=MAX_STAGE_LENGTH)
 
 
+MAX_BULK_EDIT_IDS = 50
+
+
+class BulkEditUpdate(BaseModel):
+    model_config = ConfigDict(strict=True)
+
+    current_stage: str | None = Field(None, min_length=1, max_length=MAX_STAGE_LENGTH)
+    follow_up_date: datetime | None = Field(None, strict=False)
+    tags_add: list[str] | None = None
+    tags_remove: list[str] | None = None
+
+
+class BulkEditRequest(BaseModel):
+    model_config = ConfigDict(strict=True)
+
+    application_ids: list[str]
+    update: BulkEditUpdate
+
+
 class WeeklyCount(BaseModel):
     week: str
     count: int
