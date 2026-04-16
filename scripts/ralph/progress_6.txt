@@ -139,3 +139,52 @@ Test result: 356 passed, 56 files
 
 ### Commit
 `feat: US-120 - Application templates`
+
+---
+
+## US-121: Bulk edit: stage, follow-up date, and tags
+
+**Status:** PASSED
+
+### What was built
+- **Backend:** `POST /api/applications/bulk-update` endpoint — `BulkEditUpdate` and `BulkEditRequest` schemas (no Pydantic min/max on ids so router returns 400 not 422), `bulk_edit()` service function using Motor `update_many` with `$in`; handles `$addToSet` + `$pull` conflict by running two sequential `update_many` calls when both tags_add and tags_remove are present
+- **Frontend:** `bulkEditApplications()` in `api/applications.js`, `useBulkEditApplications()` hook in `hooks/useApplications.js`, `BULK_EDIT_MAX_IDS = 50` constant; `BulkActionBar` extended with Follow-up date picker, Tags to add/remove text inputs, Apply button with spinner; `ApplicationList` wires `handleBulkEdit` callback and `isEditing` prop
+
+### Key decisions
+- HTTP 400 (not 422) for empty/oversized ids: explicit router check with `HTTPException`, no Pydantic Field constraints on `application_ids`
+- MongoDB operator conflict: `$addToSet` and `$pull` cannot coexist on same field — split into two `update_many` calls
+- Tags inputs accept comma-separated strings (client-side split/trim)
+
+### Quality checks
+- 6/6 new backend bulk-edit tests pass (`test_bulk_edit_*`)
+- 81/81 `test_applications.py` tests pass
+- 18/18 `ApplicationList.test.jsx` tests pass (including 2 new bulk-edit tests)
+- Frontend production build succeeds
+
+### Commit
+`feat: US-121 - Bulk edit: stage, follow-up date, and tags`
+
+---
+
+## US-122: Mobile touch: swipe actions, bottom sheet detail, Kanban column swipe
+
+**Status:** PASSED
+
+### What was built
+- **`useSwipeAction.js`** (new hook): Detects left swipe gesture; enforces 80px threshold, 300ms window, 2:1 H:V ratio; auto-snap-back after 3000ms; `currentOffsetRef` avoids stale closures
+- **`usePanelDrag.js`** (new hook): Detects downward drag on bottom sheet; dismisses on 100px+ drag; `lastOffsetRef` for stale-closure-safe touch end
+- **`constants.js`**: Added `SWIPE_THRESHOLD_PX`, `SWIPE_MAX_MS`, `SWIPE_H_TO_V_RATIO`, `SWIPE_REVEAL_PX`, `SWIPE_SNAP_BACK_MS`, `DRAG_DISMISS_PX`
+- **`ApplicationRow.jsx`**: Added `SwipeActions` (amber Follow-up + rose Archive buttons, absolutely positioned, opacity/pointer-events toggled); outer `overflow-hidden`, inner `translateX(offset)` with transition disabled during drag
+- **`DetailPanel.jsx`**: Drag handle pill (`md:hidden`) with `usePanelDrag(onClose)` handlers; `translateY(dragOffset)` on panel; stayed ≤298 lines
+- **`KanbanBoard.jsx`**: `handleMobileTouchStart`/`handleMobileTouchEnd` on `data-testid="mobile-kanban-swipe"`; left→next stage, right→prev stage; page dot buttons with `aria-pressed`
+
+### New tests
+- **`ApplicationRow.test.jsx`** (10 tests): desktop click/Enter, stale indicator, follow-up bell, swipe reveal/threshold/archive/followup/right-swipe
+- **`KanbanBoard.mobile.test.jsx`** (7 tests): dot render, active dot, dot click nav, left/right swipe, below-threshold, last-stage boundary
+
+### Quality checks
+- 395/395 frontend tests pass, 61 test files
+- Production build succeeds
+
+### Commit
+`feat: US-122 - Mobile touch: swipe actions, bottom sheet detail, Kanban column swipe`

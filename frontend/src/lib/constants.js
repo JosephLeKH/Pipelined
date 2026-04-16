@@ -122,6 +122,13 @@ export const COMPANY_LOGO_FALLBACK_COLORS = [
 
 export const LIST_OFFSET_PX = 280;
 
+export const SWIPE_THRESHOLD_PX = 80;
+export const SWIPE_MAX_MS = 300;
+export const SWIPE_H_TO_V_RATIO = 2;
+export const SWIPE_REVEAL_PX = 160;
+export const SWIPE_SNAP_BACK_MS = 3000;
+export const DRAG_DISMISS_PX = 100;
+
 export const KANBAN_SKELETON_COUNT = 3;
 
 export const OFFER_STAGE = "Offer";

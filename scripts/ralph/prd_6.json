@@ -154,7 +154,7 @@
         "Backend returns 400 if application_ids is empty or exceeds 50"
       ],
       "priority": 9,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
@@ -170,7 +170,7 @@
         "All existing mouse-based interactions still work normally on desktop"
       ],
       "priority": 10,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {

@@ -19,9 +19,9 @@ import UndoToast from "./UndoToast";
 import { formatDate } from "../lib/dateUtils";
 import { useAuth } from "../context/AuthContext";
 import { trackEvent } from "../lib/analytics";
+import { usePanelDrag } from "../hooks/usePanelDrag";
 
 const FOCUSABLE_SELECTORS = 'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
-
 function DetailField({ label, value }) {
   if (!value) return null;
   return (
@@ -31,8 +31,6 @@ function DetailField({ label, value }) {
     </div>
   );
 }
-
-
 function FollowUpSection({ application, onUpdate }) {
   const rawDate = application.follow_up_date;
   const dateValue = rawDate ? rawDate.slice(0, 10) : "";
@@ -73,7 +71,6 @@ function FollowUpSection({ application, onUpdate }) {
     </div>
   );
 }
-
 function PanelBody({ application, handleStageChange, handleUpdate, onAddEvent, onDirtyChange }) {
   const { user } = useAuth();
   const stageOptions = user?.default_stages ?? [];
@@ -150,6 +147,7 @@ function DetailPanel({ application, onClose, onAddEvent }) {
   const overlayRef = useRef(null);
   const panelRef = useRef(null);
   const [undoPendingId, setUndoPendingId] = useState(null);
+  const { dragOffset, reset: resetDrag, handlers: panelDragHandlers } = usePanelDrag(onClose);
   const [cachedApp, setCachedApp] = useState(application);
   const [notesDirty, setNotesDirty] = useState(false);
   const { mutate: updateApp } = useUpdateApplication();
@@ -158,8 +156,8 @@ function DetailPanel({ application, onClose, onAddEvent }) {
 
   // Keep cachedApp in sync when panel is not in undo mode
   useEffect(() => {
-    if (application) setCachedApp(application);
-  }, [application]);
+    if (application) { setCachedApp(application); resetDrag(); }
+  }, [application, resetDrag]);
 
   const handleDelete = useCallback(() => {
     if (!cachedApp) return;
@@ -266,6 +264,7 @@ function DetailPanel({ application, onClose, onAddEvent }) {
             ? "translate-y-0 md:translate-x-0"
             : "translate-y-full md:translate-y-0 md:translate-x-full"
         }`}
+        style={{ transform: dragOffset ? `translateY(${dragOffset}px)` : undefined, transition: dragOffset ? "none" : undefined }}
         role="dialog"
         aria-modal="true"
         aria-labelledby="detail-panel-heading"
@@ -273,6 +272,7 @@ function DetailPanel({ application, onClose, onAddEvent }) {
       >
         {displayApp && (
           <div key={displayApp.id} className="flex h-full flex-col overflow-y-auto animate-slideInRight">
+            <div className="mx-auto mt-2.5 h-1 w-10 shrink-0 rounded-full bg-slate-300 touch-none md:hidden" aria-hidden="true" {...panelDragHandlers} />
             <DetailPanelHeader application={displayApp} onClose={confirmClose} onDelete={handleDelete} />
             <PanelBody
               application={displayApp}

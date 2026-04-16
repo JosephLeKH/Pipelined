@@ -1,6 +1,6 @@
 /** Kanban board view: one droppable column per stage, draggable application cards. */
 
-import { useState, useMemo, memo } from "react";
+import { useState, useMemo, memo, useRef, useCallback } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   DndContext,
@@ -16,7 +16,7 @@ import { toast } from "sonner";
 
 import { useApplications, useUpdateApplication, KEYS } from "../hooks/useApplications";
 import { useAuth } from "../context/AuthContext";
-import { STAGES, STAGE_COLORS, DEFAULT_STAGE_COLOR, KANBAN_SKELETON_COUNT } from "../lib/constants";
+import { STAGES, STAGE_COLORS, DEFAULT_STAGE_COLOR, KANBAN_SKELETON_COUNT, SWIPE_THRESHOLD_PX, SWIPE_MAX_MS, SWIPE_H_TO_V_RATIO } from "../lib/constants";
 import KanbanCard from "./KanbanCard";
 import SkeletonRow from "./SkeletonRow";
 
@@ -75,6 +75,26 @@ function KanbanBoard({ filters = {}, onSelect }) {
 
   const [mobileStage, setMobileStage] = useState(stages[0] ?? "");
   const [activeId, setActiveId] = useState(null);
+  const mobileSwipeRef = useRef(null);
+
+  const handleMobileTouchStart = useCallback((e) => {
+    mobileSwipeRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY, time: Date.now() };
+  }, []);
+
+  const handleMobileTouchEnd = useCallback((e) => {
+    if (!mobileSwipeRef.current) return;
+    const { x: startX, y: startY, time } = mobileSwipeRef.current;
+    mobileSwipeRef.current = null;
+    const elapsed = Date.now() - time;
+    const dx = e.changedTouches[0].clientX - startX;
+    const dy = e.changedTouches[0].clientY - startY;
+    if (elapsed > SWIPE_MAX_MS) return;
+    if (Math.abs(dx) < SWIPE_THRESHOLD_PX) return;
+    if (Math.abs(dx) < Math.abs(dy) * SWIPE_H_TO_V_RATIO) return;
+    const idx = stages.indexOf(mobileStage);
+    if (dx < 0 && idx < stages.length - 1) setMobileStage(stages[idx + 1]);
+    if (dx > 0 && idx > 0) setMobileStage(stages[idx - 1]);
+  }, [stages, mobileStage]);
 
   const queryClient = useQueryClient();
   const queryKey = KEYS.list(filters);
@@ -182,13 +202,30 @@ function KanbanBoard({ filters = {}, onSelect }) {
         ))}
       </div>
 
-      {/* Mobile: single column view */}
-      <div className="mt-4 md:hidden">
+      {/* Mobile: single column view with swipe navigation */}
+      <div
+        className="mt-4 md:hidden"
+        data-testid="mobile-kanban-swipe"
+        onTouchStart={handleMobileTouchStart}
+        onTouchEnd={handleMobileTouchEnd}
+      >
         <KanbanColumn
           stage={mobileStage}
           applications={byStage[mobileStage] ?? []}
           onSelect={onSelect}
         />
+      </div>
+      <div className="mt-3 flex justify-center gap-2 md:hidden" aria-label="Stage navigation dots">
+        {stages.map((s) => (
+          <button
+            key={s}
+            type="button"
+            aria-label={s}
+            aria-pressed={s === mobileStage}
+            onClick={() => setMobileStage(s)}
+            className={`h-2 w-2 rounded-full transition-colors ${s === mobileStage ? "bg-brand-500" : "bg-slate-300 dark:bg-slate-600"}`}
+          />
+        ))}
       </div>
 
       {/* Desktop: all columns side by side */}
