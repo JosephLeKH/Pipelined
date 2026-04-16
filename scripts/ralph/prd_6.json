@@ -187,8 +187,8 @@
         "Service worker version is bumped when app shell assets change (use Vite build hash in cache key)"
       ],
       "priority": 11,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "manifest.json with all required fields and icons; icon-192.png and icon-512.png placeholder PNGs; sw.js cache-first/network-only strategy; SW registered via ?v=__BUILD_HASH__ query param (Vite define injects Date.now().toString(36) per build); OfflineBanner.jsx with online/offline event listeners; 5/5 tests pass; build succeeds."
     },
     {
       "id": "US-124",

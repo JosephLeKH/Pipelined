@@ -188,3 +188,29 @@ Test result: 356 passed, 56 files
 
 ### Commit
 `feat: US-122 - Mobile touch: swipe actions, bottom sheet detail, Kanban column swipe`
+
+---
+
+## US-123: PWA — web manifest, service worker, offline banner
+
+**Status:** PASSED
+
+### What was built
+- **`frontend/public/manifest.json`**: name/short_name='Pipelined', start_url='/', display='standalone', theme_color='#6366F1', background_color='#0F172A', icons at 192×192 and 512×512
+- **`frontend/public/icon-192.png`** and **`frontend/public/icon-512.png`**: valid PNG files (brand-indigo fill, #6366F1)
+- **`frontend/index.html`**: added `<link rel='manifest' href='/manifest.json'>`, updated theme-color to #6366F1
+- **`frontend/public/sw.js`**: cache-first for non-API GET requests (caches `/` and `/index.html` on install); network-only for `/api/*`; cache name includes version from `?v=<hash>` query param; old cache keys pruned on activate
+- **`frontend/vite.config.js`**: `define: { __BUILD_HASH__: JSON.stringify(Date.now().toString(36)) }` — each build gets a unique hash
+- **`frontend/src/main.jsx`**: registers SW via `navigator.serviceWorker.register('/sw.js?v=${__BUILD_HASH__}')` on window load
+- **`frontend/src/components/OfflineBanner.jsx`**: listens to `window` online/offline events; reads `navigator.onLine` on mount; renders fixed top banner with `role="status"` `aria-live="polite"`
+- **`frontend/src/App.jsx`**: `<OfflineBanner />` placed outside `<Suspense>` so it renders even during page transitions
+
+### New tests
+- **`OfflineBanner.test.jsx`** (5 tests): no-render when online, renders when initially offline, appears on offline event, disappears on online event, ARIA attributes
+
+### Quality checks
+- 400/400 frontend tests pass, 62 test files
+- Production build succeeds with __BUILD_HASH__ injected
+
+### Commit
+`feat: US-123 - PWA: web manifest, service worker, offline banner`

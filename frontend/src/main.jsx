@@ -20,6 +20,12 @@ if (import.meta.env.VITE_POSTHOG_KEY) {
   initAnalytics();
 }
 
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register(`/sw.js?v=${__BUILD_HASH__}`);
+  });
+}
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {

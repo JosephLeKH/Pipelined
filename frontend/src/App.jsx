@@ -8,6 +8,7 @@ import { trackEvent } from "./lib/analytics";
 import { useAuth } from "./context/AuthContext";
 import CommandPalette from "./components/CommandPalette";
 import EmailVerificationBanner from "./components/EmailVerificationBanner";
+import OfflineBanner from "./components/OfflineBanner";
 import FeedbackWidget from "./components/FeedbackWidget";
 import ShortcutHelp from "./components/ShortcutHelp";
 import UpgradePlanModal from "./components/UpgradePlanModal";
@@ -114,6 +115,7 @@ function App() {
       >
         Skip to main content
       </a>
+      <OfflineBanner />
       <Suspense fallback={<LoadingSpinner />}>
         <PageTracker />
         <EmailVerificationBanner />
