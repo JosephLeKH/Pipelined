@@ -15,11 +15,25 @@ import { Legend } from "recharts/es6/component/Legend";
 import { ResponsiveContainer } from "recharts/es6/component/ResponsiveContainer";
 
 import { CARD_BASE } from "../lib/designTokens";
-import { useAnalytics } from "../hooks/useApplications";
+import { useAnalytics, useFunnel } from "../hooks/useApplications";
 import EmptyState from "../components/EmptyState";
 import NavBar from "../components/NavBar";
 
 const EMPTY_STATE_THRESHOLD = 3;
+const AVG_DAYS_HIGHLIGHT_THRESHOLD = 21;
+const CONVERSION_HIGH_THRESHOLD = 0.6;
+const CONVERSION_LOW_THRESHOLD = 0.3;
+
+function rateColorClass(rate) {
+  if (rate > CONVERSION_HIGH_THRESHOLD) return "text-emerald-600 dark:text-emerald-400 font-medium";
+  if (rate >= CONVERSION_LOW_THRESHOLD) return "text-amber-600 dark:text-amber-400 font-medium";
+  return "text-rose-600 dark:text-rose-400 font-medium";
+}
+
+function avgDaysColorClass(days) {
+  if (days == null) return "";
+  return days > AVG_DAYS_HIGHLIGHT_THRESHOLD ? "text-rose-600 dark:text-rose-400" : "";
+}
 
 const CHART_COLORS = ["#6366F1", "#8B5CF6", "#10B981", "#F59E0B", "#F43F5E", "#0EA5E9"];
 
@@ -61,6 +75,7 @@ function ChartCard({ title, description, children }) {
 function Analytics() {
   const [days, setDays] = useState(90);
   const { data: analytics, isLoading, error } = useAnalytics(days);
+  const { data: funnelData = [] } = useFunnel();
 
   const totalApps = analytics
     ? analytics.stage_funnel.reduce((sum, s) => sum + s.count, 0)
@@ -117,6 +132,7 @@ function Analytics() {
             icon={BarChart3}
           />
         ) : (
+          <div className="flex flex-col gap-6">
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             <ChartCard
               title="Applications per Week"
@@ -178,6 +194,63 @@ function Analytics() {
                 </BarChart>
               </ResponsiveContainer>
             </ChartCard>
+          </div>
+
+            {funnelData.length > 0 && (
+              <>
+                <ChartCard
+                  title="Stage Conversion Funnel"
+                  description="Applications entering each stage"
+                >
+                  <ResponsiveContainer width="100%" height={Math.max(180, funnelData.length * 40)}>
+                    <BarChart data={funnelData} layout="vertical">
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                      <XAxis type="number" allowDecimals={false} tick={{ fontSize: 11 }} />
+                      <YAxis type="category" dataKey="stage" tick={{ fontSize: 11 }} width={110} />
+                      <Tooltip content={<CustomTooltip />} />
+                      <Bar dataKey="entered_count" name="Applications Entered" fill={CHART_COLORS[4]} radius={[0, 3, 3, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </ChartCard>
+
+                <ChartCard
+                  title="Conversion Rates by Stage"
+                  description="Progression rate from each stage to the next, and average time spent"
+                >
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-slate-200 dark:border-slate-700">
+                          <th className="pb-2 text-left text-xs font-medium text-slate-500 dark:text-slate-400">Stage</th>
+                          <th className="pb-2 text-right text-xs font-medium text-slate-500 dark:text-slate-400">Entered</th>
+                          <th className="pb-2 text-right text-xs font-medium text-slate-500 dark:text-slate-400">Converted</th>
+                          <th className="pb-2 text-right text-xs font-medium text-slate-500 dark:text-slate-400">Rate</th>
+                          <th className="pb-2 text-right text-xs font-medium text-slate-500 dark:text-slate-400">Avg Days</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {funnelData.map((row, i) => {
+                          const isLast = i === funnelData.length - 1;
+                          return (
+                            <tr key={row.stage} className="border-b border-slate-100 dark:border-slate-800 last:border-0">
+                              <td className="py-2 pr-4 text-slate-700 dark:text-slate-300">{row.stage}</td>
+                              <td className="py-2 text-right text-slate-700 dark:text-slate-300">{row.entered_count}</td>
+                              <td className="py-2 text-right text-slate-500 dark:text-slate-400">{isLast ? "—" : row.exited_to_next_count}</td>
+                              <td className={`py-2 text-right ${isLast ? "text-slate-400 dark:text-slate-600" : rateColorClass(row.conversion_rate)}`}>
+                                {isLast ? "—" : `${Math.round(row.conversion_rate * 100)}%`}
+                              </td>
+                              <td className={`py-2 text-right ${avgDaysColorClass(row.avg_days_in_stage)}`}>
+                                {row.avg_days_in_stage != null ? `${row.avg_days_in_stage.toFixed(1)}d` : "—"}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </ChartCard>
+              </>
+            )}
           </div>
         )}
       </main>

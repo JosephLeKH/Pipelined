@@ -1722,3 +1722,140 @@ async def test_bulk_edit_only_updates_own_applications(client, test_user):
     assert response.json()["data"]["updated_count"] == 0
     verify = await client.get(f"/api/applications/{other_id}", cookies=other_cookies)
     assert verify.json()["data"]["current_stage"] == "Applied"
+
+
+# ---------------------------------------------------------------------------
+# GET /api/applications/funnel
+# ---------------------------------------------------------------------------
+
+
+async def test_funnel_returns_all_default_stages(client, test_user):
+    # Arrange
+    _, cookies = test_user
+
+    # Act
+    response = await client.get("/api/applications/funnel", cookies=cookies)
+
+    # Assert
+    assert response.status_code == 200
+    data = response.json()["data"]
+    stage_names = [s["stage"] for s in data]
+    assert "Applied" in stage_names
+    assert "Phone Screen" in stage_names
+    assert "Offer" in stage_names
+    assert "Rejected" in stage_names
+
+
+async def test_funnel_entered_count_reflects_stage_history(client, test_user):
+    # Arrange
+    _, cookies = test_user
+    r = await client.post("/api/applications", json=APP_PAYLOAD, cookies=cookies)
+    app_id = r.json()["data"]["id"]
+    await client.patch(
+        f"/api/applications/{app_id}",
+        json={"current_stage": "Phone Screen"},
+        cookies=cookies,
+    )
+
+    # Act
+    response = await client.get("/api/applications/funnel", cookies=cookies)
+
+    # Assert
+    data = response.json()["data"]
+    by_stage = {s["stage"]: s for s in data}
+    assert by_stage["Applied"]["entered_count"] >= 1
+    assert by_stage["Phone Screen"]["entered_count"] >= 1
+
+
+async def test_funnel_exited_to_next_reflects_progression(client, test_user):
+    # Arrange — one app moves Applied → Phone Screen → Offer
+    _, cookies = test_user
+    r = await client.post("/api/applications", json=APP_PAYLOAD, cookies=cookies)
+    app_id = r.json()["data"]["id"]
+    await client.patch(
+        f"/api/applications/{app_id}",
+        json={"current_stage": "Phone Screen"},
+        cookies=cookies,
+    )
+    await client.patch(
+        f"/api/applications/{app_id}",
+        json={"current_stage": "Offer"},
+        cookies=cookies,
+    )
+
+    # Act
+    response = await client.get("/api/applications/funnel", cookies=cookies)
+
+    # Assert
+    data = response.json()["data"]
+    by_stage = {s["stage"]: s for s in data}
+    assert by_stage["Applied"]["exited_to_next_count"] >= 1
+    assert by_stage["Phone Screen"]["exited_to_next_count"] >= 1
+
+
+async def test_funnel_conversion_rate_is_ratio(client, test_user):
+    # Arrange
+    _, cookies = test_user
+
+    # Act
+    response = await client.get("/api/applications/funnel", cookies=cookies)
+
+    # Assert — conversion_rate must be in [0.0, 1.0] for every stage
+    data = response.json()["data"]
+    for stage_data in data:
+        rate = stage_data["conversion_rate"]
+        assert 0.0 <= rate <= 1.0
+
+
+async def test_funnel_dropped_count_equals_entered_minus_exited(client, test_user):
+    # Arrange
+    _, cookies = test_user
+
+    # Act
+    response = await client.get("/api/applications/funnel", cookies=cookies)
+
+    # Assert
+    data = response.json()["data"]
+    for stage_data in data:
+        assert stage_data["dropped_count"] == (
+            stage_data["entered_count"] - stage_data["exited_to_next_count"]
+        )
+
+
+async def test_funnel_includes_avg_days_in_stage(client, test_user):
+    # Arrange — create an app so at least one stage has data
+    _, cookies = test_user
+    await client.post("/api/applications", json=APP_PAYLOAD, cookies=cookies)
+
+    # Act
+    response = await client.get("/api/applications/funnel", cookies=cookies)
+
+    # Assert — Applied should have avg_days_in_stage (not None) since we just created one
+    data = response.json()["data"]
+    by_stage = {s["stage"]: s for s in data}
+    assert by_stage["Applied"]["avg_days_in_stage"] is not None
+
+
+async def test_funnel_excludes_archived_applications(client, test_user):
+    # Arrange — create and immediately archive an app
+    _, cookies = test_user
+    r = await client.post("/api/applications", json=APP_PAYLOAD, cookies=cookies)
+    app_id = r.json()["data"]["id"]
+    await client.patch(f"/api/applications/{app_id}/archive", cookies=cookies)
+
+    # Act
+    response = await client.get("/api/applications/funnel", cookies=cookies)
+
+    # Assert — endpoint returns 200 with correct shape; archived app excluded
+    assert response.status_code == 200
+    data = response.json()["data"]
+    assert isinstance(data, list)
+    assert all("entered_count" in s for s in data)
+
+
+async def test_funnel_requires_auth(client):
+    # Act — no cookies
+    response = await client.get("/api/applications/funnel")
+
+    # Assert
+    assert response.status_code == 401

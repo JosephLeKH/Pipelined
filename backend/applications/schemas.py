@@ -246,3 +246,12 @@ class MergeApplicationsRequest(BaseModel):
 
     source_id: str
     target_id: str
+
+
+class FunnelStageResult(BaseModel):
+    stage: str
+    entered_count: int
+    exited_to_next_count: int
+    conversion_rate: float
+    avg_days_in_stage: float | None
+    dropped_count: int

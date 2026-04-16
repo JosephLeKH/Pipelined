@@ -222,8 +222,8 @@
         "All queries include user_id in the filter"
       ],
       "priority": 13,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "GET /api/applications/funnel returns per-stage metrics ordered by default_stages; asyncio.gather for parallel DB calls; FunnelStageResult Pydantic model; 8 backend tests pass; useFunnel() hook in useApplications.js; Analytics.jsx adds Stage Conversion Funnel horizontal BarChart and Conversion Rates by Stage table with >60% emerald / 30-60% amber / <30% rose color coding; avg_days_in_stage>21 highlighted in rose; 7 new frontend tests pass; 407/407 frontend tests pass; build succeeds."
     },
     {
       "id": "US-126",

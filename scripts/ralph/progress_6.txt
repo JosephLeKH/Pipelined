@@ -244,3 +244,34 @@ Test result: 356 passed, 56 files
 
 ### Commit
 `feat: US-124 - Chrome extension: support Wellfound, Handshake, Dice, RemoteOK`
+
+---
+
+## US-125: Stage funnel analytics with conversion rates and time-in-stage
+
+**Status:** PASSED
+
+### What was built
+- **Backend:** `get_funnel(user_id)` service function using `asyncio.gather` to fetch user doc and all apps in parallel; ordered by `user.default_stages` (falls back to `DEFAULT_STAGES`); computes `entered_count`, `exited_to_next_count`, `conversion_rate`, `avg_days_in_stage`, `dropped_count` per stage using `stage_history`; `FunnelStageResult` Pydantic model in `schemas.py`; `GET /api/applications/funnel` route in `router.py`
+- **Frontend (API layer):** `fetchFunnel()` in `api/applications.js`
+- **Frontend (hooks):** `useFunnel()` hook in `hooks/useApplications.js` using `KEYS.funnel` query key and `STATS_STALE_TIME_MS` stale time
+- **Frontend (UI):** `Analytics.jsx` extended with:
+  - `Stage Conversion Funnel`: horizontal recharts BarChart showing `entered_count` per stage (full width, below existing 2×2 grid)
+  - `Conversion Rates by Stage`: table with columns Stage/Entered/Converted/Rate/Avg Days; rate color-coded `>60%` emerald, `30-60%` amber, `<30%` rose; `avg_days_in_stage >21` highlighted in rose; last stage shows `—` for converted/rate
+
+### Constants added
+- `AVG_DAYS_HIGHLIGHT_THRESHOLD = 21`
+- `CONVERSION_HIGH_THRESHOLD = 0.6`
+- `CONVERSION_LOW_THRESHOLD = 0.3`
+
+### New tests
+- **Backend:** 8 tests in `test_applications.py` — default stages order, entered_count, exited_to_next, conversion_rate, dropped_count, avg_days, excludes archived, requires auth
+- **Frontend:** 7 new tests in `Analytics.test.jsx` — funnel chart heading, conversion rates table heading, stage names, emerald/amber color coding, rose avg_days highlight, dash for last stage
+
+### Quality checks
+- 8/8 new backend funnel tests pass
+- 407/407 frontend tests pass, 62 test files
+- Production build succeeds
+
+### Commit
+`feat: US-125 - Stage funnel analytics with conversion rates and time-in-stage`

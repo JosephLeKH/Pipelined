@@ -106,3 +106,8 @@ export async function mergeApplications(body) {
 export async function bulkEditApplications(body) {
   return client.post("/applications/bulk-update", body);
 }
+
+/** Fetch per-stage funnel metrics for the current user. */
+export async function fetchFunnel() {
+  return client.get("/applications/funnel");
+}

@@ -1034,3 +1034,77 @@ async def merge_applications(user_id: str, source_id: str, target_id: str) -> di
     if result:
         logger.info("applications_merged", user_id=user_id, source_id=source_id, target_id=target_id)
     return result
+
+
+async def get_funnel(user_id: str) -> list[dict]:
+    """Return per-stage funnel metrics ordered by the user's default_stages.
+
+    For each stage:
+      - entered_count: apps that visited this stage (stage appears in stage_history)
+      - exited_to_next_count: apps that progressed to a later stage in default_stages order
+      - conversion_rate: exited_to_next_count / entered_count (0.0 if no entries)
+      - avg_days_in_stage: mean days between entering and leaving the stage (None if no data)
+      - dropped_count: entered_count - exited_to_next_count
+    """
+    col = get_collection("applications")
+    uid = ObjectId(user_id)
+
+    user_doc, apps = await asyncio.gather(
+        get_user_by_id(user_id),
+        col.find(
+            {"user_id": uid, "archived": {"$ne": True}},
+            {"stage_history": 1, "current_stage": 1},
+        ).to_list(length=None),
+    )
+
+    from auth.constants import DEFAULT_STAGES  # noqa: PLC0415
+    stage_order: list[str] = (user_doc or {}).get("default_stages", DEFAULT_STAGES)
+    stage_index: dict[str, int] = {s: i for i, s in enumerate(stage_order)}
+
+    results: list[dict] = []
+    now = datetime.now(tz=timezone.utc)
+
+    for stage in stage_order:
+        idx = stage_index[stage]
+        entered = 0
+        exited = 0
+        days_list: list[float] = []
+
+        for app in apps:
+            history: list[dict] = app.get("stage_history") or []
+            visited_stages = {h["stage"] for h in history}
+
+            if stage not in visited_stages:
+                continue
+
+            entered += 1
+
+            if any(stage_index.get(s, -1) > idx for s in visited_stages):
+                exited += 1
+
+            for i, entry in enumerate(history):
+                if entry["stage"] != stage:
+                    continue
+                entered_at: datetime = entry["transitioned_at"]
+                left_at: datetime = history[i + 1]["transitioned_at"] if i + 1 < len(history) else now
+                if entered_at.tzinfo is None:
+                    entered_at = entered_at.replace(tzinfo=timezone.utc)
+                if left_at.tzinfo is None:
+                    left_at = left_at.replace(tzinfo=timezone.utc)
+                days = (left_at - entered_at).total_seconds() / 86400
+                if days >= 0:
+                    days_list.append(days)
+
+        avg_days: float | None = round(sum(days_list) / len(days_list), 1) if days_list else None
+        conversion_rate = round(exited / entered, 2) if entered > 0 else 0.0
+
+        results.append({
+            "stage": stage,
+            "entered_count": entered,
+            "exited_to_next_count": exited,
+            "conversion_rate": conversion_rate,
+            "avg_days_in_stage": avg_days,
+            "dropped_count": entered - exited,
+        })
+
+    return results

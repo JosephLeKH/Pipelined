@@ -12,6 +12,12 @@ import { AuthProvider } from "../context/AuthContext";
 import { ThemeProvider } from "../context/ThemeContext";
 import Analytics from "./Analytics";
 
+const FUNNEL_DATA = [
+  { stage: "Applied", entered_count: 10, exited_to_next_count: 7, conversion_rate: 0.7, avg_days_in_stage: 5.2, dropped_count: 3 },
+  { stage: "Phone Screen", entered_count: 7, exited_to_next_count: 3, conversion_rate: 0.43, avg_days_in_stage: 8.1, dropped_count: 4 },
+  { stage: "Offer", entered_count: 3, exited_to_next_count: 0, conversion_rate: 0.0, avg_days_in_stage: 25.0, dropped_count: 3 },
+];
+
 const ANALYTICS_FULL = {
   applications_by_week: [
     { week: "2026-W01", count: 3 },
@@ -41,6 +47,9 @@ const server = setupServer(
   ),
   http.get("/api/applications/analytics", () =>
     HttpResponse.json({ data: ANALYTICS_FULL })
+  ),
+  http.get("/api/applications/funnel", () =>
+    HttpResponse.json({ data: FUNNEL_DATA })
   )
 );
 
@@ -119,5 +128,67 @@ describe("Analytics", () => {
     await userEvent.click(screen.getByText("Last 30 days"));
 
     expect(screen.getByText("Last 30 days").className).toMatch(/bg-brand-600/);
+  });
+
+  it("should render the funnel chart section heading", async () => {
+    renderAnalytics();
+
+    expect(await screen.findByText("Stage Conversion Funnel")).toBeInTheDocument();
+  });
+
+  it("should render the conversion rates table heading", async () => {
+    renderAnalytics();
+
+    expect(await screen.findByText("Conversion Rates by Stage")).toBeInTheDocument();
+  });
+
+  it("should show stage names in the conversion table", async () => {
+    renderAnalytics();
+
+    await screen.findByText("Conversion Rates by Stage");
+
+    expect(screen.getByText("Applied")).toBeInTheDocument();
+    expect(screen.getByText("Phone Screen")).toBeInTheDocument();
+    expect(screen.getByText("Offer")).toBeInTheDocument();
+  });
+
+  it("should color-code high conversion rate in emerald", async () => {
+    renderAnalytics();
+
+    await screen.findByText("Conversion Rates by Stage");
+
+    // Applied → Phone Screen: 70% → emerald
+    const cell = screen.getByText("70%");
+    expect(cell.className).toMatch(/text-emerald/);
+  });
+
+  it("should color-code mid conversion rate in amber", async () => {
+    renderAnalytics();
+
+    await screen.findByText("Conversion Rates by Stage");
+
+    // Phone Screen → Offer: 43% → amber
+    const cell = screen.getByText("43%");
+    expect(cell.className).toMatch(/text-amber/);
+  });
+
+  it("should highlight avg_days_in_stage above 21 in rose", async () => {
+    renderAnalytics();
+
+    await screen.findByText("Conversion Rates by Stage");
+
+    // Offer avg_days = 25.0 > 21 → rose
+    const cell = screen.getByText("25.0d");
+    expect(cell.className).toMatch(/text-rose/);
+  });
+
+  it("should show dash for last stage conversion", async () => {
+    renderAnalytics();
+
+    await screen.findByText("Conversion Rates by Stage");
+
+    // Last stage (Offer) should show — for rate
+    const dashes = screen.getAllByText("—");
+    expect(dashes.length).toBeGreaterThanOrEqual(1);
   });
 });

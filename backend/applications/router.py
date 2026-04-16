@@ -15,6 +15,7 @@ from applications.schemas import (
     BulkDeleteRequest,
     BulkEditRequest,
     BulkStageUpdateRequest,
+    FunnelStageResult,
     ImportResult,
     MergeApplicationsRequest,
     StageAddRequest,
@@ -162,6 +163,16 @@ async def get_analytics(
     user_id = str(user["_id"])
     analytics = await app_service.get_analytics(user_id, query.days)
     return {"data": AnalyticsResponse(**analytics)}
+
+
+@router.get("/funnel", status_code=200)
+async def get_funnel(
+    user: dict = Depends(get_current_user),
+) -> dict:
+    """Return per-stage funnel metrics ordered by the user's default_stages."""
+    user_id = str(user["_id"])
+    stages = await app_service.get_funnel(user_id)
+    return {"data": [FunnelStageResult(**s) for s in stages]}
 
 
 @router.delete("/bulk", status_code=200)

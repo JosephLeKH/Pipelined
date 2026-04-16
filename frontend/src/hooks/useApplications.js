@@ -13,6 +13,7 @@ import {
   fetchAnalytics,
   fetchApplication,
   fetchApplications,
+  fetchFunnel,
   fetchStats,
   importApplicationsCsv,
   mergeApplications,
@@ -31,6 +32,7 @@ export const KEYS = {
   detail: (id) => [...KEYS.details(), id],
   stats: ["applications", "stats"],
   analytics: (days) => ["applications", "analytics", days],
+  funnel: ["applications", "funnel"],
 };
 
 /** List applications with optional filters/pagination. */
@@ -189,6 +191,15 @@ export function useMergeApplications() {
       queryClient.invalidateQueries({ queryKey: KEYS.all });
       queryClient.invalidateQueries({ queryKey: KEYS.stats });
     },
+  });
+}
+
+/** Fetch per-stage funnel metrics for the current user. */
+export function useFunnel() {
+  return useQuery({
+    queryKey: KEYS.funnel,
+    queryFn: fetchFunnel,
+    staleTime: STATS_STALE_TIME_MS,
   });
 }
 
