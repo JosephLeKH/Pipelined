@@ -275,3 +275,38 @@ Test result: 356 passed, 56 files
 
 ### Commit
 `feat: US-125 - Stage funnel analytics with conversion rates and time-in-stage`
+
+---
+
+## US-126 — Smart tag input with predefined suggestions and analytics
+
+### Summary
+Replaced plain text tag fields with a full combobox TagInput component, added a `/tags` endpoint, surfaced tag offer rates in analytics.
+
+### Backend changes
+- **`backend/config.py`:** Added `PREDEFINED_TAGS` list (10 predefined tag strings)
+- **`backend/applications/schemas.py`:** Added `TagCount` and `TagOfferRate` Pydantic models; added `tag_offer_rates: list[TagOfferRate]` field to `StatsResponse`
+- **`backend/applications/service.py`:** Added `get_user_tags(user_id)` (aggregation pipeline: `$unwind tags → $group count → $sort count desc`); added `_compute_tag_offer_rates(user_id, col)` helper (aggregation: `$unwind → $group offer_count with $cond → $divide offer_rate`); updated `compute_stats()` to use `asyncio.gather()` with the new helper
+- **`backend/applications/router.py`:** Added `GET /api/applications/tags` route returning `{ data: { tags: [{ name, count }] } }`
+
+### Frontend changes
+- **`frontend/src/api/applications.js`:** Added `fetchTags()`
+- **`frontend/src/hooks/useApplications.js`:** Added `KEYS.tags` and `useTags()` hook
+- **`frontend/src/components/TagInput.jsx`:** New combobox component — chip display, PREDEFINED_TAGS + user tags as suggestions, keyboard nav (Enter/ArrowDown/ArrowUp/Backspace/Escape), X button per chip, `onMouseDown` prevents blur-before-click, full dark mode support
+- **`frontend/src/components/ManualAddForm.jsx`:** `tags` state changed to `string[]`; replaced plain input with `<TagInput>`
+- **`frontend/src/components/DetailPanel.jsx`:** Added `TagsSection` component using `<TagInput>`; placed before FollowUpSection in PanelBody
+- **`frontend/src/components/FilterBar.jsx`:** Added `useTags`, tag `CheckboxGroup` (AND-logic multi-select via URL params); only rendered when user has tags
+- **`frontend/src/pages/Analytics.jsx`:** Added Tags section — table showing tag, application_count, offer_count, offer_rate with color coding (>60% emerald, 30–60% amber, <30% rose)
+
+### New tests
+- **Backend:** 9 tests — tags returns empty, sorted by count, excludes deleted, requires auth, user isolation; stats tag_offer_rates empty, calculates offer rate, zero when no offers
+- **Frontend:** 10 tests in `TagInput.test.jsx` — render placeholder, chips, Enter adds tag, no duplicates, click suggestion, X removes chip, Backspace removes last chip, no duplicates in suggestions, filter by typed input, Escape closes
+- **Fix:** `DetailPanel.optimistic.test.jsx` updated to include `useTags` in its `vi.mock` for `useApplications`
+
+### Quality checks
+- 9/9 new backend tags tests pass
+- 417/417 frontend tests pass, 63 test files
+- Production build succeeds
+
+### Commit
+`feat: US-126 - Smart tag input with predefined suggestions and analytics`

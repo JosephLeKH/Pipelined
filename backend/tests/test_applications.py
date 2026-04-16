@@ -1859,3 +1859,162 @@ async def test_funnel_requires_auth(client):
 
     # Assert
     assert response.status_code == 401
+
+
+# ---------------------------------------------------------------------------
+# GET /api/applications/tags
+# ---------------------------------------------------------------------------
+
+
+async def test_tags_returns_empty_list_when_no_applications(client, test_user):
+    # Arrange
+    _, cookies = test_user
+
+    # Act
+    response = await client.get("/api/applications/tags", cookies=cookies)
+
+    # Assert
+    assert response.status_code == 200
+    data = response.json()["data"]
+    assert data["tags"] == []
+
+
+async def test_tags_returns_tags_sorted_by_count_desc(client, test_user):
+    # Arrange
+    _, cookies = test_user
+    await client.post("/api/applications", json={**APP_PAYLOAD, "tags": ["referral", "startup"]}, cookies=cookies)
+    await client.post(
+        "/api/applications",
+        json={"role_title": "PM", "company": "Beta Inc", "source": "manual", "tags": ["referral"]},
+        cookies=cookies,
+    )
+
+    # Act
+    response = await client.get("/api/applications/tags", cookies=cookies)
+
+    # Assert
+    data = response.json()["data"]
+    tags = data["tags"]
+    assert len(tags) == 2
+    assert tags[0]["name"] == "referral"
+    assert tags[0]["count"] == 2
+    assert tags[1]["name"] == "startup"
+    assert tags[1]["count"] == 1
+
+
+async def test_tags_excludes_deleted_applications(client, test_user):
+    # Arrange
+    _, cookies = test_user
+    r = await client.post(
+        "/api/applications",
+        json={**APP_PAYLOAD, "tags": ["dream company"]},
+        cookies=cookies,
+    )
+    app_id = r.json()["data"]["id"]
+    await client.delete(f"/api/applications/{app_id}", cookies=cookies)
+
+    # Act
+    response = await client.get("/api/applications/tags", cookies=cookies)
+
+    # Assert
+    data = response.json()["data"]
+    assert data["tags"] == []
+
+
+async def test_tags_requires_auth(client):
+    # Act
+    response = await client.get("/api/applications/tags")
+
+    # Assert
+    assert response.status_code == 401
+
+
+async def test_tags_does_not_return_other_users_tags(client, test_user):
+    # Arrange
+    _, cookies = test_user
+    resp_other = await client.post("/api/auth/register", json={
+        "email": "tagsisolation@example.com",
+        "password": "OtherPass123!",
+        "display_name": "Tags Other",
+    })
+    other_cookies = dict(resp_other.cookies)
+    await verify_user_by_id(resp_other.json()["data"]["id"])
+    await client.post(
+        "/api/applications",
+        json={"role_title": "Designer", "company": "Other Co", "source": "manual", "tags": ["faang"]},
+        cookies=other_cookies,
+    )
+
+    # Act — fetch tags as the original user (no apps with tags)
+    response = await client.get("/api/applications/tags", cookies=cookies)
+
+    # Assert
+    data = response.json()["data"]
+    assert data["tags"] == []
+
+
+# ---------------------------------------------------------------------------
+# GET /api/applications/stats — tag_offer_rates field
+# ---------------------------------------------------------------------------
+
+
+async def test_stats_tag_offer_rates_empty_when_no_tagged_apps(client, test_user):
+    # Arrange — create app without tags
+    _, cookies = test_user
+    await client.post("/api/applications", json=APP_PAYLOAD, cookies=cookies)
+
+    # Act
+    response = await client.get("/api/applications/stats", cookies=cookies)
+
+    # Assert
+    assert response.status_code == 200
+    data = response.json()["data"]
+    assert data["tag_offer_rates"] == []
+
+
+async def test_stats_tag_offer_rates_calculates_offer_rate(client, test_user):
+    # Arrange — two apps with "referral" tag, one reaches Offer stage
+    _, cookies = test_user
+    r1 = await client.post(
+        "/api/applications",
+        json={**APP_PAYLOAD, "tags": ["referral"]},
+        cookies=cookies,
+    )
+    app_id = r1.json()["data"]["id"]
+    await client.patch(f"/api/applications/{app_id}", json={"current_stage": "Offer"}, cookies=cookies)
+    await client.post(
+        "/api/applications",
+        json={"role_title": "PM", "company": "Beta Inc", "source": "manual", "tags": ["referral"]},
+        cookies=cookies,
+    )
+
+    # Act
+    response = await client.get("/api/applications/stats", cookies=cookies)
+
+    # Assert
+    data = response.json()["data"]
+    rates = {r["tag"]: r for r in data["tag_offer_rates"]}
+    assert "referral" in rates
+    row = rates["referral"]
+    assert row["application_count"] == 2
+    assert row["offer_count"] == 1
+    assert row["offer_rate"] == 0.5
+
+
+async def test_stats_tag_offer_rates_zero_when_no_offers(client, test_user):
+    # Arrange — app with tag but no Offer stage
+    _, cookies = test_user
+    await client.post(
+        "/api/applications",
+        json={**APP_PAYLOAD, "tags": ["startup"]},
+        cookies=cookies,
+    )
+
+    # Act
+    response = await client.get("/api/applications/stats", cookies=cookies)
+
+    # Assert
+    data = response.json()["data"]
+    rates = {r["tag"]: r for r in data["tag_offer_rates"]}
+    assert rates["startup"]["offer_rate"] == 0.0
+    assert rates["startup"]["offer_count"] == 0

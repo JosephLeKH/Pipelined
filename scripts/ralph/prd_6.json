@@ -239,7 +239,7 @@
         "Analytics page has a 'Tags' section showing a table of tag offer rates"
       ],
       "priority": 14,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {

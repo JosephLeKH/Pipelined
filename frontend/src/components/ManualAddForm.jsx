@@ -12,6 +12,7 @@ import { INPUT_BASE } from "../lib/designTokens";
 import { DuplicateWarning } from "./DuplicateWarning";
 import { FormActions } from "./FormActions";
 import FormField from "./FormField";
+import TagInput from "./TagInput";
 import TemplateBar from "./TemplateBar";
 
 const GENERIC_ERROR_MSG = "Something went wrong. Please try again.";
@@ -40,7 +41,7 @@ function ManualAddForm({ isOpen, onClose }) {
   const [location, setLocation] = useState("");
   const [remoteStatus, setRemoteStatus] = useState("");
   const [companyType, setCompanyType] = useState("");
-  const [tags, setTags] = useState("");
+  const [tags, setTags] = useState([]);
   const [fieldErrors, setFieldErrors] = useState({});
 
   const isDuplicate = mutationError?.code === DUPLICATE_CODE;
@@ -48,7 +49,7 @@ function ManualAddForm({ isOpen, onClose }) {
 
   const resetForm = useCallback(() => {
     setRoleTitle(""); setCompany(""); setSourceUrl(""); setDateApplied(getTodayString());
-    setStage(""); setCompensation(""); setLocation(""); setRemoteStatus(""); setCompanyType(""); setTags("");
+    setStage(""); setCompensation(""); setLocation(""); setRemoteStatus(""); setCompanyType(""); setTags([]);
     setFieldErrors({});
     reset();
   }, [reset]);
@@ -58,7 +59,7 @@ function ManualAddForm({ isOpen, onClose }) {
     if (f.remote_status) setRemoteStatus(f.remote_status);
     if (f.company_type) setCompanyType(f.company_type);
     if (f.compensation) setCompensation(f.compensation);
-    if (f.tags?.length) setTags(f.tags.join(", "));
+    if (f.tags?.length) setTags(f.tags);
   }, []);
 
   const handleClose = useCallback(() => {
@@ -121,7 +122,7 @@ function ManualAddForm({ isOpen, onClose }) {
         ...(location.trim() && { location: location.trim() }),
         ...(remoteStatus && { remote_status: remoteStatus }),
         ...(companyType && { company_type: companyType }),
-        tags: tags.split(",").map((t) => t.trim()).filter(Boolean),
+        tags,
       };
 
       mutate(body, {
@@ -168,7 +169,7 @@ function ManualAddForm({ isOpen, onClose }) {
               company_type: companyType || null,
               role_type: null,
               source: null,
-              tags: tags.split(",").map((t) => t.trim()).filter(Boolean),
+              tags,
               compensation: compensation || null,
             }}
           />
@@ -276,14 +277,7 @@ function ManualAddForm({ isOpen, onClose }) {
             </FormField>
           </div>
           <FormField label="Tags" htmlFor="tags">
-            <input
-              id="tags"
-              type="text"
-              value={tags}
-              onChange={(e) => setTags(e.target.value)}
-              className={`${INPUT_BASE}`}
-              placeholder="Comma-separated, e.g. python, remote"
-            />
+            <TagInput id="tags" value={tags} onChange={setTags} />
           </FormField>
           {mutationError && !isDuplicate && (
             <p role="alert" className="rounded border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">

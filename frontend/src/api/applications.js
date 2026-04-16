@@ -111,3 +111,8 @@ export async function bulkEditApplications(body) {
 export async function fetchFunnel() {
   return client.get("/applications/funnel");
 }
+
+/** Fetch all tags used by the current user, sorted by count descending. */
+export async function fetchTags() {
+  return client.get("/applications/tags");
+}

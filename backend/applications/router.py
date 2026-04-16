@@ -20,6 +20,7 @@ from applications.schemas import (
     MergeApplicationsRequest,
     StageAddRequest,
     StatsResponse,
+    TagCount,
     ValidCompanyType,
     ValidRemoteStatus,
     ValidSortField,
@@ -173,6 +174,16 @@ async def get_funnel(
     user_id = str(user["_id"])
     stages = await app_service.get_funnel(user_id)
     return {"data": [FunnelStageResult(**s) for s in stages]}
+
+
+@router.get("/tags", status_code=200)
+async def get_user_tags(
+    user: dict = Depends(get_current_user),
+) -> dict:
+    """Return all tags used by the current user, sorted by application count descending."""
+    user_id = str(user["_id"])
+    tags = await app_service.get_user_tags(user_id)
+    return {"data": {"tags": [TagCount(**t) for t in tags]}}
 
 
 @router.delete("/bulk", status_code=200)

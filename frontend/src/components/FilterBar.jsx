@@ -4,6 +4,7 @@ import { useCallback, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import SearchIcon from "lucide-react/dist/esm/icons/search";
 import { trackEvent } from "../lib/analytics";
+import { useTags } from "../hooks/useApplications";
 
 const SEARCH_DEBOUNCE_MS = 300;
 
@@ -45,10 +46,12 @@ function FilterBar() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchValue, setSearchValue] = useState(searchParams.get("q") ?? "");
   const debounceRef = useRef(null);
+  const { data: tagsData } = useTags();
 
   const stages = searchParams.getAll("stage");
   const companyTypes = searchParams.getAll("company_type");
   const remoteStatuses = searchParams.getAll("remote_status");
+  const selectedTags = searchParams.getAll("tags");
   const dateFrom = searchParams.get("date_from") ?? "";
   const dateTo = searchParams.get("date_to") ?? "";
   const includeArchived = searchParams.get("include_archived") === "true";
@@ -162,6 +165,15 @@ function FilterBar() {
             />
           </label>
         </fieldset>
+        {tagsData?.tags?.length > 0 && (
+          <CheckboxGroup
+            label="Tags"
+            groupKey="tags"
+            options={tagsData.tags.map((t) => t.name)}
+            selected={selectedTags}
+            onChange={(val) => updateFilter("tags", val)}
+          />
+        )}
         <fieldset className="flex shrink-0 flex-col gap-1">
           <legend className="mb-1 text-xs font-medium uppercase text-slate-500 dark:text-slate-400">Archive</legend>
           <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">

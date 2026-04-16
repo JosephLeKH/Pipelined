@@ -15,7 +15,7 @@ import { Legend } from "recharts/es6/component/Legend";
 import { ResponsiveContainer } from "recharts/es6/component/ResponsiveContainer";
 
 import { CARD_BASE } from "../lib/designTokens";
-import { useAnalytics, useFunnel } from "../hooks/useApplications";
+import { useAnalytics, useApplicationStats, useFunnel } from "../hooks/useApplications";
 import EmptyState from "../components/EmptyState";
 import NavBar from "../components/NavBar";
 
@@ -76,6 +76,8 @@ function Analytics() {
   const [days, setDays] = useState(90);
   const { data: analytics, isLoading, error } = useAnalytics(days);
   const { data: funnelData = [] } = useFunnel();
+  const { data: statsData } = useApplicationStats();
+  const tagOfferRates = statsData?.tag_offer_rates ?? [];
 
   const totalApps = analytics
     ? analytics.stage_funnel.reduce((sum, s) => sum + s.count, 0)
@@ -195,6 +197,38 @@ function Analytics() {
               </ResponsiveContainer>
             </ChartCard>
           </div>
+
+            {tagOfferRates.length > 0 && (
+              <ChartCard
+                title="Tags"
+                description="Offer rate for each tag across your applications"
+              >
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-slate-200 dark:border-slate-700">
+                        <th className="pb-2 text-left text-xs font-medium text-slate-500 dark:text-slate-400">Tag</th>
+                        <th className="pb-2 text-right text-xs font-medium text-slate-500 dark:text-slate-400">Applications</th>
+                        <th className="pb-2 text-right text-xs font-medium text-slate-500 dark:text-slate-400">Offers</th>
+                        <th className="pb-2 text-right text-xs font-medium text-slate-500 dark:text-slate-400">Offer Rate</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {tagOfferRates.map((row) => (
+                        <tr key={row.tag} className="border-b border-slate-100 dark:border-slate-800 last:border-0">
+                          <td className="py-2 pr-4 text-slate-700 dark:text-slate-300">{row.tag}</td>
+                          <td className="py-2 text-right text-slate-700 dark:text-slate-300">{row.application_count}</td>
+                          <td className="py-2 text-right text-slate-500 dark:text-slate-400">{row.offer_count}</td>
+                          <td className={`py-2 text-right ${rateColorClass(row.offer_rate)}`}>
+                            {`${Math.round(row.offer_rate * 100)}%`}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </ChartCard>
+            )}
 
             {funnelData.length > 0 && (
               <>

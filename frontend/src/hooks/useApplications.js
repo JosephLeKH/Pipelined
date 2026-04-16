@@ -15,6 +15,7 @@ import {
   fetchApplications,
   fetchFunnel,
   fetchStats,
+  fetchTags,
   importApplicationsCsv,
   mergeApplications,
   restoreApplication,
@@ -33,6 +34,7 @@ export const KEYS = {
   stats: ["applications", "stats"],
   analytics: (days) => ["applications", "analytics", days],
   funnel: ["applications", "funnel"],
+  tags: ["applications", "tags"],
 };
 
 /** List applications with optional filters/pagination. */
@@ -199,6 +201,15 @@ export function useFunnel() {
   return useQuery({
     queryKey: KEYS.funnel,
     queryFn: fetchFunnel,
+    staleTime: STATS_STALE_TIME_MS,
+  });
+}
+
+/** Fetch all tags used by the current user. Returns { tags: [{ name, count }] }. */
+export function useTags() {
+  return useQuery({
+    queryKey: KEYS.tags,
+    queryFn: fetchTags,
     staleTime: STATS_STALE_TIME_MS,
   });
 }

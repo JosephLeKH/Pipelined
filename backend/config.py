@@ -103,6 +103,20 @@ class Settings(BaseSettings):
     model_config = {"env_file": ".env"}
 
 
+PREDEFINED_TAGS: list[str] = [
+    "referral",
+    "dream company",
+    "remote",
+    "hybrid",
+    "in-office",
+    "startup",
+    "faang",
+    "contract",
+    "internship",
+    "return offer",
+]
+
+
 UNLIMITED = -1
 
 FREE_TIER_LIMITS: dict[str, int | bool] = {

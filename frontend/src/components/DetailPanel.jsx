@@ -15,6 +15,7 @@ import { DetailPanelNotes } from "./DetailPanelNotes";
 import { DetailPanelTimeline } from "./DetailPanelTimeline";
 import OfferDetailsSection from "./OfferDetailsSection";
 import ResumeFitSection from "./ResumeFitSection";
+import TagInput from "./TagInput";
 import UndoToast from "./UndoToast";
 import { formatDate } from "../lib/dateUtils";
 import { useAuth } from "../context/AuthContext";
@@ -71,6 +72,18 @@ function FollowUpSection({ application, onUpdate }) {
     </div>
   );
 }
+function TagsSection({ application, onUpdate }) {
+  function handleTagsChange(tags) {
+    onUpdate({ tags });
+  }
+  return (
+    <div className="flex flex-col gap-1.5">
+      <span className="text-xs font-medium uppercase text-slate-400 dark:text-slate-500">Tags</span>
+      <TagInput value={application.tags ?? []} onChange={handleTagsChange} />
+    </div>
+  );
+}
+
 function PanelBody({ application, handleStageChange, handleUpdate, onAddEvent, onDirtyChange }) {
   const { user } = useAuth();
   const stageOptions = user?.default_stages ?? [];
@@ -126,6 +139,7 @@ function PanelBody({ application, handleStageChange, handleUpdate, onAddEvent, o
           })}
         </div>
       </div>
+      <TagsSection application={application} onUpdate={handleUpdate} />
       <FollowUpSection application={application} onUpdate={handleUpdate} />
       {application.current_stage === "Offer" && (
         <OfferDetailsSection application={application} onUpdate={handleUpdate} />

@@ -8,6 +8,7 @@ vi.mock("../hooks/useApplications", () => ({
   useUpdateApplication: vi.fn(),
   useDeleteApplication: vi.fn(),
   useRestoreApplication: vi.fn(),
+  useTags: () => ({ data: { tags: [] } }),
 }));
 vi.mock("../context/AuthContext", () => ({
   useAuth: () => ({ user: { default_stages: ["Applied", "Interview", "Offer"], has_resume: false, ai_scores_remaining_today: 5 } }),

@@ -734,9 +734,10 @@ async def compute_stats(user_id: str) -> dict:
         }},
     ]
 
-    user_doc, raw = await asyncio.gather(
+    user_doc, raw, tag_offer_rates = await asyncio.gather(
         get_user_by_id(user_id),
         col.aggregate(pipeline).to_list(length=None),
+        _compute_tag_offer_rates(user_id, col),
     )
     raw = raw[0]
     weekly_goal = user_doc.get("weekly_goal", 5) if user_doc else 5
@@ -758,6 +759,7 @@ async def compute_stats(user_id: str) -> dict:
         "applied_this_week": applied_this_week,
         "current_streak": current_streak,
         "follow_ups_due": follow_ups_due,
+        "tag_offer_rates": tag_offer_rates,
     }
 
 
@@ -1108,3 +1110,49 @@ async def get_funnel(user_id: str) -> list[dict]:
         })
 
     return results
+
+
+OFFER_STAGE = "Offer"
+
+
+async def get_user_tags(user_id: str) -> list[dict]:
+    """Return all tags used by the user, sorted by application count descending."""
+    col = get_collection("applications")
+    uid = ObjectId(user_id)
+    pipeline = [
+        {"$match": {"user_id": uid, "deleted": {"$ne": True}}},
+        {"$unwind": "$tags"},
+        {"$group": {"_id": "$tags", "count": {"$sum": 1}}},
+        {"$sort": {"count": -1, "_id": 1}},
+        {"$project": {"_id": 0, "name": "$_id", "count": 1}},
+    ]
+    return await col.aggregate(pipeline).to_list(length=None)
+
+
+async def _compute_tag_offer_rates(user_id: str, col) -> list[dict]:
+    """Return per-tag offer rates for the current user's applications."""
+    uid = ObjectId(user_id)
+    pipeline = [
+        {"$match": {"user_id": uid, "deleted": {"$ne": True}}},
+        {"$unwind": "$tags"},
+        {"$group": {
+            "_id": "$tags",
+            "application_count": {"$sum": 1},
+            "offer_count": {"$sum": {"$cond": [{"$eq": ["$current_stage", OFFER_STAGE]}, 1, 0]}},
+        }},
+        {"$sort": {"application_count": -1, "_id": 1}},
+        {"$project": {
+            "_id": 0,
+            "tag": "$_id",
+            "application_count": 1,
+            "offer_count": 1,
+            "offer_rate": {
+                "$cond": [
+                    {"$gt": ["$application_count", 0]},
+                    {"$round": [{"$divide": ["$offer_count", "$application_count"]}, 2]},
+                    0.0,
+                ]
+            },
+        }},
+    ]
+    return await col.aggregate(pipeline).to_list(length=None)

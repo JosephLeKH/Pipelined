@@ -135,6 +135,18 @@ class ApplicationListQuery(BaseModel):
     include_archived: bool = False
 
 
+class TagCount(BaseModel):
+    name: str
+    count: int
+
+
+class TagOfferRate(BaseModel):
+    tag: str
+    application_count: int
+    offer_count: int
+    offer_rate: float
+
+
 class StatsResponse(BaseModel):
     total_applied: int
     active_count: int
@@ -144,6 +156,7 @@ class StatsResponse(BaseModel):
     applied_this_week: int = 0
     current_streak: int = 0
     follow_ups_due: int = 0
+    tag_offer_rates: list[TagOfferRate] = Field(default_factory=list)
 
 
 class StageAddRequest(BaseModel):
