@@ -18,7 +18,10 @@
         "*://www.indeed.com/viewjob*",
         "*://www.glassdoor.com/job-listing/*",
         "*://wellfound.com/jobs/*",
-        "*://www.dice.com/job-detail/*"
+        "*://www.dice.com/job-detail/*",
+        "*://app.joinhandshake.com/jobs/*",
+        "*://joinhandshake.com/jobs/*",
+        "*://remoteok.com/remote-jobs/*"
       ],
       "js": ["content/content.js"],
       "css": ["content/content.css"],

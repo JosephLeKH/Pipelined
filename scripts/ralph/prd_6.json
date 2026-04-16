@@ -205,8 +205,8 @@
         "Each new board has a corresponding test file with at least 3 test cases (detects job page, extracts fields, handles missing fields gracefully)"
       ],
       "priority": 12,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "wellfound.js, handshake.js, dice.js, remoteok.js board extractors with 3-selector fallback chains; remoteok hardcodes remote_status='remote'; content.js BOARDS array updated; manifest.json matches updated; test fixtures + test files for all 4 boards; handshake/remoteok tests pass (test_background.js and test_popup.js failures are pre-existing)."
     },
     {
       "id": "US-125",

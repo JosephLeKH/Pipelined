@@ -9,6 +9,8 @@ import * as indeed from "./boards/indeed.js";
 import * as glassdoor from "./boards/glassdoor.js";
 import * as wellfound from "./boards/wellfound.js";
 import * as dice from "./boards/dice.js";
+import * as handshake from "./boards/handshake.js";
+import * as remoteok from "./boards/remoteok.js";
 import * as linkedin_profile from "./boards/linkedin_profile.js";
 import {
   BANNER_AUTO_DISMISS_MS,
@@ -23,7 +25,7 @@ import { injectContactBanner } from "./contact_banner.js";
 
 const BOARDS = [
   linkedin, greenhouse, lever, ashby, workday,
-  indeed, glassdoor, wellfound, dice, linkedin_profile,
+  indeed, glassdoor, wellfound, dice, handshake, remoteok, linkedin_profile,
 ];
 
 const PAGE_TEXT_MAX_CHARS = 3200;

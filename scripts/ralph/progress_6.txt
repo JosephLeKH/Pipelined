@@ -214,3 +214,33 @@ Test result: 356 passed, 56 files
 
 ### Commit
 `feat: US-123 - PWA: web manifest, service worker, offline banner`
+
+---
+
+## US-124: Chrome extension: support Wellfound, Handshake, Dice, and RemoteOK
+
+**Status:** PASSED
+
+### What was built
+- **`extension/content/boards/wellfound.js`**: matches `wellfound.com/jobs/` and `angel.co/jobs/` URLs; 3-selector fallback chains for title, company, location; `company_type` hardcoded to `'startup'`
+- **`extension/content/boards/dice.js`**: matches `dice.com/job-detail/` URLs; 3-selector fallback chains; extracts compensation from `.salary-range`
+- **`extension/content/boards/handshake.js`**: matches `joinhandshake.com/jobs/` URLs; 3-selector fallback chains using `data-hook` attributes; `getRemoteStatus()` infers remote/hybrid/onsite from location text
+- **`extension/content/boards/remoteok.js`**: matches `remoteok.com/remote-jobs/` URLs; `remote_status` hardcoded to `'remote'` (all RemoteOK listings are remote-only)
+- **`extension/content/content.js`**: BOARDS array updated to include all four new extractors
+- **`extension/manifest.json`**: content_scripts matches updated with Wellfound, Dice, Handshake, RemoteOK URL patterns
+
+### New tests
+- **`extension/tests/fixtures/wellfound-swe-posting.html`**: fixture for Wellfound tests
+- **`extension/tests/fixtures/dice-swe-posting.html`**: fixture for Dice tests
+- **`extension/tests/fixtures/handshake-swe-posting.html`**: fixture for Handshake tests
+- **`extension/tests/fixtures/remoteok-swe-posting.html`**: fixture for RemoteOK tests
+- **`extension/tests/test_wellfound.js`** (10 tests): BOARD_ID, isJobPage URL/selector, all fields, remote_status inference, empty DOM
+- **`extension/tests/test_dice.js`** (10 tests): BOARD_ID, isJobPage, all fields, compensation, remote_status, empty DOM
+- **`extension/tests/test_handshake.js`** (10 tests): BOARD_ID, isJobPage, all fields, remote/hybrid/onsite inference, empty DOM
+- **`extension/tests/test_remoteok.js`** (10 tests): BOARD_ID, isJobPage, all fields, remote_status always 'remote', empty DOM
+
+### Quality checks
+- All 4 new test files pass; test_background.js and test_popup.js failures are pre-existing
+
+### Commit
+`feat: US-124 - Chrome extension: support Wellfound, Handshake, Dice, RemoteOK`
