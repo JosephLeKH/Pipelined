@@ -79,6 +79,17 @@ async def revoke_share(user_id: str) -> None:
     logger.info("share_revoked", user_id=user_id)
 
 
+async def revoke_share_by_type(user_id: str, share_type: str) -> None:
+    """Deactivate all active shares of a given type for a user."""
+    shares = get_collection("shares")
+    uid = ObjectId(user_id)
+    await shares.update_many(
+        {"user_id": uid, "type": share_type, "is_active": True},
+        {"$set": {"is_active": False}},
+    )
+    logger.info("share_revoked_by_type", user_id=user_id, share_type=share_type)
+
+
 async def get_public_pipeline(slug: str) -> dict:
     """Fetch public pipeline snapshot for a valid slug. Raises ShareNotFoundError if invalid."""
     shares = get_collection("shares")

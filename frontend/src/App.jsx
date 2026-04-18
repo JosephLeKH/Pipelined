@@ -64,6 +64,7 @@ const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const ActivityPage = lazy(() => import("./pages/Activity"));
 const Settings = lazy(() => import("./pages/Settings"));
 const PublicPipeline = lazy(() => import("./pages/PublicPipeline"));
+const PublicTimeline = lazy(() => import("./pages/PublicTimeline"));
 const VerifyEmailPending = lazy(() => import("./pages/VerifyEmailPending"));
 const VerifyEmailConfirm = lazy(() => import("./pages/VerifyEmailConfirm"));
 const GithubCallback = lazy(() => import("./pages/GithubCallback"));
@@ -135,6 +136,7 @@ function App() {
         <Route path="/auth/github/callback" element={<GithubCallback />} />
         <Route path="/jobs" element={<PageWrapper><JobBoard /></PageWrapper>} />
         <Route path="/pipeline/:slug" element={<PageWrapper><PublicPipeline /></PageWrapper>} />
+        <Route path="/shared/timeline/:slug" element={<PageWrapper><PublicTimeline /></PageWrapper>} />
         <Route path="/pricing" element={<PageWrapper><Pricing /></PageWrapper>} />
         <Route
           path="/dashboard"

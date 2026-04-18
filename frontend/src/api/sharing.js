@@ -22,3 +22,22 @@ export async function revokeShare() {
 export async function getPublicPipeline(slug) {
   return client.get(`/public/${slug}`);
 }
+
+export async function getMyTimelineShare() {
+  const result = await client.get("/sharing/timeline");
+  if (result && result.slug) return result;
+  if (result && result.data === null) return null;
+  return result ?? null;
+}
+
+export async function createTimelineShare() {
+  return client.post("/sharing/timeline");
+}
+
+export async function revokeTimelineShare() {
+  return client.delete("/sharing/timeline");
+}
+
+export async function getPublicTimeline(slug) {
+  return client.get(`/public/timeline/${slug}`);
+}
