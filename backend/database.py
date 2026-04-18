@@ -2,7 +2,7 @@
 
 import asyncio
 
-from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
+from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorCollection, AsyncIOMotorDatabase
 
 from config import settings
 
@@ -41,7 +41,7 @@ def get_client() -> AsyncIOMotorClient:
     return client
 
 
-def get_collection(name: str):
+def get_collection(name: str) -> AsyncIOMotorCollection:
     """Return a collection reference from the active database."""
     if db is None:
         raise RuntimeError("Database not connected. Call connect() first.")

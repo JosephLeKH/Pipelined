@@ -173,3 +173,32 @@ async def test_list_notifications_shows_inserted(client, test_user):
     data = resp.json()["data"]
     assert len(data) >= 1
     assert any(n["type"] == "interview_tomorrow" for n in data)
+
+
+
+# ---------------------------------------------------------------------------
+# GET /api/notifications/stream (SSE)
+# ---------------------------------------------------------------------------
+
+
+async def test_sse_stream_requires_auth(client):
+    """Test that SSE stream endpoint requires authentication."""
+    # Act
+    resp = await client.get("/api/notifications/stream")
+
+    # Assert
+    assert resp.status_code == 401
+
+
+async def test_sse_stream_endpoint_exists(client, test_user):
+    """Test that SSE stream endpoint is accessible and returns event-stream."""
+    # Arrange
+    _, cookies = test_user
+
+    # Act
+    # Just test that the endpoint accepts a request and returns the right headers
+    resp = await client.get("/api/notifications/stream", cookies=cookies)
+
+    # Assert
+    assert resp.status_code == 200
+    assert "text/event-stream" in resp.headers.get("content-type", "")

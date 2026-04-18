@@ -5,6 +5,7 @@ from datetime import date, datetime, timedelta, timezone
 
 import structlog
 from bson import ObjectId
+from motor.motor_asyncio import AsyncIOMotorCollection
 
 from applications.service_constants import (
     INACTIVE_STAGES,
@@ -72,7 +73,7 @@ def _parse_compensation(text: str) -> int | None:
     return None
 
 
-async def _get_salary_distribution(col, base_filter: dict) -> list[dict]:
+async def _get_salary_distribution(col: AsyncIOMotorCollection, base_filter: dict) -> list[dict]:
     """Parse compensation strings and return salary bucket counts."""
     docs = await col.find(
         {**base_filter, "compensation": {"$nin": [None, ""]}},
@@ -96,7 +97,7 @@ async def _get_salary_distribution(col, base_filter: dict) -> list[dict]:
     return [{"bucket": label, "count": counts[label]} for label in SALARY_BUCKET_LABELS]
 
 
-async def _compute_tag_offer_rates(user_id: str, col) -> list[dict]:
+async def _compute_tag_offer_rates(user_id: str, col: AsyncIOMotorCollection) -> list[dict]:
     """Return per-tag offer rates for the current user's applications."""
     uid = ObjectId(user_id)
     pipeline = [

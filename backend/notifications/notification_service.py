@@ -2,6 +2,7 @@
 
 import asyncio
 import datetime as dt
+import json
 
 import structlog
 from bson import ObjectId
@@ -10,6 +11,34 @@ from pymongo import ReturnDocument
 from database import get_collection
 
 logger = structlog.get_logger()
+
+# SSE connection pool: maps user_id (str) to list of asyncio.Queue
+_sse_connections: dict[str, list[asyncio.Queue]] = {}
+
+
+async def _broadcast_to_sse_connections(user_id: ObjectId, notification: dict) -> None:
+    """Push notification to all active SSE connections for this user."""
+    user_id_str = str(user_id)
+    if user_id_str not in _sse_connections:
+        return
+    
+    queues = _sse_connections[user_id_str]
+    dead_queues = []
+    for q in queues:
+        try:
+            q.put_nowait(notification)
+        except asyncio.QueueFull:
+            # Client disconnected, queue is full
+            dead_queues.append(q)
+    
+    # Clean up dead connections
+    for q in dead_queues:
+        queues.remove(q)
+    
+    if not queues:
+        del _sse_connections[user_id_str]
+
+
 
 NOTIFICATION_TTL_DAYS: int = 30
 MAX_STALE_NOTIFICATIONS_PER_RUN: int = 5
@@ -43,7 +72,19 @@ async def create_notification(
     }
     result = await col.insert_one(doc)
     logger.info("notification_created", user_id=str(user_id), type=type)
-    return str(result.inserted_id)
+    notification_id = str(result.inserted_id)
+    notification_dict = {
+        '_id': result.inserted_id,
+        'user_id': user_id,
+        'type': type,
+        'title': title,
+        'body': body,
+        'action_url': action_url,
+        'read': False,
+        'created_at': now,
+    }
+    await _broadcast_to_sse_connections(user_id, notification_dict)
+    return notification_id
 
 
 async def list_notifications(

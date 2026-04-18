@@ -6,11 +6,11 @@
     {
       "id": "US-128",
       "title": "Security: add user_id to _score_and_update DB query",
-      "description": "The _score_and_update function in applications/service.py updates ai_analysis using only _id in the MongoDB filter, without user_id. This is a privilege escalation bug — any background task could overwrite another user's application if app_id collides or is manipulated. Add user_id to the update_one filter.",
+      "description": "The _score_and_update function in applications/service.py updates ai_analysis using only _id in the MongoDB filter, without user_id. This is a privilege escalation bug \u2014 any background task could overwrite another user's application if app_id collides or is manipulated. Add user_id to the update_one filter.",
       "acceptanceCriteria": [
         "applications/service.py _score_and_update update_one filter includes both {'_id': ObjectId(app_id), 'user_id': user_id}",
         "If the update matches 0 documents (wrong user), log a warning via structlog and return without error",
-        "Add a test in test_applications.py: test_score_update_rejects_wrong_user — create app as user A, call _score_and_update with user B's id, assert ai_analysis is NOT set",
+        "Add a test in test_applications.py: test_score_update_rejects_wrong_user \u2014 create app as user A, call _score_and_update with user B's id, assert ai_analysis is NOT set",
         "All existing tests pass"
       ],
       "priority": 1,
@@ -34,7 +34,7 @@
     {
       "id": "US-130",
       "title": "Split applications/service.py into focused modules under 300 lines",
-      "description": "applications/service.py is 1346 lines — over 4x the 300-line limit. Split it into: service.py (CRUD core), service_export.py (CSV export, PDF report), service_analytics.py (stats, funnel, stage metrics), service_ai.py (fit scoring, AI analysis), service_bulk.py (bulk update/delete). Each file must be under 300 lines. Update all imports in router.py and tests.",
+      "description": "applications/service.py is 1346 lines \u2014 over 4x the 300-line limit. Split it into: service.py (CRUD core), service_export.py (CSV export, PDF report), service_analytics.py (stats, funnel, stage metrics), service_ai.py (fit scoring, AI analysis), service_bulk.py (bulk update/delete). Each file must be under 300 lines. Update all imports in router.py and tests.",
       "acceptanceCriteria": [
         "applications/service.py is under 300 lines and contains only CRUD operations (create, get, update, delete, list)",
         "applications/service_export.py contains export_applications_csv and generate_pdf_report functions",
@@ -44,7 +44,7 @@
         "Every new file is under 300 lines",
         "applications/router.py imports are updated to use the new module paths",
         "All tests pass: pytest tests/ -x shows 0 failures",
-        "No function exceeds 40 lines — split compute_stats and get_funnel if needed"
+        "No function exceeds 40 lines \u2014 split compute_stats and get_funnel if needed"
       ],
       "priority": 3,
       "passes": true,
@@ -78,7 +78,7 @@
         "PrepSection.jsx under 300 lines: extract PrepChecklist.jsx or PrepQuestions.jsx sub-components",
         "Each extracted component has at least one smoke test (renders without crash)",
         "All existing tests pass: npm test shows 0 failures",
-        "No behavioral changes — purely structural refactor"
+        "No behavioral changes \u2014 purely structural refactor"
       ],
       "priority": 5,
       "passes": true,
@@ -93,7 +93,7 @@
         "All board files (content/boards/*.js): every querySelector and querySelectorAll call includes a null/empty check",
         "background.js: every Promise chain in chrome.runtime.onMessage handlers has a .catch() that calls sendResponse with a safe fallback",
         "Extension tests pass: cd extension && npm test shows 0 failures",
-        "No functional changes — only defensive null checks and error handling"
+        "No functional changes \u2014 only defensive null checks and error handling"
       ],
       "priority": 6,
       "passes": true,
@@ -107,12 +107,12 @@
         "Frontend test suite runs with 0 errors: npm test shows 'Errors 0' in summary",
         "All 422+ tests still pass",
         "MSW setup in test-utils or setupTests includes passthrough handlers for: POST /api/analytics/*, GET /api/notifications/*, GET /logo.clearbit.com/*, GET /api/applications?stage=Offer*",
-        "No test logic changes — only MSW handler additions",
+        "No test logic changes \u2014 only MSW handler additions",
         "Add a comment in the MSW setup explaining which endpoints are passthroughs and why"
       ],
       "priority": 7,
       "passes": true,
-      "notes": "Skipped — Ralph could not complete this in context. Will revisit in a future PRD."
+      "notes": "Skipped \u2014 Ralph could not complete this in context. Will revisit in a future PRD."
     },
     {
       "id": "US-135",
@@ -138,7 +138,7 @@
         "board_utils.js is under 100 lines",
         "All board files (linkedin.js, greenhouse.js, lever.js, workday.js, indeed.js, glassdoor.js, wellfound.js, handshake.js, dice.js, remoteok.js, ashby.js) import getRemoteStatus from board_utils.js instead of defining it locally",
         "Extension tests pass: cd extension && npm test shows 0 failures",
-        "No behavioral changes — purely structural deduplication"
+        "No behavioral changes \u2014 purely structural deduplication"
       ],
       "priority": 9,
       "passes": true,
@@ -156,7 +156,7 @@
         "All tests pass: pytest tests/ -x shows 0 failures"
       ],
       "priority": 10,
-      "passes": false,
+      "passes": true,
       "notes": "Focus on files flagged in the review: middleware/*.py, service files with missing annotations. Don't add annotations to test files."
     },
     {
@@ -193,7 +193,7 @@
       ],
       "priority": 12,
       "passes": false,
-      "notes": "Keep it simple — no complex validation beyond type checking. Select type stores the options list with the field definition."
+      "notes": "Keep it simple \u2014 no complex validation beyond type checking. Select type stores the options list with the field definition."
     },
     {
       "id": "US-140",
@@ -206,7 +206,7 @@
         "Frontend: DetailPanel shows a Documents section with upload dropzone (drag-and-drop) for resume and cover letter",
         "Upload shows progress indicator and filename after upload",
         "Download button opens file in new tab for PDFs, downloads for DOCX",
-        "Existing resume from ResumeSection (plain text) is preserved separately — this is for file attachments",
+        "Existing resume from ResumeSection (plain text) is preserved separately \u2014 this is for file attachments",
         "Tests: backend test for upload, download, and size limit rejection; frontend smoke test for upload component"
       ],
       "priority": 13,
