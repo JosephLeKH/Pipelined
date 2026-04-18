@@ -96,7 +96,7 @@
         "No functional changes — only defensive null checks and error handling"
       ],
       "priority": 6,
-      "passes": false,
+      "passes": true,
       "notes": "Focus on runtime crash prevention. The pattern is: const el = shadow.querySelector(sel); if (!el) return defaultValue;"
     },
     {

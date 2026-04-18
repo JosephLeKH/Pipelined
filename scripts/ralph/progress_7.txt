@@ -59,3 +59,26 @@ Status: DONE
 **Learnings:**
 - When a constant is used in both the parent and an extracted child, duplicate it as a named constant in both files rather than passing it as a prop (keeps interfaces minimal).
 - The MSW "64 errors" in the test suite are pre-existing warnings from DetailPanel.test.jsx focus-trapping tests hitting unhandled endpoints — not regressions.
+
+## US-133: Extension null-check hardening and Promise error handling
+**Status:** DONE
+
+**Changes:**
+- `extension/popup/popup.js`:
+  - `show()`: Added null checks for all four `getElementById` calls before accessing `classList`.
+  - `renderSaves()`: Added `if (!list) return;` guard in the legacy-fallback else branch; replaced `if (list) list.classList.remove("hidden")` with early-return guard so `list.appendChild(item)` is never reached with a null ref.
+  - Module-level event listeners: Replaced bare `document.getElementById(...).addEventListener(...)` with null-guarded form.
+- `extension/background/background.js`:
+  - Added `.catch(() => sendResponse({ status: "error", message: "Save failed" }))` to both `SAVE_APPLICATION` and `SAVE_CONTACT` message handlers. The `GET_AUTH_STATUS` and `GET_RECENT_SAVES` handlers already had `.catch()`.
+- `extension/tests/test_popup.js`:
+  - Added `remove: jest.fn().mockResolvedValue(undefined)` to `chrome.storage.local` mock so `signOut()` doesn't crash.
+  - Made `mockResolvedValue(undefined)` explicit on `session.clear` mock.
+  - Made the `"should show the unauthenticated state after sign-out"` test `async` and added `await signOut()` (necessary because `show("unauthenticated")` comes after two awaits inside the async function).
+- `extension/tests/test_background.js`:
+  - Added `ok: true` to `SUCCESS_FETCH_RESPONSE` so `fetchWithAuth`'s `if (!response.ok)` branch does not reject a 201 response.
+
+**Learnings:**
+- `jest.fn()` without `.mockResolvedValue()` returns `undefined` synchronously. Calling `await undefined` doesn't crash, but calling `.method()` on `undefined` does — so always add stub methods the code under test actually calls.
+- For async functions, tests must `await` the call to observe side effects that happen after any internal `await` point; skipping `await` causes silent timing bugs.
+- `fetch` mock responses must include `ok: true` (alongside `status: 201`) because the browser's `Response.ok` is a derived property, not automatically inferred by Jest mocks.
+- All 247 extension tests pass after changes.
