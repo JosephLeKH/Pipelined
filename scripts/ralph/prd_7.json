@@ -1,0 +1,251 @@
+{
+  "project": "Pipelined",
+  "branchName": "ralph/pipelined-v7",
+  "description": "Post-v6 code review fixes: security vulnerabilities, 300-line limit violations, broken tests, null-check crashes, missing user_id in DB queries, and extension hardening. Followed by new features: real-time notifications, custom fields, document uploads, and deadline tracking.",
+  "userStories": [
+    {
+      "id": "US-128",
+      "title": "Security: add user_id to _score_and_update DB query",
+      "description": "The _score_and_update function in applications/service.py updates ai_analysis using only _id in the MongoDB filter, without user_id. This is a privilege escalation bug — any background task could overwrite another user's application if app_id collides or is manipulated. Add user_id to the update_one filter.",
+      "acceptanceCriteria": [
+        "applications/service.py _score_and_update update_one filter includes both {'_id': ObjectId(app_id), 'user_id': user_id}",
+        "If the update matches 0 documents (wrong user), log a warning via structlog and return without error",
+        "Add a test in test_applications.py: test_score_update_rejects_wrong_user — create app as user A, call _score_and_update with user B's id, assert ai_analysis is NOT set",
+        "All existing tests pass"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "SECURITY FIX. This is the highest priority item."
+    },
+    {
+      "id": "US-129",
+      "title": "Fix test_auth_google.py mock path to use oauth_service",
+      "description": "test_auth_google.py patches 'auth.service.httpx.AsyncClient' but google_verify_id_token lives in auth/oauth_service.py where httpx is imported. The mock target should be 'auth.oauth_service.httpx.AsyncClient'. This causes test_google_verify_id_token_returns_claims_on_200 to fail with 'AttributeError: module auth.service has no attribute httpx'.",
+      "acceptanceCriteria": [
+        "All patch() calls in test_auth_google.py use 'auth.oauth_service.httpx.AsyncClient' instead of 'auth.service.httpx.AsyncClient'",
+        "All tests in test_auth_google.py pass: run pytest tests/test_auth_google.py -v and confirm 0 failures",
+        "No other test files are modified",
+        "Full test suite passes: pytest tests/ -x shows 0 failures"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Simple find-and-replace fix across the file."
+    },
+    {
+      "id": "US-130",
+      "title": "Split applications/service.py into focused modules under 300 lines",
+      "description": "applications/service.py is 1346 lines — over 4x the 300-line limit. Split it into: service.py (CRUD core), service_export.py (CSV export, PDF report), service_analytics.py (stats, funnel, stage metrics), service_ai.py (fit scoring, AI analysis), service_bulk.py (bulk update/delete). Each file must be under 300 lines. Update all imports in router.py and tests.",
+      "acceptanceCriteria": [
+        "applications/service.py is under 300 lines and contains only CRUD operations (create, get, update, delete, list)",
+        "applications/service_export.py contains export_applications_csv and generate_pdf_report functions",
+        "applications/service_analytics.py contains compute_stats, get_funnel, and stage metric functions",
+        "applications/service_ai.py contains _score_and_update, score_fit integration, and AI-related helpers",
+        "applications/service_bulk.py contains bulk_update and bulk_delete functions",
+        "Every new file is under 300 lines",
+        "applications/router.py imports are updated to use the new module paths",
+        "All tests pass: pytest tests/ -x shows 0 failures",
+        "No function exceeds 40 lines — split compute_stats and get_funnel if needed"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "Use relative imports within the applications package. Keep shared constants (LIST_PROJECTION, STAGE_ORDER) in a service_constants.py if needed."
+    },
+    {
+      "id": "US-131",
+      "title": "Split applications/router.py to stay under 300 lines",
+      "description": "applications/router.py is 399 lines. Extract bulk operations and analytics/export endpoints into router_bulk.py and router_analytics.py. Use FastAPI APIRouter with prefix and include_router in the main router.",
+      "acceptanceCriteria": [
+        "applications/router.py is under 300 lines and contains only core CRUD endpoints (list, get, create, update, delete)",
+        "applications/router_bulk.py contains the POST /bulk-update and related bulk endpoints",
+        "applications/router_analytics.py contains GET /stats, GET /funnel, GET /export, GET /report endpoints",
+        "Both new files use APIRouter and are included via router.include_router() in the main router.py",
+        "Every new file is under 300 lines",
+        "All existing tests pass: pytest tests/ -x shows 0 failures",
+        "API contract unchanged: all endpoints respond at the same paths with same status codes"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": "The main router.py should include_router the sub-routers at the top."
+    },
+    {
+      "id": "US-132",
+      "title": "Split oversized frontend files: LandingPage, DetailPanel, ApplicationList, PrepSection",
+      "description": "Four frontend files exceed 300 lines: LandingPage.jsx (323), DetailPanel.jsx (312), ApplicationList.jsx (309), PrepSection.jsx (304). Extract sub-components to bring each under the limit.",
+      "acceptanceCriteria": [
+        "LandingPage.jsx under 300 lines: extract HeroSection.jsx, FeatureShowcase.jsx, or SocialProof.jsx as needed",
+        "DetailPanel.jsx under 300 lines: extract DetailPanelActions.jsx or DetailPanelStage.jsx for stage/action logic",
+        "ApplicationList.jsx under 300 lines: extract ApplicationListHeader.jsx or BulkActionBar refinements",
+        "PrepSection.jsx under 300 lines: extract PrepChecklist.jsx or PrepQuestions.jsx sub-components",
+        "Each extracted component has at least one smoke test (renders without crash)",
+        "All existing tests pass: npm test shows 0 failures",
+        "No behavioral changes — purely structural refactor"
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": "Keep prop interfaces minimal. Extracted components should receive data via props, not re-fetch."
+    },
+    {
+      "id": "US-133",
+      "title": "Extension null-check hardening and Promise error handling",
+      "description": "Code review found: (1) popup.js renderSaves() and renderAutoSaveToggle() access DOM elements without null checks, (2) board detection files have unguarded querySelector calls, (3) some service worker message handlers still lack .catch() on Promises. Fix all null-check gaps and add .catch() to every async message handler.",
+      "acceptanceCriteria": [
+        "popup.js: every getElementById and querySelector call is followed by an if-null guard before accessing properties",
+        "All board files (content/boards/*.js): every querySelector and querySelectorAll call includes a null/empty check",
+        "background.js: every Promise chain in chrome.runtime.onMessage handlers has a .catch() that calls sendResponse with a safe fallback",
+        "Extension tests pass: cd extension && npm test shows 0 failures",
+        "No functional changes — only defensive null checks and error handling"
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": "Focus on runtime crash prevention. The pattern is: const el = shadow.querySelector(sel); if (!el) return defaultValue;"
+    },
+    {
+      "id": "US-134",
+      "title": "Fix MSW test configuration to eliminate 64 unhandled request errors",
+      "description": "Frontend test suite shows 422 tests passing but 64 'errors' from MSW intercepting unhandled requests. The MSW server config uses onUnhandledRequest: 'error' but many tests trigger requests without matching handlers (e.g., analytics tracking, logo fetches). Add catch-all handlers or passthrough rules for known non-critical endpoints.",
+      "acceptanceCriteria": [
+        "Frontend test suite runs with 0 errors: npm test shows 'Errors 0' in summary",
+        "All 422+ tests still pass",
+        "MSW setup in test-utils or setupTests includes passthrough handlers for: POST /api/analytics/*, GET /api/notifications/*, GET /logo.clearbit.com/*, GET /api/applications?stage=Offer*",
+        "No test logic changes — only MSW handler additions",
+        "Add a comment in the MSW setup explaining which endpoints are passthroughs and why"
+      ],
+      "priority": 7,
+      "passes": false,
+      "notes": "Check frontend/src/test-utils.jsx or setupTests.js for the MSW server configuration."
+    },
+    {
+      "id": "US-135",
+      "title": "Extract magic numbers to named constants across frontend and backend",
+      "description": "Multiple magic numbers found: 86_400_000 (ms/day) in DetailPanel, hardcoded debounce timings, array slice limits in LandingPage, inline pixel offsets. Extract all to named constants in lib/constants.js (frontend) or config.py (backend).",
+      "acceptanceCriteria": [
+        "frontend/src/lib/constants.js exports MS_PER_DAY = 86_400_000",
+        "All hardcoded timing values (debounce, dismiss delays) in components use named constants from lib/constants.js",
+        "Backend config.py or relevant service files define constants for any hardcoded timeouts or limits",
+        "No raw numbers remain in component logic except Tailwind class values, array indices, and 0/1 boolean-like values",
+        "All tests pass after the constant extraction"
+      ],
+      "priority": 8,
+      "passes": false,
+      "notes": "Don't over-extract. Tailwind classes (mt-2.5, w-10) and simple loop bounds (i=0) are fine as-is."
+    },
+    {
+      "id": "US-136",
+      "title": "Extract shared board utility: deduplicate getRemoteStatus across extension boards",
+      "description": "The getRemoteStatus() function is copy-pasted across 8+ board detection files in extension/content/boards/. Extract it to a shared utility module (extension/content/boards/board_utils.js) and have each board file import from there.",
+      "acceptanceCriteria": [
+        "New file extension/content/boards/board_utils.js exports getRemoteStatus() and any other shared functions (e.g., extractSalaryRange, normalizeUrl)",
+        "board_utils.js is under 100 lines",
+        "All board files (linkedin.js, greenhouse.js, lever.js, workday.js, indeed.js, glassdoor.js, wellfound.js, handshake.js, dice.js, remoteok.js, ashby.js) import getRemoteStatus from board_utils.js instead of defining it locally",
+        "Extension tests pass: cd extension && npm test shows 0 failures",
+        "No behavioral changes — purely structural deduplication"
+      ],
+      "priority": 9,
+      "passes": false,
+      "notes": "The extension has no build step, so use ES module imports. Check the manifest.json content_scripts to ensure board_utils.js is included in the script list."
+    },
+    {
+      "id": "US-137",
+      "title": "Add missing Python type annotations on all function signatures",
+      "description": "Code review found functions missing return type annotations and parameter types in middleware (csrf.py, security_headers.py, cache_control.py dispatch methods) and some service functions. Add type annotations to every function signature in the backend.",
+      "acceptanceCriteria": [
+        "Every function in backend/**/*.py has complete type annotations: all parameters typed and return type specified",
+        "Middleware dispatch() methods have typed call_next parameter: Callable[[Request], Awaitable[Response]]",
+        "Use | union syntax, not Optional (per CLAUDE.md)",
+        "pyright or mypy check shows no new type errors (existing ones are acceptable)",
+        "All tests pass: pytest tests/ -x shows 0 failures"
+      ],
+      "priority": 10,
+      "passes": false,
+      "notes": "Focus on files flagged in the review: middleware/*.py, service files with missing annotations. Don't add annotations to test files."
+    },
+    {
+      "id": "US-138",
+      "title": "Real-time notification delivery via Server-Sent Events",
+      "description": "Currently notifications are fetched by polling (React Query refetch interval). Add an SSE endpoint GET /api/notifications/stream that pushes new notifications in real-time. The frontend NotificationBell should subscribe to SSE and update the React Query cache on new events.",
+      "acceptanceCriteria": [
+        "New endpoint GET /api/notifications/stream returns text/event-stream with keep-alive every 30s",
+        "When a new notification is created (service layer), it is pushed to all active SSE connections for that user_id",
+        "Frontend NotificationBell.jsx opens an EventSource connection on mount, closes on unmount",
+        "On SSE message, the notification count badge updates immediately without waiting for the next poll",
+        "SSE connection auto-reconnects on disconnect (EventSource handles this natively)",
+        "Add a test for the SSE endpoint: connect, send a notification, verify it arrives on the stream",
+        "Falls back gracefully to polling if SSE connection fails"
+      ],
+      "priority": 11,
+      "passes": false,
+      "notes": "Use asyncio.Queue per connection. Store active connections in a module-level dict keyed by user_id. Clean up on disconnect."
+    },
+    {
+      "id": "US-139",
+      "title": "Custom application fields: user-defined metadata per application",
+      "description": "Users want to track custom data per application (e.g., 'Referral name', 'Team', 'Visa sponsorship'). Add a custom_fields schema (max 10 fields per user, types: text, date, select). Store field definitions in a user_custom_fields collection and field values in application.custom_fields subdocument.",
+      "acceptanceCriteria": [
+        "New collection user_custom_fields with schema: {user_id, fields: [{name, type: 'text'|'date'|'select', options?: string[]}]}",
+        "Max 10 custom fields per user enforced at the service layer",
+        "PATCH /api/applications/:id accepts custom_fields: {field_name: value} in the body",
+        "GET /api/applications returns custom_fields in the response if present",
+        "New endpoints: GET /api/custom-fields (list user's field definitions), POST /api/custom-fields (create/update definitions)",
+        "Frontend: Settings page gets a 'Custom Fields' section to define fields",
+        "Frontend: DetailPanel renders custom fields below the main fields, editable inline",
+        "Custom field values appear in CSV export",
+        "Tests: at least 3 backend tests (create field, set value on app, export includes custom fields)"
+      ],
+      "priority": 12,
+      "passes": false,
+      "notes": "Keep it simple — no complex validation beyond type checking. Select type stores the options list with the field definition."
+    },
+    {
+      "id": "US-140",
+      "title": "Document upload: attach resume and cover letter files to applications",
+      "description": "Users want to attach their resume and cover letter to each application. Store files as base64 in MongoDB (max 2MB each, PDF/DOCX only). Show upload UI in DetailPanel and allow download.",
+      "acceptanceCriteria": [
+        "ApplicationUpdate schema accepts documents: {resume?: {filename, content_base64, content_type}, cover_letter?: {filename, content_base64, content_type}}",
+        "Validation: max 2MB per file (2_097_152 bytes base64), allowed types: application/pdf, application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "GET /api/applications/:id/documents/:type (type=resume|cover_letter) returns the file with correct Content-Type and Content-Disposition headers",
+        "Frontend: DetailPanel shows a Documents section with upload dropzone (drag-and-drop) for resume and cover letter",
+        "Upload shows progress indicator and filename after upload",
+        "Download button opens file in new tab for PDFs, downloads for DOCX",
+        "Existing resume from ResumeSection (plain text) is preserved separately — this is for file attachments",
+        "Tests: backend test for upload, download, and size limit rejection; frontend smoke test for upload component"
+      ],
+      "priority": 13,
+      "passes": false,
+      "notes": "Base64 in MongoDB is fine for MVP. Future optimization would use GridFS or S3. Max file size is 2MB."
+    },
+    {
+      "id": "US-141",
+      "title": "Application deadline tracking with browser push notifications",
+      "description": "Add a deadline field to applications. When a deadline is within 48 hours, show a visual indicator on the dashboard. Optionally send a browser push notification (via the service worker) if the user has granted notification permission.",
+      "acceptanceCriteria": [
+        "ApplicationUpdate schema accepts deadline: datetime | None",
+        "Dashboard ApplicationRow shows a red clock icon and 'Due in X hours' badge when deadline is within 48 hours",
+        "Dashboard StatsBar shows count of upcoming deadlines (next 7 days)",
+        "Settings page has a 'Deadline reminders' toggle that requests browser Notification permission",
+        "Frontend service worker checks deadlines every hour and shows browser notification for deadlines within 24 hours",
+        "DetailPanel shows deadline as an editable date picker field",
+        "Tests: backend test for deadline field CRUD; frontend test for deadline badge rendering"
+      ],
+      "priority": 14,
+      "passes": false,
+      "notes": "Use the existing sw.js service worker for push notifications. Deadline check runs client-side by comparing cached application data."
+    },
+    {
+      "id": "US-142",
+      "title": "Application timeline export and sharing: generate a shareable timeline link",
+      "description": "Users want to share their job search journey. Add a 'Share Timeline' feature that generates a read-only public page showing the user's application timeline (stages, dates, outcomes) without revealing sensitive details (salary, notes, contacts).",
+      "acceptanceCriteria": [
+        "New endpoint POST /api/sharing/timeline returns a shareable link with a unique token (reuse existing sharing infrastructure from US-077)",
+        "New page /shared/timeline/:token renders a clean, public timeline view",
+        "Timeline shows: company names, role titles, stages, dates applied, and outcomes (offer/rejected/withdrawn)",
+        "Sensitive fields excluded: salary, notes, contacts, ai_analysis, custom_fields, documents",
+        "User can revoke the timeline share from Settings",
+        "The shared page has a professional look with the Pipelined branding and a 'Track your own applications' CTA",
+        "Tests: backend test for timeline share creation and token validation; frontend smoke test for shared timeline page"
+      ],
+      "priority": 15,
+      "passes": false,
+      "notes": "Reuse the sharing/service.py infrastructure from US-077. Add a 'type' field to distinguish pipeline shares from timeline shares."
+    }
+  ]
+}

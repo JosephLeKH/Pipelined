@@ -13,6 +13,7 @@ from applications.service import (
     DuplicateApplicationError,
     _apply_openai_fallback,
     _build_filter,
+    _score_and_update,
     compute_stats,
     create,
     delete,
@@ -375,3 +376,25 @@ async def test_create_extension_application_saves_partial_data_when_openai_fails
     # Assert — application is saved with whatever partial data exists (nulls OK)
     assert "page_text" not in doc
     assert doc["source"] == "extension"
+
+
+async def test_score_update_rejects_wrong_user(app):
+    # Arrange — create an application as user A
+    user_a = await create_user("score_a@example.com", "TestPass123!", "Score A")
+    user_b = await create_user("score_b@example.com", "TestPass123!", "Score B")
+    user_a_id = str(user_a["_id"])
+    user_b_id = str(user_b["_id"])
+
+    app_doc = await create(user_a_id, ApplicationCreate(role_title="Analyst", company="Firm", source="manual"))
+    app_id = str(app_doc["_id"])
+
+    mock_result = {"fit_score": 88, "summary": "great fit"}
+    with patch("applications.service.score_fit", AsyncMock(return_value=mock_result)):
+        # Act — call _score_and_update with user B's id (wrong user)
+        await _score_and_update(app_id, user_b_id, "resume text", "job description")
+
+    # Assert — ai_analysis should NOT be set on the application
+    from database import get_collection  # noqa: PLC0415
+    stored = await get_collection("applications").find_one({"_id": app_doc["_id"]})
+    assert stored is not None
+    assert stored.get("ai_analysis") is None

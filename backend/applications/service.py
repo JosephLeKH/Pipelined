@@ -248,10 +248,13 @@ async def _score_and_update(
         return
     apps = get_collection("applications")
     ai_analysis = {**result, "scored_at": datetime.now(timezone.utc)}
-    await apps.update_one(
-        {"_id": ObjectId(app_id)},
+    update_result = await apps.update_one(
+        {"_id": ObjectId(app_id), "user_id": ObjectId(user_id)},
         {"$set": {"ai_analysis": ai_analysis}},
     )
+    if update_result.matched_count == 0:
+        logger.warning("fit_score_user_mismatch", app_id=app_id, user_id=user_id)
+        return
     logger.info("fit_score_saved", app_id=app_id, fit_score=result["fit_score"])
 
 
