@@ -176,12 +176,16 @@ export { handleSave };
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   if (message.type === MSG.SAVE_APPLICATION) {
-    handleSave(message.payload).then(sendResponse);
+    handleSave(message.payload)
+      .then(sendResponse)
+      .catch(() => sendResponse({ status: "error", message: "Save failed" }));
     return true;
   }
 
   if (message.type === MSG.SAVE_CONTACT) {
-    executeContactSave(message.payload).then(sendResponse);
+    executeContactSave(message.payload)
+      .then(sendResponse)
+      .catch(() => sendResponse({ status: "error", message: "Save failed" }));
     return true;
   }
 

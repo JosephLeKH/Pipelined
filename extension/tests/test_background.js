@@ -49,6 +49,7 @@ const BASE_PAYLOAD = {
 };
 
 const SUCCESS_FETCH_RESPONSE = {
+  ok: true,
   status: 201,
   json: () => Promise.resolve({ data: { company: "Stripe", role_title: "SWE" } }),
 };

@@ -54,10 +54,14 @@ export function relativeTime(isoDate) {
 }
 
 export function show(id) {
-  document.getElementById("loading").classList.add("hidden");
-  document.getElementById("unauthenticated").classList.add("hidden");
-  document.getElementById("authenticated").classList.add("hidden");
-  document.getElementById(id).classList.remove("hidden");
+  const loading = document.getElementById("loading");
+  const unauthenticated = document.getElementById("unauthenticated");
+  const authenticated = document.getElementById("authenticated");
+  const target = document.getElementById(id);
+  if (loading) loading.classList.add("hidden");
+  if (unauthenticated) unauthenticated.classList.add("hidden");
+  if (authenticated) authenticated.classList.add("hidden");
+  if (target) target.classList.remove("hidden");
 }
 
 export function renderSaves(saves) {
@@ -71,6 +75,7 @@ export function renderSaves(saves) {
       if (list) list.classList.add("hidden");
     } else {
       // Legacy fallback for test environment (POPUP_HTML fixture without #empty-state)
+      if (!list) return;
       const empty = document.createElement("li");
       empty.className = "empty";
       empty.textContent = "No saved applications yet.";
@@ -80,7 +85,8 @@ export function renderSaves(saves) {
   }
 
   if (emptyState) emptyState.classList.add("hidden");
-  if (list) list.classList.remove("hidden");
+  if (!list) return;
+  list.classList.remove("hidden");
 
   saves.slice(0, MAX_RECENT).forEach((s) => {
     const item = document.createElement("li");
@@ -202,7 +208,9 @@ export async function init() {
   await renderAutoSaveToggle();
 }
 
-document.getElementById("open-dashboard").addEventListener("click", openDashboard);
-document.getElementById("open-dashboard-auth").addEventListener("click", openDashboard);
+const openDashboardBtn = document.getElementById("open-dashboard");
+if (openDashboardBtn) openDashboardBtn.addEventListener("click", openDashboard);
+const openDashboardAuthBtn = document.getElementById("open-dashboard-auth");
+if (openDashboardAuthBtn) openDashboardAuthBtn.addEventListener("click", openDashboard);
 
 document.addEventListener("DOMContentLoaded", init);

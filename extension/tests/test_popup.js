@@ -41,8 +41,8 @@ function setupChrome() {
   global.chrome = {
     runtime: { sendMessage: jest.fn() },
     storage: {
-      local: { get: jest.fn() },
-      session: { clear: jest.fn() },
+      local: { get: jest.fn(), remove: jest.fn().mockResolvedValue(undefined) },
+      session: { clear: jest.fn().mockResolvedValue(undefined) },
     },
     tabs: { create: jest.fn() },
   };
@@ -302,10 +302,10 @@ describe("signOut()", () => {
     expect(chrome.storage.session.clear).toHaveBeenCalled();
   });
 
-  it("should show the unauthenticated state after sign-out", () => {
+  it("should show the unauthenticated state after sign-out", async () => {
     show("authenticated");
 
-    signOut();
+    await signOut();
 
     expect(document.getElementById("unauthenticated").classList.contains("hidden")).toBe(false);
     expect(document.getElementById("authenticated").classList.contains("hidden")).toBe(true);
