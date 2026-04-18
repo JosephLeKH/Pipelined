@@ -20,6 +20,7 @@ import secrets
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
+from typing import Callable, Awaitable
 
 CSRF_COOKIE_NAME = "pipelined_csrf"
 CSRF_HEADER_NAME = "X-CSRF-Token"
@@ -47,7 +48,7 @@ def generate_csrf_token() -> str:
 class CSRFMiddleware(BaseHTTPMiddleware):
     """Validate double-submit CSRF cookie on every mutating request."""
 
-    async def dispatch(self, request: Request, call_next) -> Response:
+    async def dispatch(self, request: Request, call_next: Callable[[Request], Awaitable[Response]]) -> Response:
         if request.method in _MUTATION_METHODS and request.url.path not in _EXEMPT_PATHS:
             cookie_token: str | None = request.cookies.get(CSRF_COOKIE_NAME)
             header_token: str | None = request.headers.get(CSRF_HEADER_NAME)

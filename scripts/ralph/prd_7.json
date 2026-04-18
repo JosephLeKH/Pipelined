@@ -141,7 +141,7 @@
         "No behavioral changes — purely structural deduplication"
       ],
       "priority": 9,
-      "passes": false,
+      "passes": true,
       "notes": "The extension has no build step, so use ES module imports. Check the manifest.json content_scripts to ensure board_utils.js is included in the script list."
     },
     {

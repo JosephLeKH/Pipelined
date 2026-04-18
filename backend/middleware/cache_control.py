@@ -3,6 +3,7 @@
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from starlette.responses import Response
+from typing import Callable, Awaitable
 
 # Cache-Control values
 PRIVATE_NO_CACHE = "private, no-cache"
@@ -15,7 +16,7 @@ _LONG_LIVED_PATHS = frozenset(["/sitemap.xml", "/robots.txt"])
 class CacheControlMiddleware(BaseHTTPMiddleware):
     """Set Cache-Control headers based on the response path."""
 
-    async def dispatch(self, request: Request, call_next) -> Response:
+    async def dispatch(self, request: Request, call_next: Callable[[Request], Awaitable[Response]]) -> Response:
         """Inject Cache-Control headers into response."""
         response = await call_next(request)
         path = request.url.path
