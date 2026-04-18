@@ -100,6 +100,7 @@ class ApplicationUpdate(BaseModel):
     follow_up_date: datetime | None = Field(None, strict=False)
     notes: str | None = Field(None, max_length=MAX_NOTES_LENGTH)
     offer_details: OfferDetails | None = None
+    deadline: datetime | None = Field(None, strict=False)
     custom_fields: dict[str, str | int | bool | list[str]] | None = None
     documents: dict[str, Document] | None = None  # resume and cover_letter
 
@@ -126,6 +127,7 @@ class ApplicationResponse(BaseModel):
     follow_up_date: datetime | None = None
     notes: str | None = None
     offer_details: OfferDetails | None = None
+    deadline: datetime | None = None
     custom_fields: dict[str, str | int | bool | list[str]] | None = None
     documents: dict[str, Document] | None = None  # resume and cover_letter
 

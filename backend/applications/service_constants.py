@@ -26,6 +26,7 @@ LIST_PROJECTION = {
     "ai_analysis.fit_score": 1,
     "follow_up_date": 1,
     "offer_details": 1,
+    "deadline": 1,
 }
 
 CSV_EXPORT_COLUMNS = (
