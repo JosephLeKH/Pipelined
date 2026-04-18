@@ -182,3 +182,4 @@ Total Backend Tests Created: 30+ (applications, documents, custom fields, deadli
 All Core Backend Tests Passing: 123/123 (100%)
 
 Note: Frontend implementations for some features (UI components, notifications, timeline page) remain as future work.
+US-142: Application timeline sharing — DONE. Added DELETE /api/sharing/timeline backend route, revoke_share_by_type service function, frontend PublicTimeline page (/shared/timeline/:slug), ShareTimeline settings component, timeline hooks/api, App.jsx route, Settings.jsx integration, and PublicTimeline smoke test (3/3 passing).

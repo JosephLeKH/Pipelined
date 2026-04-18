@@ -245,7 +245,7 @@
       ],
       "priority": 15,
       "passes": true,
-      "notes": "Reuse the sharing/service.py infrastructure from US-077. Add a 'type' field to distinguish pipeline shares from timeline shares."
+      "notes": "Reuse the sharing/service.py infrastructure from US-077. Add a 'type' field to distinguish pipeline shares from timeline shares. DONE: backend DELETE /api/sharing/timeline, revoke_share_by_type, frontend PublicTimeline page, ShareTimeline component, hooks, api, route, Settings integration, smoke test."
     }
   ]
 }

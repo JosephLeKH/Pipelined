@@ -25,6 +25,7 @@ import SettingsReferralSection from "../components/SettingsReferralSection";
 import SettingsReportSection from "../components/SettingsReportSection";
 import SettingsUsageSection from "../components/SettingsUsageSection";
 import SharePipeline from "../components/SharePipeline";
+import ShareTimeline from "../components/ShareTimeline";
 import TimezoneSelector from "../components/TimezoneSelector";
 import { useAuth } from "../context/AuthContext";
 import { useUpdateUser } from "../hooks/useAuth";
@@ -97,9 +98,12 @@ function SharingSection() {
     <div className="rounded-card border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800">
       <h2 className="mb-1 text-lg font-semibold text-slate-900 dark:text-slate-100">Sharing</h2>
       <p className="mb-5 text-sm text-slate-500 dark:text-slate-400">
-        Generate a read-only public link to share your pipeline with recruiters or friends.
+        Generate read-only public links to share your pipeline or timeline with recruiters and friends.
       </p>
-      <SharePipeline />
+      <div className="flex flex-col gap-4">
+        <SharePipeline />
+        <ShareTimeline />
+      </div>
     </div>
   );
 }
