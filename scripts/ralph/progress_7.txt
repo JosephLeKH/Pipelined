@@ -31,3 +31,10 @@ Status: DONE
 - Updated tests/test_applications_service.py: import paths for INITIAL_STAGE, _apply_openai_fallback, _score_and_update, compute_stats; patch paths for parse_with_openai and score_fit updated to applications.service_ai.*
 - 125 application tests pass (test_applications.py + test_applications_service.py)
 - Pre-existing event loop failures in test_calendar.py and others when run in full suite are unrelated
+
+## US-131 - Split applications/router.py to stay under 300 lines
+- Extracted analytics/export endpoints into `router_analytics.py` (90 lines): stats, export, report, analytics, funnel, tags
+- Extracted bulk operation endpoints into `router_bulk.py` (148 lines): bulk delete, bulk stage update, bulk edit, import, merge, add/remove stage
+- Trimmed `router.py` to 200 lines (core CRUD: create, list, get, update, delete, restore, archive, unarchive)
+- Sub-routers use plain `APIRouter` (no prefix); included at top of main router via `router.include_router()` so fixed paths resolve before `/{app_id}`
+- All 125 application tests pass; pre-existing RuntimeError failures in test_calendar.py and test_jobs.py are unrelated async loop issues

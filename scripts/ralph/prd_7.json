@@ -64,7 +64,7 @@
         "API contract unchanged: all endpoints respond at the same paths with same status codes"
       ],
       "priority": 4,
-      "passes": false,
+      "passes": true,
       "notes": "The main router.py should include_router the sub-routers at the top."
     },
     {
