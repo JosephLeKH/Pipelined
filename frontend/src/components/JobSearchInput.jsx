@@ -4,7 +4,7 @@ import { useState, useCallback, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import SearchIcon from "lucide-react/dist/esm/icons/search";
 
-const SEARCH_DEBOUNCE_MS = 300;
+import { SEARCH_DEBOUNCE_MS } from "../lib/constants";
 
 export default function JobSearchInput() {
   const [searchParams, setSearchParams] = useSearchParams();

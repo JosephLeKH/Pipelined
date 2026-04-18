@@ -9,6 +9,7 @@ import Gift from "lucide-react/dist/esm/icons/gift";
 import Star from "lucide-react/dist/esm/icons/star";
 
 import { trackEvent } from "../lib/analytics";
+import { COPY_RESET_MS } from "../lib/constants";
 
 const SUPER_REFERRER_THRESHOLD = 3;
 
@@ -29,7 +30,7 @@ function SettingsReferralSection({ user }) {
       setCopied(true);
       trackEvent("referral_link_copied", { referral_code: referralCode });
       toast.success("Referral link copied!");
-      setTimeout(() => setCopied(false), 2000);
+      setTimeout(() => setCopied(false), COPY_RESET_MS);
     } catch {
       toast.error("Failed to copy link.");
     }

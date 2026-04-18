@@ -1,5 +1,7 @@
 """Shared constants for the applications module."""
 
+SECONDS_PER_DAY: int = 86_400
+
 INITIAL_STAGE = "Applied"
 INACTIVE_STAGES = ["Rejected", "Offer"]
 STALE_DAYS = 14

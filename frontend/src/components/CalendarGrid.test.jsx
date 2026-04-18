@@ -9,11 +9,13 @@ import { MemoryRouter } from "react-router-dom";
 import { describe, it, expect, vi, beforeAll, afterAll, afterEach } from "vitest";
 
 import CalendarGrid from "./CalendarGrid";
+import { passthroughHandlers } from "../test/passthroughHandlers";
 
 const server = setupServer(
   http.get("/api/calendar/events", () =>
     HttpResponse.json({ data: [], meta: { count: 0 } })
-  )
+  ),
+  ...passthroughHandlers,
 );
 
 beforeAll(() => server.listen({ onUnhandledRequest: "error" }));

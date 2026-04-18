@@ -10,6 +10,7 @@ import { describe, it, expect, vi, beforeAll, afterAll, afterEach } from "vitest
 
 import { AuthProvider } from "../context/AuthContext";
 import DetailPanel from "./DetailPanel";
+import { passthroughHandlers } from "../test/passthroughHandlers";
 
 const APP = {
   id: "app1",
@@ -43,7 +44,8 @@ const server = setupServer(
         default_stages: ["Applied", "Phone Screen", "Onsite", "Offer", "Rejected"],
       },
     })
-  )
+  ),
+  ...passthroughHandlers,
 );
 
 beforeAll(() => server.listen({ onUnhandledRequest: "error" }));

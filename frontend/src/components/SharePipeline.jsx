@@ -10,9 +10,9 @@ import Loader2 from "lucide-react/dist/esm/icons/loader-2";
 
 import { useCreateShare, useMyShare, useRevokeShare } from "../hooks/useSharing";
 import { trackEvent } from "../lib/analytics";
+import { COPY_RESET_MS } from "../lib/constants";
 
 const BASE_URL = window.location.origin;
-const COPY_RESET_MS = 2000;
 
 function buildShareUrl(slug) {
   return `${BASE_URL}/pipeline/${slug}`;

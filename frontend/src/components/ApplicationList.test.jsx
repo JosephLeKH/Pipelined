@@ -10,6 +10,7 @@ import { describe, it, expect, vi, beforeAll, afterAll, afterEach } from "vitest
 
 import { AuthProvider } from "../context/AuthContext";
 import ApplicationList from "./ApplicationList";
+import { passthroughHandlers } from "../test/passthroughHandlers";
 
 const NOW = new Date("2026-03-25T00:00:00Z");
 const STALE_DATE = new Date(NOW.getTime() - 15 * 86_400_000).toISOString(); // 15 days ago
@@ -52,7 +53,8 @@ const server = setupServer(
   ),
   http.post("/api/applications/bulk-update", () =>
     HttpResponse.json({ data: { updated_count: 1 } })
-  )
+  ),
+  ...passthroughHandlers,
 );
 
 beforeAll(() => server.listen({ onUnhandledRequest: "error" }));

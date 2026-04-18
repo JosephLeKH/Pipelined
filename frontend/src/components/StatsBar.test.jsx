@@ -8,6 +8,7 @@ import { MemoryRouter } from "react-router-dom";
 import { describe, it, expect, beforeAll, afterAll, afterEach } from "vitest";
 
 import StatsBar from "./StatsBar";
+import { passthroughHandlers } from "../test/passthroughHandlers";
 
 const STATS = {
   total_applied: 42,
@@ -18,7 +19,8 @@ const STATS = {
 };
 
 const server = setupServer(
-  http.get("/api/applications/stats", () => HttpResponse.json({ data: STATS }))
+  http.get("/api/applications/stats", () => HttpResponse.json({ data: STATS })),
+  ...passthroughHandlers,
 );
 
 beforeAll(() => server.listen({ onUnhandledRequest: "error" }));

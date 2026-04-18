@@ -12,6 +12,7 @@ import {
   deleteApplication,
   fetchStats,
 } from "./applications";
+import { passthroughHandlers } from "../test/passthroughHandlers";
 
 const APP = { id: "abc123", role_title: "SWE", company: "Acme", current_stage: "Applied" };
 const STATS = { total_applied: 5, active_count: 4, response_rate: 0.2, avg_days_to_first_response: 3 };
@@ -35,7 +36,8 @@ const server = setupServer(
     const body = await request.json();
     return HttpResponse.json({ data: { ...APP, id: params.id, ...body } });
   }),
-  http.delete("/api/applications/:id", () => new HttpResponse(null, { status: 204 }))
+  http.delete("/api/applications/:id", () => new HttpResponse(null, { status: 204 })),
+  ...passthroughHandlers,
 );
 
 beforeAll(() => server.listen({ onUnhandledRequest: "error" }));

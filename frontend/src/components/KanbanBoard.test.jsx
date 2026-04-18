@@ -9,6 +9,7 @@ import { describe, it, expect, beforeAll, afterAll, afterEach } from "vitest";
 
 import { AuthProvider } from "../context/AuthContext";
 import KanbanBoard from "./KanbanBoard";
+import { passthroughHandlers } from "../test/passthroughHandlers";
 
 const STAGES = ["Applied", "Phone Screen", "Offer"];
 
@@ -55,7 +56,8 @@ const server = setupServer(
         default_stages: STAGES,
       },
     })
-  )
+  ),
+  ...passthroughHandlers,
 );
 
 beforeAll(() => server.listen({ onUnhandledRequest: "error" }));

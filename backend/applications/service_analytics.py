@@ -11,6 +11,7 @@ from applications.service_constants import (
     OFFER_STAGE,
     SALARY_BUCKET_LABELS,
     SALARY_BUCKET_THRESHOLDS,
+    SECONDS_PER_DAY,
     STALE_DAYS,
     STREAK_LOOKBACK_WEEKS,
 )
@@ -279,7 +280,7 @@ def _compute_stage_metrics(
                 entered_at = entered_at.replace(tzinfo=timezone.utc)
             if left_at.tzinfo is None:
                 left_at = left_at.replace(tzinfo=timezone.utc)
-            days = (left_at - entered_at).total_seconds() / 86400
+            days = (left_at - entered_at).total_seconds() / SECONDS_PER_DAY
             if days >= 0:
                 days_list.append(days)
     avg_days: float | None = round(sum(days_list) / len(days_list), 1) if days_list else None

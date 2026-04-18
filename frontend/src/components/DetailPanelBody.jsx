@@ -6,7 +6,7 @@ import ExternalLink from "lucide-react/dist/esm/icons/external-link";
 import AlertTriangle from "lucide-react/dist/esm/icons/alert-triangle";
 
 import { INPUT_BASE } from "../lib/designTokens";
-import { STAGE_COLORS, DEFAULT_STAGE_COLOR } from "../lib/constants";
+import { STAGE_COLORS, DEFAULT_STAGE_COLOR, MS_PER_DAY } from "../lib/constants";
 import { useAuth } from "../context/AuthContext";
 import ContactsSection from "./ContactsSection";
 import { DetailPanelNotes } from "./DetailPanelNotes";
@@ -31,7 +31,7 @@ function FollowUpSection({ application, onUpdate }) {
   const dateValue = rawDate ? rawDate.slice(0, 10) : "";
   const isOverdue = rawDate && new Date(rawDate) < new Date(new Date().toDateString());
   const overdueDays = isOverdue
-    ? Math.floor((Date.now() - new Date(rawDate).getTime()) / 86_400_000)
+    ? Math.floor((Date.now() - new Date(rawDate).getTime()) / MS_PER_DAY)
     : 0;
 
   return (

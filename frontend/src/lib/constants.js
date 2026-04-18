@@ -16,7 +16,17 @@ export const DEFAULT_STAGE_COLOR = {
   activeBg: "bg-slate-500",
 };
 
+export const MS_PER_DAY = 86_400_000;
+
 export const STALE_APPLICATION_DAYS = 14;
+
+export const SEARCH_DEBOUNCE_MS = 300;
+
+export const COPY_RESET_MS = 2_000;
+
+export const DROPDOWN_CLOSE_DELAY_MS = 150;
+
+export const MODAL_FOCUS_DELAY_MS = 50;
 
 export const BANNER_AUTO_DISMISS_MS = 8_000;
 

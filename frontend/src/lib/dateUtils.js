@@ -1,11 +1,10 @@
 /** Centralised date formatting utilities for consistent display across the app. */
 
-import { STALE_APPLICATION_DAYS, STALE_CONTACT_DAYS } from "./constants";
+import { STALE_APPLICATION_DAYS, STALE_CONTACT_DAYS, MS_PER_DAY } from "./constants";
 
 const LOCALE = "en-US";
 const TIMEZONE =
   Intl.DateTimeFormat().resolvedOptions().timeZone || "America/New_York";
-const MS_PER_DAY = 86_400_000;
 
 /**
  * Parse an ISO string to a Date, treating date-only strings (YYYY-MM-DD) as

@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import XIcon from "lucide-react/dist/esm/icons/x";
 
 import { useTags } from "../hooks/useApplications";
+import { DROPDOWN_CLOSE_DELAY_MS } from "../lib/constants";
 
 const PREDEFINED_TAGS = [
   "referral",
@@ -132,7 +133,7 @@ function TagInput({ value = [], onChange, placeholder = "Add a tag…", id }) {
             setActiveIndex(-1);
           }}
           onFocus={() => setOpen(true)}
-          onBlur={() => setTimeout(() => setOpen(false), 150)}
+          onBlur={() => setTimeout(() => setOpen(false), DROPDOWN_CLOSE_DELAY_MS)}
           onKeyDown={handleKeyDown}
           placeholder={value.length === 0 ? placeholder : ""}
           className="min-w-[120px] flex-1 bg-transparent text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none dark:text-slate-100 dark:placeholder:text-slate-500"

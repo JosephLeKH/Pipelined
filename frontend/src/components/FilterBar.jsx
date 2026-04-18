@@ -6,13 +6,9 @@ import SearchIcon from "lucide-react/dist/esm/icons/search";
 import { trackEvent } from "../lib/analytics";
 import { useTags } from "../hooks/useApplications";
 
-const SEARCH_DEBOUNCE_MS = 300;
-
-import { STAGE_COLORS } from "../lib/constants";
+import { STAGE_COLORS, SEARCH_DEBOUNCE_MS, COMPANY_TYPE_OPTIONS, REMOTE_STATUS_OPTIONS } from "../lib/constants";
 
 const STAGE_OPTIONS = Object.keys(STAGE_COLORS);
-const COMPANY_TYPE_OPTIONS = ["startup", "mid", "enterprise", "gov", "nonprofit", "other"];
-const REMOTE_STATUS_OPTIONS = ["remote", "hybrid", "onsite", "unknown"];
 
 function CheckboxGroup({ label, groupKey, options, selected, onChange }) {
   return (

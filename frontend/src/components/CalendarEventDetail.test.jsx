@@ -10,6 +10,7 @@ import { describe, it, expect, vi, beforeAll, afterAll, afterEach } from "vitest
 
 import { AuthProvider } from "../context/AuthContext";
 import CalendarEventDetail from "./CalendarEventDetail";
+import { passthroughHandlers } from "../test/passthroughHandlers";
 
 const PATCH_HANDLER = vi.fn();
 
@@ -43,7 +44,8 @@ const server = setupServer(
         prep_data: body.prep_data ?? { notes: "Initial notes", checklist: [], questions: [] },
       },
     });
-  })
+  }),
+  ...passthroughHandlers,
 );
 
 beforeAll(() => server.listen({ onUnhandledRequest: "error" }));

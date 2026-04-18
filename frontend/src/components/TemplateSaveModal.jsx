@@ -6,6 +6,7 @@ import X from "lucide-react/dist/esm/icons/x";
 
 import { INPUT_BASE, BUTTON_PRIMARY, BUTTON_SECONDARY } from "../lib/designTokens";
 import { useCreateTemplate } from "../hooks/useTemplates";
+import { MODAL_FOCUS_DELAY_MS } from "../lib/constants";
 
 const MAX_TEMPLATE_NAME_LENGTH = 100;
 
@@ -19,7 +20,7 @@ function TemplateSaveModal({ isOpen, onClose, fields }) {
     if (isOpen) {
       setName("");
       setError(null);
-      setTimeout(() => inputRef.current?.focus(), 50);
+      setTimeout(() => inputRef.current?.focus(), MODAL_FOCUS_DELAY_MS);
     }
   }, [isOpen]);
 
