@@ -38,3 +38,24 @@ Status: DONE
 - Trimmed `router.py` to 200 lines (core CRUD: create, list, get, update, delete, restore, archive, unarchive)
 - Sub-routers use plain `APIRouter` (no prefix); included at top of main router via `router.include_router()` so fixed paths resolve before `/{app_id}`
 - All 125 application tests pass; pre-existing RuntimeError failures in test_calendar.py and test_jobs.py are unrelated async loop issues
+
+## US-132: Split oversized frontend files: LandingPage, DetailPanel, ApplicationList, PrepSection
+**Status:** DONE
+
+**Changes:**
+- Created `frontend/src/components/HeroSection.jsx`: extracted `HeroMockup` + `HeroSection` from LandingPage.jsx. Defines its own `CHROME_EXTENSION_URL` constant to avoid cross-component imports.
+- Created `frontend/src/components/DetailPanelBody.jsx`: extracted `DetailField`, `FollowUpSection`, `TagsSection`, and `PanelBody` from DetailPanel.jsx. Exported as named export `PanelBody`.
+- Created `frontend/src/components/ApplicationListHeader.jsx`: extracted `ColumnHeader` + header row into `ApplicationListHeader` named export, accepting `{sortBy, sortOrder, onSort, allSelected, onSelectAll}` props.
+- Created `frontend/src/components/PrepChecklist.jsx`: extracted `ChecklistItem` and `AddChecklistItem` from PrepSection.jsx as named exports.
+- Updated source files to import extracted components.
+- Created 4 smoke test files: `HeroSection.test.jsx`, `DetailPanelBody.test.jsx`, `ApplicationListHeader.test.jsx`, `PrepChecklist.test.jsx`.
+
+**Final line counts:**
+- LandingPage.jsx: 238 (was 323)
+- DetailPanel.jsx: 167 (was 312)
+- ApplicationList.jsx: 287 (was 309)
+- PrepSection.jsx: 245 (was 304)
+
+**Learnings:**
+- When a constant is used in both the parent and an extracted child, duplicate it as a named constant in both files rather than passing it as a prop (keeps interfaces minimal).
+- The MSW "64 errors" in the test suite are pre-existing warnings from DetailPanel.test.jsx focus-trapping tests hitting unhandled endpoints — not regressions.

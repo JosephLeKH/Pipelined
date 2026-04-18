@@ -81,7 +81,7 @@
         "No behavioral changes — purely structural refactor"
       ],
       "priority": 5,
-      "passes": false,
+      "passes": true,
       "notes": "Keep prop interfaces minimal. Extracted components should receive data via props, not re-fetch."
     },
     {
