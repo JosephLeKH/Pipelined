@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 import structlog
 from bson import ObjectId
 from bson.errors import InvalidId
+from motor.motor_asyncio import AsyncIOMotorCollection
 
 from config import settings
 from database import get_collection
@@ -93,9 +94,9 @@ async def build_weekly_digest(user_id: str) -> WeeklyDigest:
 
 async def _gather_data(
     uid: ObjectId,
-    apps_col,
-    events_col,
-    users_col,
+    apps_col: AsyncIOMotorCollection,
+    events_col: AsyncIOMotorCollection,
+    users_col: AsyncIOMotorCollection,
     week_ago: dt.datetime,
     stale_cutoff: dt.datetime,
     today: dt.date,

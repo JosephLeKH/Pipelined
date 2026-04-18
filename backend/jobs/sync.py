@@ -14,6 +14,7 @@ from apscheduler.triggers.cron import CronTrigger
 
 from config import settings
 from database import get_collection
+from motor.motor_asyncio import AsyncIOMotorCollection
 
 logger = structlog.get_logger()
 
@@ -129,7 +130,7 @@ def compute_url_hash(apply_url: str) -> str:
     return hashlib.sha256(normalized.encode()).hexdigest()
 
 
-async def _upsert_listing(col, listing: dict) -> None:
+async def _upsert_listing(col: AsyncIOMotorCollection, listing: dict) -> None:
     """Upsert a listing by url_hash; sets ingested_at and date_posted on first insert."""
     now = datetime.now(timezone.utc)
     url_hash = compute_url_hash(listing["apply_url"])
@@ -153,7 +154,7 @@ async def _upsert_listing(col, listing: dict) -> None:
     )
 
 
-async def _mark_stale_listings(col) -> None:
+async def _mark_stale_listings(col: AsyncIOMotorCollection) -> None:
     """Set is_stale=True on listings whose date_posted is older than STALE_LISTING_DAYS."""
     cutoff = datetime.now(timezone.utc) - timedelta(days=STALE_LISTING_DAYS)
     result = await col.update_many(
@@ -164,7 +165,7 @@ async def _mark_stale_listings(col) -> None:
         logger.info("stale_listings_marked", count=result.modified_count)
 
 
-async def _sync_repo(client: httpx.AsyncClient, repo: str, col) -> None:
+async def _sync_repo(client: httpx.AsyncClient, repo: str, col: AsyncIOMotorCollection) -> None:
     """Fetch README for one repo and upsert all parsed listings."""
     try:
         content = await _fetch_readme_content(client, repo)

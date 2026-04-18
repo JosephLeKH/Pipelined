@@ -6,6 +6,8 @@ from datetime import datetime, timezone
 import structlog
 from bson import ObjectId
 from bson.errors import InvalidId
+from motor.motor_asyncio import AsyncIOMotorCollection
+from typing import Any, Awaitable, Callable
 
 from database import get_collection
 from saved_searches.schemas import SavedSearchCreate
@@ -141,9 +143,9 @@ async def update_match_counts_after_sync() -> None:
 
 async def _update_single_search_count(
     search: dict,
-    col,
-    jobs_col,
-    create_notification_fn,
+    col: AsyncIOMotorCollection,
+    jobs_col: AsyncIOMotorCollection,
+    create_notification_fn: Callable[..., Awaitable[Any]],
 ) -> None:
     """Count new listings since last_checked_at and increment new_matches_count."""
     mongo_filter = _build_jobs_filter(search)

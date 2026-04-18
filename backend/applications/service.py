@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 import structlog
 from bson import ObjectId
 from bson.errors import InvalidId
+from motor.motor_asyncio import AsyncIOMotorCollection
 from pymongo import ReturnDocument
 
 from applications.schemas import ApplicationCreate, ApplicationListQuery, ApplicationUpdate
@@ -78,7 +79,7 @@ def _build_filter(uid: ObjectId, query: ApplicationListQuery) -> dict:
 
 
 async def _list_with_text_search(
-    uid: ObjectId, apps, query: ApplicationListQuery
+    uid: ObjectId, apps: AsyncIOMotorCollection, query: ApplicationListQuery
 ) -> tuple[list[dict], str | None]:
     """Aggregation pipeline for $text search with textScore + _id composite cursor."""
     mongo_filter = _build_filter(uid, query)

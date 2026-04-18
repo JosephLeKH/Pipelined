@@ -8,6 +8,7 @@ from datetime import datetime, timedelta, timezone
 import structlog
 from bson import ObjectId
 from bson.errors import InvalidId
+from motor.motor_asyncio import AsyncIOMotorCollection
 from pymongo import ReturnDocument
 
 from applications.schemas import BulkEditUpdate, ImportResult, ImportRowError, MAX_IMPORT_ROWS
@@ -159,7 +160,7 @@ async def purge_stale_deleted_applications() -> int:
 
 
 async def _process_import_row(
-    uid: ObjectId, row: dict, idx: int, apps, stages: list[str], now: datetime
+    uid: ObjectId, row: dict, idx: int, apps: AsyncIOMotorCollection, stages: list[str], now: datetime
 ) -> tuple[dict | None, ImportRowError | None]:
     """Validate and build one import document. Returns (doc, None) or (None, error)."""
     company = (row.get("company") or "").strip()

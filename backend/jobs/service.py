@@ -2,6 +2,7 @@
 
 from bson import ObjectId
 from bson.errors import InvalidId
+from motor.motor_asyncio import AsyncIOMotorCollection
 
 import structlog
 
@@ -76,7 +77,7 @@ async def list_listings(
 
 
 async def _fetch_listings_and_count(
-    col, mongo_filter: dict, skip: int, limit: int, text_search: bool
+    col: AsyncIOMotorCollection, mongo_filter: dict, skip: int, limit: int, text_search: bool
 ) -> tuple[int, list[dict]]:
     """Run count and paginated find in parallel."""
     import asyncio
