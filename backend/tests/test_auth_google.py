@@ -23,7 +23,7 @@ async def test_google_verify_id_token_returns_claims_on_200():
     mock_client.__aexit__ = AsyncMock(return_value=None)
 
     # Act
-    with patch("auth.service.httpx.AsyncClient", return_value=mock_client):
+    with patch("auth.oauth_service.httpx.AsyncClient", return_value=mock_client):
         claims = await google_verify_id_token("some-token")
 
     # Assert
@@ -40,7 +40,7 @@ async def test_google_verify_id_token_raises_on_non_200():
     mock_client.__aexit__ = AsyncMock(return_value=None)
 
     # Act / Assert
-    with patch("auth.service.httpx.AsyncClient", return_value=mock_client):
+    with patch("auth.oauth_service.httpx.AsyncClient", return_value=mock_client):
         with pytest.raises(GoogleTokenError):
             await google_verify_id_token("bad-token")
 
@@ -75,7 +75,7 @@ async def test_google_auth_creates_new_user_and_returns_200(client):
     mock_client = _make_mock_http_client(200, VALID_CLAIMS)
 
     # Act
-    with patch("auth.service.httpx.AsyncClient", return_value=mock_client):
+    with patch("auth.oauth_service.httpx.AsyncClient", return_value=mock_client):
         response = await client.post("/api/auth/google", json={"id_token": "valid-token"})
 
     # Assert
@@ -92,7 +92,7 @@ async def test_google_auth_sets_auth_cookies(client):
     mock_client = _make_mock_http_client(200, VALID_CLAIMS)
 
     # Act
-    with patch("auth.service.httpx.AsyncClient", return_value=mock_client):
+    with patch("auth.oauth_service.httpx.AsyncClient", return_value=mock_client):
         response = await client.post("/api/auth/google", json={"id_token": "valid-token"})
 
     # Assert
@@ -103,14 +103,14 @@ async def test_google_auth_sets_auth_cookies(client):
 async def test_google_auth_returns_existing_user_by_google_id(client):
     # Arrange — create the user on the first call
     mock_client = _make_mock_http_client(200, VALID_CLAIMS)
-    with patch("auth.service.httpx.AsyncClient", return_value=mock_client):
+    with patch("auth.oauth_service.httpx.AsyncClient", return_value=mock_client):
         first = await client.post("/api/auth/google", json={"id_token": "valid-token"})
 
     first_id = first.json()["data"]["id"]
 
     # Act — sign in again with same Google token
     mock_client2 = _make_mock_http_client(200, VALID_CLAIMS)
-    with patch("auth.service.httpx.AsyncClient", return_value=mock_client2):
+    with patch("auth.oauth_service.httpx.AsyncClient", return_value=mock_client2):
         second = await client.post("/api/auth/google", json={"id_token": "valid-token"})
 
     # Assert — same user returned
@@ -128,7 +128,7 @@ async def test_google_auth_links_google_id_to_existing_email_user(client):
 
     # Act — sign in with Google using the same email
     mock_client = _make_mock_http_client(200, VALID_CLAIMS)
-    with patch("auth.service.httpx.AsyncClient", return_value=mock_client):
+    with patch("auth.oauth_service.httpx.AsyncClient", return_value=mock_client):
         response = await client.post("/api/auth/google", json={"id_token": "valid-token"})
 
     # Assert — same user returned (linked by email)
@@ -141,7 +141,7 @@ async def test_google_auth_returns_401_when_google_rejects_token(client):
     mock_client = _make_mock_http_client(400, {"error": "invalid_token"})
 
     # Act
-    with patch("auth.service.httpx.AsyncClient", return_value=mock_client):
+    with patch("auth.oauth_service.httpx.AsyncClient", return_value=mock_client):
         response = await client.post("/api/auth/google", json={"id_token": "bad-token"})
 
     # Assert
@@ -159,7 +159,7 @@ async def test_google_auth_uses_email_prefix_when_name_missing(client):
     mock_client = _make_mock_http_client(200, claims_no_name)
 
     # Act
-    with patch("auth.service.httpx.AsyncClient", return_value=mock_client):
+    with patch("auth.oauth_service.httpx.AsyncClient", return_value=mock_client):
         response = await client.post("/api/auth/google", json={"id_token": "valid-token"})
 
     # Assert — display_name falls back to email prefix
