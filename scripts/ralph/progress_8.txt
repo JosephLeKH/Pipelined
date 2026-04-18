@@ -31,3 +31,18 @@ Extracted six new files:
 ApplicationList.jsx reduced from 287 lines / 252-line function to 24 lines / 9-line function body.
 All 18 ApplicationList tests pass without modification. Build succeeds.
 ---
+## US-145 — Split KanbanBoard.jsx (259 lines, longest function 187 lines)
+**Status:** DONE
+**Commit:** refactor: US-145 - Split KanbanBoard.jsx (259 lines, longest function 187 lines)
+
+Extracted three new files and added two inline helpers:
+- `hooks/useKanbanDrag.js` — activeId state, sensors, handleDragStart, handleDragEnd with optimistic update + toast + undo
+- `hooks/useKanbanMobileSwipe.js` — mobileStage state, mobileSwipeRef, handleMobileTouchStart, handleMobileTouchEnd
+- `components/KanbanColumn.jsx` — droppable column with header badge, SortableContext, KanbanCard list or empty placeholder
+- `KanbanLoadingSkeleton` (inline in KanbanBoard.jsx) — loading skeleton render
+- `KanbanMobileView` (inline in KanbanBoard.jsx) — mobile tab bar + swipe container + navigation dots
+- `buildByStage` (inline pure fn) — groups applications by stage into a map
+
+KanbanBoard.jsx reduced from 259 lines / 187-line function to 97 lines with all functions under 40 lines.
+All 15 KanbanBoard tests pass (test.jsx ×4, mobile.test.jsx ×7, optimistic.test.jsx ×4). Build succeeds.
+---

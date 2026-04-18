@@ -43,7 +43,7 @@
         "npm test passes all tests"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {

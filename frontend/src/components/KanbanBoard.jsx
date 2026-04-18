@@ -1,254 +1,94 @@
 /** Kanban board view: one droppable column per stage, draggable application cards. */
 
-import { useState, useMemo, memo, useRef, useCallback } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import {
-  DndContext,
-  DragOverlay,
-  closestCenter,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  useDroppable,
-} from "@dnd-kit/core";
-import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
-import { toast } from "sonner";
+import { useMemo, memo } from "react";
+import { DndContext, DragOverlay, closestCenter } from "@dnd-kit/core";
 
-import { useApplications, useUpdateApplication, KEYS } from "../hooks/useApplications";
+import { useApplications, KEYS } from "../hooks/useApplications";
 import { useAuth } from "../context/AuthContext";
-import { STAGES, STAGE_COLORS, DEFAULT_STAGE_COLOR, KANBAN_SKELETON_COUNT, SWIPE_THRESHOLD_PX, SWIPE_MAX_MS, SWIPE_H_TO_V_RATIO } from "../lib/constants";
-import KanbanCard from "./KanbanCard";
+import { STAGES, KANBAN_SKELETON_COUNT } from "../lib/constants";
+import { useKanbanDrag } from "../hooks/useKanbanDrag";
+import { useKanbanMobileSwipe } from "../hooks/useKanbanMobileSwipe";
+import { KanbanColumn } from "./KanbanColumn";
 import SkeletonRow from "./SkeletonRow";
 
-const COLUMN_MAX_HEIGHT_PX = 600;
+function buildByStage(applications, stages) {
+  const map = Object.fromEntries(stages.map((s) => [s, []]));
+  for (const app of applications) {
+    if (Object.prototype.hasOwnProperty.call(map, app.current_stage)) {
+      map[app.current_stage].push(app);
+    }
+  }
+  return map;
+}
 
-function KanbanColumn({ stage, applications, onSelect }) {
-  const { setNodeRef, isOver } = useDroppable({ id: stage });
-  const color = STAGE_COLORS[stage] ?? DEFAULT_STAGE_COLOR;
-  const cardIds = applications.map((a) => a.id);
-
+function KanbanLoadingSkeleton({ stages }) {
   return (
-    <div
-      className="flex min-w-[240px] flex-1 flex-col rounded-lg"
-      data-testid={`kanban-column-${stage}`}
-      aria-label={`${stage} column`}
-    >
-      <div className="flex items-center gap-2 px-3 py-2">
-        <span className={`h-2 w-2 rounded-full ${color.dot}`} aria-hidden="true" />
-        <span className="text-sm font-medium text-slate-500 dark:text-slate-400">{stage}</span>
-        <span
-          className="rounded-full bg-slate-100 px-1.5 py-0.5 text-xs font-medium text-slate-500 dark:bg-slate-700 dark:text-slate-400"
-          aria-label={`${applications.length} applications`}
-        >
-          {applications.length}
-        </span>
-      </div>
-      <div
-        ref={setNodeRef}
-        style={{ maxHeight: COLUMN_MAX_HEIGHT_PX }}
-        className={`flex flex-col gap-2 overflow-y-auto rounded-lg bg-slate-50 p-2 transition-colors dark:bg-slate-800/50 ${
-          isOver ? "bg-brand-50 dark:bg-brand-900/20" : ""
-        }`}
-      >
-        <SortableContext items={cardIds} strategy={verticalListSortingStrategy}>
-          {applications.length === 0 ? (
-            <div
-              className="flex h-16 items-center justify-center rounded-lg border-2 border-dashed border-slate-300 text-sm text-slate-400 dark:border-slate-600 dark:text-slate-500"
-              aria-label="No applications"
-            >
-              No applications
-            </div>
-          ) : (
-            applications.map((app) => (
-              <KanbanCard key={app.id} application={app} onSelect={onSelect} />
-            ))
-          )}
-        </SortableContext>
-      </div>
+    <div className="flex gap-4 overflow-x-auto pb-4" aria-busy="true">
+      {stages.map((stage) => (
+        <div key={stage} className="flex min-w-[240px] flex-1 flex-col rounded-lg">
+          <div className="flex items-center gap-2 px-3 py-2">
+            <span className="text-sm font-medium text-slate-500 dark:text-slate-400">{stage}</span>
+          </div>
+          <div className="flex flex-col gap-2 rounded-lg bg-slate-50 p-2 dark:bg-slate-800/50">
+            {Array.from({ length: KANBAN_SKELETON_COUNT }, (_, i) => <SkeletonRow key={i} />)}
+          </div>
+        </div>
+      ))}
     </div>
+  );
+}
+
+function KanbanMobileView({ stages, mobileStage, setMobileStage, byStage, onSelect, handleMobileTouchStart, handleMobileTouchEnd }) {
+  return (
+    <>
+      <div className="flex overflow-x-auto border-b border-slate-200 dark:border-slate-700 md:hidden" role="tablist" aria-label="Stage tabs">
+        {stages.map((stage) => (
+          <button key={stage} type="button" role="tab" aria-selected={mobileStage === stage} onClick={() => setMobileStage(stage)}
+            className={`shrink-0 px-4 py-2 text-sm font-medium transition-colors ${mobileStage === stage ? "border-b-2 border-brand-600 text-brand-600" : "text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"}`}>
+            {stage}
+            <span className="ml-1 text-xs text-slate-400">({(byStage[stage] ?? []).length})</span>
+          </button>
+        ))}
+      </div>
+      <div className="mt-4 md:hidden" data-testid="mobile-kanban-swipe" onTouchStart={handleMobileTouchStart} onTouchEnd={handleMobileTouchEnd}>
+        <KanbanColumn stage={mobileStage} applications={byStage[mobileStage] ?? []} onSelect={onSelect} />
+      </div>
+      <div className="mt-3 flex justify-center gap-2 md:hidden" aria-label="Stage navigation dots">
+        {stages.map((s) => (
+          <button key={s} type="button" aria-label={s} aria-pressed={s === mobileStage} onClick={() => setMobileStage(s)}
+            className={`h-2 w-2 rounded-full transition-colors ${s === mobileStage ? "bg-brand-500" : "bg-slate-300 dark:bg-slate-600"}`} />
+        ))}
+      </div>
+    </>
   );
 }
 
 function KanbanBoard({ filters = {}, onSelect }) {
   const { user } = useAuth();
   const stages = user?.default_stages ?? STAGES;
-
-  const [mobileStage, setMobileStage] = useState(stages[0] ?? "");
-  const [activeId, setActiveId] = useState(null);
-  const mobileSwipeRef = useRef(null);
-
-  const handleMobileTouchStart = useCallback((e) => {
-    mobileSwipeRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY, time: Date.now() };
-  }, []);
-
-  const handleMobileTouchEnd = useCallback((e) => {
-    if (!mobileSwipeRef.current) return;
-    const { x: startX, y: startY, time } = mobileSwipeRef.current;
-    mobileSwipeRef.current = null;
-    const elapsed = Date.now() - time;
-    const dx = e.changedTouches[0].clientX - startX;
-    const dy = e.changedTouches[0].clientY - startY;
-    if (elapsed > SWIPE_MAX_MS) return;
-    if (Math.abs(dx) < SWIPE_THRESHOLD_PX) return;
-    if (Math.abs(dx) < Math.abs(dy) * SWIPE_H_TO_V_RATIO) return;
-    const idx = stages.indexOf(mobileStage);
-    if (dx < 0 && idx < stages.length - 1) setMobileStage(stages[idx + 1]);
-    if (dx > 0 && idx > 0) setMobileStage(stages[idx - 1]);
-  }, [stages, mobileStage]);
-
-  const queryClient = useQueryClient();
+  const { mobileStage, setMobileStage, handleMobileTouchStart, handleMobileTouchEnd } = useKanbanMobileSwipe(stages);
   const queryKey = KEYS.list(filters);
-
   const { data: envelope, isLoading } = useApplications(filters);
   const applications = useMemo(() => envelope?.data ?? [], [envelope]);
-  const updateMutation = useUpdateApplication();
+  const byStage = useMemo(() => buildByStage(applications, stages), [applications, stages]);
+  const { activeApp, sensors, handleDragStart, handleDragEnd } = useKanbanDrag({ applications, stages, queryKey });
 
-  const byStage = useMemo(() => {
-    const map = Object.fromEntries(stages.map((s) => [s, []]));
-    for (const app of applications) {
-      if (Object.prototype.hasOwnProperty.call(map, app.current_stage)) {
-        map[app.current_stage].push(app);
-      }
-    }
-    return map;
-  }, [applications, stages]);
-
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
-  );
-
-  const activeApp = activeId ? applications.find((a) => a.id === activeId) : null;
-
-  const handleDragStart = ({ active }) => setActiveId(active.id);
-
-  const handleDragEnd = ({ active, over }) => {
-    setActiveId(null);
-    if (!over) return;
-
-    const srcApp = applications.find((a) => a.id === active.id);
-    if (!srcApp) return;
-
-    const targetStage = stages.includes(over.id)
-      ? over.id
-      : (applications.find((a) => a.id === over.id)?.current_stage ?? null);
-
-    if (!targetStage || srcApp.current_stage === targetStage) return;
-
-    const previousData = queryClient.getQueryData(queryKey);
-    queryClient.setQueryData(queryKey, (old) =>
-      old ? { ...old, data: old.data.map((a) => a.id === active.id ? { ...a, current_stage: targetStage } : a) } : old
-    );
-
-    updateMutation.mutate({ id: active.id, body: { current_stage: targetStage } }, {
-      onSuccess: () => toast.success(`Moved to ${targetStage}`, {
-        action: { label: "Undo", onClick: () => updateMutation.mutate({ id: active.id, body: { current_stage: srcApp.current_stage } }) },
-        duration: 5000,
-      }),
-      onError: () => {
-        queryClient.setQueryData(queryKey, previousData);
-        toast.error("Move failed — reverted");
-      },
-    });
-  };
-
-  if (isLoading) {
-    return (
-      <div className="flex gap-4 overflow-x-auto pb-4" aria-busy="true">
-        {stages.map((stage) => (
-          <div key={stage} className="flex min-w-[240px] flex-1 flex-col rounded-lg">
-            <div className="flex items-center gap-2 px-3 py-2">
-              <span className="text-sm font-medium text-slate-500 dark:text-slate-400">{stage}</span>
-            </div>
-            <div className="flex flex-col gap-2 rounded-lg bg-slate-50 p-2 dark:bg-slate-800/50">
-              {Array.from({ length: KANBAN_SKELETON_COUNT }, (_, i) => <SkeletonRow key={i} />)}
-            </div>
-          </div>
-        ))}
-      </div>
-    );
-  }
+  if (isLoading) return <KanbanLoadingSkeleton stages={stages} />;
 
   return (
-    <DndContext
-      sensors={sensors}
-      collisionDetection={closestCenter}
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
-    >
-      {/* Mobile: horizontal scrollable tab bar */}
-      <div
-        className="flex overflow-x-auto border-b border-slate-200 dark:border-slate-700 md:hidden"
-        role="tablist"
-        aria-label="Stage tabs"
-      >
-        {stages.map((stage) => (
-          <button
-            key={stage}
-            type="button"
-            role="tab"
-            aria-selected={mobileStage === stage}
-            onClick={() => setMobileStage(stage)}
-            className={`shrink-0 px-4 py-2 text-sm font-medium transition-colors ${
-              mobileStage === stage
-                ? "border-b-2 border-brand-600 text-brand-600"
-                : "text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
-            }`}
-          >
-            {stage}
-            <span className="ml-1 text-xs text-slate-400">
-              ({(byStage[stage] ?? []).length})
-            </span>
-          </button>
-        ))}
-      </div>
-
-      {/* Mobile: single column view with swipe navigation */}
-      <div
-        className="mt-4 md:hidden"
-        data-testid="mobile-kanban-swipe"
-        onTouchStart={handleMobileTouchStart}
-        onTouchEnd={handleMobileTouchEnd}
-      >
-        <KanbanColumn
-          stage={mobileStage}
-          applications={byStage[mobileStage] ?? []}
-          onSelect={onSelect}
-        />
-      </div>
-      <div className="mt-3 flex justify-center gap-2 md:hidden" aria-label="Stage navigation dots">
-        {stages.map((s) => (
-          <button
-            key={s}
-            type="button"
-            aria-label={s}
-            aria-pressed={s === mobileStage}
-            onClick={() => setMobileStage(s)}
-            className={`h-2 w-2 rounded-full transition-colors ${s === mobileStage ? "bg-brand-500" : "bg-slate-300 dark:bg-slate-600"}`}
-          />
-        ))}
-      </div>
-
-      {/* Desktop: all columns side by side */}
+    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+      <KanbanMobileView stages={stages} mobileStage={mobileStage} setMobileStage={setMobileStage}
+        byStage={byStage} onSelect={onSelect} handleMobileTouchStart={handleMobileTouchStart} handleMobileTouchEnd={handleMobileTouchEnd} />
       <div className="hidden gap-4 overflow-x-auto pb-4 md:flex" data-testid="kanban-desktop">
         {stages.map((stage) => (
-          <KanbanColumn
-            key={stage}
-            stage={stage}
-            applications={byStage[stage] ?? []}
-            onSelect={onSelect}
-          />
+          <KanbanColumn key={stage} stage={stage} applications={byStage[stage] ?? []} onSelect={onSelect} />
         ))}
       </div>
-
       <DragOverlay>
         {activeApp ? (
           <div className="rotate-1 rounded-card bg-white p-3 opacity-90 shadow-lg ring-1 ring-slate-300 dark:bg-slate-800 dark:ring-slate-600">
-            <p className="truncate font-semibold text-slate-900 dark:text-slate-100">
-              {activeApp.company}
-            </p>
-            <p className="mt-0.5 truncate text-sm text-slate-600 dark:text-slate-400">
-              {activeApp.role_title}
-            </p>
+            <p className="truncate font-semibold text-slate-900 dark:text-slate-100">{activeApp.company}</p>
+            <p className="mt-0.5 truncate text-sm text-slate-600 dark:text-slate-400">{activeApp.role_title}</p>
           </div>
         ) : null}
       </DragOverlay>
