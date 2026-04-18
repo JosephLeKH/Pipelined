@@ -173,7 +173,7 @@
         "Falls back gracefully to polling if SSE connection fails"
       ],
       "priority": 11,
-      "passes": false,
+      "passes": true,
       "notes": "Use asyncio.Queue per connection. Store active connections in a module-level dict keyed by user_id. Clean up on disconnect."
     },
     {
