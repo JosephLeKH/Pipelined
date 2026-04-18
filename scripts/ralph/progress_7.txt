@@ -12,3 +12,10 @@ Started: Fri Apr 17 23:43:23 PDT 2026
 **Learnings:**
 - Background async tasks like `_score_and_update` must always include `user_id` in DB filters even when called internally. Without it, any task with a valid `app_id` could overwrite another user's document.
 - `update_one` returns an `UpdateResult` with `matched_count`; checking this is the right way to detect a filter mismatch without raising exceptions.
+
+## US-129: Fix test_auth_google.py mock path to use oauth_service
+Status: DONE
+- Replaced all 9 occurrences of `auth.service.httpx.AsyncClient` with `auth.oauth_service.httpx.AsyncClient` in backend/tests/test_auth_google.py
+- All 8 tests in test_auth_google.py now pass (0 failures)
+- Pre-existing failure in test_calendar.py::test_update_event_sets_prep_data (event loop mismatch) is unrelated and existed before this change
+Learning: When mocking httpx.AsyncClient, the patch path must match the module where httpx is imported, not where the calling function lives. google_verify_id_token imports httpx in oauth_service.py, so the patch target is auth.oauth_service.httpx.AsyncClient.

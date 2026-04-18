@@ -28,7 +28,7 @@
         "Full test suite passes: pytest tests/ -x shows 0 failures"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Simple find-and-replace fix across the file."
     },
     {

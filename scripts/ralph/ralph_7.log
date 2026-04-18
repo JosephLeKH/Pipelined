@@ -13,3 +13,10 @@ Starting Ralph - Tool: claude - Max iterations: 20
 Full suite: 191 passed, 1 pre-existing failure (`test_auth_google.py::test_google_verify_id_token_returns_claims_on_200`) — which is exactly the bug described in **US-129** (wrong mock path). That failure predates my changes and is the next story to fix. US-128 is clean.
 
 Ralph: uncommitted changes detected — creating snapshot commit for iteration 1.
+[main 115ec2e] chore(ralph): iteration 1 snapshot (auto-commit)
+ 3 files changed, 15 insertions(+), 1 deletion(-)
+Iteration 1 complete. Continuing...
+
+===============================================================
+  Ralph Iteration 2 of 20 (claude)
+===============================================================
