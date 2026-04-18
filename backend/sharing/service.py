@@ -7,7 +7,7 @@ from datetime import datetime, timedelta, timezone
 import structlog
 from bson import ObjectId
 
-from applications.service import compute_stats
+from applications.service_analytics import compute_stats
 from auth.service import get_user_by_id
 from database import get_collection
 

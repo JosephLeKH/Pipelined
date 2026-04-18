@@ -8,19 +8,18 @@ from bson import ObjectId
 
 from applications.schemas import ApplicationCreate, ApplicationListQuery, ApplicationUpdate
 from applications.service import (
-    INITIAL_STAGE,
     ApplicationNotFoundError,
     DuplicateApplicationError,
-    _apply_openai_fallback,
     _build_filter,
-    _score_and_update,
-    compute_stats,
     create,
     delete,
     get,
     list_applications,
     update,
 )
+from applications.service_ai import _apply_openai_fallback, _score_and_update
+from applications.service_analytics import compute_stats
+from applications.service_constants import INITIAL_STAGE
 from auth.service import create_user
 
 pytestmark = pytest.mark.asyncio(loop_scope="session")
@@ -297,7 +296,7 @@ async def test_apply_openai_fallback_fills_role_title_and_company():
         "remote_status": None,
     }
 
-    with patch("applications.service.parse_with_openai", AsyncMock(return_value=openai_result)):
+    with patch("applications.service_ai.parse_with_openai", AsyncMock(return_value=openai_result)):
         # Act
         result = await _apply_openai_fallback(body)
 
@@ -321,7 +320,7 @@ async def test_apply_openai_fallback_returns_body_unchanged_on_parse_failure():
     # Arrange
     body = ApplicationCreate(role_title=None, company=None, source="extension", page_text="some text")
 
-    with patch("applications.service.parse_with_openai", AsyncMock(side_effect=Exception("network error"))):
+    with patch("applications.service_ai.parse_with_openai", AsyncMock(side_effect=Exception("network error"))):
         # Act
         result = await _apply_openai_fallback(body)
 
@@ -348,7 +347,7 @@ async def test_create_extension_application_triggers_openai_fallback_when_fields
         page_text="SWE Intern at Workday Inc",
     )
 
-    with patch("applications.service.parse_with_openai", AsyncMock(return_value=openai_result)):
+    with patch("applications.service_ai.parse_with_openai", AsyncMock(return_value=openai_result)):
         # Act
         doc = await create(user_id, body)
 
@@ -369,7 +368,7 @@ async def test_create_extension_application_saves_partial_data_when_openai_fails
         page_text="some unstructured text",
     )
 
-    with patch("applications.service.parse_with_openai", AsyncMock(side_effect=Exception("api down"))):
+    with patch("applications.service_ai.parse_with_openai", AsyncMock(side_effect=Exception("api down"))):
         # Act
         doc = await create(user_id, body)
 
@@ -389,7 +388,7 @@ async def test_score_update_rejects_wrong_user(app):
     app_id = str(app_doc["_id"])
 
     mock_result = {"fit_score": 88, "summary": "great fit"}
-    with patch("applications.service.score_fit", AsyncMock(return_value=mock_result)):
+    with patch("applications.service_ai.score_fit", AsyncMock(return_value=mock_result)):
         # Act — call _score_and_update with user B's id (wrong user)
         await _score_and_update(app_id, user_b_id, "resume text", "job description")
 

@@ -204,7 +204,7 @@ NOTIFICATION_GEN_MINUTE: int = 0
 
 def create_scheduler() -> AsyncIOScheduler:
     """Build an AsyncIOScheduler with GitHub sync, weekly digest, purge, and notification jobs."""
-    from applications.service import purge_stale_deleted_applications  # noqa: PLC0415
+    from applications.service_bulk import purge_stale_deleted_applications  # noqa: PLC0415
     from notifications.digest import send_all_digests  # noqa: PLC0415 — avoid circular at module level
     from notifications.notification_service import generate_notifications  # noqa: PLC0415
 

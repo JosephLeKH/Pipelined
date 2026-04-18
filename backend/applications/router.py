@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response,
 from fastapi.responses import StreamingResponse
 
 from applications import service as app_service
+from applications import service_analytics, service_bulk, service_export
 from applications.schemas import (
     AnalyticsQuery,
     AnalyticsResponse,
@@ -85,7 +86,7 @@ async def create_application(
 async def get_stats(user: dict = Depends(get_current_user)) -> dict:
     """Return aggregated stats for the current user's applications."""
     user_id = str(user["_id"])
-    stats = await app_service.compute_stats(user_id)
+    stats = await service_analytics.compute_stats(user_id)
     return {"data": StatsResponse(**stats)}
 
 
@@ -144,7 +145,7 @@ async def export_applications_csv(
 ) -> StreamingResponse:
     """Export the current user's applications as a CSV file download."""
     user_id = str(user["_id"])
-    csv_content = await app_service.export_applications(user_id, include_archived)
+    csv_content = await service_export.export_applications(user_id, include_archived)
     # Yield line by line so the HTTP layer can flush chunks rather than sending one block.
     # The full CSV is still computed in memory by the service; true streaming would require
     # the service to be an async generator.
@@ -163,7 +164,7 @@ async def download_pipeline_report(
 ) -> StreamingResponse:
     """Generate and download the user's pipeline as a PDF report."""
     user_id = str(user["_id"])
-    pdf_bytes = await app_service.generate_pdf_report(user_id)
+    pdf_bytes = await service_export.generate_pdf_report(user_id)
     return StreamingResponse(
         iter([pdf_bytes]),
         media_type="application/pdf",
@@ -178,7 +179,7 @@ async def get_analytics(
 ) -> dict:
     """Return aggregated analytics data: applications by week, stage funnel, response rate by month, top companies."""
     user_id = str(user["_id"])
-    analytics = await app_service.get_analytics(user_id, query.days)
+    analytics = await service_analytics.get_analytics(user_id, query.days)
     return {"data": AnalyticsResponse(**analytics)}
 
 
@@ -188,7 +189,7 @@ async def get_funnel(
 ) -> dict:
     """Return per-stage funnel metrics ordered by the user's default_stages."""
     user_id = str(user["_id"])
-    stages = await app_service.get_funnel(user_id)
+    stages = await service_analytics.get_funnel(user_id)
     return {"data": [FunnelStageResult(**s) for s in stages]}
 
 
@@ -198,7 +199,7 @@ async def get_user_tags(
 ) -> dict:
     """Return all tags used by the current user, sorted by application count descending."""
     user_id = str(user["_id"])
-    tags = await app_service.get_user_tags(user_id)
+    tags = await service_analytics.get_user_tags(user_id)
     return {"data": {"tags": [TagCount(**t) for t in tags]}}
 
 
@@ -209,7 +210,7 @@ async def bulk_delete_applications(
 ) -> dict:
     """Delete multiple applications and their linked calendar events."""
     user_id = str(user["_id"])
-    deleted_count = await app_service.bulk_delete(user_id, body.ids)
+    deleted_count = await service_bulk.bulk_delete(user_id, body.ids)
     return {"data": {"deleted_count": deleted_count}}
 
 
@@ -220,7 +221,7 @@ async def bulk_update_application_stage(
 ) -> dict:
     """Update stage for multiple applications, appending stage_history entry."""
     user_id = str(user["_id"])
-    updated_count = await app_service.bulk_update_stage(user_id, body.ids, body.stage)
+    updated_count = await service_bulk.bulk_update_stage(user_id, body.ids, body.stage)
     return {"data": {"updated_count": updated_count}}
 
 
@@ -241,7 +242,7 @@ async def bulk_edit_applications(
             detail={"code": "TOO_MANY_IDS", "message": f"Bulk edit is limited to {MAX_BULK_EDIT_IDS} applications."},
         )
     user_id = str(user["_id"])
-    updated_count = await app_service.bulk_edit(user_id, body.application_ids, body.update)
+    updated_count = await service_bulk.bulk_edit(user_id, body.application_ids, body.update)
     return {"data": {"updated_count": updated_count}}
 
 
@@ -269,7 +270,7 @@ async def import_applications_csv(
             status_code=413,
             detail={"code": "FILE_TOO_LARGE", "message": "CSV file exceeds 2 MB limit."},
         )
-    result = await app_service.import_applications(user_id, csv_bytes)
+    result = await service_bulk.import_applications(user_id, csv_bytes)
     return {"data": result.model_dump()}
 
 
@@ -280,7 +281,7 @@ async def merge_applications_endpoint(
 ) -> dict:
     """Merge source application into target. Returns updated target document."""
     user_id = str(user["_id"])
-    result = await app_service.merge_applications(user_id, body.source_id, body.target_id)
+    result = await service_bulk.merge_applications(user_id, body.source_id, body.target_id)
     if result is None:
         raise HTTPException(status_code=404, detail=APP_NOT_FOUND_DETAIL)
     return {"data": ApplicationResponse.from_doc(result)}
@@ -373,7 +374,7 @@ async def add_stage(
 ) -> dict:
     """Add a custom stage at the given position in the application's stages array."""
     user_id = str(user["_id"])
-    stages = await app_service.add_stage(user_id, app_id, body.name, body.position)
+    stages = await service_bulk.add_stage(user_id, app_id, body.name, body.position)
     if stages is None:
         raise HTTPException(status_code=404, detail=APP_NOT_FOUND_DETAIL)
     return {"data": {"stages": stages}}
@@ -388,7 +389,7 @@ async def remove_stage(
     """Remove a stage from the application's stages array. Returns 409 if stage is currently active."""
     user_id = str(user["_id"])
     try:
-        stages = await app_service.remove_stage(user_id, app_id, stage_name)
+        stages = await service_bulk.remove_stage(user_id, app_id, stage_name)
     except ActiveStageError:
         raise HTTPException(
             status_code=409,
