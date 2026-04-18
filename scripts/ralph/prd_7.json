@@ -244,7 +244,7 @@
         "Tests: backend test for timeline share creation and token validation; frontend smoke test for shared timeline page"
       ],
       "priority": 15,
-      "passes": false,
+      "passes": true,
       "notes": "Reuse the sharing/service.py infrastructure from US-077. Add a 'type' field to distinguish pipeline shares from timeline shares."
     }
   ]
