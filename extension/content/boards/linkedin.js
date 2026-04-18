@@ -1,4 +1,6 @@
 /** LinkedIn job page selectors and extraction logic. */
+import { getRemoteStatus } from "./board_utils.js";
+
 
 const BOARD_ID = "linkedin";
 
@@ -38,14 +40,6 @@ function getLocation() {
     document.querySelector(".jobs-unified-top-card__bullet")?.textContent?.trim() ||
     null
   );
-}
-
-function getRemoteStatus(bodyText) {
-  const text = bodyText.toLowerCase();
-  if (text.includes("remote")) return "remote";
-  if (text.includes("hybrid")) return "hybrid";
-  if (text.includes("on-site") || text.includes("onsite")) return "onsite";
-  return null;
 }
 
 /**

@@ -82,3 +82,4 @@ Status: DONE
 - For async functions, tests must `await` the call to observe side effects that happen after any internal `await` point; skipping `await` causes silent timing bugs.
 - `fetch` mock responses must include `ok: true` (alongside `status: 201`) because the browser's `Response.ok` is a derived property, not automatically inferred by Jest mocks.
 - All 247 extension tests pass after changes.
+US-135 DONE: Extracted magic numbers to named constants. Added MS_PER_DAY, SEARCH_DEBOUNCE_MS, COPY_RESET_MS, DROPDOWN_CLOSE_DELAY_MS, MODAL_FOCUS_DELAY_MS to frontend/src/lib/constants.js. Migrated usages in dateUtils.js, DetailPanelBody.jsx, JobSearchInput.jsx, FilterBar.jsx, SettingsReferralSection.jsx, SharePipeline.jsx, TagInput.jsx, TemplateSaveModal.jsx. Added SECONDS_PER_DAY to backend/applications/service_constants.py and migrated service_analytics.py. All 427 frontend tests pass.

@@ -126,7 +126,7 @@
         "All tests pass after the constant extraction"
       ],
       "priority": 8,
-      "passes": false,
+      "passes": true,
       "notes": "Don't over-extract. Tailwind classes (mt-2.5, w-10) and simple loop bounds (i=0) are fine as-is."
     },
     {

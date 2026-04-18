@@ -1,4 +1,6 @@
 /** Greenhouse job board selectors and extraction logic. */
+import { getRemoteStatus } from "./board_utils.js";
+
 
 const BOARD_ID = "greenhouse";
 
@@ -40,14 +42,6 @@ function getLocation() {
     document.querySelector(".location-name")?.textContent?.trim() ||
     null
   );
-}
-
-function getRemoteStatus(bodyText) {
-  const text = bodyText.toLowerCase();
-  if (text.includes("remote")) return "remote";
-  if (text.includes("hybrid")) return "hybrid";
-  if (text.includes("on-site") || text.includes("onsite")) return "onsite";
-  return null;
 }
 
 /**

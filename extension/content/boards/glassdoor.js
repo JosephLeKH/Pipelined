@@ -1,4 +1,6 @@
 /** Glassdoor job board selectors and extraction logic. */
+import { getRemoteStatus } from "./board_utils.js";
+
 
 const BOARD_ID = "glassdoor";
 
@@ -48,15 +50,6 @@ function getCompensation() {
     document.querySelector("[data-test='detailSalary']")?.textContent?.trim() ||
     null
   );
-}
-
-function getRemoteStatus(location) {
-  if (!location) return null;
-  const text = location.toLowerCase();
-  if (text.includes("remote")) return "remote";
-  if (text.includes("hybrid")) return "hybrid";
-  if (text.includes("on-site") || text.includes("onsite")) return "onsite";
-  return null;
 }
 
 /**

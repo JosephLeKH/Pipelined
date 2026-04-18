@@ -1,4 +1,6 @@
 /** Wellfound job board selectors and extraction logic. */
+import { getRemoteStatus } from "./board_utils.js";
+
 
 const BOARD_ID = "wellfound";
 
@@ -40,15 +42,6 @@ function getLocation() {
     document.querySelector("[class*='JobListing_location']")?.textContent?.trim() ||
     null
   );
-}
-
-function getRemoteStatus(location) {
-  if (!location) return null;
-  const text = location.toLowerCase();
-  if (text.includes("remote")) return "remote";
-  if (text.includes("hybrid")) return "hybrid";
-  if (text.includes("on-site") || text.includes("onsite")) return "onsite";
-  return null;
 }
 
 /**
