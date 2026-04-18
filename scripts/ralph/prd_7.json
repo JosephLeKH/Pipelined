@@ -192,7 +192,7 @@
         "Tests: at least 3 backend tests (create field, set value on app, export includes custom fields)"
       ],
       "priority": 12,
-      "passes": false,
+      "passes": true,
       "notes": "Keep it simple \u2014 no complex validation beyond type checking. Select type stores the options list with the field definition."
     },
     {
