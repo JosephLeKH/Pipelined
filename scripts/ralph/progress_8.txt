@@ -1,0 +1,33 @@
+# Ralph Progress Log
+Started: Sat Apr 18 12:00:49 PDT 2026
+---
+## US-143 — Split ManualAddForm.jsx (294 lines, longest function 266 lines)
+**Status:** DONE
+**Commit:** refactor: US-143 - Split ManualAddForm.jsx (294 lines, longest function 266 lines)
+
+Extracted six new files:
+- `hooks/useManualAddFormState.js` — all useState declarations, resetForm, applyTemplate
+- `hooks/useManualAddFormDialog.js` — refs, Escape key listener, focus-first effect, Tab focus trap, overlay click
+- `hooks/useManualAddForm.js` — composition hook: calls both state/dialog hooks, adds buildBody(), handleClose, handleSubmit with validation
+- `components/ManualAddFormDateRow.jsx` — Date Applied + Compensation two-column row
+- `components/ManualAddFormCategoryRow.jsx` — Remote Status + Company Type two-column row
+- `components/ManualAddFormFields.jsx` — all form fields assembled; receives single `hook` prop
+
+ManualAddForm.jsx reduced from 294 lines / 266-line function to 47 lines / ~10-line function body.
+All 13 ManualAddForm tests pass without modification. Build succeeds.
+---
+## US-144 — Split ApplicationList.jsx (287 lines, longest function 252 lines)
+**Status:** DONE
+**Commit:** refactor: US-144 - Split ApplicationList.jsx (287 lines, longest function 252 lines)
+
+Extracted six new files:
+- `hooks/useApplicationListData.js` — state (6 useState, useRef), useWindowHeight, useQueryClient, sortBy/sortOrder, queryFilters useMemo, useApplications query, 8 mutation hooks
+- `hooks/useApplicationListRowActions.js` — handleSort, handleArchive (optimistic), handleUnarchive, handleDelete (optimistic), handleUndo
+- `hooks/useApplicationListBulkActions.js` — handleToggle, handleSelectAll, handleBulkDeleteConfirm, handleBulkMoveToStage, handleBulkEdit, handleMergeConfirm
+- `hooks/useApplicationListKeyboard.js` — useEffect reset + 5 useHotkeys (j/k/Enter/x/Escape)
+- `components/ApplicationListEmpty.jsx` — loading skeleton, error, filtered-empty, and true-empty state renders
+- `components/ApplicationListBody.jsx` — module-level Row (react-window itemData pattern), modals, BulkActionBar, ApplicationListHeader, FixedSizeList
+
+ApplicationList.jsx reduced from 287 lines / 252-line function to 24 lines / 9-line function body.
+All 18 ApplicationList tests pass without modification. Build succeeds.
+---
