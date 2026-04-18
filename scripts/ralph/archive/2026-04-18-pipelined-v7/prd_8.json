@@ -1,0 +1,212 @@
+{
+  "project": "Pipelined",
+  "branchName": "ralph/pipelined-v8",
+  "description": "Post-v7 code quality: split oversized frontend components and backend functions to meet 300-line/40-line limits, fix layer violations (direct api/ imports in components), improve extension error handling, and accessibility fixes.",
+  "userStories": [
+    {
+      "id": "US-143",
+      "title": "Split ManualAddForm.jsx (294 lines, longest function 266 lines)",
+      "description": "ManualAddForm.jsx is 294 lines with its main function body spanning 266 lines. Extract form field groups into sub-components (e.g., ManualAddFormFields.jsx, ManualAddFormActions.jsx) and move validation logic to a useManualAddForm hook. The parent component should orchestrate but not contain all markup.",
+      "acceptanceCriteria": [
+        "ManualAddForm.jsx is under 300 lines",
+        "No single function exceeds 40 lines in any extracted file",
+        "All existing ManualAddForm tests pass without modification",
+        "npm run build succeeds with no errors",
+        "npm test passes all 427+ tests"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Largest function in the entire frontend codebase."
+    },
+    {
+      "id": "US-144",
+      "title": "Split ApplicationList.jsx (287 lines, longest function 252 lines)",
+      "description": "ApplicationList.jsx is 287 lines with a 252-line function body. Extract the table header, row rendering, and bulk action bar into sub-components. Keep the data-fetching hook usage in the parent.",
+      "acceptanceCriteria": [
+        "ApplicationList.jsx is under 300 lines",
+        "No single function exceeds 40 lines in any extracted file",
+        "All existing ApplicationList tests pass",
+        "npm test passes all tests"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Second-largest function. Was partially split in US-132 but still oversized."
+    },
+    {
+      "id": "US-145",
+      "title": "Split KanbanBoard.jsx (259 lines, longest function 187 lines)",
+      "description": "KanbanBoard.jsx is 259 lines with a 187-line main function. Extract the column rendering, card rendering, and drag-drop handlers into separate files (KanbanColumn.jsx, KanbanCard.jsx). Move drag logic to a useKanbanDrag hook.",
+      "acceptanceCriteria": [
+        "KanbanBoard.jsx is under 200 lines",
+        "No single function exceeds 40 lines",
+        "All KanbanBoard and KanbanBoard.mobile tests pass",
+        "npm test passes all tests"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-146",
+      "title": "Split NewEventForm.jsx (253 lines, longest function 161 lines)",
+      "description": "NewEventForm.jsx is 253 lines with a 161-line function. Extract date/time picker fields into a sub-component and move form submission logic to a hook.",
+      "acceptanceCriteria": [
+        "NewEventForm.jsx is under 200 lines",
+        "No single function exceeds 40 lines",
+        "All calendar-related tests pass",
+        "npm test passes all tests"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-147",
+      "title": "Split CommandPalette.jsx: remove direct api/ import",
+      "description": "CommandPalette.jsx (201 lines, 159-line function) imports directly from '../api/applications' on line 11, violating the frontend layer separation rule (components must use hooks, not api/). Create a useCommandPaletteActions hook that wraps the API calls, and split the large rendering function into sub-components.",
+      "acceptanceCriteria": [
+        "CommandPalette.jsx has zero imports from '../api/' — all data access goes through hooks/",
+        "CommandPalette.jsx is under 200 lines",
+        "No single function exceeds 40 lines",
+        "npm test passes all tests"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Layer violation: components must not import from api/ directly."
+    },
+    {
+      "id": "US-148",
+      "title": "Fix SettingsReportSection.jsx direct api/ import",
+      "description": "SettingsReportSection.jsx imports 'downloadPdfReport' directly from '../api/applications' on line 8. This violates the frontend layer rule. Create or extend an existing hook (e.g., useApplicationExport) to wrap this call.",
+      "acceptanceCriteria": [
+        "SettingsReportSection.jsx has zero imports from '../api/'",
+        "PDF download functionality still works (existing tests pass)",
+        "npm test passes all tests"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Layer violation fix."
+    },
+    {
+      "id": "US-149",
+      "title": "Fix FeedbackWidget.jsx direct api/client import",
+      "description": "FeedbackWidget.jsx imports { client } from '../api/client' on line 11, bypassing the hooks layer. Create a useFeedback hook or useMutation wrapper so the component never touches the API client directly.",
+      "acceptanceCriteria": [
+        "FeedbackWidget.jsx has zero imports from '../api/'",
+        "Feedback submission still works",
+        "npm test passes all tests"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Layer violation fix."
+    },
+    {
+      "id": "US-150",
+      "title": "Fix Dashboard.jsx direct api/ import",
+      "description": "Dashboard.jsx (pages/) imports 'exportApplicationsCsv' directly from '../api/applications' on line 23. Pages should use hooks for data access. Move this to a hook.",
+      "acceptanceCriteria": [
+        "Dashboard.jsx has zero imports from '../api/'",
+        "CSV export functionality still works",
+        "npm test passes all tests"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Layer violation in pages/ — same rule applies."
+    },
+    {
+      "id": "US-151",
+      "title": "Split backend score_fit() (84 lines) in parsing/fit_scorer.py",
+      "description": "score_fit() in backend/parsing/fit_scorer.py is 84 lines, more than double the 40-line limit. Extract sub-scoring functions (e.g., _score_skills_match, _score_experience_level, _score_location) and have score_fit() orchestrate them.",
+      "acceptanceCriteria": [
+        "No function in fit_scorer.py exceeds 40 lines",
+        "score_fit() returns identical results for the same inputs (behavior unchanged)",
+        "All backend tests pass: pytest tests/ -x",
+        "Type annotations on all new functions"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Largest backend function at 84 lines."
+    },
+    {
+      "id": "US-152",
+      "title": "Split backend list_events() (59 lines) in cal/service.py",
+      "description": "list_events() in backend/cal/service.py is 59 lines. Extract the aggregation pipeline builder into a helper function and the result transformation into another.",
+      "acceptanceCriteria": [
+        "No function in cal/service.py exceeds 40 lines",
+        "Calendar API behavior unchanged",
+        "All backend tests pass: pytest tests/ -x",
+        "Type annotations on all new functions"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-153",
+      "title": "Split backend parse_with_openai() (52 lines) and parse_internship_table() (51 lines)",
+      "description": "parsing/openai_client.py parse_with_openai() is 52 lines. jobs/sync.py parse_internship_table() is 51 lines. Split each into smaller helpers.",
+      "acceptanceCriteria": [
+        "No function in openai_client.py or sync.py exceeds 40 lines",
+        "All backend tests pass: pytest tests/ -x",
+        "Type annotations on all new functions"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Two functions in one story since both are moderate violations."
+    },
+    {
+      "id": "US-154",
+      "title": "Split backend create_user() (50 lines), ensure_indexes() (55 lines), build_weekly_digest() (46 lines)",
+      "description": "Three backend functions exceed the 40-line limit: auth/service.py create_user() at 50 lines, database.py ensure_indexes() at 55 lines, notifications/digest.py build_weekly_digest() at 46 lines. Split each into smaller focused helpers.",
+      "acceptanceCriteria": [
+        "No function in auth/service.py, database.py, or notifications/digest.py exceeds 40 lines",
+        "All backend tests pass: pytest tests/ -x",
+        "Type annotations on all new functions"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "Grouped moderate violations."
+    },
+    {
+      "id": "US-155",
+      "title": "Extension: split popup.js renderSaves() (87 lines) and add error handling",
+      "description": "extension/popup/popup.js renderSaves() spans lines 67-153 (87 lines, exceeds 40-line limit). Also, init() on line 216 is called without error handling. Split renderSaves into smaller render helpers (renderSaveItem, renderEmptyState). Wrap init() in a try/catch with console.error and user-visible fallback.",
+      "acceptanceCriteria": [
+        "No function in popup.js exceeds 40 lines",
+        "popup.js init() is wrapped in try/catch with console.error and user-visible fallback",
+        "npm test in extension/ passes all tests",
+        "popup.js total lines stay under 300"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-156",
+      "title": "Extension: add unknown message type fallback in background.js",
+      "description": "background.js message listener (lines 177-210) has no fallback for unknown message types — unrecognized messages are silently dropped. Add a default case that logs the unknown type via console.warn and returns { success: false, error: 'Unknown message type' }. Also split fetchWithAuth() (43 lines) to stay under the limit.",
+      "acceptanceCriteria": [
+        "background.js message listener has a default/else branch for unknown message types that returns an error response",
+        "fetchWithAuth() in background.js is under 40 lines",
+        "npm test in extension/ passes all tests"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-157",
+      "title": "Split remaining oversized frontend components: ApplicationRowActions, PrepSection, CalendarGrid, FeedbackWidget, SettingsResumeSection, CsvImportModal",
+      "description": "Six components have functions exceeding 40 lines: ApplicationRowActions.jsx (276 lines, 131-line fn), PrepSection.jsx (245 lines, 171-line fn), CalendarGrid.jsx (233 lines, function sizes TBD), FeedbackWidget.jsx (214 lines), SettingsResumeSection.jsx (204 lines, 181-line fn), CsvImportModal.jsx (154-line fn). Extract sub-components and hooks to bring all functions under 40 lines.",
+      "acceptanceCriteria": [
+        "No function in any of the six files exceeds 40 lines",
+        "All files stay under 300 lines",
+        "All existing tests pass — npm test shows 0 failures",
+        "No new test files needed unless existing ones break"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Batch of moderate-priority component splits."
+    }
+  ]
+}
