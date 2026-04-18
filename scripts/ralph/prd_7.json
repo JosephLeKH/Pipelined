@@ -227,7 +227,7 @@
         "Tests: backend test for deadline field CRUD; frontend test for deadline badge rendering"
       ],
       "priority": 14,
-      "passes": false,
+      "passes": true,
       "notes": "Use the existing sw.js service worker for push notifications. Deadline check runs client-side by comparing cached application data."
     },
     {

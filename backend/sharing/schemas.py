@@ -33,3 +33,9 @@ class PublicPipelineResponse(BaseModel):
     display_name: str
     stats: dict
     applications: list[dict]
+
+
+class PublicTimelineResponse(BaseModel):
+    """Read-only public timeline view (excludes sensitive data)."""
+    display_name: str
+    applications: list[dict]  # company, role, stage, dates only

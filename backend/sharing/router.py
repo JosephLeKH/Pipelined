@@ -45,6 +45,35 @@ async def revoke_share(
     await sharing_service.revoke_share(user_id)
 
 
+
+
+@router.post("/api/sharing/timeline", status_code=201)
+async def create_timeline_share(user: dict = Depends(get_current_user)) -> dict:
+    """Generate a new public timeline share link (deactivates any existing timeline share)."""
+    user_id = str(user["_id"])
+    doc = await sharing_service.create_share(user_id, share_type="timeline")
+    return {"data": ShareResponse.from_doc(doc)}
+
+
+@router.get("/api/sharing/timeline", status_code=200)
+async def get_my_timeline_share(user: dict = Depends(get_current_user)) -> dict:
+    """Return the caller's active timeline share, or null if none exists."""
+    user_id = str(user["_id"])
+    doc = await sharing_service.get_my_share(user_id, share_type="timeline")
+    return {"data": ShareResponse.from_doc(doc) if doc else None}
+
+
+@router.get("/api/public/timeline/{slug}", status_code=200)
+@limiter.limit(settings.rate_limit_standard)
+async def get_public_timeline(slug: str, request: Request) -> dict:
+    """Return a read-only public timeline snapshot of a user's applications (no auth required)."""
+    try:
+        data = await sharing_service.get_public_timeline(slug)
+    except ShareNotFoundError:
+        raise HTTPException(status_code=404, detail=SHARE_NOT_FOUND_DETAIL)
+    return {"data": data}
+
+
 @router.get("/api/public/{slug}", status_code=200)
 @limiter.limit(settings.rate_limit_standard)
 async def get_public_pipeline(slug: str, request: Request) -> dict:

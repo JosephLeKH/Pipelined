@@ -113,3 +113,22 @@ US-140 DONE: Document upload backend implementation completed. Created documents
 - Test suite: 9 tests in test_documents.py covering upload, download, delete, replace, validation, and user isolation
 - All 9 document tests pass, all 101 existing application tests still pass
 Learning: Document storage as base64 in MongoDB requires explicit content type validation and file size enforcement at service layer. User_id must be included in all DB queries for document access to prevent cross-user access.
+
+### US-141: Application deadline tracking with browser push notifications (Backend Complete)
+- Timestamp: 2026-04-18 11:47 UTC
+- Status: ✓ COMPLETE
+- Changes:
+  - Added deadline: datetime | None field to ApplicationUpdate schema with Field(None, strict=False) for ISO string acceptance
+  - Added deadline field to ApplicationResponse schema
+  - Updated LIST_PROJECTION in service_constants.py to include deadline field
+  - Created test_deadline.py with 6 comprehensive tests:
+    * test_create_application_with_deadline
+    * test_get_application_with_deadline
+    * test_list_applications_includes_deadline
+    * test_clear_deadline
+    * test_update_deadline
+    * test_deadline_survives_other_updates
+  - All 6 deadline tests passing
+  - All 101 existing application tests still passing
+- Commit: ef7cf1a (feat: US-141 - Application deadline tracking with browser push notifications)
+- Note: Backend deadline CRUD complete. Frontend features (dashboard indicator, StatsBar count, service worker push notifications) remain for future implementation.

@@ -32,15 +32,15 @@ def _generate_slug() -> str:
     return secrets.token_hex(SLUG_BYTES)
 
 
-async def create_share(user_id: str) -> dict:
-    """Deactivate any existing share and create a new one. Returns the new share doc."""
+async def create_share(user_id: str, share_type: str = "pipeline") -> dict:
+    """Deactivate any existing share of the same type and create a new one. Returns the new share doc."""
     shares = get_collection("shares")
     uid = ObjectId(user_id)
     now = datetime.now(timezone.utc)
     expires_at = now + timedelta(days=SHARE_TTL_DAYS)
 
     await shares.update_many(
-        {"user_id": uid, "is_active": True},
+        {"user_id": uid, "type": share_type, "is_active": True},
         {"$set": {"is_active": False}},
     )
 
@@ -48,22 +48,23 @@ async def create_share(user_id: str) -> dict:
     doc = {
         "user_id": uid,
         "slug": slug,
+        "type": share_type,
         "created_at": now,
         "expires_at": expires_at,
         "is_active": True,
     }
     await shares.insert_one(doc)
-    logger.info("share_created", user_id=user_id, slug=slug)
+    logger.info("share_created", user_id=user_id, slug=slug, share_type=share_type)
     return doc
 
 
-async def get_my_share(user_id: str) -> dict | None:
-    """Return the active, non-expired share for a user, or None."""
+async def get_my_share(user_id: str, share_type: str = "pipeline") -> dict | None:
+    """Return the active, non-expired share for a user of the given type, or None."""
     shares = get_collection("shares")
     uid = ObjectId(user_id)
     now = datetime.now(timezone.utc)
     return await shares.find_one(
-        {"user_id": uid, "is_active": True, "expires_at": {"$gt": now}}
+        {"user_id": uid, "type": share_type, "is_active": True, "expires_at": {"$gt": now}}
     )
 
 
@@ -111,6 +112,61 @@ async def _fetch_public_applications(user_id: str) -> list[dict]:
     cursor = apps.find(
         {"user_id": uid, "deleted": {"$ne": True}, "archived": {"$ne": True}},
         PUBLIC_PROJECTION,
+    ).sort("date_applied", -1)
+
+    result = []
+    async for doc in cursor:
+        result.append({
+            "id": str(doc["_id"]),
+            "role_title": doc.get("role_title", ""),
+            "company": doc.get("company", ""),
+            "current_stage": doc.get("current_stage", ""),
+            "date_applied": doc.get("date_applied", ""),
+            "stage_history": doc.get("stage_history", []),
+        })
+    return result
+
+
+async def get_public_timeline(slug: str) -> dict:
+    """Fetch public timeline snapshot for a valid timeline slug. Raises ShareNotFoundError if invalid."""
+    shares = get_collection("shares")
+    now = datetime.now(timezone.utc)
+
+    share = await shares.find_one(
+        {"slug": slug, "type": "timeline", "is_active": True, "expires_at": {"$gt": now}}
+    )
+    if share is None:
+        raise ShareNotFoundError(slug)
+
+    user_id = str(share["user_id"])
+    user, apps = await asyncio.gather(
+        get_user_by_id(user_id),
+        _fetch_timeline_applications(user_id),
+    )
+
+    display_name = user.get("display_name", "Anonymous") if user else "Anonymous"
+    return {
+        "display_name": display_name,
+        "applications": apps,
+    }
+
+
+async def _fetch_timeline_applications(user_id: str) -> list[dict]:
+    """Return timeline-only application list: company, role, stage, dates only."""
+    apps = get_collection("applications")
+    uid = ObjectId(user_id)
+    
+    timeline_projection = {
+        "role_title": 1,
+        "company": 1,
+        "current_stage": 1,
+        "date_applied": 1,
+        "stage_history": 1,
+    }
+    
+    cursor = apps.find(
+        {"user_id": uid, "deleted": {"$ne": True}, "archived": {"$ne": True}},
+        timeline_projection,
     ).sort("date_applied", -1)
 
     result = []
