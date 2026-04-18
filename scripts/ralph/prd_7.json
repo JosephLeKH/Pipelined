@@ -47,7 +47,7 @@
         "No function exceeds 40 lines — split compute_stats and get_funnel if needed"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "notes": "Use relative imports within the applications package. Keep shared constants (LIST_PROJECTION, STAGE_ORDER) in a service_constants.py if needed."
     },
     {

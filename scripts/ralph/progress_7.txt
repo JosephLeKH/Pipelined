@@ -19,3 +19,15 @@ Status: DONE
 - All 8 tests in test_auth_google.py now pass (0 failures)
 - Pre-existing failure in test_calendar.py::test_update_event_sets_prep_data (event loop mismatch) is unrelated and existed before this change
 Learning: When mocking httpx.AsyncClient, the patch path must match the module where httpx is imported, not where the calling function lives. google_verify_id_token imports httpx in oauth_service.py, so the patch target is auth.oauth_service.httpx.AsyncClient.
+
+---
+US-130: Split applications/service.py into focused modules under 300 lines
+Status: DONE
+- Split 1346-line service.py into 6 files: service.py (298 lines), service_constants.py, service_ai.py, service_analytics.py, service_bulk.py, service_export.py
+- Each file is under 300 lines; each function is under 40 lines (extracted helpers: _build_application_doc, _build_stats_pipeline, _build_analytics_pipeline, _compute_stage_metrics, _process_import_row, _apply_merge_updates)
+- Updated router.py to import from service_analytics, service_export, service_bulk sub-modules
+- Updated jobs/sync.py: purge_stale_deleted_applications now from service_bulk
+- Updated sharing/service.py: compute_stats now from service_analytics
+- Updated tests/test_applications_service.py: import paths for INITIAL_STAGE, _apply_openai_fallback, _score_and_update, compute_stats; patch paths for parse_with_openai and score_fit updated to applications.service_ai.*
+- 125 application tests pass (test_applications.py + test_applications_service.py)
+- Pre-existing event loop failures in test_calendar.py and others when run in full suite are unrelated
