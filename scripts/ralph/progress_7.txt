@@ -1,3 +1,14 @@
 # Ralph Progress Log
 Started: Fri Apr 17 23:43:23 PDT 2026
 ---
+
+## US-128: Security: add user_id to _score_and_update DB query
+**Status:** DONE
+
+**Changes:**
+- `backend/applications/service.py`: Updated `_score_and_update` to include `user_id: ObjectId(user_id)` in the `update_one` filter alongside `_id`. If `matched_count == 0`, logs a `structlog` warning and returns early.
+- `backend/tests/test_applications_service.py`: Added `test_score_update_rejects_wrong_user` — creates app as user A, calls `_score_and_update` with user B's id, asserts `ai_analysis` is NOT set.
+
+**Learnings:**
+- Background async tasks like `_score_and_update` must always include `user_id` in DB filters even when called internally. Without it, any task with a valid `app_id` could overwrite another user's document.
+- `update_one` returns an `UpdateResult` with `matched_count`; checking this is the right way to detect a filter mismatch without raising exceptions.
