@@ -73,3 +73,30 @@ async def test_user(client):
     cookies = dict(response.cookies)
     await verify_user_by_id(user["id"])
     return user, cookies
+
+
+@pytest_asyncio.fixture(loop_scope="session")
+async def other_user(client):
+    """Register a second user for isolation/permission tests."""
+    response = await client.post("/api/auth/register", json={
+        "email": "other@example.com",
+        "password": "TestPass123!",
+        "display_name": "Other User",
+    })
+    user = response.json()["data"]
+    cookies = dict(response.cookies)
+    await verify_user_by_id(user["id"])
+    return user, cookies
+
+
+@pytest_asyncio.fixture(loop_scope="session")
+async def test_app_id(client, test_user):
+    """Create a test application and return its ID."""
+    user, cookies = test_user
+    response = await client.post("/api/applications", json={
+        "role_title": "Software Engineer",
+        "company": "Test Company",
+        "source": "manual",
+    }, cookies=cookies)
+    app = response.json()["data"]
+    return app["id"]

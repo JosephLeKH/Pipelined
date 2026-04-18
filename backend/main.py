@@ -14,6 +14,7 @@ from slowapi.middleware import SlowAPIMiddleware
 from applications.router import router as applications_router
 from contacts.router import router as contacts_router
 from custom_fields.router import router as custom_fields_router
+from documents.router import router as documents_router
 from auth.router import router as auth_router
 from auth.resume_router import router as resume_router
 from auth.verification_router import router as verification_router
@@ -117,6 +118,7 @@ def create_app(*, testing: bool = False) -> FastAPI:
     app.include_router(verification_router)
     app.include_router(applications_router)
     app.include_router(custom_fields_router)
+    app.include_router(documents_router)
     app.include_router(calendar_router)
     app.include_router(jobs_router)
     app.include_router(sharing_router)

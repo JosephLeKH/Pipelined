@@ -53,6 +53,19 @@ class ApplicationCreate(BaseModel):
 
 
 MAX_OFFER_TEXT_FIELD_LENGTH = 500
+MAX_DOCUMENT_SIZE_BYTES = 2_097_152  # 2 MB
+
+ALLOWED_DOCUMENT_TYPES = frozenset([
+    "application/pdf",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+])
+
+
+class Document(BaseModel):
+    """Document with base64-encoded content (resume, cover letter)."""
+    filename: str
+    content_base64: str
+    content_type: str
 
 
 class OfferDetails(BaseModel):
@@ -88,6 +101,7 @@ class ApplicationUpdate(BaseModel):
     notes: str | None = Field(None, max_length=MAX_NOTES_LENGTH)
     offer_details: OfferDetails | None = None
     custom_fields: dict[str, str | int | bool | list[str]] | None = None
+    documents: dict[str, Document] | None = None  # resume and cover_letter
 
 
 class ApplicationResponse(BaseModel):
@@ -113,6 +127,7 @@ class ApplicationResponse(BaseModel):
     notes: str | None = None
     offer_details: OfferDetails | None = None
     custom_fields: dict[str, str | int | bool | list[str]] | None = None
+    documents: dict[str, Document] | None = None  # resume and cover_letter
 
     @classmethod
     def from_doc(cls, doc: dict) -> "ApplicationResponse":
