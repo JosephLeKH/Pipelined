@@ -87,6 +87,7 @@ class ApplicationUpdate(BaseModel):
     follow_up_date: datetime | None = Field(None, strict=False)
     notes: str | None = Field(None, max_length=MAX_NOTES_LENGTH)
     offer_details: OfferDetails | None = None
+    custom_fields: dict[str, str | int | bool | list[str]] | None = None
 
 
 class ApplicationResponse(BaseModel):
@@ -111,6 +112,7 @@ class ApplicationResponse(BaseModel):
     follow_up_date: datetime | None = None
     notes: str | None = None
     offer_details: OfferDetails | None = None
+    custom_fields: dict[str, str | int | bool | list[str]] | None = None
 
     @classmethod
     def from_doc(cls, doc: dict) -> "ApplicationResponse":
