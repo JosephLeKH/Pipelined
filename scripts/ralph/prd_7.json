@@ -210,7 +210,7 @@
         "Tests: backend test for upload, download, and size limit rejection; frontend smoke test for upload component"
       ],
       "priority": 13,
-      "passes": false,
+      "passes": true,
       "notes": "Base64 in MongoDB is fine for MVP. Future optimization would use GridFS or S3. Max file size is 2MB."
     },
     {

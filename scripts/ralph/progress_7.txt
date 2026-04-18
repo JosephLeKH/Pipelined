@@ -97,3 +97,19 @@ US-139 DONE: Custom application fields backend implementation completed. Created
 - GET /api/applications returns custom_fields in response when present
 - Test file test_custom_fields.py written with 5 endpoint tests (skipped due to motor/asyncio fixture scope mismatch, but implementation verified via schema validation and manual testing)
 Learning: Custom field types (text, date, select) are validated at the Pydantic model level; max 10 fields enforced at service layer; field values stored as generic dict on application document allows flexibility for different field types.
+
+US-140 DONE: Document upload backend implementation completed. Created documents module with:
+- Document model in applications/schemas.py with filename, content_base64, content_type fields
+- MAX_DOCUMENT_SIZE_BYTES = 2_097_152 (2MB) constant
+- ALLOWED_DOCUMENT_TYPES frozenset with application/pdf and application/vnd.openxmlformats-officedocument.wordprocessingml.document
+- documents field added to both ApplicationUpdate and ApplicationResponse: dict[str, Document] | None
+- documents/service.py with get_document(), update_document(), delete_document() functions
+- documents/router.py with three endpoints:
+  - POST /api/applications/{app_id}/documents/{type} - upload/replace document (validates size, type, base64 format)
+  - GET /api/applications/{app_id}/documents/{type} - download document (returns filename, content_base64, content_type)
+  - DELETE /api/applications/{app_id}/documents/{type} - delete document
+- All endpoints require authentication and enforce user_id isolation at DB filter level
+- Registered documents router in main.py
+- Test suite: 9 tests in test_documents.py covering upload, download, delete, replace, validation, and user isolation
+- All 9 document tests pass, all 101 existing application tests still pass
+Learning: Document storage as base64 in MongoDB requires explicit content type validation and file size enforcement at service layer. User_id must be included in all DB queries for document access to prevent cross-user access.
