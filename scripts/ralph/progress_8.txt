@@ -46,3 +46,15 @@ Extracted three new files and added two inline helpers:
 KanbanBoard.jsx reduced from 259 lines / 187-line function to 97 lines with all functions under 40 lines.
 All 15 KanbanBoard tests pass (test.jsx ×4, mobile.test.jsx ×7, optimistic.test.jsx ×4). Build succeeds.
 ---
+## US-146 — Split NewEventForm.jsx (253 lines, longest function 161 lines)
+**Status:** DONE
+**Commit:** refactor: US-146 - Split NewEventForm.jsx (253 lines, longest function 161 lines)
+
+Extracted three new files:
+- `hooks/useAppSelector.js` — AppSearch state, pre-fill useEffect, filteredApps useMemo, handleSearchChange/handleSelectChange callbacks
+- `hooks/useNewEventForm.js` — useApplications/useCreateEvent calls, 6 state vars, handleSubmit with validation, Escape key useEffect, handleOverlayClick
+- `components/NewEventFormFields.jsx` — event type select, date input, time input, notes textarea, formError paragraph
+
+NewEventForm.jsx reduced from 253 lines / 161-line function to 71 lines with all functions under 40 lines.
+All 430 tests pass without modification. Build succeeds.
+---
