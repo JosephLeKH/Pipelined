@@ -82,7 +82,7 @@
         "npm test in extension/ passes all tests"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Three identical patterns with inconsistent error handling."
     },
     {

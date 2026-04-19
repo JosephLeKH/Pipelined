@@ -90,3 +90,20 @@ Started: Sun Apr 19 11:08:12 PDT 2026
 **Learnings:**
 - This is a pure move with no behavior change — the same numeric values, just sourced from shared/constants.js instead of inline in popup.js
 - Consistent with the no-magic-values rule and aligns with frontend/src/lib/constants.js which already exports MS_PER_DAY at the same value
+
+## US-174 — Extension: extract duplicate sendMessage pattern in content.js to helper
+Status: COMPLETE
+Committed: feat: US-174 - Extension: extract duplicate sendMessage pattern in content.js to helper
+
+### Summary
+Extracted a `sendToBackground(type, payload)` helper function in content/content.js that wraps `chrome.runtime.sendMessage` with try-catch and uniform `[content]` prefix error logging. Replaced all three previously inconsistent call sites:
+- handleSave() — was try/catch inline with "Send message failed:" message
+- showBannerAutoSaveFailed() retry button — was try/catch inline with "Retry save failed:" message
+- initAutoSave() timer callback — was try/catch inline with "Auto-save send failed:" message
+
+All three now delegate to sendToBackground(), which returns `{ status: "error" }` on failure. All 247 extension tests pass.
+
+### Learnings
+- Extracting a one-liner async wrapper eliminates scattered try-catch boilerplate and ensures uniform error messages across all call sites.
+- Converting `let result` + try/catch block to `const result = await helper()` also improves const correctness.
+- The helper's `{ status: "error" }` fallback return matches what callers already expected, making the refactor a clean drop-in replacement.

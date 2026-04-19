@@ -75,3 +75,6 @@ Iteration 5 complete. Continuing...
 ===============================================================
   Ralph Iteration 6 of 21 (claude)
 ===============================================================
+US-174 is complete. US-175 (`passes: false`) remains, so I do not output the completion tag.
+
+Ralph: uncommitted changes detected — creating snapshot commit for iteration 6.
