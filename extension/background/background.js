@@ -1,19 +1,9 @@
 /** Service worker: API calls, token management, message routing. */
 
+import { MSG, PAGE_TEXT_MAX_CHARS, MAX_RECENT } from "../shared/constants.js";
+
 const TOKEN_KEY = "pipelined_auth_token";
 const API_BASE = "https://api.pipelined.app";
-
-// MSG constants are duplicated across background.js, content.js, and contact_banner.js
-// because content scripts don't support ES modules. Keep these in sync manually.
-const MSG = {
-  SAVE_APPLICATION: "SAVE_APPLICATION",
-  SAVE_CONTACT: "SAVE_CONTACT",
-  SAVE_RESULT: "SAVE_RESULT",
-  GET_AUTH_STATUS: "GET_AUTH_STATUS",
-  AUTH_STATUS: "AUTH_STATUS",
-  GET_RECENT_SAVES: "GET_RECENT_SAVES",
-  RECENT_SAVES: "RECENT_SAVES",
-};
 
 let saveQueue = Promise.resolve();
 
@@ -103,7 +93,6 @@ async function fetchWithAuth(path, options = {}, _retried = false) {
 
 async function cacheRecentSave(application) {
   const { recent_saves = [] } = await chrome.storage.local.get("recent_saves");
-  const MAX_RECENT = 5;
   const updated = [application, ...recent_saves].slice(0, MAX_RECENT);
   await chrome.storage.local.set({ recent_saves: updated });
 }
@@ -123,7 +112,7 @@ async function executeSave(payload) {
   };
 
   if (pageText && (!fields.role_title || !fields.company_name)) {
-    body._page_text = pageText.slice(0, 3200);
+    body._page_text = pageText.slice(0, PAGE_TEXT_MAX_CHARS);
   }
 
   const response = await fetchWithAuth("/api/applications", {

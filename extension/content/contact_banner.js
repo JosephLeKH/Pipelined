@@ -2,13 +2,11 @@
 
 import {
   BANNER_AUTO_DISMISS_MS,
+  BANNER_SUCCESS_DISMISS_MS,
   createBannerHost,
   dismiss,
 } from "./banner_helpers.js";
-
-// MSG constants are duplicated across background.js, content.js, and contact_banner.js
-// because content scripts don't support ES modules. Keep these in sync manually.
-const MSG_SAVE_CONTACT = "SAVE_CONTACT";
+import { MSG } from "../shared/constants.js";
 
 export function injectContactBanner(fields) {
   const displayName = fields.name || "this person";
@@ -25,7 +23,11 @@ export function injectContactBanner(fields) {
 
   button.addEventListener("click", async () => {
     clearTimeout(timer);
-    await handleContactSave(shadow, host, fields);
+    try {
+      await handleContactSave(shadow, host, fields);
+    } catch (err) {
+      console.error("[contact_banner] Save contact failed:", err);
+    }
   });
 
   document.addEventListener(
@@ -49,7 +51,7 @@ async function handleContactSave(shadow, host, fields) {
   let result;
   try {
     result = await chrome.runtime.sendMessage({
-      type: MSG_SAVE_CONTACT,
+      type: MSG.SAVE_CONTACT,
       payload: { fields, sourceUrl: window.location.href },
     });
   } catch {
@@ -68,7 +70,7 @@ function showContactSuccess(shadow, host, name) {
   shadow.querySelector(".pipelined-text").textContent =
     `\u2713 ${displayName} saved to Pipelined!`;
   shadow.querySelector("[data-action='save']")?.remove();
-  setTimeout(() => dismiss(host), 1500);
+  setTimeout(() => dismiss(host), BANNER_SUCCESS_DISMISS_MS);
 }
 
 function showContactError(shadow, button) {

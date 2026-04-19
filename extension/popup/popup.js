@@ -1,7 +1,8 @@
 /** Popup: show last 5 saves with stage badges, link to dashboard, auth status. */
 
+import { MSG, MAX_RECENT } from "../shared/constants.js";
+
 const DASHBOARD_URL = "https://app.pipelined.app/dashboard";
-const MAX_RECENT = 5;
 
 // Stage badge colors (hex values match the frontend stage constants)
 const STAGE_COLORS = {
@@ -13,11 +14,6 @@ const STAGE_COLORS = {
 };
 
 const DEFAULT_STAGE_COLOR = { bg: "#f1f5f9", text: "#475569", bar: "#94a3b8", label: "Applied" };
-
-const MSG = {
-  GET_AUTH_STATUS: "GET_AUTH_STATUS",
-  GET_RECENT_SAVES: "GET_RECENT_SAVES",
-};
 
 const MS_PER_DAY = 86400000;
 const MS_PER_HOUR = 3600000;
@@ -170,7 +166,7 @@ export async function renderAutoSaveToggle() {
   try {
     const result = await chrome.storage.local.get("auto_save");
     auto_save = result.auto_save ?? false;
-  } catch { return; }
+  } catch (err) { console.error("[popup] Failed to read auto_save:", err); return; }
   const btn = document.getElementById("auto-save-toggle");
   if (!btn) return;
   btn.setAttribute("aria-pressed", String(auto_save));
@@ -178,9 +174,13 @@ export async function renderAutoSaveToggle() {
   row.classList.remove("hidden");
   btn.addEventListener("click", async () => {
     const next = btn.getAttribute("aria-pressed") !== "true";
-    await chrome.storage.local.set({ auto_save: next });
-    btn.setAttribute("aria-pressed", String(next));
-    btn.textContent = next ? "ON" : "OFF";
+    try {
+      await chrome.storage.local.set({ auto_save: next });
+      btn.setAttribute("aria-pressed", String(next));
+      btn.textContent = next ? "ON" : "OFF";
+    } catch (err) {
+      console.error("[popup] Auto-save toggle failed:", err);
+    }
   });
 }
 

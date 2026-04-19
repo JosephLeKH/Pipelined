@@ -22,20 +22,17 @@ import {
   showBannerDuplicate,
 } from "./banner_helpers.js";
 import { injectContactBanner } from "./contact_banner.js";
+import { MSG, PAGE_TEXT_MAX_CHARS } from "../shared/constants.js";
 
 const BOARDS = [
   linkedin, greenhouse, lever, ashby, workday,
   indeed, glassdoor, wellfound, dice, handshake, remoteok, linkedin_profile,
 ];
 
-const PAGE_TEXT_MAX_CHARS = 3200;
 const AUTO_SAVE_DEBOUNCE_MS = 2000;
 const AUTO_SAVE_SUCCESS_DISMISS_MS = 3000;
 
 const savedUrls = new Set();
-// MSG constants are duplicated across background.js, content.js, and contact_banner.js
-// because content scripts don't support ES modules. Keep these in sync manually.
-const MSG = { SAVE_APPLICATION: "SAVE_APPLICATION" };
 
 async function init() {
   const board = BOARDS.find((b) => b.isJobPage());
@@ -70,7 +67,11 @@ function injectBanner(fields, boardId) {
 
   button.addEventListener("click", async () => {
     clearTimeout(timer);
-    await handleSave(shadow, host, fields, boardId);
+    try {
+      await handleSave(shadow, host, fields, boardId);
+    } catch (err) {
+      console.error("[content] Save failed:", err);
+    }
   });
 
   document.addEventListener(
@@ -101,7 +102,8 @@ async function handleSave(shadow, host, fields, boardId) {
   let result;
   try {
     result = await chrome.runtime.sendMessage({ type: MSG.SAVE_APPLICATION, payload });
-  } catch {
+  } catch (err) {
+    console.error("[content] Send message failed:", err);
     result = { status: "error", message: "Extension error" };
   }
 
@@ -129,7 +131,7 @@ function showBannerAutoSaveFailed(shadow, host, payload) {
     btn.textContent = "Saving\u2026";
     let res;
     try { res = await chrome.runtime.sendMessage({ type: MSG.SAVE_APPLICATION, payload }); }
-    catch { res = { status: "error" }; }
+    catch (err) { console.error("[content] Retry save failed:", err); res = { status: "error" }; }
     if (res.status === "success") showBannerAutoSaved(shadow, host);
     else if (res.status === "duplicate") showBannerDuplicate(shadow, host, res.existingId);
     else { btn.disabled = false; btn.textContent = "Retry"; }
@@ -142,7 +144,7 @@ export async function initAutoSave(fields, boardId) {
   try {
     const result = await chrome.storage.local.get("auto_save");
     auto_save = result.auto_save ?? false;
-  } catch { return false; }
+  } catch (err) { console.error("[content] Failed to read auto_save:", err); return false; }
   if (!auto_save) return false;
 
   const url = window.location.href;
@@ -161,7 +163,7 @@ export async function initAutoSave(fields, boardId) {
     };
     let result;
     try { result = await chrome.runtime.sendMessage({ type: MSG.SAVE_APPLICATION, payload }); }
-    catch { result = { status: "error" }; }
+    catch (err) { console.error("[content] Auto-save send failed:", err); result = { status: "error" }; }
     if (result.status === "success") showBannerAutoSaved(shadow, host);
     else if (result.status === "duplicate") showBannerDuplicate(shadow, host, result.existingId);
     else showBannerAutoSaveFailed(shadow, host, payload);
