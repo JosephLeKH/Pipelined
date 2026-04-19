@@ -137,3 +137,17 @@ All 8 fit scorer tests pass. Pre-existing asyncio event loop failures in test_ca
 ### Learnings
 - The function had a natural split at validation vs. I/O vs. orchestration — extraction was clean with no logic changes.
 - Returning a `tuple[dict, Any] | None` from `_call_openai` lets the orchestrator access `response.usage` for cache storage without re-coupling layers.
+
+## US-152: Split backend list_events() (59 lines) in cal/service.py
+**Status:** Complete
+**Commit:** feat: US-152 - Split backend list_events() (59 lines) in cal/service.py
+
+### Summary
+Extracted two private helpers from `list_events()` in `backend/cal/service.py`:
+- `_build_events_match_filter(uid, date_from, date_to, application_id) -> dict | None` (async, ~35 lines): handles application ownership check or date range defaulting, returns None if app not owned by user.
+- `_build_events_pipeline(match_filter) -> list[dict]` (sync, ~15 lines): constructs the MongoDB aggregation pipeline with $lookup join.
+- `list_events()` reduced to ~10 lines as a thin orchestrator.
+
+### Learnings
+- Returning `None` from the filter builder (instead of `[]`) cleanly separates "filter building failed" from "query returned empty" — the orchestrator handles the early return.
+- Pre-existing asyncio event loop failure in `test_update_event_sets_prep_data` is unrelated to this change (noted in obs 379-381).
