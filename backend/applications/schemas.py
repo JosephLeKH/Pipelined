@@ -3,7 +3,7 @@
 from datetime import datetime
 from typing import Literal
 
-from pydantic import AnyHttpUrl, BaseModel, ConfigDict, Field
+from pydantic import AnyHttpUrl, BaseModel, ConfigDict, Field, field_validator
 
 ValidSource = Literal["extension", "board", "manual"]
 ValidCompanyType = Literal["startup", "mid", "enterprise", "gov", "nonprofit", "other"]
@@ -152,6 +152,22 @@ class ApplicationListQuery(BaseModel):
     cursor: str | None = None
     limit: int = Field(DEFAULT_QUERY_LIMIT, ge=1, le=MAX_QUERY_LIMIT)
     include_archived: bool = False
+
+    @field_validator("stage")
+    @classmethod
+    def stage_no_operator_injection(cls, v: str | None) -> str | None:
+        if v is not None and v.startswith("$"):
+            raise ValueError("Field value must not start with '$'")
+        return v
+
+    @field_validator("tags", mode="before")
+    @classmethod
+    def tags_no_operator_injection(cls, v: list | None) -> list | None:
+        if v is not None:
+            for item in v:
+                if isinstance(item, str) and item.startswith("$"):
+                    raise ValueError("Tag value must not start with '$'")
+        return v
 
 
 class TagCount(BaseModel):

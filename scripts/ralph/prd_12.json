@@ -1,0 +1,146 @@
+{
+  "project": "Pipelined",
+  "branchName": "ralph/pipelined-v12",
+  "description": "Hardening round 2: fix silent error swallowing (bare except, AuthContext, background tasks), non-atomic operations (bulk edit, AI quota), blocking UI patterns, missing input validation, localStorage crash in private browsing, and KanbanBoard render performance.",
+  "userStories": [
+    {
+      "id": "US-183",
+      "title": "Replace bare except Exception with specific catches in seo/router.py",
+      "description": "backend/seo/router.py has two bare `except Exception` blocks: line 49 in _get_latest_job_lastmod (silently returns today's date) and line 64 in _get_active_share_slugs (silently returns empty list). Replace with specific exception types (e.g., PyMongoError) and add structlog error logging so production failures are visible in monitoring.",
+      "acceptanceCriteria": [
+        "No bare `except Exception` in seo/router.py",
+        "Each catch block uses a specific exception type (e.g., PyMongoError, ValueError)",
+        "Each catch block logs via structlog with exc_info=True",
+        "All backend tests pass: pytest tests/ -x"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Silent failures make sitemap/robots.txt serve stale data with no monitoring visibility."
+    },
+    {
+      "id": "US-184",
+      "title": "Replace bare except Exception in tier_check.py and service_ai.py",
+      "description": "backend/middleware/tier_check.py has bare except Exception at lines 38 (_get_user_tier returns 'free') and 52 (_count_resource returns 0). backend/applications/service_ai.py line 28 catches Exception and silently returns body. Replace all three with specific exception types and structlog logging.",
+      "acceptanceCriteria": [
+        "No bare `except Exception` in tier_check.py or service_ai.py",
+        "Each catch uses specific exception types (PyMongoError, ValueError, etc.)",
+        "All catch blocks log via structlog with context (user_id, resource type, etc.)",
+        "All backend tests pass: pytest tests/ -x"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "tier_check silently falling back to 'free' could let paying users lose features; service_ai silently skipping AI parsing loses data."
+    },
+    {
+      "id": "US-185",
+      "title": "Add error handler to fire-and-forget AI scoring background task",
+      "description": "backend/applications/service.py lines 174-179: asyncio.create_task(_score_and_update(...)) is fire-and-forget — any exception is silently swallowed. Wrap the task body in a try/except that logs errors via structlog. The task should catch Exception (not just QuotaExceededError), log it with app_id and user_id context, and not re-raise.",
+      "acceptanceCriteria": [
+        "Background scoring task has try/except wrapping the full operation",
+        "Caught exceptions are logged via structlog with app_id and user_id",
+        "QuotaExceededError is still handled gracefully (no error log for expected quota hits)",
+        "All backend tests pass: pytest tests/ -x"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Without this, failed fit scores are invisible — users never get scores and nobody knows why."
+    },
+    {
+      "id": "US-186",
+      "title": "Make AI quota check-and-increment atomic with findOneAndUpdate",
+      "description": "backend/parsing/ai_cache.py lines 138-149: check_and_increment_quota() does a non-atomic read-check-increment sequence. Two concurrent requests can both pass the quota check before either increments. Replace with MongoDB findOneAndUpdate: first reset the date if changed, then use update_one with a filter condition {fit_scores_today: {$lt: limit}} and $inc to atomically check-and-increment in one operation.",
+      "acceptanceCriteria": [
+        "Quota check and increment happen in a single atomic MongoDB operation",
+        "Date reset (when day changes) is also atomic",
+        "Concurrent requests cannot both exceed the quota limit",
+        "All backend tests pass: pytest tests/ -x"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Race condition allows users to exceed daily AI limits. Low probability but real."
+    },
+    {
+      "id": "US-187",
+      "title": "Make bulk edit tags_add + tags_remove atomic in single update_many",
+      "description": "backend/applications/service_bulk.py lines 72-99: when both tags_add and tags_remove are specified, two separate update_many calls are made. If the second fails, tags are added but not removed. MongoDB does not allow $addToSet and $pull in the same update document, so the fix is: run $addToSet first, then $pull second, but wrap both in a single MongoDB client session (transaction) using Motor's async with await client.start_session().",
+      "acceptanceCriteria": [
+        "When both tags_add and tags_remove are specified, operations use a MongoDB session/transaction",
+        "If either operation fails, both are rolled back",
+        "Single-operation cases (only add OR only remove) still work without transaction overhead",
+        "All backend tests pass: pytest tests/ -x"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Data integrity issue — inconsistent tag state on partial failure."
+    },
+    {
+      "id": "US-188",
+      "title": "Add try-catch to localStorage calls in Dashboard.jsx",
+      "description": "frontend/src/pages/Dashboard.jsx line 27 calls localStorage.getItem() and line 40 calls localStorage.setItem() without try-catch. In private browsing mode or when storage quota is exceeded, these throw errors that crash the component. Wrap both in try-catch: getItem should fall back to 'list' default, setItem should log a warning and continue.",
+      "acceptanceCriteria": [
+        "localStorage.getItem wrapped in try-catch, falls back to 'list' on error",
+        "localStorage.setItem wrapped in try-catch, logs console.warn on error",
+        "Dashboard renders correctly when localStorage is unavailable",
+        "npm test passes all tests"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Crashes Dashboard in private browsing mode — common user scenario."
+    },
+    {
+      "id": "US-189",
+      "title": "Log AuthContext fetchCurrentUser errors instead of silently swallowing",
+      "description": "frontend/src/context/AuthContext.jsx line 16: .catch(() => {}) silently swallows all errors from fetchCurrentUser(). Replace with .catch((err) => console.error('[auth] Failed to fetch current user:', err.message)) so auth failures are visible in browser console for debugging. Do NOT change the behavior — user should still see unauthenticated state, just with a log.",
+      "acceptanceCriteria": [
+        "AuthContext .catch() logs the error message via console.error",
+        "Log includes '[auth]' prefix for filtering",
+        "Auth failure still results in unauthenticated state (no crash)",
+        "npm test passes all tests"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Silent auth failures are the #1 debugging headache — this makes them visible."
+    },
+    {
+      "id": "US-190",
+      "title": "Replace blocking window.confirm with non-blocking pattern in useDetailPanelState",
+      "description": "frontend/src/hooks/useDetailPanelState.js line 10: window.confirm('Discard unsaved notes?') blocks the UI thread. Replace with a state-driven pattern: add a showDiscardDialog boolean state, and instead of calling window.confirm, set it to true. The consuming component (DetailPanel) should render a confirmation modal when showDiscardDialog is true, with 'Discard' and 'Cancel' buttons. Export showDiscardDialog, confirmDiscard, and cancelDiscard from the hook.",
+      "acceptanceCriteria": [
+        "No window.confirm() calls in useDetailPanelState.js",
+        "Hook exports showDiscardDialog state, confirmDiscard(), and cancelDiscard()",
+        "DetailPanel renders a confirmation dialog when showDiscardDialog is true",
+        "Discard button calls confirmDiscard (closes panel), Cancel calls cancelDiscard (stays open)",
+        "npm test passes all tests"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Blocking dialogs are poor UX, especially on mobile."
+    },
+    {
+      "id": "US-191",
+      "title": "Add date_from/date_to validation with 400 error in jobs/router.py",
+      "description": "backend/jobs/router.py line 62: datetime.fromisoformat(date_from) is called without try-catch. Malformed date strings raise ValueError which propagates as 500 Internal Server Error. Wrap in try-except ValueError and raise HTTPException(400, detail={'error': {'code': 'INVALID_DATE', 'message': 'date_from must be ISO 8601 format'}}).",
+      "acceptanceCriteria": [
+        "Invalid date_from or date_to returns 400 with INVALID_DATE error code",
+        "Valid ISO dates still work correctly",
+        "All backend tests pass: pytest tests/ -x"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Input validation at system boundary — prevents noisy 500 errors in logs."
+    },
+    {
+      "id": "US-192",
+      "title": "Fix KanbanBoard default filters={} causing unnecessary re-renders",
+      "description": "frontend/src/components/KanbanBoard.jsx line 66: the default parameter `filters = {}` creates a new object reference on every render, defeating React.memo. Move the default to a module-level constant (const DEFAULT_FILTERS = {}) and use that as the default value. This ensures referential equality when no filters are passed.",
+      "acceptanceCriteria": [
+        "Default filters uses a module-level constant, not inline {}",
+        "KanbanBoard does not re-render when parent re-renders without filter changes",
+        "npm test passes all tests"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Performance — prevents unnecessary re-renders and refetches on large boards."
+    }
+  ]
+}
