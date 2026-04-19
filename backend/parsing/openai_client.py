@@ -42,29 +42,13 @@ def _get_client() -> AsyncOpenAI:
     return _client
 
 
-async def parse_with_openai(page_text: str) -> dict:
-    """Call GPT-4o mini to extract job fields from raw page text.
+async def _call_openai_completion(
+    client: AsyncOpenAI, page_text: str
+) -> tuple[dict | None, int, int]:
+    """Call OpenAI and parse JSON response.
 
-    Checks the cache before calling OpenAI and enforces the monthly budget cap.
-    Returns a dict with all 6 expected keys. Any field that could not be
-    determined or in case of failure is set to None.
+    Returns (parsed_dict, input_tokens, output_tokens) or (None, 0, 0) on error.
     """
-    null_result: dict = {field: None for field in EXPECTED_FIELDS}
-
-    if not settings.openai_api_key:
-        logger.warning("openai_api_key_missing")
-        return null_result
-
-    cache_key = compute_cache_key(settings.openai_model, page_text[:500])
-
-    cached = await get_cached_response(cache_key)
-    if cached is not None:
-        return cached
-
-    if not await check_budget():
-        return null_result
-
-    client = _get_client()
     try:
         response = await client.chat.completions.create(
             model=settings.openai_model,
@@ -79,18 +63,42 @@ async def parse_with_openai(page_text: str) -> dict:
         parsed = json.loads(raw)
     except (OpenAIError, json.JSONDecodeError, IndexError, AttributeError) as exc:
         logger.warning("openai_parse_failed", error=str(exc))
+        return None, 0, 0
+    usage = response.usage
+    input_tokens = usage.prompt_tokens if usage else 0
+    output_tokens = usage.completion_tokens if usage else 0
+    return parsed, input_tokens, output_tokens
+
+
+async def parse_with_openai(page_text: str) -> dict:
+    """Call GPT-4o mini to extract job fields from raw page text.
+
+    Checks the cache before calling OpenAI and enforces the monthly budget cap.
+    Returns a dict with all 6 expected keys. Any field that could not be
+    determined or in case of failure is set to None.
+    """
+    null_result: dict = {field: None for field in EXPECTED_FIELDS}
+
+    if not settings.openai_api_key:
+        logger.warning("openai_api_key_missing")
         return null_result
 
-    # Validate: must have all expected keys; ignore extra keys.
+    cache_key = compute_cache_key(settings.openai_model, page_text[:500])
+    cached = await get_cached_response(cache_key)
+    if cached is not None:
+        return cached
+
+    if not await check_budget():
+        return null_result
+
+    parsed, input_tokens, output_tokens = await _call_openai_completion(_get_client(), page_text)
+    if parsed is None:
+        return null_result
+
     if not EXPECTED_FIELDS.issubset(parsed.keys()):
         logger.warning("openai_response_missing_fields", keys=list(parsed.keys()))
         return null_result
 
     result = {field: parsed.get(field) for field in EXPECTED_FIELDS}
-
-    usage = response.usage
-    input_tokens = usage.prompt_tokens if usage else 0
-    output_tokens = usage.completion_tokens if usage else 0
     await store_response(cache_key, result, settings.openai_model, input_tokens, output_tokens)
-
     return result

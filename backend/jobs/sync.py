@@ -71,6 +71,32 @@ def _strip_md_links(text: str) -> str:
     return _MD_LINK_RE.sub(lambda m: m.group(1), text).strip()
 
 
+def _process_table_row(headers: list[str], cells: list[str]) -> dict | None:
+    """Extract a listing from table row cells; return None if the row should be skipped."""
+    if not cells or not cells[0] or cells[0].startswith("↳"):
+        return None
+
+    row = dict(zip(headers, cells))
+    company = _strip_md_links(row.get("company", ""))
+    role = _strip_md_links(row.get("role", ""))
+    location = _strip_md_links(row.get("location", ""))
+
+    apply_cell = row.get("application/link", row.get("apply", ""))
+    if not apply_cell or "\U0001f512" in apply_cell:
+        return None
+
+    apply_url = _extract_md_url(apply_cell)
+    if not apply_url:
+        return None
+
+    return {
+        "company": company,
+        "role": role,
+        "location": location,
+        "apply_url": apply_url,
+    }
+
+
 def parse_internship_table(content: str) -> list[dict]:
     """Parse a SimplifyJobs-style README markdown table into listing dicts.
 
@@ -98,28 +124,9 @@ def parse_internship_table(content: str) -> list[dict]:
             headers = [h.lower().strip() for h in cells]
             continue
 
-        if not cells or not cells[0] or cells[0].startswith("↳"):
-            continue
-
-        row = dict(zip(headers, cells))
-        company = _strip_md_links(row.get("company", ""))
-        role = _strip_md_links(row.get("role", ""))
-        location = _strip_md_links(row.get("location", ""))
-
-        apply_cell = row.get("application/link", row.get("apply", ""))
-        if not apply_cell or "\U0001f512" in apply_cell:
-            continue
-
-        apply_url = _extract_md_url(apply_cell)
-        if not apply_url:
-            continue
-
-        listings.append({
-            "company": company,
-            "role": role,
-            "location": location,
-            "apply_url": apply_url,
-        })
+        listing = _process_table_row(headers, cells)
+        if listing:
+            listings.append(listing)
 
     return listings
 
