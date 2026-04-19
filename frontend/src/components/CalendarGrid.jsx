@@ -134,27 +134,14 @@ function CalendarHeader({ month, year, onPrev, onNext, onToday }) {
   );
 }
 
-/**
- * CalendarGrid renders a monthly grid of days with event chips.
- *
- * Props:
- *   month        {number}   1-indexed month (1–12)
- *   year         {number}   4-digit year
- *   onMonthChange {function} (month, year) => void — called on nav
- *   onEventClick  {function} (event) => void — called when a chip is clicked
- *   onDayClick    {function} (date) => void — called when an empty day is clicked
- */
-function CalendarGrid({ month, year, onMonthChange, onEventClick, onDayClick }) {
+function useCalendarGridData(month, year) {
   const { data: eventsEnvelope, isLoading, error, refetch } = useCalendarEvents(month, year);
 
-  // Backend returns { data: [...], meta: { count } }
   const events = useMemo(() => {
     if (!eventsEnvelope) return [];
-    const list = Array.isArray(eventsEnvelope) ? eventsEnvelope : eventsEnvelope.data ?? [];
-    return list;
+    return Array.isArray(eventsEnvelope) ? eventsEnvelope : eventsEnvelope.data ?? [];
   }, [eventsEnvelope]);
 
-  // Group events by ISO date for O(1) day lookup
   const eventsByDate = useMemo(() => {
     const map = {};
     for (const ev of events) {
@@ -166,6 +153,51 @@ function CalendarGrid({ month, year, onMonthChange, onEventClick, onDayClick }) 
   }, [events]);
 
   const weeks = useMemo(() => buildWeeks(month, year), [month, year]);
+  return { eventsByDate, weeks, isLoading, error, refetch };
+}
+
+function CalendarContent({ isLoading, error, refetch, weeks, eventsByDate, month, onDayClick, onEventClick }) {
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-7">
+        {weeks.flat().map((date) => <SkeletonCalendarCell key={toISODate(date)} />)}
+      </div>
+    );
+  }
+  if (error) {
+    return <div className="p-6"><ApiErrorMessage error={error} onRetry={refetch} /></div>;
+  }
+  return (
+    <div className="grid grid-cols-7">
+      {weeks.flat().map((date) => {
+        const dateStr = toISODate(date);
+        return (
+          <DayCell
+            key={dateStr}
+            date={date}
+            isCurrentMonth={date.getMonth() + 1 === month}
+            events={eventsByDate[dateStr] ?? []}
+            onDayClick={onDayClick}
+            onEventClick={onEventClick}
+          />
+        );
+      })}
+    </div>
+  );
+}
+
+/**
+ * CalendarGrid renders a monthly grid of days with event chips.
+ *
+ * Props:
+ *   month        {number}   1-indexed month (1–12)
+ *   year         {number}   4-digit year
+ *   onMonthChange {function} (month, year) => void — called on nav
+ *   onEventClick  {function} (event) => void — called when a chip is clicked
+ *   onDayClick    {function} (date) => void — called when an empty day is clicked
+ */
+function CalendarGrid({ month, year, onMonthChange, onEventClick, onDayClick }) {
+  const { eventsByDate, weeks, isLoading, error, refetch } = useCalendarGridData(month, year);
 
   const handlePrev = useCallback(() => {
     const prev = month === 1 ? { m: 12, y: year - 1 } : { m: month - 1, y: year };
@@ -184,13 +216,7 @@ function CalendarGrid({ month, year, onMonthChange, onEventClick, onDayClick }) 
 
   return (
     <div className="overflow-hidden rounded-card border border-slate-200 bg-white shadow-card dark:border-slate-700 dark:bg-slate-800">
-      <CalendarHeader
-        month={month}
-        year={year}
-        onPrev={handlePrev}
-        onNext={handleNext}
-        onToday={handleToday}
-      />
+      <CalendarHeader month={month} year={year} onPrev={handlePrev} onNext={handleNext} onToday={handleToday} />
       <div className="grid grid-cols-7 border-t border-slate-200 dark:border-slate-700">
         {WEEK_DAYS.map((d) => (
           <div key={d} className="border-b border-slate-200 py-2 text-center text-xs font-medium uppercase text-slate-500 dark:border-slate-700 dark:text-slate-400">
@@ -198,34 +224,11 @@ function CalendarGrid({ month, year, onMonthChange, onEventClick, onDayClick }) 
           </div>
         ))}
       </div>
-      {isLoading ? (
-        <div className="grid grid-cols-7">
-          {weeks.flat().map((date) => (
-            <SkeletonCalendarCell key={toISODate(date)} />
-          ))}
-        </div>
-      ) : error ? (
-        <div className="p-6">
-          <ApiErrorMessage error={error} onRetry={refetch} />
-        </div>
-      ) : (
-        <div className="grid grid-cols-7">
-          {weeks.flat().map((date) => {
-            const dateStr = toISODate(date);
-            const isCurrentMonth = date.getMonth() + 1 === month;
-            return (
-              <DayCell
-                key={dateStr}
-                date={date}
-                isCurrentMonth={isCurrentMonth}
-                events={eventsByDate[dateStr] ?? []}
-                onDayClick={onDayClick}
-                onEventClick={onEventClick}
-              />
-            );
-          })}
-        </div>
-      )}
+      <CalendarContent
+        isLoading={isLoading} error={error} refetch={refetch}
+        weeks={weeks} eventsByDate={eventsByDate} month={month}
+        onDayClick={onDayClick} onEventClick={onEventClick}
+      />
     </div>
   );
 }

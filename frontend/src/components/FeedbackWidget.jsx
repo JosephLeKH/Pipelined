@@ -19,32 +19,7 @@ const NPS_DISMISSED_KEY = "pipelined_nps_dismissed";
 const NPS_DAYS_THRESHOLD = 7;
 const NPS_SCORES = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-function NPSBanner({ user, onDismiss, onSubmit }) {
-  const createdAt = user?.created_at ? new Date(user.created_at) : null;
-  const daysSinceJoin = createdAt
-    ? (Date.now() - createdAt.getTime()) / (1000 * 60 * 60 * 24)
-    : 0;
-  const alreadyDismissed = localStorage.getItem(NPS_DISMISSED_KEY);
-
-  if (alreadyDismissed || daysSinceJoin < NPS_DAYS_THRESHOLD) return null;
-
-  const handleScore = async (score) => {
-    localStorage.setItem(NPS_DISMISSED_KEY, "1");
-    trackEvent("nps_responded", { score });
-    try {
-      await onSubmit({ message: String(score), email: user?.email ?? null, category: "nps", page: window.location.pathname });
-    } catch {
-      // silently ignore — NPS is best-effort
-    }
-    onDismiss();
-    toast.success("Thanks for your feedback!");
-  };
-
-  const handleDismiss = () => {
-    localStorage.setItem(NPS_DISMISSED_KEY, "1");
-    onDismiss();
-  };
-
+function NPSBannerView({ onScore, onDismiss }) {
   return (
     <div
       role="banner"
@@ -59,7 +34,7 @@ function NPSBanner({ user, onDismiss, onSubmit }) {
           <button
             key={score}
             type="button"
-            onClick={() => handleScore(score)}
+            onClick={() => onScore(score)}
             className="h-8 w-8 rounded text-xs font-semibold text-slate-600 hover:bg-brand-500 hover:text-white transition-colors dark:text-slate-300 dark:hover:text-white border border-slate-200 dark:border-slate-600"
           >
             {score}
@@ -68,7 +43,7 @@ function NPSBanner({ user, onDismiss, onSubmit }) {
       </div>
       <button
         type="button"
-        onClick={handleDismiss}
+        onClick={onDismiss}
         aria-label="Dismiss survey"
         className="shrink-0 rounded p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
       >
@@ -78,16 +53,37 @@ function NPSBanner({ user, onDismiss, onSubmit }) {
   );
 }
 
-function FeedbackPopover({ user, page, onClose, onSubmit }) {
+function NPSBanner({ user, onDismiss, onSubmit }) {
+  const createdAt = user?.created_at ? new Date(user.created_at) : null;
+  const daysSinceJoin = createdAt
+    ? (Date.now() - createdAt.getTime()) / (1000 * 60 * 60 * 24)
+    : 0;
+  if (localStorage.getItem(NPS_DISMISSED_KEY) || daysSinceJoin < NPS_DAYS_THRESHOLD) return null;
+
+  const handleScore = async (score) => {
+    localStorage.setItem(NPS_DISMISSED_KEY, "1");
+    trackEvent("nps_responded", { score });
+    try {
+      await onSubmit({ message: String(score), email: user?.email ?? null, category: "nps", page: window.location.pathname });
+    } catch {
+      // silently ignore — NPS is best-effort
+    }
+    onDismiss();
+    toast.success("Thanks for your feedback!");
+  };
+
+  const handleDismiss = () => { localStorage.setItem(NPS_DISMISSED_KEY, "1"); onDismiss(); };
+  return <NPSBannerView onScore={handleScore} onDismiss={handleDismiss} />;
+}
+
+function useFeedbackForm(user, page, onClose, onSubmit) {
   const [message, setMessage] = useState("");
   const [email, setEmail] = useState(user?.email ?? "");
   const [category, setCategory] = useState("General");
   const [submitting, setSubmitting] = useState(false);
   const textareaRef = useRef(null);
 
-  useEffect(() => {
-    textareaRef.current?.focus();
-  }, []);
+  useEffect(() => { textareaRef.current?.focus(); }, []);
 
   const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
@@ -105,6 +101,44 @@ function FeedbackPopover({ user, page, onClose, onSubmit }) {
     }
   }, [message, email, category, page, onClose, onSubmit]);
 
+  return { message, setMessage, email, setEmail, category, setCategory, submitting, textareaRef, handleSubmit };
+}
+
+function FeedbackFormFields({ category, setCategory, message, setMessage, email, setEmail, textareaRef, submitting }) {
+  return (
+    <>
+      <div>
+        <label htmlFor="fb-category" className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">Category</label>
+        <select id="fb-category" value={category} onChange={(e) => setCategory(e.target.value)}
+          className="w-full rounded-button border border-slate-200 bg-white px-2.5 py-1.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200">
+          {FEEDBACK_CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+        </select>
+      </div>
+      <div>
+        <label htmlFor="fb-message" className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">Message</label>
+        <textarea id="fb-message" ref={textareaRef} rows={4} maxLength={FEEDBACK_MESSAGE_MAX} value={message}
+          onChange={(e) => setMessage(e.target.value)} placeholder="Describe your feedback…"
+          className="w-full resize-none rounded-button border border-slate-200 bg-white px-2.5 py-1.5 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200"
+        />
+        <p className="mt-0.5 text-right text-xs text-slate-400">{message.length}/{FEEDBACK_MESSAGE_MAX}</p>
+      </div>
+      <div>
+        <label htmlFor="fb-email" className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">Email (optional)</label>
+        <input id="fb-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com"
+          className="w-full rounded-button border border-slate-200 bg-white px-2.5 py-1.5 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200"
+        />
+      </div>
+      <button type="submit" disabled={submitting || !message.trim()}
+        className={`flex items-center justify-center gap-2 ${BUTTON_PRIMARY} disabled:opacity-60`}>
+        <Send className="h-3.5 w-3.5" aria-hidden="true" />
+        {submitting ? "Sending…" : "Send"}
+      </button>
+    </>
+  );
+}
+
+function FeedbackPopover({ user, page, onClose, onSubmit }) {
+  const { message, setMessage, email, setEmail, category, setCategory, submitting, textareaRef, handleSubmit } = useFeedbackForm(user, page, onClose, onSubmit);
   return (
     <div
       role="dialog"
@@ -119,58 +153,12 @@ function FeedbackPopover({ user, page, onClose, onSubmit }) {
         </button>
       </div>
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-        <div>
-          <label htmlFor="fb-category" className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">
-            Category
-          </label>
-          <select
-            id="fb-category"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            className="w-full rounded-button border border-slate-200 bg-white px-2.5 py-1.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200"
-          >
-            {FEEDBACK_CATEGORIES.map((c) => (
-              <option key={c} value={c}>{c}</option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label htmlFor="fb-message" className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">
-            Message
-          </label>
-          <textarea
-            id="fb-message"
-            ref={textareaRef}
-            rows={4}
-            maxLength={FEEDBACK_MESSAGE_MAX}
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            placeholder="Describe your feedback…"
-            className="w-full resize-none rounded-button border border-slate-200 bg-white px-2.5 py-1.5 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200"
-          />
-          <p className="mt-0.5 text-right text-xs text-slate-400">{message.length}/{FEEDBACK_MESSAGE_MAX}</p>
-        </div>
-        <div>
-          <label htmlFor="fb-email" className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">
-            Email (optional)
-          </label>
-          <input
-            id="fb-email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@example.com"
-            className="w-full rounded-button border border-slate-200 bg-white px-2.5 py-1.5 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200"
-          />
-        </div>
-        <button
-          type="submit"
-          disabled={submitting || !message.trim()}
-          className={`flex items-center justify-center gap-2 ${BUTTON_PRIMARY} disabled:opacity-60`}
-        >
-          <Send className="h-3.5 w-3.5" aria-hidden="true" />
-          {submitting ? "Sending…" : "Send"}
-        </button>
+        <FeedbackFormFields
+          category={category} setCategory={setCategory}
+          message={message} setMessage={setMessage}
+          email={email} setEmail={setEmail}
+          textareaRef={textareaRef} submitting={submitting}
+        />
       </form>
     </div>
   );
