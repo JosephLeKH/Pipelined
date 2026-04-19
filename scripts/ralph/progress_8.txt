@@ -94,3 +94,17 @@ Split the 159-line `CommandPalette` function into sub-components in the same fil
 - When download logic involves DOM side-effects (createObjectURL, anchor click), moving it to a hook means component tests no longer need DOM spy setup — they just assert on rendered state. Tests become simpler and less brittle.
 - The gateguard fact-force hook requires presenting facts before every Edit/Write/Bash — state this upfront to avoid repeated back-and-forth.
 - 430 tests pass after the change (69 test files).
+
+## US-149: Fix FeedbackWidget.jsx direct api/client import
+**Status:** COMPLETE
+**Commit:** dba2c5e
+
+### What was done
+- Created `frontend/src/api/feedback.js` — thin wrapper calling `client.post("/feedback", payload)`
+- Created `frontend/src/hooks/useFeedback.js` — `useMutation` wrapper exposing `{ submit, isPending }`
+- Removed `import { client } from "../api/client"` and the local `postFeedback` helper from `FeedbackWidget.jsx`
+- Called `useFeedback()` in the top-level `FeedbackWidget` component; passed `submit` as `onSubmit` prop to `NPSBanner` and `FeedbackPopover`
+
+### Learnings
+- When a component has private sub-components that both need the same API call, hoist the hook to the parent and pass the function as a prop — avoids calling the same hook twice and keeps hook count stable
+- The MSW test setup already mocked `/api/feedback` at the HTTP level, so the refactor required zero test changes
