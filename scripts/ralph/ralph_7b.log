@@ -8,3 +8,20 @@ Starting Ralph - Tool: claude - Max iterations: 20
 ===============================================================
   Ralph Iteration 1 of 20 (claude)
 ===============================================================
+US-142 is complete. Here's a summary of what was implemented across both sessions:
+
+**US-142 — Application Timeline Sharing:**
+
+| Layer | What was done |
+|-------|--------------|
+| Backend `sharing/service.py` | Added `revoke_share_by_type(user_id, share_type)` for type-scoped revoke |
+| Backend `sharing/router.py` | Added `DELETE /api/sharing/timeline` route; existing `POST` + `GET` + public `GET /api/public/timeline/{slug}` were already in place |
+| `frontend/src/api/sharing.js` | Added `getMyTimelineShare`, `createTimelineShare`, `revokeTimelineShare`, `getPublicTimeline` |
+| `frontend/src/hooks/useSharing.js` | Added `useMyTimelineShare`, `useCreateTimelineShare`, `useRevokeTimelineShare`, `usePublicTimeline` |
+| `frontend/src/components/ShareTimeline.jsx` | New component — mirrors `SharePipeline` but points to `/shared/timeline/:slug` |
+| `frontend/src/pages/PublicTimeline.jsx` | New public page at `/shared/timeline/:slug` — vertical timeline with stage history, Pipelined branding, and "Track yours free →" CTA |
+| `frontend/src/App.jsx` | Lazy import + route for `/shared/timeline/:slug` |
+| `frontend/src/pages/Settings.jsx` | `SharingSection` now renders both `<SharePipeline />` and `<ShareTimeline />` |
+| `frontend/src/pages/PublicTimeline.test.jsx` | 3 smoke tests — renders display name/apps, 404 state, CTA link (all passing) |
+
+Ralph: uncommitted changes detected — creating snapshot commit for iteration 1.
