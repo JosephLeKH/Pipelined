@@ -56,3 +56,21 @@ Started: Sun Apr 19 11:08:12 PDT 2026
 - The message router's `.catch()` at the Promise chain level provides outer protection, but individual storage helper functions need their own try-catch so callers get safe fallback values (null for getToken, no-op for setToken/clearToken)
 - For cacheRecentSave, wrapping both get+set in a single try-catch is cleaner than two separate blocks — a failure in get would make set meaningless anyway
 - Nested try-catch inside an existing try block (refreshToken) is the right pattern when the outer catch is for a different concern (fetch errors)
+
+---
+
+## US-173 — Extension: add try-catch to unprotected chrome.storage calls in popup.js
+
+**Completed:** 2026-04-19
+
+**What was done:**
+- Wrapped `chrome.storage.session.clear()` in `signOut()` with try-catch; logs error and continues to remove display_name
+- Wrapped `chrome.storage.local.remove("display_name")` in `signOut()` with a separate try-catch; both blocks use `[popup]` prefix
+- Wrapped `chrome.storage.local.get("recent_saves")` in `init()` with try-catch; falls back to empty array on error
+- `renderAutoSaveToggle()` storage calls were already protected from a prior iteration — left unchanged
+- All 247 extension tests pass
+
+**Learnings:**
+- Separate try-catch blocks per storage call in signOut() is safer than a single block — a failure clearing session shouldn't prevent the display_name removal attempt
+- When destructuring a storage result (e.g. `const { recent_saves = [] } = ...`), converting to explicit try-catch requires splitting into `const result = ...` then `recent_saves = result.recent_saves ?? []` — the default value from destructuring moves to the nullish coalescing fallback
+- Gateguard facts for JSON data files: "no imports" and "no functions affected" are valid answers — don't fabricate fake imports

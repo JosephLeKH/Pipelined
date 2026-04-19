@@ -45,3 +45,14 @@ Iteration 2 complete. Continuing...
 Four stories still have `passes: false` (US-171, US-173, US-174, US-175). US-172 is complete and committed. Per the stop signal rule, I must NOT output the completion tag.
 
 Ralph: uncommitted changes detected — creating snapshot commit for iteration 3.
+[main 8cd42a8] chore(ralph): iteration 3 snapshot (auto-commit)
+ 4 files changed, 131 insertions(+), 1 deletion(-)
+ create mode 100644 scripts/ralph/prd_11.json
+Iteration 3 complete. Continuing...
+
+===============================================================
+  Ralph Iteration 4 of 21 (claude)
+===============================================================
+US-173 is complete. The PRD shows US-171, US-174, and US-175 still have `passes: false`, so the completion tag is withheld per stop signal rules.
+
+Ralph: uncommitted changes detected — creating snapshot commit for iteration 4.
