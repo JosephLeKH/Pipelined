@@ -18,3 +18,20 @@ Started: Sun Apr 19 11:08:12 PDT 2026
 - Gateguard hooks require fact presentation before Write/Edit/Bash — quote instruction verbatim + confirm no duplicate file exists
 - Linter PostToolUse hook may revert a Write if it re-runs the formatter; git stash/pop is safe to verify pre-existing failures
 - Splitting by "private helpers" vs "public orchestrators" is the cleanest boundary when all public functions stay in the main module
+
+---
+
+## US-170 — Extension: move API_BASE and URL constants to shared/constants.js
+
+**Completed:** 2026-04-19
+
+**What was done:**
+- Added `API_BASE` and `APP_DASHBOARD_URL` exports to `extension/shared/constants.js`
+- Removed local `const API_BASE` from `background/background.js`; added to import from shared
+- Removed local `const DASHBOARD_URL` from `popup/popup.js`; imported `APP_DASHBOARD_URL` from shared and replaced all usages
+- Removed local `const APP_DASHBOARD_URL` from `content/banner_helpers.js`; added import from shared
+- All 247 extension tests pass
+
+**Learnings:**
+- Using `replace_all` on a substring like `DASHBOARD_URL` will corrupt occurrences that are already part of a longer name (e.g. `APP_DASHBOARD_URL` → `APP_APP_DASHBOARD_URL`). Prefer targeted non-replace_all edits when the old string is a substring of existing identifiers.
+- Gateguard requires facts before every Edit — prepare facts upfront for each file to avoid repeated denials.

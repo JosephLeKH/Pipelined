@@ -19,3 +19,19 @@ Starting Ralph - Tool: claude - Max iterations: 21
 - 6 remaining stories (US-170–US-175) still pending in prd_10.json
 
 Ralph: uncommitted changes detected — creating snapshot commit for iteration 1.
+[main e002e51] chore(ralph): iteration 1 snapshot (auto-commit)
+ 6 files changed, 251 insertions(+), 1 deletion(-)
+ create mode 100644 scripts/ralph/archive/2026-04-19-pipelined-v9/prd_10.json
+ create mode 100644 scripts/ralph/prd_10.json
+ create mode 100644 scripts/ralph/progress_10.txt
+ create mode 100644 scripts/ralph/ralph_10.log
+Iteration 1 complete. Continuing...
+
+===============================================================
+  Ralph Iteration 2 of 21 (claude)
+===============================================================
+Stories US-171 through US-175 still have `passes: false`. Per the stop signal, I must not output the completion tag.
+
+US-170 is complete. Remaining stories (US-171–US-175) are not yet passing — the Ralph loop will continue with those in subsequent iterations.
+
+Ralph: uncommitted changes detected — creating snapshot commit for iteration 2.

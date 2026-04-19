@@ -29,7 +29,7 @@
         "npm test in extension/ passes all tests"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "URL duplication is a maintenance hazard — changing the API domain requires editing multiple files."
     },
     {
