@@ -121,3 +121,19 @@ Split the 159-line `CommandPalette` function into sub-components in the same fil
 ### Learnings
 - Extending an existing export hook (`useApplicationExport`) is cleaner than creating a second hook — keeps CSV and PDF export logic co-located and avoids proliferating single-function hook files
 - When a hook already manages `isLoading` state for the same resource, the consumer (Dashboard) can drop its own `isExporting` useState entirely and read from the hook instead
+
+## US-151 — Split backend score_fit() (84 lines) in parsing/fit_scorer.py
+**Status:** DONE
+**Commit:** cb6bef9
+
+### Summary
+Refactored `score_fit()` in `backend/parsing/fit_scorer.py` by extracting two helper functions:
+- `_validate_parsed_result(parsed: dict) -> dict | None` — validates OpenAI response fields and builds result dict (~16 lines)
+- `_call_openai(client, resume_text, job_description) -> tuple[dict, Any] | None` — makes API call and returns (result, response) tuple (~22 lines)
+- `score_fit()` reduced to orchestrator role (~34 lines, well under 40)
+
+All 8 fit scorer tests pass. Pre-existing asyncio event loop failures in test_calendar.py and test_custom_fields.py are unrelated to this change.
+
+### Learnings
+- The function had a natural split at validation vs. I/O vs. orchestration — extraction was clean with no logic changes.
+- Returning a `tuple[dict, Any] | None` from `_call_openai` lets the orchestrator access `response.usage` for cache storage without re-coupling layers.

@@ -124,7 +124,7 @@
         "Type annotations on all new functions"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Largest backend function at 84 lines."
     },
     {
