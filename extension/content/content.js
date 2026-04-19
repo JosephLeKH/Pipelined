@@ -34,6 +34,15 @@ const AUTO_SAVE_SUCCESS_DISMISS_MS = 3000;
 
 const savedUrls = new Set();
 
+async function sendToBackground(type, payload) {
+  try {
+    return await chrome.runtime.sendMessage({ type, payload });
+  } catch (err) {
+    console.error("[content] sendMessage failed:", err);
+    return { status: "error" };
+  }
+}
+
 async function init() {
   const board = BOARDS.find((b) => b.isJobPage());
   if (!board) return;
@@ -99,13 +108,7 @@ async function handleSave(shadow, host, fields, boardId) {
 
   const payload = { fields, boardId, pageText, sourceUrl: window.location.href };
 
-  let result;
-  try {
-    result = await chrome.runtime.sendMessage({ type: MSG.SAVE_APPLICATION, payload });
-  } catch (err) {
-    console.error("[content] Send message failed:", err);
-    result = { status: "error", message: "Extension error" };
-  }
+  const result = await sendToBackground(MSG.SAVE_APPLICATION, payload);
 
   if (result.status === "success") {
     showBannerSuccess(shadow, host);
@@ -129,9 +132,7 @@ function showBannerAutoSaveFailed(shadow, host, payload) {
   btn.addEventListener("click", async () => {
     btn.disabled = true;
     btn.textContent = "Saving\u2026";
-    let res;
-    try { res = await chrome.runtime.sendMessage({ type: MSG.SAVE_APPLICATION, payload }); }
-    catch (err) { console.error("[content] Retry save failed:", err); res = { status: "error" }; }
+    const res = await sendToBackground(MSG.SAVE_APPLICATION, payload);
     if (res.status === "success") showBannerAutoSaved(shadow, host);
     else if (res.status === "duplicate") showBannerDuplicate(shadow, host, res.existingId);
     else { btn.disabled = false; btn.textContent = "Retry"; }
@@ -161,9 +162,7 @@ export async function initAutoSave(fields, boardId) {
         ? (document.body.innerText ?? "").trim().slice(0, PAGE_TEXT_MAX_CHARS)
         : null,
     };
-    let result;
-    try { result = await chrome.runtime.sendMessage({ type: MSG.SAVE_APPLICATION, payload }); }
-    catch (err) { console.error("[content] Auto-save send failed:", err); result = { status: "error" }; }
+    const result = await sendToBackground(MSG.SAVE_APPLICATION, payload);
     if (result.status === "success") showBannerAutoSaved(shadow, host);
     else if (result.status === "duplicate") showBannerDuplicate(shadow, host, result.existingId);
     else showBannerAutoSaveFailed(shadow, host, payload);
