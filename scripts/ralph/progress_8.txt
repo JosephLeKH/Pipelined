@@ -151,3 +151,16 @@ Extracted two private helpers from `list_events()` in `backend/cal/service.py`:
 ### Learnings
 - Returning `None` from the filter builder (instead of `[]`) cleanly separates "filter building failed" from "query returned empty" — the orchestrator handles the early return.
 - Pre-existing asyncio event loop failure in `test_update_event_sets_prep_data` is unrelated to this change (noted in obs 379-381).
+
+## US-153: Split parse_with_openai() and parse_internship_table()
+**Date:** 2026-04-19
+**Status:** Complete
+
+### Summary
+Split two backend functions that exceeded the 40-line limit:
+- `parse_with_openai()` (52 lines) in `parsing/openai_client.py`: extracted `_call_openai_completion()` helper that handles the OpenAI API call, JSON parsing, and usage token extraction. Returns `tuple[dict | None, int, int]` to avoid exposing the raw response object (which also fixed a type error from using `object` as the return type).
+- `parse_internship_table()` (51 lines) in `jobs/sync.py`: extracted `_process_table_row()` helper that processes a single markdown table row into a listing dict or None.
+
+### Learnings
+- Returning extracted values (token counts) from helpers instead of raw objects avoids type annotation complexity and is cleaner.
+- Two pre-existing test failures (`test_sync_github_repos_continues_on_repo_error`, `test_update_event_sets_prep_data`) were confirmed pre-existing via git stash check — not caused by this change.

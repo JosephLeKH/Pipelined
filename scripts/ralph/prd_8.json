@@ -151,7 +151,7 @@
         "Type annotations on all new functions"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Two functions in one story since both are moderate violations."
     },
     {
