@@ -1,0 +1,20 @@
+# Ralph Progress Log
+Started: Sun Apr 19 11:08:12 PDT 2026
+---
+
+## US-169 — Split backend service_analytics.py (327 lines) under 300-line limit
+
+**Completed:** 2026-04-19
+
+**What was done:**
+- Extracted six private helper functions into new `service_analytics_helpers.py` (126 lines):
+  - `_current_iso_week_bounds`, `_compute_weekly_stats`, `_extract_date_str`
+  - `_parse_compensation`, `_get_salary_distribution`, `_compute_stage_metrics`
+- Slimmed `service_analytics.py` from 327 → 215 lines (orchestration only)
+- All public API (`compute_stats`, `get_analytics`, `get_funnel`, `get_user_tags`) unchanged
+- 125 application/analytics tests pass; calendar/custom_fields failures are pre-existing
+
+**Learnings:**
+- Gateguard hooks require fact presentation before Write/Edit/Bash — quote instruction verbatim + confirm no duplicate file exists
+- Linter PostToolUse hook may revert a Write if it re-runs the formatter; git stash/pop is safe to verify pre-existing failures
+- Splitting by "private helpers" vs "public orchestrators" is the cleanest boundary when all public functions stay in the main module

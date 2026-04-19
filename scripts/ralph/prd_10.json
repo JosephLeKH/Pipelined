@@ -1,0 +1,102 @@
+{
+  "project": "Pipelined",
+  "branchName": "ralph/pipelined-v10",
+  "description": "Post-v9 hardening: split oversized service_analytics.py (327 lines), centralize remaining extension constants (API_BASE, URLs, time constants), add try-catch to unprotected chrome.storage calls, deduplicate extension sendMessage patterns, and minor accessibility fixes.",
+  "userStories": [
+    {
+      "id": "US-169",
+      "title": "Split backend service_analytics.py (327 lines) under 300-line limit",
+      "description": "backend/applications/service_analytics.py is 327 lines, exceeding the 300-line file limit. Split analytics computation into focused modules — e.g., extract timeline/trend computation into service_analytics_trends.py and summary stat builders into service_analytics_summary.py. The main file should orchestrate.",
+      "acceptanceCriteria": [
+        "service_analytics.py is under 300 lines",
+        "All extracted files are under 300 lines",
+        "No function exceeds 40 lines",
+        "All backend tests pass: pytest tests/ -x",
+        "Type annotations on all new functions"
+      ],
+      "priority": 1,
+      "passes": true,
+      "notes": "Only production backend file over 300 lines."
+    },
+    {
+      "id": "US-170",
+      "title": "Extension: move API_BASE and URL constants to shared/constants.js",
+      "description": "API_BASE is hardcoded in background/background.js line 6. DASHBOARD_URL is duplicated: popup/popup.js line 5 defines DASHBOARD_URL, banner_helpers.js line 9 defines APP_DASHBOARD_URL — same URL, different names. Move both to extension/shared/constants.js and import everywhere. Use one canonical name (APP_DASHBOARD_URL).",
+      "acceptanceCriteria": [
+        "API_BASE defined only in shared/constants.js, imported by background.js",
+        "APP_DASHBOARD_URL defined only in shared/constants.js, imported by popup.js and banner_helpers.js",
+        "No duplicate URL string literals across extension files",
+        "npm test in extension/ passes all tests"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "URL duplication is a maintenance hazard — changing the API domain requires editing multiple files."
+    },
+    {
+      "id": "US-171",
+      "title": "Extension: move time constants from popup.js to shared/constants.js",
+      "description": "popup/popup.js lines 18-20 define MS_PER_DAY, MS_PER_HOUR, MS_PER_MINUTE locally. These should be in shared/constants.js for reuse. frontend/src/lib/constants.js already exports MS_PER_DAY — use the same value for consistency.",
+      "acceptanceCriteria": [
+        "MS_PER_DAY, MS_PER_HOUR, MS_PER_MINUTE exported from extension/shared/constants.js",
+        "popup.js imports these from shared/constants.js instead of defining locally",
+        "npm test in extension/ passes all tests"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Minor but consistent with the no-magic-values rule."
+    },
+    {
+      "id": "US-172",
+      "title": "Extension: add try-catch to unprotected chrome.storage calls in background.js",
+      "description": "background/background.js has multiple chrome.storage calls without error handling: chrome.storage.session.get (line 13), chrome.storage.session.set (line 18), chrome.storage.session.remove (line 22), chrome.storage.local.get (lines 34, 95, 194), chrome.storage.local.set (line 97). Wrap each in try-catch with console.error logging using '[background]' prefix.",
+      "acceptanceCriteria": [
+        "Every chrome.storage call in background.js is wrapped in try-catch",
+        "Caught errors are logged via console.error with '[background]' prefix",
+        "npm test in extension/ passes all tests"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Unhandled storage errors can silently break token management and caching."
+    },
+    {
+      "id": "US-173",
+      "title": "Extension: add try-catch to unprotected chrome.storage calls in popup.js",
+      "description": "popup/popup.js has unprotected chrome.storage calls: chrome.storage.local.get('auto_save') (line 167), chrome.storage.local.set (line 178), chrome.storage.session.clear and .remove in signOut() (lines 157-158). Wrap each in try-catch with console.error using '[popup]' prefix.",
+      "acceptanceCriteria": [
+        "Every chrome.storage call in popup.js is wrapped in try-catch",
+        "Caught errors are logged via console.error with '[popup]' prefix",
+        "npm test in extension/ passes all tests"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-174",
+      "title": "Extension: extract duplicate sendMessage pattern in content.js to helper",
+      "description": "content/content.js has three nearly identical chrome.runtime.sendMessage calls (lines 104, 133, 165) with inconsistent error handling. Extract a sendToBackground(type, payload) helper in content.js (or shared/) that handles the message send and error logging uniformly. Replace all three call sites.",
+      "acceptanceCriteria": [
+        "A sendToBackground helper function exists that wraps chrome.runtime.sendMessage with try-catch and logging",
+        "All three sendMessage call sites in content.js use the helper",
+        "Error handling is consistent across all three call sites",
+        "npm test in extension/ passes all tests"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Three identical patterns with inconsistent error handling."
+    },
+    {
+      "id": "US-175",
+      "title": "Frontend: add aria-hidden to remaining modal backdrop overlays",
+      "description": "Check all modal/dialog components in frontend/src/components/ for backdrop overlay divs. Ensure every backdrop div has aria-hidden='true' for screen reader accessibility. CsvImportModal was fixed in prd_9 — check UpgradePlanModal, MergeDialog, NewEventForm modal, and any other components with overlay/backdrop divs.",
+      "acceptanceCriteria": [
+        "Every modal backdrop/overlay div in components/ includes aria-hidden='true'",
+        "npm test passes all tests",
+        "npm run build succeeds"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "Accessibility consistency pass."
+    }
+  ]
+}
