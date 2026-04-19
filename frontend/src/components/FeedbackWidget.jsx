@@ -8,9 +8,9 @@ import MessageCircle from "lucide-react/dist/esm/icons/message-circle";
 import X from "lucide-react/dist/esm/icons/x";
 import Send from "lucide-react/dist/esm/icons/send";
 
-import { client } from "../api/client";
 import { trackEvent } from "../lib/analytics";
 import { useAuth } from "../context/AuthContext";
+import { useFeedback } from "../hooks/useFeedback";
 import { CARD_BASE, BUTTON_PRIMARY, BUTTON_GHOST } from "../lib/designTokens";
 
 const FEEDBACK_MESSAGE_MAX = 500;
@@ -19,11 +19,7 @@ const NPS_DISMISSED_KEY = "pipelined_nps_dismissed";
 const NPS_DAYS_THRESHOLD = 7;
 const NPS_SCORES = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-async function postFeedback(payload) {
-  return client.post("/feedback", payload);
-}
-
-function NPSBanner({ user, onDismiss }) {
+function NPSBanner({ user, onDismiss, onSubmit }) {
   const createdAt = user?.created_at ? new Date(user.created_at) : null;
   const daysSinceJoin = createdAt
     ? (Date.now() - createdAt.getTime()) / (1000 * 60 * 60 * 24)
@@ -36,7 +32,7 @@ function NPSBanner({ user, onDismiss }) {
     localStorage.setItem(NPS_DISMISSED_KEY, "1");
     trackEvent("nps_responded", { score });
     try {
-      await postFeedback({ message: String(score), email: user?.email ?? null, category: "nps", page: window.location.pathname });
+      await onSubmit({ message: String(score), email: user?.email ?? null, category: "nps", page: window.location.pathname });
     } catch {
       // silently ignore — NPS is best-effort
     }
@@ -82,7 +78,7 @@ function NPSBanner({ user, onDismiss }) {
   );
 }
 
-function FeedbackPopover({ user, page, onClose }) {
+function FeedbackPopover({ user, page, onClose, onSubmit }) {
   const [message, setMessage] = useState("");
   const [email, setEmail] = useState(user?.email ?? "");
   const [category, setCategory] = useState("General");
@@ -98,7 +94,7 @@ function FeedbackPopover({ user, page, onClose }) {
     if (!message.trim()) return;
     setSubmitting(true);
     try {
-      await postFeedback({ message: message.trim(), email: email.trim() || null, category, page });
+      await onSubmit({ message: message.trim(), email: email.trim() || null, category, page });
       trackEvent("feedback_submitted", { category });
       onClose();
       toast.success("Thanks for your feedback!");
@@ -107,7 +103,7 @@ function FeedbackPopover({ user, page, onClose }) {
     } finally {
       setSubmitting(false);
     }
-  }, [message, email, category, page, onClose]);
+  }, [message, email, category, page, onClose, onSubmit]);
 
   return (
     <div
@@ -185,6 +181,7 @@ function FeedbackWidget() {
   const { pathname } = useLocation();
   const [open, setOpen] = useState(false);
   const [npsVisible, setNpsVisible] = useState(true);
+  const { submit } = useFeedback();
 
   const handleClose = useCallback(() => setOpen(false), []);
 
@@ -192,10 +189,10 @@ function FeedbackWidget() {
 
   return (
     <>
-      {npsVisible && <NPSBanner user={user} onDismiss={() => setNpsVisible(false)} />}
+      {npsVisible && <NPSBanner user={user} onDismiss={() => setNpsVisible(false)} onSubmit={submit} />}
       <div className="fixed bottom-6 right-6 z-30">
         {open && (
-          <FeedbackPopover user={user} page={pathname} onClose={handleClose} />
+          <FeedbackPopover user={user} page={pathname} onClose={handleClose} onSubmit={submit} />
         )}
         <button
           type="button"
