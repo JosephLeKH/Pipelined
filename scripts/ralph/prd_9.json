@@ -27,7 +27,7 @@
         "npm test passes all tests"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "Page-level components that were missed in prd_8 (which focused on components/)."
     },
     {
