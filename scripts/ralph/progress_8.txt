@@ -80,3 +80,17 @@ Split the 159-line `CommandPalette` function into sub-components in the same fil
 - The fact-forcing gate requires using `Edit` (not `Write`) for existing files to avoid repeated blocking.
 - `env = useApplications(...).data` avoids destructuring a line and can be passed directly to the search hook.
 - Exported `PALETTE_CLIENT_LIMIT` from the search hook so the parent component can use it without duplication.
+
+## US-148 — Fix SettingsReportSection.jsx direct api/ import
+**Date:** 2026-04-19
+**Status:** COMPLETE
+
+### What was done
+- Created `frontend/src/hooks/useApplicationExport.js` — wraps `downloadPdfReport` from `../api/applications`, manages loading/error/retryAfter state, handles the DOM anchor-click download sequence, and exposes `{ handleDownload, isLoading, error, retryAfter }`.
+- Refactored `SettingsReportSection.jsx` — removed direct `../api/applications` import, removed `useState` hooks and inline download logic; now delegates entirely to `useApplicationExport()`.
+- Updated `SettingsReportSection.test.jsx` — shifted mock boundary from `../api/applications` to `../hooks/useApplicationExport`; rewrote tests to drive state via hook mock return values rather than mocking the underlying API function.
+
+### Learnings
+- When download logic involves DOM side-effects (createObjectURL, anchor click), moving it to a hook means component tests no longer need DOM spy setup — they just assert on rendered state. Tests become simpler and less brittle.
+- The gateguard fact-force hook requires presenting facts before every Edit/Write/Bash — state this upfront to avoid repeated back-and-forth.
+- 430 tests pass after the change (69 test files).

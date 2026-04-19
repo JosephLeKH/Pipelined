@@ -38,3 +38,6 @@ Iteration 2 complete. Continuing...
 ===============================================================
   Ralph Iteration 3 of 30 (claude)
 ===============================================================
+9 stories still have `passes: false` — not all complete. Stopping here without the completion tag.
+
+Ralph: uncommitted changes detected — creating snapshot commit for iteration 3.
