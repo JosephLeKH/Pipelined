@@ -35,3 +35,10 @@ Stories US-171 through US-175 still have `passes: false`. Per the stop signal, I
 US-170 is complete. Remaining stories (US-171–US-175) are not yet passing — the Ralph loop will continue with those in subsequent iterations.
 
 Ralph: uncommitted changes detected — creating snapshot commit for iteration 2.
+[main fbf50eb] chore(ralph): iteration 2 snapshot (auto-commit)
+ 3 files changed, 34 insertions(+), 1 deletion(-)
+Iteration 2 complete. Continuing...
+
+===============================================================
+  Ralph Iteration 3 of 21 (claude)
+===============================================================

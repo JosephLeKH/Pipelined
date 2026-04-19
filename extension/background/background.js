@@ -9,16 +9,29 @@ let saveQueue = Promise.resolve();
 // ── Token management ──────────────────────────────────────────────────────────
 
 async function getToken() {
-  const result = await chrome.storage.session.get(TOKEN_KEY);
-  return result[TOKEN_KEY] || null;
+  try {
+    const result = await chrome.storage.session.get(TOKEN_KEY);
+    return result[TOKEN_KEY] || null;
+  } catch (err) {
+    console.error("[background] Failed to get token from session storage:", err);
+    return null;
+  }
 }
 
 async function setToken(token) {
-  await chrome.storage.session.set({ [TOKEN_KEY]: token });
+  try {
+    await chrome.storage.session.set({ [TOKEN_KEY]: token });
+  } catch (err) {
+    console.error("[background] Failed to set token in session storage:", err);
+  }
 }
 
 async function clearToken() {
-  await chrome.storage.session.remove(TOKEN_KEY);
+  try {
+    await chrome.storage.session.remove(TOKEN_KEY);
+  } catch (err) {
+    console.error("[background] Failed to remove token from session storage:", err);
+  }
 }
 
 async function refreshToken() {
@@ -30,7 +43,11 @@ async function refreshToken() {
       const data = await response.json();
       await setToken(data.data.token);
       if (data.data.display_name) {
-        await chrome.storage.local.set({ display_name: data.data.display_name });
+        try {
+          await chrome.storage.local.set({ display_name: data.data.display_name });
+        } catch (err) {
+          console.error("[background] Failed to cache display name in local storage:", err);
+        }
       }
       return true;
     }
@@ -91,9 +108,13 @@ async function fetchWithAuth(path, options = {}, _retried = false) {
 // ── Save logic ────────────────────────────────────────────────────────────────
 
 async function cacheRecentSave(application) {
-  const { recent_saves = [] } = await chrome.storage.local.get("recent_saves");
-  const updated = [application, ...recent_saves].slice(0, MAX_RECENT);
-  await chrome.storage.local.set({ recent_saves: updated });
+  try {
+    const { recent_saves = [] } = await chrome.storage.local.get("recent_saves");
+    const updated = [application, ...recent_saves].slice(0, MAX_RECENT);
+    await chrome.storage.local.set({ recent_saves: updated });
+  } catch (err) {
+    console.error("[background] Failed to cache recent save in local storage:", err);
+  }
 }
 
 async function executeSave(payload) {
