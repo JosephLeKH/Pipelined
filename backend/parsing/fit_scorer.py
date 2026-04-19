@@ -1,6 +1,7 @@
 """OpenAI GPT-4o mini client for scoring resume-to-job fit."""
 
 import json
+from typing import Any
 
 import structlog
 from openai import AsyncOpenAI, OpenAIError
@@ -47,6 +48,62 @@ def _get_client() -> AsyncOpenAI:
     return _client
 
 
+def _validate_parsed_result(parsed: dict) -> dict | None:
+    """Validate OpenAI response fields and build the result dict.
+
+    Returns the result dict on success, or None if validation fails.
+    """
+    if not FIT_SCORE_FIELDS.issubset(parsed.keys()):
+        logger.warning("fit_score_response_missing_fields", keys=list(parsed.keys()))
+        return None
+
+    fit_score = parsed.get("fit_score")
+    if not isinstance(fit_score, int) or not (0 <= fit_score <= 100):
+        logger.warning("fit_score_invalid_value", fit_score=fit_score)
+        return None
+
+    matched = parsed.get("matched_skills") or []
+    missing = parsed.get("missing_skills") or []
+
+    return {
+        "fit_score": fit_score,
+        "matched_skills": matched[:MAX_MATCHED_SKILLS],
+        "missing_skills": missing[:MAX_MISSING_SKILLS],
+        "summary": parsed.get("summary"),
+    }
+
+
+async def _call_openai(
+    client: AsyncOpenAI,
+    resume_text: str,
+    job_description: str,
+) -> tuple[dict, Any] | None:
+    """Call OpenAI and return (validated_result, response) or None on any error."""
+    user_content = f"RESUME:\n{resume_text}\n\nJOB DESCRIPTION:\n{job_description}"
+
+    try:
+        response = await client.chat.completions.create(
+            model=settings.openai_model,
+            temperature=FIT_SCORE_TEMPERATURE,
+            max_tokens=FIT_SCORE_MAX_TOKENS,
+            messages=[
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": user_content},
+            ],
+        )
+        raw = response.choices[0].message.content or ""
+        parsed = json.loads(raw)
+    except (OpenAIError, json.JSONDecodeError, IndexError, AttributeError) as exc:
+        logger.warning("fit_score_failed", error=str(exc))
+        return None
+
+    result = _validate_parsed_result(parsed)
+    if result is None:
+        return None
+
+    return result, response
+
+
 async def score_fit(
     resume_text: str,
     job_description: str,
@@ -79,52 +136,17 @@ async def score_fit(
     if cached is not None:
         return cached
 
-    # Check monthly budget before calling OpenAI
     if not await check_budget():
         return null_result
 
-    # Check per-user daily quota (cache hits don't count)
     if user_id:
         await check_and_increment_quota(user_id)
 
-    client = _get_client()
-    user_content = f"RESUME:\n{resume_text}\n\nJOB DESCRIPTION:\n{job_description}"
-
-    try:
-        response = await client.chat.completions.create(
-            model=settings.openai_model,
-            temperature=FIT_SCORE_TEMPERATURE,
-            max_tokens=FIT_SCORE_MAX_TOKENS,
-            messages=[
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": user_content},
-            ],
-        )
-        raw = response.choices[0].message.content or ""
-        parsed = json.loads(raw)
-    except (OpenAIError, json.JSONDecodeError, IndexError, AttributeError) as exc:
-        logger.warning("fit_score_failed", error=str(exc))
+    call_result = await _call_openai(_get_client(), resume_text, job_description)
+    if call_result is None:
         return null_result
 
-    if not FIT_SCORE_FIELDS.issubset(parsed.keys()):
-        logger.warning("fit_score_response_missing_fields", keys=list(parsed.keys()))
-        return null_result
-
-    fit_score = parsed.get("fit_score")
-    if not isinstance(fit_score, int) or not (0 <= fit_score <= 100):
-        logger.warning("fit_score_invalid_value", fit_score=fit_score)
-        return null_result
-
-    matched = parsed.get("matched_skills") or []
-    missing = parsed.get("missing_skills") or []
-
-    result = {
-        "fit_score": fit_score,
-        "matched_skills": matched[:MAX_MATCHED_SKILLS],
-        "missing_skills": missing[:MAX_MISSING_SKILLS],
-        "summary": parsed.get("summary"),
-    }
-
+    result, response = call_result
     usage = response.usage
     input_tokens = usage.prompt_tokens if usage else 0
     output_tokens = usage.completion_tokens if usage else 0
