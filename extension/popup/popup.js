@@ -64,92 +64,93 @@ export function show(id) {
   if (target) target.classList.remove("hidden");
 }
 
+function renderEmptyState(list, emptyState) {
+  if (emptyState) {
+    emptyState.classList.remove("hidden");
+    if (list) list.classList.add("hidden");
+  } else {
+    // Legacy fallback for test environment (POPUP_HTML fixture without #empty-state)
+    if (!list) return;
+    const empty = document.createElement("li");
+    empty.className = "empty";
+    empty.textContent = "No saved applications yet.";
+    list.appendChild(empty);
+  }
+}
+
+function buildCardBody(s, stageStyle) {
+  const company = document.createElement("span");
+  company.className = "company";
+  company.textContent = s.company || "";
+
+  const role = document.createElement("span");
+  role.className = "role";
+  role.textContent = s.role_title || "";
+
+  const info = document.createElement("div");
+  info.className = "card-info";
+  info.appendChild(company);
+  info.appendChild(role);
+
+  const badge = document.createElement("span");
+  badge.className = "stage-badge";
+  badge.textContent = stageStyle.label;
+  badge.style.background = stageStyle.bg;
+  badge.style.color = stageStyle.text;
+
+  const time = document.createElement("span");
+  time.className = "save-time";
+  time.textContent = relativeTime(s.date_applied || s.saved_at || null);
+
+  const meta = document.createElement("div");
+  meta.className = "card-meta";
+  meta.appendChild(badge);
+  meta.appendChild(time);
+
+  const body = document.createElement("div");
+  body.className = "card-body";
+  body.appendChild(info);
+  body.appendChild(meta);
+  return body;
+}
+
+function renderSaveItem(s) {
+  const stageKey = (s.stage || "").toLowerCase();
+  const stageStyle = STAGE_COLORS[stageKey] || DEFAULT_STAGE_COLOR;
+
+  const bar = document.createElement("div");
+  bar.className = "card-bar";
+  bar.style.background = stageStyle.bar;
+
+  // Overlay link — covers full card, opens dashboard with highlight param
+  const link = document.createElement("a");
+  link.className = "open-link";
+  link.href = `${DASHBOARD_URL}?highlight=${encodeURIComponent(s.id || "")}`;
+  link.target = "_blank";
+  link.rel = "noopener noreferrer";
+  link.dataset.appId = s.id || "";
+
+  const item = document.createElement("li");
+  item.className = "save-item";
+  item.appendChild(bar);
+  item.appendChild(buildCardBody(s, stageStyle));
+  item.appendChild(link);
+  return item;
+}
+
 export function renderSaves(saves) {
   const list = document.getElementById("saves-list");
   const emptyState = document.getElementById("empty-state");
 
   if (!saves.length) {
-    // New popup.html: use #empty-state div if present
-    if (emptyState) {
-      emptyState.classList.remove("hidden");
-      if (list) list.classList.add("hidden");
-    } else {
-      // Legacy fallback for test environment (POPUP_HTML fixture without #empty-state)
-      if (!list) return;
-      const empty = document.createElement("li");
-      empty.className = "empty";
-      empty.textContent = "No saved applications yet.";
-      list.appendChild(empty);
-    }
+    renderEmptyState(list, emptyState);
     return;
   }
 
   if (emptyState) emptyState.classList.add("hidden");
   if (!list) return;
   list.classList.remove("hidden");
-
-  saves.slice(0, MAX_RECENT).forEach((s) => {
-    const item = document.createElement("li");
-    item.className = "save-item";
-
-    const stageKey = (s.stage || "").toLowerCase();
-    const stageStyle = STAGE_COLORS[stageKey] || DEFAULT_STAGE_COLOR;
-
-    // Left colored bar (3px, stage-colored)
-    const bar = document.createElement("div");
-    bar.className = "card-bar";
-    bar.style.background = stageStyle.bar;
-
-    // Card body: info (left) + meta (right)
-    const body = document.createElement("div");
-    body.className = "card-body";
-
-    const info = document.createElement("div");
-    info.className = "card-info";
-
-    const company = document.createElement("span");
-    company.className = "company";
-    company.textContent = s.company || "";
-
-    const role = document.createElement("span");
-    role.className = "role";
-    role.textContent = s.role_title || "";
-
-    info.appendChild(company);
-    info.appendChild(role);
-
-    const meta = document.createElement("div");
-    meta.className = "card-meta";
-
-    const badge = document.createElement("span");
-    badge.className = "stage-badge";
-    badge.textContent = stageStyle.label;
-    badge.style.background = stageStyle.bg;
-    badge.style.color = stageStyle.text;
-
-    const time = document.createElement("span");
-    time.className = "save-time";
-    time.textContent = relativeTime(s.date_applied || s.saved_at || null);
-
-    meta.appendChild(badge);
-    meta.appendChild(time);
-
-    body.appendChild(info);
-    body.appendChild(meta);
-
-    // Overlay link — covers full card, opens dashboard with highlight param
-    const link = document.createElement("a");
-    link.className = "open-link";
-    link.href = `${DASHBOARD_URL}?highlight=${encodeURIComponent(s.id || "")}`;
-    link.target = "_blank";
-    link.rel = "noopener noreferrer";
-    link.dataset.appId = s.id || "";
-
-    item.appendChild(bar);
-    item.appendChild(body);
-    item.appendChild(link);
-    list.appendChild(item);
-  });
+  saves.slice(0, MAX_RECENT).forEach((s) => list.appendChild(renderSaveItem(s)));
 }
 
 export function openDashboard() {
@@ -213,4 +214,17 @@ if (openDashboardBtn) openDashboardBtn.addEventListener("click", openDashboard);
 const openDashboardAuthBtn = document.getElementById("open-dashboard-auth");
 if (openDashboardAuthBtn) openDashboardAuthBtn.addEventListener("click", openDashboard);
 
-document.addEventListener("DOMContentLoaded", init);
+document.addEventListener("DOMContentLoaded", async () => {
+  try {
+    await init();
+  } catch (err) {
+    console.error("[Popup] init failed:", err);
+    const app = document.getElementById("app");
+    if (app) {
+      const msg = document.createElement("p");
+      msg.className = "error-state";
+      msg.textContent = "Something went wrong. Please reload the extension.";
+      app.appendChild(msg);
+    }
+  }
+});
