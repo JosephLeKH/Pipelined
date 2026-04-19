@@ -25,6 +25,20 @@ async def get_document(
     return doc["documents"].get(doc_type)
 
 
+def _validate_document_content(content_base64: str, content_type: str) -> None:
+    """Raise ValueError if content_base64 or content_type fails validation."""
+    if len(content_base64) > MAX_DOCUMENT_SIZE_BYTES:
+        raise ValueError(
+            f"Document exceeds {MAX_DOCUMENT_SIZE_BYTES} bytes (base64 size: {len(content_base64)})"
+        )
+    if content_type not in ALLOWED_DOCUMENT_TYPES:
+        raise ValueError(f"Content type {content_type} not allowed. Allowed: {ALLOWED_DOCUMENT_TYPES}")
+    try:
+        base64.b64decode(content_base64)
+    except Exception as e:
+        raise ValueError(f"Invalid base64 content: {e}")
+
+
 async def update_document(
     user_id: str,
     app_id: str,
@@ -34,21 +48,7 @@ async def update_document(
     content_type: str,
 ) -> dict | None:
     """Store or update a document on an application."""
-    # Validate content size
-    if len(content_base64) > MAX_DOCUMENT_SIZE_BYTES:
-        raise ValueError(
-            f"Document exceeds {MAX_DOCUMENT_SIZE_BYTES} bytes (base64 size: {len(content_base64)})"
-        )
-
-    # Validate content type
-    if content_type not in ALLOWED_DOCUMENT_TYPES:
-        raise ValueError(f"Content type {content_type} not allowed. Allowed: {ALLOWED_DOCUMENT_TYPES}")
-
-    # Validate base64 format
-    try:
-        base64.b64decode(content_base64)
-    except Exception as e:
-        raise ValueError(f"Invalid base64 content: {e}")
+    _validate_document_content(content_base64, content_type)
 
     apps = get_collection("applications")
     result = await apps.update_one(

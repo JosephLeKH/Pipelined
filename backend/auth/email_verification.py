@@ -87,6 +87,22 @@ async def verify_email_token(token: str) -> None:
     logger.info("email_verified", user_id=str(user["_id"]))
 
 
+def _compute_resend_window(
+    user: dict, now: datetime
+) -> tuple[int, datetime | None]:
+    """Return (resend_count, window_start) after resetting an expired window."""
+    window_start: datetime | None = user.get("verification_resend_window_start")
+    resend_count: int = user.get("verification_resend_count", 0)
+
+    if window_start is not None:
+        window_start = _ensure_utc(window_start)
+        if now - window_start > timedelta(hours=VERIFICATION_RESEND_WINDOW_HOURS):
+            resend_count = 0
+            window_start = None
+
+    return resend_count, window_start
+
+
 async def resend_verification(user_id: str) -> str:
     """Generate a new verification token for user_id and return the raw token.
 
@@ -103,14 +119,7 @@ async def resend_verification(user_id: str) -> str:
         raise EmailAlreadyVerifiedError("Email is already verified")
 
     now = datetime.now(timezone.utc)
-    window_start = user.get("verification_resend_window_start")
-    resend_count: int = user.get("verification_resend_count", 0)
-
-    if window_start is not None:
-        window_start = _ensure_utc(window_start)
-        if now - window_start > timedelta(hours=VERIFICATION_RESEND_WINDOW_HOURS):
-            resend_count = 0
-            window_start = None
+    resend_count, window_start = _compute_resend_window(user, now)
 
     if resend_count >= VERIFICATION_RESEND_LIMIT:
         raise ResendRateLimitError("Resend rate limit exceeded")

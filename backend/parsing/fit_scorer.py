@@ -104,6 +104,36 @@ async def _call_openai(
     return result, response
 
 
+async def _execute_score_fit(
+    cache_key: str,
+    null_result: dict,
+    resume_text: str,
+    job_description: str,
+    user_id: str | None,
+) -> dict:
+    """Run cache lookup → budget check → quota → OpenAI call → cache store."""
+    cached = await get_cached_response(cache_key)
+    if cached is not None:
+        return cached
+
+    if not await check_budget():
+        return null_result
+
+    if user_id:
+        await check_and_increment_quota(user_id)
+
+    call_result = await _call_openai(_get_client(), resume_text, job_description)
+    if call_result is None:
+        return null_result
+
+    result, response = call_result
+    usage = response.usage
+    input_tokens = usage.prompt_tokens if usage else 0
+    output_tokens = usage.completion_tokens if usage else 0
+    await store_response(cache_key, result, settings.openai_model, input_tokens, output_tokens)
+    return result
+
+
 async def score_fit(
     resume_text: str,
     job_description: str,
@@ -131,25 +161,4 @@ async def score_fit(
         settings.openai_model,
         resume_text[:500] + role_title + company,
     )
-
-    cached = await get_cached_response(cache_key)
-    if cached is not None:
-        return cached
-
-    if not await check_budget():
-        return null_result
-
-    if user_id:
-        await check_and_increment_quota(user_id)
-
-    call_result = await _call_openai(_get_client(), resume_text, job_description)
-    if call_result is None:
-        return null_result
-
-    result, response = call_result
-    usage = response.usage
-    input_tokens = usage.prompt_tokens if usage else 0
-    output_tokens = usage.completion_tokens if usage else 0
-    await store_response(cache_key, result, settings.openai_model, input_tokens, output_tokens)
-
-    return result
+    return await _execute_score_fit(cache_key, null_result, resume_text, job_description, user_id)

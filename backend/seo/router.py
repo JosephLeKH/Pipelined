@@ -1,5 +1,6 @@
 """SEO endpoints: robots.txt and sitemap.xml."""
 
+import asyncio
 from datetime import datetime, timezone
 
 import structlog
@@ -77,8 +78,10 @@ def _build_sitemap_url(loc: str, lastmod: str, priority: str) -> str:
 async def _build_sitemap_xml(base_url: str) -> str:
     """Build sitemap.xml content with static and dynamic URLs."""
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-    job_lastmod = await _get_latest_job_lastmod()
-    slugs = await _get_active_share_slugs()
+    job_lastmod, slugs = await asyncio.gather(
+        _get_latest_job_lastmod(),
+        _get_active_share_slugs(),
+    )
 
     urls = [
         _build_sitemap_url(f"{base_url}/", today, SITEMAP_PRIORITIES["landing"]),

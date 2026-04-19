@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 
 import httpx
 import structlog
+from motor.motor_asyncio import AsyncIOMotorCollection
 
 from auth.constants import DEFAULT_STAGES, DEFAULT_TIMEZONE
 from config import settings
@@ -138,6 +139,32 @@ async def _fetch_github_profile(access_token: str) -> tuple[dict, str | None]:
     return profile, primary_email
 
 
+async def _insert_github_user(
+    users: AsyncIOMotorCollection,
+    github_id: str,
+    email: str | None,
+    display_name: str,
+    avatar_url: str | None,
+) -> dict:
+    """Insert a new GitHub-authenticated user document and return it."""
+    doc: dict = {
+        "email": email,
+        "github_id": github_id,
+        "avatar_url": avatar_url,
+        "display_name": display_name,
+        "password_hash": None,
+        "default_stages": DEFAULT_STAGES,
+        "timezone": DEFAULT_TIMEZONE,
+        "digest_enabled": True,
+        "email_verified": True,
+        "created_at": datetime.now(timezone.utc),
+    }
+    result = await users.insert_one(doc)
+    doc["_id"] = result.inserted_id
+    logger.info("github_user_created", user_id=str(result.inserted_id), email=email)
+    return doc
+
+
 async def get_or_create_github_user(
     github_id: str, email: str | None, display_name: str, avatar_url: str | None
 ) -> dict:
@@ -164,22 +191,7 @@ async def get_or_create_github_user(
                 email_user["avatar_url"] = avatar_url
         return email_user
 
-    doc: dict = {
-        "email": email,
-        "github_id": github_id,
-        "avatar_url": avatar_url,
-        "display_name": display_name,
-        "password_hash": None,
-        "default_stages": DEFAULT_STAGES,
-        "timezone": DEFAULT_TIMEZONE,
-        "digest_enabled": True,
-        "email_verified": True,
-        "created_at": datetime.now(timezone.utc),
-    }
-    result = await users.insert_one(doc)
-    doc["_id"] = result.inserted_id
-    logger.info("github_user_created", user_id=str(result.inserted_id), email=email)
-    return doc
+    return await _insert_github_user(users, github_id, email, display_name, avatar_url)
 
 
 async def github_auth(code: str) -> dict:

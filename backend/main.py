@@ -84,6 +84,26 @@ def _get_cors_origins() -> list[str]:
     return origins
 
 
+def _register_routers(app: FastAPI) -> None:
+    """Attach all feature routers to the application."""
+    app.include_router(auth_router)
+    app.include_router(resume_router)
+    app.include_router(verification_router)
+    app.include_router(applications_router)
+    app.include_router(custom_fields_router)
+    app.include_router(documents_router)
+    app.include_router(calendar_router)
+    app.include_router(jobs_router)
+    app.include_router(sharing_router)
+    app.include_router(contacts_router)
+    app.include_router(notifications_router)
+    app.include_router(saved_searches_router)
+    app.include_router(activity_router)
+    app.include_router(seo_router)
+    app.include_router(feedback_router)
+    app.include_router(templates_router)
+
+
 def create_app(*, testing: bool = False) -> FastAPI:
     """Construct and configure the FastAPI application."""
     app = FastAPI(
@@ -113,23 +133,7 @@ def create_app(*, testing: bool = False) -> FastAPI:
     async def health() -> dict:
         return {"status": "ok"}
 
-    app.include_router(auth_router)
-    app.include_router(resume_router)
-    app.include_router(verification_router)
-    app.include_router(applications_router)
-    app.include_router(custom_fields_router)
-    app.include_router(documents_router)
-    app.include_router(calendar_router)
-    app.include_router(jobs_router)
-    app.include_router(sharing_router)
-    app.include_router(contacts_router)
-    app.include_router(notifications_router)
-    app.include_router(saved_searches_router)
-    app.include_router(activity_router)
-    app.include_router(seo_router)
-    app.include_router(feedback_router)
-    app.include_router(templates_router)
-
+    _register_routers(app)
     return app
 
 

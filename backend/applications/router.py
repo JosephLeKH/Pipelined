@@ -1,5 +1,7 @@
 """Applications route handlers: CRUD and stage management."""
 
+from datetime import datetime
+
 import structlog
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response
 
@@ -73,6 +75,37 @@ async def create_application(
     return {"data": ApplicationResponse.from_doc(doc)}
 
 
+def _build_app_list_query(
+    sort_by: ValidSortField,
+    sort_order: ValidSortOrder,
+    stage: str | None,
+    company_type: ValidCompanyType | None,
+    remote_status: ValidRemoteStatus | None,
+    tags: list[str] | None,
+    date_from: str | None,
+    date_to: str | None,
+    q: str | None,
+    cursor: str | None,
+    limit: int,
+    include_archived: bool,
+) -> ApplicationListQuery:
+    """Build an ApplicationListQuery from raw query parameter strings."""
+    return ApplicationListQuery(
+        sort_by=sort_by,
+        sort_order=sort_order,
+        stage=stage,
+        company_type=company_type,
+        remote_status=remote_status,
+        tags=tags,
+        date_from=datetime.fromisoformat(date_from) if date_from else None,
+        date_to=datetime.fromisoformat(date_to) if date_to else None,
+        q=q,
+        cursor=cursor,
+        limit=limit,
+        include_archived=include_archived,
+    )
+
+
 @router.get("", status_code=200)
 async def list_applications(
     sort_by: ValidSortField = Query(default="date_applied"),
@@ -90,21 +123,9 @@ async def list_applications(
     user: dict = Depends(get_current_user),
 ) -> dict:
     """List applications with cursor-based pagination and optional filters."""
-    from datetime import datetime
-
-    query = ApplicationListQuery(
-        sort_by=sort_by,
-        sort_order=sort_order,
-        stage=stage,
-        company_type=company_type,
-        remote_status=remote_status,
-        tags=tags,
-        date_from=datetime.fromisoformat(date_from) if date_from else None,
-        date_to=datetime.fromisoformat(date_to) if date_to else None,
-        q=q,
-        cursor=cursor,
-        limit=limit,
-        include_archived=include_archived,
+    query = _build_app_list_query(
+        sort_by, sort_order, stage, company_type, remote_status,
+        tags, date_from, date_to, q, cursor, limit, include_archived,
     )
     user_id = str(user["_id"])
     try:

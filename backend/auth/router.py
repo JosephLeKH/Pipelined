@@ -14,6 +14,7 @@ from auth.schemas import (
     LoginRequest,
     RegisterRequest,
     ResetPasswordRequest,
+    TokenPayload,
     UpdateUserRequest,
     UserResponse,
 )
@@ -152,18 +153,13 @@ async def update_me(
     return {"data": UserResponse.from_doc(updated)}
 
 
-@router.post("/refresh", status_code=200)
-async def refresh(
-    response: Response,
-    refresh_token: str | None = Cookie(default=None),
-) -> dict:
-    """Issue a new access token using the refresh token cookie."""
+def _decode_refresh_token(refresh_token: str | None) -> TokenPayload:
+    """Validate and decode a refresh token cookie; raise HTTPException on any failure."""
     if not refresh_token:
         raise HTTPException(
             status_code=401,
             detail={"code": "MISSING_TOKEN", "message": "Refresh token required."},
         )
-
     try:
         payload = decode_token(refresh_token)
     except jwt.InvalidTokenError:
@@ -171,12 +167,21 @@ async def refresh(
             status_code=401,
             detail={"code": "INVALID_TOKEN", "message": "Invalid or expired refresh token."},
         )
-
     if payload.type != REFRESH_TOKEN_TYPE:
         raise HTTPException(
             status_code=401,
             detail={"code": "WRONG_TOKEN_TYPE", "message": "Refresh token required."},
         )
+    return payload
+
+
+@router.post("/refresh", status_code=200)
+async def refresh(
+    response: Response,
+    refresh_token: str | None = Cookie(default=None),
+) -> dict:
+    """Issue a new access token using the refresh token cookie."""
+    payload = _decode_refresh_token(refresh_token)
 
     user = await auth_service.get_user_by_id(payload.sub)
     if user is None:
