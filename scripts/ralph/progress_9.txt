@@ -1,3 +1,16 @@
 # Ralph Progress Log
 Started: Sun Apr 19 01:45:03 PDT 2026
 ---
+
+## US-158: Split Analytics.jsx page component (221-line function)
+**Status:** COMPLETE
+
+**What was done:**
+- Extracted `useAnalyticsData` hook (`frontend/src/hooks/useAnalyticsData.js`) — aggregates useAnalytics, useFunnel, useApplicationStats; computes totalApps and hasEnoughData
+- Created `AnalyticsCharts.jsx` (`frontend/src/components/`) — contains all chart sub-components: CustomTooltip, ChartCard, WeeklyApplicationsChart, StageFunnelChart, ResponseRateChart, TopCompaniesChart, AnalyticsMainCharts, AnalyticsTagsTable, ConversionRatesRow, ConversionRatesTable, FunnelBarChart, AnalyticsFunnelSection (~215 lines, all functions ≤40 lines)
+- Refactored Analytics.jsx to ~90 lines using extracted hook + components; all functions ≤40 lines
+
+**Learnings:**
+- Gateguard fact-force hook fires on both new file creation AND overwrites of existing files — must present facts before each Write
+- Consolidating related sub-components into one file (AnalyticsCharts.jsx) is preferable to many tiny single-component files, as long as all functions stay under 40 lines and the file stays under 300 lines
+- 430 tests pass; build succeeds

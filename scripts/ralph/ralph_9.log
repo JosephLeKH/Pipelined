@@ -10,3 +10,14 @@ Starting Ralph - Tool: claude - Max iterations: 30
 ===============================================================
   Ralph Iteration 1 of 30 (claude)
 ===============================================================
+US-158 is now `passes: true` (line 17). The remaining 9 stories still have `passes: false`. Per the stop signal, I must NOT output the completion tag since not all stories pass.
+
+US-158 is complete. Summary of what was done:
+
+- **`frontend/src/hooks/useAnalyticsData.js`** (new): aggregates `useAnalytics`, `useFunnel`, `useApplicationStats`; derives `totalApps` and `hasEnoughData`
+- **`frontend/src/components/AnalyticsCharts.jsx`** (new, ~215 lines): all chart sub-components — `AnalyticsMainCharts` (4-chart grid), `AnalyticsTagsTable`, `AnalyticsFunnelSection` plus helpers (`CustomTooltip`, `ChartCard`, individual chart components, `ConversionRatesRow`)
+- **`frontend/src/pages/Analytics.jsx`** (refactored, ~90 lines): now just composes the hook + sub-components; all functions ≤ 40 lines
+
+430 tests pass, build succeeds.
+
+Ralph: uncommitted changes detected — creating snapshot commit for iteration 1.
