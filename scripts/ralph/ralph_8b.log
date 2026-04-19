@@ -60,3 +60,8 @@ Iteration 4 complete. Continuing...
 ===============================================================
   Ralph Iteration 5 of 30 (claude)
 ===============================================================
+US-151 through US-157 still have `passes: false`. Per the stop signal, I must NOT output the completion tag since not all stories pass.
+
+US-150 is complete: `Dashboard.jsx` no longer imports from `api/` — it uses `useApplicationExport` hook instead. 430/430 tests pass. Committed as `bc3cbe6`.
+
+Ralph: uncommitted changes detected — creating snapshot commit for iteration 5.

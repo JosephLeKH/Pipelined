@@ -108,3 +108,16 @@ Split the 159-line `CommandPalette` function into sub-components in the same fil
 ### Learnings
 - When a component has private sub-components that both need the same API call, hoist the hook to the parent and pass the function as a prop — avoids calling the same hook twice and keeps hook count stable
 - The MSW test setup already mocked `/api/feedback` at the HTTP level, so the refactor required zero test changes
+
+## US-150: Fix Dashboard.jsx direct api/ import
+**Status:** PASSED
+**Commit:** bc3cbe6
+
+### What was done
+- Extended `useApplicationExport` hook to also wrap `exportApplicationsCsv` from `api/applications`, adding `handleCsvExport(includeArchived)` to its return value and a `CSV_FILENAME` constant
+- Updated `Dashboard.jsx` to import `useApplicationExport` instead of `exportApplicationsCsv` directly; replaced `useState(isExporting)` with `isLoading` from the hook; simplified `handleExport` callback to delegate to `handleCsvExport`
+- 430/430 tests pass
+
+### Learnings
+- Extending an existing export hook (`useApplicationExport`) is cleaner than creating a second hook — keeps CSV and PDF export logic co-located and avoids proliferating single-function hook files
+- When a hook already manages `isLoading` state for the same resource, the consumer (Dashboard) can drop its own `isExporting` useState entirely and read from the hook instead
