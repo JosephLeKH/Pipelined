@@ -10,10 +10,52 @@ import { BUTTON_PRIMARY, BUTTON_SECONDARY } from "../lib/designTokens";
 
 const RESEND_COOLDOWN_S = 60;
 
+function ResendStatus({ status }) {
+  if (status === "sent") {
+    return (
+      <p role="status" className="mb-4 w-full rounded-lg bg-emerald-50 border border-emerald-200 px-3 py-2 text-sm text-emerald-800 dark:bg-emerald-900/20 dark:border-emerald-800 dark:text-emerald-300">
+        Verification email resent. Check your inbox.
+      </p>
+    );
+  }
+  if (status === "already_verified") {
+    return (
+      <p role="status" className="mb-4 w-full rounded-lg bg-emerald-50 border border-emerald-200 px-3 py-2 text-sm text-emerald-800 dark:bg-emerald-900/20 dark:border-emerald-800 dark:text-emerald-300">
+        Your email is already verified. You can sign in.
+      </p>
+    );
+  }
+  if (status === "error") {
+    return (
+      <p role="alert" className="mb-4 w-full rounded-lg bg-rose-50 border border-rose-200 px-3 py-2 text-sm text-rose-800 dark:bg-rose-900/20 dark:border-rose-800 dark:text-rose-300">
+        Could not resend. Please try again in a moment.
+      </p>
+    );
+  }
+  return null;
+}
+
+function ResendEmailButton({ isPending, cooldown, onResend }) {
+  return (
+    <button
+      type="button"
+      onClick={onResend}
+      disabled={isPending || cooldown > 0}
+      className={`w-full ${BUTTON_PRIMARY}`}
+    >
+      {isPending
+        ? "Sending…"
+        : cooldown > 0
+        ? `Resend in ${cooldown}s`
+        : "Resend verification email"}
+    </button>
+  );
+}
+
 function VerifyEmailPending() {
   const { mutateAsync: resend, isPending } = useResendVerification();
   const [cooldown, setCooldown] = useState(0);
-  const [resendStatus, setResendStatus] = useState(null); // "sent" | "error"
+  const [resendStatus, setResendStatus] = useState(null);
 
   useEffect(() => {
     if (cooldown <= 0) return;
@@ -48,36 +90,8 @@ function VerifyEmailPending() {
           We sent a verification link to your email address. Click the link to activate your account.
         </p>
 
-        {resendStatus === "sent" && (
-          <p role="status" className="mb-4 w-full rounded-lg bg-emerald-50 border border-emerald-200 px-3 py-2 text-sm text-emerald-800 dark:bg-emerald-900/20 dark:border-emerald-800 dark:text-emerald-300">
-            Verification email resent. Check your inbox.
-          </p>
-        )}
-
-        {resendStatus === "already_verified" && (
-          <p role="status" className="mb-4 w-full rounded-lg bg-emerald-50 border border-emerald-200 px-3 py-2 text-sm text-emerald-800 dark:bg-emerald-900/20 dark:border-emerald-800 dark:text-emerald-300">
-            Your email is already verified. You can sign in.
-          </p>
-        )}
-
-        {resendStatus === "error" && (
-          <p role="alert" className="mb-4 w-full rounded-lg bg-rose-50 border border-rose-200 px-3 py-2 text-sm text-rose-800 dark:bg-rose-900/20 dark:border-rose-800 dark:text-rose-300">
-            Could not resend. Please try again in a moment.
-          </p>
-        )}
-
-        <button
-          type="button"
-          onClick={handleResend}
-          disabled={isPending || cooldown > 0}
-          className={`w-full ${BUTTON_PRIMARY}`}
-        >
-          {isPending
-            ? "Sending…"
-            : cooldown > 0
-            ? `Resend in ${cooldown}s`
-            : "Resend verification email"}
-        </button>
+        <ResendStatus status={resendStatus} />
+        <ResendEmailButton isPending={isPending} cooldown={cooldown} onResend={handleResend} />
 
         <p className="mt-6 text-sm text-slate-500 dark:text-slate-400">
           Wrong email?{" "}

@@ -75,6 +75,50 @@ function NotFoundState() {
   );
 }
 
+function PipelineHeader({ pipeline }) {
+  return (
+    <header className="border-b border-gray-200 bg-white px-6 py-4">
+      <div className="mx-auto flex max-w-3xl items-center justify-between">
+        <div>
+          <h1 className="text-xl font-bold text-gray-900">{pipeline.display_name}'s Pipeline</h1>
+          <p className="text-sm text-gray-500">Read-only view</p>
+        </div>
+        <Link
+          to="/register"
+          className="rounded bg-blue-600 px-3 py-1.5 text-sm text-white hover:bg-blue-700"
+        >
+          Join Pipelined →
+        </Link>
+      </div>
+    </header>
+  );
+}
+
+function ApplicationsSection({ pipeline }) {
+  return (
+    <main className="mx-auto max-w-3xl px-6 py-8 flex flex-col gap-8">
+      <section aria-label="Stats">
+        <PublicStatsBar stats={pipeline.stats} />
+      </section>
+
+      <section aria-label="Applications">
+        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-500">
+          Applications ({pipeline.applications.length})
+        </h2>
+        {pipeline.applications.length === 0 ? (
+          <p className="text-sm text-gray-400">No applications yet.</p>
+        ) : (
+          <div className="flex flex-col gap-2">
+            {pipeline.applications.map((app) => (
+              <PublicAppRow key={app.id} app={app} />
+            ))}
+          </div>
+        )}
+      </section>
+    </main>
+  );
+}
+
 function PublicPipeline() {
   const { slug } = useParams();
   const { data, isLoading, isError } = usePublicPipeline(slug);
@@ -102,41 +146,8 @@ function PublicPipeline() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="border-b border-gray-200 bg-white px-6 py-4">
-        <div className="mx-auto flex max-w-3xl items-center justify-between">
-          <div>
-            <h1 className="text-xl font-bold text-gray-900">{pipeline.display_name}'s Pipeline</h1>
-            <p className="text-sm text-gray-500">Read-only view</p>
-          </div>
-          <Link
-            to="/register"
-            className="rounded bg-blue-600 px-3 py-1.5 text-sm text-white hover:bg-blue-700"
-          >
-            Join Pipelined →
-          </Link>
-        </div>
-      </header>
-
-      <main className="mx-auto max-w-3xl px-6 py-8 flex flex-col gap-8">
-        <section aria-label="Stats">
-          <PublicStatsBar stats={pipeline.stats} />
-        </section>
-
-        <section aria-label="Applications">
-          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-500">
-            Applications ({pipeline.applications.length})
-          </h2>
-          {pipeline.applications.length === 0 ? (
-            <p className="text-sm text-gray-400">No applications yet.</p>
-          ) : (
-            <div className="flex flex-col gap-2">
-              {pipeline.applications.map((app) => (
-                <PublicAppRow key={app.id} app={app} />
-              ))}
-            </div>
-          )}
-        </section>
-      </main>
+      <PipelineHeader pipeline={pipeline} />
+      <ApplicationsSection pipeline={pipeline} />
     </div>
   );
 }

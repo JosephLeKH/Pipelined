@@ -12,6 +12,62 @@ import { BUTTON_PRIMARY } from "../lib/designTokens";
 
 const REDIRECT_DELAY_MS = 2000;
 
+function VerifyingState() {
+  return (
+    <>
+      <Loader className="mb-5 h-12 w-12 animate-spin text-brand-500" />
+      <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Verifying your email…</h1>
+      <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">Just a moment.</p>
+    </>
+  );
+}
+
+function SuccessState() {
+  return (
+    <>
+      <CheckCircle className="mb-5 h-12 w-12 text-emerald-500" />
+      <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Email verified!</h1>
+      <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+        Your account is now active. Redirecting to your dashboard…
+      </p>
+    </>
+  );
+}
+
+function ErrorState({ errorCode }) {
+  return (
+    <>
+      <XCircle className="mb-5 h-12 w-12 text-rose-500" />
+      <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+        {errorCode === "TOKEN_EXPIRED" ? "Link expired" : "Invalid link"}
+      </h1>
+      <p className="mt-2 mb-6 text-sm text-slate-500 dark:text-slate-400">
+        {errorCode === "TOKEN_EXPIRED"
+          ? "This verification link has expired. Request a new one below."
+          : "This verification link is not valid. It may have already been used."}
+      </p>
+      <Link to="/verify-email" className={`w-full ${BUTTON_PRIMARY}`}>
+        Request a new link
+      </Link>
+    </>
+  );
+}
+
+function MissingTokenState() {
+  return (
+    <>
+      <XCircle className="mb-5 h-12 w-12 text-rose-500" />
+      <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Missing token</h1>
+      <p className="mt-2 mb-6 text-sm text-slate-500 dark:text-slate-400">
+        No verification token was found in this link.
+      </p>
+      <Link to="/verify-email" className={`w-full ${BUTTON_PRIMARY}`}>
+        Request a new link
+      </Link>
+    </>
+  );
+}
+
 function VerifyEmailConfirm() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -22,7 +78,7 @@ function VerifyEmailConfirm() {
   useEffect(() => {
     if (!token || called.current) return;
     called.current = true;
-    verify({ token }).catch(() => {}); // isError state is handled via React Query
+    verify({ token }).catch(() => {});
   }, [token, verify]);
 
   useEffect(() => {
@@ -36,53 +92,10 @@ function VerifyEmailConfirm() {
   return (
     <AuthLayout>
       <div className="flex flex-col items-center text-center">
-        {isPending && (
-          <>
-            <Loader className="mb-5 h-12 w-12 animate-spin text-brand-500" />
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Verifying your email…</h1>
-            <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">Just a moment.</p>
-          </>
-        )}
-
-        {isSuccess && (
-          <>
-            <CheckCircle className="mb-5 h-12 w-12 text-emerald-500" />
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Email verified!</h1>
-            <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-              Your account is now active. Redirecting to your dashboard…
-            </p>
-          </>
-        )}
-
-        {isError && (
-          <>
-            <XCircle className="mb-5 h-12 w-12 text-rose-500" />
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
-              {errorCode === "TOKEN_EXPIRED" ? "Link expired" : "Invalid link"}
-            </h1>
-            <p className="mt-2 mb-6 text-sm text-slate-500 dark:text-slate-400">
-              {errorCode === "TOKEN_EXPIRED"
-                ? "This verification link has expired. Request a new one below."
-                : "This verification link is not valid. It may have already been used."}
-            </p>
-            <Link to="/verify-email" className={`w-full ${BUTTON_PRIMARY}`}>
-              Request a new link
-            </Link>
-          </>
-        )}
-
-        {!token && (
-          <>
-            <XCircle className="mb-5 h-12 w-12 text-rose-500" />
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Missing token</h1>
-            <p className="mt-2 mb-6 text-sm text-slate-500 dark:text-slate-400">
-              No verification token was found in this link.
-            </p>
-            <Link to="/verify-email" className={`w-full ${BUTTON_PRIMARY}`}>
-              Request a new link
-            </Link>
-          </>
-        )}
+        {isPending && <VerifyingState />}
+        {isSuccess && <SuccessState />}
+        {isError && <ErrorState errorCode={errorCode} />}
+        {!token && <MissingTokenState />}
       </div>
     </AuthLayout>
   );

@@ -1,64 +1,58 @@
 /** Reset password page: validates the token from the URL and sets a new password. */
 
-import { useState, useCallback } from "react";
-import { Link, useSearchParams, useNavigate } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
-import { useResetPassword } from "../hooks/useAuth";
+import { useResetPasswordForm } from "../hooks/useResetPasswordForm";
 import AuthLayout from "../components/AuthLayout";
 import { INPUT_BASE, BUTTON_PRIMARY } from "../lib/designTokens";
-import { PASSWORD_MIN_LENGTH } from "../lib/constants";
 
-const RESET_SUCCESS_REDIRECT_MS = 2000;
+function PasswordInput({ label, id, value, onChange }) {
+  return (
+    <div className="mb-4">
+      <label htmlFor={id} className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
+        {label}
+      </label>
+      <input
+        id={id}
+        type="password"
+        autoComplete="new-password"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className={INPUT_BASE}
+        placeholder="••••••••"
+      />
+    </div>
+  );
+}
+
+function ErrorAlert({ error }) {
+  if (!error) return null;
+  return (
+    <p role="alert" className="mb-4 rounded-lg bg-rose-50 border border-rose-200 px-3 py-2 text-sm text-rose-800 dark:bg-rose-900/20 dark:border-rose-800 dark:text-rose-300">
+      {error}
+    </p>
+  );
+}
+
+function PasswordForm({ newPassword, confirmPassword, error, isPending, onNewPasswordChange, onConfirmPasswordChange, onSubmit }) {
+  return (
+    <form onSubmit={onSubmit} noValidate>
+      <PasswordInput label="New password" id="new-password" value={newPassword} onChange={onNewPasswordChange} />
+      <div className="mb-5">
+        <PasswordInput label="Confirm password" id="confirm-password" value={confirmPassword} onChange={onConfirmPasswordChange} />
+      </div>
+      <ErrorAlert error={error} />
+      <button type="submit" disabled={isPending} className={`w-full ${BUTTON_PRIMARY}`}>
+        {isPending ? "Resetting…" : "Reset password"}
+      </button>
+    </form>
+  );
+}
 
 function ResetPassword() {
   const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
   const token = searchParams.get("token") ?? "";
-  const { mutateAsync: doReset, isPending } = useResetPassword();
-
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState(false);
-
-  const handleSubmit = useCallback(
-    async (e) => {
-      e.preventDefault();
-      setError("");
-
-      if (!token) {
-        setError("Reset token is missing. Please request a new reset link.");
-        return;
-      }
-      if (!newPassword) {
-        setError("New password is required.");
-        return;
-      }
-      if (newPassword.length < PASSWORD_MIN_LENGTH) {
-        setError(`Password must be at least ${PASSWORD_MIN_LENGTH} characters.`);
-        return;
-      }
-      if (newPassword !== confirmPassword) {
-        setError("Passwords do not match.");
-        return;
-      }
-
-      try {
-        await doReset({ token, new_password: newPassword });
-        setSuccess(true);
-        setTimeout(() => navigate("/login", { replace: true }), RESET_SUCCESS_REDIRECT_MS);
-      } catch (err) {
-        if (err?.code === "TOKEN_EXPIRED") {
-          setError("This reset link has expired. Please request a new one.");
-        } else if (err?.code === "TOKEN_INVALID") {
-          setError("This reset link is invalid. Please request a new one.");
-        } else {
-          setError("Something went wrong. Please try again.");
-        }
-      }
-    },
-    [token, newPassword, confirmPassword, doReset, navigate]
-  );
+  const { newPassword, confirmPassword, error, success, isPending, setNewPassword, setConfirmPassword, handleSubmit } = useResetPasswordForm(token);
 
   return (
     <AuthLayout>
@@ -70,47 +64,15 @@ function ResetPassword() {
           Password reset successfully! Redirecting to sign in…
         </p>
       ) : (
-        <form onSubmit={handleSubmit} noValidate>
-          <div className="mb-4">
-            <label htmlFor="new-password" className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
-              New password
-            </label>
-            <input
-              id="new-password"
-              type="password"
-              autoComplete="new-password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              className={INPUT_BASE}
-              placeholder="••••••••"
-            />
-          </div>
-
-          <div className="mb-5">
-            <label htmlFor="confirm-password" className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
-              Confirm password
-            </label>
-            <input
-              id="confirm-password"
-              type="password"
-              autoComplete="new-password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className={INPUT_BASE}
-              placeholder="••••••••"
-            />
-          </div>
-
-          {error && (
-            <p role="alert" className="mb-4 rounded-lg bg-rose-50 border border-rose-200 px-3 py-2 text-sm text-rose-800 dark:bg-rose-900/20 dark:border-rose-800 dark:text-rose-300">
-              {error}
-            </p>
-          )}
-
-          <button type="submit" disabled={isPending} className={`w-full ${BUTTON_PRIMARY}`}>
-            {isPending ? "Resetting…" : "Reset password"}
-          </button>
-        </form>
+        <PasswordForm
+          newPassword={newPassword}
+          confirmPassword={confirmPassword}
+          error={error}
+          isPending={isPending}
+          onNewPasswordChange={setNewPassword}
+          onConfirmPasswordChange={setConfirmPassword}
+          onSubmit={handleSubmit}
+        />
       )}
 
       <p className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">

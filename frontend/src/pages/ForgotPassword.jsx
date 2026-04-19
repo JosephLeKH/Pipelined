@@ -7,32 +7,76 @@ import { useForgotPassword } from "../hooks/useAuth";
 import AuthLayout from "../components/AuthLayout";
 import { INPUT_BASE, BUTTON_PRIMARY } from "../lib/designTokens";
 
+function EmailInput({ email, onChange }) {
+  return (
+    <div className="mb-5">
+      <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
+        Email
+      </label>
+      <input
+        id="email"
+        type="email"
+        autoComplete="email"
+        value={email}
+        onChange={(e) => onChange(e.target.value)}
+        className={INPUT_BASE}
+        placeholder="you@example.com"
+      />
+    </div>
+  );
+}
+
+function ErrorAlert({ error }) {
+  if (!error) return null;
+  return (
+    <p role="alert" className="mb-4 rounded-lg bg-rose-50 border border-rose-200 px-3 py-2 text-sm text-rose-800 dark:bg-rose-900/20 dark:border-rose-800 dark:text-rose-300">
+      {error}
+    </p>
+  );
+}
+
+function SuccessMessage() {
+  return (
+    <p role="status" className="rounded-lg bg-emerald-50 border border-emerald-200 px-3 py-3 text-sm text-emerald-800 dark:bg-emerald-900/20 dark:border-emerald-800 dark:text-emerald-300">
+      If that email is registered, a reset link has been sent. Check your inbox.
+    </p>
+  );
+}
+
+function ForgotPasswordForm({ email, error, isPending, onEmailChange, onSubmit }) {
+  return (
+    <form onSubmit={onSubmit} noValidate>
+      <EmailInput email={email} onChange={onEmailChange} />
+      <ErrorAlert error={error} />
+      <button type="submit" disabled={isPending} className={`w-full ${BUTTON_PRIMARY}`}>
+        {isPending ? "Sending…" : "Send reset link"}
+      </button>
+    </form>
+  );
+}
+
 function ForgotPassword() {
   const { mutateAsync: sendReset, isPending } = useForgotPassword();
-
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSubmit = useCallback(
-    async (e) => {
-      e.preventDefault();
-      setError("");
+  const handleSubmit = useCallback(async (e) => {
+    e.preventDefault();
+    setError("");
 
-      if (!email.trim()) {
-        setError("Email is required.");
-        return;
-      }
+    if (!email.trim()) {
+      setError("Email is required.");
+      return;
+    }
 
-      try {
-        await sendReset({ email: email.trim() });
-        setSubmitted(true);
-      } catch {
-        setError("Something went wrong. Please try again.");
-      }
-    },
-    [email, sendReset]
-  );
+    try {
+      await sendReset({ email: email.trim() });
+      setSubmitted(true);
+    } catch {
+      setError("Something went wrong. Please try again.");
+    }
+  }, [email, sendReset]);
 
   return (
     <AuthLayout>
@@ -41,38 +85,7 @@ function ForgotPassword() {
         Enter your email and we&apos;ll send you a reset link.
       </p>
 
-      {submitted ? (
-        <p role="status" className="rounded-lg bg-emerald-50 border border-emerald-200 px-3 py-3 text-sm text-emerald-800 dark:bg-emerald-900/20 dark:border-emerald-800 dark:text-emerald-300">
-          If that email is registered, a reset link has been sent. Check your inbox.
-        </p>
-      ) : (
-        <form onSubmit={handleSubmit} noValidate>
-          <div className="mb-5">
-            <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              autoComplete="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className={INPUT_BASE}
-              placeholder="you@example.com"
-            />
-          </div>
-
-          {error && (
-            <p role="alert" className="mb-4 rounded-lg bg-rose-50 border border-rose-200 px-3 py-2 text-sm text-rose-800 dark:bg-rose-900/20 dark:border-rose-800 dark:text-rose-300">
-              {error}
-            </p>
-          )}
-
-          <button type="submit" disabled={isPending} className={`w-full ${BUTTON_PRIMARY}`}>
-            {isPending ? "Sending…" : "Send reset link"}
-          </button>
-        </form>
-      )}
+      {submitted ? <SuccessMessage /> : <ForgotPasswordForm email={email} error={error} isPending={isPending} onEmailChange={setEmail} onSubmit={handleSubmit} />}
 
       <p className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
         <Link to="/login" className="font-medium text-brand-600 hover:underline">

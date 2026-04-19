@@ -56,6 +56,96 @@ function FeatureRow({ label, included }) {
   );
 }
 
+function PricingHeader() {
+  return (
+    <header className="border-b border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
+      <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
+        <Link to="/" className="text-lg font-bold text-brand-600 dark:text-brand-400">
+          Pipelined
+        </Link>
+        <nav className="flex items-center gap-4 text-sm">
+          <Link to="/login" className="text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">
+            Sign in
+          </Link>
+          <Link
+            to="/register"
+            className="rounded-lg bg-brand-600 px-4 py-2 font-medium text-white hover:bg-brand-700"
+          >
+            Get started free
+          </Link>
+        </nav>
+      </div>
+    </header>
+  );
+}
+
+function FreeTierCard() {
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-white p-8 dark:border-slate-700 dark:bg-slate-900">
+      <div className="mb-6">
+        <h2 className="mb-1 text-xl font-bold text-slate-900 dark:text-white">Free</h2>
+        <div className="flex items-end gap-1">
+          <span className="text-4xl font-extrabold text-slate-900 dark:text-white">$0</span>
+          <span className="mb-1 text-slate-500 dark:text-slate-400">/ month</span>
+        </div>
+        <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+          Everything you need to get started.
+        </p>
+      </div>
+
+      <Link
+        to="/register"
+        className="mb-8 block w-full rounded-xl border border-brand-500 px-6 py-3 text-center text-sm font-semibold text-brand-600 hover:bg-brand-50 dark:border-brand-400 dark:text-brand-400 dark:hover:bg-brand-950"
+      >
+        Get started free
+      </Link>
+
+      <ul className="divide-y divide-slate-100 dark:divide-slate-800">
+        {FREE_FEATURES.map((f) => (
+          <FeatureRow key={f.label} {...f} />
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function ProTierCard() {
+  return (
+    <div className="relative rounded-2xl border-2 border-brand-500 bg-white p-8 shadow-lg dark:bg-slate-900">
+      <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
+        <span className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-brand-500 to-purple-600 px-4 py-1 text-xs font-bold uppercase tracking-wide text-white shadow">
+          <Zap className="h-3 w-3" />
+          Most popular
+        </span>
+      </div>
+
+      <div className="mb-6">
+        <h2 className="mb-1 text-xl font-bold text-slate-900 dark:text-white">Pro</h2>
+        <div className="flex items-end gap-1">
+          <span className="text-4xl font-extrabold text-slate-900 dark:text-white">$9</span>
+          <span className="mb-1 text-slate-500 dark:text-slate-400">/ month</span>
+        </div>
+        <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+          For serious job seekers who want it all.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        className="mb-8 w-full rounded-xl bg-gradient-to-r from-brand-500 to-purple-600 px-6 py-3 text-sm font-semibold text-white shadow-md hover:from-brand-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
+      >
+        Upgrade to Pro — coming soon
+      </button>
+
+      <ul className="divide-y divide-slate-100 dark:divide-slate-800">
+        {PRO_FEATURES.map((f) => (
+          <FeatureRow key={f.label} {...f} />
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 function Pricing() {
   useEffect(() => {
     document.title = "Pricing — Pipelined";
@@ -66,24 +156,7 @@ function Pricing() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
-      <header className="border-b border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
-          <Link to="/" className="text-lg font-bold text-brand-600 dark:text-brand-400">
-            Pipelined
-          </Link>
-          <nav className="flex items-center gap-4 text-sm">
-            <Link to="/login" className="text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">
-              Sign in
-            </Link>
-            <Link
-              to="/register"
-              className="rounded-lg bg-brand-600 px-4 py-2 font-medium text-white hover:bg-brand-700"
-            >
-              Get started free
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <PricingHeader />
 
       <main className="mx-auto max-w-5xl px-6 py-16">
         <div className="mb-12 text-center">
@@ -96,66 +169,8 @@ function Pricing() {
         </div>
 
         <div className="grid gap-8 md:grid-cols-2">
-          {/* Free tier */}
-          <div className="rounded-2xl border border-slate-200 bg-white p-8 dark:border-slate-700 dark:bg-slate-900">
-            <div className="mb-6">
-              <h2 className="mb-1 text-xl font-bold text-slate-900 dark:text-white">Free</h2>
-              <div className="flex items-end gap-1">
-                <span className="text-4xl font-extrabold text-slate-900 dark:text-white">$0</span>
-                <span className="mb-1 text-slate-500 dark:text-slate-400">/ month</span>
-              </div>
-              <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-                Everything you need to get started.
-              </p>
-            </div>
-
-            <Link
-              to="/register"
-              className="mb-8 block w-full rounded-xl border border-brand-500 px-6 py-3 text-center text-sm font-semibold text-brand-600 hover:bg-brand-50 dark:border-brand-400 dark:text-brand-400 dark:hover:bg-brand-950"
-            >
-              Get started free
-            </Link>
-
-            <ul className="divide-y divide-slate-100 dark:divide-slate-800">
-              {FREE_FEATURES.map((f) => (
-                <FeatureRow key={f.label} {...f} />
-              ))}
-            </ul>
-          </div>
-
-          {/* Pro tier */}
-          <div className="relative rounded-2xl border-2 border-brand-500 bg-white p-8 shadow-lg dark:bg-slate-900">
-            <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-              <span className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-brand-500 to-purple-600 px-4 py-1 text-xs font-bold uppercase tracking-wide text-white shadow">
-                <Zap className="h-3 w-3" />
-                Most popular
-              </span>
-            </div>
-
-            <div className="mb-6">
-              <h2 className="mb-1 text-xl font-bold text-slate-900 dark:text-white">Pro</h2>
-              <div className="flex items-end gap-1">
-                <span className="text-4xl font-extrabold text-slate-900 dark:text-white">$9</span>
-                <span className="mb-1 text-slate-500 dark:text-slate-400">/ month</span>
-              </div>
-              <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-                For serious job seekers who want it all.
-              </p>
-            </div>
-
-            <button
-              type="button"
-              className="mb-8 w-full rounded-xl bg-gradient-to-r from-brand-500 to-purple-600 px-6 py-3 text-sm font-semibold text-white shadow-md hover:from-brand-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
-            >
-              Upgrade to Pro — coming soon
-            </button>
-
-            <ul className="divide-y divide-slate-100 dark:divide-slate-800">
-              {PRO_FEATURES.map((f) => (
-                <FeatureRow key={f.label} {...f} />
-              ))}
-            </ul>
-          </div>
+          <FreeTierCard />
+          <ProTierCard />
         </div>
 
         <p className="mt-12 text-center text-sm text-slate-400 dark:text-slate-500">

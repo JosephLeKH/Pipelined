@@ -10,6 +10,41 @@ import NavBar from "../components/NavBar";
 import NewEventForm from "../components/NewEventForm";
 import { useCalendarEvents } from "../hooks/useCalendar";
 
+function CalendarContent({ month, year, events, eventsLoading, selectedEvent, newEventForm, onMonthChange, onEventClick, onDayClick, onCloseEventDetail, onCloseForm }) {
+  return (
+    <main className="flex-1 p-6">
+      <h1 className="mb-6 text-xl font-semibold text-slate-900 dark:text-slate-100">Calendar</h1>
+      <CalendarGrid
+        month={month}
+        year={year}
+        onMonthChange={onMonthChange}
+        onEventClick={onEventClick}
+        onDayClick={onDayClick}
+      />
+      {!eventsLoading && events.length === 0 && (
+        <EmptyState
+          title="No interviews scheduled"
+          description="Events will appear here when you schedule interviews for your applications."
+          icon={CalendarDays}
+        />
+      )}
+      {selectedEvent && (
+        <CalendarEventDetail
+          event={selectedEvent}
+          onClose={onCloseEventDetail}
+        />
+      )}
+      {newEventForm && (
+        <NewEventForm
+          initialDate={newEventForm.date}
+          initialApplicationId={newEventForm.applicationId}
+          onClose={onCloseForm}
+        />
+      )}
+    </main>
+  );
+}
+
 function Calendar() {
   const today = new Date();
   const [month, setMonth] = useState(today.getMonth() + 1);
@@ -44,36 +79,19 @@ function Calendar() {
   return (
     <div className="flex min-h-screen flex-col bg-slate-50 dark:bg-slate-900">
       <NavBar />
-      <main className="flex-1 p-6">
-      <h1 className="mb-6 text-xl font-semibold text-slate-900 dark:text-slate-100">Calendar</h1>
-      <CalendarGrid
+      <CalendarContent
         month={month}
         year={year}
+        events={events}
+        eventsLoading={eventsLoading}
+        selectedEvent={selectedEvent}
+        newEventForm={newEventForm}
         onMonthChange={handleMonthChange}
         onEventClick={handleEventClick}
         onDayClick={handleDayClick}
+        onCloseEventDetail={handleCloseEventDetail}
+        onCloseForm={handleCloseForm}
       />
-      {!eventsLoading && events.length === 0 && (
-        <EmptyState
-          title="No interviews scheduled"
-          description="Events will appear here when you schedule interviews for your applications."
-          icon={CalendarDays}
-        />
-      )}
-      {selectedEvent && (
-        <CalendarEventDetail
-          event={selectedEvent}
-          onClose={handleCloseEventDetail}
-        />
-      )}
-      {newEventForm && (
-        <NewEventForm
-          initialDate={newEventForm.date}
-          initialApplicationId={newEventForm.applicationId}
-          onClose={handleCloseForm}
-        />
-      )}
-      </main>
     </div>
   );
 }

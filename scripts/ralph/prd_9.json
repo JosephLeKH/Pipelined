@@ -147,8 +147,8 @@
         "npm test passes all tests"
       ],
       "priority": 2,
-      "passes": false,
-      "notes": "Catch-all for remaining page-level function splits."
+      "passes": true,
+      "notes": "Completed: Calendar.jsx refactored (CalendarContent 40 lines, Calendar 40 lines), ResetPassword.jsx refactored (PasswordForm 15 lines, PasswordInput 19 lines, ErrorAlert 9 lines, ResetPassword 36 lines), ForgotPassword.jsx refactored (ForgotPasswordForm 9 lines, EmailInput 16 lines, ErrorAlert 6 lines, SuccessMessage 5 lines, ForgotPassword 38 lines). Settings.jsx, Activity.jsx, VerifyEmailConfirm.jsx, VerifyEmailPending.jsx already compliant. All 430 frontend tests passing."
     }
   ]
 }

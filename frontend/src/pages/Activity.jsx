@@ -65,10 +65,80 @@ function TimelineEntry({ entry, onClick }) {
   );
 }
 
+function ActivityHeader({ days, total, isLoading, onDaysChange }) {
+  return (
+    <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <h1 className="flex items-center gap-2 text-xl font-semibold text-slate-900 dark:text-slate-100">
+          <Activity className="h-5 w-5 text-brand-600" />
+          Activity
+        </h1>
+        {!isLoading && (
+          <p className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
+            {total} action{total !== 1 ? "s" : ""}
+          </p>
+        )}
+      </div>
+
+      <div className="flex items-center gap-1 rounded-full border border-slate-200 bg-white p-1 dark:border-slate-700 dark:bg-slate-800">
+        {TIME_RANGES.map((range) => (
+          <button
+            key={range.days}
+            type="button"
+            onClick={() => onDaysChange(range.days)}
+            className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+              days === range.days
+                ? "bg-brand-600 text-white"
+                : "text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-700"
+            }`}
+          >
+            {range.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ActivityTimeline({ isLoading, entries, onEntryClick }) {
+  if (isLoading) {
+    return (
+      <div className="flex justify-center py-16">
+        <div className="h-6 w-6 animate-spin rounded-full border-4 border-brand-500 border-t-transparent" />
+      </div>
+    );
+  }
+
+  if (entries.length === 0) {
+    return (
+      <div className="rounded-card border border-slate-200 bg-white px-6 py-16 text-center dark:border-slate-700 dark:bg-slate-800">
+        <Activity className="mx-auto mb-3 h-10 w-10 text-slate-300 dark:text-slate-600" />
+        <p className="text-sm font-medium text-slate-900 dark:text-slate-100">No activity yet</p>
+        <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+          Actions will appear here as you apply, move stages, and schedule interviews.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-card border border-slate-200 bg-white px-4 dark:border-slate-700 dark:bg-slate-800">
+      <div className="relative border-l border-slate-200 pl-4 dark:border-slate-700 ml-1.5">
+        {entries.map((entry, idx) => (
+          <TimelineEntry
+            key={`${entry.type}-${entry.application_id}-${idx}`}
+            entry={entry}
+            onClick={onEntryClick}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function ActivityPage() {
   const [days, setDays] = useState(30);
   const navigate = useNavigate();
-
   const { data: feedEnv, isLoading } = useActivityFeed({ days });
   const entries = feedEnv?.data ?? [];
   const total = feedEnv?.meta?.total ?? 0;
@@ -85,68 +155,9 @@ function ActivityPage() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
       <NavBar />
-
       <main className="mx-auto max-w-2xl px-4 py-8">
-        {/* Header */}
-        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h1 className="flex items-center gap-2 text-xl font-semibold text-slate-900 dark:text-slate-100">
-              <Activity className="h-5 w-5 text-brand-600" />
-              Activity
-            </h1>
-            {!isLoading && (
-              <p className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
-                {total} action{total !== 1 ? "s" : ""}
-              </p>
-            )}
-          </div>
-
-          {/* Time range selector */}
-          <div className="flex items-center gap-1 rounded-full border border-slate-200 bg-white p-1 dark:border-slate-700 dark:bg-slate-800">
-            {TIME_RANGES.map((range) => (
-              <button
-                key={range.days}
-                type="button"
-                onClick={() => setDays(range.days)}
-                className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
-                  days === range.days
-                    ? "bg-brand-600 text-white"
-                    : "text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-700"
-                }`}
-              >
-                {range.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Timeline */}
-        {isLoading ? (
-          <div className="flex justify-center py-16">
-            <div className="h-6 w-6 animate-spin rounded-full border-4 border-brand-500 border-t-transparent" />
-          </div>
-        ) : entries.length === 0 ? (
-          <div className="rounded-card border border-slate-200 bg-white px-6 py-16 text-center dark:border-slate-700 dark:bg-slate-800">
-            <Activity className="mx-auto mb-3 h-10 w-10 text-slate-300 dark:text-slate-600" />
-            <p className="text-sm font-medium text-slate-900 dark:text-slate-100">No activity yet</p>
-            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-              Actions will appear here as you apply, move stages, and schedule interviews.
-            </p>
-          </div>
-        ) : (
-          <div className="rounded-card border border-slate-200 bg-white px-4 dark:border-slate-700 dark:bg-slate-800">
-            {/* Vertical line + entries */}
-            <div className="relative border-l border-slate-200 pl-4 dark:border-slate-700 ml-1.5">
-              {entries.map((entry, idx) => (
-                <TimelineEntry
-                  key={`${entry.type}-${entry.application_id}-${idx}`}
-                  entry={entry}
-                  onClick={handleEntryClick}
-                />
-              ))}
-            </div>
-          </div>
-        )}
+        <ActivityHeader days={days} total={total} isLoading={isLoading} onDaysChange={setDays} />
+        <ActivityTimeline isLoading={isLoading} entries={entries} onEntryClick={handleEntryClick} />
       </main>
     </div>
   );
