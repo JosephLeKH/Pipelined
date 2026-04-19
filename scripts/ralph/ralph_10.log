@@ -42,3 +42,6 @@ Iteration 2 complete. Continuing...
 ===============================================================
   Ralph Iteration 3 of 21 (claude)
 ===============================================================
+Four stories still have `passes: false` (US-171, US-173, US-174, US-175). US-172 is complete and committed. Per the stop signal rule, I must NOT output the completion tag.
+
+Ralph: uncommitted changes detected — creating snapshot commit for iteration 3.

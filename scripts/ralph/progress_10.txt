@@ -35,3 +35,24 @@ Started: Sun Apr 19 11:08:12 PDT 2026
 **Learnings:**
 - Using `replace_all` on a substring like `DASHBOARD_URL` will corrupt occurrences that are already part of a longer name (e.g. `APP_DASHBOARD_URL` → `APP_APP_DASHBOARD_URL`). Prefer targeted non-replace_all edits when the old string is a substring of existing identifiers.
 - Gateguard requires facts before every Edit — prepare facts upfront for each file to avoid repeated denials.
+
+---
+
+## US-172 — Extension: add try-catch to unprotected chrome.storage calls in background.js
+
+**Completed:** 2026-04-19
+
+**What was done:**
+- Wrapped `chrome.storage.session.get` in `getToken()` with try-catch; returns null on error
+- Wrapped `chrome.storage.session.set` in `setToken()` with try-catch; logs and swallows error
+- Wrapped `chrome.storage.session.remove` in `clearToken()` with try-catch; logs and swallows error
+- Wrapped `chrome.storage.local.set` in `refreshToken()` (display_name caching) with nested try-catch
+- Wrapped both `chrome.storage.local.get` and `chrome.storage.local.set` in `cacheRecentSave()` with a single try-catch covering the pair
+- All errors logged via `console.error` with `[background]` prefix
+- Message handler `.catch()` chains for GET_AUTH_STATUS and GET_RECENT_SAVES were already protected; left unchanged
+- All 247 extension tests pass
+
+**Learnings:**
+- The message router's `.catch()` at the Promise chain level provides outer protection, but individual storage helper functions need their own try-catch so callers get safe fallback values (null for getToken, no-op for setToken/clearToken)
+- For cacheRecentSave, wrapping both get+set in a single try-catch is cleaner than two separate blocks — a failure in get would make set meaningless anyway
+- Nested try-catch inside an existing try block (refreshToken) is the right pattern when the outer catch is for a different concern (fetch errors)

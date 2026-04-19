@@ -1,0 +1,106 @@
+{
+  "project": "Pipelined",
+  "branchName": "ralph/pipelined-v11",
+  "description": "Substantive quality improvements: security hardening (rate limiting, input sanitization), UX upgrades (error boundaries, optimistic mutations, form validation), performance (memoization), and code deduplication.",
+  "userStories": [
+    {
+      "id": "US-176",
+      "title": "Add rate limiting to /reset-password endpoint",
+      "description": "backend/auth/router.py line 270: the /reset-password endpoint lacks @limiter.limit() even though /forgot-password (line 260) has @limiter.limit(settings.rate_limit_auth). This allows brute-force token guessing. Add the same rate limiter decorator.",
+      "acceptanceCriteria": [
+        "/reset-password endpoint has @limiter.limit(settings.rate_limit_auth) decorator",
+        "Rate limiting behavior matches /forgot-password",
+        "All backend tests pass: pytest tests/ -x"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Security fix — HIGH severity. Simple one-line change."
+    },
+    {
+      "id": "US-177",
+      "title": "Add MongoDB operator injection validation to query filters",
+      "description": "backend/applications/service.py line 54-61: user-supplied stage, company_type, and tags values are inserted directly into MongoDB filters. While Pydantic validates types, strings starting with '$' could be used for operator injection. Add a validator to ApplicationListQuery in applications/schemas.py that rejects any string field value starting with '$'.",
+      "acceptanceCriteria": [
+        "ApplicationListQuery schema validates that stage and company_type do not start with '$'",
+        "Tags list items are validated to not start with '$'",
+        "A test exists proving '$ne' or similar operator strings are rejected with 422",
+        "All backend tests pass: pytest tests/ -x"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Security fix — MEDIUM severity. Defense in depth against NoSQL injection."
+    },
+    {
+      "id": "US-178",
+      "title": "Wrap App.jsx routes with ErrorBoundary for per-route error isolation",
+      "description": "frontend/src/App.jsx renders <Routes> without an ErrorBoundary wrapper. The only ErrorBoundary is at the app root in main.jsx line 40, which crashes the entire app on any component error. Wrap the <Routes> block in App.jsx with <ErrorBoundary> so individual page crashes show a recovery UI instead of blanking the whole app. Include a 'Go to Dashboard' recovery link.",
+      "acceptanceCriteria": [
+        "App.jsx wraps <Routes> with <ErrorBoundary> component",
+        "ErrorBoundary renders a user-friendly fallback with a link to dashboard",
+        "A thrown error in one page does not crash the entire app",
+        "npm test passes all tests",
+        "npm run build succeeds"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "UX resilience — prevents full app crashes from isolated component errors."
+    },
+    {
+      "id": "US-179",
+      "title": "Add optimistic updates to useUpdateApplication mutation",
+      "description": "frontend/src/hooks/useApplications.js lines 81-90: useUpdateApplication() only invalidates queries on success, causing a visible delay when changing application status. Implement optimistic updates: onMutate should update the cache immediately with setQueryData, store previous data, and onError should roll back to previous data. Follow the pattern already used in useKanbanDrag.js lines 27-40.",
+      "acceptanceCriteria": [
+        "useUpdateApplication mutation uses onMutate to optimistically update cached data",
+        "onError rolls back to previous data from onMutate snapshot",
+        "onSettled still calls invalidateQueries to ensure eventual consistency",
+        "Status changes in DetailPanel feel instant (no loading delay)",
+        "npm test passes all tests"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "UX snappiness — status changes should feel instant."
+    },
+    {
+      "id": "US-180",
+      "title": "Add client-side email validation and password strength feedback to RegisterForm",
+      "description": "frontend/src/components/RegisterForm.jsx: email validation relies only on browser type='email' (line 26), and password field has no strength feedback (line 32, just placeholder text). Add: (1) real-time email format validation with inline error message, (2) password strength indicator showing requirements (8+ chars, uppercase, number) with visual feedback as user types. Use the existing form validation pattern from ManualAddForm.",
+      "acceptanceCriteria": [
+        "Email field shows inline error for invalid format on blur",
+        "Password field shows strength requirements with checkmarks as criteria are met",
+        "Submit button is disabled until email is valid and password meets minimum requirements",
+        "npm test passes all tests"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "UX improvement — helps users succeed on first attempt."
+    },
+    {
+      "id": "US-181",
+      "title": "Memoize NavBar computed values to prevent unnecessary re-renders",
+      "description": "frontend/src/components/NavBar.jsx lines 131-132: offersLink object and navLinks array are recreated on every render, causing DesktopNavLinks and MobileMenu child components to re-render unnecessarily. Wrap offersLink in useMemo (dependency: none, it's static) and navLinks in useMemo (dependency: hasOffers).",
+      "acceptanceCriteria": [
+        "offersLink and navLinks are wrapped in useMemo with correct dependency arrays",
+        "DesktopNavLinks and MobileMenu do not re-render when parent state changes unrelated to navigation",
+        "npm test passes all tests"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Performance — NavBar renders on every route change and auth state update."
+    },
+    {
+      "id": "US-182",
+      "title": "Extract shared currency formatter to lib/currencyUtils.js",
+      "description": "Identical Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }) is defined in both frontend/src/components/OfferDetailsSection.jsx (lines 10-14) and frontend/src/pages/OfferComparison.jsx (lines 13-17). Extract to a formatUSD() function in frontend/src/lib/currencyUtils.js and import in both files.",
+      "acceptanceCriteria": [
+        "frontend/src/lib/currencyUtils.js exports formatUSD(amount) function",
+        "OfferDetailsSection.jsx imports and uses formatUSD instead of local formatter",
+        "OfferComparison.jsx imports and uses formatUSD instead of local formatter",
+        "No duplicate Intl.NumberFormat definitions for USD remain",
+        "npm test passes all tests"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "Code deduplication — DRY principle."
+    }
+  ]
+}

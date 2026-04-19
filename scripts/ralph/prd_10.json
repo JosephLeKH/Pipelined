@@ -55,7 +55,7 @@
         "npm test in extension/ passes all tests"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "Unhandled storage errors can silently break token management and caching."
     },
     {
