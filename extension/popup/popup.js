@@ -152,8 +152,16 @@ export function openDashboard() {
 }
 
 export async function signOut() {
-  await chrome.storage.session.clear();
-  await chrome.storage.local.remove("display_name");
+  try {
+    await chrome.storage.session.clear();
+  } catch (err) {
+    console.error("[popup] Failed to clear session storage:", err);
+  }
+  try {
+    await chrome.storage.local.remove("display_name");
+  } catch (err) {
+    console.error("[popup] Failed to remove display_name from local storage:", err);
+  }
   show("unauthenticated");
 }
 
@@ -201,7 +209,13 @@ export async function init() {
     signOutBtn.addEventListener("click", signOut);
   }
 
-  const { recent_saves = [] } = await chrome.storage.local.get("recent_saves");
+  let recent_saves = [];
+  try {
+    const result = await chrome.storage.local.get("recent_saves");
+    recent_saves = result.recent_saves ?? [];
+  } catch (err) {
+    console.error("[popup] Failed to read recent_saves:", err);
+  }
   renderSaves(recent_saves);
   show("authenticated");
   await renderAutoSaveToggle();
