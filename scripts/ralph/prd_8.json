@@ -164,7 +164,7 @@
         "Type annotations on all new functions"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "notes": "Grouped moderate violations."
     },
     {

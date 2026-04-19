@@ -209,3 +209,24 @@ Changes:
 Learnings:
 - `stateRef = useRef({ notes, checklist, questions }); stateRef.current = { ...state }` pattern updated each render allows setState callbacks to spread fresh state without stale closure issues, avoiding separate per-field refs
 - Gateguard hook fires on both Write and Edit — facts must be presented before each tool call
+
+---
+## US-154: Split backend create_user(), ensure_indexes(), build_weekly_digest()
+**Completed:** 2026-04-19
+
+### Summary
+Split three backend functions that exceeded the 40-line limit:
+
+1. **auth/service.py `create_user()` (50→~15 lines):** Extracted `_build_user_doc()` to construct the base user document and `_apply_referral()` to handle referral code logic. Added `AsyncIOMotorCollection` import for proper type annotation on `_apply_referral`.
+
+2. **database.py `ensure_indexes()` (55→~15 lines):** Extracted `_ensure_app_event_listing_indexes(apps, events, listings)` and `_ensure_user_support_indexes(users, shares, contacts, notifications, ai_cache, ai_budget, app_templates)`. The main function now calls `asyncio.gather()` on both helpers.
+
+3. **notifications/digest.py `build_weekly_digest()` (46→~22 lines):** Extracted `_build_stale_apps(stale_docs, now)` and `_build_upcoming_events(event_docs)` as pure sync helpers. The main function now delegates list construction to these helpers.
+
+### Test Results
+235 passing, 1 pre-existing failure (test_calendar.py::test_update_event_sets_prep_data — asyncio event loop issue, unrelated to this story).
+
+### Learnings
+- The gateguard-fact-force hook requires presenting importers, affected public API, data structure, and verbatim instructions before each edit — plan for this overhead per file.
+- Splitting `ensure_indexes()` by grouping into "core collections" vs "user/support collections" is a natural seam that keeps each helper well under 40 lines.
+- `AsyncIOMotorCollection` must be imported explicitly for type annotations when passing collections as parameters to extracted helpers.
