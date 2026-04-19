@@ -134,7 +134,7 @@
         "npm test passes all tests"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "notes": "Minor accessibility fix."
     },
     {

@@ -90,7 +90,7 @@ function CsvImportModal({ isOpen, onClose }) {
   if (!isOpen) return null;
   return (
     <div role="dialog" aria-modal="true" aria-labelledby="csv-import-heading" className="fixed inset-0 z-50 flex items-center justify-center">
-      <div data-testid="import-overlay" className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={handleClose} />
+      <div data-testid="import-overlay" aria-hidden="true" className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={handleClose} />
       <div className={`relative z-10 w-full max-w-md p-6 ${MODAL_CARD}`}>
         <div className="mb-4 flex items-center justify-between">
           <h2 id="csv-import-heading" className="text-base font-semibold text-slate-900 dark:text-slate-100">Import CSV</h2>
