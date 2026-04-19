@@ -52,6 +52,22 @@ async function refreshToken() {
   return false;
 }
 
+async function _parseResponse(response) {
+  if (!response.ok) {
+    try {
+      const body = await response.json();
+      return { error: body.error ?? { code: "REQUEST_FAILED", message: `Request failed with status ${response.status}` } };
+    } catch {
+      return { error: { code: "REQUEST_FAILED", message: `Request failed with status ${response.status}` } };
+    }
+  }
+  try {
+    return await response.json();
+  } catch {
+    return { error: { code: "INVALID_RESPONSE", message: "Server returned invalid JSON" } };
+  }
+}
+
 async function fetchWithAuth(path, options = {}, _retried = false) {
   const token = await getToken();
   if (!token) {
@@ -80,20 +96,7 @@ async function fetchWithAuth(path, options = {}, _retried = false) {
     return { ok: false, status: 401, error: "SESSION_EXPIRED" };
   }
 
-  if (!response.ok) {
-    try {
-      const body = await response.json();
-      return { error: body.error ?? { code: "REQUEST_FAILED", message: `Request failed with status ${response.status}` } };
-    } catch {
-      return { error: { code: "REQUEST_FAILED", message: `Request failed with status ${response.status}` } };
-    }
-  }
-
-  try {
-    return await response.json();
-  } catch {
-    return { error: { code: "INVALID_RESPONSE", message: "Server returned invalid JSON" } };
-  }
+  return _parseResponse(response);
 }
 
 // ── Save logic ────────────────────────────────────────────────────────────────
@@ -207,4 +210,7 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
       .catch(() => sendResponse({ type: MSG.RECENT_SAVES, saves: [] }));
     return true;
   }
+
+  console.warn("[background] Unknown message type:", message.type);
+  sendResponse({ success: false, error: "Unknown message type" });
 });
