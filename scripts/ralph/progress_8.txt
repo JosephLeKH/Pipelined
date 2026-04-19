@@ -164,3 +164,21 @@ Split two backend functions that exceeded the 40-line limit:
 ### Learnings
 - Returning extracted values (token counts) from helpers instead of raw objects avoids type annotation complexity and is cleaner.
 - Two pre-existing test failures (`test_sync_github_repos_continues_on_repo_error`, `test_update_event_sets_prep_data`) were confirmed pre-existing via git stash check — not caused by this change.
+
+## US-155 — Extension: split popup.js renderSaves() (87 lines) and add error handling
+**Status:** DONE
+**Commit:** 092427e
+
+### Summary
+Split the 87-line `renderSaves()` in `extension/popup/popup.js` into three focused functions:
+- `renderEmptyState(list, emptyState)` (13 lines) — handles empty array display, with legacy JSDOM fallback
+- `buildCardBody(s, stageStyle)` (34 lines) — builds the company/role/badge/time card content
+- `renderSaveItem(s)` (23 lines) — assembles bar + body + link into a list item
+- `renderSaves(saves)` (14 lines) — orchestrates the above
+
+Wrapped the `DOMContentLoaded` event listener (not the exported `init`) in try/catch with `console.error` and a user-visible `<p class="error-state">` fallback via safe DOM methods (no innerHTML).
+
+### Learnings
+- Security hook correctly caught `innerHTML` with static content — always use `textContent` + `createElement` even for hardcoded strings to maintain the pattern
+- The POPUP_HTML test fixture lacks `#empty-state`, so the legacy `.empty` li fallback path in `renderEmptyState` must be preserved for tests to pass
+- Wrapping the DOMContentLoaded handler (not the exported function) keeps exported `init` testable without error-handling noise in tests
