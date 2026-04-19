@@ -6,16 +6,26 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 import SettingsReportSection from "./SettingsReportSection";
 
-vi.mock("../api/applications", () => ({
-  downloadPdfReport: vi.fn(),
+const mockHandleDownload = vi.fn();
+vi.mock("../hooks/useApplicationExport", () => ({
+  useApplicationExport: vi.fn(() => ({
+    handleDownload: mockHandleDownload,
+    isLoading: false,
+    error: null,
+    retryAfter: null,
+  })),
 }));
 
-import { downloadPdfReport } from "../api/applications";
+import { useApplicationExport } from "../hooks/useApplicationExport";
 
 beforeEach(() => {
   vi.clearAllMocks();
-  global.URL.createObjectURL = vi.fn(() => "blob:mock-url");
-  global.URL.revokeObjectURL = vi.fn();
+  useApplicationExport.mockReturnValue({
+    handleDownload: mockHandleDownload,
+    isLoading: false,
+    error: null,
+    retryAfter: null,
+  });
 });
 
 afterEach(() => {
@@ -29,58 +39,51 @@ describe("SettingsReportSection", () => {
     expect(screen.getByRole("button", { name: /download pipeline report/i })).toBeInTheDocument();
   });
 
-  it("should show loading spinner while downloading", async () => {
-    downloadPdfReport.mockReturnValue(new Promise(() => {}));
+  it("should show loading spinner while downloading", () => {
+    useApplicationExport.mockReturnValue({
+      handleDownload: mockHandleDownload,
+      isLoading: true,
+      error: null,
+      retryAfter: null,
+    });
 
     render(<SettingsReportSection />);
-    await userEvent.click(screen.getByRole("button", { name: /download pipeline report/i }));
 
     expect(screen.getByRole("button", { name: /generating/i })).toBeDisabled();
   });
 
-  it("should trigger anchor download on success", async () => {
-    const mockBlob = new Blob(["pdf-content"], { type: "application/pdf" });
-    downloadPdfReport.mockResolvedValue({ blob: mockBlob, retryAfter: null });
-
-    // Render before setting up spies so RTL's container attachment is unaffected
+  it("should call handleDownload when button is clicked", async () => {
     render(<SettingsReportSection />);
-
-    const mockClick = vi.fn();
-    const mockAnchor = { href: "", download: "", click: mockClick, style: {} };
-    const realCreateElement = document.createElement.bind(document);
-    vi.spyOn(document, "createElement").mockImplementation((tag, opts) => {
-      if (tag === "a") return mockAnchor;
-      return realCreateElement(tag, opts);
-    });
-    vi.spyOn(document.body, "appendChild").mockImplementation(() => mockAnchor);
-    vi.spyOn(document.body, "removeChild").mockImplementation(() => mockAnchor);
 
     await userEvent.click(screen.getByRole("button", { name: /download pipeline report/i }));
 
-    await waitFor(() => expect(mockClick).toHaveBeenCalledOnce());
-    expect(mockAnchor.download).toBe("pipeline-report.pdf");
+    expect(mockHandleDownload).toHaveBeenCalledOnce();
   });
 
-  it("should show rate limit message when retryAfter is set", async () => {
-    downloadPdfReport.mockResolvedValue({ blob: null, retryAfter: 60 });
+  it("should show rate limit message when retryAfter is set", () => {
+    useApplicationExport.mockReturnValue({
+      handleDownload: mockHandleDownload,
+      isLoading: false,
+      error: null,
+      retryAfter: 60,
+    });
 
     render(<SettingsReportSection />);
-    await userEvent.click(screen.getByRole("button", { name: /download pipeline report/i }));
 
-    await waitFor(() =>
-      expect(screen.getByRole("alert")).toHaveTextContent(/rate limit reached/i)
-    );
+    expect(screen.getByRole("alert")).toHaveTextContent(/rate limit reached/i);
     expect(screen.getByRole("alert")).toHaveTextContent("60 second");
   });
 
-  it("should show error message on failed download", async () => {
-    downloadPdfReport.mockRejectedValue(new Error("network error"));
+  it("should show error message when error is set", () => {
+    useApplicationExport.mockReturnValue({
+      handleDownload: mockHandleDownload,
+      isLoading: false,
+      error: "Failed to download report. Please try again.",
+      retryAfter: null,
+    });
 
     render(<SettingsReportSection />);
-    await userEvent.click(screen.getByRole("button", { name: /download pipeline report/i }));
 
-    await waitFor(() =>
-      expect(screen.getByRole("alert")).toHaveTextContent(/failed to download report/i)
-    );
+    expect(screen.getByRole("alert")).toHaveTextContent(/failed to download report/i);
   });
 });

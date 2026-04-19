@@ -1,43 +1,12 @@
 /** Settings reports section — download pipeline PDF report. */
 
-import { useState } from "react";
-
 import Download from "lucide-react/dist/esm/icons/download";
 import Loader2 from "lucide-react/dist/esm/icons/loader-2";
 
-import { downloadPdfReport } from "../api/applications";
-
-const REPORT_FILENAME = "pipeline-report.pdf";
+import { useApplicationExport } from "../hooks/useApplicationExport";
 
 export default function SettingsReportSection() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [retryAfter, setRetryAfter] = useState(null);
-
-  const handleDownload = async () => {
-    setIsLoading(true);
-    setError(null);
-    setRetryAfter(null);
-    try {
-      const { blob, retryAfter: after } = await downloadPdfReport();
-      if (after !== null) {
-        setRetryAfter(after);
-        return;
-      }
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = REPORT_FILENAME;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    } catch {
-      setError("Failed to download report. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const { handleDownload, isLoading, error, retryAfter } = useApplicationExport();
 
   return (
     <div className="rounded-card border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800">
