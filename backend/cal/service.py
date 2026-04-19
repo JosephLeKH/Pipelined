@@ -64,30 +64,28 @@ async def create_event(user_id: str, body: EventCreate) -> dict:
     return doc
 
 
-async def list_events(
-    user_id: str,
+async def _build_events_match_filter(
+    uid: ObjectId,
     date_from: dt.date | None,
     date_to: dt.date | None,
-    application_id: str | None = None,
-) -> list[dict]:
-    """Return events for user, optionally filtered by application_id or date range.
+    application_id: str | None,
+) -> dict | None:
+    """Build the $match filter for list_events.
 
+    Returns None if application_id is provided but not owned by this user.
     When application_id is provided, returns all events for that application (no date
     restriction). Otherwise defaults to the current calendar month.
     """
-    uid = ObjectId(user_id)
-
     match_filter: dict = {"user_id": uid}
 
     if application_id:
-        # Verify the application belongs to this user before using it as a filter.
         apps = get_collection("applications")
         app_doc = await apps.find_one(
             {"_id": ObjectId(application_id), "user_id": uid},
             projection={"_id": 1},
         )
         if app_doc is None:
-            return []
+            return None
         match_filter["application_id"] = ObjectId(application_id)
     else:
         today = dt.date.today()
@@ -102,7 +100,12 @@ async def list_events(
             "$lte": _date_to_datetime(effective_to),
         }
 
-    pipeline = [
+    return match_filter
+
+
+def _build_events_pipeline(match_filter: dict) -> list[dict]:
+    """Build aggregation pipeline for listing events with application join."""
+    return [
         {"$match": match_filter},
         {
             "$lookup": {
@@ -121,6 +124,19 @@ async def list_events(
         {"$sort": {"date": 1, "_id": 1}},
     ]
 
+
+async def list_events(
+    user_id: str,
+    date_from: dt.date | None,
+    date_to: dt.date | None,
+    application_id: str | None = None,
+) -> list[dict]:
+    """Return events for user, optionally filtered by application_id or date range."""
+    uid = ObjectId(user_id)
+    match_filter = await _build_events_match_filter(uid, date_from, date_to, application_id)
+    if match_filter is None:
+        return []
+    pipeline = _build_events_pipeline(match_filter)
     events = get_collection("calendar_events")
     return await events.aggregate(pipeline).to_list(length=MAX_CALENDAR_EVENTS)
 
