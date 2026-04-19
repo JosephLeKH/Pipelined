@@ -20,7 +20,7 @@ import DetailPanel from "../components/DetailPanel";
 import ManualAddForm from "../components/ManualAddForm";
 import OnboardingChecklist from "../components/OnboardingChecklist";
 import { useApplication, useApplicationStats } from "../hooks/useApplications";
-import { exportApplicationsCsv } from "../api/applications";
+import { useApplicationExport } from "../hooks/useApplicationExport";
 import { VIEW_MODE_STORAGE_KEY } from "../lib/constants";
 import { trackEvent } from "../lib/analytics";
 
@@ -28,7 +28,7 @@ function Dashboard() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isImportOpen, setIsImportOpen] = useState(false);
-  const [isExporting, setIsExporting] = useState(false);
+  const { handleCsvExport, isLoading: isExporting } = useApplicationExport();
   const [viewMode, setViewMode] = useState(
     () => localStorage.getItem(VIEW_MODE_STORAGE_KEY) ?? "list"
   );
@@ -73,20 +73,9 @@ function Dashboard() {
   }, [searchParams, setSearchParams]);
 
   const handleExport = useCallback(async () => {
-    setIsExporting(true);
-    try {
-      const blob = await exportApplicationsCsv(includeArchived);
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "applications.csv";
-      a.click();
-      URL.revokeObjectURL(url);
-      trackEvent("csv_exported", { count: stats?.data?.total_applied ?? 0 });
-    } finally {
-      setIsExporting(false);
-    }
-  }, [includeArchived, stats]);
+    await handleCsvExport(includeArchived);
+    trackEvent("csv_exported", { count: stats?.data?.total_applied ?? 0 });
+  }, [handleCsvExport, includeArchived, stats]);
 
   const handleSetViewMode = useCallback((mode) => {
     setViewMode(mode);

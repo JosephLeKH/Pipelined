@@ -53,3 +53,10 @@ Iteration 3 complete. Continuing...
 US-149 is complete: `FeedbackWidget.jsx` no longer imports from `../api/` — the layer violation is fixed via `useFeedback` hook and a new `api/feedback.js` thin wrapper. All 430 tests pass.
 
 Ralph: uncommitted changes detected — creating snapshot commit for iteration 4.
+[main 323c952] chore(ralph): iteration 4 snapshot (auto-commit)
+ 3 files changed, 27 insertions(+), 1 deletion(-)
+Iteration 4 complete. Continuing...
+
+===============================================================
+  Ralph Iteration 5 of 30 (claude)
+===============================================================

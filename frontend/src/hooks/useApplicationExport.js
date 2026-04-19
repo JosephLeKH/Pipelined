@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 
-import { downloadPdfReport } from "../api/applications";
+import { downloadPdfReport, exportApplicationsCsv } from "../api/applications";
 
 const REPORT_FILENAME = "pipeline-report.pdf";
+const CSV_FILENAME = "applications.csv";
 
 /** Provides a handler for downloading the pipeline PDF report with loading/error/retryAfter state. */
 export function useApplicationExport() {
@@ -37,5 +38,23 @@ export function useApplicationExport() {
     }
   };
 
-  return { handleDownload, isLoading, error, retryAfter };
+  const handleCsvExport = async (includeArchived = false) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const blob = await exportApplicationsCsv(includeArchived);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = CSV_FILENAME;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      setError("Failed to export CSV. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return { handleDownload, handleCsvExport, isLoading, error, retryAfter };
 }
