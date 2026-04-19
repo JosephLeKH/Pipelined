@@ -268,7 +268,8 @@ async def forgot_password(request: Request, body: ForgotPasswordRequest) -> dict
 
 
 @router.post("/reset-password", status_code=200)
-async def reset_password_endpoint(body: ResetPasswordRequest) -> dict:
+@limiter.limit(settings.rate_limit_auth)
+async def reset_password_endpoint(request: Request, body: ResetPasswordRequest) -> dict:
     """Reset a user's password using a valid reset token."""
     try:
         await reset_password(body.token, body.new_password)
