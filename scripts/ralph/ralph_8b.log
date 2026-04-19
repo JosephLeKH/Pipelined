@@ -21,3 +21,13 @@ Iteration 1 complete. Continuing...
 ===============================================================
   Ralph Iteration 2 of 30 (claude)
 ===============================================================
+10 stories still have `passes: false` (US-148 through US-157). US-147 is the only story assigned to this iteration. Per the stop signal, I must **not** output the completion tag since other stories remain unfinished.
+
+US-147 is complete:
+- `CommandPalette.jsx` has zero `../api/` imports — all data goes through `hooks/`
+- File is ~155 lines (under 200)
+- All functions under 40 lines (main function: 38 lines)
+- 430/430 tests pass
+- Committed and `passes: true` set in prd_8.json
+
+Ralph: uncommitted changes detected — creating snapshot commit for iteration 2.

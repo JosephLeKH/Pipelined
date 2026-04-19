@@ -58,3 +58,25 @@ Extracted three new files:
 NewEventForm.jsx reduced from 253 lines / 161-line function to 71 lines with all functions under 40 lines.
 All 430 tests pass without modification. Build succeeds.
 ---
+
+## US-147: Split CommandPalette.jsx: remove direct api/ import
+**Status:** PASSED
+**Commit:** feat: US-147 - Split CommandPalette.jsx: remove direct api/ import
+
+### Summary
+Removed the direct `../api/applications` import from CommandPalette.jsx by creating three new hooks:
+- `hooks/useCommandPaletteSearch.js` — wraps `fetchApplications` in useQuery + client-side filter logic
+- `hooks/useCommandPaletteActions.js` — wraps `exportApplicationsCsv` + returns actions array
+- `hooks/useCommandPaletteKeyboard.js` — extracts the keydown event listener useEffect
+
+Split the 159-line `CommandPalette` function into sub-components in the same file:
+- `PaletteRow` — reusable button row with active highlight and hint slot
+- `CommandPaletteResults` — conditional rendering of apps vs nav+actions lists
+- `CommandPaletteDialog` — the full modal overlay + search input
+
+**Result:** CommandPalette.jsx went from 201 lines to ~155 lines. Main function is 38 lines. All sub-functions under 40 lines. 430/430 tests pass.
+
+### Learnings
+- The fact-forcing gate requires using `Edit` (not `Write`) for existing files to avoid repeated blocking.
+- `env = useApplications(...).data` avoids destructuring a line and can be passed directly to the search hook.
+- Exported `PALETTE_CLIENT_LIMIT` from the search hook so the parent component can use it without duplication.

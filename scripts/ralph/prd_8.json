@@ -71,7 +71,7 @@
         "npm test passes all tests"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "Layer violation: components must not import from api/ directly."
     },
     {
