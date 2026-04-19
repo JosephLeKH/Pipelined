@@ -14,3 +14,7 @@ export const MAX_RECENT = 5;
 
 export const API_BASE = "https://api.pipelined.app";
 export const APP_DASHBOARD_URL = "https://app.pipelined.app/dashboard";
+
+export const MS_PER_DAY = 86400000;
+export const MS_PER_HOUR = 3600000;
+export const MS_PER_MINUTE = 60000;

@@ -56,3 +56,10 @@ Iteration 3 complete. Continuing...
 US-173 is complete. The PRD shows US-171, US-174, and US-175 still have `passes: false`, so the completion tag is withheld per stop signal rules.
 
 Ralph: uncommitted changes detected — creating snapshot commit for iteration 4.
+[main 76a6fc0] chore(ralph): iteration 4 snapshot (auto-commit)
+ 3 files changed, 30 insertions(+), 1 deletion(-)
+Iteration 4 complete. Continuing...
+
+===============================================================
+  Ralph Iteration 5 of 21 (claude)
+===============================================================

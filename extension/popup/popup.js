@@ -1,6 +1,6 @@
 /** Popup: show last 5 saves with stage badges, link to dashboard, auth status. */
 
-import { MSG, MAX_RECENT, APP_DASHBOARD_URL } from "../shared/constants.js";
+import { MSG, MAX_RECENT, APP_DASHBOARD_URL, MS_PER_DAY, MS_PER_HOUR, MS_PER_MINUTE } from "../shared/constants.js";
 
 // Stage badge colors (hex values match the frontend stage constants)
 const STAGE_COLORS = {
@@ -13,9 +13,6 @@ const STAGE_COLORS = {
 
 const DEFAULT_STAGE_COLOR = { bg: "#f1f5f9", text: "#475569", bar: "#94a3b8", label: "Applied" };
 
-const MS_PER_DAY = 86400000;
-const MS_PER_HOUR = 3600000;
-const MS_PER_MINUTE = 60000;
 
 /**
  * Escape a string for safe insertion into innerHTML.
