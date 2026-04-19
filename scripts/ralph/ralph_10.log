@@ -78,3 +78,15 @@ Iteration 5 complete. Continuing...
 US-174 is complete. US-175 (`passes: false`) remains, so I do not output the completion tag.
 
 Ralph: uncommitted changes detected — creating snapshot commit for iteration 6.
+[main 3d2012b] chore(ralph): iteration 6 snapshot (auto-commit)
+ 3 files changed, 21 insertions(+), 1 deletion(-)
+Iteration 6 complete. Continuing...
+
+===============================================================
+  Ralph Iteration 7 of 21 (claude)
+===============================================================
+All 7 user stories have `passes: true`.
+
+<promise>COMPLETE</promise>
+
+Ralph: uncommitted changes detected — creating snapshot commit for iteration 7.

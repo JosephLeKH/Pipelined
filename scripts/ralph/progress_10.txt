@@ -107,3 +107,25 @@ All three now delegate to sendToBackground(), which returns `{ status: "error" }
 - Extracting a one-liner async wrapper eliminates scattered try-catch boilerplate and ensures uniform error messages across all call sites.
 - Converting `let result` + try/catch block to `const result = await helper()` also improves const correctness.
 - The helper's `{ status: "error" }` fallback return matches what callers already expected, making the refactor a clean drop-in replacement.
+
+---
+
+## US-175 — Frontend: add aria-hidden to remaining modal backdrop overlays
+
+**Completed:** 2026-04-19
+
+**What was done:**
+- Audited all 16 component files with backdrop/overlay patterns
+- Found 4 already had `aria-hidden="true"` on separate backdrop divs: `CsvImportModal`, `UpgradePlanModal`, `CommandPalette`, `CalendarEventDetail`
+- Found components with `role="dialog"` on the outer combined container (no separate backdrop needed): `MergeDialog`, `ShortcutHelp`, `TemplateSaveModal`, `SettingsAccountSection`, `ApplicationRowActions`
+- Fixed 3 components with outer overlay wrapping an inner `role="dialog"` div:
+  - `NewEventForm.jsx`: removed `bg-black/40 backdrop-blur-sm` from outer div, added `<div aria-hidden="true" className="absolute inset-0 bg-black/40 backdrop-blur-sm pointer-events-none" />`
+  - `ManualAddForm.jsx`: same pattern; `data-testid="modal-overlay"` and `overlayRef` kept on outer div
+  - `DetailPanel.jsx`: same pattern with `bg-black/30`; `data-testid="panel-overlay"` and `overlayRef` kept on outer div
+- `pointer-events-none` on the backdrop child ensures `e.target === overlayRef.current` click-to-close checks still work
+- All 430 frontend tests pass; `npm run build` succeeds
+
+**Learnings:**
+- The key distinction is: backdrop-only sibling divs need `aria-hidden="true"`; combined container+dialog divs with `role="dialog"` do not
+- When the outer container wraps the dialog (role="dialog" on inner div), the fix is to extract the bg into a `pointer-events-none aria-hidden` child rather than modify the outer container — this preserves `e.target` click-to-close behavior
+- `e.currentTarget === e.target` (NewEventForm) and `e.target === overlayRef.current` (ManualAddForm, DetailPanel) both rely on clicks reaching the outer container element; `pointer-events-none` on the backdrop sibling passes clicks through correctly
