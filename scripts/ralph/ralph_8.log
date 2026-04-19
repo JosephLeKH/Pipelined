@@ -243,3 +243,9 @@ You've hit your limit · resets 3pm (America/Los_Angeles)
 Ralph: warning — story US-147 still has passes != true in /Users/josephle/GitHub/Pipelined/scripts/ralph/prd_8.json (next iteration will pick the open story with smallest `priority` number).
 
 Ralph: uncommitted changes detected — creating snapshot commit for iteration 20.
+[main 0d4d308] chore(ralph): iteration 20 snapshot (auto-commit)
+ 1 file changed, 12 insertions(+)
+Iteration 20 complete. Continuing...
+
+Ralph reached max iterations (20) without completing all tasks.
+Check /Users/josephle/GitHub/Pipelined/scripts/ralph/progress_8.txt for status.

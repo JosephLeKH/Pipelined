@@ -1,0 +1,15 @@
+Using CLAUDE.md: /Users/josephle/GitHub/Pipelined/CLAUDE.md (via --append-system-prompt-file)
+PRD file: /Users/josephle/GitHub/Pipelined/scripts/ralph/prd_8.json
+Progress file: /Users/josephle/GitHub/Pipelined/scripts/ralph/progress_8.txt
+Claude model: sonnet (set RALPH_MODEL to override)
+Sleep between iterations: 2s (RALPH_SLEEP_SEC)
+Starting Ralph - Tool: claude - Max iterations: 30
+
+===============================================================
+  Ralph Iteration 1 of 30 (claude)
+===============================================================
+API Error: Unable to connect to API (FailedToOpenSocket)
+
+Ralph: warning — story US-147 still has passes != true in /Users/josephle/GitHub/Pipelined/scripts/ralph/prd_8.json (next iteration will pick the open story with smallest `priority` number).
+
+Ralph: uncommitted changes detected — creating snapshot commit for iteration 1.
