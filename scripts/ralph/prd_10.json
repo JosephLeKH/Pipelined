@@ -42,7 +42,7 @@
         "npm test in extension/ passes all tests"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Minor but consistent with the no-magic-values rule."
     },
     {

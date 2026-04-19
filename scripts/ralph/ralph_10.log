@@ -63,3 +63,8 @@ Iteration 4 complete. Continuing...
 ===============================================================
   Ralph Iteration 5 of 21 (claude)
 ===============================================================
+US-174 and US-175 still have `passes: false`. Per the stop signal, I must NOT output the completion tag.
+
+US-171 is complete — `MS_PER_DAY`, `MS_PER_HOUR`, `MS_PER_MINUTE` moved to `extension/shared/constants.js`, `popup.js` updated to import them, all 247 extension tests pass, committed, PRD updated. Two stories remain (US-174, US-175).
+
+Ralph: uncommitted changes detected — creating snapshot commit for iteration 5.

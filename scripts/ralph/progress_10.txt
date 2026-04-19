@@ -74,3 +74,19 @@ Started: Sun Apr 19 11:08:12 PDT 2026
 - Separate try-catch blocks per storage call in signOut() is safer than a single block — a failure clearing session shouldn't prevent the display_name removal attempt
 - When destructuring a storage result (e.g. `const { recent_saves = [] } = ...`), converting to explicit try-catch requires splitting into `const result = ...` then `recent_saves = result.recent_saves ?? []` — the default value from destructuring moves to the nullish coalescing fallback
 - Gateguard facts for JSON data files: "no imports" and "no functions affected" are valid answers — don't fabricate fake imports
+
+---
+
+## US-171 — Extension: move time constants from popup.js to shared/constants.js
+
+**Completed:** 2026-04-19
+
+**What was done:**
+- Added `MS_PER_DAY` (86400000), `MS_PER_HOUR` (3600000), `MS_PER_MINUTE` (60000) exports to `extension/shared/constants.js`
+- Updated `popup/popup.js` import to include the three constants from shared
+- Removed the three local `const` definitions (lines 16-18) from popup.js
+- All 247 extension tests pass
+
+**Learnings:**
+- This is a pure move with no behavior change — the same numeric values, just sourced from shared/constants.js instead of inline in popup.js
+- Consistent with the no-magic-values rule and aligns with frontend/src/lib/constants.js which already exports MS_PER_DAY at the same value
