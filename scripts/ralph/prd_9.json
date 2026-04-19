@@ -1,0 +1,154 @@
+{
+  "project": "Pipelined",
+  "branchName": "ralph/pipelined-v9",
+  "description": "Post-v8 code quality: split remaining oversized page-level functions (Analytics 221 lines, Dashboard, JobBoard, etc.), extension error handling hardening (unhandled promise rejections, MSG constant consistency, shared constants), and minor backend cleanups.",
+  "userStories": [
+    {
+      "id": "US-158",
+      "title": "Split Analytics.jsx page component (221-line function)",
+      "description": "frontend/src/pages/Analytics.jsx has a 221-line main function. Extract chart sections into sub-components (e.g., AnalyticsCharts.jsx, AnalyticsSummaryCards.jsx) and data processing into a useAnalyticsData hook. The page component should compose these pieces.",
+      "acceptanceCriteria": [
+        "No function in Analytics.jsx or extracted files exceeds 40 lines",
+        "All files stay under 300 lines",
+        "npm test passes all 430+ tests",
+        "npm run build succeeds"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Largest remaining function in the entire frontend."
+    },
+    {
+      "id": "US-159",
+      "title": "Split Dashboard.jsx, JobBoard.jsx, Register.jsx, Login.jsx page functions over 40 lines",
+      "description": "Multiple page components have functions exceeding 40 lines: Dashboard.jsx, JobBoard.jsx, Register.jsx, Login.jsx. Extract sub-components and hooks from each to bring all functions under 40 lines.",
+      "acceptanceCriteria": [
+        "No function in Dashboard.jsx, JobBoard.jsx, Register.jsx, or Login.jsx exceeds 40 lines",
+        "All files stay under 300 lines",
+        "npm test passes all tests"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Page-level components that were missed in prd_8 (which focused on components/)."
+    },
+    {
+      "id": "US-160",
+      "title": "Split remaining component functions: DetailPanel, FilterBar, NavBar, ContactForm (40+ lines each)",
+      "description": "These components still have functions exceeding 40 lines after prd_8: DetailPanel.jsx (152-line fn), FilterBar.jsx (149-line fn), NavBar.jsx (141-line fn), ContactForm.jsx (141-line fn). Extract sub-components and form logic into hooks.",
+      "acceptanceCriteria": [
+        "No function in DetailPanel.jsx, FilterBar.jsx, NavBar.jsx, or ContactForm.jsx exceeds 40 lines",
+        "All existing tests pass",
+        "npm test passes all tests"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-161",
+      "title": "Extension: add try/catch to all async addEventListener callbacks",
+      "description": "Multiple async addEventListener callbacks lack error handling, causing silent promise rejections: content.js line 71 (handleSave click), contact_banner.js line 26 (handleContactSave click), popup.js line 179 (storage.local.set). Wrap each in try/catch with console.error logging and user-visible fallback where appropriate.",
+      "acceptanceCriteria": [
+        "Every async addEventListener callback in content.js, contact_banner.js, and popup.js has try/catch",
+        "Caught errors are logged via console.error with descriptive prefix (e.g., '[content] Save failed:')",
+        "npm test in extension/ passes all tests"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Unhandled rejections can silently break extension features."
+    },
+    {
+      "id": "US-162",
+      "title": "Extension: unify MSG constants into shared module",
+      "description": "MSG constants are duplicated and inconsistent across extension files. contact_banner.js uses a bare string constant MSG_SAVE_CONTACT instead of the MSG object pattern. PAGE_TEXT_MAX_CHARS is 3200 in content.js but hardcoded in background.js:126. MAX_RECENT is 5 in popup.js but hardcoded in background.js:106. BANNER_SUCCESS_DISMISS_MS is in banner_helpers.js but hardcoded 1500 in contact_banner.js:71. Create a shared extension/shared/constants.js with all MSG types and shared constants, import everywhere.",
+      "acceptanceCriteria": [
+        "A single extension/shared/constants.js (or similar) defines all MSG types and shared numeric constants",
+        "contact_banner.js uses MSG.SAVE_CONTACT from the shared module, not a bare string constant",
+        "background.js references PAGE_TEXT_MAX_CHARS and MAX_RECENT from shared constants, no hardcoded duplicates",
+        "contact_banner.js uses BANNER_SUCCESS_DISMISS_MS from banner_helpers.js or shared constants",
+        "popup.js MS_PER_DAY (86400000) is a named constant",
+        "npm test in extension/ passes all tests"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Duplicate constants are a maintenance hazard."
+    },
+    {
+      "id": "US-163",
+      "title": "Extension: add error logging to content.js silent catch blocks",
+      "description": "content.js has empty catch blocks that silently swallow errors: line 145 (storage read) returns false without logging, and other catch blocks lack context. Add console.error with '[content]' prefix to all catch blocks. Also add console.error logging to popup.js:173 which has a bare 'catch { return; }'.",
+      "acceptanceCriteria": [
+        "No empty catch blocks in content.js or popup.js — all include console.error with descriptive message",
+        "Error messages include '[content]' or '[popup]' prefix for debugging",
+        "npm test in extension/ passes all tests"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-164",
+      "title": "Extension: remove unused MSG.GET_RECENT_SAVES from popup.js and clean up unused exports",
+      "description": "popup.js line 19 defines MSG.GET_RECENT_SAVES but never uses it (recent saves are read from chrome.storage.local directly). background.js:178 exports handleSave but it's a service worker that doesn't use ES module imports in the main path. background.js defines MSG.AUTH_STATUS but never uses it. Clean up these dead definitions.",
+      "acceptanceCriteria": [
+        "MSG.GET_RECENT_SAVES removed from popup.js (or used if routing was intended)",
+        "Unused MSG.AUTH_STATUS removed from background.js",
+        "No orphaned exports in background.js",
+        "npm test in extension/ passes all tests"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-165",
+      "title": "Backend: optimize sequential awaits in seo/router.py with asyncio.gather()",
+      "description": "seo/router.py lines 80-81 execute two independent database queries sequentially: job_lastmod = await _get_latest_job_lastmod() and slugs = await _get_active_share_slugs(). These should use asyncio.gather() for parallel execution.",
+      "acceptanceCriteria": [
+        "seo/router.py uses asyncio.gather() for the two independent queries",
+        "Behavior unchanged — same data returned",
+        "All backend tests pass: pytest tests/ -x"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Only sequential await violation found in the backend."
+    },
+    {
+      "id": "US-166",
+      "title": "Backend: split remaining 7 functions over 40 lines",
+      "description": "Seven backend functions still exceed 40 lines after prd_8: fit_scorer.py score_fit() 49 lines, main.py create_app() 47 lines, applications/router.py list_applications() 45 lines, documents/service.py update_document() 43 lines, auth/router.py refresh() 42 lines, auth/oauth_service.py get_or_create_github_user() 42 lines, auth/email_verification.py resend_verification() 41 lines. Split each into smaller helpers.",
+      "acceptanceCriteria": [
+        "No function in any of the listed files exceeds 40 lines",
+        "All backend tests pass: pytest tests/ -x",
+        "Type annotations on all new functions"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "All are marginal violations (41-49 lines). create_app() may be acceptable as app factory."
+    },
+    {
+      "id": "US-167",
+      "title": "Frontend: add aria-hidden to CsvImportModal overlay div",
+      "description": "CsvImportModal.jsx has a backdrop overlay div that should have aria-hidden='true' for screen reader accessibility (similar to how CommandPalette.jsx handles its overlay).",
+      "acceptanceCriteria": [
+        "CsvImportModal overlay div includes aria-hidden='true'",
+        "npm test passes all tests"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "Minor accessibility fix."
+    },
+    {
+      "id": "US-168",
+      "title": "Split remaining page components with functions over 40 lines: Settings, Calendar, ForgotPassword, ResetPassword",
+      "description": "Additional page components likely have functions over 40 lines that were not covered in previous stories. Check Settings.jsx, Calendar.jsx, ForgotPassword.jsx, ResetPassword.jsx and any other pages/ files. Split oversized functions into sub-components and hooks.",
+      "acceptanceCriteria": [
+        "No function in any pages/*.jsx file exceeds 40 lines",
+        "All files stay under 300 lines",
+        "npm test passes all tests"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Catch-all for remaining page-level function splits."
+    }
+  ]
+}
