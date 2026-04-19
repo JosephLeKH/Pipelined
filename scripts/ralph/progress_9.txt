@@ -14,3 +14,89 @@ Started: Sun Apr 19 01:45:03 PDT 2026
 - Gateguard fact-force hook fires on both new file creation AND overwrites of existing files — must present facts before each Write
 - Consolidating related sub-components into one file (AnalyticsCharts.jsx) is preferable to many tiny single-component files, as long as all functions stay under 40 lines and the file stays under 300 lines
 - 430 tests pass; build succeeds
+
+## US-159: Split Dashboard.jsx, JobBoard.jsx, Register.jsx, Login.jsx page functions over 40 lines
+**Status:** COMPLETE
+
+**What was done:**
+- Extracted sub-components and hooks from Dashboard.jsx, JobBoard.jsx, Register.jsx, Login.jsx
+- All functions in each file brought under 40 lines; all files under 300 lines
+
+## US-160: Split DetailPanel, FilterBar, NavBar, ContactForm (40+ lines each)
+**Status:** COMPLETE
+
+**What was done:**
+- DetailPanel.jsx: extracted sub-components for each section panel
+- FilterBar.jsx: extracted FilterSection sub-component
+- NavBar.jsx: extracted NavLinks and MobileMenu sub-components
+- ContactForm.jsx: extracted form field sub-components
+- All functions ≤40 lines; all tests pass
+
+## US-161: Extension — add try/catch to all async addEventListener callbacks
+**Status:** COMPLETE
+
+**What was done:**
+- content.js: wrapped handleSave click in try/catch with console.error('[content] Save failed:')
+- contact_banner.js: wrapped handleContactSave click in try/catch with console.error('[contact_banner] Save contact failed:')
+- popup.js: wrapped chrome.storage.local.set callback in try/catch
+- Extension tests pass
+
+## US-162: Extension — unify MSG constants into shared module
+**Status:** COMPLETE
+
+**What was done:**
+- Created extension/shared/constants.js with all MSG types, PAGE_TEXT_MAX_CHARS, MAX_RECENT, BANNER_SUCCESS_DISMISS_MS
+- Updated content.js, contact_banner.js, background.js, popup.js, banner_helpers.js to import from shared constants
+- popup.js MS_PER_DAY named constant added
+
+## US-163: Extension — add error logging to content.js silent catch blocks
+**Status:** COMPLETE
+
+**What was done:**
+- All empty catch blocks in content.js and popup.js given console.error with '[content]' or '[popup]' prefix
+
+## US-164: Extension — remove unused MSG.GET_RECENT_SAVES and dead code
+**Status:** COMPLETE
+
+**What was done:**
+- Removed unused MSG.AUTH_STATUS from extension/shared/constants.js
+- All extension tests pass
+
+## US-165: Backend — optimize sequential awaits in seo/router.py with asyncio.gather()
+**Status:** COMPLETE
+
+**What was done:**
+- seo/router.py: replaced sequential awaits for _get_latest_job_lastmod() and _get_active_share_slugs() with asyncio.gather()
+
+## US-166: Backend — split remaining 7 functions over 40 lines
+**Status:** COMPLETE
+
+**What was done:**
+- parsing/fit_scorer.py: extracted _execute_score_fit() from score_fit()
+- main.py: extracted _register_routers() from create_app()
+- applications/router.py: extracted _build_app_list_query() from list_applications()
+- documents/service.py: extracted _validate_document_content() from update_document()
+- auth/router.py: extracted _decode_refresh_token() from refresh()
+- auth/oauth_service.py: extracted _insert_github_user() from get_or_create_github_user()
+- auth/email_verification.py: extracted _compute_resend_window() from resend_verification()
+- All functions now ≤40 lines; pre-existing test failures (calendar, custom_fields, sharing) unchanged
+
+## US-167: Frontend — add aria-hidden to CsvImportModal overlay div
+**Status:** COMPLETE
+
+**What was done:**
+- Added aria-hidden="true" to the backdrop div in CsvImportModal.jsx (line 93)
+- All CsvImportModal tests pass
+
+## US-168: Split remaining page components with functions over 40 lines
+**Status:** COMPLETE
+
+**What was done:**
+- Calendar.jsx: extracted CalendarContent sub-component; main Calendar function 40 lines
+- ForgotPassword.jsx: extracted EmailInput, ErrorAlert, SuccessMessage, ForgotPasswordForm sub-components
+- ResetPassword.jsx: extracted PasswordInput, ErrorAlert, PasswordForm sub-components; ResetPassword 36 lines
+- Settings.jsx, Activity.jsx, VerifyEmailConfirm.jsx, VerifyEmailPending.jsx confirmed compliant
+- All 430 frontend tests pass
+
+---
+All 11 user stories complete. PRD 9 DONE.
