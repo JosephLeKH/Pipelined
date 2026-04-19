@@ -11,3 +11,6 @@ export const MSG = {
 
 export const PAGE_TEXT_MAX_CHARS = 3200;
 export const MAX_RECENT = 5;
+
+export const API_BASE = "https://api.pipelined.app";
+export const APP_DASHBOARD_URL = "https://app.pipelined.app/dashboard";

@@ -1,12 +1,13 @@
 /** Shared banner DOM utilities for the Pipelined content scripts. */
 
+import { APP_DASHBOARD_URL } from "../shared/constants.js";
+
 export const BANNER_AUTO_DISMISS_MS = 8000;
 export const BANNER_SUCCESS_DISMISS_MS = 1500;
 export const BANNER_DUPLICATE_DISMISS_MS = 6000;
 export const FADE_DURATION_MS = 300;
 
 const MAX_Z_INDEX = "2147483647";
-const APP_DASHBOARD_URL = "https://app.pipelined.app/dashboard";
 
 export const BANNER_CSS = `
 .pipelined-banner {

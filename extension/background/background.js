@@ -1,9 +1,8 @@
 /** Service worker: API calls, token management, message routing. */
 
-import { MSG, PAGE_TEXT_MAX_CHARS, MAX_RECENT } from "../shared/constants.js";
+import { MSG, PAGE_TEXT_MAX_CHARS, MAX_RECENT, API_BASE } from "../shared/constants.js";
 
 const TOKEN_KEY = "pipelined_auth_token";
-const API_BASE = "https://api.pipelined.app";
 
 let saveQueue = Promise.resolve();
 

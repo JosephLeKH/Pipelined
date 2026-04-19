@@ -1,8 +1,6 @@
 /** Popup: show last 5 saves with stage badges, link to dashboard, auth status. */
 
-import { MSG, MAX_RECENT } from "../shared/constants.js";
-
-const DASHBOARD_URL = "https://app.pipelined.app/dashboard";
+import { MSG, MAX_RECENT, APP_DASHBOARD_URL } from "../shared/constants.js";
 
 // Stage badge colors (hex values match the frontend stage constants)
 const STAGE_COLORS = {
@@ -121,7 +119,7 @@ function renderSaveItem(s) {
   // Overlay link — covers full card, opens dashboard with highlight param
   const link = document.createElement("a");
   link.className = "open-link";
-  link.href = `${DASHBOARD_URL}?highlight=${encodeURIComponent(s.id || "")}`;
+  link.href = `${APP_DASHBOARD_URL}?highlight=${encodeURIComponent(s.id || "")}`;
   link.target = "_blank";
   link.rel = "noopener noreferrer";
   link.dataset.appId = s.id || "";
@@ -150,7 +148,7 @@ export function renderSaves(saves) {
 }
 
 export function openDashboard() {
-  chrome.tabs.create({ url: DASHBOARD_URL });
+  chrome.tabs.create({ url: APP_DASHBOARD_URL });
 }
 
 export async function signOut() {
