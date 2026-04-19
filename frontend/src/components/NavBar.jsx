@@ -34,22 +34,90 @@ const NAV_LINKS = [
 const THEME_ICONS = { system: Monitor, light: Sun, dark: Moon };
 const THEME_LABELS = { system: "System theme", light: "Light theme", dark: "Dark theme" };
 
+const LINK_BASE = "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors";
+const LINK_ACTIVE = "bg-blue-50 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300";
+const LINK_INACTIVE = "text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-100";
+
 function UserAvatar({ user }) {
   if (user?.avatar_url) {
-    return (
-      <img
-        src={user.avatar_url}
-        alt={user.display_name ?? "Profile"}
-        className="h-8 w-8 rounded-full object-cover"
-      />
-    );
+    return <img src={user.avatar_url} alt={user.display_name ?? "Profile"} className="h-8 w-8 rounded-full object-cover" />;
   }
   const seed = user?.display_name ?? user?.email ?? "U";
   const initial = (seed[0] ?? "U").toUpperCase();
   return (
-    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-xs font-semibold text-white">
-      {initial}
-    </span>
+    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-xs font-semibold text-white">{initial}</span>
+  );
+}
+
+function DesktopNavLinks({ navLinks, pathname }) {
+  return (
+    <div className="hidden items-center gap-1 md:flex">
+      {navLinks.map(({ to, label, Icon }) => {
+        const active = pathname === to;
+        return (
+          <Link key={to} to={to} aria-current={active ? "page" : undefined} className={`${LINK_BASE} ${active ? LINK_ACTIVE : LINK_INACTIVE}`}>
+            <Icon className="h-4 w-4" />
+            {label}
+          </Link>
+        );
+      })}
+    </div>
+  );
+}
+
+function DesktopActions({ user, ThemeIcon, theme, handleCycleTheme, handleLogout }) {
+  return (
+    <div className="ml-auto hidden items-center gap-2 md:flex">
+      <NotificationBell />
+      <button type="button" onClick={handleCycleTheme} aria-label={THEME_LABELS[theme]} className="rounded-md p-1.5 text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-100">
+        <ThemeIcon className="h-4 w-4" />
+      </button>
+      <UserAvatar user={user} />
+      <button type="button" onClick={handleLogout} aria-label="Log out" className="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-100">
+        <LogOut className="h-4 w-4" />
+        Log out
+      </button>
+    </div>
+  );
+}
+
+function HamburgerButton({ mobileMenuOpen, setMobileMenuOpen }) {
+  return (
+    <button
+      type="button"
+      onClick={() => setMobileMenuOpen((prev) => !prev)}
+      aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+      aria-expanded={mobileMenuOpen}
+      className="ml-auto rounded-md p-1.5 text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-100 md:hidden"
+    >
+      {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+    </button>
+  );
+}
+
+function MobileMenu({ navLinks, pathname, closeMobileMenu, ThemeIcon, theme, handleCycleTheme, handleLogout }) {
+  return (
+    <div data-testid="mobile-nav-menu" className="flex flex-col gap-1 border-t border-gray-200 bg-white px-4 py-3 dark:border-gray-700 dark:bg-gray-800 md:hidden">
+      {navLinks.map(({ to, label, Icon }) => {
+        const active = pathname === to;
+        return (
+          <Link key={to} to={to} onClick={closeMobileMenu} aria-current={active ? "page" : undefined}
+            className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors ${active ? "bg-blue-50 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300" : "text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-gray-100"}`}>
+            <Icon className="h-4 w-4" />
+            {label}
+          </Link>
+        );
+      })}
+      <div className="mt-2 flex items-center gap-2 border-t border-gray-100 pt-2 dark:border-gray-700">
+        <button type="button" onClick={handleCycleTheme} aria-label={THEME_LABELS[theme]} className="rounded-md p-1.5 text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-100">
+          <ThemeIcon className="h-4 w-4" />
+        </button>
+        <button type="button" onClick={handleLogout} aria-label="Log out" className="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-100">
+          <LogOut className="h-4 w-4" />
+          Log out
+        </button>
+      </div>
+    </div>
   );
 }
 
@@ -61,135 +129,21 @@ function NavBar() {
   const { data: offersData } = useApplications({ stage: OFFER_STAGE, limit: 1 });
   const hasOffers = (offersData?.data?.length ?? 0) > 0;
   const offersLink = { to: "/offers", label: "Offers", Icon: Trophy };
-  const navLinks = hasOffers
-    ? [NAV_LINKS[0], offersLink, ...NAV_LINKS.slice(1)]
-    : NAV_LINKS;
-
-  const handleCycleTheme = useCallback(() => {
-    cycleTheme();
-    trackEvent("feature_used", { feature: "dark_mode" });
-  }, [cycleTheme]);
-
-  const handleLogout = useCallback(async () => {
-    resetUser();
-    await logout();
-  }, [logout]);
-
+  const navLinks = hasOffers ? [NAV_LINKS[0], offersLink, ...NAV_LINKS.slice(1)] : NAV_LINKS;
+  const handleCycleTheme = useCallback(() => { cycleTheme(); trackEvent("feature_used", { feature: "dark_mode" }); }, [cycleTheme]);
+  const handleLogout = useCallback(async () => { resetUser(); await logout(); }, [logout]);
   const closeMobileMenu = useCallback(() => setMobileMenuOpen(false), []);
-
   const ThemeIcon = THEME_ICONS[theme];
 
   return (
-    <nav
-      aria-label="Main navigation"
-      className="border-b border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800"
-    >
+    <nav aria-label="Main navigation" className="border-b border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
       <div className="flex items-center gap-4 px-6 py-3">
         <span className="mr-2 text-base font-bold tracking-tight text-blue-600">Pipelined</span>
-
-        {/* Desktop nav links — hidden on mobile */}
-        <div className="hidden items-center gap-1 md:flex">
-          {navLinks.map(({ to, label, Icon }) => {
-            const active = pathname === to;
-            return (
-              <Link
-                key={to}
-                to={to}
-                aria-current={active ? "page" : undefined}
-                className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
-                  active
-                    ? "bg-blue-50 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"
-                    : "text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-100"
-                }`}
-              >
-                <Icon className="h-4 w-4" />
-                {label}
-              </Link>
-            );
-          })}
-        </div>
-
-        {/* Desktop theme + logout — hidden on mobile */}
-        <div className="ml-auto hidden items-center gap-2 md:flex">
-          <NotificationBell />
-          <button
-            type="button"
-            onClick={handleCycleTheme}
-            aria-label={THEME_LABELS[theme]}
-            className="rounded-md p-1.5 text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-100"
-          >
-            <ThemeIcon className="h-4 w-4" />
-          </button>
-          <UserAvatar user={user} />
-          <button
-            type="button"
-            onClick={handleLogout}
-            aria-label="Log out"
-            className="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-100"
-          >
-            <LogOut className="h-4 w-4" />
-            Log out
-          </button>
-        </div>
-
-        {/* Mobile hamburger — visible only below md breakpoint */}
-        <button
-          type="button"
-          onClick={() => setMobileMenuOpen((prev) => !prev)}
-          aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
-          aria-expanded={mobileMenuOpen}
-          className="ml-auto rounded-md p-1.5 text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-100 md:hidden"
-        >
-          {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
+        <DesktopNavLinks navLinks={navLinks} pathname={pathname} />
+        <DesktopActions user={user} ThemeIcon={ThemeIcon} theme={theme} handleCycleTheme={handleCycleTheme} handleLogout={handleLogout} />
+        <HamburgerButton mobileMenuOpen={mobileMenuOpen} setMobileMenuOpen={setMobileMenuOpen} />
       </div>
-
-      {/* Mobile slide-down menu */}
-      {mobileMenuOpen && (
-        <div
-          data-testid="mobile-nav-menu"
-          className="flex flex-col gap-1 border-t border-gray-200 bg-white px-4 py-3 dark:border-gray-700 dark:bg-gray-800 md:hidden"
-        >
-          {navLinks.map(({ to, label, Icon }) => {
-            const active = pathname === to;
-            return (
-              <Link
-                key={to}
-                to={to}
-                onClick={closeMobileMenu}
-                aria-current={active ? "page" : undefined}
-                className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-                  active
-                    ? "bg-blue-50 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"
-                    : "text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-gray-100"
-                }`}
-              >
-                <Icon className="h-4 w-4" />
-                {label}
-              </Link>
-            );
-          })}
-          <div className="mt-2 flex items-center gap-2 border-t border-gray-100 pt-2 dark:border-gray-700">
-            <button
-              type="button"
-              onClick={handleCycleTheme}
-              aria-label={THEME_LABELS[theme]}
-              className="rounded-md p-1.5 text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-100"
-            >
-              <ThemeIcon className="h-4 w-4" />
-            </button>
-            <button
-              type="button"
-              onClick={handleLogout}
-              aria-label="Log out"
-              className="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-100"
-            >
-              <LogOut className="h-4 w-4" />
-              Log out
-            </button>
-          </div>
-        </div>
-      )}
+      {mobileMenuOpen && <MobileMenu navLinks={navLinks} pathname={pathname} closeMobileMenu={closeMobileMenu} ThemeIcon={ThemeIcon} theme={theme} handleCycleTheme={handleCycleTheme} handleLogout={handleLogout} />}
     </nav>
   );
 }

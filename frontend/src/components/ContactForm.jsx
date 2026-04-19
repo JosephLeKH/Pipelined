@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import { useCreateContact, useLinkContact } from "../hooks/useContacts";
 import { RELATIONSHIP_OPTIONS } from "../lib/constants";
-import { BUTTON_PRIMARY, BUTTON_GHOST, INPUT_BASE } from "../lib/designTokens";
+import { INPUT_BASE } from "../lib/designTokens";
 
 const INITIAL_FORM = {
   name: "",
@@ -15,13 +15,74 @@ const INITIAL_FORM = {
   notes: "",
 };
 
+function ContactFormNameField({ form, handleChange }) {
+  return (
+    <div className="col-span-2 flex flex-col gap-1">
+      <label className="text-xs font-medium text-slate-600 dark:text-slate-400" htmlFor="contact-name">
+        Name <span className="text-red-500">*</span>
+      </label>
+      <input id="contact-name" name="name" value={form.name} onChange={handleChange}
+        required maxLength={200} className={INPUT_BASE} placeholder="Jane Smith" />
+    </div>
+  );
+}
+
+function ContactFormDetailFields({ form, handleChange }) {
+  return (
+    <>
+      <div className="flex flex-col gap-1">
+        <label className="text-xs font-medium text-slate-600 dark:text-slate-400" htmlFor="contact-company">Company</label>
+        <input id="contact-company" name="company" value={form.company} onChange={handleChange} maxLength={200} className={INPUT_BASE} placeholder="Acme Corp" />
+      </div>
+      <div className="flex flex-col gap-1">
+        <label className="text-xs font-medium text-slate-600 dark:text-slate-400" htmlFor="contact-role">Role</label>
+        <input id="contact-role" name="role" value={form.role} onChange={handleChange} maxLength={200} className={INPUT_BASE} placeholder="Recruiter" />
+      </div>
+      <div className="flex flex-col gap-1">
+        <label className="text-xs font-medium text-slate-600 dark:text-slate-400" htmlFor="contact-email">Email</label>
+        <input id="contact-email" name="email" type="email" value={form.email} onChange={handleChange} maxLength={254} className={INPUT_BASE} placeholder="jane@acme.com" />
+      </div>
+      <div className="flex flex-col gap-1">
+        <label className="text-xs font-medium text-slate-600 dark:text-slate-400" htmlFor="contact-relationship">Relationship</label>
+        <select id="contact-relationship" name="relationship" value={form.relationship} onChange={handleChange} className={INPUT_BASE}>
+          {RELATIONSHIP_OPTIONS.map((r) => (<option key={r} value={r}>{r.replace("_", " ")}</option>))}
+        </select>
+      </div>
+    </>
+  );
+}
+
+function ContactFormFields({ form, handleChange }) {
+  return (
+    <div className="grid grid-cols-2 gap-2">
+      <ContactFormNameField form={form} handleChange={handleChange} />
+      <ContactFormDetailFields form={form} handleChange={handleChange} />
+    </div>
+  );
+}
+
+function ContactFormActions({ isPending, nameValue, onDone }) {
+  return (
+    <div className="flex items-center gap-2">
+      <button
+        type="submit"
+        disabled={isPending || !nameValue.trim()}
+        className="bg-gradient-to-r from-brand-600 to-brand-500 text-white rounded-button shadow-sm hover:from-brand-700 hover:to-brand-600 active:scale-[0.98] transition-all duration-150 font-medium text-xs px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-brand-500/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none"
+      >
+        {isPending ? "Saving…" : "Add Contact"}
+      </button>
+      <button type="button" onClick={() => onDone?.()} className="text-slate-500 hover:bg-slate-100 rounded-button active:scale-[0.98] transition-all duration-150 font-medium text-xs px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:text-slate-400 dark:hover:bg-slate-700">
+        Cancel
+      </button>
+    </div>
+  );
+}
+
 function ContactForm({ applicationId, onDone }) {
   const [form, setForm] = useState(INITIAL_FORM);
   const [error, setError] = useState(null);
-
   const { mutate: createContact, isPending: creating } = useCreateContact();
   const { mutate: linkContact, isPending: linking } = useLinkContact();
-
   const isPending = creating || linking;
 
   function handleChange(e) {
@@ -31,22 +92,12 @@ function ContactForm({ applicationId, onDone }) {
   function handleSubmit(e) {
     e.preventDefault();
     setError(null);
-
-    const body = Object.fromEntries(
-      Object.entries(form).filter(([, v]) => v !== "")
-    );
-
+    const body = Object.fromEntries(Object.entries(form).filter(([, v]) => v !== ""));
     createContact(body, {
       onSuccess: (res) => {
         const newId = res?.data?.id ?? res?.id;
         if (applicationId && newId) {
-          linkContact(
-            { contactId: newId, applicationId },
-            {
-              onSuccess: () => onDone?.(),
-              onError: () => onDone?.(),
-            }
-          );
+          linkContact({ contactId: newId, applicationId }, { onSuccess: () => onDone?.(), onError: () => onDone?.() });
         } else {
           onDone?.();
         }
@@ -57,101 +108,9 @@ function ContactForm({ applicationId, onDone }) {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-3 rounded-card border border-slate-200 px-3 py-3 dark:border-slate-700">
-      <div className="grid grid-cols-2 gap-2">
-        <div className="col-span-2 flex flex-col gap-1">
-          <label className="text-xs font-medium text-slate-600 dark:text-slate-400" htmlFor="contact-name">
-            Name <span className="text-red-500">*</span>
-          </label>
-          <input
-            id="contact-name"
-            name="name"
-            value={form.name}
-            onChange={handleChange}
-            required
-            maxLength={200}
-            className={`${INPUT_BASE}`}
-            placeholder="Jane Smith"
-          />
-        </div>
-        <div className="flex flex-col gap-1">
-          <label className="text-xs font-medium text-slate-600 dark:text-slate-400" htmlFor="contact-company">
-            Company
-          </label>
-          <input
-            id="contact-company"
-            name="company"
-            value={form.company}
-            onChange={handleChange}
-            maxLength={200}
-            className={`${INPUT_BASE}`}
-            placeholder="Acme Corp"
-          />
-        </div>
-        <div className="flex flex-col gap-1">
-          <label className="text-xs font-medium text-slate-600 dark:text-slate-400" htmlFor="contact-role">
-            Role
-          </label>
-          <input
-            id="contact-role"
-            name="role"
-            value={form.role}
-            onChange={handleChange}
-            maxLength={200}
-            className={`${INPUT_BASE}`}
-            placeholder="Recruiter"
-          />
-        </div>
-        <div className="flex flex-col gap-1">
-          <label className="text-xs font-medium text-slate-600 dark:text-slate-400" htmlFor="contact-email">
-            Email
-          </label>
-          <input
-            id="contact-email"
-            name="email"
-            type="email"
-            value={form.email}
-            onChange={handleChange}
-            maxLength={254}
-            className={`${INPUT_BASE}`}
-            placeholder="jane@acme.com"
-          />
-        </div>
-        <div className="flex flex-col gap-1">
-          <label className="text-xs font-medium text-slate-600 dark:text-slate-400" htmlFor="contact-relationship">
-            Relationship
-          </label>
-          <select
-            id="contact-relationship"
-            name="relationship"
-            value={form.relationship}
-            onChange={handleChange}
-            className={`${INPUT_BASE}`}
-          >
-            {RELATIONSHIP_OPTIONS.map((r) => (
-              <option key={r} value={r}>
-                {r.replace("_", " ")}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
+      <ContactFormFields form={form} handleChange={handleChange} />
       {error && <p className="text-xs text-red-500">{error}</p>}
-      <div className="flex items-center gap-2">
-        <button
-          type="submit"
-          disabled={isPending || !form.name.trim()}
-          className="bg-gradient-to-r from-brand-600 to-brand-500 text-white rounded-button shadow-sm hover:from-brand-700 hover:to-brand-600 active:scale-[0.98] transition-all duration-150 font-medium text-xs px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-brand-500/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none"
-        >
-          {isPending ? "Saving…" : "Add Contact"}
-        </button>
-        <button
-          type="button"
-          onClick={() => onDone?.()}
-          className="text-slate-500 hover:bg-slate-100 rounded-button active:scale-[0.98] transition-all duration-150 font-medium text-xs px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:text-slate-400 dark:hover:bg-slate-700"
-        >
-          Cancel
-        </button>
-      </div>
+      <ContactFormActions isPending={isPending} nameValue={form.name} onDone={onDone} />
     </form>
   );
 }
