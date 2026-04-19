@@ -13,3 +13,11 @@ API Error: Unable to connect to API (FailedToOpenSocket)
 Ralph: warning — story US-147 still has passes != true in /Users/josephle/GitHub/Pipelined/scripts/ralph/prd_8.json (next iteration will pick the open story with smallest `priority` number).
 
 Ralph: uncommitted changes detected — creating snapshot commit for iteration 1.
+[main bea745f] chore(ralph): iteration 1 snapshot (auto-commit)
+ 2 files changed, 21 insertions(+)
+ create mode 100644 scripts/ralph/ralph_8b.log
+Iteration 1 complete. Continuing...
+
+===============================================================
+  Ralph Iteration 2 of 30 (claude)
+===============================================================
