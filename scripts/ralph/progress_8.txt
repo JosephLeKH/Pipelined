@@ -194,3 +194,18 @@ Changes:
 
 Learnings:
 - When a Chrome MV3 message listener doesn't return `true` for the fallback branch, the response channel closes synchronously — correct behavior for the unknown-type case since it responds immediately
+
+## US-157 — Split remaining oversized frontend components
+**Status:** DONE
+**Commit:** refactor(frontend): US-157 - split oversized component functions to meet 40-line limit
+
+Changes:
+- **ApplicationRowActions.jsx**: Extracted `RowMenuDropdown`, `BulkMoveControls`, `BulkEditControls`, `BulkDangerControls` sub-components; `BulkActionBar` reduced from 131 to ~38 lines
+- **CsvImportModal.jsx**: Extracted `useCsvImport` hook and `ImportResultDisplay` sub-component; main modal shell ~35 lines
+- **PrepSection.jsx**: Extracted `usePrepData` hook (~28 lines), `PrepNotesField`, `PrepChecklistSection`, `PrepQuestionsSection`; `PrepSection` shell ~20 lines
+- SettingsResumeSection, CalendarGrid, FeedbackWidget were completed in prior iterations
+- All 430 frontend tests pass
+
+Learnings:
+- `stateRef = useRef({ notes, checklist, questions }); stateRef.current = { ...state }` pattern updated each render allows setState callbacks to spread fresh state without stale closure issues, avoiding separate per-field refs
+- Gateguard hook fires on both Write and Edit — facts must be presented before each tool call
