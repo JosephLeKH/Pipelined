@@ -16,6 +16,7 @@ from auth.constants import DEFAULT_STAGES, DEFAULT_TIMEZONE  # noqa: F401
 from auth.schemas import TokenPayload
 from config import settings
 from database import get_collection
+from motor.motor_asyncio import AsyncIOMotorCollection
 
 # Re-exported for router backward compatibility.
 from auth.oauth_service import (  # noqa: F401
@@ -88,6 +89,38 @@ def decode_token(token: str) -> TokenPayload:
 REFERRAL_CODE_BYTES = 6  # secrets.token_urlsafe(6) → 8 base64 chars
 
 
+def _build_user_doc(email: str, password: str, display_name: str) -> dict:
+    """Return the base user document (no referral fields yet)."""
+    password_hash = hash_password(plain=password)
+    new_code = secrets.token_urlsafe(REFERRAL_CODE_BYTES)
+    return {
+        "email": email,
+        "password_hash": password_hash,
+        "display_name": display_name,
+        "default_stages": DEFAULT_STAGES,
+        "timezone": DEFAULT_TIMEZONE,
+        "digest_enabled": True,
+        "email_verified": False,
+        "created_at": datetime.now(timezone.utc),
+        "referral_code": new_code,
+        "referral_count": 0,
+        "referred_by": None,
+    }
+
+
+async def _apply_referral(users: AsyncIOMotorCollection, doc: dict, referral_code: str) -> None:
+    """Apply referral_code to doc and increment the referrer's count if valid."""
+    referrer = await users.find_one({"referral_code": referral_code})
+    if referrer is not None:
+        doc["referred_by"] = referral_code
+        # TODO: trigger perks at referral_count thresholds (e.g., 3 referrals = 1 month Pro trial)
+        await users.update_one(
+            {"referral_code": referral_code},
+            {"$inc": {"referral_count": 1}},
+        )
+        logger.info("referral_applied", referrer_id=str(referrer["_id"]))
+
+
 async def create_user(
     email: str,
     password: str,
@@ -106,32 +139,10 @@ async def create_user(
     if existing:
         raise DuplicateEmailError(email)
 
-    password_hash = hash_password(plain=password)
-    new_code = secrets.token_urlsafe(REFERRAL_CODE_BYTES)
-    doc: dict = {
-        "email": email,
-        "password_hash": password_hash,
-        "display_name": display_name,
-        "default_stages": DEFAULT_STAGES,
-        "timezone": DEFAULT_TIMEZONE,
-        "digest_enabled": True,
-        "email_verified": False,
-        "created_at": datetime.now(timezone.utc),
-        "referral_code": new_code,
-        "referral_count": 0,
-        "referred_by": None,
-    }
+    doc = _build_user_doc(email, password, display_name)
 
     if referral_code:
-        referrer = await users.find_one({"referral_code": referral_code})
-        if referrer is not None:
-            doc["referred_by"] = referral_code
-            # TODO: trigger perks at referral_count thresholds (e.g., 3 referrals = 1 month Pro trial)
-            await users.update_one(
-                {"referral_code": referral_code},
-                {"$inc": {"referral_count": 1}},
-            )
-            logger.info("referral_applied", referrer_id=str(referrer["_id"]))
+        await _apply_referral(users, doc, referral_code)
 
     result = await users.insert_one(doc)
     doc["_id"] = result.inserted_id

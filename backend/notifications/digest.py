@@ -44,6 +44,31 @@ class WeeklyDigest:
     upcoming_events: list[UpcomingEvent] = field(default_factory=list)
 
 
+def _build_stale_apps(stale_docs: list[dict], now: dt.datetime) -> list[StaleApp]:
+    """Convert raw stale application documents to StaleApp dataclasses."""
+    return [
+        StaleApp(
+            company=doc.get("company") or "Unknown",
+            role_title=doc.get("role_title") or "Unknown Role",
+            days_since_update=max(0, (now - doc["updated_at"].replace(tzinfo=dt.timezone.utc)).days),
+        )
+        for doc in stale_docs
+    ]
+
+
+def _build_upcoming_events(event_docs: list[dict]) -> list[UpcomingEvent]:
+    """Convert raw calendar event documents to UpcomingEvent dataclasses."""
+    return [
+        UpcomingEvent(
+            role_title=doc.get("role_title") or "Interview",
+            company=doc.get("company") or "Unknown",
+            event_date=str(doc["date"].date() if isinstance(doc["date"], dt.datetime) else doc["date"]),  # noqa: SIM210
+            event_time=str(doc["time"]) if doc.get("time") else None,
+        )
+        for doc in event_docs
+    ]
+
+
 async def build_weekly_digest(user_id: str) -> WeeklyDigest:
     """Query MongoDB to build a WeeklyDigest for the given user."""
     uid = ObjectId(user_id)
@@ -64,31 +89,12 @@ async def build_weekly_digest(user_id: str) -> WeeklyDigest:
 
     display_name: str = user.get("display_name", "there") if user else "there"
 
-    stale_apps: list[StaleApp] = [
-        StaleApp(
-            company=doc.get("company") or "Unknown",
-            role_title=doc.get("role_title") or "Unknown Role",
-            days_since_update=max(0, (now - doc["updated_at"].replace(tzinfo=dt.timezone.utc)).days),
-        )
-        for doc in stale_docs
-    ]
-
-    upcoming: list[UpcomingEvent] = [
-        UpcomingEvent(
-            role_title=doc.get("role_title") or "Interview",
-            company=doc.get("company") or "Unknown",
-            event_date=str(doc["date"].date() if isinstance(doc["date"], dt.datetime) else doc["date"]),  # noqa: SIM210
-            event_time=str(doc["time"]) if doc.get("time") else None,
-        )
-        for doc in event_docs
-    ]
-
     return WeeklyDigest(
         display_name=display_name,
         new_apps_this_week=new_count,
         total_active_apps=active_count,
-        stale_apps=stale_apps,
-        upcoming_events=upcoming,
+        stale_apps=_build_stale_apps(stale_docs, now),
+        upcoming_events=_build_upcoming_events(event_docs),
     )
 
 

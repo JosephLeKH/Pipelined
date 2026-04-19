@@ -48,19 +48,12 @@ def get_collection(name: str) -> AsyncIOMotorCollection:
     return db[name]
 
 
-async def ensure_indexes() -> None:
-    """Create all required MongoDB indexes. Safe to call on every startup (idempotent)."""
-    apps = get_collection("applications")
-    events = get_collection("calendar_events")
-    listings = get_collection("job_listings")
-    users = get_collection("users")
-    shares = get_collection("shares")
-    contacts = get_collection("contacts")
-    notifications = get_collection("notifications")
-    ai_cache = get_collection("ai_cache")
-    ai_budget = get_collection("ai_budget")
-    app_templates = get_collection("application_templates")
-
+async def _ensure_app_event_listing_indexes(
+    apps: AsyncIOMotorCollection,
+    events: AsyncIOMotorCollection,
+    listings: AsyncIOMotorCollection,
+) -> None:
+    """Create indexes for applications, calendar_events, and job_listings."""
     await asyncio.gather(
         apps.create_index([("user_id", 1), ("date_applied", -1)], name="user_date"),
         apps.create_index(
@@ -84,6 +77,20 @@ async def ensure_indexes() -> None:
             [("role", "text"), ("company", "text"), ("description", "text")],
             name="job_text_search",
         ),
+    )
+
+
+async def _ensure_user_support_indexes(
+    users: AsyncIOMotorCollection,
+    shares: AsyncIOMotorCollection,
+    contacts: AsyncIOMotorCollection,
+    notifications: AsyncIOMotorCollection,
+    ai_cache: AsyncIOMotorCollection,
+    ai_budget: AsyncIOMotorCollection,
+    app_templates: AsyncIOMotorCollection,
+) -> None:
+    """Create indexes for users, shares, contacts, notifications, AI cache/budget, and templates."""
+    await asyncio.gather(
         users.create_index("email", unique=True, name="email"),
         users.create_index("google_id", unique=True, sparse=True, name="google_id"),
         users.create_index("referral_code", unique=True, sparse=True, name="referral_code"),
@@ -95,11 +102,26 @@ async def ensure_indexes() -> None:
         notifications.create_index([("user_id", 1), ("read", 1)], name="notif_user_read"),
         notifications.create_index("created_at", expireAfterSeconds=30 * 24 * 3600, name="notif_ttl"),
         ai_cache.create_index("cache_key", unique=True, name="cache_key_unique"),
-        ai_cache.create_index(
-            "created_at",
-            expireAfterSeconds=30 * 24 * 3600,
-            name="cache_ttl",
-        ),
+        ai_cache.create_index("created_at", expireAfterSeconds=30 * 24 * 3600, name="cache_ttl"),
         ai_budget.create_index("month", unique=True, name="month_unique"),
         app_templates.create_index([("user_id", 1), ("created_at", -1)], name="template_user_date"),
+    )
+
+
+async def ensure_indexes() -> None:
+    """Create all required MongoDB indexes. Safe to call on every startup (idempotent)."""
+    apps = get_collection("applications")
+    events = get_collection("calendar_events")
+    listings = get_collection("job_listings")
+    users = get_collection("users")
+    shares = get_collection("shares")
+    contacts = get_collection("contacts")
+    notifications = get_collection("notifications")
+    ai_cache = get_collection("ai_cache")
+    ai_budget = get_collection("ai_budget")
+    app_templates = get_collection("application_templates")
+
+    await asyncio.gather(
+        _ensure_app_event_listing_indexes(apps, events, listings),
+        _ensure_user_support_indexes(users, shares, contacts, notifications, ai_cache, ai_budget, app_templates),
     )
