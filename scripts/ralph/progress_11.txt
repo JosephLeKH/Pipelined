@@ -1,0 +1,15 @@
+# Ralph Progress Log
+Started: Sun Apr 19 11:32:21 PDT 2026
+---
+
+## US-176 — Add rate limiting to /reset-password endpoint
+**Status:** COMPLETE
+**Commit:** feat: US-176 - Add rate limiting to /reset-password endpoint
+
+**What was done:**
+Added `@limiter.limit(settings.rate_limit_auth)` decorator and `request: Request` parameter to `reset_password_endpoint` in `backend/auth/router.py` (line 270), matching the pattern already used by `forgot_password` at line 260.
+
+**Learnings:**
+- slowapi requires `request: Request` as the first parameter on any rate-limited endpoint, even if the function body doesn't use it directly — the limiter reads the request object internally.
+- The pre-existing `test_calendar.py` failure is unrelated to this change and was present on clean main before any edits.
+- 235 backend tests passed; only the pre-existing calendar test failure remained.
