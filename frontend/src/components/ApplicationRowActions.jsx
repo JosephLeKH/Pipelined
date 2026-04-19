@@ -9,6 +9,28 @@ import { BUTTON_SECONDARY, MODAL_CARD } from "../lib/designTokens";
 import { useAuth } from "../context/AuthContext";
 import { BULK_EDIT_MAX_IDS } from "../lib/constants";
 
+function RowMenuDropdown({ application, onArchive, onUnarchive, onDelete, onClose }) {
+  return (
+    <div role="menu" className="absolute right-0 z-20 mt-1 w-36 rounded-card border border-slate-200 bg-white shadow-card dark:bg-slate-800 dark:border-slate-700">
+      {application.archived ? (
+        <button role="menuitem" type="button" className="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-700"
+          onClick={() => { onClose(); onUnarchive(application.id); }}>
+          Unarchive
+        </button>
+      ) : (
+        <button role="menuitem" type="button" className="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-700"
+          onClick={() => { onClose(); onArchive(application.id); }}>
+          Archive
+        </button>
+      )}
+      <button role="menuitem" type="button" className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50"
+        onClick={() => { onClose(); onDelete(application.id); }}>
+        Delete
+      </button>
+    </div>
+  );
+}
+
 export function RowMenu({ application, onArchive, onUnarchive, onDelete }) {
   const [open, setOpen] = useState(false);
   const menuRef = useRef(null);
@@ -24,48 +46,12 @@ export function RowMenu({ application, onArchive, onUnarchive, onDelete }) {
 
   return (
     <div ref={menuRef} className="relative shrink-0" onClick={(e) => e.stopPropagation()}>
-      <button
-        type="button"
-        aria-label="Application actions"
+      <button type="button" aria-label="Application actions"
         className="rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500"
-        onClick={() => setOpen((v) => !v)}
-      >
+        onClick={() => setOpen((v) => !v)}>
         <MoreHorizontal className="h-4 w-4" />
       </button>
-      {open && (
-        <div
-          role="menu"
-          className="absolute right-0 z-20 mt-1 w-36 rounded-card border border-slate-200 bg-white shadow-card dark:bg-slate-800 dark:border-slate-700"
-        >
-          {application.archived ? (
-            <button
-              role="menuitem"
-              type="button"
-              className="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-700"
-              onClick={() => { setOpen(false); onUnarchive(application.id); }}
-            >
-              Unarchive
-            </button>
-          ) : (
-            <button
-              role="menuitem"
-              type="button"
-              className="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-700"
-              onClick={() => { setOpen(false); onArchive(application.id); }}
-            >
-              Archive
-            </button>
-          )}
-          <button
-            role="menuitem"
-            type="button"
-            className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50"
-            onClick={() => { setOpen(false); onDelete(application.id); }}
-          >
-            Delete
-          </button>
-        </div>
-      )}
+      {open && <RowMenuDropdown application={application} onArchive={onArchive} onUnarchive={onUnarchive} onDelete={onDelete} onClose={() => setOpen(false)} />}
     </div>
   );
 }
@@ -85,18 +71,8 @@ export function DeleteConfirmModal({ appId, onConfirm, onCancel }) {
           Consider archiving instead.
         </p>
         <div className="flex justify-end gap-3">
-          <button
-            type="button"
-            onClick={onCancel}
-            className={`${BUTTON_SECONDARY} text-sm`}
-          >
-            Cancel
-          </button>
-          <button
-            type="button"
-            onClick={() => onConfirm(appId)}
-            className="rounded bg-red-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-red-700"
-          >
+          <button type="button" onClick={onCancel} className={`${BUTTON_SECONDARY} text-sm`}>Cancel</button>
+          <button type="button" onClick={() => onConfirm(appId)} className="rounded bg-red-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-red-700">
             Delete
           </button>
         </div>
@@ -122,18 +98,8 @@ export function BulkDeleteConfirmModal({ count, onConfirm, onCancel }) {
           This will permanently delete {count} {label} and cannot be undone.
         </p>
         <div className="flex justify-end gap-3">
-          <button
-            type="button"
-            onClick={onCancel}
-            className={`${BUTTON_SECONDARY} text-sm`}
-          >
-            Cancel
-          </button>
-          <button
-            type="button"
-            onClick={onConfirm}
-            className="rounded bg-red-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-red-700"
-          >
+          <button type="button" onClick={onCancel} className={`${BUTTON_SECONDARY} text-sm`}>Cancel</button>
+          <button type="button" onClick={onConfirm} className="rounded bg-red-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-red-700">
             Delete {count}
           </button>
         </div>
@@ -142,17 +108,59 @@ export function BulkDeleteConfirmModal({ count, onConfirm, onCancel }) {
   );
 }
 
-export function BulkActionBar({
-  selectedCount,
-  onMoveToStage,
-  onDeleteSelected,
-  onMerge,
-  onBulkEdit,
-  isDeleting = false,
-  isMoving = false,
-  isMerging = false,
-  isEditing = false,
-}) {
+function BulkMoveControls({ stageOptions, selectedStage, setSelectedStage, isMoving, isBusy, onMove }) {
+  return (
+    <>
+      <select aria-label="Move to stage" value={selectedStage} onChange={(e) => setSelectedStage(e.target.value)} disabled={isBusy}
+        className="border border-slate-300 bg-white rounded-input px-2 py-1 text-sm text-slate-700 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none transition-colors disabled:opacity-50 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-200">
+        <option value="">Move to stage…</option>
+        {stageOptions.map((s) => <option key={s} value={s}>{s}</option>)}
+      </select>
+      <button type="button" disabled={!selectedStage || isBusy} onClick={onMove}
+        className="flex items-center gap-1 bg-gradient-to-r from-brand-600 to-brand-500 text-white rounded-button shadow-sm hover:from-brand-700 hover:to-brand-600 active:scale-[0.98] transition-all duration-150 font-medium text-sm px-3 py-1 focus:outline-none focus:ring-2 focus:ring-brand-500/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none">
+        {isMoving ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" /> : null}
+        Move
+      </button>
+    </>
+  );
+}
+
+function BulkEditControls({ followUpDate, setFollowUpDate, tagsAdd, setTagsAdd, tagsRemove, setTagsRemove, isBusy, overLimit, isEditing, onApply }) {
+  const inputCls = "border border-slate-300 bg-white rounded-input px-2 py-1 text-sm text-slate-700 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none transition-colors disabled:opacity-50 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-200";
+  return (
+    <>
+      <input type="date" aria-label="Follow-up date" value={followUpDate} onChange={(e) => setFollowUpDate(e.target.value)} disabled={isBusy || overLimit} className={inputCls} />
+      <input type="text" aria-label="Tags to add" placeholder="Tags to add…" value={tagsAdd} onChange={(e) => setTagsAdd(e.target.value)} disabled={isBusy || overLimit} className={`w-36 ${inputCls}`} />
+      <input type="text" aria-label="Tags to remove" placeholder="Tags to remove…" value={tagsRemove} onChange={(e) => setTagsRemove(e.target.value)} disabled={isBusy || overLimit} className={`w-36 ${inputCls}`} />
+      <button type="button" disabled={isBusy || overLimit} onClick={onApply}
+        className="flex items-center gap-1 rounded border border-brand-600 px-3 py-1 text-sm font-medium text-brand-700 hover:bg-brand-50 disabled:opacity-50 disabled:cursor-not-allowed dark:border-brand-400 dark:text-brand-300">
+        {isEditing ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" /> : null}
+        Apply
+      </button>
+    </>
+  );
+}
+
+function BulkDangerControls({ selectedCount, isMerging, isDeleting, isBusy, onMerge, onDeleteSelected }) {
+  return (
+    <>
+      {selectedCount === 2 && (
+        <button type="button" disabled={isBusy} onClick={onMerge}
+          className="flex items-center gap-1 rounded bg-purple-600 px-3 py-1 text-sm font-medium text-white hover:bg-purple-700 disabled:opacity-50">
+          {isMerging ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" /> : null}
+          Merge
+        </button>
+      )}
+      <button type="button" disabled={isBusy} onClick={onDeleteSelected}
+        className="flex items-center gap-1 rounded bg-red-600 px-3 py-1 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50">
+        {isDeleting ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" /> : null}
+        Delete selected
+      </button>
+    </>
+  );
+}
+
+export function BulkActionBar({ selectedCount, onMoveToStage, onDeleteSelected, onMerge, onBulkEdit, isDeleting = false, isMoving = false, isMerging = false, isEditing = false }) {
   const { user } = useAuth();
   const stageOptions = user?.default_stages ?? [];
   const [selectedStage, setSelectedStage] = useState("");
@@ -178,98 +186,17 @@ export function BulkActionBar({
     if (removeList.length) update.tags_remove = removeList;
     if (!Object.keys(update).length) return;
     onBulkEdit(update);
-    setFollowUpDate("");
-    setTagsAdd("");
-    setTagsRemove("");
+    setFollowUpDate(""); setTagsAdd(""); setTagsRemove("");
   }
 
   return (
-    <div
-      role="toolbar"
-      aria-label="Bulk actions"
-      className="flex flex-wrap items-center gap-3 rounded-md border border-brand-200 bg-brand-50 px-4 py-2 text-sm dark:bg-brand-900/20 dark:border-brand-700"
-    >
+    <div role="toolbar" aria-label="Bulk actions" className="flex flex-wrap items-center gap-3 rounded-md border border-brand-200 bg-brand-50 px-4 py-2 text-sm dark:bg-brand-900/20 dark:border-brand-700">
       <span className="font-medium text-brand-800 dark:text-brand-200">{selectedCount} selected</span>
-      {overLimit && (
-        <span className="text-amber-700 dark:text-amber-400">Select {BULK_EDIT_MAX_IDS} or fewer to use bulk edit</span>
-      )}
+      {overLimit && <span className="text-amber-700 dark:text-amber-400">Select {BULK_EDIT_MAX_IDS} or fewer to use bulk edit</span>}
       <div className="ml-auto flex flex-wrap items-center gap-2">
-        <select
-          aria-label="Move to stage"
-          value={selectedStage}
-          onChange={(e) => setSelectedStage(e.target.value)}
-          disabled={isBusy}
-          className="border border-slate-300 bg-white rounded-input px-2 py-1 text-sm text-slate-700 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none transition-colors disabled:opacity-50 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-200"
-        >
-          <option value="">Move to stage…</option>
-          {stageOptions.map((s) => (
-            <option key={s} value={s}>{s}</option>
-          ))}
-        </select>
-        <button
-          type="button"
-          disabled={!selectedStage || isBusy}
-          onClick={handleMove}
-          className="flex items-center gap-1 bg-gradient-to-r from-brand-600 to-brand-500 text-white rounded-button shadow-sm hover:from-brand-700 hover:to-brand-600 active:scale-[0.98] transition-all duration-150 font-medium text-sm px-3 py-1 focus:outline-none focus:ring-2 focus:ring-brand-500/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none"
-        >
-          {isMoving ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" /> : null}
-          Move
-        </button>
-        <input
-          type="date"
-          aria-label="Follow-up date"
-          value={followUpDate}
-          onChange={(e) => setFollowUpDate(e.target.value)}
-          disabled={isBusy || overLimit}
-          className="border border-slate-300 bg-white rounded-input px-2 py-1 text-sm text-slate-700 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none transition-colors disabled:opacity-50 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-200"
-        />
-        <input
-          type="text"
-          aria-label="Tags to add"
-          placeholder="Tags to add…"
-          value={tagsAdd}
-          onChange={(e) => setTagsAdd(e.target.value)}
-          disabled={isBusy || overLimit}
-          className="w-36 border border-slate-300 bg-white rounded-input px-2 py-1 text-sm text-slate-700 placeholder-slate-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none transition-colors disabled:opacity-50 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-200"
-        />
-        <input
-          type="text"
-          aria-label="Tags to remove"
-          placeholder="Tags to remove…"
-          value={tagsRemove}
-          onChange={(e) => setTagsRemove(e.target.value)}
-          disabled={isBusy || overLimit}
-          className="w-36 border border-slate-300 bg-white rounded-input px-2 py-1 text-sm text-slate-700 placeholder-slate-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none transition-colors disabled:opacity-50 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-200"
-        />
-        <button
-          type="button"
-          disabled={isBusy || overLimit}
-          onClick={handleApply}
-          className="flex items-center gap-1 rounded border border-brand-600 px-3 py-1 text-sm font-medium text-brand-700 hover:bg-brand-50 disabled:opacity-50 disabled:cursor-not-allowed dark:border-brand-400 dark:text-brand-300"
-        >
-          {isEditing ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" /> : null}
-          Apply
-        </button>
-        {selectedCount === 2 && (
-          <button
-            type="button"
-            disabled={isBusy}
-            onClick={onMerge}
-            className="flex items-center gap-1 rounded bg-purple-600 px-3 py-1 text-sm font-medium text-white hover:bg-purple-700 disabled:opacity-50"
-          >
-            {isMerging ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" /> : null}
-            Merge
-          </button>
-        )}
-        <button
-          type="button"
-          disabled={isBusy}
-          onClick={onDeleteSelected}
-          className="flex items-center gap-1 rounded bg-red-600 px-3 py-1 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
-        >
-          {isDeleting ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" /> : null}
-          Delete selected
-        </button>
+        <BulkMoveControls stageOptions={stageOptions} selectedStage={selectedStage} setSelectedStage={setSelectedStage} isMoving={isMoving} isBusy={isBusy} onMove={handleMove} />
+        <BulkEditControls followUpDate={followUpDate} setFollowUpDate={setFollowUpDate} tagsAdd={tagsAdd} setTagsAdd={setTagsAdd} tagsRemove={tagsRemove} setTagsRemove={setTagsRemove} isBusy={isBusy} overLimit={overLimit} isEditing={isEditing} onApply={handleApply} />
+        <BulkDangerControls selectedCount={selectedCount} isMerging={isMerging} isDeleting={isDeleting} isBusy={isBusy} onMerge={onMerge} onDeleteSelected={onDeleteSelected} />
       </div>
     </div>
   );
