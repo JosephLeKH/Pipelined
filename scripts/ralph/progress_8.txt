@@ -182,3 +182,15 @@ Wrapped the `DOMContentLoaded` event listener (not the exported `init`) in try/c
 - Security hook correctly caught `innerHTML` with static content — always use `textContent` + `createElement` even for hardcoded strings to maintain the pattern
 - The POPUP_HTML test fixture lacks `#empty-state`, so the legacy `.empty` li fallback path in `renderEmptyState` must be preserved for tests to pass
 - Wrapping the DOMContentLoaded handler (not the exported function) keeps exported `init` testable without error-handling noise in tests
+
+## US-156 — Extension: add unknown message type fallback in background.js
+**Status:** DONE
+**Commit:** feat: US-156 - Extension: add unknown message type fallback in background.js
+
+Changes:
+- Extracted `_parseResponse(response)` helper (15 lines) from `fetchWithAuth()`, reducing it from 43 to 30 lines
+- Added `console.warn("[background] Unknown message type:", message.type)` + `sendResponse({ success: false, error: "Unknown message type" })` fallback at end of message listener
+- All 247 extension tests pass
+
+Learnings:
+- When a Chrome MV3 message listener doesn't return `true` for the fallback branch, the response channel closes synchronously — correct behavior for the unknown-type case since it responds immediately
