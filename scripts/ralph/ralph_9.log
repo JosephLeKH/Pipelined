@@ -307,3 +307,15 @@ You've hit your limit · resets 5am (America/Los_Angeles)
 Ralph: warning — story US-160 still has passes != true in /Users/josephle/GitHub/Pipelined/scripts/ralph/prd_9.json (next iteration will pick the open story with smallest `priority` number).
 
 Ralph: uncommitted changes detected — creating snapshot commit for iteration 25.
+[main d0be065] chore(ralph): iteration 25 snapshot (auto-commit)
+ 1 file changed, 12 insertions(+)
+Iteration 25 complete. Continuing...
+
+===============================================================
+  Ralph Iteration 26 of 30 (claude)
+===============================================================
+You've hit your limit · resets 5am (America/Los_Angeles)
+
+Ralph: warning — story US-160 still has passes != true in /Users/josephle/GitHub/Pipelined/scripts/ralph/prd_9.json (next iteration will pick the open story with smallest `priority` number).
+
+Ralph: uncommitted changes detected — creating snapshot commit for iteration 26.
