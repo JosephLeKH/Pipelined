@@ -13,9 +13,10 @@ function ManualAddForm({ isOpen, onClose }) {
     <div
       ref={overlayRef}
       data-testid="modal-overlay"
-      className={`fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm transition-opacity duration-200 ${isOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"}`}
+      className={`fixed inset-0 z-50 flex items-center justify-center transition-opacity duration-200 ${isOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"}`}
       onClick={handleOverlayClick}
     >
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm pointer-events-none" aria-hidden="true" />
       <div
         ref={dialogRef}
         className="relative w-full max-w-lg bg-white rounded-2xl shadow-modal animate-scaleIn dark:bg-slate-800 dark:border dark:border-slate-700"

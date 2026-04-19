@@ -39,8 +39,9 @@ function AppSelector({ apps, applicationId, onApplicationChange }) {
 function NewEventForm({ initialDate, initialApplicationId, onClose }) {
   const hook = useNewEventForm({ initialDate, initialApplicationId, onClose });
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+    <div className="fixed inset-0 z-50 flex items-center justify-center"
       onClick={hook.handleOverlayClick}>
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm pointer-events-none" aria-hidden="true" />
       <div className={`relative w-full max-w-md p-6 ${MODAL_CARD}`}
         role="dialog" aria-modal="true" aria-label="New calendar event">
         <div className="mb-4 flex items-center justify-between">

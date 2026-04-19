@@ -48,9 +48,10 @@ function DetailPanel({ application, onClose, onAddEvent }) {
     <div
       ref={overlayRef}
       data-testid="panel-overlay"
-      className={`fixed inset-0 z-40 bg-black/30 transition-opacity duration-200 ${isOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"}`}
+      className={`fixed inset-0 z-40 transition-opacity duration-200 ${isOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"}`}
       onClick={handleOverlayClick}
     >
+      <div className="absolute inset-0 bg-black/30 pointer-events-none" aria-hidden="true" />
       <div
         ref={panelRef}
         className={`fixed inset-x-0 bottom-0 h-[90vh] rounded-t-xl bg-white shadow-xl transition-transform duration-[250ms] md:inset-x-auto md:bottom-auto md:right-0 md:top-0 md:h-full md:w-[480px] md:rounded-none dark:bg-slate-800 ${isOpen ? "translate-y-0 md:translate-x-0" : "translate-y-full md:translate-y-0 md:translate-x-full"}`}
