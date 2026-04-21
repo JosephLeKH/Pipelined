@@ -13,3 +13,14 @@ Added `@limiter.limit(settings.rate_limit_auth)` decorator and `request: Request
 - slowapi requires `request: Request` as the first parameter on any rate-limited endpoint, even if the function body doesn't use it directly — the limiter reads the request object internally.
 - The pre-existing `test_calendar.py` failure is unrelated to this change and was present on clean main before any edits.
 - 235 backend tests passed; only the pre-existing calendar test failure remained.
+
+## US-177 — Add MongoDB operator injection validation to query filters
+**Status:** COMPLETE
+**Commit:** feat: US-177 - Add MongoDB operator injection validation to query filters
+
+**What was done:**
+The `stage_no_operator_injection` and `tags_no_operator_injection` validators were already present in `ApplicationListQuery` in `applications/schemas.py`. `company_type` uses a `Literal` type (`ValidCompanyType`) which inherently rejects any `$`-prefixed string. Added two integration tests in `test_applications.py` proving 422 is returned for `stage=$ne` and `tags=$gt`. Also added a `try/except ValidationError` block in `applications/router.py` `list_applications` handler to convert Pydantic `ValidationError` (raised during `_build_app_list_query`) into `HTTPException(422)` — without this the error propagated as an unhandled 500.
+
+**Learnings:**
+- When a Pydantic model is instantiated inside a route handler body (not via `Depends`), `ValidationError` is NOT auto-converted to 422 by FastAPI — must catch it explicitly and raise `HTTPException`.
+- 237 backend tests passed; only the pre-existing calendar test failure remained.

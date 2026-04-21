@@ -27,7 +27,7 @@
         "All backend tests pass: pytest tests/ -x"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "Security fix — MEDIUM severity. Defense in depth against NoSQL injection."
     },
     {
