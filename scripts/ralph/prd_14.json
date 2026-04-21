@@ -1,0 +1,120 @@
+{
+  "project": "Pipelined",
+  "branchName": "ralph/pipelined-v14",
+  "description": "Round 4 hardening: ReDoS prevention, sender origin validation, race condition fixes, unbounded export limits, email error handling, board extraction consolidation, merge warning, and analytics error boundary.",
+  "userStories": [
+    {
+      "id": "US-201",
+      "title": "Escape regex in contacts company filter to prevent ReDoS",
+      "description": "backend/contacts/service.py line 65: the company filter uses {'$regex': company, '$options': 'i'} with raw user input. Special regex characters (e.g., '(a+)+$') can cause catastrophic backtracking (ReDoS). Import re and apply re.escape(company) before passing to the $regex operator. This ensures only literal string matching occurs.",
+      "acceptanceCriteria": [
+        "Company filter uses re.escape() on user input before $regex",
+        "Search still works for normal company names with special chars like 'C++' or 'Yahoo!'",
+        "A test exists proving regex metacharacters are safely escaped",
+        "All backend tests pass: pytest tests/ -x"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Security — HIGH severity. ReDoS can cause denial of service via crafted company search."
+    },
+    {
+      "id": "US-202",
+      "title": "Validate sender origin in extension background message handler",
+      "description": "extension/background/background.js line 189: chrome.runtime.onMessage.addListener ignores the sender parameter (named _sender). Any webpage could potentially send messages to the service worker. Add validation that sender.id matches chrome.runtime.id (own extension) before processing any message. Return { error: 'Unauthorized' } for invalid senders.",
+      "acceptanceCriteria": [
+        "onMessage handler validates sender.id === chrome.runtime.id",
+        "Messages from non-extension origins are rejected with error response",
+        "All extension tests pass: npm test",
+        "Normal content script → background communication still works"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Security — HIGH severity. Without sender validation, malicious pages could invoke API calls."
+    },
+    {
+      "id": "US-203",
+      "title": "Fix duplicate application race condition with unique index",
+      "description": "backend/applications/service.py lines 155-167: the duplicate check (find_one) and insert (insert_one) are separate non-atomic operations. Two concurrent requests can both pass the check and create duplicates. Add a unique compound index on (user_id, url_hash) to the applications collection in the database setup/migration, and catch DuplicateKeyError in the insert path to raise DuplicateApplicationError instead.",
+      "acceptanceCriteria": [
+        "Unique compound index exists on applications collection for (user_id, url_hash)",
+        "insert_one catches pymongo.errors.DuplicateKeyError and raises DuplicateApplicationError",
+        "Concurrent identical saves do not create duplicate records",
+        "All backend tests pass: pytest tests/ -x"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Data integrity — MEDIUM severity. Users report occasional duplicate applications appearing."
+    },
+    {
+      "id": "US-204",
+      "title": "Add memory limit to CSV export query",
+      "description": "backend/applications/service_export.py line 33: .to_list(length=None) loads ALL applications into memory for CSV export. A user with 100k+ applications could exhaust server memory. Add MAX_EXPORT_ROWS = 50000 constant and use .to_list(length=MAX_EXPORT_ROWS). Log a structlog warning if result count equals the limit, indicating truncation. Include a comment in the CSV header row count if truncated.",
+      "acceptanceCriteria": [
+        ".to_list() uses MAX_EXPORT_ROWS limit instead of None",
+        "Warning logged if export is truncated at limit",
+        "Export still works correctly for normal users (<50k applications)",
+        "All backend tests pass: pytest tests/ -x"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Performance — MEDIUM severity. Unbounded memory allocation is a production risk."
+    },
+    {
+      "id": "US-205",
+      "title": "Add try-except and logging to email service SMTP calls",
+      "description": "backend/notifications/email_service.py lines 83, 94, 108: three run_in_executor calls to _send_smtp have no error handling. If SMTP connection fails (timeout, auth error, network), the exception is silently lost. Wrap each run_in_executor call in try-except, catch smtplib.SMTPException and OSError, and log the failure with structlog including the to_email and error details. Do NOT re-raise — email failures should not crash the request.",
+      "acceptanceCriteria": [
+        "All three run_in_executor calls wrapped in try-except",
+        "Catches smtplib.SMTPException and OSError specifically",
+        "Failures logged with structlog including recipient and error message",
+        "Email send failures do not propagate to caller",
+        "All backend tests pass: pytest tests/ -x"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Reliability — MEDIUM severity. Silent email failures make debugging impossible."
+    },
+    {
+      "id": "US-206",
+      "title": "Create board extraction factory to reduce duplication across 13 board files",
+      "description": "extension/content/boards/ has 13 board files (linkedin.js, indeed.js, greenhouse.js, etc.) all sharing identical structure: isJobPage(), getTitle(), getCompany(), getLocation(), extractFields(). Create a createBoardExtractor(config) factory in board_utils.js that accepts { id, urlPattern, selectors: { title: [...], company: [...], location: [...], compensation: [...] } } and returns { BOARD_ID, isJobPage, extractFields }. Refactor the 3 simplest boards (remoteok.js, dice.js, wellfound.js) to use it as proof of concept. Leave complex boards (linkedin, greenhouse) unchanged for now.",
+      "acceptanceCriteria": [
+        "board_utils.js exports createBoardExtractor factory function",
+        "At least 3 board files refactored to use the factory",
+        "Refactored boards still extract fields correctly (manual verification)",
+        "All extension tests pass: npm test"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Code quality — MEDIUM severity. 13 files with identical structure is a maintenance burden."
+    },
+    {
+      "id": "US-207",
+      "title": "Add explicit data loss warning to MergeDialog",
+      "description": "frontend/src/components/MergeDialog.jsx: the merge dialog shows field selection UI but does NOT warn that merging permanently deletes one application record. Add a warning banner at the top of the dialog: 'Merging will combine these applications into one. The duplicate will be permanently deleted. This cannot be undone.' Style it with a yellow/amber warning background consistent with existing alert patterns.",
+      "acceptanceCriteria": [
+        "Warning banner visible at top of MergeDialog before field selection",
+        "Warning text clearly states one application will be deleted and action is irreversible",
+        "Warning uses existing alert/warning styling (amber/yellow)",
+        "npm test passes all tests"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "UX safety — MEDIUM severity. Users should understand merge is destructive before confirming."
+    },
+    {
+      "id": "US-208",
+      "title": "Wrap Analytics page charts in ErrorBoundary",
+      "description": "frontend/src/pages/Analytics.jsx: AnalyticsCharts component renders Recharts visualizations with no ErrorBoundary wrapper. If chart data is malformed or Recharts throws, the entire Analytics page crashes. Wrap the charts section in an ErrorBoundary with a fallback that says 'Unable to load charts. Try refreshing the page.' and includes a retry button that calls resetErrorBoundary.",
+      "acceptanceCriteria": [
+        "AnalyticsCharts wrapped in ErrorBoundary component",
+        "Fallback UI shows helpful error message with retry button",
+        "Chart crash does not take down the full Analytics page",
+        "npm test passes all tests"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "UX resilience — prevents full page crash from chart rendering errors."
+    }
+  ]
+}

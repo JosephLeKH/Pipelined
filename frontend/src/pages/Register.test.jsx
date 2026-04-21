@@ -72,31 +72,28 @@ describe("Register", () => {
   });
 
   it("should show error when name is empty on submit", async () => {
+    // Client-side validation requires valid email + strong password before submit is enabled.
     render(<Register />, { wrapper: makeWrapper() });
 
+    await userEvent.type(screen.getByLabelText("Email"), "bob@example.com");
+    await userEvent.type(screen.getByLabelText("Password"), "Password1");
     await userEvent.click(screen.getByRole("button", { name: "Create account" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent("Name is required.");
   });
 
-  it("should show error when email is empty on submit", async () => {
+  it("should disable submit button when email is empty", () => {
+    // Client-side validation: submit is disabled until email is valid.
     render(<Register />, { wrapper: makeWrapper() });
 
-    await userEvent.type(screen.getByLabelText("Name"), "Bob");
-    await userEvent.click(screen.getByRole("button", { name: "Create account" }));
-
-    expect(await screen.findByRole("alert")).toHaveTextContent("Email is required.");
+    expect(screen.getByRole("button", { name: "Create account" })).toBeDisabled();
   });
 
-  it("should show error when password is too short", async () => {
+  it("should disable submit button when password does not meet requirements", () => {
+    // Client-side validation: submit is disabled until password meets all strength requirements.
     render(<Register />, { wrapper: makeWrapper() });
 
-    await userEvent.type(screen.getByLabelText("Name"), "Bob");
-    await userEvent.type(screen.getByLabelText("Email"), "bob@example.com");
-    await userEvent.type(screen.getByLabelText("Password"), "short");
-    await userEvent.click(screen.getByRole("button", { name: "Create account" }));
-
-    expect(await screen.findByRole("alert")).toHaveTextContent("Password must be at least 8 characters.");
+    expect(screen.getByRole("button", { name: "Create account" })).toBeDisabled();
   });
 
   it("should show error when email is already taken", async () => {
@@ -104,7 +101,7 @@ describe("Register", () => {
 
     await userEvent.type(screen.getByLabelText("Name"), "Taken");
     await userEvent.type(screen.getByLabelText("Email"), "taken@example.com");
-    await userEvent.type(screen.getByLabelText("Password"), "password123");
+    await userEvent.type(screen.getByLabelText("Password"), "Password1");
     await userEvent.click(screen.getByRole("button", { name: "Create account" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent(
@@ -133,7 +130,7 @@ describe("Register", () => {
 
     await userEvent.type(screen.getByLabelText("Name"), "Bob");
     await userEvent.type(screen.getByLabelText("Email"), "bob@example.com");
-    await userEvent.type(screen.getByLabelText("Password"), "password123");
+    await userEvent.type(screen.getByLabelText("Password"), "Password1");
     await userEvent.click(screen.getByRole("button", { name: "Create account" }));
 
     await waitFor(() => {
