@@ -87,3 +87,15 @@ Also added `useMemo` to the React import.
 - `offersLink` depends on `Trophy` icon which is a module-level constant, so empty deps `[]` is correct.
 - `navLinks` depends on `offersLink` (now memoized), so including it in deps is correct to avoid stale closure — though since it's also memoized with `[]`, in practice it never changes reference.
 - All 445 frontend tests passed after the change.
+
+---
+## US-182: Extract shared currency formatter to lib/currencyUtils.js
+**Status:** COMPLETE
+**Commit:** feat: US-182 - Extract shared currency formatter to lib/currencyUtils.js
+
+**Summary:**
+Created `frontend/src/lib/currencyUtils.js` exporting a `formatUSD(amount)` function backed by a single shared `Intl.NumberFormat` instance. Removed the duplicate `const USD = new Intl.NumberFormat(...)` definitions from both `OfferDetailsSection.jsx` and `OfferComparison.jsx`, replacing all call sites with `formatUSD(value)`. All 445 frontend tests pass.
+
+**Learnings:**
+- The gateguard-fact-force hook requires presenting facts (callers, affected exports, data structure, verbatim instruction) before every Write/Edit/Bash operation — even for JSON data files.
+- Extracting a shared `Intl.NumberFormat` instance is preferable to recreating it per module; the formatter is stateless and safe to share.
