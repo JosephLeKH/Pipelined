@@ -1,6 +1,6 @@
 /** Top navigation bar shared across protected pages. */
 
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
 import Activity from "lucide-react/dist/esm/icons/activity";
@@ -128,8 +128,8 @@ function NavBar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { data: offersData } = useApplications({ stage: OFFER_STAGE, limit: 1 });
   const hasOffers = (offersData?.data?.length ?? 0) > 0;
-  const offersLink = { to: "/offers", label: "Offers", Icon: Trophy };
-  const navLinks = hasOffers ? [NAV_LINKS[0], offersLink, ...NAV_LINKS.slice(1)] : NAV_LINKS;
+  const offersLink = useMemo(() => ({ to: "/offers", label: "Offers", Icon: Trophy }), []);
+  const navLinks = useMemo(() => (hasOffers ? [NAV_LINKS[0], offersLink, ...NAV_LINKS.slice(1)] : NAV_LINKS), [hasOffers, offersLink]);
   const handleCycleTheme = useCallback(() => { cycleTheme(); trackEvent("feature_used", { feature: "dark_mode" }); }, [cycleTheme]);
   const handleLogout = useCallback(async () => { resetUser(); await logout(); }, [logout]);
   const closeMobileMenu = useCallback(() => setMobileMenuOpen(false), []);
