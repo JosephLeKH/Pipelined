@@ -1,11 +1,12 @@
 /** App shell: defines routes, lazy-loads pages, protects authenticated routes. */
 
 import { lazy, Suspense, useEffect, useRef } from "react";
-import { Routes, Route, Navigate, useNavigate, useLocation, useSearchParams } from "react-router-dom";
+import { Routes, Route, Navigate, Link, useNavigate, useLocation, useSearchParams } from "react-router-dom";
 
 import { trackEvent } from "./lib/analytics";
 
 import { useAuth } from "./context/AuthContext";
+import ErrorBoundary from "./components/ErrorBoundary";
 import CommandPalette from "./components/CommandPalette";
 import EmailVerificationBanner from "./components/EmailVerificationBanner";
 import OfflineBanner from "./components/OfflineBanner";
@@ -107,6 +108,21 @@ function PageTracker() {
   return null;
 }
 
+function RouteErrorFallback() {
+  return (
+    <div role="alert" className="flex flex-col items-center gap-4 py-16 text-center">
+      <p className="text-lg font-semibold text-slate-900">Something went wrong</p>
+      <p className="text-sm text-slate-500">An error occurred on this page.</p>
+      <Link
+        to="/dashboard"
+        className="flex items-center gap-2 rounded-button bg-gradient-to-r from-brand-600 to-brand-500 px-4 py-2 text-sm font-medium text-white hover:from-brand-700 hover:to-brand-600 active:scale-[0.98] transition-all duration-150"
+      >
+        Go to Dashboard
+      </Link>
+    </div>
+  );
+}
+
 function App() {
   return (
     <>
@@ -126,6 +142,7 @@ function App() {
         <GlobalChordShortcuts />
         <FeedbackWidget />
         <main id="main-content">
+        <ErrorBoundary fallback={<RouteErrorFallback />}>
         <Routes>
         <Route path="/" element={<PageWrapper><LandingPage /></PageWrapper>} />
         <Route path="/login" element={<PageWrapper><Login /></PageWrapper>} />
@@ -187,6 +204,7 @@ function App() {
           }
         />
         </Routes>
+        </ErrorBoundary>
         </main>
       </Suspense>
     </>
