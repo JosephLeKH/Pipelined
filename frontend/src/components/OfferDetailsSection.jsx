@@ -6,12 +6,7 @@ import ChevronRight from "lucide-react/dist/esm/icons/chevron-right";
 
 import { INPUT_BASE } from "../lib/designTokens";
 import { OFFER_FIELDS } from "../lib/constants";
-
-const USD = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  maximumFractionDigits: 0,
-});
+import { formatUSD } from "../lib/currencyUtils";
 
 function OfferField({ fieldMeta, value, onChange }) {
   const [editing, setEditing] = useState(false);
@@ -32,7 +27,7 @@ function OfferField({ fieldMeta, value, onChange }) {
   const display =
     value != null
       ? fieldMeta.type === "currency"
-        ? USD.format(value)
+        ? formatUSD(value)
         : value
       : null;
 

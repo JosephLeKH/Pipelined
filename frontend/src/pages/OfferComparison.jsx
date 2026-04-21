@@ -9,16 +9,11 @@ import { useApplications } from "../hooks/useApplications";
 import { useUpdateApplication } from "../hooks/useApplications";
 import { OFFER_FIELDS, OFFER_STAGE } from "../lib/constants";
 import { INPUT_BASE } from "../lib/designTokens";
-
-const USD = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  maximumFractionDigits: 0,
-});
+import { formatUSD } from "../lib/currencyUtils";
 
 function fmtCell(fieldType, value) {
   if (value == null || value === "") return null;
-  return fieldType === "currency" ? USD.format(value) : String(value);
+  return fieldType === "currency" ? formatUSD(value) : String(value);
 }
 
 function EditableCellInput({ value, fieldType, handleBlur }) {
