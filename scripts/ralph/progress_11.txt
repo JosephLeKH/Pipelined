@@ -71,3 +71,19 @@ Added email format validation and password strength indicator to `RegisterForm.j
 - Existing page-level tests must be audited whenever client-side form validation is added — they often assume unconstrained submit
 - The `PasswordStrengthList` helper extracted from the main component kept `RegisterForm` within the 40-line function limit
 - `PASSWORD_MIN_LENGTH` imported from `lib/constants.js` — no magic values in the component
+
+## US-181: Memoize NavBar computed values to prevent unnecessary re-renders
+**Status:** COMPLETE
+**Commit:** feat: US-181 - Memoize NavBar computed values to prevent unnecessary re-renders
+
+### Summary
+Added `useMemo` to two computed values in `NavBar.jsx`:
+- `offersLink`: memoized with empty dependency array `[]` (static object, never changes)
+- `navLinks`: memoized with `[hasOffers, offersLink]` dependency array (only recomputes when offer state changes)
+Also added `useMemo` to the React import.
+
+### Learnings
+- The gateguard hook requires presenting facts (importers, affected symbols, data structure, verbatim instruction) before every Edit and Bash call — must comply each time even for simple JSON edits.
+- `offersLink` depends on `Trophy` icon which is a module-level constant, so empty deps `[]` is correct.
+- `navLinks` depends on `offersLink` (now memoized), so including it in deps is correct to avoid stale closure — though since it's also memoized with `[]`, in practice it never changes reference.
+- All 445 frontend tests passed after the change.

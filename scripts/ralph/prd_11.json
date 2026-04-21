@@ -84,7 +84,7 @@
         "npm test passes all tests"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Performance \u2014 NavBar renders on every route change and auth state update."
     },
     {
