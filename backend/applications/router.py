@@ -4,6 +4,7 @@ from datetime import datetime
 
 import structlog
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response
+from pydantic import ValidationError
 
 from applications import service as app_service
 from applications.router_analytics import analytics_router
@@ -123,10 +124,13 @@ async def list_applications(
     user: dict = Depends(get_current_user),
 ) -> dict:
     """List applications with cursor-based pagination and optional filters."""
-    query = _build_app_list_query(
-        sort_by, sort_order, stage, company_type, remote_status,
-        tags, date_from, date_to, q, cursor, limit, include_archived,
-    )
+    try:
+        query = _build_app_list_query(
+            sort_by, sort_order, stage, company_type, remote_status,
+            tags, date_from, date_to, q, cursor, limit, include_archived,
+        )
+    except ValidationError as exc:
+        raise HTTPException(status_code=422, detail={"code": "VALIDATION_ERROR", "message": str(exc)})
     user_id = str(user["_id"])
     try:
         docs, next_cursor = await app_service.list_applications(user_id, query)

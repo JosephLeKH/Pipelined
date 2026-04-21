@@ -296,6 +296,36 @@ async def test_list_applications_returns_400_for_invalid_plain_cursor(client, te
     assert resp.json()["detail"]["code"] == "INVALID_CURSOR"
 
 
+async def test_list_applications_rejects_operator_injection_in_stage(client, test_user):
+    # Arrange
+    _, cookies = test_user
+
+    # Act — pass a MongoDB operator string as stage filter
+    resp = await client.get(
+        "/api/applications",
+        params={"stage": "$ne"},
+        cookies=cookies,
+    )
+
+    # Assert
+    assert resp.status_code == 422
+
+
+async def test_list_applications_rejects_operator_injection_in_tags(client, test_user):
+    # Arrange
+    _, cookies = test_user
+
+    # Act — pass a MongoDB operator string as a tag filter item
+    resp = await client.get(
+        "/api/applications",
+        params={"tags": "$gt"},
+        cookies=cookies,
+    )
+
+    # Assert
+    assert resp.status_code == 422
+
+
 async def test_list_applications_text_search_returns_matching_application(client, test_user):
     # Arrange — insert two applications with distinct role titles
     _, cookies = test_user
