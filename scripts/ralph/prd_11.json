@@ -14,7 +14,7 @@
       ],
       "priority": 1,
       "passes": true,
-      "notes": "Security fix — HIGH severity. Simple one-line change."
+      "notes": "Security fix \u2014 HIGH severity. Simple one-line change."
     },
     {
       "id": "US-177",
@@ -28,7 +28,7 @@
       ],
       "priority": 1,
       "passes": true,
-      "notes": "Security fix — MEDIUM severity. Defense in depth against NoSQL injection."
+      "notes": "Security fix \u2014 MEDIUM severity. Defense in depth against NoSQL injection."
     },
     {
       "id": "US-178",
@@ -43,7 +43,7 @@
       ],
       "priority": 1,
       "passes": true,
-      "notes": "UX resilience — prevents full app crashes from isolated component errors."
+      "notes": "UX resilience \u2014 prevents full app crashes from isolated component errors."
     },
     {
       "id": "US-179",
@@ -57,8 +57,8 @@
         "npm test passes all tests"
       ],
       "priority": 1,
-      "passes": false,
-      "notes": "UX snappiness — status changes should feel instant."
+      "passes": true,
+      "notes": "UX snappiness \u2014 status changes should feel instant."
     },
     {
       "id": "US-180",
@@ -72,7 +72,7 @@
       ],
       "priority": 2,
       "passes": false,
-      "notes": "UX improvement — helps users succeed on first attempt."
+      "notes": "UX improvement \u2014 helps users succeed on first attempt."
     },
     {
       "id": "US-181",
@@ -85,7 +85,7 @@
       ],
       "priority": 2,
       "passes": false,
-      "notes": "Performance — NavBar renders on every route change and auth state update."
+      "notes": "Performance \u2014 NavBar renders on every route change and auth state update."
     },
     {
       "id": "US-182",
@@ -100,7 +100,7 @@
       ],
       "priority": 3,
       "passes": false,
-      "notes": "Code deduplication — DRY principle."
+      "notes": "Code deduplication \u2014 DRY principle."
     }
   ]
 }

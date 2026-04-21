@@ -36,3 +36,20 @@ Added `Link` to the react-router-dom import and imported the existing `ErrorBoun
 - The existing `ErrorBoundary` already supports a `fallback` prop — no changes to the component itself were needed; just pass a custom fallback at the call site.
 - Using `<Link>` inside the fallback works because `App.jsx` is rendered inside `BrowserRouter` in `main.jsx`, so router context is available even during the error boundary fallback render.
 - Pre-existing a11y test failures (axe concurrency errors) are unrelated to this change.
+
+## US-179 — Add optimistic updates to useUpdateApplication mutation
+**Status:** COMPLETE
+**Commit:** feat: US-179 - Add optimistic updates to useUpdateApplication mutation
+
+**What was done:**
+Replaced `onSuccess`-only invalidation in `useUpdateApplication` (frontend/src/hooks/useApplications.js) with a full optimistic update cycle:
+- `onMutate`: cancels in-flight queries for the detail and all list keys, snapshots previous data via `getQueryData`/`getQueriesData`, then applies the patch immediately via `setQueryData`/`setQueriesData`.
+- `onError`: rolls back both the detail cache and all affected list caches from the `context` snapshot.
+- `onSettled`: invalidates `KEYS.all` and `KEYS.stats` for eventual consistency.
+
+All 430 frontend tests pass; 3 pre-existing DetailPanel optimistic tests confirm the behavior.
+
+**Learnings:**
+- `getQueriesData`/`setQueriesData` (plural) handle multiple list query keys with different filter params in one call — no need to enumerate individual filter combinations.
+- `onSettled` (not `onSuccess`) is the right place for invalidation when using optimistic updates, so cache is re-synced even after a rollback.
+- The gate hook requires all four facts (grep for importers, affected symbols, data structure, verbatim instruction) to be presented in the same response as the tool call.
