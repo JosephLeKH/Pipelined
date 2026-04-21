@@ -82,7 +82,37 @@ export function useUpdateApplication() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ id, body }) => updateApplication(id, body),
-    onSuccess: () => {
+    onMutate: async ({ id, body }) => {
+      await queryClient.cancelQueries({ queryKey: KEYS.detail(id) });
+      await queryClient.cancelQueries({ queryKey: KEYS.lists() });
+
+      const previousDetail = queryClient.getQueryData(KEYS.detail(id));
+      const previousLists = queryClient.getQueriesData({ queryKey: KEYS.lists() });
+
+      queryClient.setQueryData(KEYS.detail(id), (old) =>
+        old ? { ...old, data: { ...old.data, ...body } } : old
+      );
+      queryClient.setQueriesData({ queryKey: KEYS.lists() }, (old) => {
+        if (!old) return old;
+        return {
+          ...old,
+          data: old.data.map((app) => (app.id === id ? { ...app, ...body } : app)),
+        };
+      });
+
+      return { previousDetail, previousLists };
+    },
+    onError: (_err, { id }, context) => {
+      if (context?.previousDetail !== undefined) {
+        queryClient.setQueryData(KEYS.detail(id), context.previousDetail);
+      }
+      if (context?.previousLists) {
+        for (const [queryKey, data] of context.previousLists) {
+          queryClient.setQueryData(queryKey, data);
+        }
+      }
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: KEYS.all });
       queryClient.invalidateQueries({ queryKey: KEYS.stats });
     },
