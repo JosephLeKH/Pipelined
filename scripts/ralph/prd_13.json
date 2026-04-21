@@ -1,0 +1,118 @@
+{
+  "project": "Pipelined",
+  "branchName": "ralph/pipelined-v13",
+  "description": "Round 3 hardening: unbounded queries, missing request cancellation, cache invalidation gaps, focus trap accessibility, prop drilling reduction, and response envelope consistency.",
+  "userStories": [
+    {
+      "id": "US-193",
+      "title": "Add pagination to _get_applied_urls in jobs/service.py",
+      "description": "backend/jobs/service.py line 54: _get_applied_urls() uses .to_list(length=None) which loads ALL applied URLs into memory. For users with thousands of applications this causes memory spikes. Change to .to_list(length=5000) with a projection that only returns source_url field (not full documents). Also add a structlog warning if the result count equals the limit, indicating potential truncation.",
+      "acceptanceCriteria": [
+        ".to_list() uses an explicit length limit instead of None",
+        "Query uses projection to only return source_url field",
+        "Warning logged if result count equals limit",
+        "All backend tests pass: pytest tests/ -x"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Memory safety — unbounded .to_list(length=None) is a time bomb for power users."
+    },
+    {
+      "id": "US-194",
+      "title": "Add KEYS.stats invalidation to useBulkEditApplications mutation",
+      "description": "frontend/src/hooks/useApplications.js lines 218-226: useBulkEditApplications() only invalidates KEYS.all on success but does NOT invalidate KEYS.stats. Compare to useBulkUpdateApplicationStage() at lines 154-163 which correctly invalidates both. Add queryClient.invalidateQueries({ queryKey: KEYS.stats }) to the onSuccess callback.",
+      "acceptanceCriteria": [
+        "useBulkEditApplications onSuccess invalidates both KEYS.all and KEYS.stats",
+        "Dashboard stats update correctly after bulk tag/field edits",
+        "npm test passes all tests"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Data consistency — stats show stale counts after bulk edits until manual refresh."
+    },
+    {
+      "id": "US-195",
+      "title": "Add focus trap to DetailPanel modal for keyboard accessibility",
+      "description": "frontend/src/components/DetailPanel.jsx line 59 has aria-modal='true' but no focus trap. Keyboard users can tab outside the panel to the list behind it, violating WCAG 2.1 SC 2.1.3. Add a useEffect that: (1) saves the previously focused element on mount, (2) focuses the first focusable element in the panel, (3) traps Tab/Shift+Tab within the panel, (4) restores focus to the saved element on unmount.",
+      "acceptanceCriteria": [
+        "Tab key cycles through focusable elements within DetailPanel only",
+        "Shift+Tab cycles backwards within DetailPanel",
+        "Focus is set to first focusable element when panel opens",
+        "Focus returns to the previously focused element when panel closes",
+        "npm test passes all tests"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Accessibility — WCAG 2.1 SC 2.1.3 compliance. aria-modal without focus trap is misleading."
+    },
+    {
+      "id": "US-196",
+      "title": "Reduce DetailPanel prop drilling by grouping handler props into single object",
+      "description": "frontend/src/components/DetailPanel.jsx line 12: PanelContent receives 11 individual props including handleDelete, handleStageChange, handleUpdate, handleUndoDelete, handleUndoDismiss, onAddEvent, setNotesDirty. Group the action handlers into a single 'actions' object prop: { onDelete, onStageChange, onUpdate, onUndoDelete, onUndoDismiss, onAddEvent, onDirtyChange }. Update PanelContent, DetailPanelHeader, and PanelBody to destructure from actions.",
+      "acceptanceCriteria": [
+        "PanelContent receives an 'actions' object prop instead of 7+ individual handler props",
+        "Total prop count on PanelContent reduced to 5 or fewer",
+        "All child components updated to use actions.onXxx pattern",
+        "npm test passes all tests"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Code simplicity — 11 props is hard to maintain and reason about."
+    },
+    {
+      "id": "US-197",
+      "title": "Add AbortController to useApplications query for request cancellation",
+      "description": "frontend/src/hooks/useApplications.js: the useApplications() hook's queryFn calls fetchApplications() without passing an AbortSignal. React Query provides a signal via the queryFn context parameter. Pass this signal to the axios request so queries are cancelled when component unmounts or filters change. Update fetchApplications in api/applications.js to accept an optional signal parameter and pass it to axios via { signal }.",
+      "acceptanceCriteria": [
+        "useApplications queryFn passes context.signal to fetchApplications",
+        "fetchApplications accepts and forwards signal to axios",
+        "Rapid filter changes cancel previous in-flight requests",
+        "npm test passes all tests"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Performance & correctness — prevents stale data overwrites from old requests completing after new ones."
+    },
+    {
+      "id": "US-198",
+      "title": "Standardize response envelope with meta on list endpoints",
+      "description": "backend/saved_searches/router.py lines 89-92 returns {data: [...], meta: {total}} but other list endpoints like /api/applications, /api/contacts return {data: [...]} without meta. Add meta: {total} to the list_applications endpoint in applications/router.py and list_contacts endpoint in contacts/router.py. The total count should come from the existing count query or be derived from the result length when unpaginated.",
+      "acceptanceCriteria": [
+        "list_applications returns {data: [...], meta: {total: N}}",
+        "list_contacts returns {data: [...], meta: {total: N}}",
+        "Existing frontend code still works (meta is additive, not breaking)",
+        "All backend tests pass: pytest tests/ -x"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "API consistency — standardize the envelope across all list endpoints per CLAUDE.md contract."
+    },
+    {
+      "id": "US-199",
+      "title": "Move OPENAI_MODEL from hardcoded config to environment variable",
+      "description": "backend/config.py line 52: openai_model is hardcoded as 'gpt-4o-mini'. This should be configurable via OPENAI_MODEL environment variable with 'gpt-4o-mini' as default. This allows switching models in production without code changes (e.g., for testing gpt-4o or future models).",
+      "acceptanceCriteria": [
+        "openai_model reads from OPENAI_MODEL env var with 'gpt-4o-mini' default",
+        "All code that references settings.openai_model still works",
+        "All backend tests pass: pytest tests/ -x"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "Configuration — models change frequently; hardcoding requires code deploys to switch."
+    },
+    {
+      "id": "US-200",
+      "title": "Add test coverage for AI quota enforcement in ai_cache.py",
+      "description": "backend/parsing/ai_cache.py has quota enforcement logic (check_and_increment_quota) but no dedicated test file. Create backend/tests/test_ai_cache.py with tests for: (1) quota increments correctly, (2) quota resets on new day, (3) quota exceeded returns appropriate error, (4) concurrent quota checks (if atomicity fix from US-186 is merged). Use real MongoDB per project testing rules.",
+      "acceptanceCriteria": [
+        "backend/tests/test_ai_cache.py exists with 4+ test functions",
+        "Tests cover: increment, daily reset, exceeded, and edge cases",
+        "Tests use real MongoDB (not mocks) per CLAUDE.md rules",
+        "All backend tests pass: pytest tests/ -x"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Testing gap — critical billing/quota logic has zero test coverage."
+    }
+  ]
+}

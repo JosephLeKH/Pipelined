@@ -24,3 +24,15 @@ The `stage_no_operator_injection` and `tags_no_operator_injection` validators we
 **Learnings:**
 - When a Pydantic model is instantiated inside a route handler body (not via `Depends`), `ValidationError` is NOT auto-converted to 422 by FastAPI — must catch it explicitly and raise `HTTPException`.
 - 237 backend tests passed; only the pre-existing calendar test failure remained.
+
+## US-178 — Wrap App.jsx routes with ErrorBoundary for per-route error isolation
+**Status:** COMPLETE
+**Commit:** feat: US-178 - Wrap App.jsx routes with ErrorBoundary for per-route error isolation
+
+**What was done:**
+Added `Link` to the react-router-dom import and imported the existing `ErrorBoundary` component in `frontend/src/App.jsx`. Added a `RouteErrorFallback` component that renders a user-friendly alert with a "Go to Dashboard" `<Link to="/dashboard">`. Wrapped the `<Routes>` block inside `<ErrorBoundary fallback={<RouteErrorFallback />}>` so per-route errors are caught at the routes level rather than only at the root `main.jsx` boundary. All 5 existing `ErrorBoundary.test.jsx` tests pass; `npm run build` succeeds.
+
+**Learnings:**
+- The existing `ErrorBoundary` already supports a `fallback` prop — no changes to the component itself were needed; just pass a custom fallback at the call site.
+- Using `<Link>` inside the fallback works because `App.jsx` is rendered inside `BrowserRouter` in `main.jsx`, so router context is available even during the error boundary fallback render.
+- Pre-existing a11y test failures (axe concurrency errors) are unrelated to this change.

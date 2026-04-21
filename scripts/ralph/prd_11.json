@@ -42,7 +42,7 @@
         "npm run build succeeds"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "UX resilience — prevents full app crashes from isolated component errors."
     },
     {
