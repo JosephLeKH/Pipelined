@@ -53,3 +53,21 @@ All 430 frontend tests pass; 3 pre-existing DetailPanel optimistic tests confirm
 - `getQueriesData`/`setQueriesData` (plural) handle multiple list query keys with different filter params in one call — no need to enumerate individual filter combinations.
 - `onSettled` (not `onSuccess`) is the right place for invalidation when using optimistic updates, so cache is re-synced even after a rollback.
 - The gate hook requires all four facts (grep for importers, affected symbols, data structure, verbatim instruction) to be presented in the same response as the tool call.
+
+---
+## US-180: Add client-side email validation and password strength feedback to RegisterForm
+**Status:** COMPLETE
+**Commit:** fc5b584
+
+### Summary
+Added email format validation and password strength indicator to `RegisterForm.jsx`:
+- `EMAIL_REGEX` constant validates format on blur; shows inline `<p id="email-error">` with `aria-describedby`
+- `PASSWORD_REQUIREMENTS` array (8+ chars, uppercase, number) drives a `PasswordStrengthList` sub-component that appears as user types, showing ✓/○ per criterion
+- Submit button disabled via `isSubmitDisabled = isPending || !isEmailValid || !passwordMeetsMinimum`
+- Created `RegisterForm.test.jsx` with 15 tests covering all three behaviors
+- Updated 5 tests in `Register.test.jsx` that assumed the button was always enabled — now tests reflect that valid email + strong password are required to enable submit
+
+### Learnings
+- Existing page-level tests must be audited whenever client-side form validation is added — they often assume unconstrained submit
+- The `PasswordStrengthList` helper extracted from the main component kept `RegisterForm` within the 40-line function limit
+- `PASSWORD_MIN_LENGTH` imported from `lib/constants.js` — no magic values in the component
