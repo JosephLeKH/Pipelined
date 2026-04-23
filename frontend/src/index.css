@@ -9,8 +9,17 @@
     line-height: 1.65;
     letter-spacing: -0.01em;
     color: #141413;
+    background-color: #faf9f5;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  .dark body {
+    background-color: #141413;
+  }
+
+  ::selection {
+    background-color: rgba(217, 119, 87, 0.2);
   }
 
   h1,
@@ -97,15 +106,15 @@
 }
 
 .markdown-preview blockquote {
-  border-left: 3px solid #cbd5e1;
+  border-left: 3px solid #d4ccbd;
   padding-left: 1em;
   margin-left: 0;
-  color: #64748b;
+  color: #6b5f4e;
   margin-bottom: 0.75em;
 }
 
 .markdown-preview a {
-  color: #2563eb;
+  color: #6a9bcc;
   text-decoration: underline;
 }
 
@@ -114,9 +123,9 @@
   background-color: rgba(255, 255, 255, 0.08);
 }
 .dark .markdown-preview blockquote {
-  border-left-color: #475569;
-  color: #94a3b8;
+  border-left-color: #4a4139;
+  color: #b0aea5;
 }
 .dark .markdown-preview a {
-  color: #60a5fa;
+  color: #6a9bcc;
 }
