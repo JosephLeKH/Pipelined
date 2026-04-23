@@ -6,11 +6,11 @@ import ExternalLink from "lucide-react/dist/esm/icons/external-link";
 import MapPin from "lucide-react/dist/esm/icons/map-pin";
 
 import CompanyLogo from "./CompanyLogo";
-import { CARD_BASE, BADGE_BASE, BUTTON_PRIMARY } from "../lib/designTokens";
+import { CARD_BASE, BADGE_BASE, BUTTON_PRIMARY, TAG } from "../lib/designTokens";
 import { formatRelative } from "../lib/dateUtils";
 
 const STALE_LABEL = "May be expired";
-const TAG_PILL = "rounded-full bg-gray-100 text-gray-600 text-xs px-2.5 py-1 dark:bg-gray-700 dark:text-gray-300 inline-flex items-center gap-1";
+const TAG_PILL = `inline-flex items-center gap-1 ${TAG}`;
 
 function JobCard({ job, onSelect }) {
   const dateLabel = job.date_posted ? formatRelative(job.date_posted) : null;
