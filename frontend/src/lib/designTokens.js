@@ -15,14 +15,14 @@ export const CARD_HOVER = "border-border-strong transition-colors";
 export const BUTTON_PRIMARY =
   "bg-brand-500 hover:bg-brand-600 text-white font-medium rounded-md px-4 py-2 text-sm " +
   "font-display transition-colors duration-150 focus:outline-none focus:ring-2 " +
-  "focus:ring-brand-500/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none";
+  "focus:ring-brand-500/30 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none";
 
 /** Secondary button — white bg, warm border, warm text. */
 export const BUTTON_SECONDARY =
   "bg-white border border-border-default hover:border-border-strong text-gray-700 " +
   "hover:text-gray-900 font-medium rounded-md px-4 py-2 text-sm font-display " +
   "transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500/30 " +
-  "disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none";
+  "active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none";
 
 /** Ghost button — transparent bg, muted text, surface hover. */
 export const BUTTON_GHOST =
@@ -35,7 +35,7 @@ export const BUTTON_GHOST =
 export const BUTTON_DANGER =
   "bg-red-600 hover:bg-red-700 text-white font-medium rounded-md px-4 py-2 text-sm " +
   "font-display transition-colors focus:outline-none focus:ring-2 focus:ring-red-500/30 " +
-  "disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none";
+  "active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none";
 
 /** Text input, select, textarea base styles — warm palette, Lora body text. */
 export const INPUT_BASE =
