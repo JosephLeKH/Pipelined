@@ -1,0 +1,164 @@
+{
+  "project": "Pipelined",
+  "branchName": "ralph/pipelined-v16",
+  "description": "Design system overhaul: replace indigo/gradient aesthetic with Anthropic's official brand palette (warm ivory, clay orange, editorial typography). Foundation layer that all page-level redesigns depend on.",
+  "userStories": [
+    {
+      "id": "US-216",
+      "title": "Replace color palette with Anthropic brand tones",
+      "description": "Overhaul tailwind.config.js to replace the indigo/violet brand palette and cool slate grays with Anthropic's official brand colors. New palette mapping: brand-500 becomes #d97757 (orange accent), brand-600 becomes #c4673a (hover/pressed). Replace all gray/slate aliases with warm grays: gray-50 #faf9f5 (light bg), gray-100 #f5f0e8, gray-200 #e8e6dc (light gray), gray-300 #d4ccbd, gray-400 #b0aea5 (mid gray), gray-500 #6b5f4e, gray-600 #4a4139, gray-700 #332d26, gray-800 #1f1b17, gray-900 #141413 (dark/primary text). Add accent-blue #6a9bcc and accent-green #788c5d as secondary/tertiary accents. Add semantic tokens: surface-primary #ffffff, surface-secondary #faf9f5, surface-tertiary #e8e6dc, border-default rgba(120,100,75,0.12), border-strong rgba(120,100,75,0.24). Dark mode: bg #141413, surface #1c1c1a, accent #d97757, text #e8e4de, text-secondary #b0aea5, border rgba(255,255,255,0.08). Remove indigo/violet colors entirely. Remove glow shadow.",
+      "acceptanceCriteria": [
+        "tailwind.config.js brand-* keys map to #d97757/#c4673a shades, not indigo",
+        "All gray-* aliases use warm-undertone hex values from the Anthropic palette",
+        "accent-blue (#6a9bcc) and accent-green (#788c5d) added as secondary colors",
+        "Semantic surface/border tokens added under theme.extend.colors",
+        "Dark mode colors defined with #141413 base",
+        "No indigo, violet, or cool blue-gray hex values remain in tailwind.config.js",
+        "npm run build succeeds with no errors"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Foundation — must land first. Every other story depends on these tokens. Colors are from Anthropic's official brand guidelines."
+    },
+    {
+      "id": "US-217",
+      "title": "Update typography to Poppins headings and Lora body",
+      "description": "In tailwind.config.js, update fontFamily: fontFamily.sans (body text) becomes ['Lora', 'Georgia', 'serif']. Add fontFamily.display (headings) as ['Poppins', 'Arial', 'sans-serif']. In index.css @layer base, add @import for Google Fonts Poppins (400,500,600,700) and Lora (400,400i,500,600,700). Set base body styles: font-family Lora, font-size 15px, line-height 1.65, letter-spacing -0.01em, color #141413, antialiased. Add utility class .font-display that applies Poppins. All h1-h6 elements should use font-display (Poppins) with: h1 font-semibold text-2xl tracking-tight (-0.02em), h2 font-semibold text-xl tracking-tight, h3 font-medium text-lg. Remove any hardcoded text-slate-* or text-indigo-* color classes from base styles.",
+      "acceptanceCriteria": [
+        "tailwind.config.js fontFamily.sans is Lora with Georgia fallback",
+        "tailwind.config.js fontFamily.display is Poppins with Arial fallback",
+        "Google Fonts import for Poppins and Lora added to index.css or index.html",
+        "Body text uses Lora, headings use Poppins",
+        "Base body has line-height 1.65 and letter-spacing -0.01em",
+        "No text-slate-* or text-indigo-* in index.css base layer",
+        "npm run build succeeds"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Foundation — Poppins + Lora is Anthropic's official font pairing. Serif body text is the key differentiator from generic SaaS."
+    },
+    {
+      "id": "US-218",
+      "title": "Redesign button tokens — solid clay, no gradients",
+      "description": "Replace all button token strings in frontend/src/lib/designTokens.js. BUTTON_PRIMARY: remove all gradient classes (from-brand-600 to-brand-500, hover:from-brand-700 hover:to-brand-600), replace with bg-brand-500 hover:bg-brand-600 text-white font-medium rounded-md px-4 py-2 text-sm font-display transition-colors duration-150. BUTTON_SECONDARY: bg-white border border-border-default hover:border-border-strong text-gray-700 hover:text-gray-900 font-medium rounded-md px-4 py-2 text-sm font-display transition-colors. BUTTON_GHOST: bg-transparent text-gray-500 hover:text-gray-700 hover:bg-surface-secondary rounded-md px-3 py-2 text-sm transition-colors. BUTTON_DANGER: bg-red-600 hover:bg-red-700 text-white font-medium rounded-md px-4 py-2 text-sm font-display transition-colors. Remove active:scale-[0.98] from all buttons. Remove all gradient references. Border radius is rounded-md (6px).",
+      "acceptanceCriteria": [
+        "BUTTON_PRIMARY uses solid bg-brand-500, no gradient classes",
+        "BUTTON_SECONDARY uses border-border-default token",
+        "All buttons use font-display (Poppins) for button text",
+        "No active:scale-* transform classes on any button token",
+        "No from-*, to-*, bg-gradient-* classes in any button token",
+        "All buttons use rounded-md (6px radius)",
+        "npm run build succeeds"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "High impact — buttons appear on every page. Gradient removal is the single biggest visual shift."
+    },
+    {
+      "id": "US-219",
+      "title": "Redesign card and modal tokens — border over shadow",
+      "description": "Update CARD_BASE in designTokens.js: replace shadow-card with border border-border-default, use bg-white rounded-xl (12px). Remove shadow-card-hover from CARD_HOVER and replace with border-border-strong transition-colors. MODAL_CARD: bg-white rounded-2xl border border-border-default shadow-lg. MODAL_BACKDROP: bg-black/30 backdrop-blur-sm (reduce from /40). Cards feel border-defined, not shadow-defined — matching Anthropic's flat warm style.",
+      "acceptanceCriteria": [
+        "CARD_BASE uses border-border-default instead of shadow-card",
+        "CARD_HOVER uses border-border-strong, no shadow-card-hover",
+        "MODAL_CARD keeps shadow-lg but adds border-border-default",
+        "MODAL_BACKDROP uses bg-black/30",
+        "npm run build succeeds"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Cards are the primary content container. Border > shadow is the core Anthropic visual shift."
+    },
+    {
+      "id": "US-220",
+      "title": "Redesign input and form tokens for warm palette",
+      "description": "Update INPUT_BASE in designTokens.js: border-gray-300 rounded-md bg-white text-gray-900 placeholder:text-gray-400 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/20 text-sm px-3 py-2 font-sans (Lora). Add INPUT_LABEL token: text-sm font-medium text-gray-700 mb-1.5 font-display. Add INPUT_HELPER: text-xs text-gray-400 mt-1. Add INPUT_ERROR: text-xs text-red-600 mt-1. Form labels use Poppins (font-display), input text uses Lora (font-sans). Focus ring is subtle brand-500/20. No slate or indigo references.",
+      "acceptanceCriteria": [
+        "INPUT_BASE uses border-gray-300 and warm placeholder color",
+        "Focus ring is brand-500/20 (subtle)",
+        "INPUT_LABEL, INPUT_HELPER, INPUT_ERROR tokens added",
+        "Labels use font-display (Poppins), inputs use font-sans (Lora)",
+        "No slate-* or indigo-* references in form tokens",
+        "npm run build succeeds"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Forms are the primary interaction surface for auth pages and settings."
+    },
+    {
+      "id": "US-221",
+      "title": "Update shadows and border-radius in tailwind.config.js",
+      "description": "In tailwind.config.js theme.extend, update boxShadow: card becomes '0 1px 2px rgba(120,100,75,0.06)', card-hover becomes '0 2px 8px rgba(120,100,75,0.08)', modal becomes '0 20px 60px rgba(20,20,19,0.15)' (warm black using #141413). Remove glow shadow entirely. Update borderRadius: card '0.75rem' (12px), button '0.375rem' (6px), tag '9999px' (full). Shadows are warm-tinted and minimal; borders carry visual weight.",
+      "acceptanceCriteria": [
+        "Shadow values use warm rgba tones, not cool grays",
+        "card shadow is very subtle (< 0.1 opacity)",
+        "glow shadow removed from config",
+        "button border-radius is 6px (0.375rem)",
+        "npm run build succeeds"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Complements US-219. Shadows should barely be noticeable."
+    },
+    {
+      "id": "US-222",
+      "title": "Add nav and sidebar design tokens",
+      "description": "Add new tokens to designTokens.js for navigation. NAV_CONTAINER: bg-white border-b border-border-default. NAV_LINK: text-gray-500 hover:text-gray-900 text-sm font-display font-medium transition-colors px-3 py-2 rounded-md. NAV_LINK_ACTIVE: text-gray-900 bg-surface-secondary text-sm font-display font-medium px-3 py-2 rounded-md. NAV_BRAND: text-gray-900 font-display font-semibold text-lg tracking-tight. No gradient backgrounds. Active state uses warm surface-secondary tint. Nav should feel minimal and recede behind content.",
+      "acceptanceCriteria": [
+        "NAV_CONTAINER, NAV_LINK, NAV_LINK_ACTIVE, NAV_BRAND tokens added",
+        "Nav text uses font-display (Poppins)",
+        "No gradient or brand-colored backgrounds in nav tokens",
+        "Active state uses bg-surface-secondary tint",
+        "npm run build succeeds"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Navigation is persistent — must feel quiet and warm."
+    },
+    {
+      "id": "US-223",
+      "title": "Add badge, tag, and status tokens",
+      "description": "Add tokens to designTokens.js. BADGE_DEFAULT: bg-surface-secondary text-gray-600 text-xs font-display font-medium px-2 py-0.5 rounded-full. BADGE_SUCCESS: bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-display font-medium px-2 py-0.5 rounded-full. BADGE_WARNING: bg-amber-50 text-amber-700 border border-amber-200. BADGE_ERROR: bg-red-50 text-red-700 border border-red-200. BADGE_INFO: bg-blue-50 text-accent-blue border border-blue-200. TAG: bg-surface-secondary text-gray-600 text-xs px-2 py-1 rounded-full hover:bg-surface-tertiary. Pipeline statuses (Applied, Interview, Offer, Rejected) should map to these badge tokens.",
+      "acceptanceCriteria": [
+        "BADGE_DEFAULT, BADGE_SUCCESS, BADGE_WARNING, BADGE_ERROR, BADGE_INFO tokens added",
+        "TAG token added with hover state",
+        "Badge backgrounds are muted pastels",
+        "All badges use font-display and rounded-full",
+        "npm run build succeeds"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Pipeline statuses are a core visual element — must look refined."
+    },
+    {
+      "id": "US-224",
+      "title": "Clean up index.css for warm palette",
+      "description": "In frontend/src/index.css, replace all hardcoded indigo/slate color values. Replace any #6366F1 with #d97757. Replace slate-* utilities with gray-* equivalents. Set body background to #faf9f5 (light) and #141413 (dark). Replace selection color with brand-500/20. Remove gradient background utilities from global styles. Ensure scrollbar styles use warm gray tones. Zero cool-tinted colors in the base stylesheet.",
+      "acceptanceCriteria": [
+        "No #6366F1, indigo, or slate hex values in index.css",
+        "Body background is #faf9f5 in light mode",
+        "Dark mode background is #141413",
+        "Selection highlight uses brand-500/20",
+        "npm run build succeeds"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Catches stray cool colors in global styles that tokens don't cover."
+    },
+    {
+      "id": "US-225",
+      "title": "Refine animations for calmer motion",
+      "description": "In frontend/src/styles/animations.css, adjust for a calmer feel. fadeIn: 300ms ease-out (from 200ms). slideInRight/slideInUp: 6px translate (from 10px), 250ms duration. scaleIn: start from scale(0.97) (from 0.95). Remove pulse-dot if unused. Verify prefers-reduced-motion media query is preserved. Motion should be present but restrained — never bouncy.",
+      "acceptanceCriteria": [
+        "fadeIn duration is 300ms",
+        "Slide animations use 6px translate distance",
+        "scaleIn starts from scale(0.97)",
+        "prefers-reduced-motion preserved",
+        "npm run build succeeds"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "Low priority but contributes to the calm editorial feel."
+    }
+  ]
+}

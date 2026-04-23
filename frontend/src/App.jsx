@@ -87,7 +87,10 @@ function LoadingSpinner() {
 }
 
 function ProtectedRoute({ children }) {
-  const { user } = useAuth();
+  const { user, isInitialized } = useAuth();
+  if (!isInitialized) {
+    return <LoadingSpinner />;
+  }
   if (!user) {
     return <Navigate to="/login" replace />;
   }
@@ -123,6 +126,21 @@ function RouteErrorFallback() {
   );
 }
 
+function AuthenticatedShell() {
+  const { user } = useAuth();
+  if (!user) return null;
+  return (
+    <>
+      <EmailVerificationBanner />
+      <UpgradePlanModal />
+      <CommandPalette />
+      <ShortcutHelp />
+      <GlobalChordShortcuts />
+      <FeedbackWidget />
+    </>
+  );
+}
+
 function App() {
   return (
     <>
@@ -135,12 +153,7 @@ function App() {
       <OfflineBanner />
       <Suspense fallback={<LoadingSpinner />}>
         <PageTracker />
-        <EmailVerificationBanner />
-        <UpgradePlanModal />
-        <CommandPalette />
-        <ShortcutHelp />
-        <GlobalChordShortcuts />
-        <FeedbackWidget />
+        <AuthenticatedShell />
         <main id="main-content">
         <ErrorBoundary fallback={<RouteErrorFallback />}>
         <Routes>

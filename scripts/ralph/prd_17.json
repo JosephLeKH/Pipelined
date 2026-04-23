@@ -1,0 +1,188 @@
+{
+  "project": "Pipelined",
+  "branchName": "ralph/pipelined-v17",
+  "description": "Page-level UI redesign: apply Anthropic brand system (from prd_16) to every page — landing, auth, dashboard, calendar, analytics, settings, job board, modals, and empty states. Depends on prd_16 design tokens being merged first.",
+  "userStories": [
+    {
+      "id": "US-226",
+      "title": "Redesign landing page with editorial Anthropic aesthetic",
+      "description": "Rewrite frontend/src/pages/LandingPage.jsx to match Anthropic's warm editorial style. Hero section: bg-surface-secondary (#faf9f5), large Poppins heading (text-4xl md:text-5xl font-display font-semibold tracking-tight text-gray-900), Lora body paragraph (text-lg text-gray-500 max-w-2xl leading-relaxed), single solid clay CTA button (BUTTON_PRIMARY token). Remove any gradient hero backgrounds, decorative blobs, or animated illustrations. Features section: 3-column grid of CARD_BASE cards, each with a simple icon (single-color gray-400, no colored circles), Poppins heading, Lora description. Footer: minimal, bg-white border-t border-border-default, warm gray text. Overall: generous whitespace (py-24 between sections), no visual clutter, content-first. The page should feel like reading a well-designed editorial site, not a SaaS template.",
+      "acceptanceCriteria": [
+        "Hero uses bg-surface-secondary, not gradient or colored background",
+        "Heading uses font-display (Poppins), body uses font-sans (Lora)",
+        "CTA button uses BUTTON_PRIMARY token (solid clay, no gradient)",
+        "Feature cards use CARD_BASE token (border, no shadow)",
+        "Icons are single-color gray, not colored circles",
+        "Sections have py-24 spacing minimum",
+        "No decorative blobs, gradients, or animated illustrations",
+        "npm run build succeeds"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Landing page is the first impression. Must feel warm, editorial, confident — not flashy SaaS."
+    },
+    {
+      "id": "US-227",
+      "title": "Redesign login and register pages",
+      "description": "Update frontend/src/pages/Login.jsx and frontend/src/pages/Register.jsx. Layout: centered card on bg-surface-secondary, max-w-sm. Card: CARD_BASE token, px-8 py-10. Brand mark at top: text wordmark 'Pipelined' in font-display font-semibold text-xl text-gray-900 (no logo image). Heading: font-display text-xl font-semibold text-gray-900. Inputs use INPUT_BASE token with INPUT_LABEL above each. Submit button full-width BUTTON_PRIMARY. Social login buttons (GitHub) use BUTTON_SECONDARY. Link text (forgot password, switch to register): text-brand-500 hover:text-brand-600 text-sm. Remove any decorative side panels, background patterns, or illustration art. The auth pages should be clean, minimal, and fast to scan. Also update ForgotPassword.jsx and ResetPassword.jsx to match the same card layout.",
+      "acceptanceCriteria": [
+        "Login/Register use centered card on bg-surface-secondary",
+        "Brand wordmark in Poppins, no logo image",
+        "All inputs use INPUT_BASE and INPUT_LABEL tokens",
+        "Submit buttons use BUTTON_PRIMARY (solid clay)",
+        "GitHub OAuth button uses BUTTON_SECONDARY",
+        "No decorative panels, patterns, or illustrations",
+        "ForgotPassword and ResetPassword pages match the same layout",
+        "npm run build succeeds"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Auth pages are the entry point. Clean and trustworthy > flashy."
+    },
+    {
+      "id": "US-228",
+      "title": "Redesign dashboard layout and navigation",
+      "description": "Update the Dashboard page (frontend/src/pages/Dashboard.jsx) and the main navigation component. Nav: use NAV_CONTAINER token, horizontal top bar with NAV_BRAND on left, NAV_LINK items (Dashboard, Calendar, Analytics, Jobs, Activity), user menu on right. Active link uses NAV_LINK_ACTIVE. Remove any colored sidebar or gradient nav backgrounds. Dashboard content area: bg-surface-secondary with max-w-7xl mx-auto px-6. Stats bar at top: use CARD_BASE cards in a grid, each showing a number in font-display text-2xl font-semibold and a label in text-sm text-gray-500. Remove any colored stat icons or gradient stat cards. Pipeline columns/kanban: CARD_BASE for each column, application cards inside use border-border-default bg-white hover:border-border-strong. Status badges use the BADGE_* tokens from US-223. Overall: clean grid layout, generous spacing, no visual noise.",
+      "acceptanceCriteria": [
+        "Top nav uses NAV_CONTAINER, NAV_LINK, NAV_LINK_ACTIVE tokens",
+        "No colored sidebar or gradient nav background",
+        "Stats cards use CARD_BASE with font-display numbers",
+        "Pipeline cards use border-based depth, not shadows",
+        "Status badges use BADGE_* tokens",
+        "Content area is max-w-7xl with generous padding",
+        "npm run build succeeds"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Dashboard is the most-used page. Must feel organized and calm, not cluttered."
+    },
+    {
+      "id": "US-229",
+      "title": "Redesign calendar page",
+      "description": "Update frontend/src/pages/Calendar.jsx. Page header: font-display text-xl font-semibold, month navigation with BUTTON_GHOST arrows. Calendar grid: bg-white border border-border-default rounded-xl. Day cells: border-border-default dividers, today highlighted with bg-brand-500/10 (subtle warm tint, not solid color). Event pills: rounded-full px-2 py-0.5 text-xs, using muted status colors (BADGE_* palette — not saturated). Hover on event shows tooltip with CARD_BASE styling. Month/week toggle: BUTTON_SECONDARY group. Remove any colored day headers or gradient event backgrounds.",
+      "acceptanceCriteria": [
+        "Calendar container uses border-border-default, not shadow",
+        "Today cell uses subtle bg-brand-500/10 highlight",
+        "Event pills use muted BADGE_* colors, not saturated fills",
+        "Navigation buttons use BUTTON_GHOST",
+        "Font-display for page heading and day-of-week headers",
+        "npm run build succeeds"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Calendar is data-dense — warm borders and muted colors prevent visual overload."
+    },
+    {
+      "id": "US-230",
+      "title": "Redesign analytics page",
+      "description": "Update frontend/src/pages/Analytics.jsx. Page header: font-display text-xl. Chart containers: CARD_BASE with generous p-6 padding. Chart color palette: use the three Anthropic accent colors as the primary series — #d97757 (orange), #6a9bcc (blue), #788c5d (green), plus gray-300 and gray-400 for secondary series. Remove any indigo/violet chart colors. Axis labels: text-xs text-gray-400 font-sans (Lora). Chart tooltips: bg-white border border-border-default rounded-lg shadow-card text-sm. Summary stat cards at top: same style as dashboard stats (font-display numbers, text-gray-500 labels). Remove any gradient chart backgrounds or colored card headers.",
+      "acceptanceCriteria": [
+        "Chart series use #d97757, #6a9bcc, #788c5d as primary colors",
+        "No indigo/violet in any chart color",
+        "Chart containers use CARD_BASE token",
+        "Axis labels use text-gray-400",
+        "Tooltips use warm border styling",
+        "npm run build succeeds"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Charts need the brand accent trio to feel cohesive with the rest of the UI."
+    },
+    {
+      "id": "US-231",
+      "title": "Redesign job board page",
+      "description": "Update frontend/src/pages/JobBoard.jsx. Page header: font-display text-xl, search/filter bar with INPUT_BASE styling. Job cards: CARD_BASE, company name in font-display font-medium text-gray-900, job title in font-sans text-gray-700, location/salary in text-sm text-gray-400. Tags (remote, full-time, etc.) use TAG token. Save/apply button: BUTTON_PRIMARY (small variant: px-3 py-1.5 text-xs). Card hover: border-border-strong transition. Remove any colored company logo placeholders or gradient card accents. Grid layout: responsive 1-2-3 columns with gap-4.",
+      "acceptanceCriteria": [
+        "Job cards use CARD_BASE with border hover",
+        "Company name in font-display, details in font-sans",
+        "Tags use TAG token (rounded-full, surface-secondary bg)",
+        "Apply button uses BUTTON_PRIMARY",
+        "No colored logo placeholders or gradient accents",
+        "Responsive grid layout",
+        "npm run build succeeds"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Job board has many cards — clean layout with warm borders prevents visual fatigue."
+    },
+    {
+      "id": "US-232",
+      "title": "Redesign settings page",
+      "description": "Update frontend/src/pages/Settings.jsx. Layout: max-w-2xl mx-auto on bg-surface-secondary. Section cards: CARD_BASE with font-display section headings (text-lg font-semibold) and font-sans body/descriptions. Form inputs use INPUT_BASE with INPUT_LABEL. Save buttons: BUTTON_PRIMARY. Danger zone (delete account): border-red-200 bg-red-50 card variant with BUTTON_DANGER. Tab/section navigation: text links with NAV_LINK_ACTIVE styling for current section. Remove any colored section headers or icon-heavy layouts.",
+      "acceptanceCriteria": [
+        "Settings layout is max-w-2xl centered",
+        "Section cards use CARD_BASE",
+        "Headings in font-display, body in font-sans",
+        "Inputs use INPUT_BASE + INPUT_LABEL tokens",
+        "Danger zone uses red border/bg variant",
+        "npm run build succeeds"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Settings is a form-heavy page — clean typography hierarchy matters most here."
+    },
+    {
+      "id": "US-233",
+      "title": "Redesign all modal dialogs",
+      "description": "Update all modal components across the app to use the new tokens. Every modal: MODAL_BACKDROP (bg-black/30 backdrop-blur-sm) + MODAL_CARD (bg-white rounded-2xl border border-border-default shadow-lg). Modal header: font-display text-lg font-semibold text-gray-900, with a BUTTON_GHOST close button (X icon in gray-400). Modal body: font-sans text-gray-700. Modal footer: border-t border-border-default pt-4, buttons right-aligned. This includes: UpgradePlanModal, CommandPalette, ShortcutHelp, any confirmation dialogs, application detail modals, and the feedback widget. All modals should have consistent spacing: p-6 body, gap-4 between sections.",
+      "acceptanceCriteria": [
+        "All modals use MODAL_BACKDROP and MODAL_CARD tokens",
+        "Modal headers use font-display, bodies use font-sans",
+        "Close button is BUTTON_GHOST with gray-400 icon",
+        "Modal footers have border-t border-border-default",
+        "Consistent p-6 padding across all modals",
+        "npm run build succeeds"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Modals appear in every flow — consistency here ties the whole redesign together."
+    },
+    {
+      "id": "US-234",
+      "title": "Redesign empty states and loading states",
+      "description": "Update all empty state illustrations and loading indicators. Empty states (no applications, no events, no contacts): centered layout with a simple line icon (gray-300, 48px), font-display heading ('No applications yet'), font-sans description in text-gray-500, single BUTTON_PRIMARY CTA. Remove any colorful illustrations, gradient backgrounds, or oversized icons. Loading spinner: replace the current blue-500 spinner with brand-500 (clay) border, thinner border-2 (from border-4), slightly larger h-6 w-6. Skeleton loading: use bg-surface-tertiary (#e8e6dc) shimmer instead of gray-200. These states should feel intentional and warm, not like something broke.",
+      "acceptanceCriteria": [
+        "Empty states use line icons in gray-300, not colorful illustrations",
+        "Empty state headings in font-display, descriptions in font-sans",
+        "Loading spinner uses brand-500 color and border-2",
+        "Skeleton shimmer uses bg-surface-tertiary",
+        "No colorful illustrations or gradient empty state backgrounds",
+        "npm run build succeeds"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "Empty/loading states are seen frequently — they shape the perceived quality of the app."
+    },
+    {
+      "id": "US-235",
+      "title": "Replace all icon styling to single-color warm gray",
+      "description": "Audit all Lucide icon usage across the frontend (grep for lucide-react imports). Currently icons are wrapped in colored circles (bg-indigo-100 text-indigo-600, bg-blue-100 text-blue-600, etc.) or use brand-colored fills. Replace all icon styling: remove colored circle wrappers, icons should be bare with text-gray-400 (default), text-gray-600 (emphasis), or text-brand-500 (interactive/accent). Icon size should be consistent: w-5 h-5 for inline, w-6 h-6 for standalone, w-8 h-8 for empty states. No colored backgrounds behind icons — Anthropic uses bare monochrome icons. Exception: status-specific icons (checkmark for success, X for error) can use their BADGE_* token text color.",
+      "acceptanceCriteria": [
+        "No bg-*-100 text-*-600 colored circle icon wrappers remain",
+        "Default icons are text-gray-400 or text-gray-600",
+        "Interactive icons use text-brand-500",
+        "Icon sizes are consistent (w-5/w-6/w-8 based on context)",
+        "Status icons use matching BADGE_* text colors",
+        "npm run build succeeds"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Colored circle icons are the #1 'AI-generated' tell. Bare monochrome icons are the fastest visual upgrade."
+    },
+    {
+      "id": "US-236",
+      "title": "Remove all gradient usage across the frontend",
+      "description": "Search the entire frontend/src directory for gradient classes: bg-gradient-to-*, from-*, to-*, via-*. Remove every instance and replace with solid colors using the new token system. Common replacements: gradient buttons become BUTTON_PRIMARY (solid bg-brand-500), gradient hero backgrounds become bg-surface-secondary, gradient card accents become border-brand-500, gradient text becomes text-brand-500. Also check for any inline style gradients. After this story, zero CSS gradient classes should exist in the frontend codebase (except in any third-party CSS that can't be changed).",
+      "acceptanceCriteria": [
+        "grep -r 'bg-gradient\\|from-\\|to-\\|via-' frontend/src returns zero matches (excluding node_modules)",
+        "All former gradients replaced with solid brand colors or neutral backgrounds",
+        "No inline style gradients in JSX",
+        "Visual appearance is consistent — no missing backgrounds or invisible text",
+        "npm run build succeeds"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Gradients are the #2 'AI-generated' tell after colored icon circles. Must be fully purged."
+    }
+  ]
+}

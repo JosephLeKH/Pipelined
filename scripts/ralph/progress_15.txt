@@ -1,0 +1,19 @@
+# Ralph Progress Log
+Started: Thu Apr 23 02:08:06 PDT 2026
+---
+
+## US-209 — Fix calendar date range off-by-one at month boundaries
+**Status:** COMPLETE
+**Commit:** feat: US-209 - Fix calendar date range off-by-one at month boundaries
+
+**Summary:**
+Replaced fragile modular arithmetic `today.month % 12 + 1` / `today.month // 12` with `calendar.monthrange(today.year, today.month)[1]` in `backend/cal/service.py`. The old code computed the last day of the month by getting the first day of next month then subtracting one day — brittle at December/year boundaries. The new approach directly returns the last day of the current month using the stdlib `calendar` module.
+
+**Changes:**
+- Added `import calendar` to `backend/cal/service.py`
+- Replaced 4-line `today.replace(day=1, month=..., year=...) - timedelta(days=1)` with 2-line `calendar.monthrange()` approach
+
+**Learnings:**
+- Pre-existing test failures exist in `test_calendar.py` (8 failures) and `test_applications.py` (1 failure) — these predate this story and are unrelated to the date range fix.
+- `calendar.monthrange(year, month)` returns `(weekday_of_first_day, number_of_days)` — index `[1]` gives the last day.
+

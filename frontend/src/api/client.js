@@ -61,7 +61,6 @@ client.interceptors.response.use(
       } catch (refreshError) {
         pendingRequests.forEach(({ reject }) => reject(refreshError));
         pendingRequests = [];
-        window.location.href = "/login";
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;

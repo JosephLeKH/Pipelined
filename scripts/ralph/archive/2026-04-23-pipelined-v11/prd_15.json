@@ -1,0 +1,105 @@
+{
+  "project": "Pipelined",
+  "branchName": "ralph/pipelined-v15",
+  "description": "Round 5 hardening: calendar date bug, password reset token exposure, SSE memory leak, contact sort null handling, unused imports cleanup, cookie parsing safety, and extension listener cleanup.",
+  "userStories": [
+    {
+      "id": "US-209",
+      "title": "Fix calendar date range off-by-one at month boundaries",
+      "description": "backend/cal/service.py line 95: the default date range calculation uses `today.month % 12 + 1` to compute the first day of next month, then subtracts 1 day to get the last day of the current month. This is fragile at year boundaries and doesn't use the standard library. Replace with calendar.monthrange(today.year, today.month)[1] to get the last day of the current month directly. This avoids the modular arithmetic entirely.",
+      "acceptanceCriteria": [
+        "Default date range uses calendar.monthrange() instead of manual month arithmetic",
+        "Events in December are correctly displayed (no year boundary bug)",
+        "Events on the last day of any month are included in the range",
+        "All backend tests pass: pytest tests/ -x"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Bug — HIGH severity. Calendar shows wrong events at month/year boundaries."
+    },
+    {
+      "id": "US-210",
+      "title": "Move password reset token from URL query param to POST body flow",
+      "description": "backend/notifications/email_service.py line 80: password reset links include the token as a URL query parameter (?token=xxx). This exposes the token in browser history, referrer headers, and server logs. Change the flow: (1) email link goes to /reset-password?email=<email> (no token in URL), (2) the frontend page prompts user to enter their new password, (3) frontend reads the token from a separate short-lived cookie set during the forgot-password response, or (4) use a POST-based token submission where the token is in the request body, not the URL.",
+      "acceptanceCriteria": [
+        "Password reset token is NOT visible in the URL bar or browser history",
+        "Reset flow still works end-to-end (forgot → email → reset → login)",
+        "Token is transmitted via POST body or httpOnly cookie, not URL param",
+        "All backend tests pass: pytest tests/ -x"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Security — MEDIUM severity. Token in URL leaks via referrer headers and browser history."
+    },
+    {
+      "id": "US-211",
+      "title": "Fix SSE connection memory leak on client disconnect",
+      "description": "backend/notifications/notification_service.py lines 25-39: _broadcast_to_sse_connections adds queues to _sse_connections[user_id] but only removes them when QueueFull is raised. If a client disconnects without triggering QueueFull, the queue reference leaks indefinitely. Add cleanup: (1) catch asyncio.QueueFull AND check for closed/invalid queues, (2) delete the user_id key from _sse_connections when the queue list is empty, (3) add a periodic cleanup or use weak references for queue tracking.",
+      "acceptanceCriteria": [
+        "Disconnected client queues are cleaned up from _sse_connections",
+        "Empty user_id entries are removed from _sse_connections dict",
+        "No memory growth from repeated SSE connect/disconnect cycles",
+        "All backend tests pass: pytest tests/ -x"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Bug — MEDIUM severity. Memory leak under sustained SSE usage."
+    },
+    {
+      "id": "US-212",
+      "title": "Handle null last_contacted_at in contact list sorting",
+      "description": "backend/contacts/service.py: list_contacts sorts by last_contacted_at descending, but contacts created without a last_contacted_at value (null) have unpredictable sort position in MongoDB. Add a secondary sort key of created_at descending so null-last_contacted_at contacts appear in creation order. This ensures stable, predictable ordering for all contacts.",
+      "acceptanceCriteria": [
+        "list_contacts sorts by (last_contacted_at desc, created_at desc)",
+        "Contacts with null last_contacted_at appear after contacted ones",
+        "Sort order is stable and predictable across queries",
+        "All backend tests pass: pytest tests/ -x"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Bug — MEDIUM severity. Users see inconsistent contact ordering."
+    },
+    {
+      "id": "US-213",
+      "title": "Remove unused imports in backend modules",
+      "description": "Three backend files have unused imports: (1) backend/documents/router.py line 3: 'import base64' is never used, (2) backend/jobs/schemas.py line 6: 'AnyHttpUrl' is imported but never referenced, (3) backend/notifications/notification_service.py line 5: 'import json' is never used. Remove all three unused imports.",
+      "acceptanceCriteria": [
+        "base64 import removed from documents/router.py",
+        "AnyHttpUrl import removed from jobs/schemas.py",
+        "json import removed from notification_service.py",
+        "All backend tests pass: pytest tests/ -x"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "Code quality — LOW severity. Dead imports add cognitive noise."
+    },
+    {
+      "id": "US-214",
+      "title": "Add try-catch around decodeURIComponent in getCookie",
+      "description": "frontend/src/api/client.js lines 9-12: getCookie calls decodeURIComponent() on the cookie value without error handling. Malformed percent-encoded values (e.g., '%ZZ') throw URIError, crashing all API requests that depend on CSRF token retrieval. Wrap in try-catch, return null on decode failure, and log a warning.",
+      "acceptanceCriteria": [
+        "decodeURIComponent wrapped in try-catch",
+        "Malformed cookie values return null instead of throwing",
+        "Warning logged to console on decode failure",
+        "npm test passes all tests"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Bug — LOW severity but HIGH blast radius. One bad cookie breaks all API calls."
+    },
+    {
+      "id": "US-215",
+      "title": "Deduplicate Escape key listeners in extension content script",
+      "description": "extension/content/content.js lines 86-95: injectBanner adds a new 'keydown' event listener each time it's called. On pages with multiple job listings or SPA navigation, listeners accumulate. Refactor to use a single module-level Escape handler that tracks the current active banner, or use AbortController to clean up listeners when the banner is dismissed.",
+      "acceptanceCriteria": [
+        "Only one Escape key listener active at any time regardless of banner count",
+        "Listener is properly removed when banner is dismissed",
+        "Escape still dismisses the most recently shown banner",
+        "All extension tests pass: npm test"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "Code quality — LOW severity. Listener accumulation is wasteful on SPA pages."
+    }
+  ]
+}
