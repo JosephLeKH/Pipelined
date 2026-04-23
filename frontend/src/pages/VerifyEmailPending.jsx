@@ -6,21 +6,21 @@ import { Link } from "react-router-dom";
 import Mail from "lucide-react/dist/esm/icons/mail";
 import { useResendVerification } from "../hooks/useAuth";
 import AuthLayout from "../components/AuthLayout";
-import { BUTTON_PRIMARY, BUTTON_SECONDARY } from "../lib/designTokens";
+import { BUTTON_PRIMARY, BUTTON_SECONDARY, SUCCESS_BANNER } from "../lib/designTokens";
 
 const RESEND_COOLDOWN_S = 60;
 
 function ResendStatus({ status }) {
   if (status === "sent") {
     return (
-      <p role="status" className="mb-4 w-full rounded-lg bg-emerald-50 border border-emerald-200 px-3 py-2 text-sm text-emerald-800 dark:bg-emerald-900/20 dark:border-emerald-800 dark:text-emerald-300">
+      <p role="status" className={`mb-4 w-full ${SUCCESS_BANNER}`}>
         Verification email resent. Check your inbox.
       </p>
     );
   }
   if (status === "already_verified") {
     return (
-      <p role="status" className="mb-4 w-full rounded-lg bg-emerald-50 border border-emerald-200 px-3 py-2 text-sm text-emerald-800 dark:bg-emerald-900/20 dark:border-emerald-800 dark:text-emerald-300">
+      <p role="status" className={`mb-4 w-full ${SUCCESS_BANNER}`}>
         Your email is already verified. You can sign in.
       </p>
     );

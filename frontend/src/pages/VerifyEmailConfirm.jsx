@@ -25,7 +25,7 @@ function VerifyingState() {
 function SuccessState() {
   return (
     <>
-      <CheckCircle className="mb-5 h-12 w-12 text-emerald-500" />
+      <CheckCircle className="mb-5 h-12 w-12 text-brand-500" />
       <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Email verified!</h1>
       <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
         Your account is now active. Redirecting to your dashboard…

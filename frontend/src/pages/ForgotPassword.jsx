@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 
 import { useForgotPassword } from "../hooks/useAuth";
 import AuthLayout from "../components/AuthLayout";
-import { INPUT_BASE, INPUT_LABEL, BUTTON_PRIMARY } from "../lib/designTokens";
+import { INPUT_BASE, INPUT_LABEL, BUTTON_PRIMARY, SUCCESS_BANNER } from "../lib/designTokens";
 
 function EmailInput({ email, onChange }) {
   return (
@@ -35,7 +35,7 @@ function ErrorAlert({ error }) {
 
 function SuccessMessage() {
   return (
-    <p role="status" className="rounded-lg bg-emerald-50 border border-emerald-200 px-3 py-3 text-sm text-emerald-800 dark:bg-emerald-900/20 dark:border-emerald-800 dark:text-emerald-300">
+    <p role="status" className={SUCCESS_BANNER}>
       If that email is registered, a reset link has been sent. Check your inbox.
     </p>
   );

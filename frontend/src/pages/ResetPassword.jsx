@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 import { useResetPasswordForm } from "../hooks/useResetPasswordForm";
 import AuthLayout from "../components/AuthLayout";
-import { INPUT_BASE, INPUT_LABEL, BUTTON_PRIMARY } from "../lib/designTokens";
+import { INPUT_BASE, INPUT_LABEL, BUTTON_PRIMARY, SUCCESS_BANNER } from "../lib/designTokens";
 
 function PasswordInput({ label, id, value, onChange }) {
   return (
@@ -56,7 +56,7 @@ function ResetPassword() {
       <p className="mt-1 mb-6 text-sm text-gray-500">Choose a strong password for your account.</p>
 
       {success ? (
-        <p role="status" className="rounded-lg bg-emerald-50 border border-emerald-200 px-3 py-3 text-sm text-emerald-800 dark:bg-emerald-900/20 dark:border-emerald-800 dark:text-emerald-300">
+        <p role="status" className={SUCCESS_BANNER}>
           Password reset successfully! Redirecting to sign in…
         </p>
       ) : (
