@@ -1,0 +1,88 @@
+{
+  "project": "Pipelined",
+  "branchName": "main",
+  "description": "PRD-20: Success banner tokens, accessibility polish, and remaining color standardization",
+  "userStories": [
+    {
+      "id": "US-245",
+      "title": "Create SUCCESS_BANNER design token and apply across auth pages",
+      "description": "Create a SUCCESS_BANNER token in designTokens.js for the repeated emerald success banner pattern. Apply it to ForgotPassword.jsx, ResetPassword.jsx, VerifyEmailPending.jsx, and VerifyEmailConfirm.jsx. Token: 'rounded-lg bg-brand-50 border border-brand-200 px-3 py-3 text-sm text-brand-800 dark:bg-brand-900/20 dark:border-brand-800 dark:text-brand-300'. For VerifyEmailConfirm.jsx, also change the CheckCircle icon from text-emerald-500 to text-brand-500.",
+      "acceptanceCriteria": [
+        "SUCCESS_BANNER token exported from designTokens.js",
+        "ForgotPassword, ResetPassword, VerifyEmailPending, VerifyEmailConfirm use the token",
+        "No emerald classes remain in auth pages",
+        "npm run build succeeds"
+      ],
+      "passes": false
+    },
+    {
+      "id": "US-246",
+      "title": "Standardize Pricing page checkmarks to brand color",
+      "description": "In Pricing.jsx, change the Check icon color from text-emerald-500 to text-brand-500 for consistency with the brand palette. Review any other emerald usage on the pricing page and migrate to brand colors.",
+      "acceptanceCriteria": [
+        "Check icons use text-brand-500 instead of text-emerald-500",
+        "No emerald classes remain in Pricing.jsx",
+        "npm run build succeeds"
+      ],
+      "passes": false
+    },
+    {
+      "id": "US-247",
+      "title": "Add aria-label to stale contact indicator in ContactCard",
+      "description": "In ContactCard.jsx, the stale indicator span uses only a title attribute. Add an aria-label='Stale contact — no activity in 14+ days' to make it accessible to screen readers. Also review other tooltip-only patterns in the contacts section for accessibility.",
+      "acceptanceCriteria": [
+        "Stale indicator has aria-label attribute",
+        "Screen readers can announce the stale status",
+        "npm run build succeeds"
+      ],
+      "passes": false
+    },
+    {
+      "id": "US-248",
+      "title": "Add font-display to all remaining page-level h1 headings",
+      "description": "Audit all page-level h1 and h2 headings across pages/ directory. Ensure every heading uses the font-display class for Poppins typeface. Known gaps: Activity.jsx h1 (line 73), any headings in Contacts page, OfferComparison page. Do not change component-level subheadings that are already fine.",
+      "acceptanceCriteria": [
+        "All page h1 elements use font-display",
+        "All section h2 elements in pages use font-display",
+        "npm run build succeeds"
+      ],
+      "passes": false
+    },
+    {
+      "id": "US-249",
+      "title": "Create CommandPalette MODAL_CARD adoption with fixed positioning",
+      "description": "CommandPalette.jsx line 99 uses inline rounded-2xl border border-gray-200 bg-white shadow-modal classes. Extract the card styling to use MODAL_CARD token while keeping the fixed positioning and top-20% placement. The dialog should use: className={`${MODAL_CARD} fixed left-1/2 top-[20%] z-50 -translate-x-1/2 max-w-xl overflow-hidden`}. Also fix the typo '-trangray-x-1/2' (should be '-translate-x-1/2').",
+      "acceptanceCriteria": [
+        "CommandPalette dialog uses MODAL_CARD token",
+        "Fixed positioning preserved at top-20%",
+        "Typo -trangray-x-1/2 corrected to -translate-x-1/2",
+        "npm run build succeeds"
+      ],
+      "passes": false
+    },
+    {
+      "id": "US-250",
+      "title": "Standardize focus ring to brand-500 on all interactive elements",
+      "description": "Audit all components for focus:ring-blue-500, focus:ring-green-500, focus:ring-red-500 and standardize to focus:ring-brand-500 (or focus:ring-brand-500/30 for the offset pattern). Exceptions: elements inside the danger zone section can keep rose focus rings. The DetailPanelHeader delete button focus:ring-rose-500 should change to focus:ring-brand-500.",
+      "acceptanceCriteria": [
+        "No focus:ring-blue-500 or focus:ring-green-500 classes remain",
+        "focus:ring-red-500 only used in danger zone contexts",
+        "DetailPanelHeader delete button uses focus:ring-brand-500",
+        "npm run build succeeds"
+      ],
+      "passes": false
+    },
+    {
+      "id": "US-251",
+      "title": "Add hover transition to all card components for consistent interaction feedback",
+      "description": "Audit all components using CARD_BASE token. Cards that are interactive (clickable) should have transition-colors and a hover:border-border-strong state to provide visual feedback. Non-interactive cards (Settings sections, static info) should not have hover states. Known interactive cards: KanbanCard, JobCard, ContactCard, ApplicationRow.",
+      "acceptanceCriteria": [
+        "Interactive cards have hover:border-border-strong transition",
+        "Non-interactive cards do not have hover states",
+        "Consistent transition-colors duration-150 on interactive cards",
+        "npm run build succeeds"
+      ],
+      "passes": false
+    }
+  ]
+}
