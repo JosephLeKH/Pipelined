@@ -7,7 +7,7 @@ import Loader2 from "lucide-react/dist/esm/icons/loader-2";
 import TimezoneSelector from "./TimezoneSelector";
 import { useAuth } from "../context/AuthContext";
 import { useUpdateUser } from "../hooks/useAuth";
-import { CARD_BASE, INPUT_BASE, INPUT_LABEL, BUTTON_PRIMARY, SUCCESS_BANNER } from "../lib/designTokens";
+import { CARD_BASE, INPUT_BASE, INPUT_LABEL, INPUT_READONLY, BUTTON_PRIMARY, SUCCESS_BANNER } from "../lib/designTokens";
 
 const AVATAR_COLORS = [
   "bg-brand-500",
@@ -108,7 +108,7 @@ function SettingsProfileSection() {
             type="email"
             value={user?.email ?? ""}
             readOnly
-            className="rounded-input border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-400"
+            className={INPUT_READONLY}
           />
         </div>
 

@@ -107,6 +107,11 @@ export const SUCCESS_BANNER =
   "rounded-lg bg-brand-50 border border-brand-200 px-3 py-3 text-sm text-brand-800 " +
   "dark:bg-brand-900/20 dark:border-brand-800 dark:text-brand-300";
 
+/** Readonly / disabled input — gray bg, muted text, not-allowed cursor. */
+export const INPUT_READONLY =
+  "border border-gray-200 rounded-md bg-gray-50 text-gray-500 text-sm px-3 py-2 font-sans w-full cursor-not-allowed " +
+  "dark:bg-gray-900 dark:border-gray-700 dark:text-gray-400";
+
 /** Small loading spinner — 24px, brand-500 color, used in inline/compact loading states. */
 export const SPINNER_SM = "h-6 w-6 animate-spin rounded-full border-2 border-brand-500 border-t-transparent";
 
