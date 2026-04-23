@@ -3,10 +3,8 @@
 import { useCallback, useState } from "react";
 
 import Loader2 from "lucide-react/dist/esm/icons/loader-2";
-import { CARD_BASE, BUTTON_PRIMARY, SUCCESS_BANNER } from "../lib/designTokens";
-
-const RESUME_ACCEPT = ".pdf";
-const RESUME_MAX_MB = 2;
+import { RESUME_ACCEPT, RESUME_MAX_MB } from "../lib/constants";
+import { BUTTON_PRIMARY, CARD_BASE, SUCCESS_BANNER } from "../lib/designTokens";
 
 function ResumeSection({ hasResume, isUploading, isDeleting, onResumeUpload, onResumeDelete }) {
   const [resumeError, setResumeError] = useState(null);

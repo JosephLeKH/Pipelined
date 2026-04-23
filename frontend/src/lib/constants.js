@@ -38,6 +38,10 @@ export const VIRTUALIZED_LIST_THRESHOLD = 50;
 
 export const PASSWORD_MIN_LENGTH = 8;
 
+export const RESUME_ACCEPT = ".pdf";
+export const RESUME_MAX_MB = 2;
+export const AI_SCORE_LIMIT = 10;
+
 export const REMOTE_STATUS_OPTIONS = ["remote", "hybrid", "onsite", "unknown"];
 
 export const SKELETON_ROW_COUNT = 8;

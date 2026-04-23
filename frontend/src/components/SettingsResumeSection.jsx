@@ -9,11 +9,8 @@ import X from "lucide-react/dist/esm/icons/x";
 
 import { useAuth } from "../context/AuthContext";
 import { useDeleteResume, useUploadResume } from "../hooks/useAuth";
+import { AI_SCORE_LIMIT, RESUME_ACCEPT, RESUME_MAX_MB } from "../lib/constants";
 import { CARD_BASE, SUCCESS_BANNER } from "../lib/designTokens";
-
-const RESUME_ACCEPT = ".pdf";
-const RESUME_MAX_MB = 2;
-const AI_SCORE_LIMIT = 10;
 
 function formatBytes(bytes) {
   if (bytes < 1024) return `${bytes} B`;
