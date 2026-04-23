@@ -71,3 +71,24 @@ Completed: Thu Apr 23 2026
 - The danger zone card was already correctly implemented in `SettingsAccountSection.jsx` from a prior iteration — no changes needed there
 - The sidebar icons were imported at the page level but only used in `SIDEBAR_ITEMS`; removing them simplified the imports significantly
 - Collapsing mobile + desktop nav into a single `TabNav` reduced code while satisfying the text-links requirement
+
+## US-233: Redesign all modal dialogs
+**Status:** COMPLETE
+**Commit:** feat: US-233 - Redesign all modal dialogs
+
+**Changes:**
+- UpgradePlanModal.jsx: adopted MODAL_BACKDROP token for backdrop, BUTTON_GHOST close button, font-display heading, font-sans body
+- ShortcutHelp.jsx: adopted BUTTON_GHOST close button, font-display heading, border-border-default header/footer borders
+- MergeDialog.jsx: adopted BUTTON_GHOST close button, font-display heading, border-border-default borders throughout
+- TemplateSaveModal.jsx: adopted BUTTON_GHOST close button, font-display heading, added border-t border-border-default to footer
+- CsvImportModal.jsx: adopted BUTTON_GHOST close button, standardized font-display text-lg heading
+- ManualAddForm.jsx: adopted BUTTON_GHOST close button, standardized font-display heading class order
+- CommandPalette.jsx: already updated in prior iteration (z-40 backdrop preserved for test compatibility)
+- NewEventForm.jsx: added BUTTON_GHOST import, adopted BUTTON_GHOST close button, standardized font-display heading
+- FeedbackWidget.jsx (FeedbackPopover): adopted font-display heading, BUTTON_GHOST close button (p-1 for compact popover)
+- CalendarEventDetail.jsx: added BUTTON_GHOST import, border-border-default header, font-display heading, BUTTON_GHOST close button
+
+**Learnings:**
+- BUTTON_GHOST has px-3 py-2 built in; for icon-only close buttons, append `p-2` at end of class string to get square button
+- CalendarEventDetail is a side drawer (aside), not a centered modal — MODAL_CARD/MODAL_BACKDROP don't apply; only close button and header typography updated
+- CommandPalette backdrop uses z-40 (not z-50) because CommandPalette.test.jsx queries `.fixed.inset-0.z-40` — must preserve
