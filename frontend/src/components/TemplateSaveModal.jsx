@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 
 import X from "lucide-react/dist/esm/icons/x";
 
-import { INPUT_BASE, BUTTON_PRIMARY, BUTTON_SECONDARY, MODAL_BACKDROP, MODAL_CARD } from "../lib/designTokens";
+import { INPUT_BASE, BUTTON_PRIMARY, BUTTON_SECONDARY, BUTTON_GHOST, MODAL_BACKDROP, MODAL_CARD } from "../lib/designTokens";
 import { useCreateTemplate } from "../hooks/useTemplates";
 import { MODAL_FOCUS_DELAY_MS } from "../lib/constants";
 
@@ -58,10 +58,10 @@ function TemplateSaveModal({ isOpen, onClose, fields }) {
       aria-labelledby="save-template-heading"
     >
       <div className={`${MODAL_CARD} max-w-sm p-6`}>
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between border-b border-border-default pb-4 mb-4">
           <h2
             id="save-template-heading"
-            className="text-base font-semibold text-gray-900 dark:text-gray-100"
+            className="font-display text-lg font-semibold text-gray-900 dark:text-gray-100"
           >
             Save as template
           </h2>
@@ -69,9 +69,9 @@ function TemplateSaveModal({ isOpen, onClose, fields }) {
             type="button"
             onClick={onClose}
             aria-label="Close modal"
-            className="rounded-button p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:hover:bg-gray-700"
+            className={`${BUTTON_GHOST} p-2`}
           >
-            <X className="h-4 w-4" />
+            <X className="h-4 w-4 text-gray-400" />
           </button>
         </div>
         <label
@@ -99,7 +99,7 @@ function TemplateSaveModal({ isOpen, onClose, fields }) {
         <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
           Saves: remote status, company type, role type, tags, and compensation.
         </p>
-        <div className="mt-4 flex justify-end gap-2">
+        <div className="mt-4 flex justify-end gap-2 border-t border-border-default pt-4">
           <button type="button" onClick={onClose} className={`${BUTTON_SECONDARY} text-sm px-3 py-2`}>
             Cancel
           </button>

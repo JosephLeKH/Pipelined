@@ -6,7 +6,7 @@ import X from "lucide-react/dist/esm/icons/x";
 
 import { useHotkeys } from "../hooks/useHotkeys";
 import { SHORTCUTS, SHORTCUT_SCOPES } from "../lib/shortcuts";
-import { MODAL_BACKDROP, MODAL_CARD } from "../lib/designTokens";
+import { BUTTON_GHOST, MODAL_BACKDROP, MODAL_CARD } from "../lib/designTokens";
 
 function ShortcutHelp() {
   const [isOpen, setIsOpen] = useState(false);
@@ -31,20 +31,20 @@ function ShortcutHelp() {
         className={`w-full max-w-lg ${MODAL_CARD}`}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4 dark:border-gray-700">
-          <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">
+        <div className="flex items-center justify-between border-b border-border-default px-6 py-4">
+          <h2 className="font-display text-lg font-semibold text-gray-900 dark:text-gray-100">
             Keyboard Shortcuts
           </h2>
           <button
             type="button"
             onClick={close}
-            className="rounded-button p-1 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:hover:text-gray-300"
+            className={`${BUTTON_GHOST} p-2`}
             aria-label="Close shortcuts"
           >
-            <X className="h-5 w-5" />
+            <X className="h-5 w-5 text-gray-400" />
           </button>
         </div>
-        <div className="flex max-h-[70vh] flex-col gap-6 overflow-y-auto px-6 py-4">
+        <div className="flex max-h-[70vh] flex-col gap-6 overflow-y-auto px-6 py-4 font-sans text-gray-700">
           {SHORTCUT_SCOPES.map((scope) => (
             <div key={scope}>
               <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">

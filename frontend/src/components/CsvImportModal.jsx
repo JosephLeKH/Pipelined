@@ -7,7 +7,7 @@ import Loader2 from "lucide-react/dist/esm/icons/loader-2";
 import X from "lucide-react/dist/esm/icons/x";
 
 import { useImportApplications } from "../hooks/useApplications";
-import { BUTTON_PRIMARY, BUTTON_SECONDARY, MODAL_CARD } from "../lib/designTokens";
+import { BUTTON_PRIMARY, BUTTON_SECONDARY, BUTTON_GHOST, MODAL_CARD, MODAL_BACKDROP } from "../lib/designTokens";
 import { trackEvent } from "../lib/analytics";
 
 const ACCEPTED_MIME = "text/csv,.csv";
@@ -97,15 +97,15 @@ function CsvImportModal({ isOpen, onClose }) {
 
   if (!isOpen) return null;
   return (
-    <div role="dialog" aria-modal="true" aria-labelledby="csv-import-heading" className="fixed inset-0 z-50 flex items-center justify-center">
-      <div data-testid="import-overlay" aria-hidden="true" className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={handleClose} />
-      <div className={`relative z-10 w-full max-w-md p-6 ${MODAL_CARD}`}>
-        <div className="mb-4 flex items-center justify-between">
-          <h2 id="csv-import-heading" className="text-base font-semibold text-gray-900 dark:text-gray-100">Import CSV</h2>
-          <button type="button" onClick={handleClose} aria-label="Close import modal" className="rounded-button p-1 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:hover:text-gray-200">
+    <div className={MODAL_BACKDROP} role="dialog" aria-modal="true" aria-labelledby="csv-import-heading" onClick={handleClose}>
+      <div className={MODAL_CARD} onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between border-b border-border-default px-6 py-4">
+          <h2 id="csv-import-heading" className="text-base font-display font-semibold text-gray-900 dark:text-gray-100">Import CSV</h2>
+          <button type="button" onClick={handleClose} aria-label="Close import modal" className="rounded-button p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:hover:bg-gray-700 dark:hover:text-gray-200">
             <X className="h-4 w-4" />
           </button>
         </div>
+        <div className="p-6">
         <p className="mb-3 text-sm text-gray-500 dark:text-gray-400">
           Upload a CSV with the following columns (required: <strong>company</strong>,{" "}
           <strong>role_title</strong>):
@@ -118,7 +118,7 @@ function CsvImportModal({ isOpen, onClose }) {
         />
         {localError && <p role="alert" className="mb-3 text-sm text-red-600 dark:text-red-400">{localError}</p>}
         <ImportResultDisplay result={result} errorsExpanded={errorsExpanded} setErrorsExpanded={setErrorsExpanded} />
-        <div className="flex justify-end gap-2">
+        <div className="flex justify-end gap-2 border-t border-border-default px-6 py-4">
           <button type="button" onClick={handleClose} className={`${BUTTON_SECONDARY} text-sm`}>Close</button>
           <button type="button" onClick={handleImport} disabled={!file || isPending} aria-label="Import CSV" className={`${BUTTON_PRIMARY} text-sm flex items-center gap-2`}>
             {isPending
@@ -126,6 +126,7 @@ function CsvImportModal({ isOpen, onClose }) {
               : <Upload className="h-4 w-4" aria-hidden="true" />}
             Import
           </button>
+        </div>
         </div>
       </div>
     </div>

@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import Zap from "lucide-react/dist/esm/icons/zap";
 import X from "lucide-react/dist/esm/icons/x";
 
-import { BUTTON_PRIMARY, BUTTON_SECONDARY, MODAL_CARD } from "../lib/designTokens";
+import { BUTTON_PRIMARY, BUTTON_SECONDARY, BUTTON_GHOST, MODAL_BACKDROP, MODAL_CARD } from "../lib/designTokens";
 
 export const TIER_LIMIT_EXCEEDED_EVENT = "pipelined:tier_limit_exceeded";
 
@@ -59,21 +59,20 @@ function UpgradePlanModal() {
       role="dialog"
       aria-modal="true"
       aria-labelledby="upgrade-modal-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      className={MODAL_BACKDROP}
       onClick={handleDismiss}
     >
-      <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" aria-hidden="true" />
       <div
-        className={`${MODAL_CARD} relative max-w-md p-8`}
+        className={`${MODAL_CARD} max-w-md p-8`}
         onClick={(e) => e.stopPropagation()}
       >
         <button
           type="button"
           onClick={handleDismiss}
           aria-label="Close"
-          className="absolute right-4 top-4 rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300"
+          className={`${BUTTON_GHOST} absolute right-4 top-4 p-2`}
         >
-          <X className="h-4 w-4" />
+          <X className="h-4 w-4 text-gray-400" />
         </button>
 
         <div className="flex flex-col items-center text-center">
@@ -81,7 +80,7 @@ function UpgradePlanModal() {
 
           <h2
             id="upgrade-modal-title"
-            className="mb-2 text-xl font-bold text-gray-900 dark:text-white"
+            className="mb-2 font-display text-lg font-semibold text-gray-900 dark:text-white"
           >
             You&apos;ve reached a free plan limit
           </h2>
@@ -92,7 +91,7 @@ function UpgradePlanModal() {
             </p>
           )}
 
-          <p className="mb-6 text-sm text-gray-500 dark:text-gray-400">
+          <p className="mb-6 font-sans text-sm text-gray-700 dark:text-gray-400">
             Upgrade to Pro for unlimited access to all features.
           </p>
 

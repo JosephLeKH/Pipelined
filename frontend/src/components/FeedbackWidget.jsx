@@ -154,9 +154,9 @@ function FeedbackPopover({ user, page, onClose, onSubmit }) {
       className={`${CARD_BASE} absolute bottom-14 right-0 w-80 p-4 animate-slideInUp shadow-modal`}
     >
       <div className="mb-3 flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100">How can we improve?</h2>
-        <button type="button" onClick={onClose} aria-label="Close" className="rounded p-0.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
-          <X className="h-4 w-4" />
+        <h2 className="font-display text-sm font-semibold text-gray-900 dark:text-gray-100">How can we improve?</h2>
+        <button type="button" onClick={onClose} aria-label="Close" className={`${BUTTON_GHOST} p-1`}>
+          <X className="h-4 w-4 text-gray-400" />
         </button>
       </div>
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">

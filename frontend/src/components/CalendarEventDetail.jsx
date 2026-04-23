@@ -9,6 +9,7 @@ import { EVENT_TYPE_COLORS, DEFAULT_EVENT_COLOR, INTERVIEW_EVENT_TYPES } from ".
 import { formatDate, formatTime } from "../lib/dateUtils";
 import { useAuth } from "../context/AuthContext";
 import { PrepSection } from "./PrepSection";
+import { BUTTON_GHOST } from "../lib/designTokens";
 
 const FOCUSABLE_SELECTORS = 'button:not([disabled]), [href], input:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
@@ -54,7 +55,7 @@ function CalendarEventDetail({ event, onClose }) {
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 z-30 bg-black/40 backdrop-blur-sm"
+        className="fixed inset-0 z-30 bg-black/30 backdrop-blur-sm"
         onClick={onClose}
         aria-hidden="true"
       />
@@ -67,14 +68,14 @@ function CalendarEventDetail({ event, onClose }) {
         className="fixed inset-y-0 right-0 z-40 flex w-full max-w-md flex-col overflow-y-auto bg-white shadow-modal dark:bg-gray-800 animate-slide-in-right"
       >
         {/* Header */}
-        <div className="flex items-start justify-between border-b border-gray-100 dark:border-gray-700 px-6 py-4">
+        <div className="flex items-start justify-between border-b border-border-default px-6 py-4">
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2">
               <span className={`rounded-badge px-2 py-0.5 text-xs font-medium ${colors.bg} ${colors.text}`}>
                 {eventTypeLabel}
               </span>
             </div>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            <h2 className="font-display text-lg font-semibold text-gray-900 dark:text-gray-100">
               {event.title || eventTypeLabel}
             </h2>
             <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -87,10 +88,10 @@ function CalendarEventDetail({ event, onClose }) {
           <button
             type="button"
             onClick={onClose}
-            className="ml-4 rounded p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className={`ml-4 ${BUTTON_GHOST} p-2`}
             aria-label="Close event details"
           >
-            <X className="h-5 w-5" />
+            <X className="h-5 w-5 text-gray-400" />
           </button>
         </div>
 
