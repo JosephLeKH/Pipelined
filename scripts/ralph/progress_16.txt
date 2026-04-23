@@ -66,3 +66,22 @@ Replaced all button token strings in `frontend/src/lib/designTokens.js` to remov
 - `active:scale-[0.98]` on buttons felt punchy/startup-y; removing it makes interactions feel calmer and more editorial, matching the Anthropic aesthetic.
 - `border-border-default` and `hover:bg-surface-secondary` are semantic tokens from US-216 — button tokens now properly depend on the palette foundation.
 - Build succeeded cleanly: `✓ built in 2.68s`.
+
+---
+## US-219: Redesign card and modal tokens — border over shadow
+**Date:** 2026-04-23
+
+### Summary
+Updated card and modal design tokens in `frontend/src/lib/designTokens.js` to shift from shadow-defined to border-defined visual style, matching Anthropic's flat warm aesthetic.
+
+### Changes
+- `CARD_BASE`: Replaced `rounded-card shadow-card border border-slate-200/60` with `rounded-xl border border-border-default`. Shadow removed; border-border-default (warm rgba token) carries visual weight.
+- `CARD_HOVER`: Added new token `"border-border-strong transition-colors"` — hover strengthens the border rather than adding shadow.
+- `MODAL_CARD`: Replaced `shadow-modal` with `shadow-lg`, added `border border-border-default` for border-defined framing alongside the retained shadow.
+- `MODAL_BACKDROP`: Changed `bg-black/40` to `bg-black/30` — lighter, less dramatic overlay.
+
+### Learnings
+- `border-border-default` uses `rgba(120,100,75,0.12)` from the US-216 palette — warm-tinted borders feel more editorial than cool slate borders.
+- Removing `shadow-card` while adding explicit border makes cards feel crisp and defined rather than floaty — a core Anthropic visual principle.
+- Modals retain `shadow-lg` to provide depth hierarchy while the border adds containment; backdrop at /30 is subtler and keeps focus on content.
+- Build succeeded cleanly: `✓ built in 2.41s`.
