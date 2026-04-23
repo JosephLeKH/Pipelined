@@ -81,7 +81,7 @@ function VerifyEmailRoute() {
 function LoadingSpinner() {
   return (
     <div className="flex min-h-screen items-center justify-center">
-      <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-500 border-t-transparent" />
+      <div className="h-6 w-6 animate-spin rounded-full border-2 border-brand-500 border-t-transparent" />
     </div>
   );
 }
@@ -115,11 +115,11 @@ function PageTracker() {
 function RouteErrorFallback() {
   return (
     <div role="alert" className="flex flex-col items-center gap-4 py-16 text-center">
-      <p className="text-lg font-semibold text-slate-900">Something went wrong</p>
-      <p className="text-sm text-slate-500">An error occurred on this page.</p>
+      <p className="text-lg font-semibold text-gray-900">Something went wrong</p>
+      <p className="text-sm text-gray-500">An error occurred on this page.</p>
       <Link
         to="/dashboard"
-        className="flex items-center gap-2 rounded-button bg-gradient-to-r from-brand-600 to-brand-500 px-4 py-2 text-sm font-medium text-white hover:from-brand-700 hover:to-brand-600 active:scale-[0.98] transition-all duration-150"
+        className="bg-brand-500 hover:bg-brand-600 text-white font-medium rounded-md px-4 py-2 text-sm font-display transition-colors"
       >
         Go to Dashboard
       </Link>
@@ -147,7 +147,7 @@ function App() {
     <>
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[9999] focus:rounded focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-blue-600 focus:shadow-lg focus:ring-2 focus:ring-blue-500"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[9999] focus:rounded focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-brand-600 focus:shadow-lg focus:ring-2 focus:ring-brand-500"
       >
         Skip to main content
       </a>
