@@ -97,7 +97,7 @@
         "npm run build succeeds"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Complements US-219. Shadows should barely be noticeable."
     },
     {

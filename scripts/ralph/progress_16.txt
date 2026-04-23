@@ -99,3 +99,20 @@ Updated INPUT_BASE in designTokens.js to use warm gray palette (border-gray-300,
 ### Learnings
 - focus:ring-2 (previous) → focus:ring-1 (spec) gives the subtle single-ring effect matching Anthropic's restrained UI style
 - Dark mode classes with slate-* were removed entirely rather than converted to gray-* equivalents, since the acceptance criteria explicitly forbids slate-* in form tokens and no dark mode spec was given for these new tokens
+
+## US-221 — Update shadows and border-radius in tailwind.config.js
+
+**Status:** Complete (pre-existing implementation verified)
+
+**Investigated:** Examined frontend/tailwind.config.js to verify all US-221 shadow and border-radius requirements. The changes had already been applied in a prior iteration during US-216/US-219 work.
+
+**Verified:**
+- boxShadow.card = '0 1px 2px rgba(120,100,75,0.06)' — warm rgba, opacity 0.06 (< 0.1 threshold) ✓
+- boxShadow.card-hover = '0 2px 8px rgba(120,100,75,0.08)' — warm rgba ✓
+- boxShadow.modal = '0 20px 60px rgba(20,20,19,0.15)' — warm black (#141413) ✓
+- No glow shadow present in config ✓
+- borderRadius.button = '0.375rem' (6px) ✓
+- borderRadius.card = '0.75rem' (12px) ✓
+- Build succeeded in 2.44s ✓
+
+**Learned:** The shadow and border-radius tokens were established early in the design system overhaul (likely during US-216 or US-219). Warm-tinted rgba shadows with opacity < 0.1 make cards feel elevated without competing with border-based visual weight. The rgba(120,100,75,...) formula aligns with the warm brown undertone of the Anthropic palette.
