@@ -82,7 +82,7 @@
         "Consistent transition-colors duration-150 on interactive cards",
         "npm run build succeeds"
       ],
-      "passes": false
+      "passes": true
     }
   ]
 }

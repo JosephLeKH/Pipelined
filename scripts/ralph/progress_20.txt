@@ -78,3 +78,15 @@ Status: COMPLETE
 **Completed**: Successfully completed US-250. Changed focus:ring-red-500 → focus:ring-brand-500 in ShareTimeline.jsx, SharePipeline.jsx, ResumeSection.jsx, and CalendarEventsList.jsx. Build passed (2.57s). Changes committed to main branch with message "feat: US-250 - Standardize focus ring to brand-500 on all interactive elements". Updated prd_20.json marking US-250 as passes: true.
 
 **Next Steps**: US-251 (Add hover transition to all card components for consistent interaction feedback) remains incomplete.
+
+## US-251: Add hover transition to all card components for consistent interaction feedback
+**Status:** COMPLETE
+**Date:** Thu Apr 23 2026
+
+**Summary:**
+Audited all components using CARD_BASE token. KanbanCard and JobCard were the only interactive (clickable) card components. Both already had `hover:border-border-strong` and `duration-150`, but used `transition-all` instead of `transition-colors`. Changed both to `transition-colors duration-150` for precise, consistent interaction feedback. Non-interactive CARD_BASE users (Settings sections, AuthLayout, Activity, Analytics, KanbanColumn, etc.) correctly have no hover states.
+
+**Learnings:**
+- CARD_HOVER token already existed in designTokens.js but wasn't being used — the interactive cards were inline-composing the hover classes. The token could be adopted in a future cleanup.
+- `transition-all` vs `transition-colors`: using `transition-colors` is more precise and avoids animating unintended properties (transform, opacity) that the card uses for drag states.
+- ContactCard and ApplicationRow are listed in the story description as "known interactive cards" but neither uses CARD_BASE nor has an onClick on the card container itself — they were correctly excluded from the border-hover pattern.
