@@ -5,7 +5,7 @@ import { useState, useCallback } from "react";
 import Loader2 from "lucide-react/dist/esm/icons/loader-2";
 import TriangleAlert from "lucide-react/dist/esm/icons/alert-triangle";
 
-import { CARD_BASE, INPUT_BASE, INPUT_LABEL, BUTTON_PRIMARY, BUTTON_SECONDARY, BUTTON_DANGER, SUCCESS_BANNER } from "../lib/designTokens";
+import { CARD_BASE, INPUT_BASE, INPUT_LABEL, BUTTON_PRIMARY, BUTTON_SECONDARY, BUTTON_DANGER, SUCCESS_BANNER, MODAL_BACKDROP, MODAL_CARD } from "../lib/designTokens";
 import { PASSWORD_MIN_LENGTH } from "../lib/constants";
 
 function ChangePasswordCard() {
@@ -136,12 +136,12 @@ function DangerZone() {
 
       {showModal && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+          className={MODAL_BACKDROP}
           role="dialog"
           aria-modal="true"
           aria-labelledby="delete-acct-title"
         >
-          <div className="w-full max-w-sm rounded-card bg-white p-6 shadow-modal dark:bg-gray-800">
+          <div className={`${MODAL_CARD} max-w-sm p-6`}>
             <h3
               id="delete-acct-title"
               className="text-base font-semibold text-gray-900 dark:text-gray-100"
