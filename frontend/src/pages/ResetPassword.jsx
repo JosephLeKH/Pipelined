@@ -1,6 +1,6 @@
-/** Reset password page: validates the token from the URL and sets a new password. */
+/** Reset password page: sets a new password using the httpOnly reset token cookie. */
 
-import { Link, useSearchParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 import { useResetPasswordForm } from "../hooks/useResetPasswordForm";
 import AuthLayout from "../components/AuthLayout";
@@ -50,9 +50,7 @@ function PasswordForm({ newPassword, confirmPassword, error, isPending, onNewPas
 }
 
 function ResetPassword() {
-  const [searchParams] = useSearchParams();
-  const token = searchParams.get("token") ?? "";
-  const { newPassword, confirmPassword, error, success, isPending, setNewPassword, setConfirmPassword, handleSubmit } = useResetPasswordForm(token);
+  const { newPassword, confirmPassword, error, success, isPending, setNewPassword, setConfirmPassword, handleSubmit } = useResetPasswordForm();
 
   return (
     <AuthLayout>

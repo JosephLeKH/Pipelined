@@ -230,6 +230,7 @@ async def test_forgot_password_returns_200_for_existing_user(client):
     assert response.status_code == 200
     assert "reset link has been sent" in response.json()["data"]["message"]
     mock_send.assert_awaited_once()
+    assert "reset_token" in response.cookies
 
 
 async def test_forgot_password_returns_200_for_nonexistent_email(client):
@@ -249,24 +250,19 @@ async def test_forgot_password_returns_200_for_nonexistent_email(client):
 
 
 async def test_reset_password_success(client):
-    # Arrange — register and request a reset token
+    # Arrange — register and request a reset token (token delivered via httpOnly cookie)
     await client.post("/api/auth/register", json=RESET_PAYLOAD)
 
-    captured_token: list[str] = []
+    forgot_response = await client.post(
+        "/api/auth/forgot-password", json={"email": "test@example.com"}
+    )
+    reset_token_cookie = forgot_response.cookies["reset_token"]
 
-    async def capture_send(to_email: str, raw_token: str) -> None:
-        captured_token.append(raw_token)
-
-    with patch(
-        "notifications.email_service.email_service.send_password_reset_email",
-        side_effect=capture_send,
-    ):
-        await client.post("/api/auth/forgot-password", json={"email": "test@example.com"})
-
-    # Act — reset the password with the captured token
+    # Act — reset the password using the cookie
     response = await client.post(
         "/api/auth/reset-password",
-        json={"token": captured_token[0], "new_password": "NewPass456!"},
+        json={"new_password": "NewPass456!"},
+        cookies={"reset_token": reset_token_cookie},
     )
 
     # Assert
@@ -281,11 +277,24 @@ async def test_reset_password_success(client):
     assert login_response.status_code == 200
 
 
-async def test_reset_password_returns_400_for_invalid_token(client):
-    # Act — token that was never issued
+async def test_reset_password_returns_400_for_missing_cookie(client):
+    # Act — no reset_token cookie present
     response = await client.post(
         "/api/auth/reset-password",
-        json={"token": "deadbeef" * 8, "new_password": "NewPass456!"},
+        json={"new_password": "NewPass456!"},
+    )
+
+    # Assert
+    assert response.status_code == 400
+    assert response.json()["detail"]["code"] == "TOKEN_MISSING"
+
+
+async def test_reset_password_returns_400_for_invalid_token(client):
+    # Act — reset_token cookie with a value that was never issued
+    response = await client.post(
+        "/api/auth/reset-password",
+        json={"new_password": "NewPass456!"},
+        cookies={"reset_token": "deadbeef" * 8},
     )
 
     # Assert
@@ -308,10 +317,11 @@ async def test_reset_password_returns_400_for_expired_token(client):
         {"$set": {"reset_token_hash": token_hash, "reset_token_expires_at": expired_at}},
     )
 
-    # Act
+    # Act — send expired raw token via cookie
     response = await client.post(
         "/api/auth/reset-password",
-        json={"token": raw_token, "new_password": "NewPass456!"},
+        json={"new_password": "NewPass456!"},
+        cookies={"reset_token": raw_token},
     )
 
     # Assert

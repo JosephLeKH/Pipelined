@@ -83,12 +83,12 @@ class EmailService:
         await loop.run_in_executor(None, self._send_smtp, to_email, message)
         logger.info("verification_email_sent", to=to_email)
 
-    async def send_password_reset_email(self, to_email: str, raw_token: str) -> None:
-        """Send a password reset email with the raw token link."""
+    async def send_password_reset_email(self, to_email: str) -> None:
+        """Send a password reset email linking to the reset page (token delivered via cookie)."""
         if not settings.smtp_host or settings.smtp_host == "localhost":
             logger.info("email_suppressed_dev_mode", to=to_email, subject=RESET_EMAIL_SUBJECT)
             return
-        reset_link = f"{settings.frontend_url}/reset-password?token={raw_token}"
+        reset_link = f"{settings.frontend_url}/reset-password"
         message = self._build_reset_message(to_email, reset_link)
         loop = asyncio.get_running_loop()
         await loop.run_in_executor(None, self._send_smtp, to_email, message)

@@ -5,7 +5,7 @@ import { PASSWORD_MIN_LENGTH } from "../lib/constants";
 
 const RESET_SUCCESS_REDIRECT_MS = 2000;
 
-export function useResetPasswordForm(token) {
+export function useResetPasswordForm() {
   const navigate = useNavigate();
   const { mutateAsync: doReset, isPending } = useResetPassword();
   const [newPassword, setNewPassword] = useState("");
@@ -18,10 +18,6 @@ export function useResetPasswordForm(token) {
       e.preventDefault();
       setError("");
 
-      if (!token) {
-        setError("Reset token is missing. Please request a new reset link.");
-        return;
-      }
       if (!newPassword) {
         setError("New password is required.");
         return;
@@ -36,20 +32,23 @@ export function useResetPasswordForm(token) {
       }
 
       try {
-        await doReset({ token, new_password: newPassword });
+        await doReset({ new_password: newPassword });
         setSuccess(true);
         setTimeout(() => navigate("/login", { replace: true }), RESET_SUCCESS_REDIRECT_MS);
       } catch (err) {
-        if (err?.code === "TOKEN_EXPIRED") {
+        const code = err?.response?.data?.detail?.code;
+        if (code === "TOKEN_MISSING") {
+          setError("No reset session found. Please request a new reset link and complete it in the same browser.");
+        } else if (code === "TOKEN_EXPIRED") {
           setError("This reset link has expired. Please request a new one.");
-        } else if (err?.code === "TOKEN_INVALID") {
+        } else if (code === "TOKEN_INVALID") {
           setError("This reset link is invalid. Please request a new one.");
         } else {
           setError("Something went wrong. Please try again.");
         }
       }
     },
-    [token, newPassword, confirmPassword, doReset, navigate]
+    [newPassword, confirmPassword, doReset, navigate]
   );
 
   return {

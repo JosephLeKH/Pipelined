@@ -25,6 +25,7 @@ from auth.oauth_service import (
 )
 from auth.service import (
     REFRESH_TOKEN_TYPE,
+    RESET_TOKEN_TTL_HOURS,
     DuplicateEmailError,
     TokenExpiredError,
     TokenInvalidError,
@@ -47,8 +48,10 @@ router = APIRouter(prefix="/api/auth", tags=["auth"])
 
 ACCESS_COOKIE = "access_token"
 REFRESH_COOKIE = "refresh_token"
+RESET_TOKEN_COOKIE = "reset_token"
 ACCESS_MAX_AGE = settings.jwt_access_ttl_minutes * 60
 REFRESH_MAX_AGE = settings.jwt_refresh_ttl_days * 24 * 60 * 60
+RESET_TOKEN_MAX_AGE = RESET_TOKEN_TTL_HOURS * 3600
 
 
 def _set_auth_cookies(response: Response, user_id: str) -> None:
@@ -259,20 +262,38 @@ RESET_LINK_SENT_MESSAGE = "If that email is registered, a reset link has been se
 
 @router.post("/forgot-password", status_code=200)
 @limiter.limit(settings.rate_limit_auth)
-async def forgot_password(request: Request, body: ForgotPasswordRequest) -> dict:
+async def forgot_password(request: Request, body: ForgotPasswordRequest, response: Response) -> dict:
     """Initiate a password reset; always returns 200 to prevent email enumeration."""
     raw_token, user = await create_password_reset_token(body.email)
     if user is not None:
-        await email_service.send_password_reset_email(body.email, raw_token)
+        response.set_cookie(
+            key=RESET_TOKEN_COOKIE,
+            value=raw_token,
+            max_age=RESET_TOKEN_MAX_AGE,
+            httponly=True,
+            secure=not settings.debug,
+            samesite="lax",
+        )
+        await email_service.send_password_reset_email(body.email)
     return {"data": {"message": RESET_LINK_SENT_MESSAGE}}
 
 
 @router.post("/reset-password", status_code=200)
 @limiter.limit(settings.rate_limit_auth)
-async def reset_password_endpoint(request: Request, body: ResetPasswordRequest) -> dict:
-    """Reset a user's password using a valid reset token."""
+async def reset_password_endpoint(
+    request: Request,
+    body: ResetPasswordRequest,
+    response: Response,
+    reset_token: str | None = Cookie(default=None),
+) -> dict:
+    """Reset a user's password using the reset token from the httpOnly cookie."""
+    if not reset_token:
+        raise HTTPException(
+            status_code=400,
+            detail={"code": "TOKEN_MISSING", "message": "No reset token found. Please use the link in your email."},
+        )
     try:
-        await reset_password(body.token, body.new_password)
+        await reset_password(reset_token, body.new_password)
     except TokenExpiredError:
         raise HTTPException(
             status_code=400,
@@ -283,6 +304,7 @@ async def reset_password_endpoint(request: Request, body: ResetPasswordRequest) 
             status_code=400,
             detail={"code": "TOKEN_INVALID", "message": "Invalid password reset token."},
         )
+    response.delete_cookie(RESET_TOKEN_COOKIE)
     return {"data": {"message": "Password reset successfully."}}
 
 
