@@ -17,7 +17,7 @@ function JobCard({ job, onSelect }) {
 
   return (
     <article
-      className={`relative flex flex-col gap-3 p-4 transition-all duration-150 hover:border-border-strong cursor-pointer ${CARD_BASE}`}
+      className={`relative flex flex-col gap-3 p-4 transition-colors duration-150 hover:border-border-strong cursor-pointer ${CARD_BASE}`}
       data-testid="job-card"
       onClick={() => onSelect?.(job)}
     >

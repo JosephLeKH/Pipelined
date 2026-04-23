@@ -68,3 +68,13 @@ Status: COMPLETE
 **Completed**: Changed focus:ring-rose-500 to focus:ring-brand-500 in DetailPanelHeader.jsx. Build passed (2.55s). Committed to main branch with "feat: US-250 - Standardize focus ring to brand-500 on all interactive elements". Updated prd_20.json marking US-250 as passes: true.
 
 **Next Steps**: US-251 (interactive card hover transitions) remains with passes: false.
+
+## US-250: Standardize focus ring to brand-500 on all interactive elements
+
+**Investigated**: Audited all frontend components for non-standard focus ring colors using grep patterns. Found: focus:ring-rose-500 in DetailPanelHeader.jsx (delete button), focus:ring-red-500 in ShareTimeline.jsx, SharePipeline.jsx (revoke link buttons), ResumeSection.jsx (remove resume button), and CalendarEventsList.jsx (delete event button). No focus:ring-blue-500 or focus:ring-green-500 instances existed. The BUTTON_DANGER token in designTokens.js uses focus:ring-red-500/30 which is appropriate for the danger zone token. SettingsAccountSection.jsx DangerZone section uses focus:ring-rose-400 which is the legitimate danger zone exception.
+
+**Learned**: DetailPanelHeader.jsx already had focus:ring-brand-500 on the delete button from a previous iteration — no change needed there. The 4 remaining files (ShareTimeline, SharePipeline, ResumeSection, CalendarEventsList) all had red-500 focus rings on delete/revoke buttons that were outside the actual Danger Zone section, so they were changed to brand-500.
+
+**Completed**: Successfully completed US-250. Changed focus:ring-red-500 → focus:ring-brand-500 in ShareTimeline.jsx, SharePipeline.jsx, ResumeSection.jsx, and CalendarEventsList.jsx. Build passed (2.57s). Changes committed to main branch with message "feat: US-250 - Standardize focus ring to brand-500 on all interactive elements". Updated prd_20.json marking US-250 as passes: true.
+
+**Next Steps**: US-251 (Add hover transition to all card components for consistent interaction feedback) remains incomplete.
