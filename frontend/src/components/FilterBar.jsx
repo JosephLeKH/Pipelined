@@ -5,6 +5,7 @@ import { useSearchParams } from "react-router-dom";
 import SearchIcon from "lucide-react/dist/esm/icons/search";
 import { trackEvent } from "../lib/analytics";
 import { useTags } from "../hooks/useApplications";
+import { INPUT_BASE } from "../lib/designTokens";
 
 import { STAGE_COLORS, SEARCH_DEBOUNCE_MS, COMPANY_TYPE_OPTIONS, REMOTE_STATUS_OPTIONS } from "../lib/constants";
 
@@ -55,7 +56,7 @@ function SearchFieldset({ searchValue, onSearchChange }) {
           value={searchValue}
           onChange={onSearchChange}
           placeholder="Title, company, notes..."
-          className="border border-gray-300 bg-white rounded-input pl-8 pr-2 py-1.5 text-sm placeholder:text-gray-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none transition-colors dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 dark:placeholder:text-gray-500"
+          className={`${INPUT_BASE} pl-8 pr-2`}
         />
       </div>
     </fieldset>
@@ -63,17 +64,16 @@ function SearchFieldset({ searchValue, onSearchChange }) {
 }
 
 function DateRangeFilter({ dateFrom, dateTo, onUpdate }) {
-  const inputClass = "border border-gray-300 bg-white rounded-input px-2 py-1.5 text-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none transition-colors dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100";
   return (
     <fieldset className="flex shrink-0 flex-col gap-1">
       <legend className="mb-1 text-xs font-medium uppercase text-gray-500 dark:text-gray-400">Date Range</legend>
       <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
         From
-        <input type="date" value={dateFrom} aria-label="date from" onChange={(e) => onUpdate("date_from", e.target.value)} className={inputClass} />
+        <input type="date" value={dateFrom} aria-label="date from" onChange={(e) => onUpdate("date_from", e.target.value)} className={`${INPUT_BASE} px-2`} />
       </label>
       <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
         To
-        <input type="date" value={dateTo} aria-label="date to" onChange={(e) => onUpdate("date_to", e.target.value)} className={inputClass} />
+        <input type="date" value={dateTo} aria-label="date to" onChange={(e) => onUpdate("date_to", e.target.value)} className={`${INPUT_BASE} px-2`} />
       </label>
     </fieldset>
   );

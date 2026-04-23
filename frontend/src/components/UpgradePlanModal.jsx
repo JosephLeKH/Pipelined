@@ -68,9 +68,7 @@ function UpgradePlanModal() {
         </button>
 
         <div className="flex flex-col items-center text-center">
-          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-500">
-            <Zap className="h-7 w-7 text-white" />
-          </div>
+          <Zap className="mb-4 h-8 w-8 text-brand-500" />
 
           <h2
             id="upgrade-modal-title"

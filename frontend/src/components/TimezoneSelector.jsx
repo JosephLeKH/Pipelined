@@ -2,6 +2,8 @@
 
 import { useMemo } from "react";
 
+import { INPUT_BASE } from "../lib/designTokens";
+
 const BROWSER_TZ = Intl.DateTimeFormat().resolvedOptions().timeZone || "America/New_York";
 
 function getGroupedTimezones() {
@@ -34,7 +36,7 @@ function TimezoneSelector({ value, onChange }) {
       value={value}
       onChange={(e) => onChange(e.target.value)}
       aria-label="Timezone"
-      className="w-full rounded border border-gray-300 bg-white px-3 py-2 text-sm text-gray-800 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500/30 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
+      className={INPUT_BASE}
     >
       {Object.entries(groups)
         .sort(([a], [b]) => a.localeCompare(b))

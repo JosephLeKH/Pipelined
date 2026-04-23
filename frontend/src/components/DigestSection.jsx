@@ -1,8 +1,10 @@
 /** Weekly digest email toggle section. */
 
+import { CARD_BASE } from "../lib/designTokens";
+
 function DigestSection({ digestEnabled, isDigestPending, onDigestToggle }) {
   return (
-    <section className="rounded-card border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+    <section className={`${CARD_BASE} p-6`}>
       <h2 className="mb-1 text-base font-semibold text-gray-900 dark:text-gray-100">
         Weekly digest email
       </h2>

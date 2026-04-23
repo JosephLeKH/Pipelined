@@ -23,6 +23,7 @@ import GripVertical from "lucide-react/dist/esm/icons/grip-vertical";
 import Loader2 from "lucide-react/dist/esm/icons/loader-2";
 import Plus from "lucide-react/dist/esm/icons/plus";
 import Trash2 from "lucide-react/dist/esm/icons/trash-2";
+import { CARD_BASE, INPUT_BASE } from "../lib/designTokens";
 
 const STAGE_NAME_MAX_LENGTH = 40;
 const STAGES_MIN_COUNT = 2;
@@ -81,7 +82,7 @@ function SortableStageItem({ id, value, onRename, onRemove, canRemove }) {
     <div
       ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1 }}
-      className="flex items-center gap-2 rounded-card border border-gray-200 bg-white px-3 py-2 dark:border-gray-600 dark:bg-gray-700"
+      className={`flex items-center gap-2 ${CARD_BASE} px-3 py-2`}
     >
       <button type="button" {...attributes} {...listeners} aria-label="Drag to reorder" className="cursor-grab text-gray-400 hover:text-gray-600 focus:outline-none dark:text-gray-500 dark:hover:text-gray-300">
         <GripVertical className="h-4 w-4" />
@@ -99,7 +100,7 @@ function SortableStageItem({ id, value, onRename, onRemove, canRemove }) {
 function AddStageInput({ newStageName, onNameChange, onAdd }) {
   return (
     <div className="flex items-center gap-2">
-      <input type="text" value={newStageName} onChange={(e) => onNameChange(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); onAdd(); } }} placeholder="New stage name" maxLength={STAGE_NAME_MAX_LENGTH} aria-label="New stage name" className="flex-1 rounded-input border border-gray-300 px-3 py-1.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500/20 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200" />
+      <input type="text" value={newStageName} onChange={(e) => onNameChange(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); onAdd(); } }} placeholder="New stage name" maxLength={STAGE_NAME_MAX_LENGTH} aria-label="New stage name" className={`${INPUT_BASE} flex-1`} />
       <button type="button" onClick={onAdd} disabled={!newStageName.trim()} aria-label="Add stage" className="flex items-center gap-1 rounded-button bg-gray-100 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-200 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">
         <Plus className="h-4 w-4" />
         Add

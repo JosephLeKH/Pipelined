@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 
 import Plus from "lucide-react/dist/esm/icons/plus";
 import Trash2 from "lucide-react/dist/esm/icons/trash-2";
+import { INPUT_BASE } from "../lib/designTokens";
 
 export function ChecklistItem({ item, onToggle, onDelete }) {
   return (

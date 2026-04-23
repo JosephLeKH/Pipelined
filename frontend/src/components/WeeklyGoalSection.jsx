@@ -3,6 +3,7 @@
 import { useCallback, useState } from "react";
 
 import Loader2 from "lucide-react/dist/esm/icons/loader-2";
+import { CARD_BASE, INPUT_BASE } from "../lib/designTokens";
 
 const WEEKLY_GOAL_MIN = 1;
 const WEEKLY_GOAL_MAX = 50;
@@ -29,7 +30,7 @@ function WeeklyGoalSection({ weeklyGoal, isGoalPending, onSaveGoal }) {
   }, [localGoal, onSaveGoal]);
 
   return (
-    <section className="rounded-card border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+    <section className={`${CARD_BASE} p-6`}>
       <h2 className="mb-1 text-base font-semibold text-gray-900 dark:text-gray-100">
         Weekly Application Goal
       </h2>
@@ -52,7 +53,7 @@ function WeeklyGoalSection({ weeklyGoal, isGoalPending, onSaveGoal }) {
           value={localGoal}
           onChange={(e) => setLocalGoal(e.target.value)}
           aria-label="Weekly application goal"
-          className="w-24 rounded-input border border-gray-300 px-3 py-1.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500/20 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
+          className={`${INPUT_BASE} w-24`}
         />
         <span className="text-sm text-gray-500 dark:text-gray-400">applications / week</span>
       </div>

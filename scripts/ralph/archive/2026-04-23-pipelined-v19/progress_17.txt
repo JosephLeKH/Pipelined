@@ -1,0 +1,36 @@
+# Ralph Progress Log
+Started: Thu Apr 23 09:07:10 PDT 2026
+---
+
+## US-227 — Redesign login and register pages
+**Status:** DONE
+**Commit:** feat: US-227 - Redesign login and register pages
+
+### Changes
+- `AuthLayout.jsx` — already correct (centered card on bg-surface-secondary, max-w-sm, CARD_BASE, brand wordmark)
+- `GithubAuthButton.jsx` — replaced custom dark GitHub styling with BUTTON_SECONDARY token
+- `LoginForm.jsx` — switched labels to INPUT_LABEL token; updated forgot-password link to `text-brand-500 hover:text-brand-600`
+- `RegisterForm.jsx` — switched all labels to INPUT_LABEL token
+- `ForgotPassword.jsx` — updated heading to `font-display text-xl font-semibold`; labels to INPUT_LABEL; back link to `text-brand-500 hover:text-brand-600`
+- `ResetPassword.jsx` — same heading/label/link fixes as ForgotPassword
+
+### Learnings
+- AuthLayout was already fully implemented from an earlier iteration — the main work was token-conformance in child components
+- GithubAuthButton was using hardcoded GitHub dark colors; BUTTON_SECONDARY makes it brand-consistent
+- INPUT_LABEL token uses `font-display` (Poppins) — switching inline label classes to the token gives consistent typography
+
+## US-228 — Redesign dashboard layout and navigation
+Completed: Thu Apr 23 09:13 PDT 2026
+
+### Changes
+- **NavBar**: Imported NAV_CONTAINER, NAV_BRAND, NAV_LINK, NAV_LINK_ACTIVE tokens from designTokens.js. Removed local LINK_BASE/LINK_ACTIVE/LINK_INACTIVE constants. Applied NAV_CONTAINER to nav element, NAV_BRAND to brand text, NAV_LINK/NAV_LINK_ACTIVE to desktop and mobile nav links with `flex items-center gap-1.5` prefix for icon layout.
+- **StatsBar**: Added CARD_BASE import. Removed `accent` (colored left border) and `iconBg` from METRIC_CONFIG. MetricCard now uses CARD_BASE for its container with no shadow-card or border-l colored accent. Numbers updated to `font-display text-2xl font-semibold`. Icons shown bare with `text-gray-400` (no colored wrappers).
+- **KanbanColumn**: Added CARD_BASE import. Column wrapper now uses CARD_BASE for border-defined depth. Column header has `border-b border-border-default` separator. Drop area uses `bg-surface-secondary` instead of `bg-gray-50`.
+- **KanbanCard**: Removed `border-l-[3px]` colored left border and `${color.border}` stage color. Removed `hover:shadow-card-hover`. Added `hover:border-border-strong` for border-based hover depth. CARD_BASE provides the default border-border-default.
+- **Dashboard**: Changed `bg-gray-50` to `bg-surface-secondary`. Added `max-w-7xl mx-auto px-6` wrapper around all content in main.
+
+### Learnings
+- NAV_LINK and NAV_LINK_ACTIVE tokens don't include `flex items-center` — need to prepend when icon + text are inline.
+- Removing colored left borders from KanbanCard requires also removing the `${color.border}` stage color from STAGE_COLORS. The color.dot is still used in KanbanColumn header so STAGE_COLORS remains useful.
+- KanbanColumn wrapping with CARD_BASE required adding `overflow-hidden` to prevent content from breaking out of the rounded corners.
+- Build: 2.83s, 13/13 tests pass.

@@ -3,6 +3,7 @@
 import { useCallback, useState } from "react";
 
 import Loader2 from "lucide-react/dist/esm/icons/loader-2";
+import { CARD_BASE } from "../lib/designTokens";
 
 const RESUME_ACCEPT = ".pdf";
 const RESUME_MAX_MB = 2;
@@ -37,7 +38,7 @@ function ResumeSection({ hasResume, isUploading, isDeleting, onResumeUpload, onR
   }, [onResumeDelete]);
 
   return (
-    <section className="rounded-card border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+    <section className={`${CARD_BASE} p-6`}>
       <h2 className="mb-1 text-base font-semibold text-gray-900 dark:text-gray-100">
         Resume
       </h2>

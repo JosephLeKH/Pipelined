@@ -81,9 +81,7 @@ function VerifyEmailPending() {
   return (
     <AuthLayout>
       <div className="flex flex-col items-center text-center">
-        <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-brand-50 dark:bg-brand-900/30">
-          <Mail className="h-7 w-7 text-brand-600 dark:text-brand-400" />
-        </div>
+        <Mail className="mb-5 h-8 w-8 text-gray-400" />
 
         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Check your email</h1>
         <p className="mt-2 mb-8 text-sm text-gray-500 dark:text-gray-400">

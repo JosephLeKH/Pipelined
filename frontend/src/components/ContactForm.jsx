@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import { useCreateContact, useLinkContact } from "../hooks/useContacts";
 import { RELATIONSHIP_OPTIONS } from "../lib/constants";
-import { INPUT_BASE } from "../lib/designTokens";
+import { INPUT_BASE, CARD_BASE } from "../lib/designTokens";
 
 const INITIAL_FORM = {
   name: "",
@@ -107,7 +107,7 @@ function ContactForm({ applicationId, onDone }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-3 rounded-card border border-gray-200 px-3 py-3 dark:border-gray-700">
+    <form onSubmit={handleSubmit} className={`flex flex-col gap-3 ${CARD_BASE} px-3 py-3`}>
       <ContactFormFields form={form} handleChange={handleChange} />
       {error && <p className="text-xs text-red-500">{error}</p>}
       <ContactFormActions isPending={isPending} nameValue={form.name} onDone={onDone} />

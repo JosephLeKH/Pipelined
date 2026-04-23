@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { useCreateSavedSearch } from "../hooks/useSavedSearches";
-import { BUTTON_PRIMARY, BUTTON_GHOST, INPUT_BASE } from "../lib/designTokens";
+import { BUTTON_PRIMARY, BUTTON_GHOST, INPUT_BASE, CARD_BASE } from "../lib/designTokens";
 
 const MAX_SAVE_NAME_LENGTH = 100;
 
@@ -33,7 +33,7 @@ export default function SaveSearchPopover({ currentFilters, onClose }) {
     <div
       role="dialog"
       aria-label="Save this search"
-      className="absolute right-0 top-10 z-30 w-64 rounded-card border border-gray-200 bg-white p-4 shadow-card dark:border-gray-700 dark:bg-gray-800"
+      className={`absolute right-0 top-10 z-30 w-64 ${CARD_BASE} p-4 shadow-card`}
     >
       <p className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Name this search</p>
       <input

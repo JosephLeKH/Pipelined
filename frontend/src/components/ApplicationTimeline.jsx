@@ -15,8 +15,6 @@ import { useApplicationEvents } from "../hooks/useCalendar";
 import {
   STAGE_COLORS,
   DEFAULT_STAGE_COLOR,
-  EVENT_TYPE_COLORS,
-  DEFAULT_EVENT_COLOR,
 } from "../lib/constants";
 import { formatDate } from "../lib/dateUtils";
 
@@ -65,15 +63,12 @@ function StageTimelineNode({ node }) {
 
 function EventTimelineNode({ node }) {
   const Icon = EVENT_ICONS[node.eventType] ?? CalendarDays;
-  const colors = EVENT_TYPE_COLORS[node.eventType] ?? DEFAULT_EVENT_COLOR;
   return (
     <li className="flex items-start gap-3 pb-3" data-testid="timeline-event-node">
-      <span
-        className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${colors.bg}`}
+      <Icon
+        className="mt-0.5 h-5 w-5 shrink-0 text-gray-400"
         aria-label={node.eventType.replace(/_/g, " ")}
-      >
-        <Icon className={`h-3 w-3 ${colors.text}`} />
-      </span>
+      />
       <div>
         <p className="text-sm font-medium capitalize text-gray-800">{node.title}</p>
         <p className="text-xs text-gray-400">{formatDate(node.date)}</p>

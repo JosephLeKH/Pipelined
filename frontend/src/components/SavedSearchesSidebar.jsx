@@ -6,6 +6,7 @@ import {
   useSavedSearches,
   useDeleteSavedSearch,
 } from "../hooks/useSavedSearches";
+import { CARD_BASE } from "../lib/designTokens";
 
 export default function SavedSearchesSidebar({ onApply }) {
   const { data: searches = [] } = useSavedSearches();
@@ -21,7 +22,7 @@ export default function SavedSearchesSidebar({ onApply }) {
   }
 
   return (
-    <div className="rounded-card border border-gray-200/60 bg-white p-4 shadow-card dark:border-gray-700 dark:bg-gray-800">
+    <div className={`${CARD_BASE} p-4 shadow-card`}>
       <h2 className="mb-3 text-sm font-semibold text-gray-700 dark:text-gray-300">Saved Searches</h2>
       <ul className="flex flex-col gap-1" aria-label="Saved searches list">
         {searches.map((s) => (

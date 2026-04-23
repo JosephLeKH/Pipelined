@@ -7,7 +7,7 @@ import Loader2 from "lucide-react/dist/esm/icons/loader-2";
 import TimezoneSelector from "./TimezoneSelector";
 import { useAuth } from "../context/AuthContext";
 import { useUpdateUser } from "../hooks/useAuth";
-import { CARD_BASE } from "../lib/designTokens";
+import { CARD_BASE, INPUT_BASE, INPUT_LABEL } from "../lib/designTokens";
 
 const AVATAR_COLORS = [
   "bg-brand-500",
@@ -83,7 +83,7 @@ function SettingsProfileSection() {
         <div className="flex flex-col gap-1.5">
           <label
             htmlFor="display-name"
-            className="text-sm font-medium text-gray-700 dark:text-gray-300"
+            className={INPUT_LABEL}
           >
             Display name
           </label>
@@ -92,14 +92,14 @@ function SettingsProfileSection() {
             type="text"
             value={displayName}
             onChange={(e) => setDisplayName(e.target.value)}
-            className="rounded-input border border-gray-300 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500/20 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
+            className={INPUT_BASE}
           />
         </div>
 
         <div className="flex flex-col gap-1.5">
           <label
             htmlFor="email-display"
-            className="text-sm font-medium text-gray-700 dark:text-gray-300"
+            className={INPUT_LABEL}
           >
             Email
           </label>
@@ -113,7 +113,7 @@ function SettingsProfileSection() {
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label className={INPUT_LABEL}>
             Timezone
           </label>
           <TimezoneSelector value={timezone} onChange={setTimezone} />

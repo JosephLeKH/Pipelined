@@ -1,20 +1,3 @@
 # Ralph Progress Log
-Started: Thu Apr 23 09:07:10 PDT 2026
+Started: Thu Apr 23 09:16:08 PDT 2026
 ---
-
-## US-227 — Redesign login and register pages
-**Status:** DONE
-**Commit:** feat: US-227 - Redesign login and register pages
-
-### Changes
-- `AuthLayout.jsx` — already correct (centered card on bg-surface-secondary, max-w-sm, CARD_BASE, brand wordmark)
-- `GithubAuthButton.jsx` — replaced custom dark GitHub styling with BUTTON_SECONDARY token
-- `LoginForm.jsx` — switched labels to INPUT_LABEL token; updated forgot-password link to `text-brand-500 hover:text-brand-600`
-- `RegisterForm.jsx` — switched all labels to INPUT_LABEL token
-- `ForgotPassword.jsx` — updated heading to `font-display text-xl font-semibold`; labels to INPUT_LABEL; back link to `text-brand-500 hover:text-brand-600`
-- `ResetPassword.jsx` — same heading/label/link fixes as ForgotPassword
-
-### Learnings
-- AuthLayout was already fully implemented from an earlier iteration — the main work was token-conformance in child components
-- GithubAuthButton was using hardcoded GitHub dark colors; BUTTON_SECONDARY makes it brand-consistent
-- INPUT_LABEL token uses `font-display` (Poppins) — switching inline label classes to the token gives consistent typography

@@ -5,7 +5,7 @@ import { useState, useCallback } from "react";
 import Loader2 from "lucide-react/dist/esm/icons/loader-2";
 import TriangleAlert from "lucide-react/dist/esm/icons/alert-triangle";
 
-import { CARD_BASE } from "../lib/designTokens";
+import { CARD_BASE, INPUT_BASE, INPUT_LABEL } from "../lib/designTokens";
 
 const PW_MIN_LENGTH = 8;
 
@@ -51,7 +51,7 @@ function ChangePasswordCard() {
       </p>
       <div className="flex max-w-sm flex-col gap-4">
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="pw-current" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label htmlFor="pw-current" className={INPUT_LABEL}>
             Current password
           </label>
           <input
@@ -59,11 +59,11 @@ function ChangePasswordCard() {
             type="password"
             value={current}
             onChange={(e) => setCurrent(e.target.value)}
-            className="rounded-input border border-gray-300 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500/20 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
+            className={INPUT_BASE}
           />
         </div>
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="pw-new" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label htmlFor="pw-new" className={INPUT_LABEL}>
             New password
           </label>
           <input
@@ -71,11 +71,11 @@ function ChangePasswordCard() {
             type="password"
             value={newPw}
             onChange={(e) => setNewPw(e.target.value)}
-            className="rounded-input border border-gray-300 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500/20 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
+            className={INPUT_BASE}
           />
         </div>
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="pw-confirm" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label htmlFor="pw-confirm" className={INPUT_LABEL}>
             Confirm new password
           </label>
           <input
@@ -83,7 +83,7 @@ function ChangePasswordCard() {
             type="password"
             value={confirm}
             onChange={(e) => setConfirm(e.target.value)}
-            className="rounded-input border border-gray-300 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500/20 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
+            className={INPUT_BASE}
           />
         </div>
         {pwError && (

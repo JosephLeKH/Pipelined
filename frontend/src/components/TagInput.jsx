@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import XIcon from "lucide-react/dist/esm/icons/x";
 
 import { useTags } from "../hooks/useApplications";
+import { INPUT_BASE } from "../lib/designTokens";
 import { DROPDOWN_CLOSE_DELAY_MS } from "../lib/constants";
 
 const PREDEFINED_TAGS = [
@@ -103,7 +104,7 @@ function TagInput({ value = [], onChange, placeholder = "Add a tag…", id }) {
   return (
     <div className="relative">
       <div
-        className="flex min-h-[38px] flex-wrap gap-1.5 rounded-input border border-gray-300 bg-white px-2.5 py-1.5 text-sm transition-colors focus-within:border-brand-500 focus-within:ring-2 focus-within:ring-brand-500/20 dark:border-gray-600 dark:bg-gray-800"
+        className={`${INPUT_BASE} flex min-h-[38px] flex-wrap gap-1.5 rounded-input px-2.5 py-1.5`}
         onClick={() => inputRef.current?.focus()}
       >
         {value.map((tag) => (
