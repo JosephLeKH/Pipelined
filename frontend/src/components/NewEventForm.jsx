@@ -12,7 +12,7 @@ function AppSelector({ apps, applicationId, onApplicationChange }) {
     useAppSelector({ applicationId, apps, onApplicationChange });
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-xs font-medium uppercase text-slate-400" htmlFor="app-search">
+      <label className="text-xs font-medium uppercase text-gray-400" htmlFor="app-search">
         Application
       </label>
       <input id="app-search" type="text" placeholder="Search by company or role…"
@@ -45,9 +45,9 @@ function NewEventForm({ initialDate, initialApplicationId, onClose }) {
       <div className={`relative w-full max-w-md p-6 ${MODAL_CARD}`}
         role="dialog" aria-modal="true" aria-label="New calendar event">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">New Event</h2>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">New Event</h2>
           <button type="button" onClick={onClose}
-            className="rounded-button p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+            className="rounded-button p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
             aria-label="Close form">
             <X className="h-5 w-5" />
           </button>

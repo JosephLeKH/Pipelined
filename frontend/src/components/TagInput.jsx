@@ -103,7 +103,7 @@ function TagInput({ value = [], onChange, placeholder = "Add a tag…", id }) {
   return (
     <div className="relative">
       <div
-        className="flex min-h-[38px] flex-wrap gap-1.5 rounded-input border border-slate-300 bg-white px-2.5 py-1.5 text-sm transition-colors focus-within:border-brand-500 focus-within:ring-2 focus-within:ring-brand-500/20 dark:border-slate-600 dark:bg-slate-800"
+        className="flex min-h-[38px] flex-wrap gap-1.5 rounded-input border border-gray-300 bg-white px-2.5 py-1.5 text-sm transition-colors focus-within:border-brand-500 focus-within:ring-2 focus-within:ring-brand-500/20 dark:border-gray-600 dark:bg-gray-800"
         onClick={() => inputRef.current?.focus()}
       >
         {value.map((tag) => (
@@ -136,7 +136,7 @@ function TagInput({ value = [], onChange, placeholder = "Add a tag…", id }) {
           onBlur={() => setTimeout(() => setOpen(false), DROPDOWN_CLOSE_DELAY_MS)}
           onKeyDown={handleKeyDown}
           placeholder={value.length === 0 ? placeholder : ""}
-          className="min-w-[120px] flex-1 bg-transparent text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none dark:text-slate-100 dark:placeholder:text-slate-500"
+          className="min-w-[120px] flex-1 bg-transparent text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none dark:text-gray-100 dark:placeholder:text-gray-500"
           aria-autocomplete="list"
           aria-expanded={open && suggestions.length > 0}
           role="combobox"
@@ -148,7 +148,7 @@ function TagInput({ value = [], onChange, placeholder = "Add a tag…", id }) {
         <ul
           ref={listRef}
           role="listbox"
-          className="absolute z-50 mt-1 max-h-48 w-full overflow-y-auto rounded-input border border-slate-200 bg-white py-1 shadow-lg dark:border-slate-700 dark:bg-slate-800"
+          className="absolute z-50 mt-1 max-h-48 w-full overflow-y-auto rounded-input border border-gray-200 bg-white py-1 shadow-lg dark:border-gray-700 dark:bg-gray-800"
         >
           {suggestions.map((tag, i) => (
             <li
@@ -159,7 +159,7 @@ function TagInput({ value = [], onChange, placeholder = "Add a tag…", id }) {
               className={`cursor-pointer px-3 py-1.5 text-sm ${
                 i === activeIndex
                   ? "bg-brand-50 text-brand-700 dark:bg-brand-900/30 dark:text-brand-300"
-                  : "text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-700"
+                  : "text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700"
               }`}
             >
               {tag}

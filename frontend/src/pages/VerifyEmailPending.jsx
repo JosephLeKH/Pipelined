@@ -85,15 +85,15 @@ function VerifyEmailPending() {
           <Mail className="h-7 w-7 text-brand-600 dark:text-brand-400" />
         </div>
 
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Check your email</h1>
-        <p className="mt-2 mb-8 text-sm text-slate-500 dark:text-slate-400">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Check your email</h1>
+        <p className="mt-2 mb-8 text-sm text-gray-500 dark:text-gray-400">
           We sent a verification link to your email address. Click the link to activate your account.
         </p>
 
         <ResendStatus status={resendStatus} />
         <ResendEmailButton isPending={isPending} cooldown={cooldown} onResend={handleResend} />
 
-        <p className="mt-6 text-sm text-slate-500 dark:text-slate-400">
+        <p className="mt-6 text-sm text-gray-500 dark:text-gray-400">
           Wrong email?{" "}
           <Link to="/register" className="font-medium text-brand-600 hover:underline">
             Sign up again

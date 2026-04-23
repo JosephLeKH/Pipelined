@@ -84,15 +84,15 @@ export default function MergeDialog({ apps, onConfirm, onCancel, isPending = fal
     >
       <div className={`flex w-full max-w-2xl flex-col ${MODAL_CARD}`}>
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4 dark:border-slate-700">
-          <h2 id="merge-dialog-heading" className="text-base font-semibold text-slate-900 dark:text-slate-100">
+        <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4 dark:border-gray-700">
+          <h2 id="merge-dialog-heading" className="text-base font-semibold text-gray-900 dark:text-gray-100">
             Merge duplicate applications
           </h2>
           <button
             type="button"
             aria-label="Close"
             onClick={onCancel}
-            className="rounded-button p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-700"
+            className="rounded-button p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-700"
           >
             <X className="h-4 w-4" />
           </button>
@@ -158,7 +158,7 @@ export default function MergeDialog({ apps, onConfirm, onCancel, isPending = fal
         </div>
 
         {/* Footer */}
-        <div className="flex justify-end gap-3 border-t border-slate-200 px-6 py-4 dark:border-slate-700">
+        <div className="flex justify-end gap-3 border-t border-gray-200 px-6 py-4 dark:border-gray-700">
           <button
             type="button"
             onClick={onCancel}

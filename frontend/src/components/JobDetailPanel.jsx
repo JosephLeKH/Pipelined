@@ -18,19 +18,19 @@ const STALE_LABEL = "May be expired";
 
 function MetaRow({ job }) {
   return (
-    <div className="flex flex-wrap items-center gap-3 border-b border-slate-100 px-6 py-4 dark:border-slate-700">
+    <div className="flex flex-wrap items-center gap-3 border-b border-gray-100 px-6 py-4 dark:border-gray-700">
       {job.location && (
-        <span className="flex items-center gap-1 text-sm text-slate-600 dark:text-slate-400">
-          <MapPin className="h-3.5 w-3.5 shrink-0 text-slate-400" aria-hidden="true" />
+        <span className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
+          <MapPin className="h-3.5 w-3.5 shrink-0 text-gray-400" aria-hidden="true" />
           {job.location}
         </span>
       )}
       {job.remote_status && (
-        <span className="text-sm capitalize text-slate-600 dark:text-slate-400">{job.remote_status}</span>
+        <span className="text-sm capitalize text-gray-600 dark:text-gray-400">{job.remote_status}</span>
       )}
       {job.experience_level && (
-        <span className="flex items-center gap-1 text-sm text-slate-600 dark:text-slate-400">
-          <Briefcase className="h-3.5 w-3.5 shrink-0 text-slate-400" aria-hidden="true" />
+        <span className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
+          <Briefcase className="h-3.5 w-3.5 shrink-0 text-gray-400" aria-hidden="true" />
           {job.experience_level}
         </span>
       )}
@@ -48,10 +48,10 @@ function RequirementsList({ requirements }) {
   const items = Array.isArray(requirements) ? requirements : [requirements];
   return (
     <div>
-      <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400">
+      <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-400">
         Requirements
       </h3>
-      <ul className="flex flex-col gap-1.5 text-sm text-slate-700 dark:text-slate-300">
+      <ul className="flex flex-col gap-1.5 text-sm text-gray-700 dark:text-gray-300">
         {items.map((req, i) => (
           <li key={i} className="flex items-start gap-2">
             <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-500" />
@@ -65,7 +65,7 @@ function RequirementsList({ requirements }) {
 
 function PanelFooter({ job, saved, onSave, isPending }) {
   return (
-    <div className="flex gap-3 border-t border-slate-200 px-6 py-4 dark:border-slate-700">
+    <div className="flex gap-3 border-t border-gray-200 px-6 py-4 dark:border-gray-700">
       {job.apply_url && (
         <a
           href={job.apply_url}
@@ -122,8 +122,8 @@ function JobDetailPanel({ job, onClose }) {
         aria-label="Close detail panel"
         tabIndex={-1}
       />
-      <div className="relative flex h-full w-full max-w-lg flex-col overflow-y-auto bg-white shadow-modal dark:bg-slate-800">
-        <div className="flex items-start justify-between border-b border-slate-200 px-6 py-5 dark:border-slate-700">
+      <div className="relative flex h-full w-full max-w-lg flex-col overflow-y-auto bg-white shadow-modal dark:bg-gray-800">
+        <div className="flex items-start justify-between border-b border-gray-200 px-6 py-5 dark:border-gray-700">
           <div className="flex items-center gap-4">
             <CompanyLogo
               company_domain={job.company_domain ?? null}
@@ -131,17 +131,17 @@ function JobDetailPanel({ job, onClose }) {
               size={48}
             />
             <div>
-              <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                 {job.role ?? "Untitled Role"}
               </h2>
-              <p className="text-sm text-slate-500 dark:text-slate-400">{job.company ?? ""}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{job.company ?? ""}</p>
             </div>
           </div>
           <button
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="rounded-full bg-slate-100 p-1.5 text-slate-500 hover:bg-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-slate-700 dark:hover:bg-slate-600"
+            className="rounded-full bg-gray-100 p-1.5 text-gray-500 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-gray-700 dark:hover:bg-gray-600"
           >
             <X className="h-4 w-4" />
           </button>
@@ -155,14 +155,14 @@ function JobDetailPanel({ job, onClose }) {
               {STALE_LABEL}
             </span>
           )}
-          {datePosted && <p className="text-xs text-slate-400">Posted {datePosted}</p>}
+          {datePosted && <p className="text-xs text-gray-400">Posted {datePosted}</p>}
 
           {job.description && (
             <div>
-              <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400">
+              <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-400">
                 Description
               </h3>
-              <p className="whitespace-pre-wrap text-sm leading-relaxed text-slate-700 dark:text-slate-300">
+              <p className="whitespace-pre-wrap text-sm leading-relaxed text-gray-700 dark:text-gray-300">
                 {job.description}
               </p>
             </div>

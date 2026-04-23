@@ -20,7 +20,7 @@ function PasswordStrengthList({ password }) {
       {PASSWORD_REQUIREMENTS.map((req) => {
         const met = req.test(password);
         return (
-          <li key={req.key} className={`flex items-center gap-1.5 text-xs ${met ? "text-green-600" : "text-slate-500"}`}>
+          <li key={req.key} className={`flex items-center gap-1.5 text-xs ${met ? "text-green-600" : "text-gray-500"}`}>
             <span aria-hidden="true">{met ? "✓" : "○"}</span>
             {req.label}
           </li>
@@ -41,13 +41,13 @@ export function RegisterForm({ displayName, setDisplayName, email, setEmail, pas
   return (
     <form onSubmit={onSubmit} noValidate>
       <div className="mb-4">
-        <label htmlFor="display-name" className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
+        <label htmlFor="display-name" className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">
           Name
         </label>
         <input id="display-name" type="text" autoComplete="name" value={displayName} onChange={(e) => setDisplayName(e.target.value)} className={INPUT_BASE} placeholder="Jane Smith" />
       </div>
       <div className="mb-4">
-        <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
+        <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">
           Email
         </label>
         <input
@@ -64,7 +64,7 @@ export function RegisterForm({ displayName, setDisplayName, email, setEmail, pas
         {emailError && <p id="email-error" className="mt-1 text-xs text-red-600">{emailError}</p>}
       </div>
       <div className="mb-5">
-        <label htmlFor="password" className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
+        <label htmlFor="password" className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">
           Password
         </label>
         <input id="password" type="password" autoComplete="new-password" value={password} onChange={(e) => setPassword(e.target.value)} className={INPUT_BASE} placeholder="Min. 8 characters" />

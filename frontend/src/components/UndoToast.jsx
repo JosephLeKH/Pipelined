@@ -30,14 +30,14 @@ function UndoToast({ message, onUndo, onDismiss, duration = TOAST_DURATION_MS })
       role="status"
       aria-live="polite"
       data-testid="undo-toast"
-      className="fixed bottom-6 left-1/2 z-50 w-80 -translate-x-1/2 rounded-lg bg-gray-900 shadow-xl animate-slideInUp"
+      className="fixed bottom-6 left-1/2 z-50 w-80 -trangray-x-1/2 rounded-lg bg-gray-900 shadow-xl animate-slideInUp"
     >
       <div className="flex items-center justify-between gap-3 px-4 py-3">
         <span className="text-sm text-white">{message}</span>
         <button
           type="button"
           onClick={() => onUndoRef.current()}
-          className="shrink-0 rounded px-2 py-1 text-sm font-medium text-brand-400 hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400"
+          className="shrink-0 rounded px-2 py-1 text-sm font-medium text-brand-400 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-400"
         >
           Undo
         </button>

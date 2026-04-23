@@ -11,12 +11,12 @@ function ToggleSwitch({ checked, onChange, disabled, label, description, id }) {
       <div>
         <p
           id={id}
-          className="text-sm font-medium text-slate-800 dark:text-slate-200"
+          className="text-sm font-medium text-gray-800 dark:text-gray-200"
         >
           {label}
         </p>
         {description && (
-          <p className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">{description}</p>
+          <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">{description}</p>
         )}
       </div>
       <button
@@ -27,12 +27,12 @@ function ToggleSwitch({ checked, onChange, disabled, label, description, id }) {
         disabled={disabled}
         onClick={() => onChange(!checked)}
         className={`relative mt-0.5 inline-flex h-6 w-10 shrink-0 cursor-pointer items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 ${
-          checked ? "bg-brand-500" : "bg-slate-300 dark:bg-slate-600"
+          checked ? "bg-brand-500" : "bg-gray-300 dark:bg-gray-600"
         }`}
       >
         <span
           className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${
-            checked ? "translate-x-5" : "translate-x-1"
+            checked ? "trangray-x-5" : "trangray-x-1"
           }`}
         />
       </button>
@@ -88,14 +88,14 @@ function SettingsNotificationsSection() {
   );
 
   return (
-    <div className="rounded-card border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800">
-      <h2 className="mb-1 text-lg font-semibold text-slate-900 dark:text-slate-100">
+    <div className="rounded-card border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+      <h2 className="mb-1 text-lg font-semibold text-gray-900 dark:text-gray-100">
         Notifications
       </h2>
-      <p className="mb-2 text-sm text-slate-500 dark:text-slate-400">
+      <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
         Control which alerts and digests you receive.
       </p>
-      <div className="divide-y divide-slate-100 dark:divide-slate-700">
+      <div className="divide-y divide-gray-100 dark:divide-gray-700">
         {TOGGLES.map((t) => (
           <ToggleSwitch
             key={t.field}

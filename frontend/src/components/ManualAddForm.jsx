@@ -19,18 +19,18 @@ function ManualAddForm({ isOpen, onClose }) {
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm pointer-events-none" aria-hidden="true" />
       <div
         ref={dialogRef}
-        className="relative w-full max-w-lg bg-white rounded-2xl shadow-modal animate-scaleIn dark:bg-slate-800 dark:border dark:border-slate-700"
+        className="relative w-full max-w-lg bg-white rounded-2xl shadow-modal animate-scaleIn dark:bg-gray-800 dark:border dark:border-gray-700"
         role="dialog"
         aria-modal="true"
         aria-label="Add application"
         onKeyDown={handleDialogKeyDown}
       >
-        <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4 dark:border-slate-700">
-          <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Add Application</h2>
+        <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4 dark:border-gray-700">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Add Application</h2>
           <button
             type="button"
             onClick={handleClose}
-            className="rounded-button p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 focus:outline-none focus:ring-2 focus:ring-brand-500/30"
+            className="rounded-button p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-500/30"
             aria-label="Close modal"
           >
             <X className="h-5 w-5" />

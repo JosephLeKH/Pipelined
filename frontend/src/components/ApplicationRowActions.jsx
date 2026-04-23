@@ -11,14 +11,14 @@ import { BULK_EDIT_MAX_IDS } from "../lib/constants";
 
 function RowMenuDropdown({ application, onArchive, onUnarchive, onDelete, onClose }) {
   return (
-    <div role="menu" className="absolute right-0 z-20 mt-1 w-36 rounded-card border border-slate-200 bg-white shadow-card dark:bg-slate-800 dark:border-slate-700">
+    <div role="menu" className="absolute right-0 z-20 mt-1 w-36 rounded-card border border-gray-200 bg-white shadow-card dark:bg-gray-800 dark:border-gray-700">
       {application.archived ? (
-        <button role="menuitem" type="button" className="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-700"
+        <button role="menuitem" type="button" className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-700"
           onClick={() => { onClose(); onUnarchive(application.id); }}>
           Unarchive
         </button>
       ) : (
-        <button role="menuitem" type="button" className="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-700"
+        <button role="menuitem" type="button" className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-700"
           onClick={() => { onClose(); onArchive(application.id); }}>
           Archive
         </button>
@@ -47,7 +47,7 @@ export function RowMenu({ application, onArchive, onUnarchive, onDelete }) {
   return (
     <div ref={menuRef} className="relative shrink-0" onClick={(e) => e.stopPropagation()}>
       <button type="button" aria-label="Application actions"
-        className="rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500"
+        className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-500"
         onClick={() => setOpen((v) => !v)}>
         <MoreHorizontal className="h-4 w-4" />
       </button>
@@ -65,8 +65,8 @@ export function DeleteConfirmModal({ appId, onConfirm, onCancel }) {
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
     >
       <div className={`w-80 p-6 ${MODAL_CARD}`}>
-        <h2 id="delete-confirm-heading" className="mb-2 text-base font-semibold text-slate-900 dark:text-slate-100">Delete application?</h2>
-        <p className="mb-6 text-sm text-slate-600 dark:text-slate-400">
+        <h2 id="delete-confirm-heading" className="mb-2 text-base font-semibold text-gray-900 dark:text-gray-100">Delete application?</h2>
+        <p className="mb-6 text-sm text-gray-600 dark:text-gray-400">
           This will permanently delete the application and cannot be undone.
           Consider archiving instead.
         </p>
@@ -91,10 +91,10 @@ export function BulkDeleteConfirmModal({ count, onConfirm, onCancel }) {
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
     >
       <div className={`w-80 p-6 ${MODAL_CARD}`}>
-        <h2 id="bulk-delete-heading" className="mb-2 text-base font-semibold text-slate-900 dark:text-slate-100">
+        <h2 id="bulk-delete-heading" className="mb-2 text-base font-semibold text-gray-900 dark:text-gray-100">
           Delete {count} {label}?
         </h2>
-        <p className="mb-6 text-sm text-slate-600 dark:text-slate-400">
+        <p className="mb-6 text-sm text-gray-600 dark:text-gray-400">
           This will permanently delete {count} {label} and cannot be undone.
         </p>
         <div className="flex justify-end gap-3">
@@ -112,7 +112,7 @@ function BulkMoveControls({ stageOptions, selectedStage, setSelectedStage, isMov
   return (
     <>
       <select aria-label="Move to stage" value={selectedStage} onChange={(e) => setSelectedStage(e.target.value)} disabled={isBusy}
-        className="border border-slate-300 bg-white rounded-input px-2 py-1 text-sm text-slate-700 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none transition-colors disabled:opacity-50 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-200">
+        className="border border-gray-300 bg-white rounded-input px-2 py-1 text-sm text-gray-700 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none transition-colors disabled:opacity-50 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200">
         <option value="">Move to stage…</option>
         {stageOptions.map((s) => <option key={s} value={s}>{s}</option>)}
       </select>
@@ -126,7 +126,7 @@ function BulkMoveControls({ stageOptions, selectedStage, setSelectedStage, isMov
 }
 
 function BulkEditControls({ followUpDate, setFollowUpDate, tagsAdd, setTagsAdd, tagsRemove, setTagsRemove, isBusy, overLimit, isEditing, onApply }) {
-  const inputCls = "border border-slate-300 bg-white rounded-input px-2 py-1 text-sm text-slate-700 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none transition-colors disabled:opacity-50 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-200";
+  const inputCls = "border border-gray-300 bg-white rounded-input px-2 py-1 text-sm text-gray-700 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none transition-colors disabled:opacity-50 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200";
   return (
     <>
       <input type="date" aria-label="Follow-up date" value={followUpDate} onChange={(e) => setFollowUpDate(e.target.value)} disabled={isBusy || overLimit} className={inputCls} />

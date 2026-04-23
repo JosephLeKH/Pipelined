@@ -42,7 +42,7 @@ function KanbanCard({ application, onSelect }) {
         dndKeyDown?.(e);
       }}
       data-testid="kanban-card"
-      className={`relative cursor-pointer border-l-[3px] p-3 transition-all duration-150 hover:-translate-y-px hover:shadow-card-hover ${CARD_BASE} ${color.border} ${
+      className={`relative cursor-pointer border-l-[3px] p-3 transition-all duration-150 hover:-trangray-y-px hover:shadow-card-hover ${CARD_BASE} ${color.border} ${
         isDragging ? "rotate-[2deg] scale-[1.05] opacity-80 shadow-xl transition-transform" : ""
       }`}
     >
@@ -62,15 +62,15 @@ function KanbanCard({ application, onSelect }) {
       )}
       <div className="flex items-center gap-2 pr-4">
         <CompanyLogo company_domain={application.company_domain ?? null} company={application.company ?? ""} size={20} />
-        <p className="truncate font-semibold text-slate-900 dark:text-slate-100">
+        <p className="truncate font-semibold text-gray-900 dark:text-gray-100">
           {application.company}
         </p>
       </div>
-      <p className="mt-0.5 truncate text-sm text-slate-600 dark:text-slate-400">
+      <p className="mt-0.5 truncate text-sm text-gray-600 dark:text-gray-400">
         {application.role_title}
       </p>
       <div className="mt-1 flex items-center justify-between">
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-gray-500">
           {formatRelative(application.date_applied)}
         </p>
         <FitBadge score={application.ai_analysis?.fit_score ?? null} />

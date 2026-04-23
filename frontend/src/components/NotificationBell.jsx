@@ -28,7 +28,7 @@ function NotificationItem({ notification }) {
 
   return (
     <li
-      className={`flex cursor-pointer items-start gap-3 px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 ${
+      className={`flex cursor-pointer items-start gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 ${
         notification.read ? "opacity-60" : ""
       }`}
       onClick={handleClick}
@@ -39,17 +39,17 @@ function NotificationItem({ notification }) {
       <span
         className={`mt-0.5 shrink-0 rounded-full p-1.5 ${
           notification.read
-            ? "bg-slate-100 text-slate-400 dark:bg-slate-700 dark:text-slate-500"
+            ? "bg-gray-100 text-gray-400 dark:bg-gray-700 dark:text-gray-500"
             : "bg-brand-50 text-brand-600 dark:bg-brand-900/40 dark:text-brand-400"
         }`}
       >
         <Icon className="h-3.5 w-3.5" />
       </span>
       <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-medium text-slate-900 dark:text-slate-100">
+        <p className="truncate text-sm font-medium text-gray-900 dark:text-gray-100">
           {notification.title}
         </p>
-        <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400 line-clamp-2">
+        <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400 line-clamp-2">
           {notification.body}
         </p>
       </div>
@@ -96,7 +96,7 @@ function NotificationBell() {
         aria-label={`Notifications${unreadCount > 0 ? `, ${unreadCount} unread` : ""}`}
         aria-expanded={open}
         onClick={() => setOpen((prev) => !prev)}
-        className="relative rounded-md p-1.5 text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-100"
+        className="relative rounded-md p-1.5 text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-100"
       >
         <Bell className="h-4 w-4" />
         {unreadCount > 0 && (
@@ -113,10 +113,10 @@ function NotificationBell() {
         <div
           ref={panelRef}
           data-testid="notification-panel"
-          className="absolute right-0 top-full z-50 mt-2 w-80 overflow-hidden rounded-card border border-slate-200 bg-white shadow-card dark:border-slate-700 dark:bg-slate-800"
+          className="absolute right-0 top-full z-50 mt-2 w-80 overflow-hidden rounded-card border border-gray-200 bg-white shadow-card dark:border-gray-700 dark:bg-gray-800"
         >
-          <div className="flex items-center justify-between border-b border-slate-200 px-4 py-2.5 dark:border-slate-700">
-            <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+          <div className="flex items-center justify-between border-b border-gray-200 px-4 py-2.5 dark:border-gray-700">
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
               Notifications
             </h3>
             {unreadCount > 0 && (
@@ -131,11 +131,11 @@ function NotificationBell() {
           </div>
 
           {notifications.length === 0 ? (
-            <p className="px-4 py-6 text-center text-sm text-slate-500 dark:text-slate-400">
+            <p className="px-4 py-6 text-center text-sm text-gray-500 dark:text-gray-400">
               No notifications
             </p>
           ) : (
-            <ul className="max-h-80 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-700">
+            <ul className="max-h-80 overflow-y-auto divide-y divide-gray-100 dark:divide-gray-700">
               {notifications.map((n) => (
                 <NotificationItem key={n.id} notification={n} />
               ))}

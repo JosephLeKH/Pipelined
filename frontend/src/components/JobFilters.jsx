@@ -25,7 +25,7 @@ function FilterChip({ label, active, onClick }) {
       className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium capitalize transition-colors ${
         active
           ? "bg-brand-600 text-white"
-          : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600"
+          : "bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
       }`}
     >
       {label.replace(/_/g, " ")}
@@ -57,7 +57,7 @@ export function JobFilters() {
     >
       {FILTER_GROUPS.map(({ label: groupLabel, paramKey, options }) => (
         <div key={paramKey} className="flex shrink-0 items-center gap-1.5">
-          <span className="shrink-0 text-xs font-medium text-slate-400">{groupLabel}:</span>
+          <span className="shrink-0 text-xs font-medium text-gray-400">{groupLabel}:</span>
           {options.map((opt) => (
             <FilterChip
               key={opt}

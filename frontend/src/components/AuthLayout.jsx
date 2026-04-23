@@ -41,7 +41,7 @@ function BrandPanel() {
 function AuthLayout({ children }) {
   return (
     <div className="flex min-h-screen">
-      <div className="flex flex-1 flex-col items-center justify-center bg-white px-8 py-12 dark:bg-slate-900 lg:w-[55%]">
+      <div className="flex flex-1 flex-col items-center justify-center bg-white px-8 py-12 dark:bg-gray-900 lg:w-[55%]">
         <div className="w-full max-w-sm">
           {/* Mobile-only logo */}
           <p className="mb-8 text-center text-xl font-bold text-brand-600 lg:hidden">Pipelined</p>

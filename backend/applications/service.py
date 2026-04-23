@@ -158,7 +158,7 @@ async def create(user_id: str, body: ApplicationCreate) -> dict:
     )
     if existing:
         raise DuplicateApplicationError(str(existing["_id"]))
-    stages = await fetch_user_stages(uid)
+    stages, user = await asyncio.gather(fetch_user_stages(uid), get_user_by_id(user_id))
     now = datetime.now(timezone.utc)
     body_dict = body.model_dump(exclude={"page_text"})
     body_dict["source_url"] = str(body.source_url) if body.source_url else None
@@ -167,7 +167,6 @@ async def create(user_id: str, body: ApplicationCreate) -> dict:
     result = await apps.insert_one(doc)
     doc["_id"] = result.inserted_id
     logger.info("application_created", user_id=user_id, app_id=str(result.inserted_id))
-    user = await get_user_by_id(user_id)
     resume_text = user.get("resume_text", "") if user else ""
     if resume_text:
         job_description = " ".join(filter(None, [body.role_title, body.company, body.page_text]))

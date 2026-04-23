@@ -16,8 +16,8 @@ function VerifyingState() {
   return (
     <>
       <Loader className="mb-5 h-12 w-12 animate-spin text-brand-500" />
-      <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Verifying your email…</h1>
-      <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">Just a moment.</p>
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Verifying your email…</h1>
+      <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">Just a moment.</p>
     </>
   );
 }
@@ -26,8 +26,8 @@ function SuccessState() {
   return (
     <>
       <CheckCircle className="mb-5 h-12 w-12 text-emerald-500" />
-      <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Email verified!</h1>
-      <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Email verified!</h1>
+      <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
         Your account is now active. Redirecting to your dashboard…
       </p>
     </>
@@ -38,10 +38,10 @@ function ErrorState({ errorCode }) {
   return (
     <>
       <XCircle className="mb-5 h-12 w-12 text-rose-500" />
-      <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
         {errorCode === "TOKEN_EXPIRED" ? "Link expired" : "Invalid link"}
       </h1>
-      <p className="mt-2 mb-6 text-sm text-slate-500 dark:text-slate-400">
+      <p className="mt-2 mb-6 text-sm text-gray-500 dark:text-gray-400">
         {errorCode === "TOKEN_EXPIRED"
           ? "This verification link has expired. Request a new one below."
           : "This verification link is not valid. It may have already been used."}
@@ -57,8 +57,8 @@ function MissingTokenState() {
   return (
     <>
       <XCircle className="mb-5 h-12 w-12 text-rose-500" />
-      <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Missing token</h1>
-      <p className="mt-2 mb-6 text-sm text-slate-500 dark:text-slate-400">
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Missing token</h1>
+      <p className="mt-2 mb-6 text-sm text-gray-500 dark:text-gray-400">
         No verification token was found in this link.
       </p>
       <Link to="/verify-email" className={`w-full ${BUTTON_PRIMARY}`}>

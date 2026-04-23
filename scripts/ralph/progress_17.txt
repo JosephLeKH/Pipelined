@@ -1,0 +1,20 @@
+# Ralph Progress Log
+Started: Thu Apr 23 02:46:09 PDT 2026
+---
+
+---
+## US-226: Redesign landing page with editorial Anthropic aesthetic
+
+**Completed:** 2026-04-23
+
+**Changes:**
+- Rewrote `frontend/src/components/HeroSection.jsx`: removed HeroMockup (decorative 3D card mockup), gradient text, blob decorations, second install-extension button, and scroll-reveal animations. New version is a centered editorial hero on `bg-surface-secondary` with `font-display` (Poppins) heading, `font-sans` (Lora) body copy, and a single `BUTTON_PRIMARY` CTA.
+- Rewrote `frontend/src/pages/LandingPage.jsx`: removed `useEffect`/`useRef`/`useState`/`useInView` (scroll animation hooks), `TrustBar` (slate palette), `StatsBar` (solid `bg-brand-600`), `HowItWorksSection` (colored circles), `BottomCTA` (gradient), and `HeroMockup`. Replaced with clean nav (`NAV_BRAND`/`NAV_LINK` tokens), `FeaturesSection` (3-col `CARD_BASE` grid, bare `text-gray-400` icons, no colored circles), `BottomCTA` (bg-surface-secondary, no gradient), and `LandingFooter` (`bg-white border-t border-border-default`, warm gray text).
+
+**Design decisions:**
+- Removed the `HowItWorksSection` steps and `TrustBar` entirely — reducing to hero + features + CTA produces a cleaner, more editorial page with less visual noise.
+- `BottomCTA` uses `bg-surface-secondary` (warm off-white) instead of a gradient, matching the hero background and creating a natural warm bookend.
+- Feature icon color changed from `text-brand-600` inside `bg-brand-50` circles to bare `text-gray-400` — the most impactful visual change matching Anthropic's monochrome icon style.
+- Line count: LandingPage.jsx went from 238 → ~175 lines; HeroSection.jsx from 93 → 28 lines.
+
+**Build:** `npm run build` passes (✓ 1256 modules transformed).

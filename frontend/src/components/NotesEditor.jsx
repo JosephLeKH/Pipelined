@@ -53,13 +53,13 @@ function NotesEditor({ applicationId, initialValue, onDirtyChange }) {
 
   const charPct = draft.length / NOTES_MAX_LENGTH;
   const charCls =
-    charPct >= 1 ? "text-rose-600" : charPct >= AMBER_PCT ? "text-amber-600" : "text-slate-400";
+    charPct >= 1 ? "text-rose-600" : charPct >= AMBER_PCT ? "text-amber-600" : "text-gray-400";
 
   return (
     <div className="flex flex-col gap-1.5" data-testid="notes-editor">
       <div className="flex items-center justify-between">
         <label
-          className="text-xs font-medium uppercase text-slate-400"
+          className="text-xs font-medium uppercase text-gray-400"
           htmlFor={isEditing ? "notes-textarea" : undefined}
         >
           Notes
@@ -68,7 +68,7 @@ function NotesEditor({ applicationId, initialValue, onDirtyChange }) {
           <button
             type="button"
             onClick={handleEdit}
-            className="rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-1 dark:hover:bg-slate-700 dark:hover:text-slate-300"
+            className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-1 dark:hover:bg-gray-700 dark:hover:text-gray-300"
             aria-label="Edit notes"
           >
             <Pencil className="h-3.5 w-3.5" />
@@ -92,7 +92,7 @@ function NotesEditor({ applicationId, initialValue, onDirtyChange }) {
               <button
                 type="button"
                 onClick={handleCancel}
-                className="text-slate-600 hover:bg-slate-100 rounded-button active:scale-[0.98] transition-all duration-150 text-xs px-2 py-1 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:text-slate-300 dark:hover:bg-slate-700"
+                className="text-gray-600 hover:bg-gray-100 rounded-button active:scale-[0.98] transition-all duration-150 text-xs px-2 py-1 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:text-gray-300 dark:hover:bg-gray-700"
               >
                 Cancel
               </button>
@@ -107,8 +107,8 @@ function NotesEditor({ applicationId, initialValue, onDirtyChange }) {
           </div>
         </>
       ) : (
-        <p className="whitespace-pre-wrap text-sm text-slate-700 dark:text-slate-300" data-testid="notes-display">
-          {savedValue || <span className="text-slate-400">No notes yet.</span>}
+        <p className="whitespace-pre-wrap text-sm text-gray-700 dark:text-gray-300" data-testid="notes-display">
+          {savedValue || <span className="text-gray-400">No notes yet.</span>}
         </p>
       )}
     </div>

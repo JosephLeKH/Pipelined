@@ -27,9 +27,9 @@ function KanbanLoadingSkeleton({ stages }) {
       {stages.map((stage) => (
         <div key={stage} className="flex min-w-[240px] flex-1 flex-col rounded-lg">
           <div className="flex items-center gap-2 px-3 py-2">
-            <span className="text-sm font-medium text-slate-500 dark:text-slate-400">{stage}</span>
+            <span className="text-sm font-medium text-gray-500 dark:text-gray-400">{stage}</span>
           </div>
-          <div className="flex flex-col gap-2 rounded-lg bg-slate-50 p-2 dark:bg-slate-800/50">
+          <div className="flex flex-col gap-2 rounded-lg bg-gray-50 p-2 dark:bg-gray-800/50">
             {Array.from({ length: KANBAN_SKELETON_COUNT }, (_, i) => <SkeletonRow key={i} />)}
           </div>
         </div>
@@ -41,12 +41,12 @@ function KanbanLoadingSkeleton({ stages }) {
 function KanbanMobileView({ stages, mobileStage, setMobileStage, byStage, onSelect, handleMobileTouchStart, handleMobileTouchEnd }) {
   return (
     <>
-      <div className="flex overflow-x-auto border-b border-slate-200 dark:border-slate-700 md:hidden" role="tablist" aria-label="Stage tabs">
+      <div className="flex overflow-x-auto border-b border-gray-200 dark:border-gray-700 md:hidden" role="tablist" aria-label="Stage tabs">
         {stages.map((stage) => (
           <button key={stage} type="button" role="tab" aria-selected={mobileStage === stage} onClick={() => setMobileStage(stage)}
-            className={`shrink-0 px-4 py-2 text-sm font-medium transition-colors ${mobileStage === stage ? "border-b-2 border-brand-600 text-brand-600" : "text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"}`}>
+            className={`shrink-0 px-4 py-2 text-sm font-medium transition-colors ${mobileStage === stage ? "border-b-2 border-brand-600 text-brand-600" : "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"}`}>
             {stage}
-            <span className="ml-1 text-xs text-slate-400">({(byStage[stage] ?? []).length})</span>
+            <span className="ml-1 text-xs text-gray-400">({(byStage[stage] ?? []).length})</span>
           </button>
         ))}
       </div>
@@ -56,7 +56,7 @@ function KanbanMobileView({ stages, mobileStage, setMobileStage, byStage, onSele
       <div className="mt-3 flex justify-center gap-2 md:hidden" aria-label="Stage navigation dots">
         {stages.map((s) => (
           <button key={s} type="button" aria-label={s} aria-pressed={s === mobileStage} onClick={() => setMobileStage(s)}
-            className={`h-2 w-2 rounded-full transition-colors ${s === mobileStage ? "bg-brand-500" : "bg-slate-300 dark:bg-slate-600"}`} />
+            className={`h-2 w-2 rounded-full transition-colors ${s === mobileStage ? "bg-brand-500" : "bg-gray-300 dark:bg-gray-600"}`} />
         ))}
       </div>
     </>
@@ -86,9 +86,9 @@ function KanbanBoard({ filters = {}, onSelect }) {
       </div>
       <DragOverlay>
         {activeApp ? (
-          <div className="rotate-1 rounded-card bg-white p-3 opacity-90 shadow-lg ring-1 ring-slate-300 dark:bg-slate-800 dark:ring-slate-600">
-            <p className="truncate font-semibold text-slate-900 dark:text-slate-100">{activeApp.company}</p>
-            <p className="mt-0.5 truncate text-sm text-slate-600 dark:text-slate-400">{activeApp.role_title}</p>
+          <div className="rotate-1 rounded-card bg-white p-3 opacity-90 shadow-lg ring-1 ring-gray-300 dark:bg-gray-800 dark:ring-gray-600">
+            <p className="truncate font-semibold text-gray-900 dark:text-gray-100">{activeApp.company}</p>
+            <p className="mt-0.5 truncate text-sm text-gray-600 dark:text-gray-400">{activeApp.role_title}</p>
           </div>
         ) : null}
       </DragOverlay>

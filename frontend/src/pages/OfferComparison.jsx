@@ -37,9 +37,9 @@ function EditableCellDisplay({ value, fieldType, onEdit }) {
     <button
       type="button"
       onClick={onEdit}
-      className="w-full text-left text-sm text-slate-700 hover:underline dark:text-slate-300"
+      className="w-full text-left text-sm text-gray-700 hover:underline dark:text-gray-300"
     >
-      {display ?? <span className="italic text-slate-400">—</span>}
+      {display ?? <span className="italic text-gray-400">—</span>}
     </button>
   );
 }
@@ -91,8 +91,8 @@ function EmptyState() {
   return (
     <>
       <NavBar />
-      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-3 text-slate-500 dark:text-slate-400">
-        <Trophy className="h-12 w-12 text-slate-300 dark:text-slate-600" />
+      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-3 text-gray-500 dark:text-gray-400">
+        <Trophy className="h-12 w-12 text-gray-300 dark:text-gray-600" />
         <p className="text-lg font-medium">No offers yet</p>
         <p className="text-sm">
           Move an application to the Offer stage to compare packages here.
@@ -104,7 +104,7 @@ function EmptyState() {
 
 function OfferComparisonHeader() {
   return (
-    <h1 className="mb-6 text-2xl font-bold text-slate-900 dark:text-slate-100">
+    <h1 className="mb-6 text-2xl font-bold text-gray-900 dark:text-gray-100">
       Offer Comparison
     </h1>
   );
@@ -116,11 +116,11 @@ function OfferHeaderCell({ app, isWinner, onMarkWinner }) {
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-1.5">
           {isWinner && <Trophy className="h-4 w-4 text-amber-500" aria-label="Winner" />}
-          <span className="truncate text-sm font-semibold text-slate-900 dark:text-slate-100">
+          <span className="truncate text-sm font-semibold text-gray-900 dark:text-gray-100">
             {app.company ?? "Unknown"}
           </span>
         </div>
-        <span className="truncate text-xs text-slate-500 dark:text-slate-400">
+        <span className="truncate text-xs text-gray-500 dark:text-gray-400">
           {app.role_title ?? ""}
         </span>
         <button
@@ -129,7 +129,7 @@ function OfferHeaderCell({ app, isWinner, onMarkWinner }) {
           className={`mt-1 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium transition-colors ${
             isWinner
               ? "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300"
-              : "bg-slate-100 text-slate-600 hover:bg-emerald-100 hover:text-emerald-700 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-emerald-900/40 dark:hover:text-emerald-300"
+              : "bg-gray-100 text-gray-600 hover:bg-emerald-100 hover:text-emerald-700 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-emerald-900/40 dark:hover:text-emerald-300"
           }`}
         >
           <Trophy className="h-3 w-3" />
@@ -142,11 +142,11 @@ function OfferHeaderCell({ app, isWinner, onMarkWinner }) {
 
 function OfferComparisonTable({ apps, winnerId, handleSave, handleMarkWinner }) {
   return (
-    <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700">
-      <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
-        <thead className="bg-slate-50 dark:bg-slate-800">
+    <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700">
+      <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+        <thead className="bg-gray-50 dark:bg-gray-800">
           <tr>
-            <th className="w-36 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+            <th className="w-36 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
               Field
             </th>
             {apps.map((app) => (
@@ -154,10 +154,10 @@ function OfferComparisonTable({ apps, winnerId, handleSave, handleMarkWinner }) 
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-slate-100 bg-white dark:divide-slate-800 dark:bg-slate-900">
+        <tbody className="divide-y divide-gray-100 bg-white dark:divide-gray-800 dark:bg-gray-900">
           {OFFER_FIELDS.map((field) => (
-            <tr key={field.key} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
-              <td className="px-4 py-3 text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
+            <tr key={field.key} className="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+              <td className="px-4 py-3 text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
                 {field.label}
               </td>
               {apps.map((app) => {

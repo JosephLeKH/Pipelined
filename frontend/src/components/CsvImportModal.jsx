@@ -69,7 +69,7 @@ function ImportResultDisplay({ result, errorsExpanded, setErrorsExpanded }) {
                 {errorsExpanded ? "Hide errors" : `Show all ${result.errors.length} errors`}
               </button>
             )}
-            <button type="button" onClick={() => navigator.clipboard.writeText(result.errors.map((e) => `Row ${e.row}: ${e.reason}`).join("\n"))} className="text-xs text-slate-500 underline dark:text-slate-400">
+            <button type="button" onClick={() => navigator.clipboard.writeText(result.errors.map((e) => `Row ${e.row}: ${e.reason}`).join("\n"))} className="text-xs text-gray-500 underline dark:text-gray-400">
               Copy errors
             </button>
           </div>
@@ -93,8 +93,8 @@ function CsvImportModal({ isOpen, onClose }) {
       <div data-testid="import-overlay" aria-hidden="true" className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={handleClose} />
       <div className={`relative z-10 w-full max-w-md p-6 ${MODAL_CARD}`}>
         <div className="mb-4 flex items-center justify-between">
-          <h2 id="csv-import-heading" className="text-base font-semibold text-slate-900 dark:text-slate-100">Import CSV</h2>
-          <button type="button" onClick={handleClose} aria-label="Close import modal" className="rounded-button p-1 text-slate-400 hover:text-slate-600 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:hover:text-slate-200">
+          <h2 id="csv-import-heading" className="text-base font-semibold text-gray-900 dark:text-gray-100">Import CSV</h2>
+          <button type="button" onClick={handleClose} aria-label="Close import modal" className="rounded-button p-1 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:hover:text-gray-200">
             <X className="h-4 w-4" />
           </button>
         </div>

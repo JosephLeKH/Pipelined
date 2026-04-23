@@ -10,7 +10,7 @@ import { CARD_BASE, BADGE_BASE, BUTTON_PRIMARY } from "../lib/designTokens";
 import { formatRelative } from "../lib/dateUtils";
 
 const STALE_LABEL = "May be expired";
-const TAG_PILL = "rounded-full bg-slate-100 text-slate-600 text-xs px-2.5 py-1 dark:bg-slate-700 dark:text-slate-300 inline-flex items-center gap-1";
+const TAG_PILL = "rounded-full bg-gray-100 text-gray-600 text-xs px-2.5 py-1 dark:bg-gray-700 dark:text-gray-300 inline-flex items-center gap-1";
 
 function JobCard({ job, onSelect }) {
   const dateLabel = job.date_posted ? formatRelative(job.date_posted) : null;
@@ -37,16 +37,16 @@ function JobCard({ job, onSelect }) {
           company={job.company ?? ""}
           size={32}
         />
-        <span className="flex-1 truncate text-sm font-medium text-slate-900 dark:text-slate-100">
+        <span className="flex-1 truncate text-sm font-medium text-gray-900 dark:text-gray-100">
           {job.company ?? "Unknown Company"}
         </span>
         {dateLabel && (
-          <span className="shrink-0 text-xs text-slate-400">{dateLabel}</span>
+          <span className="shrink-0 text-xs text-gray-400">{dateLabel}</span>
         )}
       </div>
 
       {/* Role title */}
-      <h3 className="pr-2 text-lg font-semibold leading-snug text-slate-900 dark:text-slate-100">
+      <h3 className="pr-2 text-lg font-semibold leading-snug text-gray-900 dark:text-gray-100">
         {job.role ?? "Untitled Role"}
       </h3>
 
@@ -92,7 +92,7 @@ function JobCard({ job, onSelect }) {
           type="button"
           onClick={(e) => e.stopPropagation()}
           aria-label="Bookmark job"
-          className="rounded-full p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-700"
+          className="rounded-full p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-700"
         >
           <Bookmark className="h-4 w-4" />
         </button>

@@ -33,9 +33,9 @@ export default function SaveSearchPopover({ currentFilters, onClose }) {
     <div
       role="dialog"
       aria-label="Save this search"
-      className="absolute right-0 top-10 z-30 w-64 rounded-card border border-slate-200 bg-white p-4 shadow-card dark:border-slate-700 dark:bg-slate-800"
+      className="absolute right-0 top-10 z-30 w-64 rounded-card border border-gray-200 bg-white p-4 shadow-card dark:border-gray-700 dark:bg-gray-800"
     >
-      <p className="mb-2 text-sm font-medium text-slate-700 dark:text-slate-300">Name this search</p>
+      <p className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Name this search</p>
       <input
         type="text"
         aria-label="Saved search name"
@@ -50,7 +50,7 @@ export default function SaveSearchPopover({ currentFilters, onClose }) {
         <button
           type="button"
           onClick={onClose}
-          className="text-slate-600 hover:bg-slate-100 rounded-button active:scale-[0.98] transition-all duration-150 font-medium text-sm px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:text-slate-300 dark:hover:bg-slate-700"
+          className="text-gray-600 hover:bg-gray-100 rounded-button active:scale-[0.98] transition-all duration-150 font-medium text-sm px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:text-gray-300 dark:hover:bg-gray-700"
         >
           Cancel
         </button>

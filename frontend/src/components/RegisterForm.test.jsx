@@ -74,7 +74,7 @@ describe("RegisterForm — password strength indicator", () => {
 
     const items = screen.getAllByRole("listitem");
     const lengthItem = items.find((el) => el.textContent.includes("characters"));
-    expect(lengthItem).toHaveClass("text-slate-500");
+    expect(lengthItem).toHaveClass("text-gray-500");
   });
 
   it("should show length requirement as met when password is 8+ chars", () => {

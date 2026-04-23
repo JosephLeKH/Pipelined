@@ -9,9 +9,9 @@ export default function SettingsReportSection() {
   const { handleDownload, isLoading, error, retryAfter } = useApplicationExport();
 
   return (
-    <div className="rounded-card border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800">
-      <h2 className="mb-1 text-lg font-semibold text-slate-900 dark:text-slate-100">Reports</h2>
-      <p className="mb-5 text-sm text-slate-500 dark:text-slate-400">
+    <div className="rounded-card border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+      <h2 className="mb-1 text-lg font-semibold text-gray-900 dark:text-gray-100">Reports</h2>
+      <p className="mb-5 text-sm text-gray-500 dark:text-gray-400">
         Export a PDF summary of your pipeline including stats, stage funnel, and application history.
       </p>
 

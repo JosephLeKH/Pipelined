@@ -26,7 +26,7 @@ const NAV_ITEMS = [
 
 function SectionHeader({ label }) {
   return (
-    <p className="px-3 pt-2 pb-1 text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">
+    <p className="px-3 pt-2 pb-1 text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
       {label}
     </p>
   );
@@ -44,11 +44,11 @@ function PaletteRow({ item, isActive, activate, highlightRef, hint, children }) 
       type="button"
       onClick={() => activate(item)}
       className={`flex w-full items-center gap-2 px-3 py-2 text-left text-sm transition-colors ${
-        isActive ? "bg-brand-50 dark:bg-brand-900/30" : "hover:bg-slate-50 dark:hover:bg-slate-700"
+        isActive ? "bg-brand-50 dark:bg-brand-900/30" : "hover:bg-gray-50 dark:hover:bg-gray-700"
       }`}
     >
       {children}
-      {hint && <span className="ml-auto shrink-0 text-xs text-slate-400 dark:text-slate-500">{hint}</span>}
+      {hint && <span className="ml-auto shrink-0 text-xs text-gray-400 dark:text-gray-500">{hint}</span>}
     </button>
   );
 }
@@ -59,11 +59,11 @@ function CommandPaletteResults({ query, filteredApps, actions, idx, activate, hi
       <>
         <SectionHeader label="Applications" />
         {filteredApps.length === 0
-          ? <p className="px-3 py-2 text-sm text-slate-400 dark:text-slate-500">No results.</p>
+          ? <p className="px-3 py-2 text-sm text-gray-400 dark:text-gray-500">No results.</p>
           : filteredApps.map((app, i) => (
               <PaletteRow key={app.id} item={{ type: "app", ...app }} isActive={idx === i} activate={activate} highlightRef={highlightRef}>
-                <span className="font-semibold text-slate-900 dark:text-slate-100">{app.company}</span>
-                <span className="min-w-0 truncate text-slate-500 dark:text-slate-400">{app.role_title}</span>
+                <span className="font-semibold text-gray-900 dark:text-gray-100">{app.company}</span>
+                <span className="min-w-0 truncate text-gray-500 dark:text-gray-400">{app.role_title}</span>
                 <StageBadge stage={app.current_stage} />
               </PaletteRow>
             ))}
@@ -75,13 +75,13 @@ function CommandPaletteResults({ query, filteredApps, actions, idx, activate, hi
       <SectionHeader label="Navigation" />
       {NAV_ITEMS.map((item, i) => (
         <PaletteRow key={item.id} item={item} isActive={idx === i} activate={activate} highlightRef={highlightRef} hint={item.hint}>
-          <span className="text-slate-900 dark:text-slate-100">{item.label}</span>
+          <span className="text-gray-900 dark:text-gray-100">{item.label}</span>
         </PaletteRow>
       ))}
       <SectionHeader label="Actions" />
       {actions.map((item, i) => (
         <PaletteRow key={item.id} item={item} isActive={idx === NAV_ITEMS.length + i} activate={activate} highlightRef={highlightRef}>
-          <span className="text-slate-900 dark:text-slate-100">{item.label}</span>
+          <span className="text-gray-900 dark:text-gray-100">{item.label}</span>
         </PaletteRow>
       ))}
     </>
@@ -96,17 +96,17 @@ function CommandPaletteDialog({ query, setQuery, filteredApps, actions, idx, act
         role="dialog"
         aria-modal="true"
         aria-label="Command palette"
-        className="fixed left-1/2 top-[20%] z-50 w-full max-w-xl -translate-x-1/2 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-modal dark:border-slate-700 dark:bg-slate-800"
+        className="fixed left-1/2 top-[20%] z-50 w-full max-w-xl -trangray-x-1/2 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-modal dark:border-gray-700 dark:bg-gray-800"
       >
-        <div className="flex items-center gap-2 border-b border-slate-200 px-3 dark:border-slate-700">
-          <SearchIcon className="h-4 w-4 shrink-0 text-slate-400" />
+        <div className="flex items-center gap-2 border-b border-gray-200 px-3 dark:border-gray-700">
+          <SearchIcon className="h-4 w-4 shrink-0 text-gray-400" />
           <input
             autoFocus
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search applications or type a command…"
-            className="w-full bg-transparent py-3 text-sm text-slate-900 placeholder:text-slate-400 outline-none dark:text-slate-100"
+            className="w-full bg-transparent py-3 text-sm text-gray-900 placeholder:text-gray-400 outline-none dark:text-gray-100"
           />
         </div>
         <div className="max-h-80 overflow-y-auto py-1">

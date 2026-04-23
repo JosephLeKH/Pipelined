@@ -31,7 +31,7 @@ function OfferField({ fieldMeta, value, onChange }) {
 
   return (
     <div className="flex flex-col gap-0.5">
-      <span className="text-xs font-medium uppercase text-slate-400 dark:text-slate-500">
+      <span className="text-xs font-medium uppercase text-gray-400 dark:text-gray-500">
         {fieldMeta.label}
       </span>
       {editing ? (
@@ -47,11 +47,11 @@ function OfferField({ fieldMeta, value, onChange }) {
         <button
           type="button"
           onClick={() => setEditing(true)}
-          className="text-left text-sm text-slate-800 hover:underline dark:text-slate-200"
+          className="text-left text-sm text-gray-800 hover:underline dark:text-gray-200"
           aria-label={`Edit ${fieldMeta.label}`}
         >
           {formatFieldDisplay(fieldMeta, value) ?? (
-            <span className="italic text-slate-400">Click to set</span>
+            <span className="italic text-gray-400">Click to set</span>
           )}
         </button>
       )}

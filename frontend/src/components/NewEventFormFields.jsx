@@ -7,7 +7,7 @@ export function NewEventFormFields({ eventType, setEventType, date, setDate, tim
   return (
     <>
       <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-medium uppercase text-slate-400" htmlFor="event-type">
+        <label className="text-xs font-medium uppercase text-gray-400" htmlFor="event-type">
           Event Type
         </label>
         <select id="event-type" value={eventType} onChange={(e) => setEventType(e.target.value)} className={`${INPUT_BASE}`}>
@@ -17,18 +17,18 @@ export function NewEventFormFields({ eventType, setEventType, date, setDate, tim
         </select>
       </div>
       <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-medium uppercase text-slate-400" htmlFor="event-date">Date</label>
+        <label className="text-xs font-medium uppercase text-gray-400" htmlFor="event-date">Date</label>
         <input id="event-date" type="date" value={date} onChange={(e) => setDate(e.target.value)} className={`${INPUT_BASE}`} required />
       </div>
       <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-medium uppercase text-slate-400" htmlFor="event-time">
-          Time{" "}<span className="font-normal normal-case text-slate-400">(optional)</span>
+        <label className="text-xs font-medium uppercase text-gray-400" htmlFor="event-time">
+          Time{" "}<span className="font-normal normal-case text-gray-400">(optional)</span>
         </label>
         <input id="event-time" type="time" value={time} onChange={(e) => setTime(e.target.value)} className={`${INPUT_BASE}`} />
       </div>
       <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-medium uppercase text-slate-400" htmlFor="event-notes">
-          Notes{" "}<span className="font-normal normal-case text-slate-400">(optional)</span>
+        <label className="text-xs font-medium uppercase text-gray-400" htmlFor="event-notes">
+          Notes{" "}<span className="font-normal normal-case text-gray-400">(optional)</span>
         </label>
         <textarea id="event-notes" value={notes} onChange={(e) => setNotes(e.target.value)} className={`min-h-[80px] resize-y ${INPUT_BASE}`} />
       </div>

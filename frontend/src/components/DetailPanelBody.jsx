@@ -20,8 +20,8 @@ function DetailField({ label, value }) {
   if (!value) return null;
   return (
     <div className="flex flex-col gap-0.5">
-      <span className="text-xs font-medium uppercase text-slate-400 dark:text-slate-500">{label}</span>
-      <span className="text-sm text-slate-800 dark:text-slate-200">{value}</span>
+      <span className="text-xs font-medium uppercase text-gray-400 dark:text-gray-500">{label}</span>
+      <span className="text-sm text-gray-800 dark:text-gray-200">{value}</span>
     </div>
   );
 }
@@ -36,7 +36,7 @@ function FollowUpSection({ application, onUpdate }) {
 
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-xs font-medium uppercase text-slate-400 dark:text-slate-500" htmlFor="follow-up-date">
+      <label className="text-xs font-medium uppercase text-gray-400 dark:text-gray-500" htmlFor="follow-up-date">
         Follow up
       </label>
       {isOverdue && (
@@ -57,7 +57,7 @@ function FollowUpSection({ application, onUpdate }) {
           <button
             type="button"
             onClick={() => onUpdate({ follow_up_date: null })}
-            className="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+            className="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
           >
             Clear
           </button>
@@ -73,7 +73,7 @@ function TagsSection({ application, onUpdate }) {
   }
   return (
     <div className="flex flex-col gap-1.5">
-      <span className="text-xs font-medium uppercase text-slate-400 dark:text-slate-500">Tags</span>
+      <span className="text-xs font-medium uppercase text-gray-400 dark:text-gray-500">Tags</span>
       <TagInput value={application.tags ?? []} onChange={handleTagsChange} />
     </div>
   );
@@ -105,7 +105,7 @@ export function PanelBody({ application, handleStageChange, handleUpdate, onAddE
         </a>
       )}
       <div className="flex flex-col gap-1.5">
-        <span className="text-xs font-medium uppercase text-slate-400 dark:text-slate-500">
+        <span className="text-xs font-medium uppercase text-gray-400 dark:text-gray-500">
           Stage
         </span>
         <div
@@ -125,7 +125,7 @@ export function PanelBody({ application, handleStageChange, handleUpdate, onAddE
                 className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
                   active
                     ? `${color.activeBg} border-transparent text-white`
-                    : `border-slate-300 bg-white text-slate-600 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700`
+                    : `border-gray-300 bg-white text-gray-600 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700`
                 }`}
               >
                 {s}

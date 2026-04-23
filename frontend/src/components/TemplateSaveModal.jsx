@@ -57,11 +57,11 @@ function TemplateSaveModal({ isOpen, onClose, fields }) {
       aria-modal="true"
       aria-labelledby="save-template-heading"
     >
-      <div className="w-full max-w-sm rounded-2xl bg-white shadow-modal dark:bg-slate-800 dark:border dark:border-slate-700 p-6">
+      <div className="w-full max-w-sm rounded-2xl bg-white shadow-modal dark:bg-gray-800 dark:border dark:border-gray-700 p-6">
         <div className="flex items-center justify-between mb-4">
           <h2
             id="save-template-heading"
-            className="text-base font-semibold text-slate-900 dark:text-slate-100"
+            className="text-base font-semibold text-gray-900 dark:text-gray-100"
           >
             Save as template
           </h2>
@@ -69,14 +69,14 @@ function TemplateSaveModal({ isOpen, onClose, fields }) {
             type="button"
             onClick={onClose}
             aria-label="Close modal"
-            className="rounded-button p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:hover:bg-slate-700"
+            className="rounded-button p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:hover:bg-gray-700"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
         <label
           htmlFor="template-name-input"
-          className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
+          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
         >
           Template name
         </label>
@@ -96,7 +96,7 @@ function TemplateSaveModal({ isOpen, onClose, fields }) {
             {error}
           </p>
         )}
-        <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
+        <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
           Saves: remote status, company type, role type, tags, and compensation.
         </p>
         <div className="mt-4 flex justify-end gap-2">

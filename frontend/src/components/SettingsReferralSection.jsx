@@ -37,10 +37,10 @@ function SettingsReferralSection({ user }) {
   }, [referralLink, referralCode]);
 
   return (
-    <div className="rounded-card border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800">
+    <div className="rounded-card border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
       <div className="mb-4 flex items-center gap-2">
         <Gift className="h-5 w-5 text-brand-500" aria-hidden="true" />
-        <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Invite Friends</h2>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Invite Friends</h2>
         {isSuperReferrer && (
           <span className="ml-auto flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">
             <Star className="h-3 w-3" aria-hidden="true" />
@@ -48,7 +48,7 @@ function SettingsReferralSection({ user }) {
           </span>
         )}
       </div>
-      <p className="mb-5 text-sm text-slate-500 dark:text-slate-400">
+      <p className="mb-5 text-sm text-gray-500 dark:text-gray-400">
         Share your referral link. Every friend who signs up is counted toward your referral total.
       </p>
 
@@ -58,13 +58,13 @@ function SettingsReferralSection({ user }) {
             readOnly
             value={referralLink}
             aria-label="Referral link"
-            className="flex-1 rounded-button border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200"
+            className="flex-1 rounded-button border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-700 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
           />
           <button
             type="button"
             onClick={handleCopy}
             aria-label="Copy referral link"
-            className="flex items-center gap-1.5 rounded-button border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 active:scale-[0.97] dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600"
+            className="flex items-center gap-1.5 rounded-button border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 active:scale-[0.97] dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
           >
             {copied ? (
               <CheckCircle className="h-4 w-4 text-green-500" aria-hidden="true" />
@@ -75,11 +75,11 @@ function SettingsReferralSection({ user }) {
           </button>
         </div>
       ) : (
-        <p className="text-sm text-slate-400 dark:text-slate-500">No referral code available.</p>
+        <p className="text-sm text-gray-400 dark:text-gray-500">No referral code available.</p>
       )}
 
-      <p className="mt-4 text-sm text-slate-600 dark:text-slate-400">
-        <span className="font-semibold text-slate-900 dark:text-slate-100">{referralCount}</span>{" "}
+      <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">
+        <span className="font-semibold text-gray-900 dark:text-gray-100">{referralCount}</span>{" "}
         {referralCount === 1 ? "friend" : "friends"} joined using your link
         {isSuperReferrer && (
           <span className="ml-1 text-amber-600 dark:text-amber-400">— You're a Super Referrer!</span>

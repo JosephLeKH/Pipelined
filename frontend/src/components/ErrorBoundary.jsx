@@ -32,8 +32,8 @@ class ErrorBoundary extends Component {
           role="alert"
           className="flex flex-col items-center gap-4 py-16 text-center"
         >
-          <p className="text-lg font-semibold text-slate-900">Something went wrong</p>
-          <p className="text-sm text-slate-500">
+          <p className="text-lg font-semibold text-gray-900">Something went wrong</p>
+          <p className="text-sm text-gray-500">
             {this.state.error?.message || "An unexpected error occurred."}
           </p>
           <button

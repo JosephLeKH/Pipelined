@@ -9,12 +9,12 @@ function UsageMeter({ label, used, max }) {
   return (
     <div className="flex flex-col gap-1.5">
       <div className="flex items-center justify-between">
-        <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{label}</span>
-        <span className="text-sm text-slate-500 dark:text-slate-400">
+        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{label}</span>
+        <span className="text-sm text-gray-500 dark:text-gray-400">
           {used} / {max}
         </span>
       </div>
-      <div className="h-2 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
+      <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
         <div
           className="h-full rounded-full bg-brand-500 transition-all duration-300"
           style={{ width: `${pct}%` }}
@@ -35,13 +35,13 @@ function SettingsUsageSection({ user }) {
   const aiScores = user?.ai_scores_today ?? 0;
 
   return (
-    <div className="rounded-card border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800">
+    <div className="rounded-card border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
       <div className="mb-5 flex items-start justify-between gap-4">
         <div>
-          <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
             Usage & Plan
           </h2>
-          <p className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
+          <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">
             Your current usage against plan limits.
           </p>
         </div>
@@ -56,8 +56,8 @@ function SettingsUsageSection({ user }) {
         <UsageMeter label="AI fit scores today" used={aiScores} max={AI_SCORE_LIMIT} />
       </div>
 
-      <div className="mt-6 border-t border-slate-100 pt-5 dark:border-slate-700">
-        <p className="mb-3 text-sm text-slate-600 dark:text-slate-400">
+      <div className="mt-6 border-t border-gray-100 pt-5 dark:border-gray-700">
+        <p className="mb-3 text-sm text-gray-600 dark:text-gray-400">
           Upgrade to Pro for unlimited applications, contacts, and AI scoring.
         </p>
         <button

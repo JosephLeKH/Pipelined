@@ -45,7 +45,7 @@ function TemplateRow({ template }) {
     .join(" · ");
 
   return (
-    <div className="flex items-center gap-3 py-3 border-b border-slate-100 dark:border-slate-700 last:border-b-0">
+    <div className="flex items-center gap-3 py-3 border-b border-gray-100 dark:border-gray-700 last:border-b-0">
       <div className="min-w-0 flex-1">
         {editing ? (
           <input
@@ -60,11 +60,11 @@ function TemplateRow({ template }) {
           />
         ) : (
           <>
-            <p className="text-sm font-medium text-slate-900 dark:text-slate-100 truncate">
+            <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
               {template.name}
             </p>
             {fieldSummary && (
-              <p className="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5">
+              <p className="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5">
                 {fieldSummary}
               </p>
             )}
@@ -87,7 +87,7 @@ function TemplateRow({ template }) {
               type="button"
               onClick={() => { setName(template.name); setEditing(false); }}
               aria-label="Cancel rename"
-              className="rounded p-1 text-slate-400 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:hover:bg-slate-700"
+              className="rounded p-1 text-gray-400 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:hover:bg-gray-700"
             >
               <X className="h-4 w-4" />
             </button>
@@ -97,7 +97,7 @@ function TemplateRow({ template }) {
             type="button"
             onClick={() => setEditing(true)}
             aria-label={`Rename ${template.name}`}
-            className="rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:hover:bg-slate-700 dark:hover:text-slate-200"
+            className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:hover:bg-gray-700 dark:hover:text-gray-200"
           >
             <Pencil className="h-4 w-4" />
           </button>
@@ -107,7 +107,7 @@ function TemplateRow({ template }) {
           onClick={() => deleteMutate(template.id)}
           disabled={isDeleting}
           aria-label={`Delete ${template.name}`}
-          className="rounded p-1 text-slate-400 hover:bg-rose-50 hover:text-rose-600 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:hover:bg-rose-900/20 dark:hover:text-rose-400"
+          className="rounded p-1 text-gray-400 hover:bg-rose-50 hover:text-rose-600 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:hover:bg-rose-900/20 dark:hover:text-rose-400"
         >
           <Trash2 className="h-4 w-4" />
         </button>
@@ -120,14 +120,14 @@ function SettingsTemplatesSection() {
   const { data: templates, isLoading, error } = useTemplates();
 
   return (
-    <div className="rounded-card border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800">
-      <h2 className="mb-1 text-lg font-semibold text-slate-900 dark:text-slate-100">Templates</h2>
-      <p className="mb-5 text-sm text-slate-500 dark:text-slate-400">
+    <div className="rounded-card border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+      <h2 className="mb-1 text-lg font-semibold text-gray-900 dark:text-gray-100">Templates</h2>
+      <p className="mb-5 text-sm text-gray-500 dark:text-gray-400">
         Saved templates prefill fields in the Add Application form. Up to 10 templates.
       </p>
 
       {isLoading && (
-        <p className="text-sm text-slate-500 dark:text-slate-400">Loading…</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400">Loading…</p>
       )}
       {error && (
         <p role="alert" className="text-sm text-red-600 dark:text-red-400">
@@ -135,9 +135,9 @@ function SettingsTemplatesSection() {
         </p>
       )}
       {!isLoading && !error && templates?.length === 0 && (
-        <p className="text-sm text-slate-500 dark:text-slate-400">
+        <p className="text-sm text-gray-500 dark:text-gray-400">
           No templates yet. Use the{" "}
-          <span className="font-medium text-slate-700 dark:text-slate-300">
+          <span className="font-medium text-gray-700 dark:text-gray-300">
             "Save as template"
           </span>{" "}
           button when adding an application.

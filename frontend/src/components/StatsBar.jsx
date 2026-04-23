@@ -75,26 +75,26 @@ function MetricCard({ metricKey, label, stats, isLoading, Icon, accent, iconBg }
   if (isLoading) {
     return (
       <div
-        className={`flex flex-col gap-2 border-l-[3px] p-4 bg-white rounded-card shadow-card border border-slate-200/60 dark:bg-slate-800 dark:border-slate-700 ${accent}`}
+        className={`flex flex-col gap-2 border-l-[3px] p-4 bg-white rounded-card shadow-card border border-gray-200/60 dark:bg-gray-800 dark:border-gray-700 ${accent}`}
         aria-label={`${label}: loading`}
       >
-        <div className="h-9 w-9 animate-pulse rounded-lg bg-slate-200 dark:bg-slate-700" />
-        <div className="h-4 w-24 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
-        <div className="h-7 w-16 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
+        <div className="h-9 w-9 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700" />
+        <div className="h-4 w-24 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+        <div className="h-7 w-16 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
       </div>
     );
   }
 
   return (
     <div
-      className={`flex flex-col gap-2 border-l-[3px] p-4 bg-white rounded-card shadow-card border border-slate-200/60 dark:bg-slate-800 dark:border-slate-700 ${accent}`}
+      className={`flex flex-col gap-2 border-l-[3px] p-4 bg-white rounded-card shadow-card border border-gray-200/60 dark:bg-gray-800 dark:border-gray-700 ${accent}`}
       aria-label={`${label}: ${displayValue}`}
     >
       <div className={`flex h-9 w-9 items-center justify-center rounded-lg ${iconBg}`}>
         <Icon className="h-5 w-5" aria-hidden="true" />
       </div>
-      <span className="text-sm text-slate-500 dark:text-slate-400">{label}</span>
-      <span className="text-2xl font-bold text-slate-900 dark:text-slate-100">{displayValue}</span>
+      <span className="text-sm text-gray-500 dark:text-gray-400">{label}</span>
+      <span className="text-2xl font-bold text-gray-900 dark:text-gray-100">{displayValue}</span>
     </div>
   );
 }

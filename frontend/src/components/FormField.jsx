@@ -3,7 +3,7 @@
 function FormField({ label, htmlFor, children, error }) {
   return (
     <div className="flex flex-col gap-1">
-      <label className="text-sm font-medium text-slate-700 dark:text-slate-300" htmlFor={htmlFor}>
+      <label className="text-sm font-medium text-gray-700 dark:text-gray-300" htmlFor={htmlFor}>
         {label}
       </label>
       {children}

@@ -14,7 +14,7 @@ function PanelContent({ displayApp, panelDragHandlers, confirmClose, handleDelet
     <>
       {displayApp && (
         <div key={displayApp.id} className="flex h-full flex-col overflow-y-auto animate-slideInRight">
-          <div className="mx-auto mt-2.5 h-1 w-10 shrink-0 rounded-full bg-slate-300 touch-none md:hidden" aria-hidden="true" {...panelDragHandlers} />
+          <div className="mx-auto mt-2.5 h-1 w-10 shrink-0 rounded-full bg-gray-300 touch-none md:hidden" aria-hidden="true" {...panelDragHandlers} />
           <DetailPanelHeader application={displayApp} onClose={confirmClose} onDelete={handleDelete} />
           <PanelBody
             application={displayApp}
@@ -54,7 +54,7 @@ function DetailPanel({ application, onClose, onAddEvent }) {
       <div className="absolute inset-0 bg-black/30 pointer-events-none" aria-hidden="true" />
       <div
         ref={panelRef}
-        className={`fixed inset-x-0 bottom-0 h-[90vh] rounded-t-xl bg-white shadow-xl transition-transform duration-[250ms] md:inset-x-auto md:bottom-auto md:right-0 md:top-0 md:h-full md:w-[480px] md:rounded-none dark:bg-slate-800 ${isOpen ? "translate-y-0 md:translate-x-0" : "translate-y-full md:translate-y-0 md:translate-x-full"}`}
+        className={`fixed inset-x-0 bottom-0 h-[90vh] rounded-t-xl bg-white shadow-xl transition-transform duration-[250ms] md:inset-x-auto md:bottom-auto md:right-0 md:top-0 md:h-full md:w-[480px] md:rounded-none dark:bg-gray-800 ${isOpen ? "trangray-y-0 md:trangray-x-0" : "trangray-y-full md:trangray-y-0 md:trangray-x-full"}`}
         style={{ transform: dragOffset ? `translateY(${dragOffset}px)` : undefined, transition: dragOffset ? "none" : undefined }}
         role="dialog" aria-modal="true" aria-labelledby="detail-panel-heading" onKeyDown={handlePanelKeyDown}
       >

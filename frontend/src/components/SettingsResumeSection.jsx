@@ -63,15 +63,15 @@ function useResumeUpload() {
 
 function ResumeFileCard({ uploadedFile, isDeleting, isUploading, onDelete }) {
   return (
-    <div className="flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-700 dark:bg-slate-900">
+    <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 dark:border-gray-700 dark:bg-gray-900">
       <div className="flex items-center gap-3">
         <FileText className="h-5 w-5 text-brand-500 shrink-0" aria-hidden="true" />
         <div>
-          <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
+          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
             {uploadedFile?.name ?? "resume.pdf"}
           </p>
           {uploadedFile?.size && (
-            <p className="text-xs text-slate-400">{formatBytes(uploadedFile.size)}</p>
+            <p className="text-xs text-gray-400">{formatBytes(uploadedFile.size)}</p>
           )}
         </div>
       </div>
@@ -98,18 +98,18 @@ function ResumeDropZone({ isDragOver, setIsDragOver, isUploading, fileInputRef, 
         className={`flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed p-8 text-center transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 ${
           isDragOver
             ? "border-brand-500 bg-brand-50 dark:bg-brand-900/10"
-            : "border-slate-300 hover:border-brand-500 dark:border-slate-600 dark:hover:border-brand-400"
+            : "border-gray-300 hover:border-brand-500 dark:border-gray-600 dark:hover:border-brand-400"
         }`}
         aria-label="Upload resume — drag and drop or click to browse"
       >
         {isUploading
           ? <Loader2 className="h-8 w-8 animate-spin text-brand-500" aria-hidden="true" />
-          : <UploadCloud className={`h-8 w-8 ${isDragOver ? "text-brand-500" : "text-slate-400"}`} aria-hidden="true" />}
+          : <UploadCloud className={`h-8 w-8 ${isDragOver ? "text-brand-500" : "text-gray-400"}`} aria-hidden="true" />}
         <div>
-          <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
+          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
             {isUploading ? "Uploading…" : "Drop your resume here or click to browse"}
           </p>
-          <p className="mt-0.5 text-xs text-slate-400">PDF only · max {RESUME_MAX_MB} MB</p>
+          <p className="mt-0.5 text-xs text-gray-400">PDF only · max {RESUME_MAX_MB} MB</p>
         </div>
       </div>
       <input ref={fileInputRef} type="file" accept={RESUME_ACCEPT} className="sr-only"
@@ -120,15 +120,15 @@ function ResumeDropZone({ isDragOver, setIsDragOver, isUploading, fileInputRef, 
 
 function AiScoreMeter({ aiScores, aiPct }) {
   return (
-    <div className="rounded-card border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800">
-      <h3 className="mb-1 text-base font-semibold text-slate-900 dark:text-slate-100">AI fit scoring</h3>
-      <p className="mb-4 text-sm text-slate-500 dark:text-slate-400">Daily usage resets at midnight UTC.</p>
+    <div className="rounded-card border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+      <h3 className="mb-1 text-base font-semibold text-gray-900 dark:text-gray-100">AI fit scoring</h3>
+      <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">Daily usage resets at midnight UTC.</p>
       <div className="flex flex-col gap-1.5">
         <div className="flex items-center justify-between">
-          <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Fit scores used today</span>
-          <span className="text-sm text-slate-500 dark:text-slate-400">{aiScores} / {AI_SCORE_LIMIT}</span>
+          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Fit scores used today</span>
+          <span className="text-sm text-gray-500 dark:text-gray-400">{aiScores} / {AI_SCORE_LIMIT}</span>
         </div>
-        <div className="h-2 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
+        <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
           <div className="h-full rounded-full bg-brand-500 transition-all duration-300" style={{ width: `${aiPct}%` }}
             role="progressbar" aria-valuenow={aiScores} aria-valuemin={0} aria-valuemax={AI_SCORE_LIMIT}
             aria-label="AI fit scores used today" />
@@ -147,9 +147,9 @@ function SettingsResumeSection() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="rounded-card border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800">
-        <h2 className="mb-1 text-lg font-semibold text-slate-900 dark:text-slate-100">Resume & AI</h2>
-        <p className="mb-5 text-sm text-slate-500 dark:text-slate-400">
+      <div className="rounded-card border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+        <h2 className="mb-1 text-lg font-semibold text-gray-900 dark:text-gray-100">Resume & AI</h2>
+        <p className="mb-5 text-sm text-gray-500 dark:text-gray-400">
           Upload your resume to enable AI fit scoring on new applications.
         </p>
         {resumeSuccess && (

@@ -41,13 +41,13 @@ function FeatureRow({ label, included }) {
       {included ? (
         <Check className="h-4 w-4 flex-shrink-0 text-emerald-500" />
       ) : (
-        <X className="h-4 w-4 flex-shrink-0 text-slate-300 dark:text-slate-600" />
+        <X className="h-4 w-4 flex-shrink-0 text-gray-300 dark:text-gray-600" />
       )}
       <span
         className={
           included
-            ? "text-sm text-slate-700 dark:text-slate-300"
-            : "text-sm text-slate-400 dark:text-slate-500"
+            ? "text-sm text-gray-700 dark:text-gray-300"
+            : "text-sm text-gray-400 dark:text-gray-500"
         }
       >
         {label}
@@ -58,13 +58,13 @@ function FeatureRow({ label, included }) {
 
 function PricingHeader() {
   return (
-    <header className="border-b border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
+    <header className="border-b border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
       <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
         <Link to="/" className="text-lg font-bold text-brand-600 dark:text-brand-400">
           Pipelined
         </Link>
         <nav className="flex items-center gap-4 text-sm">
-          <Link to="/login" className="text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">
+          <Link to="/login" className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
             Sign in
           </Link>
           <Link
@@ -81,14 +81,14 @@ function PricingHeader() {
 
 function FreeTierCard() {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-8 dark:border-slate-700 dark:bg-slate-900">
+    <div className="rounded-2xl border border-gray-200 bg-white p-8 dark:border-gray-700 dark:bg-gray-900">
       <div className="mb-6">
-        <h2 className="mb-1 text-xl font-bold text-slate-900 dark:text-white">Free</h2>
+        <h2 className="mb-1 text-xl font-bold text-gray-900 dark:text-white">Free</h2>
         <div className="flex items-end gap-1">
-          <span className="text-4xl font-extrabold text-slate-900 dark:text-white">$0</span>
-          <span className="mb-1 text-slate-500 dark:text-slate-400">/ month</span>
+          <span className="text-4xl font-extrabold text-gray-900 dark:text-white">$0</span>
+          <span className="mb-1 text-gray-500 dark:text-gray-400">/ month</span>
         </div>
-        <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+        <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
           Everything you need to get started.
         </p>
       </div>
@@ -100,7 +100,7 @@ function FreeTierCard() {
         Get started free
       </Link>
 
-      <ul className="divide-y divide-slate-100 dark:divide-slate-800">
+      <ul className="divide-y divide-gray-100 dark:divide-gray-800">
         {FREE_FEATURES.map((f) => (
           <FeatureRow key={f.label} {...f} />
         ))}
@@ -111,8 +111,8 @@ function FreeTierCard() {
 
 function ProTierCard() {
   return (
-    <div className="relative rounded-2xl border-2 border-brand-500 bg-white p-8 shadow-lg dark:bg-slate-900">
-      <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
+    <div className="relative rounded-2xl border-2 border-brand-500 bg-white p-8 shadow-lg dark:bg-gray-900">
+      <div className="absolute -top-3.5 left-1/2 -trangray-x-1/2">
         <span className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-brand-500 to-purple-600 px-4 py-1 text-xs font-bold uppercase tracking-wide text-white shadow">
           <Zap className="h-3 w-3" />
           Most popular
@@ -120,12 +120,12 @@ function ProTierCard() {
       </div>
 
       <div className="mb-6">
-        <h2 className="mb-1 text-xl font-bold text-slate-900 dark:text-white">Pro</h2>
+        <h2 className="mb-1 text-xl font-bold text-gray-900 dark:text-white">Pro</h2>
         <div className="flex items-end gap-1">
-          <span className="text-4xl font-extrabold text-slate-900 dark:text-white">$9</span>
-          <span className="mb-1 text-slate-500 dark:text-slate-400">/ month</span>
+          <span className="text-4xl font-extrabold text-gray-900 dark:text-white">$9</span>
+          <span className="mb-1 text-gray-500 dark:text-gray-400">/ month</span>
         </div>
-        <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+        <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
           For serious job seekers who want it all.
         </p>
       </div>
@@ -137,7 +137,7 @@ function ProTierCard() {
         Upgrade to Pro — coming soon
       </button>
 
-      <ul className="divide-y divide-slate-100 dark:divide-slate-800">
+      <ul className="divide-y divide-gray-100 dark:divide-gray-800">
         {PRO_FEATURES.map((f) => (
           <FeatureRow key={f.label} {...f} />
         ))}
@@ -155,15 +155,15 @@ function Pricing() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       <PricingHeader />
 
       <main className="mx-auto max-w-5xl px-6 py-16">
         <div className="mb-12 text-center">
-          <h1 className="mb-3 text-4xl font-extrabold text-slate-900 dark:text-white">
+          <h1 className="mb-3 text-4xl font-extrabold text-gray-900 dark:text-white">
             Simple, transparent pricing
           </h1>
-          <p className="text-lg text-slate-500 dark:text-slate-400">
+          <p className="text-lg text-gray-500 dark:text-gray-400">
             Start free. Upgrade when you need more.
           </p>
         </div>
@@ -173,7 +173,7 @@ function Pricing() {
           <ProTierCard />
         </div>
 
-        <p className="mt-12 text-center text-sm text-slate-400 dark:text-slate-500">
+        <p className="mt-12 text-center text-sm text-gray-400 dark:text-gray-500">
           Questions?{" "}
           <a href="mailto:support@pipelined.app" className="text-brand-600 hover:underline dark:text-brand-400">
             Contact us

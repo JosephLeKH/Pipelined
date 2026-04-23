@@ -36,7 +36,7 @@ function entryLabel(entry) {
 }
 
 function TimelineEntry({ entry, onClick }) {
-  const dotClass = TYPE_STYLES[entry.type] ?? "bg-slate-400";
+  const dotClass = TYPE_STYLES[entry.type] ?? "bg-gray-400";
   const ts = new Date(entry.timestamp);
   const dateStr = ts.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
   const timeStr = ts.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
@@ -45,19 +45,19 @@ function TimelineEntry({ entry, onClick }) {
     <button
       type="button"
       onClick={() => onClick(entry.application_id)}
-      className="group relative flex w-full items-start gap-4 rounded-md px-2 py-3 text-left transition-colors hover:bg-slate-50 dark:hover:bg-slate-700/50"
+      className="group relative flex w-full items-start gap-4 rounded-md px-2 py-3 text-left transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/50"
     >
       {/* Timeline dot */}
       <div className="mt-1.5 flex-shrink-0">
-        <span className={`block h-3 w-3 rounded-full ${dotClass} ring-2 ring-white dark:ring-slate-800`} />
+        <span className={`block h-3 w-3 rounded-full ${dotClass} ring-2 ring-white dark:ring-gray-800`} />
       </div>
 
       {/* Content */}
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-medium text-slate-900 group-hover:text-brand-600 dark:text-slate-100 dark:group-hover:text-brand-400">
+        <p className="text-sm font-medium text-gray-900 group-hover:text-brand-600 dark:text-gray-100 dark:group-hover:text-brand-400">
           {entryLabel(entry)}
         </p>
-        <p className="mt-0.5 text-xs text-slate-400">
+        <p className="mt-0.5 text-xs text-gray-400">
           {dateStr} · {timeStr}
         </p>
       </div>
@@ -69,18 +69,18 @@ function ActivityHeader({ days, total, isLoading, onDaysChange }) {
   return (
     <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <h1 className="flex items-center gap-2 text-xl font-semibold text-slate-900 dark:text-slate-100">
+        <h1 className="flex items-center gap-2 text-xl font-semibold text-gray-900 dark:text-gray-100">
           <Activity className="h-5 w-5 text-brand-600" />
           Activity
         </h1>
         {!isLoading && (
-          <p className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
+          <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">
             {total} action{total !== 1 ? "s" : ""}
           </p>
         )}
       </div>
 
-      <div className="flex items-center gap-1 rounded-full border border-slate-200 bg-white p-1 dark:border-slate-700 dark:bg-slate-800">
+      <div className="flex items-center gap-1 rounded-full border border-gray-200 bg-white p-1 dark:border-gray-700 dark:bg-gray-800">
         {TIME_RANGES.map((range) => (
           <button
             key={range.days}
@@ -89,7 +89,7 @@ function ActivityHeader({ days, total, isLoading, onDaysChange }) {
             className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
               days === range.days
                 ? "bg-brand-600 text-white"
-                : "text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-700"
+                : "text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
             }`}
           >
             {range.label}
@@ -111,10 +111,10 @@ function ActivityTimeline({ isLoading, entries, onEntryClick }) {
 
   if (entries.length === 0) {
     return (
-      <div className="rounded-card border border-slate-200 bg-white px-6 py-16 text-center dark:border-slate-700 dark:bg-slate-800">
-        <Activity className="mx-auto mb-3 h-10 w-10 text-slate-300 dark:text-slate-600" />
-        <p className="text-sm font-medium text-slate-900 dark:text-slate-100">No activity yet</p>
-        <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+      <div className="rounded-card border border-gray-200 bg-white px-6 py-16 text-center dark:border-gray-700 dark:bg-gray-800">
+        <Activity className="mx-auto mb-3 h-10 w-10 text-gray-300 dark:text-gray-600" />
+        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">No activity yet</p>
+        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
           Actions will appear here as you apply, move stages, and schedule interviews.
         </p>
       </div>
@@ -122,8 +122,8 @@ function ActivityTimeline({ isLoading, entries, onEntryClick }) {
   }
 
   return (
-    <div className="rounded-card border border-slate-200 bg-white px-4 dark:border-slate-700 dark:bg-slate-800">
-      <div className="relative border-l border-slate-200 pl-4 dark:border-slate-700 ml-1.5">
+    <div className="rounded-card border border-gray-200 bg-white px-4 dark:border-gray-700 dark:bg-gray-800">
+      <div className="relative border-l border-gray-200 pl-4 dark:border-gray-700 ml-1.5">
         {entries.map((entry, idx) => (
           <TimelineEntry
             key={`${entry.type}-${entry.application_id}-${idx}`}
@@ -153,7 +153,7 @@ function ActivityPage() {
   );
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <NavBar />
       <main className="mx-auto max-w-2xl px-4 py-8">
         <ActivityHeader days={days} total={total} isLoading={isLoading} onDaysChange={setDays} />

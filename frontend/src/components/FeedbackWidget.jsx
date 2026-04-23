@@ -24,9 +24,9 @@ function NPSBannerView({ onScore, onDismiss }) {
     <div
       role="banner"
       aria-label="NPS survey"
-      className="fixed top-0 inset-x-0 z-40 flex items-center justify-between gap-4 bg-white px-4 py-3 shadow-md dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700"
+      className="fixed top-0 inset-x-0 z-40 flex items-center justify-between gap-4 bg-white px-4 py-3 shadow-md dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700"
     >
-      <p className="text-sm font-medium text-slate-700 dark:text-slate-200 shrink-0">
+      <p className="text-sm font-medium text-gray-700 dark:text-gray-200 shrink-0">
         How likely are you to recommend Pipelined to a friend?
       </p>
       <div className="flex items-center gap-1">
@@ -35,7 +35,7 @@ function NPSBannerView({ onScore, onDismiss }) {
             key={score}
             type="button"
             onClick={() => onScore(score)}
-            className="h-8 w-8 rounded text-xs font-semibold text-slate-600 hover:bg-brand-500 hover:text-white transition-colors dark:text-slate-300 dark:hover:text-white border border-slate-200 dark:border-slate-600"
+            className="h-8 w-8 rounded text-xs font-semibold text-gray-600 hover:bg-brand-500 hover:text-white transition-colors dark:text-gray-300 dark:hover:text-white border border-gray-200 dark:border-gray-600"
           >
             {score}
           </button>
@@ -45,7 +45,7 @@ function NPSBannerView({ onScore, onDismiss }) {
         type="button"
         onClick={onDismiss}
         aria-label="Dismiss survey"
-        className="shrink-0 rounded p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+        className="shrink-0 rounded p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
       >
         <X className="h-4 w-4" />
       </button>
@@ -108,24 +108,24 @@ function FeedbackFormFields({ category, setCategory, message, setMessage, email,
   return (
     <>
       <div>
-        <label htmlFor="fb-category" className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">Category</label>
+        <label htmlFor="fb-category" className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Category</label>
         <select id="fb-category" value={category} onChange={(e) => setCategory(e.target.value)}
-          className="w-full rounded-button border border-slate-200 bg-white px-2.5 py-1.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200">
+          className="w-full rounded-button border border-gray-200 bg-white px-2.5 py-1.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200">
           {FEEDBACK_CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
         </select>
       </div>
       <div>
-        <label htmlFor="fb-message" className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">Message</label>
+        <label htmlFor="fb-message" className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Message</label>
         <textarea id="fb-message" ref={textareaRef} rows={4} maxLength={FEEDBACK_MESSAGE_MAX} value={message}
           onChange={(e) => setMessage(e.target.value)} placeholder="Describe your feedback…"
-          className="w-full resize-none rounded-button border border-slate-200 bg-white px-2.5 py-1.5 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200"
+          className="w-full resize-none rounded-button border border-gray-200 bg-white px-2.5 py-1.5 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
         />
-        <p className="mt-0.5 text-right text-xs text-slate-400">{message.length}/{FEEDBACK_MESSAGE_MAX}</p>
+        <p className="mt-0.5 text-right text-xs text-gray-400">{message.length}/{FEEDBACK_MESSAGE_MAX}</p>
       </div>
       <div>
-        <label htmlFor="fb-email" className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">Email (optional)</label>
+        <label htmlFor="fb-email" className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Email (optional)</label>
         <input id="fb-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com"
-          className="w-full rounded-button border border-slate-200 bg-white px-2.5 py-1.5 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200"
+          className="w-full rounded-button border border-gray-200 bg-white px-2.5 py-1.5 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
         />
       </div>
       <button type="submit" disabled={submitting || !message.trim()}
@@ -147,8 +147,8 @@ function FeedbackPopover({ user, page, onClose, onSubmit }) {
       className={`${CARD_BASE} absolute bottom-14 right-0 w-80 p-4 animate-slideInUp shadow-modal`}
     >
       <div className="mb-3 flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">How can we improve?</h2>
-        <button type="button" onClick={onClose} aria-label="Close" className="rounded p-0.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+        <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100">How can we improve?</h2>
+        <button type="button" onClick={onClose} aria-label="Close" className="rounded p-0.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
           <X className="h-4 w-4" />
         </button>
       </div>

@@ -76,7 +76,7 @@ function ActiveShare({ share, onRevoke, isRevoking }) {
 function NoShare({ onCreate, isCreating }) {
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-sm text-slate-500 dark:text-slate-400">
+      <p className="text-sm text-gray-500 dark:text-gray-400">
         Generate a read-only public link to your application timeline. Stages, dates, and outcomes — no sensitive details.
       </p>
       <button
@@ -106,12 +106,12 @@ function ShareTimeline() {
   };
 
   return (
-    <section aria-labelledby="timeline-share-heading" className="flex flex-col gap-3 rounded-card border border-slate-200 p-4 dark:border-slate-700">
-      <h2 id="timeline-share-heading" className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+    <section aria-labelledby="timeline-share-heading" className="flex flex-col gap-3 rounded-card border border-gray-200 p-4 dark:border-gray-700">
+      <h2 id="timeline-share-heading" className="text-sm font-semibold text-gray-800 dark:text-gray-100">
         Share Your Timeline
       </h2>
       {isLoading ? (
-        <Loader2 className="h-5 w-5 animate-spin text-slate-400" aria-label="Loading" />
+        <Loader2 className="h-5 w-5 animate-spin text-gray-400" aria-label="Loading" />
       ) : share ? (
         <ActiveShare share={share} onRevoke={revokeShare} isRevoking={isRevoking} />
       ) : (

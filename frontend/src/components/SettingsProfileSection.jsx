@@ -49,9 +49,9 @@ function SettingsProfileSection() {
   }, [displayName, timezone, mutateAsync]);
 
   return (
-    <div className="rounded-card border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800">
-      <h2 className="mb-1 text-lg font-semibold text-slate-900 dark:text-slate-100">Profile</h2>
-      <p className="mb-6 text-sm text-slate-500 dark:text-slate-400">
+    <div className="rounded-card border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+      <h2 className="mb-1 text-lg font-semibold text-gray-900 dark:text-gray-100">Profile</h2>
+      <p className="mb-6 text-sm text-gray-500 dark:text-gray-400">
         Manage your display name, email, and timezone.
       </p>
 
@@ -72,8 +72,8 @@ function SettingsProfileSection() {
             </div>
           )}
           <div>
-            <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Profile picture</p>
-            <p className="text-xs text-slate-400 dark:text-slate-500">
+            <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Profile picture</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500">
               {user?.avatar_url ? "GitHub avatar" : "Initials avatar · GitHub avatar available with GitHub login"}
             </p>
           </div>
@@ -82,7 +82,7 @@ function SettingsProfileSection() {
         <div className="flex flex-col gap-1.5">
           <label
             htmlFor="display-name"
-            className="text-sm font-medium text-slate-700 dark:text-slate-300"
+            className="text-sm font-medium text-gray-700 dark:text-gray-300"
           >
             Display name
           </label>
@@ -91,14 +91,14 @@ function SettingsProfileSection() {
             type="text"
             value={displayName}
             onChange={(e) => setDisplayName(e.target.value)}
-            className="rounded-input border border-slate-300 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500/20 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200"
+            className="rounded-input border border-gray-300 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500/20 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
           />
         </div>
 
         <div className="flex flex-col gap-1.5">
           <label
             htmlFor="email-display"
-            className="text-sm font-medium text-slate-700 dark:text-slate-300"
+            className="text-sm font-medium text-gray-700 dark:text-gray-300"
           >
             Email
           </label>
@@ -107,12 +107,12 @@ function SettingsProfileSection() {
             type="email"
             value={user?.email ?? ""}
             readOnly
-            className="rounded-input border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400"
+            className="rounded-input border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-400"
           />
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
             Timezone
           </label>
           <TimezoneSelector value={timezone} onChange={setTimezone} />

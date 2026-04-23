@@ -21,19 +21,19 @@ export default function SavedSearchesSidebar({ onApply }) {
   }
 
   return (
-    <div className="rounded-card border border-slate-200/60 bg-white p-4 shadow-card dark:border-slate-700 dark:bg-slate-800">
-      <h2 className="mb-3 text-sm font-semibold text-slate-700 dark:text-slate-300">Saved Searches</h2>
+    <div className="rounded-card border border-gray-200/60 bg-white p-4 shadow-card dark:border-gray-700 dark:bg-gray-800">
+      <h2 className="mb-3 text-sm font-semibold text-gray-700 dark:text-gray-300">Saved Searches</h2>
       <ul className="flex flex-col gap-1" aria-label="Saved searches list">
         {searches.map((s) => (
           <li
             key={s.id}
-            className="flex cursor-pointer items-center justify-between rounded px-2 py-1.5 text-sm hover:bg-slate-50 dark:hover:bg-slate-700"
+            className="flex cursor-pointer items-center justify-between rounded px-2 py-1.5 text-sm hover:bg-gray-50 dark:hover:bg-gray-700"
             onClick={() => onApply(s)}
           >
             <div className="flex flex-col">
-              <span className="font-medium text-slate-800 dark:text-slate-200">{s.name}</span>
+              <span className="font-medium text-gray-800 dark:text-gray-200">{s.name}</span>
               {s.query && (
-                <span className="text-xs text-slate-500 dark:text-slate-400">"{s.query}"</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400">"{s.query}"</span>
               )}
             </div>
             <div className="flex items-center gap-2">

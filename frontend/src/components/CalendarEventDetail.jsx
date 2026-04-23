@@ -64,20 +64,20 @@ function CalendarEventDetail({ event, onClose }) {
         ref={panelRef}
         role="complementary"
         aria-label="Event details"
-        className="fixed inset-y-0 right-0 z-40 flex w-full max-w-md flex-col overflow-y-auto bg-white shadow-modal dark:bg-slate-800 animate-slide-in-right"
+        className="fixed inset-y-0 right-0 z-40 flex w-full max-w-md flex-col overflow-y-auto bg-white shadow-modal dark:bg-gray-800 animate-slide-in-right"
       >
         {/* Header */}
-        <div className="flex items-start justify-between border-b border-slate-100 dark:border-slate-700 px-6 py-4">
+        <div className="flex items-start justify-between border-b border-gray-100 dark:border-gray-700 px-6 py-4">
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2">
               <span className={`rounded-badge px-2 py-0.5 text-xs font-medium ${colors.bg} ${colors.text}`}>
                 {eventTypeLabel}
               </span>
             </div>
-            <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
               {event.title || eventTypeLabel}
             </h2>
-            <p className="text-sm text-slate-500 dark:text-slate-400">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
               {formatDate(
                 typeof event.date === "string" ? event.date.slice(0, 10) : event.date
               )}
@@ -87,7 +87,7 @@ function CalendarEventDetail({ event, onClose }) {
           <button
             type="button"
             onClick={onClose}
-            className="ml-4 rounded p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="ml-4 rounded p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-500"
             aria-label="Close event details"
           >
             <X className="h-5 w-5" />
@@ -96,11 +96,11 @@ function CalendarEventDetail({ event, onClose }) {
 
         {/* Application info */}
         {(event.company || event.role_title) && (
-          <div className="border-b border-slate-100 dark:border-slate-700 px-6 py-3">
-            <span className="text-xs font-medium uppercase text-slate-400">Application</span>
-            <p className="mt-1 text-sm font-medium text-slate-800 dark:text-slate-200">
+          <div className="border-b border-gray-100 dark:border-gray-700 px-6 py-3">
+            <span className="text-xs font-medium uppercase text-gray-400">Application</span>
+            <p className="mt-1 text-sm font-medium text-gray-800 dark:text-gray-200">
               {event.company && <span>{event.company}</span>}
-              {event.company && event.role_title && <span className="text-slate-400"> · </span>}
+              {event.company && event.role_title && <span className="text-gray-400"> · </span>}
               {event.role_title && <span>{event.role_title}</span>}
             </p>
           </div>

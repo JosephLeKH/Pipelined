@@ -29,11 +29,11 @@ function WeeklyGoalSection({ weeklyGoal, isGoalPending, onSaveGoal }) {
   }, [localGoal, onSaveGoal]);
 
   return (
-    <section className="rounded-card border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800">
-      <h2 className="mb-1 text-base font-semibold text-slate-900 dark:text-slate-100">
+    <section className="rounded-card border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+      <h2 className="mb-1 text-base font-semibold text-gray-900 dark:text-gray-100">
         Weekly Application Goal
       </h2>
-      <p className="mb-4 text-sm text-slate-500 dark:text-slate-400">
+      <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">
         Set a target number of applications to submit per week. Shown as a progress ring on the dashboard.
       </p>
       {goalSaved && !isGoalPending && (
@@ -52,9 +52,9 @@ function WeeklyGoalSection({ weeklyGoal, isGoalPending, onSaveGoal }) {
           value={localGoal}
           onChange={(e) => setLocalGoal(e.target.value)}
           aria-label="Weekly application goal"
-          className="w-24 rounded-input border border-slate-300 px-3 py-1.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500/20 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200"
+          className="w-24 rounded-input border border-gray-300 px-3 py-1.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500/20 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
         />
-        <span className="text-sm text-slate-500 dark:text-slate-400">applications / week</span>
+        <span className="text-sm text-gray-500 dark:text-gray-400">applications / week</span>
       </div>
       <div className="mt-4 flex justify-end">
         <button

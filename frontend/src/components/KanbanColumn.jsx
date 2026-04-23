@@ -18,21 +18,21 @@ export function KanbanColumn({ stage, applications, onSelect }) {
     >
       <div className="flex items-center gap-2 px-3 py-2">
         <span className={`h-2 w-2 rounded-full ${color.dot}`} aria-hidden="true" />
-        <span className="text-sm font-medium text-slate-500 dark:text-slate-400">{stage}</span>
-        <span className="rounded-full bg-slate-100 px-1.5 py-0.5 text-xs font-medium text-slate-500 dark:bg-slate-700 dark:text-slate-400" aria-label={`${applications.length} applications`}>
+        <span className="text-sm font-medium text-gray-500 dark:text-gray-400">{stage}</span>
+        <span className="rounded-full bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-500 dark:bg-gray-700 dark:text-gray-400" aria-label={`${applications.length} applications`}>
           {applications.length}
         </span>
       </div>
       <div
         ref={setNodeRef}
         style={{ maxHeight: COLUMN_MAX_HEIGHT_PX }}
-        className={`flex flex-col gap-2 overflow-y-auto rounded-lg bg-slate-50 p-2 transition-colors dark:bg-slate-800/50 ${
+        className={`flex flex-col gap-2 overflow-y-auto rounded-lg bg-gray-50 p-2 transition-colors dark:bg-gray-800/50 ${
           isOver ? "bg-brand-50 dark:bg-brand-900/20" : ""
         }`}
       >
         <SortableContext items={applications.map((a) => a.id)} strategy={verticalListSortingStrategy}>
           {applications.length === 0 ? (
-            <div className="flex h-16 items-center justify-center rounded-lg border-2 border-dashed border-slate-300 text-sm text-slate-400 dark:border-slate-600 dark:text-slate-500" aria-label="No applications">
+            <div className="flex h-16 items-center justify-center rounded-lg border-2 border-dashed border-gray-300 text-sm text-gray-400 dark:border-gray-600 dark:text-gray-500" aria-label="No applications">
               No applications
             </div>
           ) : (

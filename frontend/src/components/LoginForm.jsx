@@ -8,14 +8,14 @@ export function LoginForm({ email, setEmail, password, setPassword, error, isPen
   return (
     <form onSubmit={onSubmit} noValidate>
       <div className="mb-4">
-        <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
+        <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">
           Email
         </label>
         <input id="email" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} className={INPUT_BASE} placeholder="you@example.com" />
       </div>
       <div className="mb-5">
         <div className="mb-1.5 flex items-center justify-between">
-          <label htmlFor="password" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+          <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
             Password
           </label>
           <Link to="/forgot-password" className="text-xs text-brand-600 hover:underline">Forgot password?</Link>

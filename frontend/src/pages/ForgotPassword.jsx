@@ -10,7 +10,7 @@ import { INPUT_BASE, BUTTON_PRIMARY } from "../lib/designTokens";
 function EmailInput({ email, onChange }) {
   return (
     <div className="mb-5">
-      <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
+      <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">
         Email
       </label>
       <input
@@ -80,14 +80,14 @@ function ForgotPassword() {
 
   return (
     <AuthLayout>
-      <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Forgot password?</h1>
-      <p className="mt-1 mb-6 text-sm text-slate-500 dark:text-slate-400">
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Forgot password?</h1>
+      <p className="mt-1 mb-6 text-sm text-gray-500 dark:text-gray-400">
         Enter your email and we&apos;ll send you a reset link.
       </p>
 
       {submitted ? <SuccessMessage /> : <ForgotPasswordForm email={email} error={error} isPending={isPending} onEmailChange={setEmail} onSubmit={handleSubmit} />}
 
-      <p className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
+      <p className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
         <Link to="/login" className="font-medium text-brand-600 hover:underline">
           Back to sign in
         </Link>

@@ -6,7 +6,7 @@ import { BUTTON_PRIMARY, BUTTON_SECONDARY } from "../lib/designTokens";
 
 export function FormActions({ isPending, onCancel }) {
   return (
-    <div className="flex justify-end gap-3 border-t border-slate-100 pt-4 dark:border-slate-700">
+    <div className="flex justify-end gap-3 border-t border-gray-100 pt-4 dark:border-gray-700">
       <button type="button" onClick={onCancel} className={`${BUTTON_SECONDARY} text-sm`}>
         Cancel
       </button>

@@ -18,7 +18,7 @@ const INITIAL_FORM = {
 function ContactFormNameField({ form, handleChange }) {
   return (
     <div className="col-span-2 flex flex-col gap-1">
-      <label className="text-xs font-medium text-slate-600 dark:text-slate-400" htmlFor="contact-name">
+      <label className="text-xs font-medium text-gray-600 dark:text-gray-400" htmlFor="contact-name">
         Name <span className="text-red-500">*</span>
       </label>
       <input id="contact-name" name="name" value={form.name} onChange={handleChange}
@@ -31,19 +31,19 @@ function ContactFormDetailFields({ form, handleChange }) {
   return (
     <>
       <div className="flex flex-col gap-1">
-        <label className="text-xs font-medium text-slate-600 dark:text-slate-400" htmlFor="contact-company">Company</label>
+        <label className="text-xs font-medium text-gray-600 dark:text-gray-400" htmlFor="contact-company">Company</label>
         <input id="contact-company" name="company" value={form.company} onChange={handleChange} maxLength={200} className={INPUT_BASE} placeholder="Acme Corp" />
       </div>
       <div className="flex flex-col gap-1">
-        <label className="text-xs font-medium text-slate-600 dark:text-slate-400" htmlFor="contact-role">Role</label>
+        <label className="text-xs font-medium text-gray-600 dark:text-gray-400" htmlFor="contact-role">Role</label>
         <input id="contact-role" name="role" value={form.role} onChange={handleChange} maxLength={200} className={INPUT_BASE} placeholder="Recruiter" />
       </div>
       <div className="flex flex-col gap-1">
-        <label className="text-xs font-medium text-slate-600 dark:text-slate-400" htmlFor="contact-email">Email</label>
+        <label className="text-xs font-medium text-gray-600 dark:text-gray-400" htmlFor="contact-email">Email</label>
         <input id="contact-email" name="email" type="email" value={form.email} onChange={handleChange} maxLength={254} className={INPUT_BASE} placeholder="jane@acme.com" />
       </div>
       <div className="flex flex-col gap-1">
-        <label className="text-xs font-medium text-slate-600 dark:text-slate-400" htmlFor="contact-relationship">Relationship</label>
+        <label className="text-xs font-medium text-gray-600 dark:text-gray-400" htmlFor="contact-relationship">Relationship</label>
         <select id="contact-relationship" name="relationship" value={form.relationship} onChange={handleChange} className={INPUT_BASE}>
           {RELATIONSHIP_OPTIONS.map((r) => (<option key={r} value={r}>{r.replace("_", " ")}</option>))}
         </select>
@@ -71,7 +71,7 @@ function ContactFormActions({ isPending, nameValue, onDone }) {
       >
         {isPending ? "Saving…" : "Add Contact"}
       </button>
-      <button type="button" onClick={() => onDone?.()} className="text-slate-500 hover:bg-slate-100 rounded-button active:scale-[0.98] transition-all duration-150 font-medium text-xs px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:text-slate-400 dark:hover:bg-slate-700">
+      <button type="button" onClick={() => onDone?.()} className="text-gray-500 hover:bg-gray-100 rounded-button active:scale-[0.98] transition-all duration-150 font-medium text-xs px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:text-gray-400 dark:hover:bg-gray-700">
         Cancel
       </button>
     </div>
@@ -107,7 +107,7 @@ function ContactForm({ applicationId, onDone }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-3 rounded-card border border-slate-200 px-3 py-3 dark:border-slate-700">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-3 rounded-card border border-gray-200 px-3 py-3 dark:border-gray-700">
       <ContactFormFields form={form} handleChange={handleChange} />
       {error && <p className="text-xs text-red-500">{error}</p>}
       <ContactFormActions isPending={isPending} nameValue={form.name} onDone={onDone} />

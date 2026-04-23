@@ -40,16 +40,16 @@ function ChangePasswordCard() {
   }, [current, newPw, confirm]);
 
   return (
-    <div className="rounded-card border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800">
-      <h2 className="mb-1 text-lg font-semibold text-slate-900 dark:text-slate-100">
+    <div className="rounded-card border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+      <h2 className="mb-1 text-lg font-semibold text-gray-900 dark:text-gray-100">
         Change password
       </h2>
-      <p className="mb-5 text-sm text-slate-500 dark:text-slate-400">
+      <p className="mb-5 text-sm text-gray-500 dark:text-gray-400">
         Update your account password. Choose a strong password you don't use elsewhere.
       </p>
       <div className="flex max-w-sm flex-col gap-4">
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="pw-current" className="text-sm font-medium text-slate-700 dark:text-slate-300">
+          <label htmlFor="pw-current" className="text-sm font-medium text-gray-700 dark:text-gray-300">
             Current password
           </label>
           <input
@@ -57,11 +57,11 @@ function ChangePasswordCard() {
             type="password"
             value={current}
             onChange={(e) => setCurrent(e.target.value)}
-            className="rounded-input border border-slate-300 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500/20 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200"
+            className="rounded-input border border-gray-300 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500/20 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
           />
         </div>
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="pw-new" className="text-sm font-medium text-slate-700 dark:text-slate-300">
+          <label htmlFor="pw-new" className="text-sm font-medium text-gray-700 dark:text-gray-300">
             New password
           </label>
           <input
@@ -69,11 +69,11 @@ function ChangePasswordCard() {
             type="password"
             value={newPw}
             onChange={(e) => setNewPw(e.target.value)}
-            className="rounded-input border border-slate-300 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500/20 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200"
+            className="rounded-input border border-gray-300 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500/20 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
           />
         </div>
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="pw-confirm" className="text-sm font-medium text-slate-700 dark:text-slate-300">
+          <label htmlFor="pw-confirm" className="text-sm font-medium text-gray-700 dark:text-gray-300">
             Confirm new password
           </label>
           <input
@@ -81,7 +81,7 @@ function ChangePasswordCard() {
             type="password"
             value={confirm}
             onChange={(e) => setConfirm(e.target.value)}
-            className="rounded-input border border-slate-300 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500/20 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200"
+            className="rounded-input border border-gray-300 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500/20 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
           />
         </div>
         {pwError && (
@@ -140,21 +140,21 @@ function DangerZone() {
           aria-modal="true"
           aria-labelledby="delete-acct-title"
         >
-          <div className="w-full max-w-sm rounded-card bg-white p-6 shadow-modal dark:bg-slate-800">
+          <div className="w-full max-w-sm rounded-card bg-white p-6 shadow-modal dark:bg-gray-800">
             <h3
               id="delete-acct-title"
-              className="text-base font-semibold text-slate-900 dark:text-slate-100"
+              className="text-base font-semibold text-gray-900 dark:text-gray-100"
             >
               Delete account?
             </h3>
-            <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
               This will permanently delete your account and all data. This action cannot be undone.
             </p>
             <div className="mt-5 flex justify-end gap-3">
               <button
                 type="button"
                 onClick={() => setShowModal(false)}
-                className="rounded-button border border-slate-300 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
+                className="rounded-button border border-gray-300 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
               >
                 Cancel
               </button>
