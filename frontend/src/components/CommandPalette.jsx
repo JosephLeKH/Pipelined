@@ -11,7 +11,7 @@ import { useCommandPaletteSearch, PALETTE_CLIENT_LIMIT } from "../hooks/useComma
 import { useCommandPaletteActions } from "../hooks/useCommandPaletteActions";
 import { useCommandPaletteKeyboard } from "../hooks/useCommandPaletteKeyboard";
 import { STAGE_COLORS, DEFAULT_STAGE_COLOR } from "../lib/constants";
-import { BADGE_BASE } from "../lib/designTokens";
+import { BADGE_BASE, MODAL_CARD } from "../lib/designTokens";
 import ManualAddForm from "./ManualAddForm";
 
 const PALETTE_DEBOUNCE_MS = 200;
@@ -96,7 +96,7 @@ function CommandPaletteDialog({ query, setQuery, filteredApps, actions, idx, act
         role="dialog"
         aria-modal="true"
         aria-label="Command palette"
-        className="fixed left-1/2 top-[20%] z-50 w-full max-w-xl -translate-x-1/2 overflow-hidden rounded-2xl border border-border-default bg-white shadow-modal dark:bg-gray-800 dark:border-dark-border"
+        className={`${MODAL_CARD} fixed left-1/2 top-[20%] z-50 -translate-x-1/2 max-w-xl overflow-hidden`}
       >
         <div className="flex items-center gap-2 border-b border-border-default px-3">
           <SearchIcon className="h-4 w-4 shrink-0 text-gray-400" />
