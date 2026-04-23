@@ -71,11 +71,11 @@ function OfferDetailsSection({ application, onUpdate }) {
   );
 
   return (
-    <div className="flex flex-col gap-2 rounded-lg border border-emerald-200 bg-emerald-50 p-3 dark:border-emerald-800 dark:bg-emerald-900/20">
+    <div className="flex flex-col gap-2 rounded-lg border border-brand-200 bg-brand-50 p-3 dark:border-brand-800 dark:bg-brand-900/20">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-1.5 text-sm font-semibold text-emerald-800 dark:text-emerald-300"
+        className="flex items-center gap-1.5 text-sm font-semibold text-brand-800 dark:text-brand-300"
         aria-expanded={open}
       >
         {open ? (

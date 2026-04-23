@@ -152,14 +152,14 @@ describe("Analytics", () => {
     expect(screen.getByText("Offer")).toBeInTheDocument();
   });
 
-  it("should color-code high conversion rate in emerald", async () => {
+  it("should color-code high conversion rate in brand color", async () => {
     renderAnalytics();
 
     await screen.findByText("Conversion Rates by Stage");
 
-    // Applied → Phone Screen: 70% → emerald
+    // Applied → Phone Screen: 70% → brand (high conversion)
     const cell = screen.getByText("70%");
-    expect(cell.className).toMatch(/text-emerald/);
+    expect(cell.className).toMatch(/text-brand/);
   });
 
   it("should color-code mid conversion rate in amber", async () => {

@@ -7,6 +7,7 @@ import Activity from "lucide-react/dist/esm/icons/activity";
 
 import NavBar from "../components/NavBar";
 import { useActivityFeed } from "../hooks/useActivity";
+import { CARD_BASE } from "../lib/designTokens";
 
 const TIME_RANGES = [
   { label: "Last 7 days", days: 7 },
@@ -104,14 +105,14 @@ function ActivityTimeline({ isLoading, entries, onEntryClick }) {
   if (isLoading) {
     return (
       <div className="flex justify-center py-16">
-        <div className="h-6 w-6 animate-spin rounded-full border-4 border-brand-500 border-t-transparent" />
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-brand-500 border-t-transparent" />
       </div>
     );
   }
 
   if (entries.length === 0) {
     return (
-      <div className="rounded-card border border-gray-200 bg-white px-6 py-16 text-center dark:border-gray-700 dark:bg-gray-800">
+      <div className={`${CARD_BASE} px-6 py-16 text-center`}>
         <Activity className="mx-auto mb-3 h-10 w-10 text-gray-300 dark:text-gray-600" />
         <p className="text-sm font-medium text-gray-900 dark:text-gray-100">No activity yet</p>
         <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
@@ -122,7 +123,7 @@ function ActivityTimeline({ isLoading, entries, onEntryClick }) {
   }
 
   return (
-    <div className="rounded-card border border-gray-200 bg-white px-4 dark:border-gray-700 dark:bg-gray-800">
+    <div className={`${CARD_BASE} px-4`}>
       <div className="relative border-l border-gray-200 pl-4 dark:border-gray-700 ml-1.5">
         {entries.map((entry, idx) => (
           <TimelineEntry

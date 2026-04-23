@@ -51,7 +51,7 @@ function SettingsProfileSection() {
 
   return (
     <div className={`${CARD_BASE} p-6`}>
-      <h2 className="mb-1 text-lg font-semibold text-gray-900 dark:text-gray-100">Profile</h2>
+      <h2 className="mb-1 text-lg font-semibold font-display text-gray-900 dark:text-gray-100">Profile</h2>
       <p className="mb-6 text-sm text-gray-500 dark:text-gray-400">
         Manage your display name, email, and timezone.
       </p>

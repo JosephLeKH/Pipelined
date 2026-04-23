@@ -43,7 +43,7 @@ function ChangePasswordCard() {
 
   return (
     <div className={`${CARD_BASE} p-6`}>
-      <h2 className="mb-1 text-lg font-semibold text-gray-900 dark:text-gray-100">
+      <h2 className="mb-1 text-lg font-semibold font-display text-gray-900 dark:text-gray-100">
         Change password
       </h2>
       <p className="mb-5 text-sm text-gray-500 dark:text-gray-400">
@@ -119,7 +119,7 @@ function DangerZone() {
         <div className="flex items-start gap-3">
           <TriangleAlert className="mt-0.5 h-5 w-5 shrink-0 text-rose-600 dark:text-rose-400" aria-hidden="true" />
           <div className="flex-1">
-            <h2 className="text-lg font-semibold text-rose-900 dark:text-rose-200">Danger zone</h2>
+            <h2 className="text-lg font-semibold font-display text-rose-900 dark:text-rose-200">Danger zone</h2>
             <p className="mt-1 text-sm text-rose-700 dark:text-rose-300">
               Permanently delete your account and all associated data — applications, calendar events,
               contacts, and resume. This cannot be undone.

@@ -79,7 +79,7 @@ function TemplateRow({ template }) {
               onClick={handleRename}
               disabled={isUpdating}
               aria-label="Confirm rename"
-              className="rounded p-1 text-emerald-600 hover:bg-emerald-50 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:hover:bg-emerald-900/20"
+              className="rounded p-1 text-brand-600 hover:bg-brand-50 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:hover:bg-brand-900/20"
             >
               <Check className="h-4 w-4" />
             </button>

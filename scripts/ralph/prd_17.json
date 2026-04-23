@@ -1,7 +1,7 @@
 {
   "project": "Pipelined",
   "branchName": "ralph/pipelined-v17",
-  "description": "Page-level UI redesign: apply Anthropic brand system (from prd_16) to every page — landing, auth, dashboard, calendar, analytics, settings, job board, modals, and empty states. Depends on prd_16 design tokens being merged first.",
+  "description": "Page-level UI redesign: apply Anthropic brand system (from prd_16) to every page \u2014 landing, auth, dashboard, calendar, analytics, settings, job board, modals, and empty states. Depends on prd_16 design tokens being merged first.",
   "userStories": [
     {
       "id": "US-226",
@@ -19,7 +19,7 @@
       ],
       "priority": 1,
       "passes": true,
-      "notes": "Landing page is the first impression. Must feel warm, editorial, confident — not flashy SaaS."
+      "notes": "Landing page is the first impression. Must feel warm, editorial, confident \u2014 not flashy SaaS."
     },
     {
       "id": "US-227",
@@ -59,7 +59,7 @@
     {
       "id": "US-229",
       "title": "Redesign calendar page",
-      "description": "Update frontend/src/pages/Calendar.jsx. Page header: font-display text-xl font-semibold, month navigation with BUTTON_GHOST arrows. Calendar grid: bg-white border border-border-default rounded-xl. Day cells: border-border-default dividers, today highlighted with bg-brand-500/10 (subtle warm tint, not solid color). Event pills: rounded-full px-2 py-0.5 text-xs, using muted status colors (BADGE_* palette — not saturated). Hover on event shows tooltip with CARD_BASE styling. Month/week toggle: BUTTON_SECONDARY group. Remove any colored day headers or gradient event backgrounds.",
+      "description": "Update frontend/src/pages/Calendar.jsx. Page header: font-display text-xl font-semibold, month navigation with BUTTON_GHOST arrows. Calendar grid: bg-white border border-border-default rounded-xl. Day cells: border-border-default dividers, today highlighted with bg-brand-500/10 (subtle warm tint, not solid color). Event pills: rounded-full px-2 py-0.5 text-xs, using muted status colors (BADGE_* palette \u2014 not saturated). Hover on event shows tooltip with CARD_BASE styling. Month/week toggle: BUTTON_SECONDARY group. Remove any colored day headers or gradient event backgrounds.",
       "acceptanceCriteria": [
         "Calendar container uses border-border-default, not shadow",
         "Today cell uses subtle bg-brand-500/10 highlight",
@@ -70,12 +70,12 @@
       ],
       "priority": 2,
       "passes": true,
-      "notes": "Calendar is data-dense — warm borders and muted colors prevent visual overload."
+      "notes": "Calendar is data-dense \u2014 warm borders and muted colors prevent visual overload."
     },
     {
       "id": "US-230",
       "title": "Redesign analytics page",
-      "description": "Update frontend/src/pages/Analytics.jsx. Page header: font-display text-xl. Chart containers: CARD_BASE with generous p-6 padding. Chart color palette: use the three Anthropic accent colors as the primary series — #d97757 (orange), #6a9bcc (blue), #788c5d (green), plus gray-300 and gray-400 for secondary series. Remove any indigo/violet chart colors. Axis labels: text-xs text-gray-400 font-sans (Lora). Chart tooltips: bg-white border border-border-default rounded-lg shadow-card text-sm. Summary stat cards at top: same style as dashboard stats (font-display numbers, text-gray-500 labels). Remove any gradient chart backgrounds or colored card headers.",
+      "description": "Update frontend/src/pages/Analytics.jsx. Page header: font-display text-xl. Chart containers: CARD_BASE with generous p-6 padding. Chart color palette: use the three Anthropic accent colors as the primary series \u2014 #d97757 (orange), #6a9bcc (blue), #788c5d (green), plus gray-300 and gray-400 for secondary series. Remove any indigo/violet chart colors. Axis labels: text-xs text-gray-400 font-sans (Lora). Chart tooltips: bg-white border border-border-default rounded-lg shadow-card text-sm. Summary stat cards at top: same style as dashboard stats (font-display numbers, text-gray-500 labels). Remove any gradient chart backgrounds or colored card headers.",
       "acceptanceCriteria": [
         "Chart series use #d97757, #6a9bcc, #788c5d as primary colors",
         "No indigo/violet in any chart color",
@@ -103,7 +103,7 @@
       ],
       "priority": 2,
       "passes": true,
-      "notes": "Job board has many cards — clean layout with warm borders prevents visual fatigue."
+      "notes": "Job board has many cards \u2014 clean layout with warm borders prevents visual fatigue."
     },
     {
       "id": "US-232",
@@ -119,7 +119,7 @@
       ],
       "priority": 2,
       "passes": true,
-      "notes": "Settings is a form-heavy page — clean typography hierarchy matters most here."
+      "notes": "Settings is a form-heavy page \u2014 clean typography hierarchy matters most here."
     },
     {
       "id": "US-233",
@@ -134,8 +134,8 @@
         "npm run build succeeds"
       ],
       "priority": 2,
-      "passes": false,
-      "notes": "Modals appear in every flow — consistency here ties the whole redesign together."
+      "passes": true,
+      "notes": "Modals appear in every flow \u2014 consistency here ties the whole redesign together."
     },
     {
       "id": "US-234",
@@ -150,13 +150,13 @@
         "npm run build succeeds"
       ],
       "priority": 3,
-      "passes": false,
-      "notes": "Empty/loading states are seen frequently — they shape the perceived quality of the app."
+      "passes": true,
+      "notes": "Empty/loading states are seen frequently \u2014 they shape the perceived quality of the app."
     },
     {
       "id": "US-235",
       "title": "Replace all icon styling to single-color warm gray",
-      "description": "Audit all Lucide icon usage across the frontend (grep for lucide-react imports). Currently icons are wrapped in colored circles (bg-indigo-100 text-indigo-600, bg-blue-100 text-blue-600, etc.) or use brand-colored fills. Replace all icon styling: remove colored circle wrappers, icons should be bare with text-gray-400 (default), text-gray-600 (emphasis), or text-brand-500 (interactive/accent). Icon size should be consistent: w-5 h-5 for inline, w-6 h-6 for standalone, w-8 h-8 for empty states. No colored backgrounds behind icons — Anthropic uses bare monochrome icons. Exception: status-specific icons (checkmark for success, X for error) can use their BADGE_* token text color.",
+      "description": "Audit all Lucide icon usage across the frontend (grep for lucide-react imports). Currently icons are wrapped in colored circles (bg-indigo-100 text-indigo-600, bg-blue-100 text-blue-600, etc.) or use brand-colored fills. Replace all icon styling: remove colored circle wrappers, icons should be bare with text-gray-400 (default), text-gray-600 (emphasis), or text-brand-500 (interactive/accent). Icon size should be consistent: w-5 h-5 for inline, w-6 h-6 for standalone, w-8 h-8 for empty states. No colored backgrounds behind icons \u2014 Anthropic uses bare monochrome icons. Exception: status-specific icons (checkmark for success, X for error) can use their BADGE_* token text color.",
       "acceptanceCriteria": [
         "No bg-*-100 text-*-600 colored circle icon wrappers remain",
         "Default icons are text-gray-400 or text-gray-600",
@@ -177,7 +177,7 @@
         "grep -r 'bg-gradient\\|from-\\|to-\\|via-' frontend/src returns zero matches (excluding node_modules)",
         "All former gradients replaced with solid brand colors or neutral backgrounds",
         "No inline style gradients in JSX",
-        "Visual appearance is consistent — no missing backgrounds or invisible text",
+        "Visual appearance is consistent \u2014 no missing backgrounds or invisible text",
         "npm run build succeeds"
       ],
       "priority": 1,

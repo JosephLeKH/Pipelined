@@ -19,7 +19,7 @@ const CONVERSION_LOW_THRESHOLD = 0.3;
 const AVG_DAYS_HIGHLIGHT_THRESHOLD = 21;
 
 function rateColorClass(rate) {
-  if (rate > CONVERSION_HIGH_THRESHOLD) return "text-emerald-600 dark:text-emerald-400 font-medium";
+  if (rate > CONVERSION_HIGH_THRESHOLD) return "text-brand-600 dark:text-brand-400 font-medium";
   if (rate >= CONVERSION_LOW_THRESHOLD) return "text-amber-600 dark:text-amber-400 font-medium";
   return "text-rose-600 dark:text-rose-400 font-medium";
 }

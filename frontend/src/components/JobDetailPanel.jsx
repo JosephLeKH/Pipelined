@@ -35,7 +35,7 @@ function MetaRow({ job }) {
         </span>
       )}
       {job.salary_range && (
-        <span className="flex items-center gap-1 text-sm font-semibold text-emerald-600 dark:text-emerald-400">
+        <span className="flex items-center gap-1 text-sm font-semibold text-gray-700 dark:text-gray-300">
           <DollarSign className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
           {job.salary_range}
         </span>

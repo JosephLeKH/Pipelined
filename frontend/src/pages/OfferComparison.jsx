@@ -70,7 +70,7 @@ function LoadingState() {
     <>
       <NavBar />
       <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-emerald-500 border-t-transparent" />
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-brand-500 border-t-transparent" />
       </div>
     </>
   );
@@ -92,9 +92,9 @@ function EmptyState() {
     <>
       <NavBar />
       <div className="flex min-h-[60vh] flex-col items-center justify-center gap-3 text-gray-500 dark:text-gray-400">
-        <Trophy className="h-12 w-12 text-gray-300 dark:text-gray-600" />
-        <p className="text-lg font-medium">No offers yet</p>
-        <p className="text-sm">
+        <Trophy className="mb-2 h-10 w-10 text-gray-300 dark:text-gray-600" />
+        <p className="text-sm font-medium font-display text-gray-900 dark:text-gray-100">No offers yet</p>
+        <p className="text-xs font-sans text-gray-500 dark:text-gray-400">
           Move an application to the Offer stage to compare packages here.
         </p>
       </div>
@@ -129,7 +129,7 @@ function OfferHeaderCell({ app, isWinner, onMarkWinner }) {
           className={`mt-1 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium transition-colors ${
             isWinner
               ? "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300"
-              : "bg-gray-100 text-gray-600 hover:bg-emerald-100 hover:text-emerald-700 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-emerald-900/40 dark:hover:text-emerald-300"
+              : "bg-gray-100 text-gray-600 hover:bg-brand-100 hover:text-brand-700 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-brand-900/40 dark:hover:text-brand-300"
           }`}
         >
           <Trophy className="h-3 w-3" />

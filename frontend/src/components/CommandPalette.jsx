@@ -91,14 +91,14 @@ function CommandPaletteResults({ query, filteredApps, actions, idx, activate, hi
 function CommandPaletteDialog({ query, setQuery, filteredApps, actions, idx, activate, close, highlightRef }) {
   return (
     <>
-      <div className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm" onClick={close} aria-hidden="true" />
+      <div className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm" onClick={close} aria-hidden="true" />
       <div
         role="dialog"
         aria-modal="true"
         aria-label="Command palette"
-        className="fixed left-1/2 top-[20%] z-50 w-full max-w-xl -trangray-x-1/2 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-modal dark:border-gray-700 dark:bg-gray-800"
+        className="fixed left-1/2 top-[20%] z-50 w-full max-w-xl -translate-x-1/2 overflow-hidden rounded-2xl border border-border-default bg-white shadow-modal dark:bg-gray-800 dark:border-dark-border"
       >
-        <div className="flex items-center gap-2 border-b border-gray-200 px-3 dark:border-gray-700">
+        <div className="flex items-center gap-2 border-b border-border-default px-3">
           <SearchIcon className="h-4 w-4 shrink-0 text-gray-400" />
           <input
             autoFocus
