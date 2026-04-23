@@ -4,13 +4,13 @@ import Search from "lucide-react/dist/esm/icons/search";
 
 import ApiErrorMessage from "../components/ApiErrorMessage";
 import JobCard from "../components/JobCard";
-import { BUTTON_GHOST } from "../lib/designTokens";
+import { BUTTON_GHOST, BUTTON_SECONDARY } from "../lib/designTokens";
 
 function LoadingSkeleton() {
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
       {Array.from({ length: 6 }, (_, i) => (
-        <div key={i} className="h-52 animate-pulse rounded-card bg-gray-100 dark:bg-gray-700" />
+        <div key={i} className="h-52 animate-pulse rounded-card bg-surface-tertiary" />
       ))}
     </div>
   );
@@ -49,7 +49,7 @@ export function JobBoardContent({ isLoading, error, jobs, total, hasFilters, has
       </div>
       {hasMore && (
         <div className="flex flex-col items-center gap-2 pt-2">
-          <button type="button" onClick={onLoadMore} className="rounded-button border border-gray-300 bg-white px-6 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700">
+          <button type="button" onClick={onLoadMore} className={BUTTON_SECONDARY}>
             Load more
           </button>
         </div>

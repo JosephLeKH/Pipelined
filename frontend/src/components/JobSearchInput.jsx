@@ -5,6 +5,7 @@ import { useSearchParams } from "react-router-dom";
 import SearchIcon from "lucide-react/dist/esm/icons/search";
 
 import { SEARCH_DEBOUNCE_MS } from "../lib/constants";
+import { INPUT_BASE } from "../lib/designTokens";
 
 export default function JobSearchInput() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -31,18 +32,16 @@ export default function JobSearchInput() {
   );
 
   return (
-    <div className="flex items-center rounded-lg bg-white px-4 py-3 shadow-sm dark:bg-gray-800">
-      <div className="relative flex items-center">
-        <SearchIcon className="absolute left-2 h-4 w-4 text-gray-400" aria-hidden="true" />
-        <input
-          type="text"
-          aria-label="search jobs"
-          value={searchValue}
-          onChange={handleChange}
-          placeholder="Role, company, description..."
-          className="rounded border border-gray-300 pl-8 pr-3 py-1.5 text-sm w-72 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 dark:placeholder-gray-400"
-        />
-      </div>
+    <div className="relative flex items-center">
+      <SearchIcon className="pointer-events-none absolute left-3 h-4 w-4 text-gray-400" aria-hidden="true" />
+      <input
+        type="text"
+        aria-label="search jobs"
+        value={searchValue}
+        onChange={handleChange}
+        placeholder="Role, company, description..."
+        className={`pl-9 ${INPUT_BASE}`}
+      />
     </div>
   );
 }

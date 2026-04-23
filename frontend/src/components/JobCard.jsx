@@ -17,7 +17,7 @@ function JobCard({ job, onSelect }) {
 
   return (
     <article
-      className={`relative flex flex-col gap-3 p-4 transition-all duration-150 hover:shadow-card-hover cursor-pointer ${CARD_BASE}`}
+      className={`relative flex flex-col gap-3 p-4 transition-all duration-150 hover:border-border-strong cursor-pointer ${CARD_BASE}`}
       data-testid="job-card"
       onClick={() => onSelect?.(job)}
     >
@@ -37,7 +37,7 @@ function JobCard({ job, onSelect }) {
           company={job.company ?? ""}
           size={32}
         />
-        <span className="flex-1 truncate text-sm font-medium text-gray-900 dark:text-gray-100">
+        <span className="flex-1 truncate font-display font-medium text-gray-900 text-sm">
           {job.company ?? "Unknown Company"}
         </span>
         {dateLabel && (
@@ -46,7 +46,7 @@ function JobCard({ job, onSelect }) {
       </div>
 
       {/* Role title */}
-      <h3 className="pr-2 text-lg font-semibold leading-snug text-gray-900 dark:text-gray-100">
+      <h3 className="pr-2 text-base font-semibold font-sans leading-snug text-gray-700">
         {job.role ?? "Untitled Role"}
       </h3>
 
@@ -65,7 +65,7 @@ function JobCard({ job, onSelect }) {
 
       {/* Salary */}
       {job.salary_range && (
-        <span className="flex items-center gap-1 text-sm font-semibold text-emerald-600 dark:text-emerald-400">
+        <span className="flex items-center gap-1 text-sm text-gray-400">
           <DollarSign className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
           {job.salary_range}
         </span>

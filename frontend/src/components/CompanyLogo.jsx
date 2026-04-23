@@ -1,26 +1,16 @@
 /** Company logo via Clearbit favicon API with letter-circle fallback. */
 
 import { useState } from "react";
-import { CLEARBIT_LOGO_BASE_URL, COMPANY_LOGO_FALLBACK_COLORS } from "../lib/constants";
-
-function getFallbackColor(company) {
-  let hash = 0;
-  const s = company || "";
-  for (let i = 0; i < s.length; i++) {
-    hash = (hash * 31 + s.charCodeAt(i)) & 0x7fffffff;
-  }
-  return COMPANY_LOGO_FALLBACK_COLORS[hash % COMPANY_LOGO_FALLBACK_COLORS.length];
-}
+import { CLEARBIT_LOGO_BASE_URL } from "../lib/constants";
 
 function CompanyLogo({ company_domain, company, size = 32 }) {
   const [hasError, setHasError] = useState(false);
   const initial = (company || "?")[0].toUpperCase();
-  const colorClass = getFallbackColor(company);
 
   if (!company_domain || hasError) {
     return (
       <span
-        className={`inline-flex shrink-0 items-center justify-center rounded-full text-white ${colorClass}`}
+        className="inline-flex shrink-0 items-center justify-center rounded-full bg-surface-secondary text-gray-500 font-display font-medium"
         style={{ width: size, height: size, fontSize: Math.round(size * 0.45) }}
         aria-hidden="true"
         data-testid="company-logo-fallback"

@@ -5,7 +5,7 @@ import { useState, useRef, useEffect } from "react";
 import Loader2 from "lucide-react/dist/esm/icons/loader-2";
 import MoreHorizontal from "lucide-react/dist/esm/icons/more-horizontal";
 
-import { BUTTON_SECONDARY, MODAL_CARD } from "../lib/designTokens";
+import { BUTTON_DANGER, BUTTON_PRIMARY, BUTTON_SECONDARY, INPUT_BASE, MODAL_BACKDROP, MODAL_CARD } from "../lib/designTokens";
 import { useAuth } from "../context/AuthContext";
 import { BULK_EDIT_MAX_IDS } from "../lib/constants";
 
@@ -67,7 +67,7 @@ export function DeleteConfirmModal({ appId, onConfirm, onCancel }) {
       role="dialog"
       aria-modal="true"
       aria-labelledby="delete-confirm-heading"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+      className={MODAL_BACKDROP}
     >
       <div className={`w-80 p-6 ${MODAL_CARD}`}>
         <h2 id="delete-confirm-heading" className="mb-2 text-base font-semibold text-gray-900 dark:text-gray-100">Delete application?</h2>
@@ -77,7 +77,7 @@ export function DeleteConfirmModal({ appId, onConfirm, onCancel }) {
         </p>
         <div className="flex justify-end gap-3">
           <button type="button" onClick={onCancel} autoFocus className={`${BUTTON_SECONDARY} text-sm`}>Cancel</button>
-          <button type="button" onClick={() => onConfirm(appId)} className="rounded bg-red-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-red-700">
+          <button type="button" onClick={() => onConfirm(appId)} className={`${BUTTON_DANGER} px-3 py-1.5`}>
             Delete
           </button>
         </div>
@@ -98,7 +98,7 @@ export function BulkDeleteConfirmModal({ count, onConfirm, onCancel }) {
       role="dialog"
       aria-modal="true"
       aria-labelledby="bulk-delete-heading"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+      className={MODAL_BACKDROP}
     >
       <div className={`w-80 p-6 ${MODAL_CARD}`}>
         <h2 id="bulk-delete-heading" className="mb-2 text-base font-semibold text-gray-900 dark:text-gray-100">
@@ -109,7 +109,7 @@ export function BulkDeleteConfirmModal({ count, onConfirm, onCancel }) {
         </p>
         <div className="flex justify-end gap-3">
           <button type="button" onClick={onCancel} autoFocus className={`${BUTTON_SECONDARY} text-sm`}>Cancel</button>
-          <button type="button" onClick={onConfirm} className="rounded bg-red-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-red-700">
+          <button type="button" onClick={onConfirm} className={`${BUTTON_DANGER} px-3 py-1.5`}>
             Delete {count}
           </button>
         </div>
@@ -122,12 +122,12 @@ function BulkMoveControls({ stageOptions, selectedStage, setSelectedStage, isMov
   return (
     <>
       <select aria-label="Move to stage" value={selectedStage} onChange={(e) => setSelectedStage(e.target.value)} disabled={isBusy}
-        className="border border-gray-300 bg-white rounded-input px-2 py-1 text-sm text-gray-700 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none transition-colors disabled:opacity-50 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200">
+        className={`${INPUT_BASE} w-auto px-2 py-1`}>
         <option value="">Move to stage…</option>
         {stageOptions.map((s) => <option key={s} value={s}>{s}</option>)}
       </select>
       <button type="button" disabled={!selectedStage || isBusy} onClick={onMove}
-        className="flex items-center gap-1 bg-brand-500 text-white rounded-button shadow-sm hover:bg-brand-600 active:scale-[0.98] transition-all duration-150 font-medium text-sm px-3 py-1 focus:outline-none focus:ring-2 focus:ring-brand-500/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none">
+        className={`${BUTTON_PRIMARY} flex items-center gap-1 px-3 py-1 active:scale-[0.98]`}>
         {isMoving ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" /> : null}
         Move
       </button>
@@ -136,7 +136,7 @@ function BulkMoveControls({ stageOptions, selectedStage, setSelectedStage, isMov
 }
 
 function BulkEditControls({ followUpDate, setFollowUpDate, tagsAdd, setTagsAdd, tagsRemove, setTagsRemove, isBusy, overLimit, isEditing, onApply }) {
-  const inputCls = "border border-gray-300 bg-white rounded-input px-2 py-1 text-sm text-gray-700 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none transition-colors disabled:opacity-50 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200";
+  const inputCls = `${INPUT_BASE} w-auto px-2 py-1`;
   return (
     <>
       <input type="date" aria-label="Follow-up date" value={followUpDate} onChange={(e) => setFollowUpDate(e.target.value)} disabled={isBusy || overLimit} className={inputCls} />
@@ -156,13 +156,13 @@ function BulkDangerControls({ selectedCount, isMerging, isDeleting, isBusy, onMe
     <>
       {selectedCount === 2 && (
         <button type="button" disabled={isBusy} onClick={onMerge}
-          className="flex items-center gap-1 rounded bg-brand-500 px-3 py-1 text-sm font-medium text-white hover:bg-brand-600 disabled:opacity-50">
+          className={`${BUTTON_PRIMARY} flex items-center gap-1 px-3 py-1`}>
           {isMerging ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" /> : null}
           Merge
         </button>
       )}
       <button type="button" disabled={isBusy} onClick={onDeleteSelected}
-        className="flex items-center gap-1 rounded bg-red-600 px-3 py-1 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50">
+        className={`${BUTTON_DANGER} flex items-center gap-1 px-3 py-1`}>
         {isDeleting ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" /> : null}
         Delete selected
       </button>

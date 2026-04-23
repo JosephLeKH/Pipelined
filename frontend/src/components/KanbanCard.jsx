@@ -2,8 +2,6 @@
 
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import Bell from "lucide-react/dist/esm/icons/bell";
-
 import { formatRelative, isStale, isFollowUpOverdue } from "../lib/dateUtils";
 import { CARD_BASE } from "../lib/designTokens";
 import { STAGE_COLORS, DEFAULT_STAGE_COLOR } from "../lib/constants";
