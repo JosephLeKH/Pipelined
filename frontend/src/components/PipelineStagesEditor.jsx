@@ -28,54 +28,7 @@ const STAGE_NAME_MAX_LENGTH = 40;
 const STAGES_MIN_COUNT = 2;
 const STAGES_MAX_COUNT = 10;
 
-function SortableStageItem({ id, value, onRename, onRemove, canRemove }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
-    useSortable({ id });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-  };
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className="flex items-center gap-2 rounded-card border border-slate-200 bg-white px-3 py-2 dark:border-slate-600 dark:bg-slate-700"
-    >
-      <button
-        type="button"
-        {...attributes}
-        {...listeners}
-        aria-label="Drag to reorder"
-        className="cursor-grab text-slate-400 hover:text-slate-600 focus:outline-none dark:text-slate-500 dark:hover:text-slate-300"
-      >
-        <GripVertical className="h-4 w-4" />
-      </button>
-      <input
-        type="text"
-        value={value}
-        maxLength={STAGE_NAME_MAX_LENGTH}
-        onChange={(e) => onRename(id, e.target.value)}
-        className="flex-1 rounded border-0 bg-transparent text-sm text-slate-800 focus:outline-none focus:ring-1 focus:ring-brand-500/30 dark:text-slate-200"
-        aria-label={`Stage name: ${value}`}
-      />
-      {canRemove && (
-        <button
-          type="button"
-          onClick={() => onRemove(id)}
-          aria-label={`Remove stage ${value}`}
-          className="text-slate-300 hover:text-red-500 focus:outline-none focus:ring-2 focus:ring-red-400 dark:text-slate-500 dark:hover:text-red-400"
-        >
-          <Trash2 className="h-4 w-4" />
-        </button>
-      )}
-    </div>
-  );
-}
-
-function PipelineStagesEditor({ initialStages, onSave, isSaving, saveError }) {
+function useStagesEditor(initialStages, onSave) {
   const [stages, setStages] = useState(() =>
     initialStages.map((name, i) => ({ id: `stage-${i}-${name}`, name }))
   );
@@ -84,19 +37,13 @@ function PipelineStagesEditor({ initialStages, onSave, isSaving, saveError }) {
 
   const sensors = useSensors(
     useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
 
   const handleDragEnd = useCallback((event) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
-    setStages((prev) => {
-      const oldIndex = prev.findIndex((s) => s.id === active.id);
-      const newIndex = prev.findIndex((s) => s.id === over.id);
-      return arrayMove(prev, oldIndex, newIndex);
-    });
+    setStages((prev) => arrayMove(prev, prev.findIndex((s) => s.id === active.id), prev.findIndex((s) => s.id === over.id)));
   }, []);
 
   const handleRename = useCallback((id, value) => {
@@ -110,32 +57,71 @@ function PipelineStagesEditor({ initialStages, onSave, isSaving, saveError }) {
   const handleAdd = useCallback(() => {
     const trimmed = newStageName.trim();
     if (!trimmed) return;
-    if (stages.length >= STAGES_MAX_COUNT) {
-      setLocalError(`Maximum ${STAGES_MAX_COUNT} stages allowed.`);
-      return;
-    }
+    if (stages.length >= STAGES_MAX_COUNT) { setLocalError(`Maximum ${STAGES_MAX_COUNT} stages allowed.`); return; }
     setLocalError(null);
-    setStages((prev) => [
-      ...prev,
-      { id: `stage-new-${Date.now()}`, name: trimmed },
-    ]);
+    setStages((prev) => [...prev, { id: `stage-new-${Date.now()}`, name: trimmed }]);
     setNewStageName("");
   }, [newStageName, stages.length]);
 
   const handleSave = useCallback(async () => {
     const names = stages.map((s) => s.name.trim()).filter(Boolean);
-    if (names.length < STAGES_MIN_COUNT) {
-      setLocalError(`At least ${STAGES_MIN_COUNT} stages are required.`);
-      return;
-    }
-    if (names.length > STAGES_MAX_COUNT) {
-      setLocalError(`Maximum ${STAGES_MAX_COUNT} stages allowed.`);
-      return;
-    }
+    if (names.length < STAGES_MIN_COUNT) { setLocalError(`At least ${STAGES_MIN_COUNT} stages are required.`); return; }
+    if (names.length > STAGES_MAX_COUNT) { setLocalError(`Maximum ${STAGES_MAX_COUNT} stages allowed.`); return; }
     setLocalError(null);
     await onSave(names);
   }, [stages, onSave]);
 
+  return { stages, sensors, newStageName, setNewStageName, localError, handleDragEnd, handleRename, handleRemove, handleAdd, handleSave };
+}
+
+function SortableStageItem({ id, value, onRename, onRemove, canRemove }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={{ transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1 }}
+      className="flex items-center gap-2 rounded-card border border-slate-200 bg-white px-3 py-2 dark:border-slate-600 dark:bg-slate-700"
+    >
+      <button type="button" {...attributes} {...listeners} aria-label="Drag to reorder" className="cursor-grab text-slate-400 hover:text-slate-600 focus:outline-none dark:text-slate-500 dark:hover:text-slate-300">
+        <GripVertical className="h-4 w-4" />
+      </button>
+      <input type="text" value={value} maxLength={STAGE_NAME_MAX_LENGTH} onChange={(e) => onRename(id, e.target.value)} className="flex-1 rounded border-0 bg-transparent text-sm text-slate-800 focus:outline-none focus:ring-1 focus:ring-brand-500/30 dark:text-slate-200" aria-label={`Stage name: ${value}`} />
+      {canRemove && (
+        <button type="button" onClick={() => onRemove(id)} aria-label={`Remove stage ${value}`} className="text-slate-300 hover:text-red-500 focus:outline-none focus:ring-2 focus:ring-red-400 dark:text-slate-500 dark:hover:text-red-400">
+          <Trash2 className="h-4 w-4" />
+        </button>
+      )}
+    </div>
+  );
+}
+
+function AddStageInput({ newStageName, onNameChange, onAdd }) {
+  return (
+    <div className="flex items-center gap-2">
+      <input type="text" value={newStageName} onChange={(e) => onNameChange(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); onAdd(); } }} placeholder="New stage name" maxLength={STAGE_NAME_MAX_LENGTH} aria-label="New stage name" className="flex-1 rounded-input border border-slate-300 px-3 py-1.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500/20 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200" />
+      <button type="button" onClick={onAdd} disabled={!newStageName.trim()} aria-label="Add stage" className="flex items-center gap-1 rounded-button bg-slate-100 px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-200 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600">
+        <Plus className="h-4 w-4" />
+        Add
+      </button>
+    </div>
+  );
+}
+
+function StagesSaveFooter({ count, onSave, isSaving }) {
+  return (
+    <div className="flex items-center justify-between border-t border-slate-100 pt-3 dark:border-slate-700">
+      <p className="text-xs text-slate-400">{count} / {STAGES_MAX_COUNT} stages</p>
+      <button type="button" onClick={onSave} disabled={isSaving} className="flex items-center gap-2 rounded-button bg-gradient-to-r from-brand-600 to-brand-500 px-4 py-2 text-sm font-medium text-white hover:from-brand-700 hover:to-brand-600 active:scale-[0.98] transition-all duration-150 disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:ring-offset-2">
+        {isSaving && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
+        Save stages
+      </button>
+    </div>
+  );
+}
+
+function PipelineStagesEditor({ initialStages, onSave, isSaving, saveError }) {
+  const { stages, sensors, newStageName, setNewStageName, localError, handleDragEnd, handleRename, handleRemove, handleAdd, handleSave } = useStagesEditor(initialStages, onSave);
   const errorMessage = localError ?? saveError;
 
   return (
@@ -144,62 +130,14 @@ function PipelineStagesEditor({ initialStages, onSave, isSaving, saveError }) {
         <SortableContext items={stages.map((s) => s.id)} strategy={verticalListSortingStrategy}>
           <div className="flex flex-col gap-2" aria-label="Pipeline stages list">
             {stages.map((stage) => (
-              <SortableStageItem
-                key={stage.id}
-                id={stage.id}
-                value={stage.name}
-                onRename={handleRename}
-                onRemove={handleRemove}
-                canRemove={stages.length > STAGES_MIN_COUNT}
-              />
+              <SortableStageItem key={stage.id} id={stage.id} value={stage.name} onRename={handleRename} onRemove={handleRemove} canRemove={stages.length > STAGES_MIN_COUNT} />
             ))}
           </div>
         </SortableContext>
       </DndContext>
-
-      {stages.length < STAGES_MAX_COUNT && (
-        <div className="flex items-center gap-2">
-          <input
-            type="text"
-            value={newStageName}
-            onChange={(e) => setNewStageName(e.target.value)}
-            onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleAdd(); } }}
-            placeholder="New stage name"
-            maxLength={STAGE_NAME_MAX_LENGTH}
-            aria-label="New stage name"
-            className="flex-1 rounded-input border border-slate-300 px-3 py-1.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500/20 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200"
-          />
-          <button
-            type="button"
-            onClick={handleAdd}
-            disabled={!newStageName.trim()}
-            aria-label="Add stage"
-            className="flex items-center gap-1 rounded-button bg-slate-100 px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-200 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600"
-          >
-            <Plus className="h-4 w-4" />
-            Add
-          </button>
-        </div>
-      )}
-
-      {errorMessage && (
-        <p role="alert" className="text-sm text-red-600 dark:text-red-400">{errorMessage}</p>
-      )}
-
-      <div className="flex items-center justify-between border-t border-slate-100 pt-3 dark:border-slate-700">
-        <p className="text-xs text-slate-400">
-          {stages.length} / {STAGES_MAX_COUNT} stages
-        </p>
-        <button
-          type="button"
-          onClick={handleSave}
-          disabled={isSaving}
-          className="flex items-center gap-2 rounded-button bg-gradient-to-r from-brand-600 to-brand-500 px-4 py-2 text-sm font-medium text-white hover:from-brand-700 hover:to-brand-600 active:scale-[0.98] transition-all duration-150 disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:ring-offset-2"
-        >
-          {isSaving && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
-          Save stages
-        </button>
-      </div>
+      {stages.length < STAGES_MAX_COUNT && <AddStageInput newStageName={newStageName} onNameChange={setNewStageName} onAdd={handleAdd} />}
+      {errorMessage && <p role="alert" className="text-sm text-red-600 dark:text-red-400">{errorMessage}</p>}
+      <StagesSaveFooter count={stages.length} onSave={handleSave} isSaving={isSaving} />
     </div>
   );
 }
