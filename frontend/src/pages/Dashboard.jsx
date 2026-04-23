@@ -47,7 +47,7 @@ function Dashboard() {
     <div className="flex min-h-screen flex-col bg-surface-secondary">
       <NavBar />
       <main className="flex-1 py-8">
-        <div className="max-w-7xl mx-auto px-6 space-y-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 space-y-6">
           <DashboardToolbar viewMode={viewMode} onSetViewMode={handleSetViewMode} isExporting={isExporting} onImport={() => setIsImportOpen(true)} onExport={handleExport} onAdd={() => setIsModalOpen(true)} />
           <OnboardingChecklist onAdd={() => setIsModalOpen(true)} />
           <FollowUpBanner followUpsDue={stats?.follow_ups_due ?? 0} onView={handleViewFollowUps} />

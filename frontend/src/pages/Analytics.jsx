@@ -68,7 +68,7 @@ function Analytics() {
   return (
     <div className="flex min-h-screen flex-col bg-surface-secondary dark:bg-gray-900">
       <NavBar />
-      <main className="flex-1 px-6 py-8">
+      <main className="flex-1 px-4 sm:px-6 py-8">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <h1 className="font-display text-xl font-semibold text-gray-900 dark:text-gray-100">Analytics</h1>
           <AnalyticsDateRangePicker days={days} setDays={setDays} />

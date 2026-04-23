@@ -212,7 +212,7 @@ function OfferComparison() {
   return (
     <>
       <NavBar />
-      <main className="px-6 py-8">
+      <main className="px-4 sm:px-6 py-8">
         <OfferComparisonHeader />
         <OfferComparisonTable apps={apps} winnerId={winnerId} handleSave={handleSave} handleMarkWinner={handleMarkWinner} />
       </main>

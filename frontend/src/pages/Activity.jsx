@@ -156,7 +156,7 @@ function ActivityPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <NavBar />
-      <main className="mx-auto max-w-2xl px-4 py-8">
+      <main className="mx-auto max-w-2xl px-4 sm:px-6 py-8">
         <ActivityHeader days={days} total={total} isLoading={isLoading} onDaysChange={setDays} />
         <ActivityTimeline isLoading={isLoading} entries={entries} onEntryClick={handleEntryClick} />
       </main>
