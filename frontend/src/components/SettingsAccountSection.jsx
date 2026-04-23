@@ -6,8 +6,7 @@ import Loader2 from "lucide-react/dist/esm/icons/loader-2";
 import TriangleAlert from "lucide-react/dist/esm/icons/alert-triangle";
 
 import { CARD_BASE, INPUT_BASE, INPUT_LABEL, BUTTON_PRIMARY, BUTTON_SECONDARY, BUTTON_DANGER, SUCCESS_BANNER } from "../lib/designTokens";
-
-const PW_MIN_LENGTH = 8;
+import { PASSWORD_MIN_LENGTH } from "../lib/constants";
 
 function ChangePasswordCard() {
   const [current, setCurrent] = useState("");
@@ -21,8 +20,8 @@ function ChangePasswordCard() {
     setPwError(null);
     setPwSaved(false);
     if (!current) { setPwError("Current password is required."); return; }
-    if (newPw.length < PW_MIN_LENGTH) {
-      setPwError(`New password must be at least ${PW_MIN_LENGTH} characters.`);
+    if (newPw.length < PASSWORD_MIN_LENGTH) {
+      setPwError(`New password must be at least ${PASSWORD_MIN_LENGTH} characters.`);
       return;
     }
     if (newPw !== confirm) { setPwError("Passwords do not match."); return; }
