@@ -83,7 +83,7 @@ function VerifyEmailPending() {
       <div className="flex flex-col items-center text-center">
         <Mail className="mb-5 h-8 w-8 text-gray-400" />
 
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Check your email</h1>
+        <h1 className="font-display text-2xl font-bold text-gray-900 dark:text-gray-100">Check your email</h1>
         <p className="mt-2 mb-8 text-sm text-gray-500 dark:text-gray-400">
           We sent a verification link to your email address. Click the link to activate your account.
         </p>

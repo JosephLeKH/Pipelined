@@ -83,7 +83,7 @@ function FreeTierCard() {
   return (
     <div className="rounded-2xl border border-gray-200 bg-white p-8 dark:border-gray-700 dark:bg-gray-900">
       <div className="mb-6">
-        <h2 className="mb-1 text-xl font-bold text-gray-900 dark:text-white">Free</h2>
+        <h2 className="mb-1 font-display text-xl font-bold text-gray-900 dark:text-white">Free</h2>
         <div className="flex items-end gap-1">
           <span className="text-4xl font-extrabold text-gray-900 dark:text-white">$0</span>
           <span className="mb-1 text-gray-500 dark:text-gray-400">/ month</span>
@@ -120,7 +120,7 @@ function ProTierCard() {
       </div>
 
       <div className="mb-6">
-        <h2 className="mb-1 text-xl font-bold text-gray-900 dark:text-white">Pro</h2>
+        <h2 className="mb-1 font-display text-xl font-bold text-gray-900 dark:text-white">Pro</h2>
         <div className="flex items-end gap-1">
           <span className="text-4xl font-extrabold text-gray-900 dark:text-white">$9</span>
           <span className="mb-1 text-gray-500 dark:text-gray-400">/ month</span>
@@ -160,7 +160,7 @@ function Pricing() {
 
       <main className="mx-auto max-w-5xl px-6 py-16">
         <div className="mb-12 text-center">
-          <h1 className="mb-3 text-4xl font-extrabold text-gray-900 dark:text-white">
+          <h1 className="mb-3 font-display text-4xl font-extrabold text-gray-900 dark:text-white">
             Simple, transparent pricing
           </h1>
           <p className="text-lg text-gray-500 dark:text-gray-400">

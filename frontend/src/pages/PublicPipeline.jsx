@@ -68,7 +68,7 @@ function LoadingState() {
 function NotFoundState() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-4">
-      <h1 className="text-2xl font-bold text-gray-800">Link not found</h1>
+      <h1 className="font-display text-2xl font-bold text-gray-800">Link not found</h1>
       <p className="text-gray-500">This pipeline link has expired or been revoked.</p>
       <Link to="/" className="text-brand-600 hover:underline">Go to Pipelined →</Link>
     </div>
@@ -80,7 +80,7 @@ function PipelineHeader({ pipeline }) {
     <header className="border-b border-gray-200 bg-white px-6 py-4">
       <div className="mx-auto flex max-w-3xl items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-gray-900">{pipeline.display_name}'s Pipeline</h1>
+          <h1 className="font-display text-xl font-bold text-gray-900">{pipeline.display_name}'s Pipeline</h1>
           <p className="text-sm text-gray-500">Read-only view</p>
         </div>
         <Link
@@ -102,7 +102,7 @@ function ApplicationsSection({ pipeline }) {
       </section>
 
       <section aria-label="Applications">
-        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-500">
+        <h2 className="mb-3 font-display text-sm font-semibold uppercase tracking-wide text-gray-500">
           Applications ({pipeline.applications.length})
         </h2>
         {pipeline.applications.length === 0 ? (

@@ -16,7 +16,7 @@ function VerifyingState() {
   return (
     <>
       <Loader className="mb-5 h-12 w-12 animate-spin text-brand-500" />
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Verifying your email…</h1>
+      <h1 className="font-display text-2xl font-bold text-gray-900 dark:text-gray-100">Verifying your email…</h1>
       <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">Just a moment.</p>
     </>
   );
@@ -26,7 +26,7 @@ function SuccessState() {
   return (
     <>
       <CheckCircle className="mb-5 h-12 w-12 text-brand-500" />
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Email verified!</h1>
+      <h1 className="font-display text-2xl font-bold text-gray-900 dark:text-gray-100">Email verified!</h1>
       <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
         Your account is now active. Redirecting to your dashboard…
       </p>
@@ -38,7 +38,7 @@ function ErrorState({ errorCode }) {
   return (
     <>
       <XCircle className="mb-5 h-12 w-12 text-rose-500" />
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+      <h1 className="font-display text-2xl font-bold text-gray-900 dark:text-gray-100">
         {errorCode === "TOKEN_EXPIRED" ? "Link expired" : "Invalid link"}
       </h1>
       <p className="mt-2 mb-6 text-sm text-gray-500 dark:text-gray-400">
@@ -57,7 +57,7 @@ function MissingTokenState() {
   return (
     <>
       <XCircle className="mb-5 h-12 w-12 text-rose-500" />
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Missing token</h1>
+      <h1 className="font-display text-2xl font-bold text-gray-900 dark:text-gray-100">Missing token</h1>
       <p className="mt-2 mb-6 text-sm text-gray-500 dark:text-gray-400">
         No verification token was found in this link.
       </p>
