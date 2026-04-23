@@ -1,0 +1,28 @@
+# Ralph Progress Log
+Started: Thu Apr 23 02:32:38 PDT 2026
+---
+
+## US-216 — Replace color palette with Anthropic brand tones
+**Date:** 2026-04-23
+**Status:** COMPLETE
+
+### Summary
+Overhauled frontend/tailwind.config.js to replace the indigo/violet brand palette and cool slate grays with Anthropic's official brand colors.
+
+### Changes
+- `brand.*`: replaced indigo hex values (#6366F1 etc.) with Anthropic clay orange shades centered on brand-500 #d97757 and brand-600 #c4673a
+- `gray.*`: replaced `colors.slate` alias with explicit warm-gray hex values (gray-50 #faf9f5 through gray-900 #141413)
+- Added `accent-blue: #6a9bcc` and `accent-green: #788c5d` as secondary accent colors
+- Added semantic surface tokens: `surface-primary`, `surface-secondary`, `surface-tertiary`
+- Added semantic border tokens: `border-default` and `border-strong` (warm rgba values)
+- Added `dark.*` token group for dark mode: bg #141413, surface #1c1c1a, accent #d97757, text #e8e4de, text-secondary #b0aea5, border rgba(255,255,255,0.08)
+- Removed `glow` shadow (indigo-tinted, now gone)
+- Updated `card`, `card-hover`, `modal` shadows to use warm rgba(120,100,75,...) tones
+- Updated `button` border-radius from 0.5rem to 0.375rem (6px per spec)
+- Removed `accent: colors.amber[500]` (was a named single value, not needed)
+- `npm run build` passes clean
+
+### Learnings
+- Tailwind's `colors.slate` was being aliased to `gray`, which pulled in cool blue-gray tones — replacing with explicit hex values gives precise control
+- Dark mode tokens grouped under a `dark` key in `colors` are accessible via `text-dark-text`, `bg-dark-bg` etc., but won't auto-apply — still need class-based dark mode selectors in components
+- The `border-default` / `border-strong` rgba values work fine as Tailwind color values and can be used with `border-border-default` class syntax

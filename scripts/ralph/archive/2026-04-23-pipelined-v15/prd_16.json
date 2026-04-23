@@ -17,7 +17,7 @@
         "npm run build succeeds with no errors"
       ],
       "priority": 1,
-      "passes": true,
+      "passes": false,
       "notes": "Foundation — must land first. Every other story depends on these tokens. Colors are from Anthropic's official brand guidelines."
     },
     {
