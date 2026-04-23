@@ -8,26 +8,30 @@
 export const CARD_BASE =
   "bg-white rounded-card shadow-card border border-slate-200/60 dark:bg-slate-800 dark:border-slate-700";
 
-/** Primary action button — indigo-to-violet gradient, white text, micro-interactions. */
+/** Primary action button — solid clay, white text. */
 export const BUTTON_PRIMARY =
-  "bg-gradient-to-r from-brand-600 to-brand-500 text-white rounded-button shadow-sm " +
-  "hover:from-brand-700 hover:to-brand-600 active:scale-[0.98] transition-all duration-150 " +
-  "font-medium px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-500/30 " +
-  "disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none";
+  "bg-brand-500 hover:bg-brand-600 text-white font-medium rounded-md px-4 py-2 text-sm " +
+  "font-display transition-colors duration-150 focus:outline-none focus:ring-2 " +
+  "focus:ring-brand-500/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none";
 
-/** Secondary button — white bg, slate border, slate text. */
+/** Secondary button — white bg, warm border, warm text. */
 export const BUTTON_SECONDARY =
-  "bg-white border border-slate-300 text-slate-700 rounded-button " +
-  "hover:bg-slate-50 active:scale-[0.98] transition-all duration-150 " +
-  "font-medium px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-500/30 " +
-  "dark:bg-slate-800 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-700 " +
+  "bg-white border border-border-default hover:border-border-strong text-gray-700 " +
+  "hover:text-gray-900 font-medium rounded-md px-4 py-2 text-sm font-display " +
+  "transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500/30 " +
   "disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none";
 
-/** Ghost button — transparent bg, slate text, subtle hover. */
+/** Ghost button — transparent bg, muted text, surface hover. */
 export const BUTTON_GHOST =
-  "text-slate-600 hover:bg-slate-100 rounded-button active:scale-[0.98] " +
-  "transition-all duration-150 font-medium px-4 py-2.5 focus:outline-none " +
-  "focus:ring-2 focus:ring-brand-500/30 dark:text-slate-300 dark:hover:bg-slate-700 " +
+  "bg-transparent text-gray-500 hover:text-gray-700 hover:bg-surface-secondary " +
+  "rounded-md px-3 py-2 text-sm transition-colors focus:outline-none " +
+  "focus:ring-2 focus:ring-brand-500/30 disabled:opacity-50 disabled:cursor-not-allowed " +
+  "disabled:pointer-events-none";
+
+/** Danger button — red bg, white text. */
+export const BUTTON_DANGER =
+  "bg-red-600 hover:bg-red-700 text-white font-medium rounded-md px-4 py-2 text-sm " +
+  "font-display transition-colors focus:outline-none focus:ring-2 focus:ring-red-500/30 " +
   "disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none";
 
 /** Text input, select, textarea base styles. */
