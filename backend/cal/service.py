@@ -1,5 +1,6 @@
 """Calendar event CRUD with application join for company/role_title enrichment."""
 
+import calendar
 import datetime as dt
 
 import structlog
@@ -90,11 +91,8 @@ async def _build_events_match_filter(
     else:
         today = dt.date.today()
         effective_from = date_from or today.replace(day=DEFAULT_DATE_FROM_DAY)
-        effective_to = date_to or today.replace(
-            day=1,
-            month=today.month % 12 + 1,
-            year=today.year + today.month // 12,
-        ) - dt.timedelta(days=1)
+        last_day_of_month = calendar.monthrange(today.year, today.month)[1]
+        effective_to = date_to or today.replace(day=last_day_of_month)
         match_filter["date"] = {
             "$gte": _date_to_datetime(effective_from),
             "$lte": _date_to_datetime(effective_to),
