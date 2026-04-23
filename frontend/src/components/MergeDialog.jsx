@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from "react";
 import X from "lucide-react/dist/esm/icons/x";
 import Loader2 from "lucide-react/dist/esm/icons/loader-2";
 
-import { BUTTON_PRIMARY, BUTTON_SECONDARY, MODAL_CARD } from "../lib/designTokens";
+import { BUTTON_PRIMARY, BUTTON_SECONDARY, MODAL_BACKDROP, MODAL_CARD } from "../lib/designTokens";
 
 const MERGE_FIELDS = [
   { key: "company", label: "Company" },

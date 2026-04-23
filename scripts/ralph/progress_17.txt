@@ -52,3 +52,22 @@ Completed: Thu Apr 23 2026
 - JobBoardContent.jsx: load more button uses BUTTON_SECONDARY token; skeleton shimmer uses bg-surface-tertiary instead of bg-gray-100
 - JobFilters.jsx: active filter chip uses bg-brand-500 (from brand-600); inactive chip uses bg-surface-secondary hover:bg-surface-tertiary (TAG token palette)
 - npm run build: ✓ passed (2.48s)
+
+## US-232: Redesign settings page
+**Status:** COMPLETE
+**Commit:** feat: US-232 - Redesign settings page
+
+**Changes:**
+- Removed icon-heavy sidebar (`SettingsSidebar`) and `MobileTabBar` components
+- Added text-only `TabNav` using `NAV_LINK`/`NAV_LINK_ACTIVE` design tokens (works across all screen sizes)
+- Changed outer layout from `max-w-5xl` to `max-w-2xl mx-auto` centered container
+- Changed page background from `bg-gray-50` to `bg-surface-secondary`
+- Updated `CalendarSectionContent` inline card to use `CARD_BASE`, `font-display` heading, and `BUTTON_PRIMARY`
+- Updated `SharingSection` inline card to use `CARD_BASE` and `font-display` heading
+- Removed all icon imports (BarChart2, Bell, CalendarIcon, Download, FileText, Gift, LayoutTemplate, Layers, Settings2, Share2, User)
+- Danger zone already correctly styled with red border/bg variant and `BUTTON_DANGER` in `SettingsAccountSection`
+
+**Learnings:**
+- The danger zone card was already correctly implemented in `SettingsAccountSection.jsx` from a prior iteration — no changes needed there
+- The sidebar icons were imported at the page level but only used in `SIDEBAR_ITEMS`; removing them simplified the imports significantly
+- Collapsing mobile + desktop nav into a single `TabNav` reduced code while satisfying the text-links requirement

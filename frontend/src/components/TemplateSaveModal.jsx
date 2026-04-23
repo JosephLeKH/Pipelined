@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 
 import X from "lucide-react/dist/esm/icons/x";
 
-import { INPUT_BASE, BUTTON_PRIMARY, BUTTON_SECONDARY } from "../lib/designTokens";
+import { INPUT_BASE, BUTTON_PRIMARY, BUTTON_SECONDARY, MODAL_BACKDROP, MODAL_CARD } from "../lib/designTokens";
 import { useCreateTemplate } from "../hooks/useTemplates";
 import { MODAL_FOCUS_DELAY_MS } from "../lib/constants";
 
@@ -52,12 +52,12 @@ function TemplateSaveModal({ isOpen, onClose, fields }) {
 
   return (
     <div
-      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 backdrop-blur-sm"
+      className={`${MODAL_BACKDROP} z-[60]`}
       role="dialog"
       aria-modal="true"
       aria-labelledby="save-template-heading"
     >
-      <div className="w-full max-w-sm rounded-2xl bg-white shadow-modal dark:bg-gray-800 dark:border dark:border-gray-700 p-6">
+      <div className={`${MODAL_CARD} max-w-sm p-6`}>
         <div className="flex items-center justify-between mb-4">
           <h2
             id="save-template-heading"

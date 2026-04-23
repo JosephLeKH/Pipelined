@@ -118,7 +118,7 @@
         "npm run build succeeds"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Settings is a form-heavy page — clean typography hierarchy matters most here."
     },
     {
