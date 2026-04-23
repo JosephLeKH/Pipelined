@@ -37,3 +37,10 @@ Started: Thu Apr 23 12:37:07 PDT 2026
 ### Learnings
 - Simple dark mode additions are two-class changes; the icon already used text-gray-400 which works in both modes without a dark variant.
 - Build succeeded immediately — no side effects.
+
+## US-262: Add active:scale press feedback to all primary and secondary buttons
+- Added `active:scale-[0.98]` to BUTTON_PRIMARY, BUTTON_SECONDARY, and BUTTON_DANGER tokens in designTokens.js
+- BUTTON_GHOST intentionally left unchanged (ghost buttons stay flat per spec)
+- Pattern was already used in NotesEditor.jsx and ContactForm.jsx; centralizing in tokens propagates it to all usages automatically
+- Build passed (✓ built in ~20s)
+- Committed: feat: US-262 - Add active:scale press feedback to all primary and secondary buttons

@@ -52,7 +52,7 @@
         "BUTTON_GHOST does NOT include active:scale",
         "npm run build succeeds"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "US-263",
