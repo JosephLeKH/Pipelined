@@ -82,7 +82,7 @@
         "npm run build succeeds"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Forms are the primary interaction surface for auth pages and settings."
     },
     {

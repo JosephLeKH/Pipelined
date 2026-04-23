@@ -85,3 +85,17 @@ Updated card and modal design tokens in `frontend/src/lib/designTokens.js` to sh
 - Removing `shadow-card` while adding explicit border makes cards feel crisp and defined rather than floaty — a core Anthropic visual principle.
 - Modals retain `shadow-lg` to provide depth hierarchy while the border adds containment; backdrop at /30 is subtler and keeps focus on content.
 - Build succeeded cleanly: `✓ built in 2.41s`.
+
+---
+## US-220: Redesign input and form tokens for warm palette
+**Date:** 2026-04-23
+
+### Summary
+Updated INPUT_BASE in designTokens.js to use warm gray palette (border-gray-300, placeholder:text-gray-400) instead of slate-*, with focus:ring-1 focus:ring-brand-500/20 (subtle single-ring), font-sans (Lora) for input text, and rounded-md. Added three new tokens: INPUT_LABEL (font-display Poppins, text-gray-700), INPUT_HELPER (text-xs text-gray-400), and INPUT_ERROR (text-xs text-red-600). Removed all dark mode slate-* variant classes per no-slate requirement.
+
+### Changes
+- `frontend/src/lib/designTokens.js`: Replaced INPUT_BASE slate-* classes with gray-* warm palette; added INPUT_LABEL, INPUT_HELPER, INPUT_ERROR tokens
+
+### Learnings
+- focus:ring-2 (previous) → focus:ring-1 (spec) gives the subtle single-ring effect matching Anthropic's restrained UI style
+- Dark mode classes with slate-* were removed entirely rather than converted to gray-* equivalents, since the acceptance criteria explicitly forbids slate-* in form tokens and no dark mode spec was given for these new tokens
