@@ -1,0 +1,13 @@
+# Ralph Progress Log
+Started: Thu Apr 23 12:37:07 PDT 2026
+---
+
+## US-259: Increase page-level vertical spacing for editorial feel
+- Dashboard.jsx: `py-6` → `py-8` on `<main>`, added `space-y-6` to inner container div
+- Activity.jsx: already had `py-8` — no change needed
+- Analytics.jsx: `p-6` → `px-6 py-8` to split compound shorthand and set py-8
+- JobBoard.jsx: `py-6` → `py-8`
+- Build: ✓ (17.12s)
+- Commit: be6641e
+
+**Learnings:** Activity page already had py-8 from prior work — always read before writing. Analytics used `p-6` shorthand which sets both axes; splitting it to `px-6 py-8` is the clean fix.

@@ -1,0 +1,82 @@
+{
+  "project": "Pipelined",
+  "branchName": "main",
+  "description": "PRD-22: Generous whitespace, refined empty states, dark mode gaps, and interactive feedback polish",
+  "userStories": [
+    {
+      "id": "US-259",
+      "title": "Increase page-level vertical spacing for editorial feel",
+      "description": "Modern apps like Ramp and Linear use generous vertical spacing. Update page-level containers: (1) Dashboard.jsx line 49: change 'py-6' to 'py-8', (2) Activity.jsx main container: ensure py-8, (3) Analytics.jsx main container: ensure py-8, (4) JobBoard.jsx main container: ensure py-8. Also add 'space-y-6' (or gap-6) between major Dashboard sections (StatsBar, FilterBar, content area) if not already present. Do NOT change padding on Settings or auth pages (they're already good).",
+      "acceptanceCriteria": [
+        "Dashboard main uses py-8",
+        "Activity, Analytics, JobBoard main containers use py-8",
+        "Dashboard sections have consistent gap-6 or space-y-6 between them",
+        "No layout breaks on mobile or desktop",
+        "npm run build succeeds"
+      ],
+      "passes": true
+    },
+    {
+      "id": "US-260",
+      "title": "Refine EmptyState component for premium feel",
+      "description": "EmptyState.jsx needs refinements: (1) Increase icon size from h-10 w-10 to h-12 w-12, (2) Change icon color from text-gray-300 to text-gray-400 dark:text-gray-500 for better visibility, (3) Change title from text-sm to text-base for better hierarchy, (4) Change description from text-xs to text-sm for readability, (5) Increase vertical padding from py-16 to py-20, (6) Add max-w-md to the container for better text measure on wide screens. Keep mb spacing as-is.",
+      "acceptanceCriteria": [
+        "Icon is h-12 w-12 with text-gray-400 dark:text-gray-500",
+        "Title is text-base font-medium",
+        "Description is text-sm",
+        "Container uses py-20 and max-w-md",
+        "npm run build succeeds"
+      ],
+      "passes": false
+    },
+    {
+      "id": "US-261",
+      "title": "Add dark mode variants to StatsBar MetricCard",
+      "description": "StatsBar.jsx MetricCard (around line 85-91) is missing dark mode variants on two elements: (1) The label span 'text-sm text-gray-500' needs 'dark:text-gray-400', (2) The value span 'text-2xl font-semibold text-gray-900' needs 'dark:text-gray-100'. The icon already has correct styling. Review all MetricCard elements for dark mode completeness.",
+      "acceptanceCriteria": [
+        "MetricCard label has dark:text-gray-400",
+        "MetricCard value has dark:text-gray-100",
+        "All text in MetricCard is readable in dark mode",
+        "npm run build succeeds"
+      ],
+      "passes": false
+    },
+    {
+      "id": "US-262",
+      "title": "Add active:scale press feedback to all primary and secondary buttons",
+      "description": "Add 'active:scale-[0.98]' to BUTTON_PRIMARY and BUTTON_SECONDARY tokens in designTokens.js for tactile press feedback. This pattern already exists in NotesEditor.jsx and ContactForm.jsx buttons. By adding it to the tokens, all buttons using those tokens get the effect automatically. Also add it to BUTTON_DANGER. Do NOT add it to BUTTON_GHOST (ghost buttons should stay flat).",
+      "acceptanceCriteria": [
+        "BUTTON_PRIMARY includes active:scale-[0.98]",
+        "BUTTON_SECONDARY includes active:scale-[0.98]",
+        "BUTTON_DANGER includes active:scale-[0.98]",
+        "BUTTON_GHOST does NOT include active:scale",
+        "npm run build succeeds"
+      ],
+      "passes": false
+    },
+    {
+      "id": "US-263",
+      "title": "Standardize responsive page padding across all pages",
+      "description": "Standardize responsive padding on all page main containers to 'px-4 sm:px-6 lg:px-8' for better mobile experience. Current state: Dashboard.jsx uses 'px-6' (no mobile breakpoint), JobBoard.jsx uses 'px-4 py-6 sm:px-6', Activity.jsx and Analytics.jsx need checking. Update: (1) Dashboard.jsx line 50: 'px-6' → 'px-4 sm:px-6', (2) Audit Activity.jsx, Analytics.jsx, Calendar.jsx, OfferComparison.jsx for consistent responsive padding. Only fix inconsistent ones — if a page already uses responsive padding correctly, leave it.",
+      "acceptanceCriteria": [
+        "Dashboard uses px-4 sm:px-6 responsive padding",
+        "All page containers use consistent responsive px pattern",
+        "No layout breaks on 320px viewport width",
+        "npm run build succeeds"
+      ],
+      "passes": false
+    },
+    {
+      "id": "US-264",
+      "title": "Add cursor-pointer to all clickable non-button elements",
+      "description": "Several interactive elements use div or span with onClick but lack cursor-pointer, making them feel unresponsive. Audit and fix: (1) Activity.jsx timeline entries — if they have onClick handlers, ensure cursor-pointer, (2) JobCard.jsx — the main card container should have cursor-pointer if clickable, (3) KanbanCard.jsx — card container should have cursor-pointer, (4) Any other div/span with onClick that lacks cursor-pointer. Do NOT add cursor-pointer to elements that already have it or to non-interactive elements.",
+      "acceptanceCriteria": [
+        "All clickable divs/spans have cursor-pointer class",
+        "Non-interactive elements do NOT have cursor-pointer",
+        "Buttons are excluded (they have cursor-pointer by default)",
+        "npm run build succeeds"
+      ],
+      "passes": false
+    }
+  ]
+}
