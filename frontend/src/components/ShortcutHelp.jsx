@@ -24,7 +24,7 @@ function ShortcutHelp() {
       role="dialog"
       aria-modal="true"
       aria-label="Keyboard shortcuts"
-      className={MODAL_BACKDROP}
+      className={`${MODAL_BACKDROP} cursor-pointer`}
       onClick={close}
     >
       <div

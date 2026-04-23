@@ -97,7 +97,7 @@ function CsvImportModal({ isOpen, onClose }) {
 
   if (!isOpen) return null;
   return (
-    <div className={MODAL_BACKDROP} role="dialog" aria-modal="true" aria-labelledby="csv-import-heading" onClick={handleClose}>
+    <div className={`${MODAL_BACKDROP} cursor-pointer`} role="dialog" aria-modal="true" aria-labelledby="csv-import-heading" onClick={handleClose}>
       <div className={MODAL_CARD} onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between border-b border-border-default px-6 py-4">
           <h2 id="csv-import-heading" className="text-base font-display font-semibold text-gray-900 dark:text-gray-100">Import CSV</h2>

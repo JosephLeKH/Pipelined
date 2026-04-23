@@ -91,7 +91,7 @@ function CommandPaletteResults({ query, filteredApps, actions, idx, activate, hi
 function CommandPaletteDialog({ query, setQuery, filteredApps, actions, idx, activate, close, highlightRef }) {
   return (
     <>
-      <div className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm" onClick={close} aria-hidden="true" />
+      <div className="fixed inset-0 z-40 cursor-pointer bg-black/30 backdrop-blur-sm" onClick={close} aria-hidden="true" />
       <div
         role="dialog"
         aria-modal="true"

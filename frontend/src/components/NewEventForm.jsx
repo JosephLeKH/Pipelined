@@ -39,7 +39,7 @@ function AppSelector({ apps, applicationId, onApplicationChange }) {
 function NewEventForm({ initialDate, initialApplicationId, onClose }) {
   const hook = useNewEventForm({ initialDate, initialApplicationId, onClose });
   return (
-    <div className={MODAL_BACKDROP}
+    <div className={`${MODAL_BACKDROP} cursor-pointer`}
       onClick={hook.handleOverlayClick}
       role="dialog"
       aria-modal="true"

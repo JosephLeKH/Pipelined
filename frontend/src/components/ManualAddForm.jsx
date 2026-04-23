@@ -14,7 +14,7 @@ function ManualAddForm({ isOpen, onClose }) {
 
   return (
     <div
-      className={MODAL_BACKDROP}
+      className={`${MODAL_BACKDROP} cursor-pointer`}
       data-testid="modal-overlay"
       onClick={handleOverlayClick}
       role="dialog"

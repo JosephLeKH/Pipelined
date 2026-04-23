@@ -59,7 +59,7 @@ function UpgradePlanModal() {
       role="dialog"
       aria-modal="true"
       aria-labelledby="upgrade-modal-title"
-      className={MODAL_BACKDROP}
+      className={`${MODAL_BACKDROP} cursor-pointer`}
       onClick={handleDismiss}
     >
       <div
