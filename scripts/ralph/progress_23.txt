@@ -1,0 +1,10 @@
+# Ralph Progress Log
+Started: Thu Apr 23 13:08:45 PDT 2026
+---
+
+## US-265: Fix trangray→translate typo in DetailPanel slide animation
+- Fixed 4 broken `trangray-*` class instances on DetailPanel.jsx line 57
+- `trangray-y-0 md:trangray-x-0` → `translate-y-0 md:translate-x-0`
+- `trangray-y-full md:trangray-y-0 md:trangray-x-full` → `translate-y-full md:translate-y-0 md:translate-x-full`
+- Build passed. Committed as `feat: US-265`.
+- Learning: The trangray typo was widespread across many files (6 additional files still have it — covered by US-266).

@@ -1,0 +1,90 @@
+{
+  "project": "Pipelined",
+  "branchName": "main",
+  "description": "PRD-23: Fix broken trangray typos, add dark mode to design tokens and remaining pages",
+  "userStories": [
+    {
+      "id": "US-265",
+      "title": "Fix trangray→translate typo in DetailPanel slide animation",
+      "description": "DetailPanel.jsx line 57 uses 'trangray-y-0 md:trangray-x-0' and 'trangray-y-full md:trangray-y-0 md:trangray-x-full'. These are broken — CSS transforms don't work. Fix all four instances on line 57: trangray-y-0 → translate-y-0, trangray-x-0 → translate-x-0, trangray-y-full → translate-y-full, trangray-x-full → translate-x-full.",
+      "acceptanceCriteria": [
+        "No trangray classes remain in DetailPanel.jsx",
+        "Panel slides in/out correctly with translate-y / translate-x classes",
+        "npm run build succeeds"
+      ],
+      "passes": true
+    },
+    {
+      "id": "US-266",
+      "title": "Fix trangray→translate typo in toggle switches and tooltips",
+      "description": "Five files have broken trangray classes: (1) DigestSection.jsx line 25: 'trangray-x-6' → 'translate-x-6' and 'trangray-x-1' → 'translate-x-1', (2) SettingsNotificationsSection.jsx line 36: 'trangray-x-5' → 'translate-x-5' and 'trangray-x-1' → 'translate-x-1', (3) ApplicationRow.jsx line 117: '-trangray-y-1/2' → '-translate-y-1/2', (4) ApplicationRow.jsx line 139: '-trangray-y-1/2' → '-translate-y-1/2', (5) UndoToast.jsx line 33: '-trangray-x-1/2' → '-translate-x-1/2', (6) Pricing.jsx line 115: '-trangray-x-1/2' → '-translate-x-1/2'. Replace every occurrence of 'trangray' with 'translate' in these files.",
+      "acceptanceCriteria": [
+        "No trangray classes remain in any frontend file",
+        "Toggle switches animate correctly with translate-x",
+        "Tooltips position correctly with -translate-y-1/2",
+        "UndoToast centers correctly with -translate-x-1/2",
+        "npm run build succeeds"
+      ],
+      "passes": false
+    },
+    {
+      "id": "US-267",
+      "title": "Add dark mode variants to NAV design tokens",
+      "description": "Four NAV tokens in designTokens.js are missing dark mode variants: (1) NAV_CONTAINER line 68: add 'dark:bg-gray-900 dark:border-dark-border' after existing classes, (2) NAV_LINK line 71-72: add 'dark:text-gray-400 dark:hover:text-gray-100' after existing classes, (3) NAV_LINK_ACTIVE line 75-76: add 'dark:text-gray-100 dark:bg-gray-800' after existing classes, (4) NAV_BRAND line 79: add 'dark:text-gray-100' after existing classes. Do NOT change any other tokens.",
+      "acceptanceCriteria": [
+        "NAV_CONTAINER has dark:bg-gray-900 dark:border-dark-border",
+        "NAV_LINK has dark:text-gray-400 dark:hover:text-gray-100",
+        "NAV_LINK_ACTIVE has dark:text-gray-100 dark:bg-gray-800",
+        "NAV_BRAND has dark:text-gray-100",
+        "npm run build succeeds"
+      ],
+      "passes": false
+    },
+    {
+      "id": "US-268",
+      "title": "Add dark mode variants to BUTTON_SECONDARY and BUTTON_GHOST tokens",
+      "description": "Two button tokens in designTokens.js are missing dark mode variants: (1) BUTTON_SECONDARY lines 21-25: add 'dark:bg-gray-800 dark:border-dark-border dark:text-gray-300 dark:hover:text-gray-100 dark:hover:border-gray-500' to the string, (2) BUTTON_GHOST lines 28-32: add 'dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700' to the string. Do NOT change BUTTON_PRIMARY or BUTTON_DANGER (they use brand/red colors that already work in dark mode).",
+      "acceptanceCriteria": [
+        "BUTTON_SECONDARY includes dark:bg-gray-800 dark:border-dark-border dark:text-gray-300",
+        "BUTTON_GHOST includes dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700",
+        "BUTTON_PRIMARY and BUTTON_DANGER unchanged",
+        "npm run build succeeds"
+      ],
+      "passes": false
+    },
+    {
+      "id": "US-269",
+      "title": "Add dark mode to GoogleAuthButton",
+      "description": "GoogleAuthButton.jsx line 67 has a fully light-only button: 'border-gray-300 bg-white text-gray-700 shadow-sm hover:bg-gray-50'. Add dark mode variants: 'dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700'. Keep focus:ring-brand-500/30 as-is.",
+      "acceptanceCriteria": [
+        "GoogleAuthButton has dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700",
+        "Button is readable and styled correctly in dark mode",
+        "npm run build succeeds"
+      ],
+      "passes": false
+    },
+    {
+      "id": "US-270",
+      "title": "Add dark mode to MobileMenu and OnboardingChecklist success state",
+      "description": "Two components lack dark mode: (1) NavBar.jsx MobileMenu line 97: the container div has 'bg-white' — add 'dark:bg-gray-900'. (2) OnboardingChecklist.jsx line 92: the success banner uses 'border-green-200 bg-green-50' with dark variants 'dark:border-green-800 dark:bg-green-900/20' — these should use brand colors for consistency with SUCCESS_BANNER token. Change to 'border-brand-200 bg-brand-50 dark:border-brand-800 dark:bg-brand-900/20'. Also line 93: change 'text-green-800 dark:text-green-300' to 'text-brand-800 dark:text-brand-300'. Also line 24: change CheckCircle2 'text-green-500' to 'text-brand-500'.",
+      "acceptanceCriteria": [
+        "MobileMenu container has dark:bg-gray-900",
+        "OnboardingChecklist success banner uses brand colors, not green",
+        "OnboardingChecklist CheckCircle2 uses text-brand-500",
+        "npm run build succeeds"
+      ],
+      "passes": false
+    },
+    {
+      "id": "US-271",
+      "title": "Standardize password requirement checkmarks to brand color",
+      "description": "RegisterForm.jsx line 23 uses 'text-green-600' for met password requirements. Change to 'text-brand-600' for brand consistency. The unmet state 'text-gray-500' is fine. This is a one-line change.",
+      "acceptanceCriteria": [
+        "Password requirement met state uses text-brand-600",
+        "No text-green-600 remains in RegisterForm.jsx",
+        "npm run build succeeds"
+      ],
+      "passes": false
+    }
+  ]
+}
