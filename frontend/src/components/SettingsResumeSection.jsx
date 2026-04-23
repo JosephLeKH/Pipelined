@@ -9,7 +9,7 @@ import X from "lucide-react/dist/esm/icons/x";
 
 import { useAuth } from "../context/AuthContext";
 import { useDeleteResume, useUploadResume } from "../hooks/useAuth";
-import { CARD_BASE } from "../lib/designTokens";
+import { CARD_BASE, SUCCESS_BANNER } from "../lib/designTokens";
 
 const RESUME_ACCEPT = ".pdf";
 const RESUME_MAX_MB = 2;
@@ -154,7 +154,7 @@ function SettingsResumeSection() {
           Upload your resume to enable AI fit scoring on new applications.
         </p>
         {resumeSuccess && (
-          <p role="alert" className="mb-4 rounded bg-green-50 px-3 py-2 text-sm text-green-700 dark:bg-green-900/30 dark:text-green-300">
+          <p role="alert" className={`mb-4 ${SUCCESS_BANNER}`}>
             Resume uploaded successfully.
           </p>
         )}

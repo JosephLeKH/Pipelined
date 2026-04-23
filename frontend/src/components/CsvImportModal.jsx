@@ -7,7 +7,7 @@ import Loader2 from "lucide-react/dist/esm/icons/loader-2";
 import X from "lucide-react/dist/esm/icons/x";
 
 import { useImportApplications } from "../hooks/useApplications";
-import { BUTTON_PRIMARY, BUTTON_SECONDARY, BUTTON_GHOST, MODAL_CARD, MODAL_BACKDROP } from "../lib/designTokens";
+import { BUTTON_PRIMARY, BUTTON_SECONDARY, BUTTON_GHOST, MODAL_CARD, MODAL_BACKDROP, SUCCESS_BANNER } from "../lib/designTokens";
 import { trackEvent } from "../lib/analytics";
 
 const ACCEPTED_MIME = "text/csv,.csv";
@@ -58,7 +58,7 @@ function useCsvImport(onClose) {
 function ImportResultDisplay({ result, errorsExpanded, setErrorsExpanded }) {
   if (!result) return null;
   return (
-    <div role="status" aria-live="polite" className="mb-4 rounded bg-green-50 px-3 py-2 text-sm text-green-700 dark:bg-green-900/30 dark:text-green-300">
+    <div role="status" aria-live="polite" className={`mb-4 ${SUCCESS_BANNER}`}>
       <p><strong>{result.imported}</strong> imported, <strong>{result.skipped}</strong> skipped.</p>
       {result.warning && <p className="mt-1 text-xs">{result.warning}</p>}
       {result.errors?.length > 0 && (

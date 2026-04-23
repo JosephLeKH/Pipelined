@@ -3,7 +3,7 @@
 import { useCallback, useState } from "react";
 
 import Loader2 from "lucide-react/dist/esm/icons/loader-2";
-import { CARD_BASE, INPUT_BASE, BUTTON_PRIMARY } from "../lib/designTokens";
+import { CARD_BASE, INPUT_BASE, BUTTON_PRIMARY, SUCCESS_BANNER } from "../lib/designTokens";
 
 const WEEKLY_GOAL_MIN = 1;
 const WEEKLY_GOAL_MAX = 50;
@@ -38,7 +38,7 @@ function WeeklyGoalSection({ weeklyGoal, isGoalPending, onSaveGoal }) {
         Set a target number of applications to submit per week. Shown as a progress ring on the dashboard.
       </p>
       {goalSaved && !isGoalPending && (
-        <p role="alert" className="mb-4 rounded bg-green-50 px-3 py-2 text-sm text-green-700 dark:bg-green-900/30 dark:text-green-300">
+        <p role="alert" className={`mb-4 ${SUCCESS_BANNER}`}>
           Weekly goal saved.
         </p>
       )}

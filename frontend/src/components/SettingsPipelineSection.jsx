@@ -8,7 +8,7 @@ import PipelineStagesEditor from "./PipelineStagesEditor";
 import WeeklyGoalSection from "./WeeklyGoalSection";
 import { useAuth } from "../context/AuthContext";
 import { useUpdateUser } from "../hooks/useAuth";
-import { CARD_BASE } from "../lib/designTokens";
+import { CARD_BASE, SUCCESS_BANNER } from "../lib/designTokens";
 
 const GENERIC_ERROR = "Failed to save stages. Please try again.";
 const DEFAULT_WEEKLY_GOAL = 5;
@@ -59,7 +59,7 @@ function SettingsPipelineSection() {
         </p>
 
         {saveSuccess && !isPending && (
-          <p role="alert" className="mb-4 rounded bg-green-50 px-3 py-2 text-sm text-green-700 dark:bg-green-900/30 dark:text-green-300">
+          <p role="alert" className={`mb-4 ${SUCCESS_BANNER}`}>
             Stages saved successfully.
           </p>
         )}

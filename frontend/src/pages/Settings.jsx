@@ -17,7 +17,7 @@ import ShareTimeline from "../components/ShareTimeline";
 import TimezoneSelector from "../components/TimezoneSelector";
 import { useAuth } from "../context/AuthContext";
 import { useUpdateUser } from "../hooks/useAuth";
-import { CARD_BASE, BUTTON_PRIMARY, NAV_LINK, NAV_LINK_ACTIVE } from "../lib/designTokens";
+import { CARD_BASE, BUTTON_PRIMARY, NAV_LINK, NAV_LINK_ACTIVE, SUCCESS_BANNER } from "../lib/designTokens";
 
 const NAV_ITEMS = [
   { id: "pipeline", label: "Pipeline" },
@@ -61,7 +61,7 @@ function CalendarSectionContent({ timezone, saved, error, isPending, onTimezoneC
       </p>
       <TimezoneSelector value={timezone} onChange={onTimezoneChange} />
       {saved && !isPending && (
-        <p role="alert" className="mt-4 rounded bg-green-50 px-3 py-2 text-sm text-green-700 dark:bg-green-900/30 dark:text-green-300">
+        <p role="alert" className={`mt-4 ${SUCCESS_BANNER}`}>
           Timezone saved.
         </p>
       )}

@@ -5,7 +5,7 @@ import { useState, useCallback } from "react";
 import Loader2 from "lucide-react/dist/esm/icons/loader-2";
 import TriangleAlert from "lucide-react/dist/esm/icons/alert-triangle";
 
-import { CARD_BASE, INPUT_BASE, INPUT_LABEL, BUTTON_PRIMARY, BUTTON_SECONDARY, BUTTON_DANGER } from "../lib/designTokens";
+import { CARD_BASE, INPUT_BASE, INPUT_LABEL, BUTTON_PRIMARY, BUTTON_SECONDARY, BUTTON_DANGER, SUCCESS_BANNER } from "../lib/designTokens";
 
 const PW_MIN_LENGTH = 8;
 
@@ -90,7 +90,7 @@ function ChangePasswordCard() {
           <p role="alert" className="text-sm text-red-600 dark:text-red-400">{pwError}</p>
         )}
         {pwSaved && !isPending && (
-          <p role="alert" className="rounded bg-green-50 px-3 py-2 text-sm text-green-700 dark:bg-green-900/30 dark:text-green-300">
+          <p role="alert" className={SUCCESS_BANNER}>
             Password changed successfully.
           </p>
         )}

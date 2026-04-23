@@ -7,7 +7,7 @@ import Loader2 from "lucide-react/dist/esm/icons/loader-2";
 import TimezoneSelector from "./TimezoneSelector";
 import { useAuth } from "../context/AuthContext";
 import { useUpdateUser } from "../hooks/useAuth";
-import { CARD_BASE, INPUT_BASE, INPUT_LABEL, BUTTON_PRIMARY } from "../lib/designTokens";
+import { CARD_BASE, INPUT_BASE, INPUT_LABEL, BUTTON_PRIMARY, SUCCESS_BANNER } from "../lib/designTokens";
 
 const AVATAR_COLORS = [
   "bg-brand-500",
@@ -121,7 +121,7 @@ function SettingsProfileSection() {
       </div>
 
       {saved && !isPending && (
-        <p role="alert" className="mt-4 rounded bg-green-50 px-3 py-2 text-sm text-green-700 dark:bg-green-900/30 dark:text-green-300">
+        <p role="alert" className={`mt-4 ${SUCCESS_BANNER}`}>
           Profile saved.
         </p>
       )}
