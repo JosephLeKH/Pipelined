@@ -70,7 +70,7 @@
         "DetailPanelHeader delete button uses focus:ring-brand-500",
         "npm run build succeeds"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "US-251",
