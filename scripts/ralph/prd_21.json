@@ -1,0 +1,94 @@
+{
+  "project": "Pipelined",
+  "branchName": "main",
+  "description": "PRD-21: Spinner token, inline success alerts, constant deduplication, modal token adoption, and font-display gaps",
+  "userStories": [
+    {
+      "id": "US-252",
+      "title": "Create SPINNER design token and apply across all loading states",
+      "description": "Create a SPINNER design token in designTokens.js for the repeated loading spinner pattern. There are two size variants in use: small (h-6 w-6) in App.jsx:84, Activity.jsx:108, OfferComparison.jsx:73 and large (h-8 w-8) in Analytics.jsx:24, GithubCallback.jsx:38, PublicPipeline.jsx:63, PublicTimeline.jsx:65. Create two tokens: SPINNER_SM = 'h-6 w-6 animate-spin rounded-full border-2 border-brand-500 border-t-transparent' and SPINNER_LG = 'h-8 w-8 animate-spin rounded-full border-2 border-brand-500 border-t-transparent'. Replace all 7 inline spinner divs with the appropriate token. Import from designTokens.js in each file.",
+      "acceptanceCriteria": [
+        "SPINNER_SM and SPINNER_LG tokens exported from designTokens.js",
+        "App.jsx, Activity.jsx, OfferComparison.jsx use SPINNER_SM",
+        "Analytics.jsx, GithubCallback.jsx, PublicPipeline.jsx, PublicTimeline.jsx use SPINNER_LG",
+        "No inline animate-spin rounded-full border patterns remain in pages/",
+        "npm run build succeeds"
+      ],
+      "passes": false
+    },
+    {
+      "id": "US-253",
+      "title": "Replace inline green success alerts with SUCCESS_BANNER token",
+      "description": "Eight files use the identical inline pattern 'rounded bg-green-50 px-3 py-2 text-sm text-green-700 dark:bg-green-900/30 dark:text-green-300' for success alerts. Replace all with the SUCCESS_BANNER design token (already defined in designTokens.js). Files: SettingsProfileSection.jsx:124, SettingsAccountSection.jsx:93, SettingsResumeSection.jsx:157, SettingsPipelineSection.jsx:62, WeeklyGoalSection.jsx:41, Settings.jsx:64, ResumeSection.jsx:49, CsvImportModal.jsx:61. Add SUCCESS_BANNER to each file's import from designTokens.js.",
+      "acceptanceCriteria": [
+        "All 8 files import and use SUCCESS_BANNER token",
+        "No inline bg-green-50 success alert patterns remain",
+        "Alert text content and role='alert' attributes preserved",
+        "npm run build succeeds"
+      ],
+      "passes": false
+    },
+    {
+      "id": "US-254",
+      "title": "Deduplicate PW_MIN_LENGTH constant in SettingsAccountSection",
+      "description": "SettingsAccountSection.jsx line 10 defines a local 'const PW_MIN_LENGTH = 8' which duplicates PASSWORD_MIN_LENGTH from constants.js (line 39). Remove the local constant and import PASSWORD_MIN_LENGTH from '../lib/constants'. Update the two references on lines 24-25 from PW_MIN_LENGTH to PASSWORD_MIN_LENGTH.",
+      "acceptanceCriteria": [
+        "Local PW_MIN_LENGTH removed from SettingsAccountSection.jsx",
+        "PASSWORD_MIN_LENGTH imported from constants.js",
+        "Both validation check and error message use PASSWORD_MIN_LENGTH",
+        "npm run build succeeds"
+      ],
+      "passes": false
+    },
+    {
+      "id": "US-255",
+      "title": "Move SettingsResumeSection local constants to constants.js",
+      "description": "SettingsResumeSection.jsx lines 14-16 define three local constants: RESUME_ACCEPT = '.pdf', RESUME_MAX_MB = 2, AI_SCORE_LIMIT = 10. Move all three to constants.js and import them. Also check ResumeSection.jsx for a duplicate RESUME_MAX_MB constant and consolidate.",
+      "acceptanceCriteria": [
+        "RESUME_ACCEPT, RESUME_MAX_MB, AI_SCORE_LIMIT exported from constants.js",
+        "SettingsResumeSection.jsx imports from constants.js instead of defining locally",
+        "ResumeSection.jsx also imports RESUME_MAX_MB from constants.js if it has a local copy",
+        "npm run build succeeds"
+      ],
+      "passes": false
+    },
+    {
+      "id": "US-256",
+      "title": "Adopt MODAL_BACKDROP and MODAL_CARD tokens in DangerZone delete modal",
+      "description": "SettingsAccountSection.jsx DangerZone component (lines 139-172) renders a delete confirmation modal with inline backdrop and card classes instead of using MODAL_BACKDROP and MODAL_CARD tokens. Replace: (1) the backdrop div class 'fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4' with MODAL_BACKDROP (which already includes fixed inset-0 bg-black/30 z-50 flex items-center justify-center p-4), (2) the card div class 'w-full max-w-sm rounded-card bg-white p-6 shadow-modal dark:bg-gray-800' with `${MODAL_CARD} max-w-sm` (MODAL_CARD already includes bg-white rounded-2xl border shadow-sm w-full max-w-lg). Override max-w-lg → max-w-sm. Add MODAL_BACKDROP and MODAL_CARD to the existing import from designTokens.js.",
+      "acceptanceCriteria": [
+        "MODAL_BACKDROP and MODAL_CARD imported in SettingsAccountSection.jsx",
+        "Delete modal backdrop uses MODAL_BACKDROP token",
+        "Delete modal card uses MODAL_CARD token with max-w-sm override",
+        "Modal p-6 padding and content preserved",
+        "npm run build succeeds"
+      ],
+      "passes": false
+    },
+    {
+      "id": "US-257",
+      "title": "Add font-display to remaining Settings section headings",
+      "description": "Several Settings sub-component h2 headings are missing the font-display class for Poppins typeface consistency. Fix: (1) SettingsResumeSection.jsx line 152 h2 'Resume & AI' — add font-display, (2) WeeklyGoalSection.jsx line 34 h2 'Weekly Application Goal' — add font-display, (3) AiScoreMeter h3 in SettingsResumeSection.jsx line 125 — add font-display. Check SettingsPipelineSection.jsx headings too.",
+      "acceptanceCriteria": [
+        "SettingsResumeSection h2 has font-display",
+        "WeeklyGoalSection h2 has font-display",
+        "AiScoreMeter h3 has font-display",
+        "All Settings section headings consistently use font-display",
+        "npm run build succeeds"
+      ],
+      "passes": false
+    },
+    {
+      "id": "US-258",
+      "title": "Create INPUT_READONLY token for disabled/readonly input fields",
+      "description": "SettingsProfileSection.jsx line 111 has an inline readonly email input with classes 'rounded-input border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-400'. Create an INPUT_READONLY token in designTokens.js: 'border border-gray-200 rounded-md bg-gray-50 text-gray-500 text-sm px-3 py-2 font-sans w-full cursor-not-allowed dark:bg-gray-900 dark:border-gray-700 dark:text-gray-400'. Apply it to the readonly email input in SettingsProfileSection.jsx.",
+      "acceptanceCriteria": [
+        "INPUT_READONLY token exported from designTokens.js",
+        "SettingsProfileSection readonly email input uses INPUT_READONLY",
+        "Visual appearance unchanged (gray bg, muted text, same sizing)",
+        "npm run build succeeds"
+      ],
+      "passes": false
+    }
+  ]
+}

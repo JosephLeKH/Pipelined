@@ -106,3 +106,9 @@ export const TAG =
 export const SUCCESS_BANNER =
   "rounded-lg bg-brand-50 border border-brand-200 px-3 py-3 text-sm text-brand-800 " +
   "dark:bg-brand-900/20 dark:border-brand-800 dark:text-brand-300";
+
+/** Small loading spinner — 24px, brand-500 color, used in inline/compact loading states. */
+export const SPINNER_SM = "h-6 w-6 animate-spin rounded-full border-2 border-brand-500 border-t-transparent";
+
+/** Large loading spinner — 32px, brand-500 color, used in full-page loading states. */
+export const SPINNER_LG = "h-8 w-8 animate-spin rounded-full border-2 border-brand-500 border-t-transparent";

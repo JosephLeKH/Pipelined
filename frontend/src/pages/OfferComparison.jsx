@@ -8,7 +8,7 @@ import NavBar from "../components/NavBar";
 import { useApplications } from "../hooks/useApplications";
 import { useUpdateApplication } from "../hooks/useApplications";
 import { OFFER_FIELDS, OFFER_STAGE } from "../lib/constants";
-import { INPUT_BASE } from "../lib/designTokens";
+import { INPUT_BASE, SPINNER_SM } from "../lib/designTokens";
 import { formatUSD } from "../lib/currencyUtils";
 
 const CONFETTI_CONFIG = { particleCount: 150, spread: 80, origin: { y: 0.5 } };
@@ -70,7 +70,7 @@ function LoadingState() {
     <>
       <NavBar />
       <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="h-6 w-6 animate-spin rounded-full border-2 border-brand-500 border-t-transparent" />
+        <div className={SPINNER_SM} />
       </div>
     </>
   );

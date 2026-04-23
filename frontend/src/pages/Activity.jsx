@@ -7,7 +7,7 @@ import Activity from "lucide-react/dist/esm/icons/activity";
 
 import NavBar from "../components/NavBar";
 import { useActivityFeed } from "../hooks/useActivity";
-import { CARD_BASE } from "../lib/designTokens";
+import { CARD_BASE, SPINNER_SM } from "../lib/designTokens";
 
 const TIME_RANGES = [
   { label: "Last 7 days", days: 7 },
@@ -105,7 +105,7 @@ function ActivityTimeline({ isLoading, entries, onEntryClick }) {
   if (isLoading) {
     return (
       <div className="flex justify-center py-16">
-        <div className="h-6 w-6 animate-spin rounded-full border-2 border-brand-500 border-t-transparent" />
+        <div className={SPINNER_SM} />
       </div>
     );
   }

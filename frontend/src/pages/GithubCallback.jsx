@@ -5,6 +5,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 
 import { useAuth } from "../context/AuthContext";
 import { useGithubAuth } from "../hooks/useAuth";
+import { SPINNER_LG } from "../lib/designTokens";
 
 function GithubCallback() {
   const [searchParams] = useSearchParams();
@@ -35,7 +36,7 @@ function GithubCallback() {
 
   return (
     <div className="flex min-h-screen items-center justify-center">
-      <div className="h-8 w-8 animate-spin rounded-full border-2 border-brand-500 border-t-transparent" />
+      <div className={SPINNER_LG} />
     </div>
   );
 }

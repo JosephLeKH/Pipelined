@@ -5,6 +5,7 @@ import { useState } from "react";
 import BarChart3 from "lucide-react/dist/esm/icons/bar-chart-3";
 
 import useAnalyticsData from "../hooks/useAnalyticsData";
+import { SPINNER_LG } from "../lib/designTokens";
 import { AnalyticsMainCharts, AnalyticsTagsTable, AnalyticsFunnelSection } from "../components/AnalyticsCharts";
 import EmptyState from "../components/EmptyState";
 import NavBar from "../components/NavBar";
@@ -21,7 +22,7 @@ function AnalyticsLoading() {
     <div className="flex min-h-screen flex-col bg-surface-secondary dark:bg-gray-900">
       <NavBar />
       <main className="flex flex-1 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-brand-500 border-t-transparent" />
+        <div className={SPINNER_LG} />
       </main>
     </div>
   );

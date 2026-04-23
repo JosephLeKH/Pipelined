@@ -14,6 +14,7 @@ import FeedbackWidget from "./components/FeedbackWidget";
 import ShortcutHelp from "./components/ShortcutHelp";
 import UpgradePlanModal from "./components/UpgradePlanModal";
 import { CHORD_TIMEOUT_MS } from "./lib/shortcuts";
+import { SPINNER_SM } from "./lib/designTokens";
 
 const CHORD_DESTINATIONS = { d: "/dashboard", c: "/calendar", a: "/analytics", j: "/jobs" };
 const IGNORED_CHORD_TAGS = new Set(["INPUT", "TEXTAREA", "SELECT"]);
@@ -81,7 +82,7 @@ function VerifyEmailRoute() {
 function LoadingSpinner() {
   return (
     <div className="flex min-h-screen items-center justify-center">
-      <div className="h-6 w-6 animate-spin rounded-full border-2 border-brand-500 border-t-transparent" />
+      <div className={SPINNER_SM} />
     </div>
   );
 }

@@ -7,6 +7,7 @@ import { STAGE_COLORS, DEFAULT_STAGE_COLOR } from "../lib/constants";
 import { formatDate } from "../lib/dateUtils";
 import { usePublicPipeline } from "../hooks/useSharing";
 import { trackEvent } from "../lib/analytics";
+import { SPINNER_LG } from "../lib/designTokens";
 
 function StagePill({ stage }) {
   const color = STAGE_COLORS[stage] ?? DEFAULT_STAGE_COLOR;
@@ -60,7 +61,7 @@ function PublicAppRow({ app }) {
 function LoadingState() {
   return (
     <div className="flex min-h-screen items-center justify-center">
-      <div className="h-8 w-8 animate-spin rounded-full border-2 border-brand-500 border-t-transparent" />
+      <div className={SPINNER_LG} />
     </div>
   );
 }
