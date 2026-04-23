@@ -9,37 +9,66 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Brand palette — indigo-to-violet identity
+        // Brand palette — Anthropic clay orange
         brand: {
-          50: "#EEF2FF",
-          100: "#E0E7FF",
-          200: "#C7D2FE",
-          300: "#A5B4FC",
-          400: "#818CF8",
-          500: "#6366F1",
-          600: "#4F46E5",
-          700: "#4338CA",
-          800: "#3730A3",
-          900: "#312E81",
-          950: "#1E1B4B",
+          50: "#fdf3ee",
+          100: "#fae4d4",
+          200: "#f5c9aa",
+          300: "#eeac80",
+          400: "#e48f5a",
+          500: "#d97757",
+          600: "#c4673a",
+          700: "#a35430",
+          800: "#7d4127",
+          900: "#5c3020",
+          950: "#3a1e13",
+        },
+        // Warm gray palette — Anthropic brand neutrals
+        gray: {
+          50: "#faf9f5",
+          100: "#f5f0e8",
+          200: "#e8e6dc",
+          300: "#d4ccbd",
+          400: "#b0aea5",
+          500: "#6b5f4e",
+          600: "#4a4139",
+          700: "#332d26",
+          800: "#1f1b17",
+          900: "#141413",
+          950: "#0d0c0b",
+        },
+        // Secondary accent colors
+        "accent-blue": "#6a9bcc",
+        "accent-green": "#788c5d",
+        // Semantic tokens — surfaces
+        "surface-primary": "#ffffff",
+        "surface-secondary": "#faf9f5",
+        "surface-tertiary": "#e8e6dc",
+        // Semantic tokens — borders
+        "border-default": "rgba(120,100,75,0.12)",
+        "border-strong": "rgba(120,100,75,0.24)",
+        // Dark mode semantic tokens
+        dark: {
+          bg: "#141413",
+          surface: "#1c1c1a",
+          accent: "#d97757",
+          text: "#e8e4de",
+          "text-secondary": "#b0aea5",
+          border: "rgba(255,255,255,0.08)",
         },
         // Semantic colors
-        accent: colors.amber[500],
         success: colors.emerald[500],
         warning: colors.amber[500],
         danger: colors.rose[500],
-        info: colors.sky[500],
-        // Alias gray → slate for warmer, more professional neutrals
-        gray: colors.slate,
+        info: "#6a9bcc",
       },
       fontFamily: {
         sans: ["Inter", ...defaultTheme.fontFamily.sans],
       },
       boxShadow: {
-        card: "0 1px 3px 0 rgb(0 0 0 / 0.06), 0 1px 2px -1px rgb(0 0 0 / 0.06)",
-        "card-hover": "0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.07)",
-        modal: "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.08)",
-        glow: "0 0 20px -5px rgb(99 102 241 / 0.3)",
+        card: "0 1px 2px rgba(120,100,75,0.06)",
+        "card-hover": "0 2px 8px rgba(120,100,75,0.08)",
+        modal: "0 20px 60px rgba(20,20,19,0.15)",
       },
       keyframes: {
         slideInRight: {
@@ -52,7 +81,7 @@ export default {
       },
       borderRadius: {
         card: "0.75rem",
-        button: "0.5rem",
+        button: "0.375rem",
         badge: "9999px",
         input: "0.5rem",
       },
