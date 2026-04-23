@@ -58,7 +58,7 @@ export function AddChecklistItem({ onAdd }) {
         onChange={(e) => setText(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder="Add item and press Enter"
-        className="flex-1 border border-gray-200 bg-white rounded-input px-2 py-1 text-sm text-gray-700 placeholder:text-gray-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none transition-colors dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100"
+        className={`${INPUT_BASE} flex-1 px-2 py-1`}
         aria-label="New checklist item"
         maxLength={200}
       />

@@ -13,6 +13,7 @@ import {
   MAX_PREP_QUESTIONS,
   PREP_CHECKLIST_STARTER_SUGGESTIONS,
 } from "../lib/constants";
+import { INPUT_BASE } from "../lib/designTokens";
 import { ChecklistItem, AddChecklistItem } from "./PrepChecklist";
 
 function QuestionItem({ question, onDelete }) {
@@ -53,7 +54,7 @@ function AddQuestionItem({ onAdd, disabled }) {
         onKeyDown={handleKeyDown}
         placeholder={disabled ? `Max ${MAX_PREP_QUESTIONS} questions` : "Add question and press Enter"}
         disabled={disabled}
-        className="flex-1 border border-gray-200 bg-white rounded-input px-2 py-1 text-sm text-gray-700 placeholder:text-gray-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none transition-colors dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+        className={`${INPUT_BASE} flex-1 px-2 py-1 disabled:opacity-50 disabled:cursor-not-allowed`}
         aria-label="New practice question"
         maxLength={200}
       />
@@ -109,7 +110,7 @@ function PrepNotesField({ notes, onNotesChange }) {
         maxLength={PREP_NOTES_MAX_LENGTH}
         placeholder="Add your prep notes here…"
         rows={4}
-        className="mt-1 w-full resize-none border border-gray-200 bg-white rounded-input px-3 py-2 text-sm text-gray-700 placeholder:text-gray-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none transition-colors dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100"
+        className={`${INPUT_BASE} mt-1 resize-none`}
       />
       <p className="mt-1 text-right text-xs text-gray-400">{notes.length} / {PREP_NOTES_MAX_LENGTH}</p>
     </div>
