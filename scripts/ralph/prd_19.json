@@ -94,7 +94,7 @@
         "No console warnings"
       ],
       "priority": 2,
-      "passes": false
+      "passes": true
     },
     {
       "id": "US-244",
