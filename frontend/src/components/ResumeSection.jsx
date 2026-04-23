@@ -71,7 +71,7 @@ function ResumeSection({ hasResume, isUploading, isDeleting, onResumeUpload, onR
             type="button"
             onClick={handleResumeDelete}
             disabled={isUploading || isDeleting}
-            className="flex items-center gap-2 rounded-button border border-gray-300 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+            className="flex items-center gap-2 rounded-button border border-gray-300 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
           >
             {isDeleting && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
             Remove resume
