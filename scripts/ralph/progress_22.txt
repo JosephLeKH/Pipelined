@@ -54,3 +54,13 @@ Started: Thu Apr 23 12:37:07 PDT 2026
 - JobBoard.jsx: already had `px-4 py-8 sm:px-6` — left untouched
 - Build passes. Committed.
 **Learning:** When a page uses `p-6` shorthand, split into `px-N py-N` to allow responsive px breakpoints without affecting vertical padding.
+
+## US-264: Add cursor-pointer to all clickable non-button elements
+
+**Investigated**: Audited Activity.jsx, JobCard.jsx, KanbanCard.jsx (all specifically named), plus broader search for div/span elements with onClick lacking cursor-pointer.
+
+**Learned**: The three explicitly named files were already handled correctly — Activity.jsx uses `<button>` elements for timeline entries, JobCard.jsx article container already had `cursor-pointer`, KanbanCard.jsx already had `cursor-pointer`. The remaining gaps were modal backdrop divs with `onClick={close/handleClose/handleDismiss/handleOverlayClick}` across 5 components: CommandPalette.jsx, ShortcutHelp.jsx, ManualAddForm.jsx, NewEventForm.jsx, CsvImportModal.jsx, UpgradePlanModal.jsx. MODAL_BACKDROP token was not modified (some usages have no onClick); instead `cursor-pointer` was added individually per-component.
+
+**Completed**: US-264 complete and committed (e0c31ab). Added `cursor-pointer` to 6 clickable non-button elements across 6 files. Build succeeded in 31.99s. PRD updated: US-264 passes: true.
+
+**Status**: All 6 stories in PRD-22 now pass.

@@ -76,7 +76,7 @@
         "Buttons are excluded (they have cursor-pointer by default)",
         "npm run build succeeds"
       ],
-      "passes": false
+      "passes": true
     }
   ]
 }
