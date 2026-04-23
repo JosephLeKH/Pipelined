@@ -38,6 +38,17 @@
   .animate-slideInUp   { animation: slideInUp   250ms ease-out    both; }
   .animate-scaleIn     { animation: scaleIn     150ms ease-out    both; }
   .animate-shimmer     { animation: shimmer     1.5s  linear  infinite; }
+
+  /* Shimmer background — uses surface-tertiary (#e8e6dc) per design system.
+     Defined here (not Tailwind utilities) so the gradient lives in CSS, not JSX. */
+  .shimmer-bg {
+    background: linear-gradient(to right, #e8e6dc 0%, #f5f4f0 50%, #e8e6dc 100%);
+    background-size: 200% 100%;
+  }
+  .dark .shimmer-bg {
+    background: linear-gradient(to right, #374151 0%, #4b5563 50%, #374151 100%);
+    background-size: 200% 100%;
+  }
   .animate-pulse-dot   { animation: pulse-dot   2s    ease     infinite; }
 
   /* Scroll-reveal — start hidden, transition in when .in-view is added via IntersectionObserver */

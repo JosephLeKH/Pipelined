@@ -1,6 +1,6 @@
 /** Skeleton placeholder for a calendar day cell — animated shimmer matching DayCell layout. */
 
-const SHIMMER = "bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 dark:from-gray-700 dark:via-gray-600 dark:to-gray-700 bg-[length:200%_100%] animate-shimmer";
+const SHIMMER = "shimmer-bg animate-shimmer";
 
 function SkeletonCalendarCell() {
   return (
