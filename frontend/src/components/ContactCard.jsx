@@ -38,6 +38,8 @@ function ContactCard({ contact, applicationId }) {
               <span
                 className="inline-block h-2 w-2 shrink-0 rounded-full bg-amber-400"
                 title="Stale — no contact in 14+ days"
+                aria-label="Stale contact — no activity in 14+ days"
+                role="img"
               />
             )}
             <span className="truncate text-sm font-medium text-gray-900 dark:text-gray-100">
