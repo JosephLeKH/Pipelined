@@ -61,7 +61,7 @@ function WeeklyGoalSection({ weeklyGoal, isGoalPending, onSaveGoal }) {
           type="button"
           onClick={handleSaveGoal}
           disabled={isGoalPending}
-          className="flex items-center gap-2 rounded-button bg-gradient-to-r from-brand-600 to-brand-500 px-4 py-2 text-sm font-medium text-white hover:from-brand-700 hover:to-brand-600 active:scale-[0.98] transition-all duration-150 disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:ring-offset-2"
+          className="flex items-center gap-2 rounded-button bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-600 active:scale-[0.98] transition-all duration-150 disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:ring-offset-2"
         >
           {isGoalPending && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
           Save goal

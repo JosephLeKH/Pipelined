@@ -15,11 +15,11 @@ import ApiErrorMessage from "./ApiErrorMessage";
 const COUNT_UP_DURATION_MS = 400;
 
 const METRIC_CONFIG = [
-  { key: "total_applied", label: "Total Applied", Icon: TrendingUp, accent: "border-brand-500", iconBg: "bg-brand-50 text-brand-600 dark:bg-brand-900/30 dark:text-brand-400" },
-  { key: "active_count", label: "Active", Icon: Activity, accent: "border-accent-blue", iconBg: "bg-blue-50 text-accent-blue dark:bg-blue-900/30 dark:text-blue-400" },
-  { key: "response_rate", label: "Response Rate", Icon: CheckCircle, accent: "border-emerald-500", iconBg: "bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400" },
-  { key: "avg_days_to_first_response", label: "Avg Days to Response", Icon: Clock, accent: "border-amber-500", iconBg: "bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400" },
-  { key: "stale_count", label: "Needs follow-up", Icon: Bell, accent: "border-rose-500", iconBg: "bg-rose-50 text-rose-600 dark:bg-rose-900/30 dark:text-rose-400" },
+  { key: "total_applied", label: "Total Applied", Icon: TrendingUp, accent: "border-brand-500", iconBg: "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400" },
+  { key: "active_count", label: "Active", Icon: Activity, accent: "border-accent-blue", iconBg: "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400" },
+  { key: "response_rate", label: "Response Rate", Icon: CheckCircle, accent: "border-emerald-500", iconBg: "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400" },
+  { key: "avg_days_to_first_response", label: "Avg Days to Response", Icon: Clock, accent: "border-amber-500", iconBg: "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400" },
+  { key: "stale_count", label: "Needs follow-up", Icon: Bell, accent: "border-rose-500", iconBg: "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400" },
 ];
 
 function getRawValue(key, stats) {

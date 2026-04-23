@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { INPUT_BASE, BUTTON_PRIMARY } from "../lib/designTokens";
+import { INPUT_BASE, INPUT_LABEL, BUTTON_PRIMARY } from "../lib/designTokens";
 import { PASSWORD_MIN_LENGTH } from "../lib/constants";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -41,15 +41,11 @@ export function RegisterForm({ displayName, setDisplayName, email, setEmail, pas
   return (
     <form onSubmit={onSubmit} noValidate>
       <div className="mb-4">
-        <label htmlFor="display-name" className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">
-          Name
-        </label>
+        <label htmlFor="display-name" className={`block ${INPUT_LABEL}`}>Name</label>
         <input id="display-name" type="text" autoComplete="name" value={displayName} onChange={(e) => setDisplayName(e.target.value)} className={INPUT_BASE} placeholder="Jane Smith" />
       </div>
       <div className="mb-4">
-        <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">
-          Email
-        </label>
+        <label htmlFor="email" className={`block ${INPUT_LABEL}`}>Email</label>
         <input
           id="email"
           type="email"
@@ -64,9 +60,7 @@ export function RegisterForm({ displayName, setDisplayName, email, setEmail, pas
         {emailError && <p id="email-error" className="mt-1 text-xs text-red-600">{emailError}</p>}
       </div>
       <div className="mb-5">
-        <label htmlFor="password" className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">
-          Password
-        </label>
+        <label htmlFor="password" className={`block ${INPUT_LABEL}`}>Password</label>
         <input id="password" type="password" autoComplete="new-password" value={password} onChange={(e) => setPassword(e.target.value)} className={INPUT_BASE} placeholder="Min. 8 characters" />
         <PasswordStrengthList password={password} />
       </div>

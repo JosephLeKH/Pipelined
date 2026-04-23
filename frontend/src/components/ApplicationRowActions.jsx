@@ -117,7 +117,7 @@ function BulkMoveControls({ stageOptions, selectedStage, setSelectedStage, isMov
         {stageOptions.map((s) => <option key={s} value={s}>{s}</option>)}
       </select>
       <button type="button" disabled={!selectedStage || isBusy} onClick={onMove}
-        className="flex items-center gap-1 bg-gradient-to-r from-brand-600 to-brand-500 text-white rounded-button shadow-sm hover:from-brand-700 hover:to-brand-600 active:scale-[0.98] transition-all duration-150 font-medium text-sm px-3 py-1 focus:outline-none focus:ring-2 focus:ring-brand-500/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none">
+        className="flex items-center gap-1 bg-brand-500 text-white rounded-button shadow-sm hover:bg-brand-600 active:scale-[0.98] transition-all duration-150 font-medium text-sm px-3 py-1 focus:outline-none focus:ring-2 focus:ring-brand-500/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none">
         {isMoving ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" /> : null}
         Move
       </button>
@@ -146,7 +146,7 @@ function BulkDangerControls({ selectedCount, isMerging, isDeleting, isBusy, onMe
     <>
       {selectedCount === 2 && (
         <button type="button" disabled={isBusy} onClick={onMerge}
-          className="flex items-center gap-1 rounded bg-purple-600 px-3 py-1 text-sm font-medium text-white hover:bg-purple-700 disabled:opacity-50">
+          className="flex items-center gap-1 rounded bg-brand-500 px-3 py-1 text-sm font-medium text-white hover:bg-brand-600 disabled:opacity-50">
           {isMerging ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" /> : null}
           Merge
         </button>

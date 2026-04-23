@@ -83,7 +83,7 @@ function NoShare({ onCreate, isCreating }) {
         type="button"
         onClick={onCreate}
         disabled={isCreating}
-        className="flex items-center gap-1.5 self-start rounded-button bg-gradient-to-r from-brand-600 to-brand-500 px-3 py-1.5 text-sm text-white hover:from-brand-700 hover:to-brand-600 active:scale-[0.98] transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:ring-offset-1 disabled:opacity-50"
+        className="flex items-center gap-1.5 self-start rounded-button bg-brand-500 px-3 py-1.5 text-sm text-white hover:bg-brand-600 active:scale-[0.98] transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:ring-offset-1 disabled:opacity-50"
       >
         {isCreating
           ? <Loader2 className="h-4 w-4 animate-spin" />

@@ -59,9 +59,9 @@ export const BADGE_BASE = "rounded-badge text-xs font-medium px-2.5 py-1 inline-
 /** Modal backdrop — semi-transparent black with blur; fades in on mount. */
 export const MODAL_BACKDROP = "fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fadeIn";
 
-/** Modal card — large rounded, border-defined with shadow-lg, white bg with dark variant; scales in on mount. */
+/** Modal card — large rounded, border-defined, white bg with dark variant; scales in on mount. */
 export const MODAL_CARD =
-  "bg-white rounded-2xl border border-border-default shadow-lg w-full max-w-lg mx-auto relative animate-scaleIn " +
+  "bg-white rounded-2xl border border-border-default shadow-sm w-full max-w-lg mx-auto relative animate-scaleIn " +
   "dark:bg-gray-800 dark:border-dark-border";
 
 /** Nav container — white bg, bottom border, no gradient. */

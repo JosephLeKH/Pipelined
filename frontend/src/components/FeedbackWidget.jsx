@@ -187,7 +187,7 @@ function FeedbackWidget() {
           onClick={() => setOpen((v) => !v)}
           aria-label="Send feedback"
           title="Send feedback"
-          className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-600 text-white shadow-lg hover:bg-brand-700 hover:shadow-xl transition-all duration-150 active:scale-95"
+          className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-500 text-white shadow-sm hover:bg-brand-600 transition-all duration-150 active:scale-95"
         >
           <MessageCircle className="h-5 w-5" aria-hidden="true" />
         </button>

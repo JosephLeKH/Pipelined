@@ -99,7 +99,7 @@ function NotesEditor({ applicationId, initialValue, onDirtyChange }) {
               <button
                 type="button"
                 onClick={handleSave}
-                className="bg-gradient-to-r from-brand-600 to-brand-500 text-white rounded-button hover:from-brand-700 hover:to-brand-600 active:scale-[0.98] transition-all duration-150 text-xs px-2 py-1 focus:outline-none focus:ring-2 focus:ring-brand-500/30"
+                className="bg-brand-500 text-white rounded-button hover:bg-brand-600 active:scale-[0.98] transition-all duration-150 text-xs px-2 py-1 focus:outline-none focus:ring-2 focus:ring-brand-500/30"
               >
                 Save
               </button>

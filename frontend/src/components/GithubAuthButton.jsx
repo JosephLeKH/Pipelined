@@ -1,5 +1,7 @@
 /** GitHub OAuth sign-in button. Redirects to GitHub authorization page. */
 
+import { BUTTON_SECONDARY } from "../lib/designTokens";
+
 const GITHUB_CLIENT_ID = import.meta.env.VITE_GITHUB_CLIENT_ID ?? "";
 const REDIRECT_URI = `${window.location.origin}/auth/github/callback`;
 const GITHUB_AUTHORIZE_URL = "https://github.com/login/oauth/authorize";
@@ -29,7 +31,7 @@ function GithubAuthButton({ label = "Continue with GitHub" }) {
     <button
       type="button"
       onClick={handleClick}
-      className="flex w-full items-center justify-center gap-3 rounded-lg bg-[#24292e] px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-[#1b1f23] focus:outline-none focus:ring-2 focus:ring-[#24292e] focus:ring-offset-2"
+      className={`flex w-full items-center justify-center gap-2 ${BUTTON_SECONDARY}`}
       data-testid="github-auth-button"
     >
       <GithubIcon />

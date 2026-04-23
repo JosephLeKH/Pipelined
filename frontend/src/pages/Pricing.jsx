@@ -111,9 +111,9 @@ function FreeTierCard() {
 
 function ProTierCard() {
   return (
-    <div className="relative rounded-2xl border-2 border-brand-500 bg-white p-8 shadow-lg dark:bg-gray-900">
+    <div className="relative rounded-2xl border-2 border-brand-500 bg-white p-8 dark:bg-gray-900">
       <div className="absolute -top-3.5 left-1/2 -trangray-x-1/2">
-        <span className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-brand-500 to-purple-600 px-4 py-1 text-xs font-bold uppercase tracking-wide text-white shadow">
+        <span className="flex items-center gap-1.5 rounded-full bg-brand-500 px-4 py-1 text-xs font-bold uppercase tracking-wide text-white">
           <Zap className="h-3 w-3" />
           Most popular
         </span>
@@ -132,7 +132,7 @@ function ProTierCard() {
 
       <button
         type="button"
-        className="mb-8 w-full rounded-xl bg-gradient-to-r from-brand-500 to-purple-600 px-6 py-3 text-sm font-semibold text-white shadow-md hover:from-brand-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
+        className="mb-8 w-full rounded-xl bg-brand-500 px-6 py-3 text-sm font-semibold text-white hover:bg-brand-600 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
       >
         Upgrade to Pro — coming soon
       </button>

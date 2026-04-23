@@ -54,7 +54,7 @@ function DetailPanel({ application, onClose, onAddEvent }) {
       <div className="absolute inset-0 bg-black/30 pointer-events-none" aria-hidden="true" />
       <div
         ref={panelRef}
-        className={`fixed inset-x-0 bottom-0 h-[90vh] rounded-t-xl bg-white shadow-xl transition-transform duration-[250ms] md:inset-x-auto md:bottom-auto md:right-0 md:top-0 md:h-full md:w-[480px] md:rounded-none dark:bg-gray-800 ${isOpen ? "trangray-y-0 md:trangray-x-0" : "trangray-y-full md:trangray-y-0 md:trangray-x-full"}`}
+        className={`fixed inset-x-0 bottom-0 h-[90vh] rounded-t-xl bg-white shadow-sm border-l border-gray-200 dark:border-gray-700 transition-transform duration-[250ms] md:inset-x-auto md:bottom-auto md:right-0 md:top-0 md:h-full md:w-[480px] md:rounded-none dark:bg-gray-800 ${isOpen ? "trangray-y-0 md:trangray-x-0" : "trangray-y-full md:trangray-y-0 md:trangray-x-full"}`}
         style={{ transform: dragOffset ? `translateY(${dragOffset}px)` : undefined, transition: dragOffset ? "none" : undefined }}
         role="dialog" aria-modal="true" aria-labelledby="detail-panel-heading" onKeyDown={handlePanelKeyDown}
       >

@@ -4,14 +4,12 @@ import { Link } from "react-router-dom";
 
 import { useResetPasswordForm } from "../hooks/useResetPasswordForm";
 import AuthLayout from "../components/AuthLayout";
-import { INPUT_BASE, BUTTON_PRIMARY } from "../lib/designTokens";
+import { INPUT_BASE, INPUT_LABEL, BUTTON_PRIMARY } from "../lib/designTokens";
 
 function PasswordInput({ label, id, value, onChange }) {
   return (
     <div className="mb-4">
-      <label htmlFor={id} className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">
-        {label}
-      </label>
+      <label htmlFor={id} className={`block ${INPUT_LABEL}`}>{label}</label>
       <input
         id={id}
         type="password"
@@ -54,8 +52,8 @@ function ResetPassword() {
 
   return (
     <AuthLayout>
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Set new password</h1>
-      <p className="mt-1 mb-6 text-sm text-gray-500 dark:text-gray-400">Choose a strong password for your account.</p>
+      <h1 className="font-display text-xl font-semibold text-gray-900">Set new password</h1>
+      <p className="mt-1 mb-6 text-sm text-gray-500">Choose a strong password for your account.</p>
 
       {success ? (
         <p role="status" className="rounded-lg bg-emerald-50 border border-emerald-200 px-3 py-3 text-sm text-emerald-800 dark:bg-emerald-900/20 dark:border-emerald-800 dark:text-emerald-300">
@@ -73,10 +71,8 @@ function ResetPassword() {
         />
       )}
 
-      <p className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
-        <Link to="/login" className="font-medium text-brand-600 hover:underline">
-          Back to sign in
-        </Link>
+      <p className="mt-6 text-center text-sm text-gray-500">
+        <Link to="/login" className="text-brand-500 hover:text-brand-600 text-sm">Back to sign in</Link>
       </p>
     </AuthLayout>
   );

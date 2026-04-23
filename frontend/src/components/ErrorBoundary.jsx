@@ -39,7 +39,7 @@ class ErrorBoundary extends Component {
           <button
             type="button"
             onClick={this.handleReset}
-            className="flex items-center gap-2 rounded-button bg-gradient-to-r from-brand-600 to-brand-500 px-4 py-2 text-sm font-medium text-white hover:from-brand-700 hover:to-brand-600 active:scale-[0.98] transition-all duration-150"
+            className="flex items-center gap-2 rounded-button bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-600 active:scale-[0.98] transition-all duration-150"
           >
             <RefreshCw className="h-4 w-4" />
             Try again

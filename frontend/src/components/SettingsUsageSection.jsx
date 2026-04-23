@@ -64,7 +64,7 @@ function SettingsUsageSection({ user }) {
           type="button"
           disabled
           title="Coming soon"
-          className="flex cursor-not-allowed items-center gap-2 rounded-button bg-gradient-to-r from-brand-600 to-brand-500 px-4 py-2 text-sm font-medium text-white opacity-60"
+          className="flex cursor-not-allowed items-center gap-2 rounded-button bg-brand-500 px-4 py-2 text-sm font-medium text-white opacity-60"
         >
           Upgrade to Pro — Coming soon
         </button>

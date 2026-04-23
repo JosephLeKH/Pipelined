@@ -112,7 +112,7 @@ function StagesSaveFooter({ count, onSave, isSaving }) {
   return (
     <div className="flex items-center justify-between border-t border-gray-100 pt-3 dark:border-gray-700">
       <p className="text-xs text-gray-400">{count} / {STAGES_MAX_COUNT} stages</p>
-      <button type="button" onClick={onSave} disabled={isSaving} className="flex items-center gap-2 rounded-button bg-gradient-to-r from-brand-600 to-brand-500 px-4 py-2 text-sm font-medium text-white hover:from-brand-700 hover:to-brand-600 active:scale-[0.98] transition-all duration-150 disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:ring-offset-2">
+      <button type="button" onClick={onSave} disabled={isSaving} className="flex items-center gap-2 rounded-button bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-600 active:scale-[0.98] transition-all duration-150 disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:ring-offset-2">
         {isSaving && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
         Save stages
       </button>

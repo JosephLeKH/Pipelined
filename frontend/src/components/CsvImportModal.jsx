@@ -106,7 +106,7 @@ function CsvImportModal({ isOpen, onClose }) {
           {SAMPLE_HEADERS}
         </code>
         <input ref={fileRef} type="file" accept={ACCEPTED_MIME} onChange={handleFileChange} aria-label="CSV file"
-          className="mb-4 block w-full text-sm text-gray-600 file:mr-3 file:rounded file:border-0 file:bg-blue-50 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-blue-700 hover:file:bg-blue-100 dark:text-gray-300 dark:file:bg-blue-900/30 dark:file:text-blue-300"
+          className="mb-4 block w-full text-sm text-gray-600 file:mr-3 file:rounded file:border-0 file:bg-brand-50 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-brand-700 hover:file:bg-brand-100 dark:text-gray-300 dark:file:bg-brand-900/30 dark:file:text-brand-300"
         />
         {localError && <p role="alert" className="mb-3 text-sm text-red-600 dark:text-red-400">{localError}</p>}
         <ImportResultDisplay result={result} errorsExpanded={errorsExpanded} setErrorsExpanded={setErrorsExpanded} />

@@ -58,7 +58,7 @@ export default function SaveSearchPopover({ currentFilters, onClose }) {
           type="button"
           onClick={handleSave}
           disabled={!name.trim() || createMutation.isPending}
-          className="bg-gradient-to-r from-brand-600 to-brand-500 text-white rounded-button shadow-sm hover:from-brand-700 hover:to-brand-600 active:scale-[0.98] transition-all duration-150 font-medium text-sm px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-brand-500/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none"
+          className="bg-brand-500 text-white rounded-button shadow-sm hover:bg-brand-600 active:scale-[0.98] transition-all duration-150 font-medium text-sm px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-brand-500/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none"
         >
           Save
         </button>
