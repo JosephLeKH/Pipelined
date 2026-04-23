@@ -63,7 +63,8 @@ export default {
         info: "#6a9bcc",
       },
       fontFamily: {
-        sans: ["Inter", ...defaultTheme.fontFamily.sans],
+        sans: ["Lora", "Georgia", "serif"],
+        display: ["Poppins", "Arial", "sans-serif"],
       },
       boxShadow: {
         card: "0 1px 2px rgba(120,100,75,0.06)",

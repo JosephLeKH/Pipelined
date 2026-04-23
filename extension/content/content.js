@@ -95,8 +95,6 @@ function injectBanner(fields, boardId) {
       if (e.key === "Escape") {
         clearTimeout(timer);
         dismiss(host);
-        _escapeController?.abort();
-        _escapeController = null;
       }
     },
     { signal: escapeSignal }
