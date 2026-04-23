@@ -26,7 +26,7 @@
         "Alert text content and role='alert' attributes preserved",
         "npm run build succeeds"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "US-254",

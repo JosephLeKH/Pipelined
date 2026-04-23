@@ -17,3 +17,9 @@ Status: COMPLETE
 ### Learnings
 - Files with existing designTokens imports just needed the new token name added to the destructure
 - PublicPipeline and PublicTimeline had no prior designTokens usage — pattern is identical, import added after trackEvent import
+
+## US-253: Replace inline green success alerts with SUCCESS_BANNER token
+- Added SUCCESS_BANNER to imports in all 8 files: SettingsProfileSection, SettingsAccountSection, SettingsResumeSection, SettingsPipelineSection, WeeklyGoalSection, Settings, ResumeSection, CsvImportModal
+- Replaced inline `rounded bg-green-50 px-3 py-2 text-sm text-green-700 dark:bg-green-900/30 dark:text-green-300` with `${SUCCESS_BANNER}`, preserving positional classes (mt-4/mb-4 where present)
+- Note: CsvImportModal uses `role="status"` not `role="alert"` — preserved as-is
+- Build passes. 8 files changed.
