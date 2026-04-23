@@ -85,7 +85,7 @@
         "npm run build succeeds"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Charts need the brand accent trio to feel cohesive with the rest of the UI."
     },
     {

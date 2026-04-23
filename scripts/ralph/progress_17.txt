@@ -23,6 +23,16 @@ Completed: Thu Apr 23 2026
 - Calendar.jsx page heading: added font-display class
 - npm run build: ✓ passed
 
+## US-230: Redesign analytics page
+Completed: Thu Apr 23 2026
+- Analytics.jsx already had bg-surface-secondary and font-display on page header (applied in prior iteration)
+- AnalyticsCharts.jsx already uses CHART_COLORS = ["#d97757", "#6a9bcc", "#788c5d", "#9ca3af", "#d1d5db"] (brand accent trio)
+- CustomTooltip uses border-border-default bg-white shadow-card (warm border styling)
+- ChartCard wraps all charts with CARD_BASE and p-6 padding
+- Axis tick fill "#9ca3af" (gray-400 equivalent) throughout all charts
+- No indigo/violet colors present in chart palette
+- npm run build: ✓ passed
+
 ## US-235: Replace all icon styling to single-color warm gray
 Completed: Thu Apr 23 2026
 - Audited all 69 lucide-react imports across frontend/src
