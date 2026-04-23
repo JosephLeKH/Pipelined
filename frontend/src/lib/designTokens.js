@@ -37,12 +37,20 @@ export const BUTTON_DANGER =
   "font-display transition-colors focus:outline-none focus:ring-2 focus:ring-red-500/30 " +
   "disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none";
 
-/** Text input, select, textarea base styles. */
+/** Text input, select, textarea base styles — warm palette, Lora body text. */
 export const INPUT_BASE =
-  "border border-slate-300 bg-white rounded-input px-3 py-2 text-sm " +
-  "placeholder:text-slate-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 " +
-  "focus:outline-none transition-colors w-full " +
-  "dark:bg-slate-800 dark:border-slate-600 dark:text-slate-100 dark:placeholder:text-slate-500";
+  "border border-gray-300 rounded-md bg-white text-gray-900 " +
+  "placeholder:text-gray-400 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/20 " +
+  "focus:outline-none transition-colors text-sm px-3 py-2 font-sans w-full";
+
+/** Form field label — Poppins, warm gray. */
+export const INPUT_LABEL = "text-sm font-medium text-gray-700 mb-1.5 font-display";
+
+/** Helper text below a form field. */
+export const INPUT_HELPER = "text-xs text-gray-400 mt-1";
+
+/** Validation error text below a form field. */
+export const INPUT_ERROR = "text-xs text-red-600 mt-1";
 
 /** Badge / pill base — pill shape, small text. Combine with stage-specific color classes. */
 export const BADGE_BASE = "rounded-badge text-xs font-medium px-2.5 py-1 inline-flex items-center gap-1";
