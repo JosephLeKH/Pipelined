@@ -69,3 +69,16 @@ Status: COMPLETE
 ### Learnings
 - SettingsPipelineSection.jsx also had an h2 missing font-display — the story description mentioned checking it; the audit confirmed it needed fixing
 - Pattern: when adding font-display to section headings, scan all Settings subcomponents, not just the ones explicitly named in the story
+
+## US-258: Create INPUT_READONLY token for disabled/readonly input fields
+Status: COMPLETE
+
+### Summary
+- Added INPUT_READONLY token to designTokens.js: `border border-gray-200 rounded-md bg-gray-50 text-gray-500 text-sm px-3 py-2 font-sans w-full cursor-not-allowed dark:bg-gray-900 dark:border-gray-700 dark:text-gray-400`
+- Added INPUT_READONLY to the import in SettingsProfileSection.jsx
+- Replaced inline class string on the readonly email input (line 111) with `{INPUT_READONLY}`
+- Build passed cleanly. Committed as 3ca0175.
+
+### Learnings
+- The inline class used `rounded-input` (a custom Tailwind alias) while the token spec uses `rounded-md` — the token spec takes precedence and keeps things consistent with other INPUT_* tokens which all use `rounded-md`
+- cursor-not-allowed was added to the token (not in the original inline) to improve UX signal for readonly fields
