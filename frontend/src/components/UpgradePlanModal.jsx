@@ -8,6 +8,8 @@ import { useNavigate } from "react-router-dom";
 import Zap from "lucide-react/dist/esm/icons/zap";
 import X from "lucide-react/dist/esm/icons/x";
 
+import { BUTTON_PRIMARY, BUTTON_SECONDARY, MODAL_CARD } from "../lib/designTokens";
+
 export const TIER_LIMIT_EXCEEDED_EVENT = "pipelined:tier_limit_exceeded";
 
 const RESOURCE_LABELS = {
@@ -60,9 +62,9 @@ function UpgradePlanModal() {
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
       onClick={handleDismiss}
     >
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" aria-hidden="true" />
+      <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" aria-hidden="true" />
       <div
-        className="relative w-full max-w-md rounded-2xl bg-white p-8 shadow-2xl dark:bg-gray-900"
+        className={`${MODAL_CARD} relative max-w-md p-8`}
         onClick={(e) => e.stopPropagation()}
       >
         <button
@@ -99,14 +101,14 @@ function UpgradePlanModal() {
               type="button"
               onClick={handleUpgrade}
               autoFocus
-              className="w-full rounded-xl bg-brand-500 px-6 py-3 text-sm font-semibold text-white hover:bg-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-500/30 transition-colors"
+              className={`${BUTTON_PRIMARY} w-full px-6 py-3`}
             >
               Upgrade to Pro
             </button>
             <button
               type="button"
               onClick={handleDismiss}
-              className="w-full rounded-xl border border-gray-200 px-6 py-3 text-sm font-medium text-gray-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-800"
+              className={`${BUTTON_SECONDARY} w-full px-6 py-3`}
             >
               Got it
             </button>

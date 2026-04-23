@@ -102,7 +102,7 @@
         "npm run build succeeds"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Job board has many cards — clean layout with warm borders prevents visual fatigue."
     },
     {

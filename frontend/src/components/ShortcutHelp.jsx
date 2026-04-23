@@ -6,7 +6,7 @@ import X from "lucide-react/dist/esm/icons/x";
 
 import { useHotkeys } from "../hooks/useHotkeys";
 import { SHORTCUTS, SHORTCUT_SCOPES } from "../lib/shortcuts";
-import { MODAL_CARD } from "../lib/designTokens";
+import { MODAL_BACKDROP, MODAL_CARD } from "../lib/designTokens";
 
 function ShortcutHelp() {
   const [isOpen, setIsOpen] = useState(false);
@@ -24,7 +24,7 @@ function ShortcutHelp() {
       role="dialog"
       aria-modal="true"
       aria-label="Keyboard shortcuts"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
+      className={MODAL_BACKDROP}
       onClick={close}
     >
       <div

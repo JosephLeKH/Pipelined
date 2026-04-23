@@ -91,7 +91,7 @@ export default function MergeDialog({ apps, onConfirm, onCancel, isPending = fal
       role="dialog"
       aria-modal="true"
       aria-labelledby="merge-dialog-heading"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
+      className={MODAL_BACKDROP}
     >
       <div className={`flex w-full max-w-2xl flex-col ${MODAL_CARD}`}>
         {/* Header */}

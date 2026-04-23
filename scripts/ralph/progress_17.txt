@@ -42,3 +42,13 @@ Completed: Thu Apr 23 2026
 - Verified exceptions: Check/CheckCircle status icons (Pricing, VerifyEmailConfirm, SettingsTemplatesSection), FitBadge text badges, hover-only color states
 - ApplicationTimeline.jsx and UpgradePlanModal.jsx already had correct bare icon styling
 - npm run build: ✓ passed
+
+## US-231: Redesign job board page
+Completed: Thu Apr 23 2026
+- JobBoard.jsx: page background changed to bg-surface-secondary; added font-display text-xl h1 heading "Job Board"; "Save this search" button now uses BUTTON_SECONDARY token
+- JobCard.jsx: company name gets font-display class; job title changed to font-sans text-gray-700; salary changed from text-emerald-600 to text-gray-400; card hover changed from hover:shadow-card-hover to hover:border-border-strong
+- CompanyLogo.jsx: removed COMPANY_LOGO_FALLBACK_COLORS colored circles; fallback now uses neutral bg-surface-secondary text-gray-500 circle
+- JobSearchInput.jsx: input now uses INPUT_BASE token with absolute-positioned search icon (pl-9); removed shadow-sm wrapper container
+- JobBoardContent.jsx: load more button uses BUTTON_SECONDARY token; skeleton shimmer uses bg-surface-tertiary instead of bg-gray-100
+- JobFilters.jsx: active filter chip uses bg-brand-500 (from brand-600); inactive chip uses bg-surface-secondary hover:bg-surface-tertiary (TAG token palette)
+- npm run build: ✓ passed (2.48s)
