@@ -51,7 +51,7 @@ function SettingsPipelineSection() {
   return (
     <div className="flex flex-col gap-4">
       <section className={`${CARD_BASE} p-6`}>
-        <h2 className="mb-1 text-lg font-semibold text-gray-900 dark:text-gray-100">
+        <h2 className="font-display mb-1 text-lg font-semibold text-gray-900 dark:text-gray-100">
           Pipeline Stages
         </h2>
         <p className="mb-5 text-sm text-gray-500 dark:text-gray-400">

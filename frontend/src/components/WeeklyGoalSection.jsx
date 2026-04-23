@@ -31,7 +31,7 @@ function WeeklyGoalSection({ weeklyGoal, isGoalPending, onSaveGoal }) {
 
   return (
     <section className={`${CARD_BASE} p-6`}>
-      <h2 className="mb-1 text-base font-semibold text-gray-900 dark:text-gray-100">
+      <h2 className="font-display mb-1 text-base font-semibold text-gray-900 dark:text-gray-100">
         Weekly Application Goal
       </h2>
       <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">

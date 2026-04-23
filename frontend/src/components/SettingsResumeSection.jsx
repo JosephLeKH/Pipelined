@@ -119,7 +119,7 @@ function ResumeDropZone({ isDragOver, setIsDragOver, isUploading, fileInputRef, 
 function AiScoreMeter({ aiScores, aiPct }) {
   return (
     <div className={`${CARD_BASE} p-6`}>
-      <h3 className="mb-1 text-base font-semibold text-gray-900 dark:text-gray-100">AI fit scoring</h3>
+      <h3 className="font-display mb-1 text-base font-semibold text-gray-900 dark:text-gray-100">AI fit scoring</h3>
       <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">Daily usage resets at midnight UTC.</p>
       <div className="flex flex-col gap-1.5">
         <div className="flex items-center justify-between">
@@ -146,7 +146,7 @@ function SettingsResumeSection() {
   return (
     <div className="flex flex-col gap-4">
       <div className={`${CARD_BASE} p-6`}>
-        <h2 className="mb-1 text-lg font-semibold text-gray-900 dark:text-gray-100">Resume & AI</h2>
+        <h2 className="font-display mb-1 text-lg font-semibold text-gray-900 dark:text-gray-100">Resume & AI</h2>
         <p className="mb-5 text-sm text-gray-500 dark:text-gray-400">
           Upload your resume to enable AI fit scoring on new applications.
         </p>
