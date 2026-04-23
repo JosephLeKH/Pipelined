@@ -36,7 +36,7 @@
         "npm run build succeeds"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "Auth pages are the entry point. Clean and trustworthy > flashy."
     },
     {

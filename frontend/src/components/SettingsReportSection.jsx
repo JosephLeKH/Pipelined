@@ -4,12 +4,13 @@ import Download from "lucide-react/dist/esm/icons/download";
 import Loader2 from "lucide-react/dist/esm/icons/loader-2";
 
 import { useApplicationExport } from "../hooks/useApplicationExport";
+import { CARD_BASE } from "../lib/designTokens";
 
 export default function SettingsReportSection() {
   const { handleDownload, isLoading, error, retryAfter } = useApplicationExport();
 
   return (
-    <div className="rounded-card border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+    <div className={`${CARD_BASE} p-6`}>
       <h2 className="mb-1 text-lg font-semibold text-gray-900 dark:text-gray-100">Reports</h2>
       <p className="mb-5 text-sm text-gray-500 dark:text-gray-400">
         Export a PDF summary of your pipeline including stats, stage funnel, and application history.

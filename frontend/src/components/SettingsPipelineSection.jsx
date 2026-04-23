@@ -8,6 +8,7 @@ import PipelineStagesEditor from "./PipelineStagesEditor";
 import WeeklyGoalSection from "./WeeklyGoalSection";
 import { useAuth } from "../context/AuthContext";
 import { useUpdateUser } from "../hooks/useAuth";
+import { CARD_BASE } from "../lib/designTokens";
 
 const GENERIC_ERROR = "Failed to save stages. Please try again.";
 const DEFAULT_WEEKLY_GOAL = 5;
@@ -49,7 +50,7 @@ function SettingsPipelineSection() {
 
   return (
     <div className="flex flex-col gap-4">
-      <section className="rounded-card border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+      <section className={`${CARD_BASE} p-6`}>
         <h2 className="mb-1 text-lg font-semibold text-gray-900 dark:text-gray-100">
           Pipeline Stages
         </h2>
@@ -81,7 +82,7 @@ function SettingsPipelineSection() {
       />
 
       {streak > 0 && (
-        <div className="flex items-center gap-2 rounded-card border border-gray-200 bg-white px-5 py-4 dark:border-gray-700 dark:bg-gray-800">
+        <div className={`flex items-center gap-2 ${CARD_BASE} px-5 py-4`}>
           <Flame className="h-5 w-5 text-amber-500" aria-hidden="true" />
           <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
             {streak}-week streak

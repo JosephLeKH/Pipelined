@@ -44,23 +44,25 @@ function Dashboard() {
   useHotkeys("a", () => setIsModalOpen(true), { enabled: shortcutsEnabled });
 
   return (
-    <div className="flex min-h-screen flex-col bg-gray-50 dark:bg-gray-900">
+    <div className="flex min-h-screen flex-col bg-surface-secondary">
       <NavBar />
-      <main className="flex-1 p-6">
-        <DashboardToolbar viewMode={viewMode} onSetViewMode={handleSetViewMode} isExporting={isExporting} onImport={() => setIsImportOpen(true)} onExport={handleExport} onAdd={() => setIsModalOpen(true)} />
-        <OnboardingChecklist onAdd={() => setIsModalOpen(true)} />
-        <FollowUpBanner followUpsDue={stats?.follow_ups_due ?? 0} onView={handleViewFollowUps} />
-        <GoalProgress />
-        <StatsBar />
-        <FilterBar />
-        {viewMode === "kanban" ? (
-          <KanbanBoard filters={filters} onSelect={handleSelect} />
-        ) : (
-          <ApplicationList filters={filters} onSelect={handleSelect} onAdd={() => setIsModalOpen(true)} onImportCsv={() => setIsImportOpen(true)} shortcutsEnabled={shortcutsEnabled} onClearFilters={handleClearFilters} />
-        )}
-        <DetailPanel application={selectedApp ?? null} onClose={handleClosePanel} />
-        <ManualAddForm isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-        <CsvImportModal isOpen={isImportOpen} onClose={() => setIsImportOpen(false)} />
+      <main className="flex-1 py-6">
+        <div className="max-w-7xl mx-auto px-6">
+          <DashboardToolbar viewMode={viewMode} onSetViewMode={handleSetViewMode} isExporting={isExporting} onImport={() => setIsImportOpen(true)} onExport={handleExport} onAdd={() => setIsModalOpen(true)} />
+          <OnboardingChecklist onAdd={() => setIsModalOpen(true)} />
+          <FollowUpBanner followUpsDue={stats?.follow_ups_due ?? 0} onView={handleViewFollowUps} />
+          <GoalProgress />
+          <StatsBar />
+          <FilterBar />
+          {viewMode === "kanban" ? (
+            <KanbanBoard filters={filters} onSelect={handleSelect} />
+          ) : (
+            <ApplicationList filters={filters} onSelect={handleSelect} onAdd={() => setIsModalOpen(true)} onImportCsv={() => setIsImportOpen(true)} shortcutsEnabled={shortcutsEnabled} onClearFilters={handleClearFilters} />
+          )}
+          <DetailPanel application={selectedApp ?? null} onClose={handleClosePanel} />
+          <ManualAddForm isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+          <CsvImportModal isOpen={isImportOpen} onClose={() => setIsImportOpen(false)} />
+        </div>
       </main>
     </div>
   );

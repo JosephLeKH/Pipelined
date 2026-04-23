@@ -7,7 +7,7 @@ import Pencil from "lucide-react/dist/esm/icons/pencil";
 import Trash2 from "lucide-react/dist/esm/icons/trash-2";
 import X from "lucide-react/dist/esm/icons/x";
 
-import { INPUT_BASE } from "../lib/designTokens";
+import { CARD_BASE, INPUT_BASE } from "../lib/designTokens";
 import { useDeleteTemplate, useTemplates, useUpdateTemplate } from "../hooks/useTemplates";
 
 function TemplateRow({ template }) {
@@ -120,7 +120,7 @@ function SettingsTemplatesSection() {
   const { data: templates, isLoading, error } = useTemplates();
 
   return (
-    <div className="rounded-card border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+    <div className={`${CARD_BASE} p-6`}>
       <h2 className="mb-1 text-lg font-semibold text-gray-900 dark:text-gray-100">Templates</h2>
       <p className="mb-5 text-sm text-gray-500 dark:text-gray-400">
         Saved templates prefill fields in the Add Application form. Up to 10 templates.

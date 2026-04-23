@@ -21,6 +21,7 @@ import { useTheme } from "../context/ThemeContext";
 import { resetUser, trackEvent } from "../lib/analytics";
 import { useApplications } from "../hooks/useApplications";
 import { OFFER_STAGE } from "../lib/constants";
+import { NAV_CONTAINER, NAV_BRAND, NAV_LINK, NAV_LINK_ACTIVE } from "../lib/designTokens";
 import NotificationBell from "./NotificationBell";
 
 const NAV_LINKS = [
@@ -33,10 +34,6 @@ const NAV_LINKS = [
 
 const THEME_ICONS = { system: Monitor, light: Sun, dark: Moon };
 const THEME_LABELS = { system: "System theme", light: "Light theme", dark: "Dark theme" };
-
-const LINK_BASE = "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors";
-const LINK_ACTIVE = "bg-surface-secondary text-gray-900 dark:bg-gray-700 dark:text-gray-100";
-const LINK_INACTIVE = "text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-100";
 
 function UserAvatar({ user }) {
   if (user?.avatar_url) {
@@ -55,7 +52,7 @@ function DesktopNavLinks({ navLinks, pathname }) {
       {navLinks.map(({ to, label, Icon }) => {
         const active = pathname === to;
         return (
-          <Link key={to} to={to} aria-current={active ? "page" : undefined} className={`${LINK_BASE} ${active ? LINK_ACTIVE : LINK_INACTIVE}`}>
+          <Link key={to} to={to} aria-current={active ? "page" : undefined} className={`flex items-center gap-1.5 ${active ? NAV_LINK_ACTIVE : NAV_LINK}`}>
             <Icon className="h-4 w-4" />
             {label}
           </Link>
@@ -97,12 +94,12 @@ function HamburgerButton({ mobileMenuOpen, setMobileMenuOpen }) {
 
 function MobileMenu({ navLinks, pathname, closeMobileMenu, ThemeIcon, theme, handleCycleTheme, handleLogout }) {
   return (
-    <div data-testid="mobile-nav-menu" className="flex flex-col gap-1 border-t border-gray-200 bg-white px-4 py-3 dark:border-gray-700 dark:bg-gray-800 md:hidden">
+    <div data-testid="mobile-nav-menu" className="flex flex-col gap-1 border-t border-border-default bg-white px-4 py-3 md:hidden">
       {navLinks.map(({ to, label, Icon }) => {
         const active = pathname === to;
         return (
           <Link key={to} to={to} onClick={closeMobileMenu} aria-current={active ? "page" : undefined}
-            className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors ${active ? "bg-surface-secondary text-gray-900 dark:bg-gray-700 dark:text-gray-100" : "text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-gray-100"}`}>
+            className={`flex items-center gap-2 ${active ? NAV_LINK_ACTIVE : NAV_LINK}`}>
             <Icon className="h-4 w-4" />
             {label}
           </Link>
@@ -136,9 +133,9 @@ function NavBar() {
   const ThemeIcon = THEME_ICONS[theme];
 
   return (
-    <nav aria-label="Main navigation" className="border-b border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
+    <nav aria-label="Main navigation" className={NAV_CONTAINER}>
       <div className="flex items-center gap-4 px-6 py-3">
-        <span className="mr-2 text-base font-bold tracking-tight text-gray-900 dark:text-gray-100">Pipelined</span>
+        <span className={`mr-2 ${NAV_BRAND}`}>Pipelined</span>
         <DesktopNavLinks navLinks={navLinks} pathname={pathname} />
         <DesktopActions user={user} ThemeIcon={ThemeIcon} theme={theme} handleCycleTheme={handleCycleTheme} handleLogout={handleLogout} />
         <HamburgerButton mobileMenuOpen={mobileMenuOpen} setMobileMenuOpen={setMobileMenuOpen} />

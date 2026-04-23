@@ -11,15 +11,16 @@ import Bell from "lucide-react/dist/esm/icons/bell";
 
 import { useApplicationStats } from "../hooks/useApplications";
 import ApiErrorMessage from "./ApiErrorMessage";
+import { CARD_BASE } from "../lib/designTokens";
 
 const COUNT_UP_DURATION_MS = 400;
 
 const METRIC_CONFIG = [
-  { key: "total_applied", label: "Total Applied", Icon: TrendingUp, accent: "border-brand-500", iconBg: "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400" },
-  { key: "active_count", label: "Active", Icon: Activity, accent: "border-accent-blue", iconBg: "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400" },
-  { key: "response_rate", label: "Response Rate", Icon: CheckCircle, accent: "border-emerald-500", iconBg: "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400" },
-  { key: "avg_days_to_first_response", label: "Avg Days to Response", Icon: Clock, accent: "border-amber-500", iconBg: "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400" },
-  { key: "stale_count", label: "Needs follow-up", Icon: Bell, accent: "border-rose-500", iconBg: "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400" },
+  { key: "total_applied", label: "Total Applied", Icon: TrendingUp },
+  { key: "active_count", label: "Active", Icon: Activity },
+  { key: "response_rate", label: "Response Rate", Icon: CheckCircle },
+  { key: "avg_days_to_first_response", label: "Avg Days to Response", Icon: Clock },
+  { key: "stale_count", label: "Needs follow-up", Icon: Bell },
 ];
 
 function getRawValue(key, stats) {
@@ -67,34 +68,25 @@ function useCountUp(target) {
   return current;
 }
 
-function MetricCard({ metricKey, label, stats, isLoading, Icon, accent, iconBg }) {
+function MetricCard({ metricKey, label, stats, isLoading, Icon }) {
   const rawValue = stats ? getRawValue(metricKey, stats) : null;
   const counted = useCountUp(rawValue);
   const displayValue = stats ? formatCounted(metricKey, counted, stats) : "—";
 
   if (isLoading) {
     return (
-      <div
-        className={`flex flex-col gap-2 border-l-[3px] p-4 bg-white rounded-card shadow-card border border-gray-200/60 dark:bg-gray-800 dark:border-gray-700 ${accent}`}
-        aria-label={`${label}: loading`}
-      >
-        <div className="h-9 w-9 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700" />
-        <div className="h-4 w-24 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
-        <div className="h-7 w-16 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+      <div className={`flex flex-col gap-2 p-4 ${CARD_BASE}`} aria-label={`${label}: loading`}>
+        <div className="h-4 w-24 animate-pulse rounded bg-gray-200" />
+        <div className="h-7 w-16 animate-pulse rounded bg-gray-200" />
       </div>
     );
   }
 
   return (
-    <div
-      className={`flex flex-col gap-2 border-l-[3px] p-4 bg-white rounded-card shadow-card border border-gray-200/60 dark:bg-gray-800 dark:border-gray-700 ${accent}`}
-      aria-label={`${label}: ${displayValue}`}
-    >
-      <div className={`flex h-9 w-9 items-center justify-center rounded-lg ${iconBg}`}>
-        <Icon className="h-5 w-5" aria-hidden="true" />
-      </div>
-      <span className="text-sm text-gray-500 dark:text-gray-400">{label}</span>
-      <span className="text-2xl font-bold text-gray-900 dark:text-gray-100">{displayValue}</span>
+    <div className={`flex flex-col gap-2 p-4 ${CARD_BASE}`} aria-label={`${label}: ${displayValue}`}>
+      <Icon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+      <span className="text-sm text-gray-500">{label}</span>
+      <span className="font-display text-2xl font-semibold text-gray-900">{displayValue}</span>
     </div>
   );
 }
@@ -106,7 +98,7 @@ function StatsBar() {
 
   return (
     <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5">
-      {METRIC_CONFIG.map(({ key, label, Icon, accent, iconBg }) => (
+      {METRIC_CONFIG.map(({ key, label, Icon }) => (
         <MetricCard
           key={key}
           metricKey={key}
@@ -114,8 +106,6 @@ function StatsBar() {
           stats={stats ?? null}
           isLoading={isLoading}
           Icon={Icon}
-          accent={accent}
-          iconBg={iconBg}
         />
       ))}
     </div>

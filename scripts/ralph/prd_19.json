@@ -1,0 +1,113 @@
+{
+  "project": "Pipelined",
+  "branchName": "ralph/pipelined-v19",
+  "description": "Design token adoption: replace inline Tailwind class strings with centralized design tokens (CARD_BASE, INPUT_BASE, BUTTON_PRIMARY, etc.) from lib/designTokens.js. Ensures visual consistency and makes future design changes single-source.",
+  "userStories": [
+    {
+      "id": "US-237",
+      "title": "Adopt CARD_BASE token in Settings section components",
+      "description": "Replace inline card styling with CARD_BASE token in these files: frontend/src/components/SettingsProfileSection.jsx (line 52), frontend/src/components/SettingsAccountSection.jsx (lines 43, 116), frontend/src/components/SettingsReportSection.jsx (line 12), frontend/src/components/SettingsUsageSection.jsx (line 38), frontend/src/components/SettingsNotificationsSection.jsx (line 91), frontend/src/components/SettingsPipelineSection.jsx (lines 52, 84), frontend/src/components/SettingsReferralSection.jsx (line 40). Each file has a card container with inline `rounded-card border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800` or similar. Replace the border/bg/rounded portion with CARD_BASE, keeping the padding (p-6). Import CARD_BASE from '../lib/designTokens'.",
+      "acceptanceCriteria": [
+        "All 9 Settings section components use CARD_BASE token for card containers",
+        "CARD_BASE is imported from '../lib/designTokens' in each file",
+        "Padding (p-6) is preserved alongside CARD_BASE",
+        "No duplicate border/bg/rounded inline classes remain alongside CARD_BASE",
+        "npm run build succeeds"
+      ],
+      "priority": 1,
+      "passes": false
+    },
+    {
+      "id": "US-238",
+      "title": "Adopt CARD_BASE token in non-Settings components",
+      "description": "Replace inline card styling with CARD_BASE token in: frontend/src/components/WeeklyGoalSection.jsx (line 32), frontend/src/components/ResumeSection.jsx (line 40), frontend/src/components/ContactForm.jsx (line 110), frontend/src/components/DigestSection.jsx (line 5), frontend/src/components/SavedSearchesSidebar.jsx (line 24), frontend/src/components/SaveSearchPopover.jsx (line 36), frontend/src/components/PipelineStagesEditor.jsx (line 84). Each has inline card classes like `rounded-card border border-gray-200 bg-white ... dark:border-gray-700 dark:bg-gray-800`. Replace with CARD_BASE token, preserving padding and any extra classes.",
+      "acceptanceCriteria": [
+        "All 7 listed components use CARD_BASE for their card containers",
+        "CARD_BASE imported from '../lib/designTokens'",
+        "Padding and extra layout classes preserved",
+        "npm run build succeeds"
+      ],
+      "priority": 1,
+      "passes": false
+    },
+    {
+      "id": "US-239",
+      "title": "Adopt INPUT_BASE token in Settings form inputs",
+      "description": "Replace inline input styling with INPUT_BASE token in: frontend/src/components/SettingsProfileSection.jsx (line 94 display-name input), frontend/src/components/SettingsAccountSection.jsx (lines 60, 72, 84 for current/new/confirm password inputs), frontend/src/components/TimezoneSelector.jsx (line 37 select element). Each input has inline classes like `rounded-input border border-gray-300 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-1 ...`. Replace with INPUT_BASE. Also apply INPUT_LABEL token to their associated <label> elements. Import both from '../lib/designTokens'.",
+      "acceptanceCriteria": [
+        "All 5 inputs in Settings use INPUT_BASE token",
+        "Associated labels use INPUT_LABEL token",
+        "Both tokens imported from '../lib/designTokens'",
+        "No duplicate border/focus inline classes remain alongside INPUT_BASE",
+        "npm run build succeeds"
+      ],
+      "priority": 1,
+      "passes": false
+    },
+    {
+      "id": "US-240",
+      "title": "Adopt INPUT_BASE token in non-Settings inputs",
+      "description": "Replace inline input styling with INPUT_BASE token in: frontend/src/components/FilterBar.jsx (line 58 search input), frontend/src/components/TagInput.jsx (line 106 tag input), frontend/src/components/WeeklyGoalSection.jsx (line 55 goal input), frontend/src/components/PipelineStagesEditor.jsx (line 102 stage name input), frontend/src/components/PrepChecklist.jsx (line 60), frontend/src/components/PrepSection.jsx (lines 56, 112). Replace inline border/focus classes with INPUT_BASE. Keep any width/layout classes. Import INPUT_BASE from '../lib/designTokens'.",
+      "acceptanceCriteria": [
+        "All 7 inputs use INPUT_BASE token",
+        "INPUT_BASE imported from '../lib/designTokens'",
+        "Width and layout classes preserved",
+        "npm run build succeeds"
+      ],
+      "priority": 1,
+      "passes": false
+    },
+    {
+      "id": "US-241",
+      "title": "Adopt BUTTON_PRIMARY token in Settings buttons",
+      "description": "Replace inline primary button styling with BUTTON_PRIMARY token in: frontend/src/components/SettingsProfileSection.jsx (line 136 Save profile), frontend/src/components/SettingsAccountSection.jsx (line 100 Change password), frontend/src/components/SettingsReportSection.jsx (line 22 Generate report), frontend/src/components/WeeklyGoalSection.jsx (line 64 Save goal), frontend/src/components/PipelineStagesEditor.jsx (line 115 Save). These buttons currently have inline `bg-brand-500 ... hover:bg-brand-600 ...` classes. Replace with BUTTON_PRIMARY token. Import from '../lib/designTokens'.",
+      "acceptanceCriteria": [
+        "All 5 Settings primary buttons use BUTTON_PRIMARY token",
+        "Import added from '../lib/designTokens'",
+        "Loading spinners and disabled states preserved",
+        "npm run build succeeds"
+      ],
+      "priority": 2,
+      "passes": false
+    },
+    {
+      "id": "US-242",
+      "title": "Adopt BUTTON_PRIMARY token in non-Settings buttons",
+      "description": "Replace inline primary button styling with BUTTON_PRIMARY token in: frontend/src/components/ErrorBoundary.jsx (line 42 Try again), frontend/src/components/ContactForm.jsx (line 70 Add contact), frontend/src/components/SaveSearchPopover.jsx (line 61 Save), frontend/src/components/ShareTimeline.jsx (line 86 Share), frontend/src/components/SharePipeline.jsx (line 86), frontend/src/components/NotesEditor.jsx (line 102 Save), frontend/src/components/JobRow.jsx (line 75 Apply), frontend/src/components/ResumeSection.jsx (line 56 Upload). Replace inline brand-500/brand-600 button classes with BUTTON_PRIMARY. Preserve any size overrides (text-xs, px-2.5) by combining: `${BUTTON_PRIMARY} text-xs px-2.5 py-1`.",
+      "acceptanceCriteria": [
+        "All 8 buttons use BUTTON_PRIMARY token",
+        "Size overrides preserved where needed",
+        "Loading spinners and disabled states preserved",
+        "npm run build succeeds"
+      ],
+      "priority": 2,
+      "passes": false
+    },
+    {
+      "id": "US-243",
+      "title": "Add focus traps and Escape key handlers to modal dialogs",
+      "description": "Add keyboard accessibility to all modal dialogs: frontend/src/components/MergeDialog.jsx, frontend/src/components/UpgradePlanModal.jsx, frontend/src/components/ApplicationRowActions.jsx (DeleteConfirmModal, BulkDeleteConfirmModal). Each modal must: (1) close on Escape key press via onKeyDown handler, (2) auto-focus the first interactive element on mount via useEffect + ref. The CsvImportModal.jsx and FeedbackWidget.jsx should also get Escape handlers if missing. Keep changes minimal — just add the keydown handler and autoFocus.",
+      "acceptanceCriteria": [
+        "All modals close on Escape key press",
+        "First interactive element receives focus on modal open",
+        "npm run build succeeds",
+        "No console warnings"
+      ],
+      "priority": 2,
+      "passes": false
+    },
+    {
+      "id": "US-244",
+      "title": "Adopt BUTTON_SECONDARY and BUTTON_DANGER tokens in action buttons",
+      "description": "Replace inline secondary/cancel button styling with BUTTON_SECONDARY token in components: frontend/src/components/SettingsAccountSection.jsx (lines 128, 157 for cancel buttons), frontend/src/components/SettingsReferralSection.jsx (line 67 copy button), frontend/src/components/CalendarGrid.jsx (lines 112, 120, 128 for view toggle buttons), frontend/src/components/TemplateBar.jsx (line 38 template buttons). For the delete account button in SettingsAccountSection.jsx (line 163), use BUTTON_DANGER token instead. Import tokens from '../lib/designTokens'.",
+      "acceptanceCriteria": [
+        "All cancel/dismiss buttons use BUTTON_SECONDARY",
+        "Delete account button uses BUTTON_DANGER",
+        "Tokens imported from '../lib/designTokens'",
+        "npm run build succeeds"
+      ],
+      "priority": 3,
+      "passes": false
+    }
+  ]
+}

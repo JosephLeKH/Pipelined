@@ -5,6 +5,8 @@ import { useState, useCallback } from "react";
 import Loader2 from "lucide-react/dist/esm/icons/loader-2";
 import TriangleAlert from "lucide-react/dist/esm/icons/alert-triangle";
 
+import { CARD_BASE } from "../lib/designTokens";
+
 const PW_MIN_LENGTH = 8;
 
 function ChangePasswordCard() {
@@ -40,7 +42,7 @@ function ChangePasswordCard() {
   }, [current, newPw, confirm]);
 
   return (
-    <div className="rounded-card border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+    <div className={`${CARD_BASE} p-6`}>
       <h2 className="mb-1 text-lg font-semibold text-gray-900 dark:text-gray-100">
         Change password
       </h2>

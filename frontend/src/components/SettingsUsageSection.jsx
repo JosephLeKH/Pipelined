@@ -1,5 +1,7 @@
 /** Settings usage section — tier badge, usage meters, and upgrade teaser. */
 
+import { CARD_BASE } from "../lib/designTokens";
+
 const APP_LIMIT = 100;
 const CONTACT_LIMIT = 50;
 const AI_SCORE_LIMIT = 10;
@@ -35,7 +37,7 @@ function SettingsUsageSection({ user }) {
   const aiScores = user?.ai_scores_today ?? 0;
 
   return (
-    <div className="rounded-card border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+    <div className={`${CARD_BASE} p-6`}>
       <div className="mb-5 flex items-start justify-between gap-4">
         <div>
           <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">

@@ -10,6 +10,7 @@ import Star from "lucide-react/dist/esm/icons/star";
 
 import { trackEvent } from "../lib/analytics";
 import { COPY_RESET_MS } from "../lib/constants";
+import { CARD_BASE } from "../lib/designTokens";
 
 const SUPER_REFERRER_THRESHOLD = 3;
 
@@ -37,7 +38,7 @@ function SettingsReferralSection({ user }) {
   }, [referralLink, referralCode]);
 
   return (
-    <div className="rounded-card border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+    <div className={`${CARD_BASE} p-6`}>
       <div className="mb-4 flex items-center gap-2">
         <Gift className="h-5 w-5 text-brand-500" aria-hidden="true" />
         <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Invite Friends</h2>

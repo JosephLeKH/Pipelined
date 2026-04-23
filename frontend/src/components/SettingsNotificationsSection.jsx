@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 
 import { useAuth } from "../context/AuthContext";
 import { useUpdateUser } from "../hooks/useAuth";
+import { CARD_BASE } from "../lib/designTokens";
 
 function ToggleSwitch({ checked, onChange, disabled, label, description, id }) {
   return (
@@ -88,7 +89,7 @@ function SettingsNotificationsSection() {
   );
 
   return (
-    <div className="rounded-card border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+    <div className={`${CARD_BASE} p-6`}>
       <h2 className="mb-1 text-lg font-semibold text-gray-900 dark:text-gray-100">
         Notifications
       </h2>

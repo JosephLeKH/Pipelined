@@ -42,7 +42,7 @@ function KanbanCard({ application, onSelect }) {
         dndKeyDown?.(e);
       }}
       data-testid="kanban-card"
-      className={`relative cursor-pointer border-l-[3px] p-3 transition-all duration-150 hover:-trangray-y-px hover:shadow-card-hover ${CARD_BASE} ${color.border} ${
+      className={`relative cursor-pointer p-3 transition-all duration-150 hover:border-border-strong ${CARD_BASE} ${
         isDragging ? "rotate-[2deg] scale-[1.05] opacity-80 shadow-md transition-transform" : ""
       }`}
     >

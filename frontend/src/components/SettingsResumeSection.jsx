@@ -9,6 +9,7 @@ import X from "lucide-react/dist/esm/icons/x";
 
 import { useAuth } from "../context/AuthContext";
 import { useDeleteResume, useUploadResume } from "../hooks/useAuth";
+import { CARD_BASE } from "../lib/designTokens";
 
 const RESUME_ACCEPT = ".pdf";
 const RESUME_MAX_MB = 2;
@@ -120,7 +121,7 @@ function ResumeDropZone({ isDragOver, setIsDragOver, isUploading, fileInputRef, 
 
 function AiScoreMeter({ aiScores, aiPct }) {
   return (
-    <div className="rounded-card border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+    <div className={`${CARD_BASE} p-6`}>
       <h3 className="mb-1 text-base font-semibold text-gray-900 dark:text-gray-100">AI fit scoring</h3>
       <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">Daily usage resets at midnight UTC.</p>
       <div className="flex flex-col gap-1.5">
@@ -147,7 +148,7 @@ function SettingsResumeSection() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="rounded-card border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+      <div className={`${CARD_BASE} p-6`}>
         <h2 className="mb-1 text-lg font-semibold text-gray-900 dark:text-gray-100">Resume & AI</h2>
         <p className="mb-5 text-sm text-gray-500 dark:text-gray-400">
           Upload your resume to enable AI fit scoring on new applications.
