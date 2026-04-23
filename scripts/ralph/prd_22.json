@@ -27,7 +27,7 @@
         "Container uses py-20 and max-w-md",
         "npm run build succeeds"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "US-261",

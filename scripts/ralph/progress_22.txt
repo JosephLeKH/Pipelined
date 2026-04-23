@@ -11,3 +11,18 @@ Started: Thu Apr 23 12:37:07 PDT 2026
 - Commit: be6641e
 
 **Learnings:** Activity page already had py-8 from prior work — always read before writing. Analytics used `p-6` shorthand which sets both axes; splitting it to `px-6 py-8` is the clean fix.
+
+## US-260: Refine EmptyState component for premium feel
+**Status:** COMPLETE
+**Commit:** 733da38
+
+### Changes
+- EmptyState.jsx: icon h-10 w-10 → h-12 w-12, color text-gray-300 dark:text-gray-600 → text-gray-400 dark:text-gray-500
+- Title: text-sm → text-base
+- Description: text-xs → text-sm
+- Container: py-16 → py-20, added max-w-md mx-auto
+
+### Learnings
+- The original icon dark mode used dark:text-gray-600 (darker = less visible); the new dark:text-gray-500 is slightly lighter and more readable
+- max-w-md added with mx-auto to keep it centered; constraining the container width improves text measure on wide viewports
+- Build passed cleanly with no issues
