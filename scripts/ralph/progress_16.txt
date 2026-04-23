@@ -116,3 +116,21 @@ Updated INPUT_BASE in designTokens.js to use warm gray palette (border-gray-300,
 - Build succeeded in 2.44s ✓
 
 **Learned:** The shadow and border-radius tokens were established early in the design system overhaul (likely during US-216 or US-219). Warm-tinted rgba shadows with opacity < 0.1 make cards feel elevated without competing with border-based visual weight. The rgba(120,100,75,...) formula aligns with the warm brown undertone of the Anthropic palette.
+
+---
+## US-222 — Add nav and sidebar design tokens
+**Completed:** 2026-04-23
+
+**Summary:**
+Added four navigation design tokens to `frontend/src/lib/designTokens.js`:
+- `NAV_CONTAINER`: white bg with bottom border using semantic `border-border-default` token
+- `NAV_LINK`: muted gray-500 text that warms to gray-900 on hover, Poppins font, rounded-md padding
+- `NAV_LINK_ACTIVE`: dark gray-900 text with `bg-surface-secondary` warm tint (no brand color or gradient)
+- `NAV_BRAND`: dark gray-900, Poppins semibold, tight tracking for logo/brand text
+
+**Learnings:**
+- Nav tokens reinforce the "recede behind content" philosophy — no brand colors in navigation, just warm grays and semantic surface tokens
+- `bg-surface-secondary` (the warm ivory #faf9f5 tint) is the right active state — visible but not aggressive
+- All four tokens use `font-display` (Poppins) consistently, matching the editorial heading system
+
+Build succeeded in 2.63s.
