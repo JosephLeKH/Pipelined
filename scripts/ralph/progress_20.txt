@@ -23,3 +23,9 @@ Started: Thu Apr 23 11:23:12 PDT 2026
 - Changed `text-emerald-500` → `text-brand-500` on Check icon in FeatureRow component (Pricing.jsx:42)
 - No other emerald classes were present in the file
 - Build passed ✓
+
+## US-247 — Add aria-label to stale contact indicator in ContactCard
+- Added `aria-label="Stale contact — no activity in 14+ days"` to the amber dot span in `ContactCard.jsx` (line 41)
+- Added `role="img"` so the span is properly announced by screen readers
+- Other tooltip-only patterns in the file (buttons) already had `aria-label` attributes — no additional changes needed
+- Build passed ✓

@@ -35,7 +35,7 @@
         "Screen readers can announce the stale status",
         "npm run build succeeds"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "US-248",
