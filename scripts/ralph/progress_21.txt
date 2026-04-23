@@ -1,3 +1,19 @@
 # Ralph Progress Log
 Started: Thu Apr 23 11:40:29 PDT 2026
 ---
+
+## US-252: Create SPINNER design token and apply across all loading states
+Status: COMPLETE
+
+### Summary
+- Added SPINNER_SM and SPINNER_LG tokens to designTokens.js
+- SPINNER_SM applied to: App.jsx, Activity.jsx, OfferComparison.jsx (h-6 w-6)
+- SPINNER_LG applied to: Analytics.jsx, GithubCallback.jsx, PublicPipeline.jsx, PublicTimeline.jsx (h-8 w-8)
+- 3 files already had designTokens imports (Activity, OfferComparison had CARD_BASE/INPUT_BASE); added token to existing import
+- 4 files (Analytics, GithubCallback, PublicPipeline, PublicTimeline) needed new designTokens import line
+- App.jsx needed new designTokens import added after shortcuts import
+- Build passed cleanly
+
+### Learnings
+- Files with existing designTokens imports just needed the new token name added to the destructure
+- PublicPipeline and PublicTimeline had no prior designTokens usage — pattern is identical, import added after trackEvent import

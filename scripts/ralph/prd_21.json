@@ -14,7 +14,7 @@
         "No inline animate-spin rounded-full border patterns remain in pages/",
         "npm run build succeeds"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "US-253",
