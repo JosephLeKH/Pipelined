@@ -54,28 +54,18 @@ REFRESH_MAX_AGE = settings.jwt_refresh_ttl_days * 24 * 60 * 60
 RESET_TOKEN_MAX_AGE = RESET_TOKEN_TTL_HOURS * 3600
 
 
-def _set_auth_cookies(response: Response, user_id: str) -> None:
-    """Set httpOnly access and refresh token cookies on the response.
+def _set_cookie(response: Response, key: str, value: str, max_age: int) -> None:
+    """Set an httpOnly cookie. secure=True in prod; False when DEBUG=True."""
+    response.set_cookie(
+        key=key, value=value, max_age=max_age,
+        httponly=True, secure=not settings.debug, samesite="lax",
+    )
 
-    secure=True in production; relaxed to False only when DEBUG=True.
-    """
-    secure = not settings.debug
-    response.set_cookie(
-        key=ACCESS_COOKIE,
-        value=create_access_token(user_id),
-        max_age=ACCESS_MAX_AGE,
-        httponly=True,
-        secure=secure,
-        samesite="lax",
-    )
-    response.set_cookie(
-        key=REFRESH_COOKIE,
-        value=create_refresh_token(user_id),
-        max_age=REFRESH_MAX_AGE,
-        httponly=True,
-        secure=secure,
-        samesite="lax",
-    )
+
+def _set_auth_cookies(response: Response, user_id: str) -> None:
+    """Set httpOnly access and refresh token cookies on the response."""
+    _set_cookie(response, ACCESS_COOKIE, create_access_token(user_id), ACCESS_MAX_AGE)
+    _set_cookie(response, REFRESH_COOKIE, create_refresh_token(user_id), REFRESH_MAX_AGE)
 
 
 @router.post("/register", status_code=201)
@@ -193,14 +183,7 @@ async def refresh(
             detail={"code": "USER_NOT_FOUND", "message": "User no longer exists."},
         )
 
-    response.set_cookie(
-        key=ACCESS_COOKIE,
-        value=create_access_token(payload.sub),
-        max_age=ACCESS_MAX_AGE,
-        httponly=True,
-        secure=not settings.debug,
-        samesite="lax",
-    )
+    _set_cookie(response, ACCESS_COOKIE, create_access_token(payload.sub), ACCESS_MAX_AGE)
     logger.info("token_refreshed", user_id=payload.sub)
     return {"data": UserResponse.from_doc(user)}
 
@@ -266,14 +249,7 @@ async def forgot_password(request: Request, body: ForgotPasswordRequest, respons
     """Initiate a password reset; always returns 200 to prevent email enumeration."""
     raw_token, user = await create_password_reset_token(body.email)
     if user is not None:
-        response.set_cookie(
-            key=RESET_TOKEN_COOKIE,
-            value=raw_token,
-            max_age=RESET_TOKEN_MAX_AGE,
-            httponly=True,
-            secure=not settings.debug,
-            samesite="lax",
-        )
+        _set_cookie(response, RESET_TOKEN_COOKIE, raw_token, RESET_TOKEN_MAX_AGE)
         await email_service.send_password_reset_email(body.email)
     return {"data": {"message": RESET_LINK_SENT_MESSAGE}}
 
@@ -292,18 +268,15 @@ async def reset_password_endpoint(
             status_code=400,
             detail={"code": "TOKEN_MISSING", "message": "No reset token found. Please use the link in your email."},
         )
+    _reset_error_map = {
+        TokenExpiredError: ("TOKEN_EXPIRED", "Password reset token has expired."),
+        TokenInvalidError: ("TOKEN_INVALID", "Invalid password reset token."),
+    }
     try:
         await reset_password(reset_token, body.new_password)
-    except TokenExpiredError:
-        raise HTTPException(
-            status_code=400,
-            detail={"code": "TOKEN_EXPIRED", "message": "Password reset token has expired."},
-        )
-    except TokenInvalidError:
-        raise HTTPException(
-            status_code=400,
-            detail={"code": "TOKEN_INVALID", "message": "Invalid password reset token."},
-        )
+    except (TokenExpiredError, TokenInvalidError) as exc:
+        code, message = _reset_error_map[type(exc)]
+        raise HTTPException(status_code=400, detail={"code": code, "message": message})
     response.delete_cookie(RESET_TOKEN_COOKIE)
     return {"data": {"message": "Password reset successfully."}}
 
