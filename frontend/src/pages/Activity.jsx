@@ -17,7 +17,7 @@ const TIME_RANGES = [
 
 const TYPE_STYLES = {
   applied: "bg-brand-500",
-  stage_change: "bg-violet-500",
+  stage_change: "bg-accent-blue",
   event_created: "bg-amber-500",
 };
 

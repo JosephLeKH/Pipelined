@@ -93,7 +93,7 @@ function ApplicationTimeline({ stageHistory, applicationId }) {
       <button
         type="button"
         onClick={() => setIsExpanded((prev) => !prev)}
-        className="flex items-center gap-1 text-xs font-medium uppercase text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
+        className="flex items-center gap-1 text-xs font-medium uppercase text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:ring-offset-1"
         aria-expanded={isExpanded}
         aria-label="Toggle timeline"
       >

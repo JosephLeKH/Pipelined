@@ -60,7 +60,7 @@ function PublicAppRow({ app }) {
 function LoadingState() {
   return (
     <div className="flex min-h-screen items-center justify-center">
-      <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-500 border-t-transparent" />
+      <div className="h-8 w-8 animate-spin rounded-full border-4 border-brand-500 border-t-transparent" />
     </div>
   );
 }
@@ -70,7 +70,7 @@ function NotFoundState() {
     <div className="flex min-h-screen flex-col items-center justify-center gap-4">
       <h1 className="text-2xl font-bold text-gray-800">Link not found</h1>
       <p className="text-gray-500">This pipeline link has expired or been revoked.</p>
-      <Link to="/" className="text-blue-600 hover:underline">Go to Pipelined →</Link>
+      <Link to="/" className="text-brand-600 hover:underline">Go to Pipelined →</Link>
     </div>
   );
 }
@@ -85,7 +85,7 @@ function PipelineHeader({ pipeline }) {
         </div>
         <Link
           to="/register"
-          className="rounded bg-blue-600 px-3 py-1.5 text-sm text-white hover:bg-blue-700"
+          className="rounded bg-brand-500 px-3 py-1.5 text-sm text-white hover:bg-brand-600"
         >
           Join Pipelined →
         </Link>

@@ -27,7 +27,7 @@ function TimelineRow({ app, isLast }) {
     <div className="flex gap-4">
       {/* Timeline connector */}
       <div className="flex flex-col items-center">
-        <div className="h-3 w-3 rounded-full border-2 border-blue-500 bg-white" />
+        <div className="h-3 w-3 rounded-full border-2 border-brand-500 bg-white" />
         {!isLast && <div className="w-0.5 flex-1 bg-gray-200" />}
       </div>
 
@@ -62,7 +62,7 @@ function TimelineRow({ app, isLast }) {
 function LoadingState() {
   return (
     <div className="flex min-h-screen items-center justify-center">
-      <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-500 border-t-transparent" />
+      <div className="h-8 w-8 animate-spin rounded-full border-4 border-brand-500 border-t-transparent" />
     </div>
   );
 }
@@ -72,7 +72,7 @@ function NotFoundState() {
     <div className="flex min-h-screen flex-col items-center justify-center gap-4">
       <h1 className="text-2xl font-bold text-gray-800">Link not found</h1>
       <p className="text-gray-500">This timeline link has expired or been revoked.</p>
-      <Link to="/" className="text-blue-600 hover:underline">Go to Pipelined →</Link>
+      <Link to="/" className="text-brand-600 hover:underline">Go to Pipelined →</Link>
     </div>
   );
 }
@@ -87,7 +87,7 @@ function TimelineHeader({ timeline }) {
         </div>
         <Link
           to="/register"
-          className="rounded bg-blue-600 px-3 py-1.5 text-sm text-white hover:bg-blue-700"
+          className="rounded bg-brand-500 px-3 py-1.5 text-sm text-white hover:bg-brand-600"
         >
           Track yours free →
         </Link>
@@ -122,12 +122,12 @@ function ApplicationsTimeline({ timeline }) {
 
 function TimelineCTA() {
   return (
-    <div className="mt-12 rounded-xl border border-blue-100 bg-blue-50 px-6 py-5 text-center">
-      <p className="mb-1 font-semibold text-blue-900">Track your own job search with Pipelined</p>
-      <p className="mb-4 text-sm text-blue-700">One-click save from LinkedIn, Greenhouse, Lever, and more.</p>
+    <div className="mt-12 rounded-xl border border-brand-100 bg-brand-50 px-6 py-5 text-center">
+      <p className="mb-1 font-semibold text-brand-900">Track your own job search with Pipelined</p>
+      <p className="mb-4 text-sm text-brand-700">One-click save from LinkedIn, Greenhouse, Lever, and more.</p>
       <Link
         to="/register"
-        className="inline-block rounded-lg bg-blue-600 px-5 py-2 text-sm font-medium text-white hover:bg-blue-700"
+        className="inline-block rounded-lg bg-brand-500 px-5 py-2 text-sm font-medium text-white hover:bg-brand-600"
       >
         Get started — it's free
       </Link>

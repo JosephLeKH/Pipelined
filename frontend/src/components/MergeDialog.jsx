@@ -120,7 +120,7 @@ export default function MergeDialog({ apps, onConfirm, onCancel, isPending = fal
                   value="a"
                   checked={selections[key] === "a"}
                   onChange={() => handleChange(key, "a")}
-                  className="mt-0.5 shrink-0 accent-blue-600"
+                  className="mt-0.5 shrink-0 accent-brand-500"
                 />
                 <span className="text-gray-800 dark:text-gray-200">{displayValue(appA[key])}</span>
               </label>
@@ -131,7 +131,7 @@ export default function MergeDialog({ apps, onConfirm, onCancel, isPending = fal
                   value="b"
                   checked={selections[key] === "b"}
                   onChange={() => handleChange(key, "b")}
-                  className="mt-0.5 shrink-0 accent-blue-600"
+                  className="mt-0.5 shrink-0 accent-brand-500"
                 />
                 <span className="text-gray-800 dark:text-gray-200">{displayValue(appB[key])}</span>
               </label>

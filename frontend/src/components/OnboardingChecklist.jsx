@@ -96,7 +96,7 @@ function OnboardingChecklist({ onAdd }) {
   }
 
   return (
-    <div className="mb-4 rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-900/20">
+    <div className="mb-4 rounded-lg border border-brand-200 bg-brand-50 p-4 dark:border-brand-800 dark:bg-brand-900/20">
       <div className="mb-3 flex items-center justify-between">
         <h2 className="font-semibold text-gray-900 dark:text-gray-100">Get started with Pipelined</h2>
         <button
@@ -118,7 +118,7 @@ function OnboardingChecklist({ onAdd }) {
           {!hasExtensionApp && (
             <a
               href={EXTENSION_STEP_HREF}
-              className="ml-8 text-xs text-blue-600 underline hover:text-blue-800 dark:text-blue-400"
+              className="ml-8 text-xs text-brand-600 underline hover:text-brand-700 dark:text-brand-400"
             >
               Get the extension
             </a>
@@ -135,7 +135,7 @@ function OnboardingChecklist({ onAdd }) {
             <button
               type="button"
               onClick={onAdd}
-              className="ml-8 text-xs text-blue-600 underline hover:text-blue-800 dark:text-blue-400"
+              className="ml-8 text-xs text-brand-600 underline hover:text-brand-700 dark:text-brand-400"
             >
               Add Application
             </button>
@@ -152,7 +152,7 @@ function OnboardingChecklist({ onAdd }) {
             <button
               type="button"
               onClick={() => navigate("/settings")}
-              className="ml-8 text-xs text-blue-600 underline hover:text-blue-800 dark:text-blue-400"
+              className="ml-8 text-xs text-brand-600 underline hover:text-brand-700 dark:text-brand-400"
             >
               Go to Settings
             </button>

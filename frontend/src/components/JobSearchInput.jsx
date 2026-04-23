@@ -40,7 +40,7 @@ export default function JobSearchInput() {
           value={searchValue}
           onChange={handleChange}
           placeholder="Role, company, description..."
-          className="rounded border border-gray-300 pl-8 pr-3 py-1.5 text-sm w-72 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 dark:placeholder-gray-400"
+          className="rounded border border-gray-300 pl-8 pr-3 py-1.5 text-sm w-72 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 dark:placeholder-gray-400"
         />
       </div>
     </div>

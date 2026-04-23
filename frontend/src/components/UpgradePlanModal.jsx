@@ -68,7 +68,7 @@ function UpgradePlanModal() {
         </button>
 
         <div className="flex flex-col items-center text-center">
-          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-500 to-purple-600">
+          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-500">
             <Zap className="h-7 w-7 text-white" />
           </div>
 
@@ -93,7 +93,7 @@ function UpgradePlanModal() {
             <button
               type="button"
               onClick={handleUpgrade}
-              className="w-full rounded-xl bg-gradient-to-r from-brand-500 to-purple-600 px-6 py-3 text-sm font-semibold text-white shadow-md hover:from-brand-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
+              className="w-full rounded-xl bg-brand-500 px-6 py-3 text-sm font-semibold text-white hover:bg-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-500/30 transition-colors"
             >
               Upgrade to Pro
             </button>

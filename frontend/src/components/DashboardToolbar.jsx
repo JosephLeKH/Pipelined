@@ -4,7 +4,7 @@ import LayoutGrid from "lucide-react/dist/esm/icons/layout-grid";
 import List from "lucide-react/dist/esm/icons/list";
 import Loader2 from "lucide-react/dist/esm/icons/loader-2";
 
-const VIEW_BTN_ACTIVE = "bg-blue-600 text-white";
+const VIEW_BTN_ACTIVE = "bg-brand-500 text-white";
 const VIEW_BTN_INACTIVE = "bg-white text-gray-600 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700";
 
 export function DashboardToolbar({ viewMode, onSetViewMode, isExporting, onImport, onExport, onAdd }) {
@@ -39,7 +39,7 @@ export function DashboardToolbar({ viewMode, onSetViewMode, isExporting, onImpor
           {isExporting && <Loader2 className="h-4 w-4 animate-spin" />}
           Export CSV
         </button>
-        <button type="button" onClick={onAdd} title="Add Application (A)" className="rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">
+        <button type="button" onClick={onAdd} title="Add Application (A)" className="rounded bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-600">
           Add Application
         </button>
       </div>

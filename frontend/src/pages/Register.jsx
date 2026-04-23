@@ -16,8 +16,8 @@ function Register() {
 
   return (
     <AuthLayout>
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Create your account</h1>
-      <p className="mt-1 mb-6 text-sm text-gray-500 dark:text-gray-400">Start tracking your job search today</p>
+      <h1 className="font-display text-xl font-semibold text-gray-900">Create your account</h1>
+      <p className="mt-1 mb-6 text-sm text-gray-500">Start tracking your job search today</p>
       <GoogleAuthButton label="Sign up with Google" onSuccess={handleGoogleSuccess} onError={handleGoogleError} />
       <div className="mt-3">
         <GithubAuthButton label="Sign up with GitHub" />

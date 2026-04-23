@@ -10,7 +10,7 @@ import { useUpdateUser } from "../hooks/useAuth";
 
 const AVATAR_COLORS = [
   "bg-brand-500",
-  "bg-violet-500",
+  "bg-accent-blue",
   "bg-amber-500",
   "bg-emerald-500",
   "bg-rose-500",

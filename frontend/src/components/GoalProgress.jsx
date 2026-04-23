@@ -14,7 +14,7 @@ const DEFAULT_WEEKLY_GOAL = 5;
 
 function ringColor(pct) {
   if (pct >= 1) return "stroke-green-500";
-  if (pct > 0) return "stroke-blue-500";
+  if (pct > 0) return "stroke-brand-500";
   return "stroke-gray-300 dark:stroke-gray-600";
 }
 

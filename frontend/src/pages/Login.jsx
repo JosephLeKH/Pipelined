@@ -16,8 +16,8 @@ function Login() {
 
   return (
     <AuthLayout>
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Welcome back</h1>
-      <p className="mt-1 mb-6 text-sm text-gray-500 dark:text-gray-400">Sign in to your account</p>
+      <h1 className="font-display text-xl font-semibold text-gray-900">Welcome back</h1>
+      <p className="mt-1 mb-6 text-sm text-gray-500">Sign in to your account</p>
       <GoogleAuthButton label="Continue with Google" onSuccess={handleGoogleSuccess} onError={handleGoogleError} />
       <div className="mt-3">
         <GithubAuthButton label="Continue with GitHub" />
@@ -34,7 +34,7 @@ function Login() {
       />
       <p className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
         Don&apos;t have an account?{" "}
-        <Link to="/register" className="font-medium text-brand-600 hover:underline">Sign up</Link>
+        <Link to="/register" className="text-brand-500 hover:text-brand-600 text-sm">Sign up</Link>
       </p>
     </AuthLayout>
   );

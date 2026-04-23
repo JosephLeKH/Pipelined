@@ -57,7 +57,7 @@ function ContactLinkDropdown({ applicationId, linkedIds = [], onDone }) {
               type="button"
               disabled={isPending}
               onClick={() => handleLink(contact.id)}
-              className="flex w-full items-center justify-between rounded px-2 py-1.5 text-left text-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 disabled:opacity-50 dark:hover:bg-gray-700"
+              className="flex w-full items-center justify-between rounded px-2 py-1.5 text-left text-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:ring-offset-1 disabled:opacity-50 dark:hover:bg-gray-700"
             >
               <div className="flex flex-col gap-0.5 min-w-0">
                 <span className="truncate font-medium text-gray-900 dark:text-gray-100">{contact.name}</span>
@@ -67,7 +67,7 @@ function ContactLinkDropdown({ applicationId, linkedIds = [], onDone }) {
                   </span>
                 )}
               </div>
-              <span className="ml-2 shrink-0 text-xs text-blue-600 dark:text-blue-400">Link</span>
+              <span className="ml-2 shrink-0 text-xs text-brand-600 dark:text-brand-400">Link</span>
             </button>
           </li>
         ))}

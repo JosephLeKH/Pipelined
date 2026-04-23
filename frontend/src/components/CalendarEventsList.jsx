@@ -22,7 +22,7 @@ function CalendarEventsList({ applicationId, onAddEvent }) {
         <button
           type="button"
           onClick={() => onAddEvent(applicationId)}
-          className="flex items-center gap-1 rounded px-2 py-1 text-xs text-blue-600 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 dark:hover:bg-blue-900/30"
+          className="flex items-center gap-1 rounded px-2 py-1 text-xs text-brand-600 hover:bg-brand-50 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:ring-offset-1 dark:hover:bg-brand-900/30"
           aria-label="Add event"
         >
           <Plus className="h-3.5 w-3.5" />
