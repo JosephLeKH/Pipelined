@@ -36,3 +36,16 @@ Status: COMPLETE
 ### Learnings
 - PASSWORD_MIN_LENGTH was already exported from constants.js at line 39 — pure deduplication, no value change
 - Pattern: always check constants.js before defining module-level magic values
+
+## US-255: Move SettingsResumeSection local constants to constants.js
+Status: COMPLETE
+
+### Summary
+- Added RESUME_ACCEPT = ".pdf", RESUME_MAX_MB = 2, AI_SCORE_LIMIT = 10 to constants.js (after PASSWORD_MIN_LENGTH)
+- SettingsResumeSection.jsx: removed 3 local const definitions, added import from "../lib/constants"
+- ResumeSection.jsx: had duplicate RESUME_ACCEPT and RESUME_MAX_MB — removed both, imported from constants.js
+- Build passed cleanly
+
+### Learnings
+- ResumeSection.jsx had both RESUME_ACCEPT and RESUME_MAX_MB as local constants (not just RESUME_MAX_MB as the story mentioned) — consolidated both
+- Both files already imported from designTokens.js; the constants.js import was added as a separate line

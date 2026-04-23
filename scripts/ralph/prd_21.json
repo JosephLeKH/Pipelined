@@ -50,7 +50,7 @@
         "ResumeSection.jsx also imports RESUME_MAX_MB from constants.js if it has a local copy",
         "npm run build succeeds"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "US-256",
