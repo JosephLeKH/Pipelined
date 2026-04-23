@@ -76,7 +76,7 @@
         "All Settings section headings consistently use font-display",
         "npm run build succeeds"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "US-258",

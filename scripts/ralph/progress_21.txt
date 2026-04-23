@@ -55,3 +55,17 @@ Status: COMPLETE
 **Completed**: Replaced inline backdrop class `fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4` with `{MODAL_BACKDROP}` and card class `w-full max-w-sm rounded-card bg-white p-6 shadow-modal dark:bg-gray-800` with `${MODAL_CARD} max-w-sm p-6`. Added MODAL_BACKDROP and MODAL_CARD to the designTokens import. Build verified (4.23s). Committed as e1dd43f.
 
 **Learned**: MODAL_CARD token includes `max-w-lg` by default; override with `max-w-sm` by appending it after the token interpolation since Tailwind uses last-wins for conflicting utilities in the same class string. Also, when replacing card classes that included padding (p-6), the padding must be explicitly re-added since MODAL_CARD doesn't include it.
+
+## US-257: Add font-display to remaining Settings section headings
+Status: COMPLETE
+
+### Summary
+- Added `font-display` class to h2 in SettingsResumeSection.jsx ('Resume & AI')
+- Added `font-display` class to h3 in AiScoreMeter subcomponent in SettingsResumeSection.jsx ('AI fit scoring')
+- Added `font-display` class to h2 in WeeklyGoalSection.jsx ('Weekly Application Goal')
+- Added `font-display` class to h2 in SettingsPipelineSection.jsx ('Pipeline Stages') — found during audit
+- Build passed cleanly. Committed as 8bd8071.
+
+### Learnings
+- SettingsPipelineSection.jsx also had an h2 missing font-display — the story description mentioned checking it; the audit confirmed it needed fixing
+- Pattern: when adding font-display to section headings, scan all Settings subcomponents, not just the ones explicitly named in the story
