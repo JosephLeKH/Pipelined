@@ -38,7 +38,7 @@
         "Both validation check and error message use PASSWORD_MIN_LENGTH",
         "npm run build succeeds"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "US-255",

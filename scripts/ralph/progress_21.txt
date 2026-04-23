@@ -23,3 +23,16 @@ Status: COMPLETE
 - Replaced inline `rounded bg-green-50 px-3 py-2 text-sm text-green-700 dark:bg-green-900/30 dark:text-green-300` with `${SUCCESS_BANNER}`, preserving positional classes (mt-4/mb-4 where present)
 - Note: CsvImportModal uses `role="status"` not `role="alert"` — preserved as-is
 - Build passes. 8 files changed.
+
+## US-254: Deduplicate PW_MIN_LENGTH constant in SettingsAccountSection
+Status: COMPLETE
+
+### Summary
+- Removed local `const PW_MIN_LENGTH = 8` from SettingsAccountSection.jsx
+- Added `import { PASSWORD_MIN_LENGTH } from "../lib/constants"`
+- Replaced both references (validation check and error message) with PASSWORD_MIN_LENGTH
+- Build passed cleanly
+
+### Learnings
+- PASSWORD_MIN_LENGTH was already exported from constants.js at line 39 — pure deduplication, no value change
+- Pattern: always check constants.js before defining module-level magic values
