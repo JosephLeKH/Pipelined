@@ -1,0 +1,129 @@
+{
+  "project": "Pipelined",
+  "branchName": "ralph/pipelined-v18",
+  "description": "Warm palette migration for remaining components — replace all slate-* Tailwind classes with gray-* (warm) equivalents and use semantic design tokens where applicable. These files were not covered by prd_16 (design tokens) or prd_17 (page-level redesign).",
+  "userStories": [
+    {
+      "id": "US-237",
+      "title": "Migrate Pricing and Activity pages to warm palette",
+      "description": "In frontend/src/pages/Pricing.jsx (22 slate refs) and frontend/src/pages/Activity.jsx (16 slate refs), replace all slate-* classes with gray-* equivalents. slate-50→gray-50, slate-100→gray-100, slate-200→gray-200, slate-300→gray-300, slate-400→gray-400, slate-500→gray-500, slate-600→gray-600, slate-700→gray-700, slate-800→gray-800, slate-900→gray-900. Also replace border classes: border-slate-*→border-gray-*. Use CARD_BASE token where cards use inline border+bg classes. Use BUTTON_PRIMARY/BUTTON_SECONDARY tokens where buttons use inline classes.",
+      "acceptanceCriteria": [
+        "Zero slate-* classes remain in Pricing.jsx",
+        "Zero slate-* classes remain in Activity.jsx",
+        "CARD_BASE token used where applicable",
+        "npm run build succeeds"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Pricing is a public-facing page. Activity is frequently viewed."
+    },
+    {
+      "id": "US-238",
+      "title": "Migrate OfferComparison and PrepSection to warm palette",
+      "description": "In frontend/src/pages/OfferComparison.jsx (15 slate refs) and frontend/src/components/PrepSection.jsx (14 slate refs), replace all slate-* classes with gray-* equivalents. Use design tokens (CARD_BASE, INPUT_BASE, BADGE_BASE) where components use inline border+bg+text class combinations that match a token.",
+      "acceptanceCriteria": [
+        "Zero slate-* classes remain in OfferComparison.jsx",
+        "Zero slate-* classes remain in PrepSection.jsx",
+        "Design tokens used where applicable",
+        "npm run build succeeds"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "OfferComparison has table styling; PrepSection has form elements."
+    },
+    {
+      "id": "US-239",
+      "title": "Migrate FeedbackWidget, FilterBar, and CommandPalette to warm palette",
+      "description": "In frontend/src/components/FeedbackWidget.jsx (13 slate refs), frontend/src/components/FilterBar.jsx (12 slate refs), and frontend/src/components/CommandPalette.jsx (12 slate refs), replace all slate-* classes with gray-* equivalents. FeedbackWidget and CommandPalette are modal-like — use MODAL_BACKDROP/MODAL_CARD tokens where they have inline backdrop/card class combinations. FilterBar inputs should use INPUT_BASE where applicable.",
+      "acceptanceCriteria": [
+        "Zero slate-* classes remain in FeedbackWidget.jsx",
+        "Zero slate-* classes remain in FilterBar.jsx",
+        "Zero slate-* classes remain in CommandPalette.jsx",
+        "MODAL_BACKDROP/MODAL_CARD tokens used where applicable",
+        "npm run build succeeds"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "CommandPalette is a highly visible component. FeedbackWidget appears on every page."
+    },
+    {
+      "id": "US-240",
+      "title": "Migrate HeroSection and ApplicationRow components to warm palette",
+      "description": "In frontend/src/components/HeroSection.jsx (11 slate refs), frontend/src/components/ApplicationRow.jsx (8 slate refs), and frontend/src/components/ApplicationRowActions.jsx (10 slate refs), replace all slate-* classes with gray-* equivalents. HeroSection should use bg-surface-secondary for the hero background, font-display for headings. ApplicationRow is the most-rendered component in the dashboard — use BADGE_* tokens for status badges.",
+      "acceptanceCriteria": [
+        "Zero slate-* classes remain in HeroSection.jsx",
+        "Zero slate-* classes remain in ApplicationRow.jsx",
+        "Zero slate-* classes remain in ApplicationRowActions.jsx",
+        "npm run build succeeds"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "ApplicationRow is rendered for every application — high visual impact."
+    },
+    {
+      "id": "US-241",
+      "title": "Migrate NotificationBell, KanbanBoard, and KanbanCard to warm palette",
+      "description": "In frontend/src/components/NotificationBell.jsx (10 slate refs), frontend/src/components/KanbanBoard.jsx (9 slate refs), frontend/src/components/KanbanCard.jsx (4 slate refs), and frontend/src/components/KanbanColumn.jsx (4 slate refs), replace all slate-* classes with gray-* equivalents. KanbanCard should use CARD_BASE token. NotificationBell dropdown should use CARD_BASE for the panel.",
+      "acceptanceCriteria": [
+        "Zero slate-* classes remain in all four files",
+        "KanbanCard uses CARD_BASE token",
+        "npm run build succeeds"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Kanban view is a primary interaction mode."
+    },
+    {
+      "id": "US-242",
+      "title": "Migrate DetailPanel, StatsBar, and MarkdownEditor to warm palette",
+      "description": "In frontend/src/components/DetailPanel.jsx (2 slate refs), frontend/src/components/DetailPanelBody.jsx (7 slate refs), frontend/src/components/DetailPanelHeader.jsx (5 slate refs), frontend/src/components/StatsBar.jsx (7 slate refs), and frontend/src/components/MarkdownEditor.jsx (9 slate refs), replace all slate-* classes with gray-* equivalents. StatsBar stat cards should use CARD_BASE. DetailPanel should use CARD_BASE for the panel container.",
+      "acceptanceCriteria": [
+        "Zero slate-* classes remain in all five files",
+        "StatsBar uses CARD_BASE for stat cards",
+        "npm run build succeeds"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "DetailPanel is the application detail view — seen constantly."
+    },
+    {
+      "id": "US-243",
+      "title": "Migrate remaining auth and contact components to warm palette",
+      "description": "In frontend/src/pages/VerifyEmailConfirm.jsx (8 slate refs), frontend/src/pages/VerifyEmailPending.jsx (3 slate refs), frontend/src/components/ContactForm.jsx (7 slate refs), frontend/src/components/ContactCard.jsx (4 slate refs), frontend/src/components/LoginForm.jsx (2 slate refs), and frontend/src/components/RegisterForm.jsx (4 slate refs), replace all slate-* classes with gray-* equivalents. Auth pages should use INPUT_BASE for form fields. Contact components should use CARD_BASE.",
+      "acceptanceCriteria": [
+        "Zero slate-* classes remain in all six files",
+        "INPUT_BASE used for form fields where applicable",
+        "npm run build succeeds"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Auth and contact pages are part of core user flows."
+    },
+    {
+      "id": "US-244",
+      "title": "Migrate remaining small components to warm palette",
+      "description": "In frontend/src/components/ShortcutHelp.jsx (6 slate refs), frontend/src/components/WeeklyGoalSection.jsx (5 slate refs), frontend/src/components/SavedSearchesSidebar.jsx (5 slate refs), frontend/src/components/ResumeSection.jsx (5 slate refs), frontend/src/components/DigestSection.jsx (6 slate refs), frontend/src/components/NotesEditor.jsx (6 slate refs), frontend/src/components/PrepChecklist.jsx (4 slate refs), frontend/src/components/SaveSearchPopover.jsx (3 slate refs), frontend/src/components/OfferDetailsSection.jsx (3 slate refs), frontend/src/components/SharePipeline.jsx (4 slate refs), frontend/src/components/ShareTimeline.jsx (4 slate refs), frontend/src/components/TagInput.jsx (4 slate refs), frontend/src/components/PipelineStagesEditor.jsx (8 slate refs), frontend/src/components/NewEventFormFields.jsx (6 slate refs), frontend/src/components/NewEventForm.jsx (3 slate refs), frontend/src/components/CalendarEventDetail.jsx (9 slate refs), frontend/src/components/ManualAddForm.jsx (4 slate refs), frontend/src/components/JobFilters.jsx (2 slate refs), replace all slate-* classes with gray-* equivalents. This is a batch cleanup — do a find-and-replace of 'slate-' to 'gray-' in each file, then verify build passes.",
+      "acceptanceCriteria": [
+        "Zero slate-* classes remain in all listed files",
+        "npm run build succeeds",
+        "No visual regressions — gray-* maps to warm palette"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Mechanical find-and-replace — slate-N maps 1:1 to warm gray-N in our tailwind config."
+    },
+    {
+      "id": "US-245",
+      "title": "Migrate remaining page and utility files to warm palette",
+      "description": "In frontend/src/components/EmptyState.jsx (3 slate refs), frontend/src/components/ErrorBoundary.jsx (2 slate refs), frontend/src/components/FormActions.jsx (1 slate ref), frontend/src/components/FormField.jsx (1 slate ref), frontend/src/components/TemplateBar.jsx (1 slate ref), frontend/src/components/AuthLayout.jsx (1 slate ref), frontend/src/components/SkeletonRow.jsx (1 slate ref), frontend/src/components/SkeletonCalendarCell.jsx (1 slate ref), frontend/src/components/UndoToast.jsx (2 slate refs), frontend/src/components/CsvImportModal.jsx (3 slate refs), frontend/src/components/MergeDialog.jsx (4 slate refs), frontend/src/components/TemplateSaveModal.jsx (5 slate refs), frontend/src/components/UpgradePlanModal.jsx (6 slate refs), frontend/src/components/JobBoardContent.jsx (6 slate refs), frontend/src/components/JobCard.jsx (5 slate refs), frontend/src/components/JobRow.jsx (9 slate refs), frontend/src/components/JobDetailPanel.jsx (17 slate refs), frontend/src/pages/JobBoard.jsx (1 slate ref), frontend/src/pages/Calendar.jsx (2 slate refs), frontend/src/App.jsx (2 slate refs), replace all slate-* classes with gray-* equivalents.",
+      "acceptanceCriteria": [
+        "Zero slate-* classes remain in all listed files",
+        "npm run build succeeds",
+        "grep -r 'slate-' frontend/src/ --include='*.jsx' --include='*.js' returns zero matches"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Final sweep — after this story, zero slate references should remain in the frontend."
+    }
+  ]
+}

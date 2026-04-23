@@ -142,7 +142,7 @@
         "npm run build succeeds"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Catches stray cool colors in global styles that tokens don't cover."
     },
     {

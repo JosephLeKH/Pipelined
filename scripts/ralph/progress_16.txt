@@ -146,3 +146,21 @@ Build succeeded in 2.63s.
 **Completed**: Added BADGE_DEFAULT, BADGE_SUCCESS, BADGE_WARNING, BADGE_ERROR, BADGE_INFO, and TAG tokens to designTokens.js. All badges use muted pastel backgrounds with matching border colors (emerald-50/200, amber-50/200, red-50/200, blue-50/200) and font-display for Poppins rendering. TAG includes transition-colors for smooth hover. Build passed cleanly (2.78s). Committed and marked US-223 as complete in PRD.
 
 **Next Steps**: Remaining stories in PRD-16: US-224 (index.css cleanup), US-225 (animation refinement). Seven of ten user stories now complete.
+
+---
+## US-224: Clean up index.css for warm palette
+
+**Completed:** 2026-04-23
+
+**What was done:**
+- Added `background-color: #faf9f5` to body in light mode
+- Added `.dark body { background-color: #141413; }` for dark mode
+- Added `::selection { background-color: rgba(217, 119, 87, 0.2); }` for brand-500/20 selection highlight
+- Replaced slate hex values in markdown-preview styles: #cbd5e1 → #d4ccbd (warm gray-300), #64748b → #6b5f4e (warm gray-500), #475569 → #4a4139 (warm gray-600), #94a3b8 → #b0aea5 (warm gray-400)
+- Replaced cool blue link color (#2563eb, #60a5fa) with accent-blue #6a9bcc (warm-tinted blue from brand palette)
+
+**Learnings:**
+- The existing file had no #6366F1 or indigo values — only slate hex codes that map to cool grays
+- Markdown-preview blockquote and link styles were the primary offenders with cool-tinted colors
+- Warm gray replacements follow the palette defined in US-216: gray-300=#d4ccbd, gray-400=#b0aea5, gray-500=#6b5f4e, gray-600=#4a4139
+- Build passed cleanly (2.46s)
