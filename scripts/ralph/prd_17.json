@@ -181,7 +181,7 @@
         "npm run build succeeds"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "Gradients are the #2 'AI-generated' tell after colored icon circles. Must be fully purged."
     }
   ]

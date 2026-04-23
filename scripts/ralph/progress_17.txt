@@ -2,6 +2,16 @@
 Started: Thu Apr 23 09:16:08 PDT 2026
 ---
 
+## US-236: Remove all gradient usage across the frontend
+Completed: Thu Apr 23 2026
+- Only gradient instances found were in SkeletonRow.jsx and SkeletonCalendarCell.jsx (shimmer animation)
+- Moved shimmer gradient to CSS class `.shimmer-bg` in animations.css using bg-surface-tertiary (#e8e6dc) colors
+- SHIMMER constant in both skeleton files simplified to "shimmer-bg animate-shimmer"
+- Dark mode shimmer handled via `.dark .shimmer-bg` CSS selector
+- All other gradient patterns (buttons, heroes, cards) were already removed in prior stories
+- grep check: zero Tailwind gradient class matches in frontend/src JSX/JS files
+- npm run build: ✓ passed
+
 ## US-235: Replace all icon styling to single-color warm gray
 Completed: Thu Apr 23 2026
 - Audited all 69 lucide-react imports across frontend/src
