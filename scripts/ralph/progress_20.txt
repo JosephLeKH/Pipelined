@@ -44,3 +44,12 @@ Started: Thu Apr 23 11:23:12 PDT 2026
 - PublicPipeline.jsx — h1 "Link not found", h1 "{name}'s Pipeline", h2 "Applications (N)" added font-display
 
 **Learnings:** No Contacts page exists as a separate file in pages/ — that was a red herring in the US description. The small uppercase tracking-wide h2 section labels in PublicTimeline and PublicPipeline also needed font-display per acceptance criteria. Build passed cleanly.
+
+## US-249: Create CommandPalette MODAL_CARD adoption with fixed positioning
+Status: COMPLETE
+
+**Summary:** CommandPalette.jsx already had the correct implementation from a prior session — the dialog element at line 99 uses `${MODAL_CARD}` token and `-translate-x-1/2` (no typo). The MODAL_CARD import was already present at line 14. All acceptance criteria were already met.
+
+**Build:** Passed (3.07s).
+
+**Learnings:** When a story's acceptance criteria are already satisfied by previous work, verify via grep/read before making any edits. The PRD description mentioned a typo `-trangray-x-1/2` that had already been fixed.

@@ -58,7 +58,7 @@
         "Typo -trangray-x-1/2 corrected to -translate-x-1/2",
         "npm run build succeeds"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "US-250",
