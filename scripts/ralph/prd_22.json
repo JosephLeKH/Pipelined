@@ -64,7 +64,7 @@
         "No layout breaks on 320px viewport width",
         "npm run build succeeds"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "US-264",

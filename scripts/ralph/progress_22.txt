@@ -44,3 +44,13 @@ Started: Thu Apr 23 12:37:07 PDT 2026
 - Pattern was already used in NotesEditor.jsx and ContactForm.jsx; centralizing in tokens propagates it to all usages automatically
 - Build passed (✓ built in ~20s)
 - Committed: feat: US-262 - Add active:scale press feedback to all primary and secondary buttons
+
+## US-263: Standardize responsive page padding across all pages
+- Dashboard.jsx: `px-6` → `px-4 sm:px-6` in the inner max-w-7xl wrapper
+- Activity.jsx: `px-4` → `px-4 sm:px-6` (added sm breakpoint)
+- Analytics.jsx: `px-6` → `px-4 sm:px-6`
+- Calendar.jsx: `p-6` → `px-4 sm:px-6 py-6` (split shorthand to allow responsive px)
+- OfferComparison.jsx: `px-6` → `px-4 sm:px-6`
+- JobBoard.jsx: already had `px-4 py-8 sm:px-6` — left untouched
+- Build passes. Committed.
+**Learning:** When a page uses `p-6` shorthand, split into `px-N py-N` to allow responsive px breakpoints without affecting vertical padding.
