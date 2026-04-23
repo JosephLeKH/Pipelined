@@ -7,7 +7,7 @@ import Loader2 from "lucide-react/dist/esm/icons/loader-2";
 import TimezoneSelector from "./TimezoneSelector";
 import { useAuth } from "../context/AuthContext";
 import { useUpdateUser } from "../hooks/useAuth";
-import { CARD_BASE, INPUT_BASE, INPUT_LABEL } from "../lib/designTokens";
+import { CARD_BASE, INPUT_BASE, INPUT_LABEL, BUTTON_PRIMARY } from "../lib/designTokens";
 
 const AVATAR_COLORS = [
   "bg-brand-500",
@@ -134,7 +134,7 @@ function SettingsProfileSection() {
           type="button"
           onClick={handleSave}
           disabled={isPending}
-          className="flex items-center gap-2 rounded-button bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-600 active:scale-[0.98] transition-all duration-150 disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:ring-offset-2"
+          className={`flex items-center gap-2 ${BUTTON_PRIMARY}`}
         >
           {isPending && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
           Save profile
