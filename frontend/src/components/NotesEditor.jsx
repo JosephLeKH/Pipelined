@@ -6,6 +6,7 @@ import Pencil from "lucide-react/dist/esm/icons/pencil";
 
 import { useUpdateApplication } from "../hooks/useApplications";
 import { NOTES_MAX_LENGTH } from "../lib/constants";
+import { BUTTON_PRIMARY } from "../lib/designTokens";
 import MarkdownEditor from "./MarkdownEditor";
 
 const AMBER_PCT = 0.8;
@@ -99,7 +100,7 @@ function NotesEditor({ applicationId, initialValue, onDirtyChange }) {
               <button
                 type="button"
                 onClick={handleSave}
-                className="bg-brand-500 text-white rounded-button hover:bg-brand-600 active:scale-[0.98] transition-all duration-150 text-xs px-2 py-1 focus:outline-none focus:ring-2 focus:ring-brand-500/30"
+                className={`${BUTTON_PRIMARY} text-xs px-2 py-1 active:scale-[0.98]`}
               >
                 Save
               </button>

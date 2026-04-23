@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import { useCreateContact, useLinkContact } from "../hooks/useContacts";
 import { RELATIONSHIP_OPTIONS } from "../lib/constants";
-import { INPUT_BASE, CARD_BASE } from "../lib/designTokens";
+import { INPUT_BASE, CARD_BASE, BUTTON_PRIMARY } from "../lib/designTokens";
 
 const INITIAL_FORM = {
   name: "",
@@ -67,7 +67,7 @@ function ContactFormActions({ isPending, nameValue, onDone }) {
       <button
         type="submit"
         disabled={isPending || !nameValue.trim()}
-        className="bg-brand-500 text-white rounded-button shadow-sm hover:bg-brand-600 active:scale-[0.98] transition-all duration-150 font-medium text-xs px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-brand-500/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none"
+        className={`${BUTTON_PRIMARY} text-xs px-3 py-1.5 active:scale-[0.98]`}
       >
         {isPending ? "Saving…" : "Add Contact"}
       </button>

@@ -23,7 +23,7 @@ import GripVertical from "lucide-react/dist/esm/icons/grip-vertical";
 import Loader2 from "lucide-react/dist/esm/icons/loader-2";
 import Plus from "lucide-react/dist/esm/icons/plus";
 import Trash2 from "lucide-react/dist/esm/icons/trash-2";
-import { CARD_BASE, INPUT_BASE } from "../lib/designTokens";
+import { CARD_BASE, INPUT_BASE, BUTTON_PRIMARY } from "../lib/designTokens";
 
 const STAGE_NAME_MAX_LENGTH = 40;
 const STAGES_MIN_COUNT = 2;
@@ -113,7 +113,7 @@ function StagesSaveFooter({ count, onSave, isSaving }) {
   return (
     <div className="flex items-center justify-between border-t border-gray-100 pt-3 dark:border-gray-700">
       <p className="text-xs text-gray-400">{count} / {STAGES_MAX_COUNT} stages</p>
-      <button type="button" onClick={onSave} disabled={isSaving} className="flex items-center gap-2 rounded-button bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-600 active:scale-[0.98] transition-all duration-150 disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:ring-offset-2">
+      <button type="button" onClick={onSave} disabled={isSaving} className={`flex items-center gap-2 ${BUTTON_PRIMARY}`}>
         {isSaving && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
         Save stages
       </button>

@@ -23,3 +23,15 @@ Learnings:
 
 ## US-238 — Adopt CARD_BASE token in non-Settings components
 All 7 components (WeeklyGoalSection, ResumeSection, ContactForm, DigestSection, SavedSearchesSidebar, SaveSearchPopover, PipelineStagesEditor) already had CARD_BASE applied from a prior iteration. Build verified clean. Committed.
+
+## US-239 - Adopt INPUT_BASE token in Settings form inputs
+**Status:** COMPLETE
+**Date:** 2026-04-23
+
+All three target files (SettingsProfileSection.jsx, SettingsAccountSection.jsx, TimezoneSelector.jsx) already had INPUT_BASE and INPUT_LABEL tokens correctly applied from prior iteration work. The changes just needed to be committed.
+
+**Changes committed:** 2 files changed (SettingsProfileSection.jsx and SettingsAccountSection.jsx had minor uncommitted label/input token updates).
+
+**Build:** npm run build passed (✓ built in 13.78s, 1256 modules transformed).
+
+**Learnings:** When iterating Ralph loops, check git diff first — prior iterations may have partially completed a story. The commit step alone closes the loop.

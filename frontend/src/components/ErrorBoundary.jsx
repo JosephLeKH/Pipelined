@@ -3,6 +3,7 @@
 import { Component } from "react";
 
 import RefreshCw from "lucide-react/dist/esm/icons/refresh-cw";
+import { BUTTON_PRIMARY } from "../lib/designTokens";
 
 class ErrorBoundary extends Component {
   constructor(props) {
@@ -39,7 +40,7 @@ class ErrorBoundary extends Component {
           <button
             type="button"
             onClick={this.handleReset}
-            className="flex items-center gap-2 rounded-button bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-600 active:scale-[0.98] transition-all duration-150"
+            className={`flex items-center gap-2 rounded-button active:scale-[0.98] ${BUTTON_PRIMARY}`}
           >
             <RefreshCw className="h-4 w-4" />
             Try again

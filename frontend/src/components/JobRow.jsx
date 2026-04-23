@@ -4,6 +4,7 @@ import MapPin from "lucide-react/dist/esm/icons/map-pin";
 import ExternalLink from "lucide-react/dist/esm/icons/external-link";
 
 import { formatDate } from "../lib/dateUtils";
+import { BUTTON_PRIMARY } from "../lib/designTokens";
 
 const REMOTE_COLORS = {
   remote: "text-green-700",
@@ -72,7 +73,7 @@ function JobRow({ job, style }) {
             href={job.apply_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1 rounded-button bg-brand-500 px-2.5 py-1 text-xs font-medium text-white hover:bg-brand-600 active:scale-[0.98] transition-all duration-150"
+            className={`flex items-center gap-1 rounded-button ${BUTTON_PRIMARY} text-xs px-2.5 py-1 active:scale-[0.98]`}
             aria-label={`Apply to ${job.role ?? "this role"} at ${job.company ?? "this company"}`}
           >
             Apply

@@ -4,7 +4,7 @@ import Download from "lucide-react/dist/esm/icons/download";
 import Loader2 from "lucide-react/dist/esm/icons/loader-2";
 
 import { useApplicationExport } from "../hooks/useApplicationExport";
-import { CARD_BASE } from "../lib/designTokens";
+import { CARD_BASE, BUTTON_PRIMARY } from "../lib/designTokens";
 
 export default function SettingsReportSection() {
   const { handleDownload, isLoading, error, retryAfter } = useApplicationExport();
@@ -20,7 +20,7 @@ export default function SettingsReportSection() {
         type="button"
         onClick={handleDownload}
         disabled={isLoading}
-        className="inline-flex items-center gap-2 rounded-button bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-600 active:scale-[0.98] transition-all duration-150 disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:ring-offset-2"
+        className={`inline-flex items-center gap-2 ${BUTTON_PRIMARY}`}
       >
         {isLoading ? (
           <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
