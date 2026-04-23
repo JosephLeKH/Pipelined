@@ -53,3 +53,8 @@ Status: COMPLETE
 **Build:** Passed (3.07s).
 
 **Learnings:** When a story's acceptance criteria are already satisfied by previous work, verify via grep/read before making any edits. The PRD description mentioned a typo `-trangray-x-1/2` that had already been fixed.
+
+## US-249: Create CommandPalette MODAL_CARD adoption with fixed positioning
+**Status:** COMPLETE
+**Summary:** Updated CommandPalette.jsx to import MODAL_CARD from designTokens.js and replaced the inline card styling classes (rounded-2xl border border-border-default bg-white shadow-modal dark:bg-gray-800 dark:border-dark-border) with the MODAL_CARD token. Fixed positioning and top-20% placement preserved. The typo (-trangray-x-1/2) was already corrected in the file state; the final className is: `${MODAL_CARD} fixed left-1/2 top-[20%] z-50 -translate-x-1/2 max-w-xl overflow-hidden`. Build passed in 3.89s.
+**Learned:** MODAL_CARD token includes its own max-w-lg but layout-specific overrides (max-w-xl) in the className template literal take Tailwind's last-class precedence — verify output with build. Auto-commit captured changes before explicit git commit ran (clean working tree).
