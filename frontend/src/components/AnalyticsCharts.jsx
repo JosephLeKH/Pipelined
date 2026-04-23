@@ -13,7 +13,7 @@ import { ResponsiveContainer } from "recharts/es6/component/ResponsiveContainer"
 
 import { CARD_BASE } from "../lib/designTokens";
 
-const CHART_COLORS = ["#d97757", "#6a9bcc", "#788c5d", "#F59E0B", "#F43F5E"];
+const CHART_COLORS = ["#d97757", "#6a9bcc", "#788c5d", "#9ca3af", "#d1d5db"];
 const CONVERSION_HIGH_THRESHOLD = 0.6;
 const CONVERSION_LOW_THRESHOLD = 0.3;
 const AVG_DAYS_HIGHLIGHT_THRESHOLD = 21;
@@ -32,10 +32,10 @@ function avgDaysColorClass(days) {
 function CustomTooltip({ active, payload, label, formatter }) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="rounded-lg bg-gray-900 px-3 py-2 shadow-lg text-sm">
+    <div className="rounded-lg border border-border-default bg-white px-3 py-2 shadow-card text-sm dark:border-gray-700 dark:bg-gray-800">
       {label != null && <p className="mb-1 text-xs text-gray-400">{label}</p>}
       {payload.map((entry) => (
-        <p key={entry.dataKey} className="text-white">
+        <p key={entry.dataKey} className="text-gray-700 dark:text-gray-300">
           {entry.name}: {formatter ? formatter(entry.value) : entry.value}
         </p>
       ))}
@@ -45,9 +45,9 @@ function CustomTooltip({ active, payload, label, formatter }) {
 
 function ChartCard({ title, description, children }) {
   return (
-    <div className={`${CARD_BASE} p-5`}>
+    <div className={`${CARD_BASE} p-6`}>
       <div className="mb-4">
-        <h2 className="text-sm font-medium text-gray-900 dark:text-gray-100">{title}</h2>
+        <h2 className="font-display text-sm font-medium text-gray-900 dark:text-gray-100">{title}</h2>
         {description && (
           <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">{description}</p>
         )}
@@ -63,8 +63,8 @@ function WeeklyApplicationsChart({ data }) {
       <ResponsiveContainer width="100%" height={240}>
         <BarChart data={data}>
           <CartesianGrid strokeDasharray="3 3" stroke="#e8e6dc" />
-          <XAxis dataKey="week" tick={{ fontSize: 11 }} />
-          <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
+          <XAxis dataKey="week" tick={{ fontSize: 11, fill: "#9ca3af" }} />
+          <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: "#9ca3af" }} />
           <Tooltip content={<CustomTooltip />} />
           <Bar dataKey="count" name="Applications" fill={CHART_COLORS[0]} radius={[3, 3, 0, 0]} />
         </BarChart>
@@ -79,8 +79,8 @@ function StageFunnelChart({ data }) {
       <ResponsiveContainer width="100%" height={240}>
         <BarChart data={data} layout="vertical">
           <CartesianGrid strokeDasharray="3 3" stroke="#e8e6dc" />
-          <XAxis type="number" allowDecimals={false} tick={{ fontSize: 11 }} />
-          <YAxis type="category" dataKey="stage" tick={{ fontSize: 11 }} width={90} />
+          <XAxis type="number" allowDecimals={false} tick={{ fontSize: 11, fill: "#9ca3af" }} />
+          <YAxis type="category" dataKey="stage" tick={{ fontSize: 11, fill: "#9ca3af" }} width={90} />
           <Tooltip content={<CustomTooltip />} />
           <Bar dataKey="count" name="Applications" fill={CHART_COLORS[1]} radius={[0, 3, 3, 0]} />
         </BarChart>
@@ -95,8 +95,8 @@ function ResponseRateChart({ data }) {
       <ResponsiveContainer width="100%" height={240}>
         <LineChart data={data}>
           <CartesianGrid strokeDasharray="3 3" stroke="#e8e6dc" />
-          <XAxis dataKey="month" tick={{ fontSize: 11 }} />
-          <YAxis domain={[0, 1]} tickFormatter={(v) => `${Math.round(v * 100)}%`} tick={{ fontSize: 11 }} />
+          <XAxis dataKey="month" tick={{ fontSize: 11, fill: "#9ca3af" }} />
+          <YAxis domain={[0, 1]} tickFormatter={(v) => `${Math.round(v * 100)}%`} tick={{ fontSize: 11, fill: "#9ca3af" }} />
           <Tooltip content={<CustomTooltip formatter={(v) => `${Math.round(v * 100)}%`} />} />
           <Legend />
           <Line type="monotone" dataKey="rate" name="Response Rate" stroke={CHART_COLORS[2]} dot={false} strokeWidth={2} />
@@ -112,8 +112,8 @@ function TopCompaniesChart({ data }) {
       <ResponsiveContainer width="100%" height={240}>
         <BarChart data={data} layout="vertical">
           <CartesianGrid strokeDasharray="3 3" stroke="#e8e6dc" />
-          <XAxis type="number" allowDecimals={false} tick={{ fontSize: 11 }} />
-          <YAxis type="category" dataKey="company" tick={{ fontSize: 11 }} width={100} />
+          <XAxis type="number" allowDecimals={false} tick={{ fontSize: 11, fill: "#9ca3af" }} />
+          <YAxis type="category" dataKey="company" tick={{ fontSize: 11, fill: "#9ca3af" }} width={100} />
           <Tooltip content={<CustomTooltip />} />
           <Bar dataKey="count" name="Applications" fill={CHART_COLORS[3]} radius={[0, 3, 3, 0]} />
         </BarChart>
@@ -213,8 +213,8 @@ function FunnelBarChart({ data }) {
       <ResponsiveContainer width="100%" height={Math.max(180, data.length * 40)}>
         <BarChart data={data} layout="vertical">
           <CartesianGrid strokeDasharray="3 3" stroke="#e8e6dc" />
-          <XAxis type="number" allowDecimals={false} tick={{ fontSize: 11 }} />
-          <YAxis type="category" dataKey="stage" tick={{ fontSize: 11 }} width={110} />
+          <XAxis type="number" allowDecimals={false} tick={{ fontSize: 11, fill: "#9ca3af" }} />
+          <YAxis type="category" dataKey="stage" tick={{ fontSize: 11, fill: "#9ca3af" }} width={110} />
           <Tooltip content={<CustomTooltip />} />
           <Bar dataKey="entered_count" name="Applications Entered" fill={CHART_COLORS[4]} radius={[0, 3, 3, 0]} />
         </BarChart>
