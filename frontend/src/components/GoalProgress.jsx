@@ -98,7 +98,7 @@ function GoalProgress() {
         </span>
         <span className="text-xs text-gray-500 dark:text-gray-400">Weekly goal</span>
         {currentStreak > 0 && (
-          <span className="mt-1 flex items-center gap-1 text-xs font-medium text-orange-500">
+          <span className="mt-1 flex items-center gap-1 text-xs font-medium text-brand-500">
             <Flame className="h-3.5 w-3.5" aria-hidden="true" />
             {currentStreak} week streak
           </span>

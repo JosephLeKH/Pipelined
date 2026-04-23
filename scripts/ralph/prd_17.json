@@ -166,7 +166,7 @@
         "npm run build succeeds"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "Colored circle icons are the #1 'AI-generated' tell. Bare monochrome icons are the fastest visual upgrade."
     },
     {

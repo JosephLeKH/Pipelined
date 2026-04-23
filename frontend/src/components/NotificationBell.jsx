@@ -36,15 +36,13 @@ function NotificationItem({ notification }) {
       tabIndex={0}
       onKeyDown={(e) => e.key === "Enter" && handleClick()}
     >
-      <span
-        className={`mt-0.5 shrink-0 rounded-full p-1.5 ${
+      <Icon
+        className={`mt-0.5 h-4 w-4 shrink-0 ${
           notification.read
-            ? "bg-gray-100 text-gray-400 dark:bg-gray-700 dark:text-gray-500"
-            : "bg-brand-50 text-brand-600 dark:bg-brand-900/40 dark:text-brand-400"
+            ? "text-gray-400 dark:text-gray-500"
+            : "text-gray-600 dark:text-gray-400"
         }`}
-      >
-        <Icon className="h-3.5 w-3.5" />
-      </span>
+      />
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-medium text-gray-900 dark:text-gray-100">
           {notification.title}

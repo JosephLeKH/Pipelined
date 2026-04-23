@@ -70,7 +70,7 @@ function ActivityHeader({ days, total, isLoading, onDaysChange }) {
     <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
         <h1 className="flex items-center gap-2 text-xl font-semibold text-gray-900 dark:text-gray-100">
-          <Activity className="h-5 w-5 text-brand-500" />
+          <Activity className="h-5 w-5 text-gray-600" />
           Activity
         </h1>
         {!isLoading && (

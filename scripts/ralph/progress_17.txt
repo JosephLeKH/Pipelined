@@ -1,3 +1,13 @@
 # Ralph Progress Log
 Started: Thu Apr 23 09:16:08 PDT 2026
 ---
+
+## US-235: Replace all icon styling to single-color warm gray
+Completed: Thu Apr 23 2026
+- Audited all 69 lucide-react imports across frontend/src
+- NotificationBell.jsx: Removed rounded-full p-1.5 colored circle wrapper from NotificationItem; bare icon now uses text-gray-400/text-gray-600 based on read state
+- GoalProgress.jsx: Changed streak indicator from text-orange-500 to text-brand-500 (accent)
+- Activity.jsx: Changed page heading Activity icon from text-brand-500 to text-gray-600 (decorative/emphasis)
+- Verified exceptions: Check/CheckCircle status icons (Pricing, VerifyEmailConfirm, SettingsTemplatesSection), FitBadge text badges, hover-only color states
+- ApplicationTimeline.jsx and UpgradePlanModal.jsx already had correct bare icon styling
+- npm run build: ✓ passed
