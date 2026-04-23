@@ -69,7 +69,7 @@
         "npm run build succeeds"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Calendar is data-dense — warm borders and muted colors prevent visual overload."
     },
     {
