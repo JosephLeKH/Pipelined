@@ -63,7 +63,7 @@
         "Modal p-6 padding and content preserved",
         "npm run build succeeds"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "US-257",
