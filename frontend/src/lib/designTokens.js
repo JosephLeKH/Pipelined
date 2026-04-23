@@ -77,3 +77,27 @@ export const NAV_LINK_ACTIVE =
 
 /** Nav brand / logo text — dark, Poppins semibold, tight tracking. */
 export const NAV_BRAND = "text-gray-900 font-display font-semibold text-lg tracking-tight";
+
+/** Default badge — warm surface-secondary bg, muted text, pill shape, Poppins. */
+export const BADGE_DEFAULT =
+  "bg-surface-secondary text-gray-600 text-xs font-display font-medium px-2 py-0.5 rounded-full";
+
+/** Success badge — muted emerald pastel bg, border-defined, pill shape. Maps to Offer pipeline status. */
+export const BADGE_SUCCESS =
+  "bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-display font-medium px-2 py-0.5 rounded-full";
+
+/** Warning badge — muted amber pastel bg, border-defined, pill shape. Maps to Interview pipeline status. */
+export const BADGE_WARNING =
+  "bg-amber-50 text-amber-700 border border-amber-200 text-xs font-display font-medium px-2 py-0.5 rounded-full";
+
+/** Error badge — muted red pastel bg, border-defined, pill shape. Maps to Rejected pipeline status. */
+export const BADGE_ERROR =
+  "bg-red-50 text-red-700 border border-red-200 text-xs font-display font-medium px-2 py-0.5 rounded-full";
+
+/** Info badge — muted blue pastel bg, border-defined, accent-blue text, pill shape. Maps to Applied pipeline status. */
+export const BADGE_INFO =
+  "bg-blue-50 text-accent-blue border border-blue-200 text-xs font-display font-medium px-2 py-0.5 rounded-full";
+
+/** Tag / filter chip — warm surface bg, muted text, pill shape, subtle hover. */
+export const TAG =
+  "bg-surface-secondary text-gray-600 text-xs px-2 py-1 rounded-full hover:bg-surface-tertiary transition-colors";
