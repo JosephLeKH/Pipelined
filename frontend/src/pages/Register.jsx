@@ -35,7 +35,7 @@ function Register() {
       />
       <p className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
         Already have an account?{" "}
-        <Link to="/login" className="font-medium text-brand-600 hover:underline">Log in</Link>
+        <Link to="/login" className="text-brand-500 hover:text-brand-600 text-sm">Log in</Link>
       </p>
     </AuthLayout>
   );
