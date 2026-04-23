@@ -26,3 +26,14 @@ Started: Thu Apr 23 12:37:07 PDT 2026
 - The original icon dark mode used dark:text-gray-600 (darker = less visible); the new dark:text-gray-500 is slightly lighter and more readable
 - max-w-md added with mx-auto to keep it centered; constraining the container width improves text measure on wide viewports
 - Build passed cleanly with no issues
+
+## US-261: Add dark mode variants to StatsBar MetricCard
+**Status:** COMPLETE
+**Commit:** feat: US-261 - Add dark mode variants to StatsBar MetricCard
+
+### Changes
+- `frontend/src/components/StatsBar.jsx`: Added `dark:text-gray-400` to label span (line 88) and `dark:text-gray-100` to value span (line 89). Icon already had correct dark mode styling.
+
+### Learnings
+- Simple dark mode additions are two-class changes; the icon already used text-gray-400 which works in both modes without a dark variant.
+- Build succeeded immediately — no side effects.

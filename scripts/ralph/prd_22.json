@@ -39,7 +39,7 @@
         "All text in MetricCard is readable in dark mode",
         "npm run build succeeds"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "US-262",
