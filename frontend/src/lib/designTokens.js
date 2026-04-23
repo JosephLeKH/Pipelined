@@ -6,7 +6,7 @@
 
 /** Card container — white bg, rounded-xl, border-defined (no shadow), dark variants. */
 export const CARD_BASE =
-  "bg-white rounded-xl border border-border-default dark:bg-slate-800 dark:border-slate-700";
+  "bg-white rounded-xl border border-border-default dark:bg-gray-800 dark:border-dark-border";
 
 /** Card hover state — stronger border, no shadow. */
 export const CARD_HOVER = "border-border-strong transition-colors";
@@ -41,7 +41,8 @@ export const BUTTON_DANGER =
 export const INPUT_BASE =
   "border border-gray-300 rounded-md bg-white text-gray-900 " +
   "placeholder:text-gray-400 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/20 " +
-  "focus:outline-none transition-colors text-sm px-3 py-2 font-sans w-full";
+  "focus:outline-none transition-colors text-sm px-3 py-2 font-sans w-full " +
+  "dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 dark:placeholder:text-gray-500";
 
 /** Form field label — Poppins, warm gray. */
 export const INPUT_LABEL = "text-sm font-medium text-gray-700 mb-1.5 font-display";
@@ -61,4 +62,18 @@ export const MODAL_BACKDROP = "fixed inset-0 bg-black/30 backdrop-blur-sm z-50 f
 /** Modal card — large rounded, border-defined with shadow-lg, white bg with dark variant; scales in on mount. */
 export const MODAL_CARD =
   "bg-white rounded-2xl border border-border-default shadow-lg w-full max-w-lg mx-auto relative animate-scaleIn " +
-  "dark:bg-slate-800 dark:border dark:border-slate-700";
+  "dark:bg-gray-800 dark:border-dark-border";
+
+/** Nav container — white bg, bottom border, no gradient. */
+export const NAV_CONTAINER = "bg-white border-b border-border-default";
+
+/** Nav link — muted text, warms on hover, Poppins, no background. */
+export const NAV_LINK =
+  "text-gray-500 hover:text-gray-900 text-sm font-display font-medium transition-colors px-3 py-2 rounded-md";
+
+/** Active nav link — dark text, warm surface-secondary tint, Poppins. */
+export const NAV_LINK_ACTIVE =
+  "text-gray-900 bg-surface-secondary text-sm font-display font-medium px-3 py-2 rounded-md";
+
+/** Nav brand / logo text — dark, Poppins semibold, tight tracking. */
+export const NAV_BRAND = "text-gray-900 font-display font-semibold text-lg tracking-tight";
