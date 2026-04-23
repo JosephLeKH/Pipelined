@@ -18,3 +18,8 @@ Started: Thu Apr 23 11:23:12 PDT 2026
 - When a token includes padding (px-3 py-3), components that had slightly different padding (py-2) get standardized — this is intentional per the token spec
 - `VerifyEmailPending.jsx` statuses needed `mb-4 w-full ${SUCCESS_BANNER}` to preserve layout-specific classes not part of the token
 - Build: 2.56s, 5 files changed, 13 insertions, 8 deletions
+
+## US-246 — Standardize Pricing page checkmarks to brand color
+- Changed `text-emerald-500` → `text-brand-500` on Check icon in FeatureRow component (Pricing.jsx:42)
+- No other emerald classes were present in the file
+- Build passed ✓
