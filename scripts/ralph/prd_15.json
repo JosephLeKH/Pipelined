@@ -28,7 +28,7 @@
         "All backend tests pass: pytest tests/ -x"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "Security — MEDIUM severity. Token in URL leaks via referrer headers and browser history."
     },
     {
@@ -42,7 +42,7 @@
         "All backend tests pass: pytest tests/ -x"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Bug — MEDIUM severity. Memory leak under sustained SSE usage."
     },
     {
@@ -56,7 +56,7 @@
         "All backend tests pass: pytest tests/ -x"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Bug — MEDIUM severity. Users see inconsistent contact ordering."
     },
     {
@@ -70,7 +70,7 @@
         "All backend tests pass: pytest tests/ -x"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "notes": "Code quality — LOW severity. Dead imports add cognitive noise."
     },
     {
@@ -84,7 +84,7 @@
         "npm test passes all tests"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Bug — LOW severity but HIGH blast radius. One bad cookie breaks all API calls."
     },
     {
@@ -98,7 +98,7 @@
         "All extension tests pass: npm test"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "notes": "Code quality — LOW severity. Listener accumulation is wasteful on SPA pages."
     }
   ]

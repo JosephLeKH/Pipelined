@@ -17,3 +17,89 @@ Replaced fragile modular arithmetic `today.month % 12 + 1` / `today.month // 12`
 - Pre-existing test failures exist in `test_calendar.py` (8 failures) and `test_applications.py` (1 failure) — these predate this story and are unrelated to the date range fix.
 - `calendar.monthrange(year, month)` returns `(weekday_of_first_day, number_of_days)` — index `[1]` gives the last day.
 
+---
+
+## US-210 — Move password reset token from URL query param to POST body flow
+**Status:** COMPLETE
+**Commit:** feat: US-210 - Move password reset token from URL query param to POST body flow
+
+**Summary:**
+Password reset token was previously embedded in the email link as `?token=xxx`, exposing it in browser history, referrer headers, and server logs. Switched to a cookie-based flow: `forgot-password` response now sets an httpOnly `reset_token` cookie containing the raw token; the email link navigates to `/reset-password` with no token in the URL; `reset-password` endpoint reads the token from the cookie and deletes it on success.
+
+**Changes:**
+- `backend/notifications/email_service.py`: removed `raw_token` parameter from `send_password_reset_email`, reset link no longer contains token
+- `backend/auth/schemas.py`: removed `token` field from `ResetPasswordRequest` (only `new_password` remains)
+- `backend/auth/router.py`: `forgot_password` sets httpOnly `reset_token` cookie; `reset_password_endpoint` reads from cookie, handles `TOKEN_MISSING`, clears cookie on success
+- `backend/tests/test_auth.py`: rewritten reset tests to use cookie flow; added `test_reset_password_returns_400_for_missing_cookie`
+- `frontend/src/api/auth.js`: `resetPassword(new_password)` — token param removed
+- `frontend/src/hooks/useAuth.js`: `useResetPassword` mutationFn updated
+- `frontend/src/hooks/useResetPasswordForm.js`: removed `token` parameter and client-side token guard; added `TOKEN_MISSING` error handling
+- `frontend/src/pages/ResetPassword.jsx`: removed `useSearchParams` and token reading from URL
+- `frontend/src/pages/ResetPassword.test.jsx`: MSW handler updated; token-from-URL tests replaced with cookie-missing scenario
+
+**Learnings:**
+- httpx `AsyncClient` exposes httpOnly cookies from test responses — `httpOnly` is a browser-enforcement concept, not a server-side restriction, so tests can read them directly.
+- Cookie-based reset has a same-device limitation: if the user opens the email on a different browser/device, the cookie won't be present. This tradeoff is accepted.
+- Error code lookup from Axios errors must use `err?.response?.data?.detail?.code` (FastAPI uses `detail` key), not `err?.code`.
+
+---
+
+## US-211 — Fix SSE connection memory leak on client disconnect
+**Status:** COMPLETE
+**Commit:** feat: US-211/US-213/US-214/US-215 - ...
+
+**Summary:**
+Encapsulated `_sse_connections` dict behind `register_sse_queue` and `unregister_sse_queue` functions in `notification_service.py`. The router no longer directly imports or mutates the internal dict — it calls the service API. The `finally` block in the SSE generator now calls `svc.unregister_sse_queue(user_id_str, queue)` which removes the queue and deletes the user_id key when empty. Dead-queue removal on QueueFull now logs the event.
+
+**Changes:**
+- Added `register_sse_queue` and `unregister_sse_queue` to `notification_service.py`
+- Removed direct `_sse_connections` import from `router.py`; router uses `svc.register_sse_queue` / `svc.unregister_sse_queue`
+
+**Learnings:**
+- asyncio.Queue has no "closed" state — the only reliable lifecycle hooks are the producer (broadcast) and the consumer (generator finally block). The router's `finally` block is the authoritative cleanup path.
+
+---
+
+## US-212 — Handle null last_contacted_at in contact list sorting
+**Status:** COMPLETE (already implemented)
+
+**Summary:**
+The secondary `created_at` sort key was already present in `contacts/service.py` line 71: `.sort([("last_contacted_at", -1), ("created_at", -1)])`. Acceptance criteria fully met. Marked as passing without code changes.
+
+---
+
+## US-213 — Remove unused imports in backend modules
+**Status:** COMPLETE
+**Commit:** feat: US-211/US-213/US-214/US-215 - ...
+
+**Changes:**
+- Removed `import base64` from `documents/router.py` (base64 string is stored as field, not processed)
+- Removed `AnyHttpUrl` from `jobs/schemas.py` pydantic imports
+- Removed `import json` from `notification_service.py` (json.dumps is only in router.py)
+
+---
+
+## US-214 — Add try-catch around decodeURIComponent in getCookie
+**Status:** COMPLETE
+**Commit:** feat: US-211/US-213/US-214/US-215 - ...
+
+**Changes:**
+- Wrapped `decodeURIComponent` in `getCookie` (frontend/src/api/client.js) with try-catch
+- Returns null on URIError, logs `console.warn` with the cookie name
+- All 445 frontend tests pass
+
+---
+
+## US-215 — Deduplicate Escape key listeners in extension content script
+**Status:** COMPLETE
+**Commit:** feat: US-211/US-213/US-214/US-215 - ...
+
+**Changes:**
+- Added module-level `_escapeController` (AbortController | null) in content.js
+- `injectBanner` aborts previous controller before registering new listener
+- Escape handler aborts its own controller after firing (self-cleanup)
+- All 247 extension tests pass
+
+**Learnings:**
+- `AbortController` + `{ signal }` is the idiomatic way to remove event listeners without saving a reference to the handler function.
+
