@@ -35,3 +35,9 @@ All three target files (SettingsProfileSection.jsx, SettingsAccountSection.jsx, 
 **Build:** npm run build passed (✓ built in 13.78s, 1256 modules transformed).
 
 **Learnings:** When iterating Ralph loops, check git diff first — prior iterations may have partially completed a story. The commit step alone closes the loop.
+
+## US-240: Adopt INPUT_BASE token in non-Settings inputs
+- Status: COMPLETE
+- All 7 inputs (FilterBar, TagInput, WeeklyGoalSection, PipelineStagesEditor, PrepChecklist, PrepSection x2) were already using INPUT_BASE token with correct imports from '../lib/designTokens' — implemented by a prior iteration.
+- Build verified: `npm run build` passed in 11.5s.
+- Committed: feat: US-240 - Adopt INPUT_BASE token in non-Settings inputs
