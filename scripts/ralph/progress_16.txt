@@ -164,3 +164,17 @@ Build succeeded in 2.63s.
 - Markdown-preview blockquote and link styles were the primary offenders with cool-tinted colors
 - Warm gray replacements follow the palette defined in US-216: gray-300=#d4ccbd, gray-400=#b0aea5, gray-500=#6b5f4e, gray-600=#4a4139
 - Build passed cleanly (2.46s)
+
+---
+## US-225: Refine animations for calmer motion
+
+**Completed**: Updated frontend/src/styles/animations.css to reduce visual intensity.
+- fadeIn: changed from 150ms ease to 300ms ease-out
+- slideInRight: translateX reduced from 16px → 6px, duration 200ms → 250ms ease-out
+- slideInUp: translateY reduced from 8px → 6px, duration 150ms → 250ms ease-out
+- scaleIn keyframe: scale start changed from 0.95 → 0.97
+- pulse-dot preserved (used in KanbanCard.jsx — not unused)
+- prefers-reduced-motion media query wrapper unchanged
+- Build passed in 2.60s
+
+**Learnings**: The description said "from 10px" for slides, but actual values were 16px (slideInRight) and 8px (slideInUp) — both updated to 6px. Always read the actual file before applying deltas from spec. pulse-dot check via grep before removal saved a regression.
