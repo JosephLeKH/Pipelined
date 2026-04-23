@@ -83,7 +83,7 @@ function DayCell({ date, isCurrentMonth, events, onDayClick, onEventClick }) {
       <span
         className={`inline-flex h-6 w-6 items-center justify-center rounded-full text-xs font-medium ${
           isToday
-            ? "bg-brand-600 text-white"
+            ? "bg-brand-500/10 text-brand-600 dark:bg-brand-500/20 dark:text-brand-400"
             : isCurrentMonth
             ? "text-gray-900 dark:text-gray-100"
             : "text-gray-400 dark:text-gray-500"
@@ -103,7 +103,7 @@ function DayCell({ date, isCurrentMonth, events, onDayClick, onEventClick }) {
 function CalendarHeader({ month, year, onPrev, onNext, onToday }) {
   return (
     <div className="flex items-center justify-between px-4 py-3">
-      <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+      <h2 className="font-display text-xl font-semibold text-gray-900 dark:text-gray-100">
         {MONTH_NAMES[month - 1]} {year}
       </h2>
       <div className="flex items-center gap-2">
@@ -216,11 +216,11 @@ function CalendarGrid({ month, year, onMonthChange, onEventClick, onDayClick }) 
   }, [onMonthChange]);
 
   return (
-    <div className="overflow-hidden rounded-card border border-gray-200 bg-white shadow-card dark:border-gray-700 dark:bg-gray-800">
+    <div className="overflow-hidden rounded-card border border-border-default bg-white dark:border-gray-700 dark:bg-gray-800">
       <CalendarHeader month={month} year={year} onPrev={handlePrev} onNext={handleNext} onToday={handleToday} />
       <div className="grid grid-cols-7 border-t border-gray-200 dark:border-gray-700">
         {WEEK_DAYS.map((d) => (
-          <div key={d} className="border-b border-gray-200 py-2 text-center text-xs font-medium uppercase text-gray-500 dark:border-gray-700 dark:text-gray-400">
+          <div key={d} className="border-b border-gray-200 py-2 text-center text-xs font-display font-medium uppercase text-gray-500 dark:border-gray-700 dark:text-gray-400">
             {d}
           </div>
         ))}

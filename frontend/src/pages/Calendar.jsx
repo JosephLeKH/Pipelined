@@ -13,7 +13,7 @@ import { useCalendarEvents } from "../hooks/useCalendar";
 function CalendarContent({ month, year, events, eventsLoading, selectedEvent, newEventForm, onMonthChange, onEventClick, onDayClick, onCloseEventDetail, onCloseForm }) {
   return (
     <main className="flex-1 p-6">
-      <h1 className="mb-6 text-xl font-semibold text-gray-900 dark:text-gray-100">Calendar</h1>
+      <h1 className="mb-6 font-display text-xl font-semibold text-gray-900 dark:text-gray-100">Calendar</h1>
       <CalendarGrid
         month={month}
         year={year}
