@@ -12,6 +12,17 @@ Completed: Thu Apr 23 2026
 - grep check: zero Tailwind gradient class matches in frontend/src JSX/JS files
 - npm run build: ✓ passed
 
+## US-229: Redesign calendar page
+Completed: Thu Apr 23 2026
+- Updated EVENT_TYPE_COLORS in constants.js to muted BADGE_* palette (bg-*-50 instead of bg-*-100) with border property added
+- CalendarGrid.jsx EventChip: added border class and colors.border, changed px-1.5 to px-2
+- CalendarGrid.jsx DayCell today: changed bg-brand-600 text-white to bg-brand-500/10 text-brand-600 (subtle warm tint)
+- CalendarGrid.jsx wrapper: removed shadow-card, changed border-gray-200 to border-border-default
+- CalendarGrid.jsx WEEK_DAYS headers: added font-display class
+- CalendarGrid.jsx CalendarHeader month title: added font-display class
+- Calendar.jsx page heading: added font-display class
+- npm run build: ✓ passed
+
 ## US-235: Replace all icon styling to single-color warm gray
 Completed: Thu Apr 23 2026
 - Audited all 69 lucide-react imports across frontend/src
