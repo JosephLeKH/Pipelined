@@ -11,18 +11,13 @@ from bson.errors import InvalidId
 from motor.motor_asyncio import AsyncIOMotorCollection
 from pymongo import ReturnDocument
 
-from applications.schemas import BulkEditUpdate, ImportResult, ImportRowError, MAX_IMPORT_ROWS
+from applications.schemas import BulkEditUpdate
+from applications.schemas_analytics import ImportResult, ImportRowError, MAX_IMPORT_ROWS
+from applications.service import fetch_user_stages
 from applications.service_constants import DELETED_PURGE_DAYS, INITIAL_STAGE, MERGEABLE_FIELDS
-from auth.service import get_user_by_id
 from database import get_client, get_collection
 
 logger = structlog.get_logger()
-
-
-async def _fetch_user_stages(uid: ObjectId) -> list[str]:
-    """Return the user's default_stages, falling back to [INITIAL_STAGE]."""
-    user = await get_user_by_id(str(uid))
-    return user.get("default_stages", [INITIAL_STAGE]) if user else [INITIAL_STAGE]
 
 
 async def bulk_delete(user_id: str, ids: list[str]) -> int:
@@ -199,7 +194,7 @@ async def import_applications(user_id: str, csv_bytes: bytes) -> ImportResult:
     """Parse CSV bytes and bulk-insert applications, skipping duplicates."""
     uid = ObjectId(user_id)
     apps = get_collection("applications")
-    stages = await _fetch_user_stages(uid)
+    stages = await fetch_user_stages(uid)
     now = datetime.now(timezone.utc)
     text = csv_bytes.decode("utf-8-sig", errors="replace")
     rows = list(csv.DictReader(io.StringIO(text)))

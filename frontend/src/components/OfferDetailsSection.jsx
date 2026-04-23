@@ -8,6 +8,11 @@ import { INPUT_BASE } from "../lib/designTokens";
 import { OFFER_FIELDS } from "../lib/constants";
 import { formatUSD } from "../lib/currencyUtils";
 
+function formatFieldDisplay(fieldMeta, value) {
+  if (value == null) return null;
+  return fieldMeta.type === "currency" ? formatUSD(value) : value;
+}
+
 function OfferField({ fieldMeta, value, onChange }) {
   const [editing, setEditing] = useState(false);
 
@@ -23,13 +28,6 @@ function OfferField({ fieldMeta, value, onChange }) {
     },
     [fieldMeta.type, onChange]
   );
-
-  const display =
-    value != null
-      ? fieldMeta.type === "currency"
-        ? formatUSD(value)
-        : value
-      : null;
 
   return (
     <div className="flex flex-col gap-0.5">
@@ -52,7 +50,7 @@ function OfferField({ fieldMeta, value, onChange }) {
           className="text-left text-sm text-slate-800 hover:underline dark:text-slate-200"
           aria-label={`Edit ${fieldMeta.label}`}
         >
-          {display ?? (
+          {formatFieldDisplay(fieldMeta, value) ?? (
             <span className="italic text-slate-400">Click to set</span>
           )}
         </button>

@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, Query, Request
 from fastapi.responses import StreamingResponse
 
 from applications import service_analytics, service_export
-from applications.schemas import (
+from applications.schemas_analytics import (
     AnalyticsQuery,
     AnalyticsResponse,
     FunnelStageResult,

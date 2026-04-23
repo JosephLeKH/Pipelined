@@ -37,7 +37,7 @@ class InvalidCursorError(Exception):
     """Raised when a pagination cursor cannot be parsed."""
 
 
-async def _fetch_user_stages(uid: ObjectId) -> list[str]:
+async def fetch_user_stages(uid: ObjectId) -> list[str]:
     """Return the user's default_stages, falling back to [INITIAL_STAGE]."""
     user = await get_user_by_id(str(uid))
     return user.get("default_stages", [INITIAL_STAGE]) if user else [INITIAL_STAGE]
@@ -158,7 +158,7 @@ async def create(user_id: str, body: ApplicationCreate) -> dict:
     )
     if existing:
         raise DuplicateApplicationError(str(existing["_id"]))
-    stages = await _fetch_user_stages(uid)
+    stages = await fetch_user_stages(uid)
     now = datetime.now(timezone.utc)
     body_dict = body.model_dump(exclude={"page_text"})
     body_dict["source_url"] = str(body.source_url) if body.source_url else None

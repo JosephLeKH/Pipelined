@@ -174,8 +174,14 @@ async def get_or_create_github_user(
     """
     users = get_collection("users")
 
-    github_user = await users.find_one({"github_id": github_id})
-    email_user = await users.find_one({"email": email}) if email else None
+    if email:
+        github_user, email_user = await asyncio.gather(
+            users.find_one({"github_id": github_id}),
+            users.find_one({"email": email}),
+        )
+    else:
+        github_user = await users.find_one({"github_id": github_id})
+        email_user = None
 
     if github_user is not None:
         return github_user

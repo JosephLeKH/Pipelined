@@ -175,12 +175,14 @@ export async function renderAutoSaveToggle() {
   btn.setAttribute("aria-pressed", String(auto_save));
   btn.textContent = auto_save ? "ON" : "OFF";
   row.classList.remove("hidden");
-  btn.addEventListener("click", async () => {
-    const next = btn.getAttribute("aria-pressed") !== "true";
+  const freshBtn = btn.cloneNode(true);
+  btn.replaceWith(freshBtn);
+  freshBtn.addEventListener("click", async () => {
+    const next = freshBtn.getAttribute("aria-pressed") !== "true";
     try {
       await chrome.storage.local.set({ auto_save: next });
-      btn.setAttribute("aria-pressed", String(next));
-      btn.textContent = next ? "ON" : "OFF";
+      freshBtn.setAttribute("aria-pressed", String(next));
+      freshBtn.textContent = next ? "ON" : "OFF";
     } catch (err) {
       console.error("[popup] Auto-save toggle failed:", err);
     }

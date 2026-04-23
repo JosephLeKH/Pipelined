@@ -9,10 +9,12 @@ from applications.schemas import (
     BulkDeleteRequest,
     BulkEditRequest,
     BulkStageUpdateRequest,
-    MergeApplicationsRequest,
     StageAddRequest,
     MAX_BULK_EDIT_IDS,
+)
+from applications.schemas_analytics import (
     MAX_IMPORT_FILE_SIZE_BYTES,
+    MergeApplicationsRequest,
 )
 from applications.service import ActiveStageError
 from auth.dependencies import get_verified_user as get_current_user

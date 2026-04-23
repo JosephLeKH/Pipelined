@@ -11,6 +11,8 @@ import { OFFER_FIELDS, OFFER_STAGE } from "../lib/constants";
 import { INPUT_BASE } from "../lib/designTokens";
 import { formatUSD } from "../lib/currencyUtils";
 
+const CONFETTI_CONFIG = { particleCount: 150, spread: 80, origin: { y: 0.5 } };
+
 function fmtCell(fieldType, value) {
   if (value == null || value === "") return null;
   return fieldType === "currency" ? formatUSD(value) : String(value);
@@ -108,6 +110,36 @@ function OfferComparisonHeader() {
   );
 }
 
+function OfferHeaderCell({ app, isWinner, onMarkWinner }) {
+  return (
+    <th className="min-w-[180px] px-4 py-3 text-left">
+      <div className="flex flex-col gap-1">
+        <div className="flex items-center gap-1.5">
+          {isWinner && <Trophy className="h-4 w-4 text-amber-500" aria-label="Winner" />}
+          <span className="truncate text-sm font-semibold text-slate-900 dark:text-slate-100">
+            {app.company ?? "Unknown"}
+          </span>
+        </div>
+        <span className="truncate text-xs text-slate-500 dark:text-slate-400">
+          {app.role_title ?? ""}
+        </span>
+        <button
+          type="button"
+          onClick={() => onMarkWinner(app.id)}
+          className={`mt-1 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium transition-colors ${
+            isWinner
+              ? "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300"
+              : "bg-slate-100 text-slate-600 hover:bg-emerald-100 hover:text-emerald-700 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-emerald-900/40 dark:hover:text-emerald-300"
+          }`}
+        >
+          <Trophy className="h-3 w-3" />
+          {isWinner ? "Winner!" : "Mark winner"}
+        </button>
+      </div>
+    </th>
+  );
+}
+
 function OfferComparisonTable({ apps, winnerId, handleSave, handleMarkWinner }) {
   return (
     <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700">
@@ -118,33 +150,7 @@ function OfferComparisonTable({ apps, winnerId, handleSave, handleMarkWinner }) 
               Field
             </th>
             {apps.map((app) => (
-              <th key={app.id} className="min-w-[180px] px-4 py-3 text-left">
-                <div className="flex flex-col gap-1">
-                  <div className="flex items-center gap-1.5">
-                    {winnerId === app.id && (
-                      <Trophy className="h-4 w-4 text-amber-500" aria-label="Winner" />
-                    )}
-                    <span className="truncate text-sm font-semibold text-slate-900 dark:text-slate-100">
-                      {app.company ?? "Unknown"}
-                    </span>
-                  </div>
-                  <span className="truncate text-xs text-slate-500 dark:text-slate-400">
-                    {app.role_title ?? ""}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => handleMarkWinner(app.id)}
-                    className={`mt-1 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium transition-colors ${
-                      winnerId === app.id
-                        ? "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300"
-                        : "bg-slate-100 text-slate-600 hover:bg-emerald-100 hover:text-emerald-700 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-emerald-900/40 dark:hover:text-emerald-300"
-                    }`}
-                  >
-                    <Trophy className="h-3 w-3" />
-                    {winnerId === app.id ? "Winner!" : "Mark winner"}
-                  </button>
-                </div>
-              </th>
+              <OfferHeaderCell key={app.id} app={app} isWinner={winnerId === app.id} onMarkWinner={handleMarkWinner} />
             ))}
           </tr>
         </thead>
@@ -194,7 +200,7 @@ function OfferComparison() {
 
   const handleMarkWinner = useCallback((appId) => {
     setWinnerId(appId);
-    confetti({ particleCount: 150, spread: 80, origin: { y: 0.5 } });
+    confetti(CONFETTI_CONFIG);
   }, []);
 
   if (isLoading) return <LoadingState />;
