@@ -67,3 +67,16 @@ Learnings:
 Learnings:
 - Prior Ralph iterations fully implemented this story. Just verification + PRD pass marker needed.
 - Pattern used across all modals: document.addEventListener("keydown", handler) in useEffect with cleanup, plus either autoFocus prop or ref.current?.focus() in separate useEffect.
+
+## US-244: Adopt BUTTON_SECONDARY and BUTTON_DANGER tokens in action buttons
+- Status: COMPLETE
+- Date: 2026-04-23
+- All target buttons updated by prior snapshot iteration:
+  - SettingsAccountSection.jsx: modal Cancel → BUTTON_SECONDARY, "Delete my account" → BUTTON_DANGER; BUTTON_SECONDARY + BUTTON_DANGER imported
+  - SettingsReferralSection.jsx: copy referral link button → BUTTON_SECONDARY; BUTTON_SECONDARY added to import
+  - CalendarGrid.jsx: Today/Prev/Next month buttons → BUTTON_SECONDARY; BUTTON_SECONDARY imported from designTokens
+  - TemplateBar.jsx: "Save as template" button → BUTTON_SECONDARY; BUTTON_SECONDARY added to import
+- Build verified: npm run build passed (✓ built in 13.83s, no errors).
+
+Learnings:
+- The "Delete account" trigger button in DangerZone retains rose-specific styling (border-rose-300, text-rose-700) since it's a danger trigger, not a modal action. BUTTON_DANGER applies only to the destructive confirm action inside the modal.
