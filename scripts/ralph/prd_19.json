@@ -86,7 +86,7 @@
     {
       "id": "US-243",
       "title": "Add focus traps and Escape key handlers to modal dialogs",
-      "description": "Add keyboard accessibility to all modal dialogs: frontend/src/components/MergeDialog.jsx, frontend/src/components/UpgradePlanModal.jsx, frontend/src/components/ApplicationRowActions.jsx (DeleteConfirmModal, BulkDeleteConfirmModal). Each modal must: (1) close on Escape key press via onKeyDown handler, (2) auto-focus the first interactive element on mount via useEffect + ref. The CsvImportModal.jsx and FeedbackWidget.jsx should also get Escape handlers if missing. Keep changes minimal — just add the keydown handler and autoFocus.",
+      "description": "Add keyboard accessibility to all modal dialogs: frontend/src/components/MergeDialog.jsx, frontend/src/components/UpgradePlanModal.jsx, frontend/src/components/ApplicationRowActions.jsx (DeleteConfirmModal, BulkDeleteConfirmModal). Each modal must: (1) close on Escape key press via onKeyDown handler, (2) auto-focus the first interactive element on mount via useEffect + ref. The CsvImportModal.jsx and FeedbackWidget.jsx should also get Escape handlers if missing. Keep changes minimal \u2014 just add the keydown handler and autoFocus.",
       "acceptanceCriteria": [
         "All modals close on Escape key press",
         "First interactive element receives focus on modal open",
