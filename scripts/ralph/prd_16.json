@@ -34,7 +34,7 @@
         "npm run build succeeds"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "Foundation — Poppins + Lora is Anthropic's official font pairing. Serif body text is the key differentiator from generic SaaS."
     },
     {

@@ -26,3 +26,22 @@ Overhauled frontend/tailwind.config.js to replace the indigo/violet brand palett
 - Tailwind's `colors.slate` was being aliased to `gray`, which pulled in cool blue-gray tones — replacing with explicit hex values gives precise control
 - Dark mode tokens grouped under a `dark` key in `colors` are accessible via `text-dark-text`, `bg-dark-bg` etc., but won't auto-apply — still need class-based dark mode selectors in components
 - The `border-default` / `border-strong` rgba values work fine as Tailwind color values and can be used with `border-border-default` class syntax
+
+## US-217 — Update typography to Poppins headings and Lora body
+**Date:** 2026-04-23
+**Status:** COMPLETE
+
+### Summary
+Established Anthropic's Poppins + Lora editorial font pairing as the project's typography foundation. Lora (serif) is now the body font, Poppins (sans-serif) is the heading and UI font.
+
+### Changes
+- `frontend/tailwind.config.js`: changed `fontFamily.sans` from `["Inter", ...defaultTheme.fontFamily.sans]` to `["Lora", "Georgia", "serif"]`; added `fontFamily.display: ["Poppins", "Arial", "sans-serif"]`
+- `frontend/index.html`: replaced Google Fonts link from Inter to Poppins (400,500,600,700) + Lora (ital and non-ital 400,500,600,700)
+- `frontend/src/index.css`: added `@layer base` block setting body to Lora 15px / 1.65 line-height / -0.01em tracking / #141413 color / antialiased; h1-h6 use Poppins with h1 (600, 1.5rem, -0.02em), h2 (600, 1.25rem, -0.025em), h3 (500, 1.125rem); added `@layer utilities` `.font-display` class
+- No text-slate-* or text-indigo-* were present in index.css base layer (already clean)
+- `npm run build` passes clean
+
+### Learnings
+- `@import` for Google Fonts must come before `@tailwind` directives in CSS, so font imports go into `index.html` as `<link>` tags rather than `@import` statements in index.css
+- The tailwind.config.js `fontFamily.display` key automatically generates a `font-display` utility class — the explicit `.font-display` in `@layer utilities` provides an escape hatch for non-Tailwind CSS contexts
+- Previous iteration auto-committed tailwind.config.js and index.html changes; only index.css needed to be written this session
