@@ -8,7 +8,13 @@ const CSRF_HEADER_NAME = "X-CSRF-Token";
 
 function getCookie(name) {
   const match = document.cookie.split("; ").find((row) => row.startsWith(`${name}=`));
-  return match ? decodeURIComponent(match.split("=")[1]) : null;
+  if (!match) return null;
+  try {
+    return decodeURIComponent(match.split("=")[1]);
+  } catch {
+    console.warn(`[getCookie] Failed to decode cookie "${name}" — malformed percent-encoding`);
+    return null;
+  }
 }
 
 export const client = axios.create({

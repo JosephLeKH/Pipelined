@@ -34,6 +34,9 @@ const AUTO_SAVE_SUCCESS_DISMISS_MS = 3000;
 
 const savedUrls = new Set();
 
+// Tracks the active Escape key listener so it can be replaced on new banners.
+let _escapeController = null;
+
 async function sendToBackground(type, payload) {
   try {
     return await chrome.runtime.sendMessage({ type, payload });
@@ -83,15 +86,20 @@ function injectBanner(fields, boardId) {
     }
   });
 
+  if (_escapeController) _escapeController.abort();
+  _escapeController = new AbortController();
+  const escapeSignal = _escapeController.signal;
   document.addEventListener(
     "keydown",
     (e) => {
       if (e.key === "Escape") {
         clearTimeout(timer);
         dismiss(host);
+        _escapeController?.abort();
+        _escapeController = null;
       }
     },
-    { once: true }
+    { signal: escapeSignal }
   );
 }
 

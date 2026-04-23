@@ -3,7 +3,7 @@
 from datetime import datetime
 from typing import Literal
 
-from pydantic import AnyHttpUrl, BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 ValidExperienceLevel = Literal["internship", "entry", "mid", "senior", "staff", "any"]
 ValidRoleType = Literal["full_time", "part_time", "contract", "internship", "any"]

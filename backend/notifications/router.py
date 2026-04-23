@@ -9,7 +9,6 @@ import asyncio
 
 from auth.dependencies import get_verified_user as get_current_user
 from notifications import notification_service as svc
-from notifications.notification_service import _sse_connections
 from notifications.schemas import NotificationResponse, UnreadCountResponse
 
 router = APIRouter(prefix="/api/notifications", tags=["notifications"])
@@ -58,21 +57,14 @@ async def stream_notifications(
     """Server-Sent Events endpoint for real-time notifications."""
     user_id_str = str(user["_id"])
     queue: asyncio.Queue = asyncio.Queue(maxsize=100)
-    
-    # Register this connection
-    if user_id_str not in _sse_connections:
-        _sse_connections[user_id_str] = []
-    _sse_connections[user_id_str].append(queue)
-    
+    svc.register_sse_queue(user_id_str, queue)
+
     async def generate() -> AsyncIterator[str]:
         """Generate SSE messages from the queue."""
-        # Keep-alive task
         keep_alive_task = asyncio.create_task(_keep_alive(queue))
-        
         try:
             while True:
                 msg = await queue.get()
-                
                 if msg.get("_keep_alive"):
                     yield ": keep-alive\n\n"
                 else:
@@ -81,15 +73,8 @@ async def stream_notifications(
             pass
         finally:
             keep_alive_task.cancel()
-            # Clean up connection
-            if user_id_str in _sse_connections:
-                try:
-                    _sse_connections[user_id_str].remove(queue)
-                except ValueError:
-                    pass
-                if not _sse_connections[user_id_str]:
-                    del _sse_connections[user_id_str]
-    
+            svc.unregister_sse_queue(user_id_str, queue)
+
     return StreamingResponse(generate(), media_type="text/event-stream")
 
 

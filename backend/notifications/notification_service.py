@@ -2,7 +2,6 @@
 
 import asyncio
 import datetime as dt
-import json
 
 import structlog
 from bson import ObjectId
@@ -16,25 +15,43 @@ logger = structlog.get_logger()
 _sse_connections: dict[str, list[asyncio.Queue]] = {}
 
 
+def register_sse_queue(user_id_str: str, queue: asyncio.Queue) -> None:
+    """Register a new SSE queue for a user connection."""
+    if user_id_str not in _sse_connections:
+        _sse_connections[user_id_str] = []
+    _sse_connections[user_id_str].append(queue)
+
+
+def unregister_sse_queue(user_id_str: str, queue: asyncio.Queue) -> None:
+    """Remove an SSE queue when a client disconnects."""
+    if user_id_str not in _sse_connections:
+        return
+    try:
+        _sse_connections[user_id_str].remove(queue)
+    except ValueError:
+        pass
+    if not _sse_connections[user_id_str]:
+        del _sse_connections[user_id_str]
+
+
 async def _broadcast_to_sse_connections(user_id: ObjectId, notification: dict) -> None:
     """Push notification to all active SSE connections for this user."""
     user_id_str = str(user_id)
     if user_id_str not in _sse_connections:
         return
-    
+
     queues = _sse_connections[user_id_str]
     dead_queues = []
     for q in queues:
         try:
             q.put_nowait(notification)
         except asyncio.QueueFull:
-            # Client disconnected, queue is full
             dead_queues.append(q)
-    
-    # Clean up dead connections
+
     for q in dead_queues:
         queues.remove(q)
-    
+        logger.info("sse_dead_queue_removed", user_id=user_id_str)
+
     if not queues:
         del _sse_connections[user_id_str]
 

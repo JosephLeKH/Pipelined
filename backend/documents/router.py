@@ -1,6 +1,5 @@
 """Document endpoints for applications."""
 
-import base64
 from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException
