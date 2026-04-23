@@ -1,3 +1,20 @@
 # Ralph Progress Log
 Started: Thu Apr 23 11:23:12 PDT 2026
 ---
+
+## US-245: Create SUCCESS_BANNER design token and apply across auth pages
+**Commit:** f887e31
+**Status:** Complete
+
+### Changes
+- Added `SUCCESS_BANNER` token to `frontend/src/lib/designTokens.js`:
+  `'rounded-lg bg-brand-50 border border-brand-200 px-3 py-3 text-sm text-brand-800 dark:bg-brand-900/20 dark:border-brand-800 dark:text-brand-300'`
+- `ForgotPassword.jsx`: Replaced inline emerald classes in `SuccessMessage` with `SUCCESS_BANNER` token
+- `ResetPassword.jsx`: Replaced inline emerald classes in success `<p>` with `SUCCESS_BANNER` token
+- `VerifyEmailPending.jsx`: Replaced inline emerald classes in both `"sent"` and `"already_verified"` statuses with `SUCCESS_BANNER` token (keeping `mb-4 w-full` prefix)
+- `VerifyEmailConfirm.jsx`: Changed `CheckCircle` icon from `text-emerald-500` to `text-brand-500`
+
+### Learnings
+- When a token includes padding (px-3 py-3), components that had slightly different padding (py-2) get standardized — this is intentional per the token spec
+- `VerifyEmailPending.jsx` statuses needed `mb-4 w-full ${SUCCESS_BANNER}` to preserve layout-specific classes not part of the token
+- Build: 2.56s, 5 files changed, 13 insertions, 8 deletions

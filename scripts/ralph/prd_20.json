@@ -13,7 +13,7 @@
         "No emerald classes remain in auth pages",
         "npm run build succeeds"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "US-246",
