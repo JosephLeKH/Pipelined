@@ -127,7 +127,7 @@
         "npm run build succeeds"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Pipeline statuses are a core visual element — must look refined."
     },
     {

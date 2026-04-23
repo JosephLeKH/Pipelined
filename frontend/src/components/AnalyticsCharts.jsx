@@ -32,8 +32,8 @@ function avgDaysColorClass(days) {
 function CustomTooltip({ active, payload, label, formatter }) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="rounded-lg bg-slate-900 px-3 py-2 shadow-lg text-sm">
-      {label != null && <p className="mb-1 text-xs text-slate-400">{label}</p>}
+    <div className="rounded-lg bg-gray-900 px-3 py-2 shadow-lg text-sm">
+      {label != null && <p className="mb-1 text-xs text-gray-400">{label}</p>}
       {payload.map((entry) => (
         <p key={entry.dataKey} className="text-white">
           {entry.name}: {formatter ? formatter(entry.value) : entry.value}
@@ -47,9 +47,9 @@ function ChartCard({ title, description, children }) {
   return (
     <div className={`${CARD_BASE} p-5`}>
       <div className="mb-4">
-        <h2 className="text-sm font-medium text-slate-900 dark:text-slate-100">{title}</h2>
+        <h2 className="text-sm font-medium text-gray-900 dark:text-gray-100">{title}</h2>
         {description && (
-          <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">{description}</p>
+          <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">{description}</p>
         )}
       </div>
       {children}
@@ -62,7 +62,7 @@ function WeeklyApplicationsChart({ data }) {
     <ChartCard title="Applications per Week" description="How many applications you submitted each week">
       <ResponsiveContainer width="100%" height={240}>
         <BarChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+          <CartesianGrid strokeDasharray="3 3" stroke="#e8e6dc" />
           <XAxis dataKey="week" tick={{ fontSize: 11 }} />
           <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
           <Tooltip content={<CustomTooltip />} />
@@ -78,7 +78,7 @@ function StageFunnelChart({ data }) {
     <ChartCard title="Stage Funnel" description="Distribution of applications across pipeline stages">
       <ResponsiveContainer width="100%" height={240}>
         <BarChart data={data} layout="vertical">
-          <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+          <CartesianGrid strokeDasharray="3 3" stroke="#e8e6dc" />
           <XAxis type="number" allowDecimals={false} tick={{ fontSize: 11 }} />
           <YAxis type="category" dataKey="stage" tick={{ fontSize: 11 }} width={90} />
           <Tooltip content={<CustomTooltip />} />
@@ -94,7 +94,7 @@ function ResponseRateChart({ data }) {
     <ChartCard title="Response Rate by Month" description="Percentage of applications that received a response">
       <ResponsiveContainer width="100%" height={240}>
         <LineChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+          <CartesianGrid strokeDasharray="3 3" stroke="#e8e6dc" />
           <XAxis dataKey="month" tick={{ fontSize: 11 }} />
           <YAxis domain={[0, 1]} tickFormatter={(v) => `${Math.round(v * 100)}%`} tick={{ fontSize: 11 }} />
           <Tooltip content={<CustomTooltip formatter={(v) => `${Math.round(v * 100)}%`} />} />
@@ -111,7 +111,7 @@ function TopCompaniesChart({ data }) {
     <ChartCard title="Top 10 Companies Applied To" description="Companies you've applied to most frequently">
       <ResponsiveContainer width="100%" height={240}>
         <BarChart data={data} layout="vertical">
-          <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+          <CartesianGrid strokeDasharray="3 3" stroke="#e8e6dc" />
           <XAxis type="number" allowDecimals={false} tick={{ fontSize: 11 }} />
           <YAxis type="category" dataKey="company" tick={{ fontSize: 11 }} width={100} />
           <Tooltip content={<CustomTooltip />} />
@@ -139,19 +139,19 @@ function AnalyticsTagsTable({ tagOfferRates }) {
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-slate-200 dark:border-slate-700">
-              <th className="pb-2 text-left text-xs font-medium text-slate-500 dark:text-slate-400">Tag</th>
-              <th className="pb-2 text-right text-xs font-medium text-slate-500 dark:text-slate-400">Applications</th>
-              <th className="pb-2 text-right text-xs font-medium text-slate-500 dark:text-slate-400">Offers</th>
-              <th className="pb-2 text-right text-xs font-medium text-slate-500 dark:text-slate-400">Offer Rate</th>
+            <tr className="border-b border-gray-200 dark:border-gray-700">
+              <th className="pb-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400">Tag</th>
+              <th className="pb-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400">Applications</th>
+              <th className="pb-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400">Offers</th>
+              <th className="pb-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400">Offer Rate</th>
             </tr>
           </thead>
           <tbody>
             {tagOfferRates.map((row) => (
-              <tr key={row.tag} className="border-b border-slate-100 dark:border-slate-800 last:border-0">
-                <td className="py-2 pr-4 text-slate-700 dark:text-slate-300">{row.tag}</td>
-                <td className="py-2 text-right text-slate-700 dark:text-slate-300">{row.application_count}</td>
-                <td className="py-2 text-right text-slate-500 dark:text-slate-400">{row.offer_count}</td>
+              <tr key={row.tag} className="border-b border-gray-100 dark:border-gray-800 last:border-0">
+                <td className="py-2 pr-4 text-gray-700 dark:text-gray-300">{row.tag}</td>
+                <td className="py-2 text-right text-gray-700 dark:text-gray-300">{row.application_count}</td>
+                <td className="py-2 text-right text-gray-500 dark:text-gray-400">{row.offer_count}</td>
                 <td className={`py-2 text-right ${rateColorClass(row.offer_rate)}`}>
                   {`${Math.round(row.offer_rate * 100)}%`}
                 </td>
@@ -166,13 +166,13 @@ function AnalyticsTagsTable({ tagOfferRates }) {
 
 function ConversionRatesRow({ row, isLast }) {
   return (
-    <tr className="border-b border-slate-100 dark:border-slate-800 last:border-0">
-      <td className="py-2 pr-4 text-slate-700 dark:text-slate-300">{row.stage}</td>
-      <td className="py-2 text-right text-slate-700 dark:text-slate-300">{row.entered_count}</td>
-      <td className="py-2 text-right text-slate-500 dark:text-slate-400">
+    <tr className="border-b border-gray-100 dark:border-gray-800 last:border-0">
+      <td className="py-2 pr-4 text-gray-700 dark:text-gray-300">{row.stage}</td>
+      <td className="py-2 text-right text-gray-700 dark:text-gray-300">{row.entered_count}</td>
+      <td className="py-2 text-right text-gray-500 dark:text-gray-400">
         {isLast ? "—" : row.exited_to_next_count}
       </td>
-      <td className={`py-2 text-right ${isLast ? "text-slate-400 dark:text-slate-600" : rateColorClass(row.conversion_rate)}`}>
+      <td className={`py-2 text-right ${isLast ? "text-gray-400 dark:text-gray-600" : rateColorClass(row.conversion_rate)}`}>
         {isLast ? "—" : `${Math.round(row.conversion_rate * 100)}%`}
       </td>
       <td className={`py-2 text-right ${avgDaysColorClass(row.avg_days_in_stage)}`}>
@@ -188,12 +188,12 @@ function ConversionRatesTable({ data }) {
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-slate-200 dark:border-slate-700">
-              <th className="pb-2 text-left text-xs font-medium text-slate-500 dark:text-slate-400">Stage</th>
-              <th className="pb-2 text-right text-xs font-medium text-slate-500 dark:text-slate-400">Entered</th>
-              <th className="pb-2 text-right text-xs font-medium text-slate-500 dark:text-slate-400">Converted</th>
-              <th className="pb-2 text-right text-xs font-medium text-slate-500 dark:text-slate-400">Rate</th>
-              <th className="pb-2 text-right text-xs font-medium text-slate-500 dark:text-slate-400">Avg Days</th>
+            <tr className="border-b border-gray-200 dark:border-gray-700">
+              <th className="pb-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400">Stage</th>
+              <th className="pb-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400">Entered</th>
+              <th className="pb-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400">Converted</th>
+              <th className="pb-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400">Rate</th>
+              <th className="pb-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400">Avg Days</th>
             </tr>
           </thead>
           <tbody>
@@ -212,7 +212,7 @@ function FunnelBarChart({ data }) {
     <ChartCard title="Stage Conversion Funnel" description="Applications entering each stage">
       <ResponsiveContainer width="100%" height={Math.max(180, data.length * 40)}>
         <BarChart data={data} layout="vertical">
-          <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+          <CartesianGrid strokeDasharray="3 3" stroke="#e8e6dc" />
           <XAxis type="number" allowDecimals={false} tick={{ fontSize: 11 }} />
           <YAxis type="category" dataKey="stage" tick={{ fontSize: 11 }} width={110} />
           <Tooltip content={<CustomTooltip />} />

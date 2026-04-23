@@ -134,3 +134,15 @@ Added four navigation design tokens to `frontend/src/lib/designTokens.js`:
 - All four tokens use `font-display` (Poppins) consistently, matching the editorial heading system
 
 Build succeeded in 2.63s.
+
+---
+## US-223: Add badge, tag, and status tokens
+**Date:** 2026-04-23
+
+**Investigated**: Examined frontend/src/lib/designTokens.js to understand the existing BADGE_BASE token and overall token structure. Reviewed PRD acceptance criteria requiring BADGE_DEFAULT, BADGE_SUCCESS, BADGE_WARNING, BADGE_ERROR, BADGE_INFO, and TAG tokens with muted pastel backgrounds, font-display (Poppins), and rounded-full pill shape.
+
+**Learned**: The existing BADGE_BASE was a generic foundation token. The new tokens are semantic variants mapping to pipeline status states: BADGE_INFO→Applied, BADGE_WARNING→Interview, BADGE_SUCCESS→Offer, BADGE_ERROR→Rejected. Each variant uses consistent shared classes (text-xs font-display font-medium px-2 py-0.5 rounded-full) with different color pairs. The TAG token adds hover:bg-surface-tertiary for interactive chip behavior.
+
+**Completed**: Added BADGE_DEFAULT, BADGE_SUCCESS, BADGE_WARNING, BADGE_ERROR, BADGE_INFO, and TAG tokens to designTokens.js. All badges use muted pastel backgrounds with matching border colors (emerald-50/200, amber-50/200, red-50/200, blue-50/200) and font-display for Poppins rendering. TAG includes transition-colors for smooth hover. Build passed cleanly (2.78s). Committed and marked US-223 as complete in PRD.
+
+**Next Steps**: Remaining stories in PRD-16: US-224 (index.css cleanup), US-225 (animation refinement). Seven of ten user stories now complete.
