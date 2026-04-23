@@ -9,6 +9,7 @@ import ChevronRight from "lucide-react/dist/esm/icons/chevron-right";
 import { useCalendarEvents } from "../hooks/useCalendar";
 import { DEFAULT_EVENT_COLOR, EVENT_TYPE_COLORS, WEEK_DAYS } from "../lib/constants";
 import { toISODate, formatDateLong, formatTime } from "../lib/dateUtils";
+import { BUTTON_SECONDARY } from "../lib/designTokens";
 import ApiErrorMessage from "./ApiErrorMessage";
 import SkeletonCalendarCell from "./SkeletonCalendarCell";
 
@@ -109,7 +110,7 @@ function CalendarHeader({ month, year, onPrev, onNext, onToday }) {
         <button
           type="button"
           onClick={onToday}
-          className="rounded-button border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:ring-offset-1"
+          className={`rounded-button ${BUTTON_SECONDARY}`}
         >
           Today
         </button>
@@ -117,7 +118,7 @@ function CalendarHeader({ month, year, onPrev, onNext, onToday }) {
           type="button"
           onClick={onPrev}
           aria-label="Previous month"
-          className="rounded-button border border-gray-300 p-1.5 text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:ring-offset-1"
+          className={`rounded-button ${BUTTON_SECONDARY} p-1.5`}
         >
           <ChevronLeft className="h-4 w-4" />
         </button>
@@ -125,7 +126,7 @@ function CalendarHeader({ month, year, onPrev, onNext, onToday }) {
           type="button"
           onClick={onNext}
           aria-label="Next month"
-          className="rounded-button border border-gray-300 p-1.5 text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:ring-offset-1"
+          className={`rounded-button ${BUTTON_SECONDARY} p-1.5`}
         >
           <ChevronRight className="h-4 w-4" />
         </button>

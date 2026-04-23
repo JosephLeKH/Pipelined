@@ -57,6 +57,11 @@ export function RowMenu({ application, onArchive, onUnarchive, onDelete }) {
 }
 
 export function DeleteConfirmModal({ appId, onConfirm, onCancel }) {
+  useEffect(() => {
+    function onKeyDown(e) { if (e.key === "Escape") onCancel(); }
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [onCancel]);
   return (
     <div
       role="dialog"
@@ -71,7 +76,7 @@ export function DeleteConfirmModal({ appId, onConfirm, onCancel }) {
           Consider archiving instead.
         </p>
         <div className="flex justify-end gap-3">
-          <button type="button" onClick={onCancel} className={`${BUTTON_SECONDARY} text-sm`}>Cancel</button>
+          <button type="button" onClick={onCancel} autoFocus className={`${BUTTON_SECONDARY} text-sm`}>Cancel</button>
           <button type="button" onClick={() => onConfirm(appId)} className="rounded bg-red-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-red-700">
             Delete
           </button>
@@ -83,6 +88,11 @@ export function DeleteConfirmModal({ appId, onConfirm, onCancel }) {
 
 export function BulkDeleteConfirmModal({ count, onConfirm, onCancel }) {
   const label = count === 1 ? "application" : "applications";
+  useEffect(() => {
+    function onKeyDown(e) { if (e.key === "Escape") onCancel(); }
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [onCancel]);
   return (
     <div
       role="dialog"
@@ -98,7 +108,7 @@ export function BulkDeleteConfirmModal({ count, onConfirm, onCancel }) {
           This will permanently delete {count} {label} and cannot be undone.
         </p>
         <div className="flex justify-end gap-3">
-          <button type="button" onClick={onCancel} className={`${BUTTON_SECONDARY} text-sm`}>Cancel</button>
+          <button type="button" onClick={onCancel} autoFocus className={`${BUTTON_SECONDARY} text-sm`}>Cancel</button>
           <button type="button" onClick={onConfirm} className="rounded bg-red-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-red-700">
             Delete {count}
           </button>

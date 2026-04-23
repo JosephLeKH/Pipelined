@@ -1,6 +1,6 @@
 /** Modal for bulk-importing applications from a CSV file. */
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 
 import Upload from "lucide-react/dist/esm/icons/upload";
 import Loader2 from "lucide-react/dist/esm/icons/loader-2";
@@ -87,6 +87,14 @@ function ImportResultDisplay({ result, errorsExpanded, setErrorsExpanded }) {
 
 function CsvImportModal({ isOpen, onClose }) {
   const { fileRef, file, result, localError, errorsExpanded, setErrorsExpanded, isPending, handleFileChange, handleImport, handleClose } = useCsvImport(onClose);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    function onKeyDown(e) { if (e.key === "Escape") handleClose(); }
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [isOpen, handleClose]);
+
   if (!isOpen) return null;
   return (
     <div role="dialog" aria-modal="true" aria-labelledby="csv-import-heading" className="fixed inset-0 z-50 flex items-center justify-center">
@@ -105,7 +113,7 @@ function CsvImportModal({ isOpen, onClose }) {
         <code className="mb-4 block overflow-x-auto whitespace-nowrap rounded bg-gray-100 px-3 py-2 text-xs text-gray-700 dark:bg-gray-700 dark:text-gray-300">
           {SAMPLE_HEADERS}
         </code>
-        <input ref={fileRef} type="file" accept={ACCEPTED_MIME} onChange={handleFileChange} aria-label="CSV file"
+        <input ref={fileRef} type="file" accept={ACCEPTED_MIME} onChange={handleFileChange} aria-label="CSV file" autoFocus
           className="mb-4 block w-full text-sm text-gray-600 file:mr-3 file:rounded file:border-0 file:bg-brand-50 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-brand-700 hover:file:bg-brand-100 dark:text-gray-300 dark:file:bg-brand-900/30 dark:file:text-brand-300"
         />
         {localError && <p role="alert" className="mb-3 text-sm text-red-600 dark:text-red-400">{localError}</p>}

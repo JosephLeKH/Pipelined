@@ -5,7 +5,7 @@ import { useState, useCallback } from "react";
 import Loader2 from "lucide-react/dist/esm/icons/loader-2";
 import TriangleAlert from "lucide-react/dist/esm/icons/alert-triangle";
 
-import { CARD_BASE, INPUT_BASE, INPUT_LABEL, BUTTON_PRIMARY } from "../lib/designTokens";
+import { CARD_BASE, INPUT_BASE, INPUT_LABEL, BUTTON_PRIMARY, BUTTON_SECONDARY, BUTTON_DANGER } from "../lib/designTokens";
 
 const PW_MIN_LENGTH = 8;
 
@@ -156,13 +156,13 @@ function DangerZone() {
               <button
                 type="button"
                 onClick={() => setShowModal(false)}
-                className="rounded-button border border-gray-300 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+                className={`rounded-button ${BUTTON_SECONDARY}`}
               >
                 Cancel
               </button>
               <button
                 type="button"
-                className="rounded-button bg-rose-600 px-4 py-2 text-sm font-medium text-white hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2"
+                className={`rounded-button ${BUTTON_DANGER}`}
               >
                 Delete my account
               </button>

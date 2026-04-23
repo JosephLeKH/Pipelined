@@ -139,6 +139,13 @@ function FeedbackFormFields({ category, setCategory, message, setMessage, email,
 
 function FeedbackPopover({ user, page, onClose, onSubmit }) {
   const { message, setMessage, email, setEmail, category, setCategory, submitting, textareaRef, handleSubmit } = useFeedbackForm(user, page, onClose, onSubmit);
+
+  useEffect(() => {
+    function onKeyDown(e) { if (e.key === "Escape") onClose(); }
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [onClose]);
+
   return (
     <div
       role="dialog"

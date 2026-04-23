@@ -34,6 +34,13 @@ function UpgradePlanModal() {
 
   const handleDismiss = useCallback(() => setVisible(false), []);
 
+  useEffect(() => {
+    if (!visible) return;
+    function onKeyDown(e) { if (e.key === "Escape") setVisible(false); }
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [visible]);
+
   const handleUpgrade = useCallback(() => {
     setVisible(false);
     navigate("/pricing");
@@ -91,6 +98,7 @@ function UpgradePlanModal() {
             <button
               type="button"
               onClick={handleUpgrade}
+              autoFocus
               className="w-full rounded-xl bg-brand-500 px-6 py-3 text-sm font-semibold text-white hover:bg-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-500/30 transition-colors"
             >
               Upgrade to Pro

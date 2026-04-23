@@ -10,7 +10,7 @@ import Star from "lucide-react/dist/esm/icons/star";
 
 import { trackEvent } from "../lib/analytics";
 import { COPY_RESET_MS } from "../lib/constants";
-import { CARD_BASE } from "../lib/designTokens";
+import { CARD_BASE, BUTTON_SECONDARY } from "../lib/designTokens";
 
 const SUPER_REFERRER_THRESHOLD = 3;
 
@@ -65,7 +65,7 @@ function SettingsReferralSection({ user }) {
             type="button"
             onClick={handleCopy}
             aria-label="Copy referral link"
-            className="flex items-center gap-1.5 rounded-button border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 active:scale-[0.97] dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+            className={`flex items-center gap-1.5 rounded-button ${BUTTON_SECONDARY} active:scale-[0.97]`}
           >
             {copied ? (
               <CheckCircle className="h-4 w-4 text-green-500" aria-hidden="true" />

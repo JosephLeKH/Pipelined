@@ -41,3 +41,14 @@ All three target files (SettingsProfileSection.jsx, SettingsAccountSection.jsx, 
 - All 7 inputs (FilterBar, TagInput, WeeklyGoalSection, PipelineStagesEditor, PrepChecklist, PrepSection x2) were already using INPUT_BASE token with correct imports from '../lib/designTokens' — implemented by a prior iteration.
 - Build verified: `npm run build` passed in 11.5s.
 - Committed: feat: US-240 - Adopt INPUT_BASE token in non-Settings inputs
+
+## US-241: Adopt BUTTON_PRIMARY token in Settings buttons
+- Status: COMPLETE
+- All 5 buttons (SettingsProfileSection, SettingsAccountSection, SettingsReportSection, WeeklyGoalSection, PipelineStagesEditor) already use BUTTON_PRIMARY token with correct imports from '../lib/designTokens' — implemented by prior iterations.
+- Loading spinners and disabled states preserved in all 5 components.
+- Build verified: `npm run build` passed (✓ built in ~62s, no errors).
+- Committed: feat: US-241 - Adopt BUTTON_PRIMARY token in Settings buttons
+
+Learnings:
+- When Ralph loops run ahead, subsequent iterations often just need to verify + commit the PRD pass marker.
+- Selective `git add` (not -A) is correct when sibling story work sits uncommitted alongside this story's scope.

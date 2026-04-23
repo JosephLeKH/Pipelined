@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 import { useTemplates } from "../hooks/useTemplates";
-import { INPUT_BASE } from "../lib/designTokens";
+import { INPUT_BASE, BUTTON_SECONDARY } from "../lib/designTokens";
 import TemplateSaveModal from "./TemplateSaveModal";
 
 function TemplateBar({ onApply, fields }) {
@@ -35,7 +35,7 @@ function TemplateBar({ onApply, fields }) {
         <button
           type="button"
           onClick={() => setShowSaveModal(true)}
-          className="shrink-0 rounded-button border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+          className={`shrink-0 rounded-button ${BUTTON_SECONDARY}`}
         >
           Save as template
         </button>

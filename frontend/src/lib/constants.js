@@ -45,15 +45,15 @@ export const SKELETON_ROW_COUNT = 8;
 export const COMPANY_TYPE_OPTIONS = ["startup", "mid", "enterprise", "gov", "nonprofit", "other"];
 
 export const EVENT_TYPE_COLORS = {
-  phone_screen: { bg: "bg-blue-100", text: "text-blue-800", dot: "bg-accent-blue" },
-  technical: { bg: "bg-brand-100", text: "text-brand-800", dot: "bg-brand-500" },
-  onsite: { bg: "bg-amber-100", text: "text-amber-800", dot: "bg-amber-500" },
-  behavioral: { bg: "bg-sky-100", text: "text-sky-800", dot: "bg-sky-500" },
-  offer: { bg: "bg-emerald-100", text: "text-emerald-800", dot: "bg-emerald-500" },
-  other: { bg: "bg-gray-100", text: "text-gray-800", dot: "bg-gray-500" },
+  phone_screen: { bg: "bg-blue-50", text: "text-accent-blue", dot: "bg-accent-blue", border: "border-blue-200" },
+  technical: { bg: "bg-brand-50", text: "text-brand-600", dot: "bg-brand-500", border: "border-brand-200" },
+  onsite: { bg: "bg-amber-50", text: "text-amber-700", dot: "bg-amber-500", border: "border-amber-200" },
+  behavioral: { bg: "bg-sky-50", text: "text-sky-700", dot: "bg-sky-500", border: "border-sky-200" },
+  offer: { bg: "bg-emerald-50", text: "text-emerald-700", dot: "bg-emerald-500", border: "border-emerald-200" },
+  other: { bg: "bg-surface-secondary", text: "text-gray-600", dot: "bg-gray-400", border: "border-border-default" },
 };
 
-export const DEFAULT_EVENT_COLOR = { bg: "bg-gray-100", text: "text-gray-800", dot: "bg-gray-500" };
+export const DEFAULT_EVENT_COLOR = { bg: "bg-surface-secondary", text: "text-gray-600", dot: "bg-gray-400", border: "border-border-default" };
 
 export const CALENDAR_STALE_TIME_MS = 60_000;
 

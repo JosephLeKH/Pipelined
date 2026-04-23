@@ -1,6 +1,6 @@
 /** Dialog for merging two duplicate applications with per-field conflict resolution. */
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 import X from "lucide-react/dist/esm/icons/x";
 import Loader2 from "lucide-react/dist/esm/icons/loader-2";
@@ -60,6 +60,17 @@ function buildInitialSelections(appA, appB) {
 export default function MergeDialog({ apps, onConfirm, onCancel, isPending = false }) {
   const [appA, appB] = apps;
   const [selections, setSelections] = useState(() => buildInitialSelections(appA, appB));
+  const cancelButtonRef = useRef(null);
+
+  useEffect(() => {
+    cancelButtonRef.current?.focus();
+  }, []);
+
+  useEffect(() => {
+    function onKeyDown(e) { if (e.key === "Escape") onCancel(); }
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [onCancel]);
 
   function handleChange(fieldKey, side) {
     setSelections((prev) => ({ ...prev, [fieldKey]: side }));
@@ -160,6 +171,7 @@ export default function MergeDialog({ apps, onConfirm, onCancel, isPending = fal
         {/* Footer */}
         <div className="flex justify-end gap-3 border-t border-gray-200 px-6 py-4 dark:border-gray-700">
           <button
+            ref={cancelButtonRef}
             type="button"
             onClick={onCancel}
             disabled={isPending}
