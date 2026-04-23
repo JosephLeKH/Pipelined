@@ -39,7 +39,7 @@ function FeatureRow({ label, included }) {
   return (
     <li className="flex items-center gap-3 py-2">
       {included ? (
-        <Check className="h-4 w-4 flex-shrink-0 text-emerald-500" />
+        <Check className="h-4 w-4 flex-shrink-0 text-brand-500" />
       ) : (
         <X className="h-4 w-4 flex-shrink-0 text-gray-300 dark:text-gray-600" />
       )}
