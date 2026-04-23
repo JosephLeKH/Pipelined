@@ -20,3 +20,6 @@ Tests: 443 passed (2 pre-existing failures in LandingPage/HeroSection unrelated 
 Learnings:
 - CARD_BASE token was already adopted in Settings components in earlier loop iterations before US-237 ran
 - DangerZone in SettingsAccountSection keeps rose-specific styling (`border-rose-200 bg-rose-50`) to preserve danger visual signaling — CARD_BASE (white/neutral) would not be appropriate here
+
+## US-238 — Adopt CARD_BASE token in non-Settings components
+All 7 components (WeeklyGoalSection, ResumeSection, ContactForm, DigestSection, SavedSearchesSidebar, SaveSearchPopover, PipelineStagesEditor) already had CARD_BASE applied from a prior iteration. Build verified clean. Committed.
