@@ -1,0 +1,22 @@
+# Ralph Progress Log
+Started: Thu Apr 23 09:15:35 PDT 2026
+---
+
+## US-237 — Adopt CARD_BASE token in Settings section components
+Date: 2026-04-23
+
+All 7 Settings section component files already had CARD_BASE applied from prior committed work:
+- SettingsProfileSection.jsx: `${CARD_BASE} p-6` on main card container
+- SettingsAccountSection.jsx: `${CARD_BASE} p-6` on ChangePasswordCard; DangerZone retains intentional rose styling
+- SettingsReportSection.jsx: `${CARD_BASE} p-6` on card container
+- SettingsUsageSection.jsx: `${CARD_BASE} p-6` on card container
+- SettingsNotificationsSection.jsx: `${CARD_BASE} p-6` on card container
+- SettingsPipelineSection.jsx: `${CARD_BASE} p-6` on pipeline-stages section; `${CARD_BASE} px-5 py-4` on streak card
+- SettingsReferralSection.jsx: `${CARD_BASE} p-6` on card container
+
+Build: ✓ built in 2.96s
+Tests: 443 passed (2 pre-existing failures in LandingPage/HeroSection unrelated to Settings)
+
+Learnings:
+- CARD_BASE token was already adopted in Settings components in earlier loop iterations before US-237 ran
+- DangerZone in SettingsAccountSection keeps rose-specific styling (`border-rose-200 bg-rose-50`) to preserve danger visual signaling — CARD_BASE (white/neutral) would not be appropriate here
