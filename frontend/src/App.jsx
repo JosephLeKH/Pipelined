@@ -88,13 +88,14 @@ function LoadingSpinner() {
 
 function ProtectedRoute({ children }) {
   const { user, isInitialized } = useAuth();
-  if (!isInitialized) {
-    return <LoadingSpinner />;
-  }
-  if (!user) {
-    return <Navigate to="/login" replace />;
-  }
+  if (!isInitialized) return <LoadingSpinner />;
+  if (!user) return <Navigate to="/login" replace />;
   return children;
+}
+
+/** Combines ProtectedRoute + PageWrapper for authenticated page routes. */
+function ProtectedPage({ children }) {
+  return <ProtectedRoute><PageWrapper>{children}</PageWrapper></ProtectedRoute>;
 }
 
 /** Wraps page content with a fade-in transition on mount. */
@@ -168,54 +169,12 @@ function App() {
         <Route path="/pipeline/:slug" element={<PageWrapper><PublicPipeline /></PageWrapper>} />
         <Route path="/shared/timeline/:slug" element={<PageWrapper><PublicTimeline /></PageWrapper>} />
         <Route path="/pricing" element={<PageWrapper><Pricing /></PageWrapper>} />
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <PageWrapper><Dashboard /></PageWrapper>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/calendar"
-          element={
-            <ProtectedRoute>
-              <PageWrapper><Calendar /></PageWrapper>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/analytics"
-          element={
-            <ProtectedRoute>
-              <PageWrapper><Analytics /></PageWrapper>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/activity"
-          element={
-            <ProtectedRoute>
-              <PageWrapper><ActivityPage /></PageWrapper>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/settings"
-          element={
-            <ProtectedRoute>
-              <PageWrapper><Settings /></PageWrapper>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/offers"
-          element={
-            <ProtectedRoute>
-              <PageWrapper><OfferComparison /></PageWrapper>
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/dashboard" element={<ProtectedPage><Dashboard /></ProtectedPage>} />
+        <Route path="/calendar" element={<ProtectedPage><Calendar /></ProtectedPage>} />
+        <Route path="/analytics" element={<ProtectedPage><Analytics /></ProtectedPage>} />
+        <Route path="/activity" element={<ProtectedPage><ActivityPage /></ProtectedPage>} />
+        <Route path="/settings" element={<ProtectedPage><Settings /></ProtectedPage>} />
+        <Route path="/offers" element={<ProtectedPage><OfferComparison /></ProtectedPage>} />
         </Routes>
         </ErrorBoundary>
         </main>
