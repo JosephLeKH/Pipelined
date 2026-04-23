@@ -13,7 +13,7 @@ import { ResponsiveContainer } from "recharts/es6/component/ResponsiveContainer"
 
 import { CARD_BASE } from "../lib/designTokens";
 
-const CHART_COLORS = ["#6366F1", "#8B5CF6", "#10B981", "#F59E0B", "#F43F5E"];
+const CHART_COLORS = ["#d97757", "#6a9bcc", "#788c5d", "#F59E0B", "#F43F5E"];
 const CONVERSION_HIGH_THRESHOLD = 0.6;
 const CONVERSION_LOW_THRESHOLD = 0.3;
 const AVG_DAYS_HIGHLIGHT_THRESHOLD = 21;

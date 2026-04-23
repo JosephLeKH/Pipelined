@@ -45,3 +45,24 @@ Established Anthropic's Poppins + Lora editorial font pairing as the project's t
 - `@import` for Google Fonts must come before `@tailwind` directives in CSS, so font imports go into `index.html` as `<link>` tags rather than `@import` statements in index.css
 - The tailwind.config.js `fontFamily.display` key automatically generates a `font-display` utility class — the explicit `.font-display` in `@layer utilities` provides an escape hatch for non-Tailwind CSS contexts
 - Previous iteration auto-committed tailwind.config.js and index.html changes; only index.css needed to be written this session
+
+---
+## US-218: Redesign button tokens — solid clay, no gradients
+**Date:** 2026-04-23
+
+### Summary
+Replaced all button token strings in `frontend/src/lib/designTokens.js` to remove gradients and micro-interaction scale transforms, replacing with solid clay-colored buttons using Anthropic brand palette.
+
+### Changes
+- `BUTTON_PRIMARY`: Removed `bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-700 hover:to-brand-600 active:scale-[0.98]`. Now uses `bg-brand-500 hover:bg-brand-600 rounded-md font-display text-sm`.
+- `BUTTON_SECONDARY`: Replaced `border-slate-300 hover:bg-slate-50 active:scale-[0.98]` with `border-border-default hover:border-border-strong text-gray-700 hover:text-gray-900 font-display`.
+- `BUTTON_GHOST`: Replaced `text-slate-600 hover:bg-slate-100 active:scale-[0.98]` with `bg-transparent text-gray-500 hover:text-gray-700 hover:bg-surface-secondary`.
+- `BUTTON_DANGER`: Added new token (`bg-red-600 hover:bg-red-700 font-display`).
+- All buttons now use `rounded-md` (6px), `font-display` (Poppins), and `transition-colors`.
+- Retained `focus:outline-none focus:ring-2` and `disabled:*` classes for accessibility.
+
+### Learnings
+- The gradient-to-solid shift is the biggest visual change — `bg-gradient-to-r from-* to-*` is verbose and harder to maintain than a single bg token. Solid colors are cleaner.
+- `active:scale-[0.98]` on buttons felt punchy/startup-y; removing it makes interactions feel calmer and more editorial, matching the Anthropic aesthetic.
+- `border-border-default` and `hover:bg-surface-secondary` are semantic tokens from US-216 — button tokens now properly depend on the palette foundation.
+- Build succeeded cleanly: `✓ built in 2.68s`.

@@ -51,7 +51,7 @@
         "npm run build succeeds"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "High impact — buttons appear on every page. Gradient removal is the single biggest visual shift."
     },
     {
