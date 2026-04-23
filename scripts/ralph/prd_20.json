@@ -46,7 +46,7 @@
         "All section h2 elements in pages use font-display",
         "npm run build succeeds"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "US-249",

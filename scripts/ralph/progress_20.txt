@@ -29,3 +29,18 @@ Started: Thu Apr 23 11:23:12 PDT 2026
 - Added `role="img"` so the span is properly announced by screen readers
 - Other tooltip-only patterns in the file (buttons) already had `aria-label` attributes — no additional changes needed
 - Build passed ✓
+
+## US-248: Add font-display to all remaining page-level h1 headings
+
+**Summary:** Audited all page-level h1 and h2 headings across the pages/ directory. Found 11 headings missing font-display across 7 files.
+
+**Files modified:**
+- Activity.jsx:73 — h1 "Activity" heading added font-display
+- OfferComparison.jsx:107 — h1 "Offer Comparison" added font-display
+- VerifyEmailConfirm.jsx — 4 h1 elements (Verifying, Email verified, Link expired/Invalid, Missing token) added font-display via replace_all
+- VerifyEmailPending.jsx:86 — h1 "Check your email" added font-display
+- Pricing.jsx — h1 "Simple, transparent pricing" + h2 "Free" + h2 "Pro" all added font-display
+- PublicTimeline.jsx — h1 "Link not found", h1 "{name}'s Job Search", h2 "Applications (N)" added font-display
+- PublicPipeline.jsx — h1 "Link not found", h1 "{name}'s Pipeline", h2 "Applications (N)" added font-display
+
+**Learnings:** No Contacts page exists as a separate file in pages/ — that was a red herring in the US description. The small uppercase tracking-wide h2 section labels in PublicTimeline and PublicPipeline also needed font-display per acceptance criteria. Build passed cleanly.
