@@ -114,7 +114,7 @@ function ApplicationRow({
               />
               <span
                 role="tooltip"
-                className="pointer-events-none absolute left-4 top-1/2 z-10 -trangray-y-1/2 whitespace-nowrap rounded-button bg-gray-800 px-2 py-1 text-xs text-white opacity-0 group-hover/stale:opacity-100"
+                className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 whitespace-nowrap rounded-button bg-gray-800 px-2 py-1 text-xs text-white opacity-0 group-hover/stale:opacity-100"
               >
                 No updates in 14 days — consider following up
               </span>
@@ -136,7 +136,7 @@ function ApplicationRow({
               <Bell className="h-4 w-4 text-amber-500" data-testid="follow-up-bell" aria-label={`Follow-up due ${formatDate(application.follow_up_date)}`} />
               <span
                 role="tooltip"
-                className="pointer-events-none absolute left-5 top-1/2 z-10 -trangray-y-1/2 whitespace-nowrap rounded bg-gray-800 px-2 py-1 text-xs text-white opacity-0 group-hover/followup:opacity-100"
+                className="pointer-events-none absolute left-5 top-1/2 z-10 -translate-y-1/2 whitespace-nowrap rounded bg-gray-800 px-2 py-1 text-xs text-white opacity-0 group-hover/followup:opacity-100"
               >
                 Follow-up due {formatDate(application.follow_up_date)}
               </span>

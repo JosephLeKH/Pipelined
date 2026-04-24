@@ -22,7 +22,7 @@ function DigestSection({ digestEnabled, isDigestPending, onDigestToggle }) {
           className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:opacity-60 ${digestEnabled ? "bg-brand-600" : "bg-gray-300 dark:bg-gray-600"}`}
         >
           <span
-            className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${digestEnabled ? "trangray-x-6" : "trangray-x-1"}`}
+            className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${digestEnabled ? "translate-x-6" : "translate-x-1"}`}
           />
         </button>
         <span className="text-sm text-gray-700 dark:text-gray-300">

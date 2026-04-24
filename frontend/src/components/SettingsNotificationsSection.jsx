@@ -33,7 +33,7 @@ function ToggleSwitch({ checked, onChange, disabled, label, description, id }) {
       >
         <span
           className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${
-            checked ? "trangray-x-5" : "trangray-x-1"
+            checked ? "translate-x-5" : "translate-x-1"
           }`}
         />
       </button>

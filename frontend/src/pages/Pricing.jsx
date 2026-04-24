@@ -112,7 +112,7 @@ function FreeTierCard() {
 function ProTierCard() {
   return (
     <div className="relative rounded-2xl border-2 border-brand-500 bg-white p-8 dark:bg-gray-900">
-      <div className="absolute -top-3.5 left-1/2 -trangray-x-1/2">
+      <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
         <span className="flex items-center gap-1.5 rounded-full bg-brand-500 px-4 py-1 text-xs font-bold uppercase tracking-wide text-white">
           <Zap className="h-3 w-3" />
           Most popular
