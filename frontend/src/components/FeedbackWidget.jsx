@@ -156,7 +156,7 @@ function FeedbackPopover({ user, page, onClose, onSubmit }) {
       <div className="mb-3 flex items-center justify-between">
         <h2 className="font-display text-sm font-semibold text-gray-900 dark:text-gray-100">How can we improve?</h2>
         <button type="button" onClick={onClose} aria-label="Close" className={`${BUTTON_GHOST} p-1`}>
-          <X className="h-4 w-4 text-gray-400" />
+          <X className="h-4 w-4 text-gray-500" />
         </button>
       </div>
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">

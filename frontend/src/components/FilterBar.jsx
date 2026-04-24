@@ -49,7 +49,7 @@ function SearchFieldset({ searchValue, onSearchChange }) {
     <fieldset className="flex shrink-0 flex-col gap-1">
       <legend className="mb-1 text-xs font-medium uppercase text-gray-500 dark:text-gray-400">Search</legend>
       <div className="relative flex items-center">
-        <SearchIcon className="absolute left-2 h-4 w-4 text-gray-400" aria-hidden="true" />
+        <SearchIcon className="absolute left-2 h-4 w-4 text-gray-500" aria-hidden="true" />
         <input
           type="text"
           aria-label="search applications"

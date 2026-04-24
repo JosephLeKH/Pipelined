@@ -66,7 +66,7 @@ function EventTimelineNode({ node }) {
   return (
     <li className="flex items-start gap-3 pb-3" data-testid="timeline-event-node">
       <Icon
-        className="mt-0.5 h-5 w-5 shrink-0 text-gray-400"
+        className="mt-0.5 h-5 w-5 shrink-0 text-gray-500"
         aria-label={node.eventType.replace(/_/g, " ")}
       />
       <div>

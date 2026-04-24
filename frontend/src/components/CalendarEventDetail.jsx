@@ -91,7 +91,7 @@ function CalendarEventDetail({ event, onClose }) {
             className={`ml-4 ${BUTTON_GHOST} p-2`}
             aria-label="Close event details"
           >
-            <X className="h-5 w-5 text-gray-400" />
+            <X className="h-5 w-5 text-gray-500" />
           </button>
         </div>
 

@@ -1,0 +1,105 @@
+{
+  "project": "Pipelined",
+  "branchName": "main",
+  "description": "PRD-24: UI/UX modernization — shift from editorial to modern SaaS aesthetic (Ramp/Linear style)",
+  "userStories": [
+    {
+      "id": "US-275",
+      "title": "Switch body font from Lora serif to Inter sans-serif",
+      "description": "The serif body font (Lora) reads editorial/blog-like rather than modern SaaS. Change the font-sans family in tailwind.config.js from ['Lora', 'Georgia', 'serif'] to ['Inter', 'system-ui', '-apple-system', 'sans-serif']. Also update the Google Fonts link in frontend/index.html to load Inter (weights 400, 500, 600) instead of Lora. Keep Poppins for font-display (headings). Update the base font size in index.css from 15px to 14px and line-height from 1.65 to 1.6 to match Inter's tighter metrics.",
+      "acceptanceCriteria": [
+        "tailwind.config.js fontFamily.sans starts with 'Inter'",
+        "index.html loads Inter from Google Fonts (400, 500, 600 weights)",
+        "Lora is no longer loaded or referenced",
+        "Base font-size is 14px with line-height 1.6",
+        "npm run build succeeds"
+      ],
+      "passes": true
+    },
+    {
+      "id": "US-276",
+      "title": "Increase card shadows and button border-radius for depth",
+      "description": "Cards have nearly invisible shadows and buttons have a tight 6px radius. In tailwind.config.js: (1) Change boxShadow.card from '0 1px 2px rgba(120,100,75,0.06)' to '0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06)'. (2) Change boxShadow['card-hover'] from '0 2px 8px rgba(120,100,75,0.08)' to '0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04)'. (3) Change borderRadius.button from '0.375rem' to '0.5rem'. These use neutral black shadows instead of warm-tinted, matching Linear/Ramp convention.",
+      "acceptanceCriteria": [
+        "boxShadow.card uses neutral black rgba with two layers",
+        "boxShadow['card-hover'] uses neutral 4px+2px layered shadow",
+        "borderRadius.button is '0.5rem' (8px)",
+        "npm run build succeeds"
+      ],
+      "passes": true
+    },
+    {
+      "id": "US-277",
+      "title": "Darken icon color from gray-400 to gray-500 across all components",
+      "description": "Icons throughout the app use text-gray-400 which is too light for good scannability (WCAG AA for non-text). Search all frontend JSX files for 'text-gray-400' on elements that contain icon classes (lucide, h-4, h-5, h-6, w-4, w-5, w-6) and change them to 'text-gray-500'. Do NOT change text-gray-400 on non-icon elements like helper text, timestamps, or secondary labels. Files to check: StatsBar.jsx, NavBar.jsx, ApplicationRow.jsx, KanbanCard.jsx, DetailPanel.jsx, ManualAddForm.jsx, and any component with lucide icon imports.",
+      "acceptanceCriteria": [
+        "All icon elements (lucide, h-4/h-5/h-6) use text-gray-500 instead of text-gray-400",
+        "Non-icon text elements still use text-gray-400 where appropriate",
+        "Dark mode icon variants unchanged (dark:text-gray-400 stays for dark mode icons)",
+        "npm run build succeeds"
+      ],
+      "passes": true
+    },
+    {
+      "id": "US-278",
+      "title": "Neutralize border color from warm brown to standard gray",
+      "description": "Borders use warm-tinted rgba(120,100,75,0.12) which gives a brownish hue. In tailwind.config.js, change: (1) border-default from 'rgba(120,100,75,0.12)' to 'rgba(0,0,0,0.08)'. (2) border-strong from 'rgba(120,100,75,0.24)' to 'rgba(0,0,0,0.16)'. This gives clean neutral borders like Linear/Ramp. Also update boxShadow.modal from 'rgba(20,20,19,0.15)' to 'rgba(0,0,0,0.12)' to match.",
+      "acceptanceCriteria": [
+        "border-default is 'rgba(0,0,0,0.08)'",
+        "border-strong is 'rgba(0,0,0,0.16)'",
+        "boxShadow.modal uses 'rgba(0,0,0,0.12)'",
+        "No warm brown rgba values remain in border or shadow tokens",
+        "npm run build succeeds"
+      ],
+      "passes": true
+    },
+    {
+      "id": "US-279",
+      "title": "Add shadow-card to CARD_BASE token and card components",
+      "description": "Cards currently use border-only styling with no shadow. In designTokens.js, add 'shadow-card' to the CARD_BASE string after 'border-border-default'. This gives cards a subtle elevation. Also add 'hover:shadow-card-hover' to CARD_HOVER token after 'border-border-strong'. This applies shadow elevation globally through the token system. Additionally, update MODAL_CARD to use 'shadow-modal' instead of 'shadow-sm'.",
+      "acceptanceCriteria": [
+        "CARD_BASE includes 'shadow-card' class",
+        "CARD_HOVER includes 'hover:shadow-card-hover' class",
+        "MODAL_CARD uses 'shadow-modal' instead of 'shadow-sm'",
+        "npm run build succeeds"
+      ],
+      "passes": true
+    },
+    {
+      "id": "US-280",
+      "title": "Adjust warm gray-50 and gray-100 to be less yellow-tinted",
+      "description": "The lightest grays (gray-50: #faf9f5, gray-100: #f5f0e8) have a noticeable warm/yellow tint that feels dated. In tailwind.config.js, shift these to cooler values: (1) gray-50 from '#faf9f5' to '#fafafa'. (2) gray-100 from '#f5f0e8' to '#f5f5f4'. (3) gray-200 from '#e8e6dc' to '#e7e5e4'. (4) Update surface-primary to '#ffffff' (no change needed). (5) Update surface-secondary from '#faf9f5' to '#fafafa'. (6) Update surface-tertiary from '#e8e6dc' to '#e7e5e4'. Keep gray-500 through gray-950 unchanged to preserve the warm brand feel in darker tones.",
+      "acceptanceCriteria": [
+        "gray-50 is '#fafafa'",
+        "gray-100 is '#f5f5f4'",
+        "gray-200 is '#e7e5e4'",
+        "surface-secondary is '#fafafa'",
+        "surface-tertiary is '#e7e5e4'",
+        "gray-500 through gray-950 are unchanged",
+        "npm run build succeeds"
+      ]
+    },
+    {
+      "id": "US-281",
+      "title": "Increase spacing on dense components for breathing room",
+      "description": "Several components feel cramped compared to Linear/Ramp's spacious layouts. Make these specific changes: (1) In StatsBar.jsx, change the grid gap from 'gap-3' or 'gap-4' to 'gap-5'. (2) In the CARD_BASE token (designTokens.js), ensure there's no padding built in (components should apply their own). (3) In ApplicationRow.jsx, increase vertical padding from 'py-3' to 'py-4' if present, or from 'py-2' to 'py-3'. (4) In NavBar.jsx, increase the nav container height by changing padding from 'py-2' to 'py-3' if present.",
+      "acceptanceCriteria": [
+        "StatsBar grid uses gap-5",
+        "ApplicationRow has increased vertical padding (py-3 minimum)",
+        "NavBar container has py-3 minimum padding",
+        "npm run build succeeds"
+      ],
+      "passes": true
+    },
+    {
+      "id": "US-282",
+      "title": "Remove Lora reference from index.css font-display utility",
+      "description": "The index.css @layer utilities section still references Lora indirectly through the body font-family declaration that was updated. Verify there are no remaining Lora references in the codebase. Also update the dark body background from '#141413' to match the warm-brand dark tone (keep as-is since it's the dark mode base).",
+      "acceptanceCriteria": [
+        "No Lora references remain in index.css, tailwind.config.js, or index.html",
+        "npm run build succeeds"
+      ],
+      "passes": true
+    }
+  ]
+}

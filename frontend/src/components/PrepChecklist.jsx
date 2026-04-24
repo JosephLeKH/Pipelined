@@ -51,7 +51,7 @@ export function AddChecklistItem({ onAdd }) {
 
   return (
     <div className="flex items-center gap-2 pt-1">
-      <Plus className="h-4 w-4 flex-shrink-0 text-gray-400" />
+      <Plus className="h-4 w-4 flex-shrink-0 text-gray-500" />
       <input
         type="text"
         value={text}

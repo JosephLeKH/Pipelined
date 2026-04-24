@@ -106,7 +106,7 @@ export default function MergeDialog({ apps, onConfirm, onCancel, isPending = fal
             onClick={onCancel}
             className={`${BUTTON_GHOST} p-2`}
           >
-            <X className="h-4 w-4 text-gray-400" />
+            <X className="h-4 w-4 text-gray-500" />
           </button>
         </div>
 

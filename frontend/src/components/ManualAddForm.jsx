@@ -35,7 +35,7 @@ function ManualAddForm({ isOpen, onClose }) {
             className={`${BUTTON_GHOST} p-2`}
             aria-label="Close modal"
           >
-            <X className="h-5 w-5 text-gray-400" />
+            <X className="h-5 w-5 text-gray-500" />
           </button>
         </div>
         <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4 px-6 py-4">

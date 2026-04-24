@@ -99,7 +99,7 @@ function CommandPaletteDialog({ query, setQuery, filteredApps, actions, idx, act
         className={`${MODAL_CARD} fixed left-1/2 top-[20%] z-50 -translate-x-1/2 max-w-xl overflow-hidden`}
       >
         <div className="flex items-center gap-2 border-b border-border-default px-3">
-          <SearchIcon className="h-4 w-4 shrink-0 text-gray-400" />
+          <SearchIcon className="h-4 w-4 shrink-0 text-gray-500" />
           <input
             autoFocus
             type="text"

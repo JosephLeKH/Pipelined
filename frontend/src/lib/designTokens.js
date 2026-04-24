@@ -6,10 +6,10 @@
 
 /** Card container — white bg, rounded-xl, border-defined (no shadow), dark variants. */
 export const CARD_BASE =
-  "bg-white rounded-xl border border-border-default dark:bg-gray-800 dark:border-dark-border";
+  "bg-white rounded-xl border border-border-default shadow-card dark:bg-gray-800 dark:border-dark-border";
 
 /** Card hover state — stronger border, no shadow. */
-export const CARD_HOVER = "border-border-strong transition-colors";
+export const CARD_HOVER = "border-border-strong hover:shadow-card-hover transition-all";
 
 /** Primary action button — solid clay, white text. */
 export const BUTTON_PRIMARY =
@@ -39,7 +39,7 @@ export const BUTTON_DANGER =
   "font-display transition-colors focus:outline-none focus:ring-2 focus:ring-red-500/30 " +
   "active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none";
 
-/** Text input, select, textarea base styles — warm palette, Lora body text. */
+/** Text input, select, textarea base styles — neutral palette, Inter body text. */
 export const INPUT_BASE =
   "border border-gray-300 rounded-md bg-white text-gray-900 " +
   "placeholder:text-gray-400 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/20 " +
@@ -63,7 +63,7 @@ export const MODAL_BACKDROP = "fixed inset-0 bg-black/30 backdrop-blur-sm z-50 f
 
 /** Modal card — large rounded, border-defined, white bg with dark variant; scales in on mount. */
 export const MODAL_CARD =
-  "bg-white rounded-2xl border border-border-default shadow-sm w-full max-w-lg mx-auto relative animate-scaleIn " +
+  "bg-white rounded-2xl border border-border-default shadow-modal w-full max-w-lg mx-auto relative animate-scaleIn " +
   "dark:bg-gray-800 dark:border-dark-border";
 
 /** Nav container — white bg, bottom border, no gradient. */

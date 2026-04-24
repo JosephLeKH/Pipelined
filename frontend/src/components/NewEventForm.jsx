@@ -51,7 +51,7 @@ function NewEventForm({ initialDate, initialApplicationId, onClose }) {
         <div className="flex items-center justify-between border-b border-border-default px-6 py-4">
           <h2 className="font-display text-lg font-semibold text-gray-900 dark:text-gray-100">New Event</h2>
           <button type="button" onClick={onClose} className={`${BUTTON_GHOST} p-2`} aria-label="Close form">
-            <X className="h-5 w-5 text-gray-400" />
+            <X className="h-5 w-5 text-gray-500" />
           </button>
         </div>
         <form onSubmit={hook.handleSubmit} className="flex flex-col gap-4 px-6 py-4">

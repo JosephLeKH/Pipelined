@@ -41,7 +41,7 @@ function ShortcutHelp() {
             className={`${BUTTON_GHOST} p-2`}
             aria-label="Close shortcuts"
           >
-            <X className="h-5 w-5 text-gray-400" />
+            <X className="h-5 w-5 text-gray-500" />
           </button>
         </div>
         <div className="flex max-h-[70vh] flex-col gap-6 overflow-y-auto px-6 py-4 font-sans text-gray-700">

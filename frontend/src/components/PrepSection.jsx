@@ -46,7 +46,7 @@ function AddQuestionItem({ onAdd, disabled }) {
 
   return (
     <div className="flex items-center gap-2 pt-1">
-      <Plus className="h-4 w-4 flex-shrink-0 text-gray-400" />
+      <Plus className="h-4 w-4 flex-shrink-0 text-gray-500" />
       <input
         type="text"
         value={text}
@@ -172,7 +172,7 @@ export function PrepSection({ initialPrepData, onPrepChange }) {
         className="flex w-full items-center justify-between px-6 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-brand-500"
         aria-expanded={isOpen}>
         <span className="text-xs font-medium uppercase text-gray-400">Interview Prep</span>
-        {isOpen ? <ChevronDown className="h-4 w-4 text-gray-400" /> : <ChevronRight className="h-4 w-4 text-gray-400" />}
+        {isOpen ? <ChevronDown className="h-4 w-4 text-gray-500" /> : <ChevronRight className="h-4 w-4 text-gray-500" />}
       </button>
       {isOpen && (
         <div className="px-6 pb-4 flex flex-col gap-4">

@@ -84,7 +84,7 @@ function MetricCard({ metricKey, label, stats, isLoading, Icon }) {
 
   return (
     <div className={`flex flex-col gap-2 p-4 ${CARD_BASE}`} aria-label={`${label}: ${displayValue}`}>
-      <Icon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+      <Icon className="h-5 w-5 text-gray-500" aria-hidden="true" />
       <span className="text-sm text-gray-500 dark:text-gray-400">{label}</span>
       <span className="font-display text-2xl font-semibold text-gray-900 dark:text-gray-100">{displayValue}</span>
     </div>
@@ -97,7 +97,7 @@ function StatsBar() {
   if (error) return <ApiErrorMessage error={error} onRetry={refetch} />;
 
   return (
-    <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5">
+    <div className="grid grid-cols-2 gap-5 md:grid-cols-3 lg:grid-cols-5">
       {METRIC_CONFIG.map(({ key, label, Icon }) => (
         <MetricCard
           key={key}

@@ -4,12 +4,12 @@
 
 @layer base {
   body {
-    font-family: 'Lora', Georgia, serif;
-    font-size: 15px;
-    line-height: 1.65;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
     letter-spacing: -0.01em;
     color: #141413;
-    background-color: #faf9f5;
+    background-color: #fafafa;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }

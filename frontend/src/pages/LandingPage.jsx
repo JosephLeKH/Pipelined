@@ -110,7 +110,7 @@ function FeaturesSection() {
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {FEATURES.map(({ icon: Icon, title, description }) => (
           <div key={title} className={`${CARD_BASE} flex flex-col gap-3 p-6`}>
-            <Icon className="h-6 w-6 text-gray-400" aria-hidden="true" />
+            <Icon className="h-6 w-6 text-gray-500" aria-hidden="true" />
             <h3 className="text-base font-display font-semibold text-gray-900">{title}</h3>
             <p className="font-sans text-sm leading-relaxed text-gray-500">{description}</p>
           </div>

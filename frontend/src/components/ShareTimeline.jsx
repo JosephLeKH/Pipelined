@@ -112,7 +112,7 @@ function ShareTimeline() {
         Share Your Timeline
       </h2>
       {isLoading ? (
-        <Loader2 className="h-5 w-5 animate-spin text-gray-400" aria-label="Loading" />
+        <Loader2 className="h-5 w-5 animate-spin text-gray-500" aria-label="Loading" />
       ) : share ? (
         <ActiveShare share={share} onRevoke={revokeShare} isRevoking={isRevoking} />
       ) : (

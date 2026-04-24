@@ -57,7 +57,7 @@ function TagNameEditor({ name, onSave, onCancel }) {
         <Check className="h-4 w-4 text-green-600" />
       </button>
       <button type="button" onClick={onCancel} aria-label="Cancel" className={`${BUTTON_GHOST} p-1.5`}>
-        <XIcon className="h-4 w-4 text-gray-400" />
+        <XIcon className="h-4 w-4 text-gray-500" />
       </button>
     </div>
   );

@@ -23,11 +23,11 @@ export default {
           900: "#5c3020",
           950: "#3a1e13",
         },
-        // Warm gray palette — Anthropic brand neutrals
+        // Neutral gray palette — cool-shifted for modern SaaS aesthetic
         gray: {
-          50: "#faf9f5",
-          100: "#f5f0e8",
-          200: "#e8e6dc",
+          50: "#fafafa",
+          100: "#f5f5f4",
+          200: "#e7e5e4",
           300: "#d4ccbd",
           400: "#b0aea5",
           500: "#6b5f4e",
@@ -42,11 +42,11 @@ export default {
         "accent-green": "#788c5d",
         // Semantic tokens — surfaces
         "surface-primary": "#ffffff",
-        "surface-secondary": "#faf9f5",
-        "surface-tertiary": "#e8e6dc",
+        "surface-secondary": "#fafafa",
+        "surface-tertiary": "#e7e5e4",
         // Semantic tokens — borders
-        "border-default": "rgba(120,100,75,0.12)",
-        "border-strong": "rgba(120,100,75,0.24)",
+        "border-default": "rgba(0,0,0,0.08)",
+        "border-strong": "rgba(0,0,0,0.16)",
         // Dark mode semantic tokens
         dark: {
           bg: "#141413",
@@ -63,13 +63,13 @@ export default {
         info: "#6a9bcc",
       },
       fontFamily: {
-        sans: ["Lora", "Georgia", "serif"],
+        sans: ["Inter", "system-ui", "-apple-system", "sans-serif"],
         display: ["Poppins", "Arial", "sans-serif"],
       },
       boxShadow: {
-        card: "0 1px 2px rgba(120,100,75,0.06)",
-        "card-hover": "0 2px 8px rgba(120,100,75,0.08)",
-        modal: "0 20px 60px rgba(20,20,19,0.15)",
+        card: "0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06)",
+        "card-hover": "0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04)",
+        modal: "0 20px 60px rgba(0,0,0,0.12)",
       },
       keyframes: {
         slideInRight: {
@@ -82,7 +82,7 @@ export default {
       },
       borderRadius: {
         card: "0.75rem",
-        button: "0.375rem",
+        button: "0.5rem",
         badge: "9999px",
         input: "0.5rem",
       },

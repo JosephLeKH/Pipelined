@@ -144,7 +144,7 @@ function ApplicationRow({
           )}
         </span>
         <span className="w-28 text-sm text-gray-500 dark:text-gray-400">{dateApplied}</span>
-        <SourceIcon className="h-4 w-4 shrink-0 text-gray-400 dark:text-gray-500" aria-label={application.source} />
+        <SourceIcon className="h-4 w-4 shrink-0 text-gray-500 dark:text-gray-400" aria-label={application.source} />
         <RowMenu
           application={application}
           onArchive={onArchive}

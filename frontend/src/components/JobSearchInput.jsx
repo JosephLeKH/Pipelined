@@ -33,7 +33,7 @@ export default function JobSearchInput() {
 
   return (
     <div className="relative flex items-center">
-      <SearchIcon className="pointer-events-none absolute left-3 h-4 w-4 text-gray-400" aria-hidden="true" />
+      <SearchIcon className="pointer-events-none absolute left-3 h-4 w-4 text-gray-500" aria-hidden="true" />
       <input
         type="text"
         aria-label="search jobs"

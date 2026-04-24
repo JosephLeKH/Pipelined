@@ -72,7 +72,7 @@ function UpgradePlanModal() {
           aria-label="Close"
           className={`${BUTTON_GHOST} absolute right-4 top-4 p-2`}
         >
-          <X className="h-4 w-4 text-gray-400" />
+          <X className="h-4 w-4 text-gray-500" />
         </button>
 
         <div className="flex flex-col items-center text-center">
