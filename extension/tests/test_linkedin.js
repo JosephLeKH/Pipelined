@@ -80,7 +80,7 @@ describe("LinkedIn board module", () => {
     it("should extract location from the primary selector", () => {
       const fields = extractFields();
 
-      expect(fields.location).toBe("San Francisco, CA");
+      expect(fields.location).toBe("San Francisco, CA (Remote)");
     });
 
     it("should return null for compensation (not in LinkedIn DOM)", () => {
@@ -101,12 +101,11 @@ describe("LinkedIn board module", () => {
       expect(fields.remote_status).toBe("remote");
     });
 
-    it("should detect remote_status as 'hybrid' when body text contains 'hybrid'", () => {
+    it("should detect remote_status as 'hybrid' when location contains 'hybrid'", () => {
       const html = `<html><body>
         <h1 class="job-details-jobs-unified-top-card__job-title">Engineer</h1>
         <span class="job-details-jobs-unified-top-card__company-name">Corp</span>
-        <span class="job-details-jobs-unified-top-card__bullet">NYC</span>
-        This is a hybrid role.
+        <span class="job-details-jobs-unified-top-card__bullet">NYC (Hybrid)</span>
       </body></html>`;
       const dom = new JSDOM(html, { url: LINKEDIN_JOB_URL });
       setGlobals(dom);
@@ -116,12 +115,11 @@ describe("LinkedIn board module", () => {
       expect(fields.remote_status).toBe("hybrid");
     });
 
-    it("should detect remote_status as 'onsite' when body text contains 'on-site'", () => {
+    it("should detect remote_status as 'onsite' when location contains 'on-site'", () => {
       const html = `<html><body>
         <h1 class="job-details-jobs-unified-top-card__job-title">Engineer</h1>
         <span class="job-details-jobs-unified-top-card__company-name">Corp</span>
-        <span class="job-details-jobs-unified-top-card__bullet">NYC</span>
-        This is an on-site position.
+        <span class="job-details-jobs-unified-top-card__bullet">NYC (On-site)</span>
       </body></html>`;
       const dom = new JSDOM(html, { url: LINKEDIN_JOB_URL });
       setGlobals(dom);
@@ -131,12 +129,11 @@ describe("LinkedIn board module", () => {
       expect(fields.remote_status).toBe("onsite");
     });
 
-    it("should detect remote_status as 'onsite' when body text contains 'onsite'", () => {
+    it("should detect remote_status as 'onsite' when location contains 'onsite'", () => {
       const html = `<html><body>
         <h1 class="job-details-jobs-unified-top-card__job-title">Engineer</h1>
         <span class="job-details-jobs-unified-top-card__company-name">Corp</span>
-        <span class="job-details-jobs-unified-top-card__bullet">NYC</span>
-        Onsite work required.
+        <span class="job-details-jobs-unified-top-card__bullet">NYC Onsite</span>
       </body></html>`;
       const dom = new JSDOM(html, { url: LINKEDIN_JOB_URL });
       setGlobals(dom);

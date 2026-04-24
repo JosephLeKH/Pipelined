@@ -1,64 +1,15 @@
 /** Indeed job board selectors and extraction logic. */
-import { getRemoteStatus } from "./board_utils.js";
+import { createBoardExtractor } from "./board_utils.js";
 
-
-const BOARD_ID = "indeed";
-
-const URL_PATTERN = /www\.indeed\.com\/viewjob/;
-
-/**
- * Returns true if the current page is a specific job posting.
- * Must be synchronous and fast — called on every page load.
- */
-function isJobPage() {
-  return (
-    URL_PATTERN.test(window.location.href) &&
-    !!document.querySelector(".jobsearch-JobInfoHeader-title, h1[data-testid='jobsearch-JobInfoHeader-title']")
-  );
-}
-
-function getTitle() {
-  return (
-    document.querySelector(".jobsearch-JobInfoHeader-title")?.textContent?.trim() ||
-    document.querySelector("h1[data-testid='jobsearch-JobInfoHeader-title']")?.textContent?.trim() ||
-    document.querySelector("h1.jobTitle")?.textContent?.trim() ||
-    null
-  );
-}
-
-function getCompany() {
-  return (
-    document.querySelector(".icl-u-lg-mr--sm")?.textContent?.trim() ||
-    document.querySelector("[data-testid='inlineHeader-companyName'] a")?.textContent?.trim() ||
-    document.querySelector(".jobsearch-CompanyInfoContainer a")?.textContent?.trim() ||
-    null
-  );
-}
-
-function getLocation() {
-  return (
-    document.querySelector("#jobLocationText")?.textContent?.trim() ||
-    document.querySelector("[data-testid='job-location']")?.textContent?.trim() ||
-    document.querySelector(".jobsearch-JobInfoHeader-subtitle .icl-u-xs-mr--xs")?.textContent?.trim() ||
-    null
-  );
-}
-
-/**
- * Extracts structured fields from the page DOM.
- * Returns an object with 6 fields. Any field can be null if not found.
- * Never throws — returns nulls for missing data.
- */
-function extractFields() {
-  const location = getLocation();
-  return {
-    role_title: getTitle(),
-    company_name: getCompany(),
-    compensation: null,
-    company_type: null,
-    location,
-    remote_status: getRemoteStatus(location),
-  };
-}
+const { BOARD_ID, isJobPage, extractFields } = createBoardExtractor({
+  id: "indeed",
+  urlPattern: /www\.indeed\.com\/viewjob/,
+  pageSelectors: [".jobsearch-JobInfoHeader-title", "h1[data-testid='jobsearch-JobInfoHeader-title']"],
+  selectors: {
+    title: [".jobsearch-JobInfoHeader-title", "h1[data-testid='jobsearch-JobInfoHeader-title']", "h1.jobTitle"],
+    company: [".icl-u-lg-mr--sm", "[data-testid='inlineHeader-companyName'] a", ".jobsearch-CompanyInfoContainer a"],
+    location: ["#jobLocationText", "[data-testid='job-location']", ".jobsearch-JobInfoHeader-subtitle .icl-u-xs-mr--xs"],
+  },
+});
 
 export { BOARD_ID, isJobPage, extractFields };

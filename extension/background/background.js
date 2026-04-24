@@ -184,6 +184,7 @@ async function handleSave(payload) {
 
 // ── Message router ────────────────────────────────────────────────────────────
 
+// Exported for test access only.
 export { handleSave };
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {

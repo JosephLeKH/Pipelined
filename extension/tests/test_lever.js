@@ -71,7 +71,7 @@ describe("Lever board module", () => {
       expect(fields.role_title).toBe("Software Engineer");
     });
 
-    it("should extract company_name from the logo img alt attribute", () => {
+    it("should extract company_name from the main-header-logo selector", () => {
       const fields = extractFields();
 
       expect(fields.company_name).toBe("Acme Corp");
@@ -80,7 +80,7 @@ describe("Lever board module", () => {
     it("should extract location from the sort-by-location selector", () => {
       const fields = extractFields();
 
-      expect(fields.location).toBe("San Francisco, CA");
+      expect(fields.location).toBe("San Francisco, CA (Hybrid)");
     });
 
     it("should return null for compensation", () => {
@@ -95,23 +95,22 @@ describe("Lever board module", () => {
       expect(fields.company_type).toBeNull();
     });
 
-    it("should detect remote_status as 'hybrid' when body text contains 'hybrid'", () => {
+    it("should detect remote_status as 'hybrid' when location contains 'hybrid'", () => {
       const fields = extractFields();
 
       expect(fields.remote_status).toBe("hybrid");
     });
 
-    it("should detect remote_status as 'remote' when body text contains 'remote'", () => {
+    it("should detect remote_status as 'remote' when location contains 'remote'", () => {
       const html = `<html><body>
-        <div class="main-header-logo"><img alt="Corp" /></div>
+        <div class="main-header-logo">Acme Corp</div>
         <div class="content">
           <div class="posting-headline">
             <h2>Engineer</h2>
             <div class="posting-categories">
-              <span class="sort-by-location posting-category">NYC</span>
+              <span class="sort-by-location posting-category">NYC (Remote)</span>
             </div>
           </div>
-          This is a fully remote position.
         </div>
       </body></html>`;
       const dom = new JSDOM(html, { url: LEVER_JOB_URL });
@@ -122,17 +121,16 @@ describe("Lever board module", () => {
       expect(fields.remote_status).toBe("remote");
     });
 
-    it("should detect remote_status as 'onsite' when body text contains 'onsite'", () => {
+    it("should detect remote_status as 'onsite' when location contains 'onsite'", () => {
       const html = `<html><body>
-        <div class="main-header-logo"><img alt="Corp" /></div>
+        <div class="main-header-logo">Acme Corp</div>
         <div class="content">
           <div class="posting-headline">
             <h2>Engineer</h2>
             <div class="posting-categories">
-              <span class="sort-by-location posting-category">NYC</span>
+              <span class="sort-by-location posting-category">NYC (Onsite)</span>
             </div>
           </div>
-          Onsite work required.
         </div>
       </body></html>`;
       const dom = new JSDOM(html, { url: LEVER_JOB_URL });
@@ -145,7 +143,7 @@ describe("Lever board module", () => {
 
     it("should return null for remote_status when no keyword is present", () => {
       const html = `<html><body>
-        <div class="main-header-logo"><img alt="Corp" /></div>
+        <div class="main-header-logo">Acme Corp</div>
         <div class="content">
           <div class="posting-headline">
             <h2>Engineer</h2>
@@ -153,7 +151,6 @@ describe("Lever board module", () => {
               <span class="sort-by-location posting-category">NYC</span>
             </div>
           </div>
-          Great opportunity to grow your career.
         </div>
       </body></html>`;
       const dom = new JSDOM(html, { url: LEVER_JOB_URL });
@@ -186,7 +183,7 @@ describe("Lever board module", () => {
 
     it("should fall back to bare h2 when posting-headline h2 is absent", () => {
       const html = `<html><body>
-        <div class="main-header-logo"><img alt="Corp" /></div>
+        <div class="main-header-logo">Corp</div>
         <div class="content">
           <h2>Fallback Title</h2>
         </div>

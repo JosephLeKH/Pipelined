@@ -80,7 +80,7 @@ describe("Ashby board module", () => {
     it("should extract location from the data-ui='job-location' selector", () => {
       const fields = extractFields();
 
-      expect(fields.location).toBe("San Francisco, CA");
+      expect(fields.location).toBe("San Francisco, CA (Remote)");
     });
 
     it("should return null for compensation", () => {
@@ -95,18 +95,17 @@ describe("Ashby board module", () => {
       expect(fields.company_type).toBeNull();
     });
 
-    it("should detect remote_status as 'remote' when body text contains 'remote'", () => {
+    it("should detect remote_status as 'remote' when location contains 'remote'", () => {
       const fields = extractFields();
 
       expect(fields.remote_status).toBe("remote");
     });
 
-    it("should detect remote_status as 'hybrid' when body text contains 'hybrid'", () => {
+    it("should detect remote_status as 'hybrid' when location contains 'hybrid'", () => {
       const html = `<html><body>
         <span class="ashby-job-posting-brief-company-name">Corp</span>
         <h1 data-ui="job-title">Engineer</h1>
-        <div data-ui="job-location">NYC</div>
-        This is a hybrid position.
+        <div data-ui="job-location">NYC (Hybrid)</div>
       </body></html>`;
       const dom = new JSDOM(html, { url: ASHBY_JOB_URL });
       setGlobals(dom);
@@ -116,12 +115,11 @@ describe("Ashby board module", () => {
       expect(fields.remote_status).toBe("hybrid");
     });
 
-    it("should detect remote_status as 'onsite' when body text contains 'on-site'", () => {
+    it("should detect remote_status as 'onsite' when location contains 'on-site'", () => {
       const html = `<html><body>
         <span class="ashby-job-posting-brief-company-name">Corp</span>
         <h1 data-ui="job-title">Engineer</h1>
-        <div data-ui="job-location">NYC</div>
-        This is an on-site role.
+        <div data-ui="job-location">NYC (On-site)</div>
       </body></html>`;
       const dom = new JSDOM(html, { url: ASHBY_JOB_URL });
       setGlobals(dom);
@@ -136,7 +134,6 @@ describe("Ashby board module", () => {
         <span class="ashby-job-posting-brief-company-name">Corp</span>
         <h1 data-ui="job-title">Engineer</h1>
         <div data-ui="job-location">NYC</div>
-        Great benefits and growth opportunity.
       </body></html>`;
       const dom = new JSDOM(html, { url: ASHBY_JOB_URL });
       setGlobals(dom);

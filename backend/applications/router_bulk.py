@@ -32,15 +32,14 @@ TIER_LIMIT_EXCEEDED_DETAIL = {
 }
 
 
-@bulk_router.delete("/bulk", status_code=200)
+@bulk_router.delete("/bulk", status_code=204)
 async def bulk_delete_applications(
     body: BulkDeleteRequest,
     user: dict = Depends(get_current_user),
-) -> dict:
+) -> None:
     """Delete multiple applications and their linked calendar events."""
     user_id = str(user["_id"])
-    deleted_count = await service_bulk.bulk_delete(user_id, body.ids)
-    return {"data": {"deleted_count": deleted_count}}
+    await service_bulk.bulk_delete(user_id, body.ids)
 
 
 @bulk_router.patch("/bulk-stage", status_code=200)
@@ -130,21 +129,20 @@ async def add_stage(
     return {"data": {"stages": stages}}
 
 
-@bulk_router.delete("/{app_id}/stages/{stage_name}", status_code=200)
+@bulk_router.delete("/{app_id}/stages/{stage_name}", status_code=204)
 async def remove_stage(
     app_id: str,
     stage_name: str,
     user: dict = Depends(get_current_user),
-) -> dict:
+) -> None:
     """Remove a stage from the application's stages array. Returns 409 if stage is currently active."""
     user_id = str(user["_id"])
     try:
-        stages = await service_bulk.remove_stage(user_id, app_id, stage_name)
+        result = await service_bulk.remove_stage(user_id, app_id, stage_name)
     except ActiveStageError:
         raise HTTPException(
             status_code=409,
             detail={"code": "STAGE_ACTIVE", "message": "Cannot remove the currently active stage."},
         )
-    if stages is None:
+    if result is None:
         raise HTTPException(status_code=404, detail=APP_NOT_FOUND_DETAIL)
-    return {"data": {"stages": stages}}

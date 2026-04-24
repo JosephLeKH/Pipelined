@@ -106,12 +106,11 @@ async def rename_tag(
     return {"data": {"updated_count": updated}}
 
 
-@analytics_router.delete("/tags/{tag}", status_code=200)
+@analytics_router.delete("/tags/{tag}", status_code=204)
 async def delete_tag(
     tag: str,
     user: dict = Depends(get_current_user),
-) -> dict:
+) -> None:
     """Remove a tag from all of the current user's applications."""
     user_id = str(user["_id"])
-    updated = await service_analytics.delete_tag(user_id, tag.strip().lower())
-    return {"data": {"updated_count": updated}}
+    await service_analytics.delete_tag(user_id, tag.strip().lower())

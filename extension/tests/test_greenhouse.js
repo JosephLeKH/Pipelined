@@ -80,7 +80,7 @@ describe("Greenhouse board module", () => {
     it("should extract location from the location selector", () => {
       const fields = extractFields();
 
-      expect(fields.location).toBe("San Francisco, CA");
+      expect(fields.location).toBe("San Francisco, CA (Remote)");
     });
 
     it("should return null for compensation", () => {
@@ -95,19 +95,18 @@ describe("Greenhouse board module", () => {
       expect(fields.company_type).toBeNull();
     });
 
-    it("should detect remote_status as 'remote' when body text contains 'remote'", () => {
+    it("should detect remote_status as 'remote' when location contains 'remote'", () => {
       const fields = extractFields();
 
       expect(fields.remote_status).toBe("remote");
     });
 
-    it("should detect remote_status as 'hybrid' when body text contains 'hybrid'", () => {
+    it("should detect remote_status as 'hybrid' when location contains 'hybrid'", () => {
       const html = `<html><body>
         <div id="header"><span class="company-name">Corp</span></div>
         <div id="app_body">
           <h1 class="app-title">Engineer</h1>
-          <div class="location">NYC</div>
-          This is a hybrid role.
+          <div class="location">NYC (Hybrid)</div>
         </div>
       </body></html>`;
       const dom = new JSDOM(html, { url: GREENHOUSE_JOB_URL });
@@ -118,13 +117,12 @@ describe("Greenhouse board module", () => {
       expect(fields.remote_status).toBe("hybrid");
     });
 
-    it("should detect remote_status as 'onsite' when body text contains 'on-site'", () => {
+    it("should detect remote_status as 'onsite' when location contains 'on-site'", () => {
       const html = `<html><body>
         <div id="header"><span class="company-name">Corp</span></div>
         <div id="app_body">
           <h1 class="app-title">Engineer</h1>
-          <div class="location">NYC</div>
-          This is an on-site position.
+          <div class="location">NYC (On-site)</div>
         </div>
       </body></html>`;
       const dom = new JSDOM(html, { url: GREENHOUSE_JOB_URL });
@@ -141,7 +139,6 @@ describe("Greenhouse board module", () => {
         <div id="app_body">
           <h1 class="app-title">Engineer</h1>
           <div class="location">NYC</div>
-          Great opportunity at our office.
         </div>
       </body></html>`;
       const dom = new JSDOM(html, { url: GREENHOUSE_JOB_URL });

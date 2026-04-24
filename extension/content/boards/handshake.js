@@ -1,66 +1,15 @@
 /** Handshake job board selectors and extraction logic. */
-import { getRemoteStatus } from "./board_utils.js";
+import { createBoardExtractor } from "./board_utils.js";
 
-
-const BOARD_ID = "handshake";
-
-const URL_PATTERN = /joinhandshake\.com\/jobs\//;
-
-/**
- * Returns true if the current page is a specific job posting.
- * Must be synchronous and fast — called on every page load.
- */
-function isJobPage() {
-  return (
-    URL_PATTERN.test(window.location.href) &&
-    !!document.querySelector(
-      "h1[data-hook='job-name'], h1.job-name, h1[class*='JobTitle'], [data-hook='job-name']"
-    )
-  );
-}
-
-function getTitle() {
-  return (
-    document.querySelector("h1[data-hook='job-name']")?.textContent?.trim() ||
-    document.querySelector("h1.job-name")?.textContent?.trim() ||
-    document.querySelector("h1[class*='JobTitle']")?.textContent?.trim() ||
-    null
-  );
-}
-
-function getCompany() {
-  return (
-    document.querySelector("[data-hook='employer-name']")?.textContent?.trim() ||
-    document.querySelector(".employer-profile-banner--name")?.textContent?.trim() ||
-    document.querySelector("[class*='EmployerName']")?.textContent?.trim() ||
-    null
-  );
-}
-
-function getLocation() {
-  return (
-    document.querySelector("[data-hook='location']")?.textContent?.trim() ||
-    document.querySelector(".job-location")?.textContent?.trim() ||
-    document.querySelector("[class*='JobLocation']")?.textContent?.trim() ||
-    null
-  );
-}
-
-/**
- * Extracts structured fields from the page DOM.
- * Returns an object with 6 fields. Any field can be null if not found.
- * Never throws — returns nulls for missing data.
- */
-function extractFields() {
-  const location = getLocation();
-  return {
-    role_title: getTitle(),
-    company_name: getCompany(),
-    compensation: null,
-    company_type: null,
-    location,
-    remote_status: getRemoteStatus(location),
-  };
-}
+const { BOARD_ID, isJobPage, extractFields } = createBoardExtractor({
+  id: "handshake",
+  urlPattern: /joinhandshake\.com\/jobs\//,
+  pageSelectors: ["h1[data-hook='job-name']", "h1.job-name", "h1[class*='JobTitle']", "[data-hook='job-name']"],
+  selectors: {
+    title: ["h1[data-hook='job-name']", "h1.job-name", "h1[class*='JobTitle']"],
+    company: ["[data-hook='employer-name']", ".employer-profile-banner--name", "[class*='EmployerName']"],
+    location: ["[data-hook='location']", ".job-location", "[class*='JobLocation']"],
+  },
+});
 
 export { BOARD_ID, isJobPage, extractFields };
