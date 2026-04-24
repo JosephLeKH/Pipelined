@@ -8,3 +8,38 @@ Started: Thu Apr 23 13:08:45 PDT 2026
 - `trangray-y-full md:trangray-y-0 md:trangray-x-full` → `translate-y-full md:translate-y-0 md:translate-x-full`
 - Build passed. Committed as `feat: US-265`.
 - Learning: The trangray typo was widespread across many files (6 additional files still have it — covered by US-266).
+
+---
+## US-266: Fix trangray→translate typo in toggle switches and tooltips
+**Status:** COMPLETE
+**Commit:** feat: US-266 - Fix trangray→translate typo in toggle switches and tooltips
+**Summary:** Replaced all 6 `trangray` occurrences across DigestSection.jsx, SettingsNotificationsSection.jsx, ApplicationRow.jsx (2x), UndoToast.jsx, and Pricing.jsx with correct `translate` classes. Build passes. One test comment referencing "trangray" left as-is (not a CSS class).
+
+## US-267: Add dark mode variants to NAV design tokens
+**Status:** COMPLETE
+**Commit:** feat: US-267, US-268 (combined)
+**Summary:** Added dark:bg-gray-900, dark:border-dark-border to NAV_CONTAINER; dark:text-gray-400 dark:hover:text-gray-100 to NAV_LINK; dark:text-gray-100 dark:bg-gray-800 to NAV_LINK_ACTIVE; dark:text-gray-100 to NAV_BRAND.
+
+## US-268: Add dark mode variants to BUTTON_SECONDARY and BUTTON_GHOST tokens
+**Status:** COMPLETE
+**Commit:** feat: US-267, US-268 (combined)
+**Summary:** Added dark mode variants to BUTTON_SECONDARY and BUTTON_GHOST. BUTTON_PRIMARY and BUTTON_DANGER left unchanged.
+
+## US-269: Add dark mode to GoogleAuthButton
+**Status:** COMPLETE
+**Commit:** feat: US-269, US-270, US-271 (combined)
+**Summary:** Added dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 to GoogleAuthButton.
+
+## US-270: Add dark mode to MobileMenu and OnboardingChecklist success state
+**Status:** COMPLETE
+**Commit:** feat: US-269, US-270, US-271 (combined)
+**Summary:** Added dark:bg-gray-900 to MobileMenu container. Changed OnboardingChecklist success banner from green to brand colors. Changed CheckCircle2 from text-green-500 to text-brand-500.
+
+## US-271: Standardize password requirement checkmarks to brand color
+**Status:** COMPLETE
+**Commit:** feat: US-269, US-270, US-271 (combined)
+**Summary:** Changed text-green-600 to text-brand-600 in RegisterForm.jsx. Updated 3 corresponding test assertions in RegisterForm.test.jsx.
+
+**Learnings:**
+- Pre-existing test failures in HeroSection, ManualAddForm, LandingPage, and Analytics are unrelated to this PRD's changes.
+- When changing CSS class names used in components, always grep test files for matching assertions.

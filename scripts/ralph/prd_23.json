@@ -61,7 +61,7 @@
         "Button is readable and styled correctly in dark mode",
         "npm run build succeeds"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "US-270",
@@ -73,7 +73,7 @@
         "OnboardingChecklist CheckCircle2 uses text-brand-500",
         "npm run build succeeds"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "US-271",
@@ -84,7 +84,7 @@
         "No text-green-600 remains in RegisterForm.jsx",
         "npm run build succeeds"
       ],
-      "passes": false
+      "passes": true
     }
   ]
 }
