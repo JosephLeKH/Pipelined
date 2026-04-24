@@ -94,7 +94,7 @@ function HamburgerButton({ mobileMenuOpen, setMobileMenuOpen }) {
 
 function MobileMenu({ navLinks, pathname, closeMobileMenu, ThemeIcon, theme, handleCycleTheme, handleLogout }) {
   return (
-    <div data-testid="mobile-nav-menu" className="flex flex-col gap-1 border-t border-border-default bg-white px-4 py-3 md:hidden">
+    <div data-testid="mobile-nav-menu" className="flex flex-col gap-1 border-t border-border-default bg-white dark:bg-gray-900 px-4 py-3 md:hidden">
       {navLinks.map(({ to, label, Icon }) => {
         const active = pathname === to;
         return (

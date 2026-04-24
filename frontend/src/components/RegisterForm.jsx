@@ -20,7 +20,7 @@ function PasswordStrengthList({ password }) {
       {PASSWORD_REQUIREMENTS.map((req) => {
         const met = req.test(password);
         return (
-          <li key={req.key} className={`flex items-center gap-1.5 text-xs ${met ? "text-green-600" : "text-gray-500"}`}>
+          <li key={req.key} className={`flex items-center gap-1.5 text-xs ${met ? "text-brand-600" : "text-gray-500"}`}>
             <span aria-hidden="true">{met ? "✓" : "○"}</span>
             {req.label}
           </li>

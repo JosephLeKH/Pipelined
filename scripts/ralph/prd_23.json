@@ -38,7 +38,7 @@
         "NAV_BRAND has dark:text-gray-100",
         "npm run build succeeds"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "US-268",
@@ -50,7 +50,7 @@
         "BUTTON_PRIMARY and BUTTON_DANGER unchanged",
         "npm run build succeeds"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "US-269",

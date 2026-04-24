@@ -21,7 +21,7 @@ function StepRow({ id, label, description, done }) {
   return (
     <div key={id} className="flex items-start gap-3">
       {done
-        ? <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-green-500" />
+        ? <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-brand-500" />
         : <Circle className="mt-0.5 h-5 w-5 shrink-0 text-gray-300 dark:text-gray-600" />
       }
       <div className="min-w-0">
@@ -89,8 +89,8 @@ function OnboardingChecklist({ onAdd }) {
 
   if (showSuccess) {
     return (
-      <div className="mb-4 rounded-lg border border-green-200 bg-green-50 p-4 text-center dark:border-green-800 dark:bg-green-900/20">
-        <p className="font-semibold text-green-800 dark:text-green-300">You are all set!</p>
+      <div className="mb-4 rounded-lg border border-brand-200 bg-brand-50 p-4 text-center dark:border-brand-800 dark:bg-brand-900/20">
+        <p className="font-semibold text-brand-800 dark:text-brand-300">You are all set!</p>
       </div>
     );
   }
