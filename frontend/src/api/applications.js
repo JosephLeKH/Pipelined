@@ -6,7 +6,7 @@ import { client } from "./client";
  * Fetch a paginated, filtered list of applications.
  * @param {Object} filters - Optional filter/sort/pagination params.
  */
-export async function fetchApplications(filters = {}) {
+export async function fetchApplications(filters = {}, { signal } = {}) {
   const params = new URLSearchParams();
   for (const [key, value] of Object.entries(filters)) {
     if (value === null || value === undefined) continue;
@@ -17,7 +17,7 @@ export async function fetchApplications(filters = {}) {
     }
   }
   const query = params.toString();
-  return client.get(`/applications${query ? `?${query}` : ""}`);
+  return client.get(`/applications${query ? `?${query}` : ""}`, { signal });
 }
 
 /** Fetch a single application by id. */

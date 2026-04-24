@@ -59,7 +59,8 @@ async def list_contacts(
         application_id=application_id,
         limit=limit,
     )
-    return {"data": [ContactResponse.from_doc(d) for d in docs]}
+    items = [ContactResponse.from_doc(d) for d in docs]
+    return {"data": items, "meta": {"total": len(items)}}
 
 
 CONTACT_NOT_FOUND_DETAIL = {"code": "CONTACT_NOT_FOUND", "message": "Contact not found."}

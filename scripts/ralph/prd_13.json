@@ -14,7 +14,7 @@
         "All backend tests pass: pytest tests/ -x"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "Memory safety — unbounded .to_list(length=None) is a time bomb for power users."
     },
     {
@@ -27,7 +27,7 @@
         "npm test passes all tests"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "Data consistency — stats show stale counts after bulk edits until manual refresh."
     },
     {
@@ -42,7 +42,7 @@
         "npm test passes all tests"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "Accessibility — WCAG 2.1 SC 2.1.3 compliance. aria-modal without focus trap is misleading."
     },
     {
@@ -56,7 +56,7 @@
         "npm test passes all tests"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Code simplicity — 11 props is hard to maintain and reason about."
     },
     {
@@ -70,7 +70,7 @@
         "npm test passes all tests"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Performance & correctness — prevents stale data overwrites from old requests completing after new ones."
     },
     {
@@ -84,7 +84,7 @@
         "All backend tests pass: pytest tests/ -x"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "API consistency — standardize the envelope across all list endpoints per CLAUDE.md contract."
     },
     {
@@ -97,7 +97,7 @@
         "All backend tests pass: pytest tests/ -x"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "notes": "Configuration — models change frequently; hardcoding requires code deploys to switch."
     },
     {
@@ -111,7 +111,7 @@
         "All backend tests pass: pytest tests/ -x"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Testing gap — critical billing/quota logic has zero test coverage."
     }
   ]

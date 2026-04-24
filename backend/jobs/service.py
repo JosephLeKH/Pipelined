@@ -45,13 +45,17 @@ def _build_filter(query: JobListQuery, excluded_urls: list[str]) -> dict:
     return f
 
 
+APPLIED_URLS_LIMIT = 5000
+
 async def _get_applied_urls(user_id: str) -> list[str]:
     """Return list of apply URLs the user has already applied to."""
     apps = get_collection("applications")
     docs = await apps.find(
         {"user_id": ObjectId(user_id), "source_url": {"$ne": None}},
-        projection={"source_url": 1},
-    ).to_list(length=None)
+        projection={"source_url": 1, "_id": 0},
+    ).to_list(length=APPLIED_URLS_LIMIT)
+    if len(docs) == APPLIED_URLS_LIMIT:
+        logger.warning("applied_urls_truncated", user_id=user_id, limit=APPLIED_URLS_LIMIT)
     return [str(d["source_url"]) for d in docs if d.get("source_url")]
 
 

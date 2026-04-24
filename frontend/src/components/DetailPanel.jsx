@@ -1,6 +1,6 @@
 /** Side panel showing application details, inline notes, stage selector, and stage history. */
 
-import { useRef } from "react";
+import { useRef, useMemo } from "react";
 
 import { useDetailPanelState } from "../hooks/useDetailPanelState";
 import { useDetailPanelKeyboard } from "../hooks/useDetailPanelKeyboard";
@@ -24,25 +24,25 @@ function DiscardDialog({ onDiscard, onCancel }) {
   );
 }
 
-function PanelContent({ displayApp, panelDragHandlers, confirmClose, handleDelete, handleStageChange, handleUpdate, onAddEvent, setNotesDirty, undoPendingId, handleUndoDelete, handleUndoDismiss, showDiscardDialog, confirmDiscard, cancelDiscard }) {
+function PanelContent({ displayApp, panelDragHandlers, actions, undoPendingId, showDiscardDialog }) {
   return (
     <>
       {displayApp && (
         <div key={displayApp.id} className="flex h-full flex-col overflow-y-auto animate-slideInRight">
           <div className="mx-auto mt-2.5 h-1 w-10 shrink-0 rounded-full bg-gray-300 touch-none md:hidden" aria-hidden="true" {...panelDragHandlers} />
-          <DetailPanelHeader application={displayApp} onClose={confirmClose} onDelete={handleDelete} />
+          <DetailPanelHeader application={displayApp} onClose={actions.onClose} onDelete={actions.onDelete} />
           <PanelBody
             application={displayApp}
-            handleStageChange={handleStageChange}
-            handleUpdate={handleUpdate}
-            onAddEvent={onAddEvent}
-            onDirtyChange={setNotesDirty}
+            handleStageChange={actions.onStageChange}
+            handleUpdate={actions.onUpdate}
+            onAddEvent={actions.onAddEvent}
+            onDirtyChange={actions.onDirtyChange}
           />
         </div>
       )}
-      {showDiscardDialog && <DiscardDialog onDiscard={confirmDiscard} onCancel={cancelDiscard} />}
+      {showDiscardDialog && <DiscardDialog onDiscard={actions.onConfirmDiscard} onCancel={actions.onCancelDiscard} />}
       {undoPendingId && (
-        <UndoToast message="Application deleted." onUndo={handleUndoDelete} onDismiss={handleUndoDismiss} />
+        <UndoToast message="Application deleted." onUndo={actions.onUndoDelete} onDismiss={actions.onUndoDismiss} />
       )}
     </>
   );
@@ -60,6 +60,12 @@ function DetailPanel({ application, onClose, onAddEvent }) {
   const { handlePanelKeyDown, handleOverlayClick } = useDetailPanelKeyboard(panelRef, overlayRef, confirmClose, panelOpen);
   const displayApp = application ?? cachedApp;
   const isOpen = Boolean(application) || Boolean(undoPendingId);
+  const actions = useMemo(() => ({
+    onClose: confirmClose, onDelete: handleDelete, onStageChange: handleStageChange,
+    onUpdate: handleUpdate, onAddEvent, onDirtyChange: setNotesDirty,
+    onUndoDelete: handleUndoDelete, onUndoDismiss: handleUndoDismiss,
+    onConfirmDiscard: confirmDiscard, onCancelDiscard: cancelDiscard,
+  }), [confirmClose, handleDelete, handleStageChange, handleUpdate, onAddEvent, setNotesDirty, handleUndoDelete, handleUndoDismiss, confirmDiscard, cancelDiscard]);
 
   return (
     <div
@@ -76,11 +82,8 @@ function DetailPanel({ application, onClose, onAddEvent }) {
         role="dialog" aria-modal="true" aria-labelledby="detail-panel-heading" onKeyDown={handlePanelKeyDown}
       >
         <PanelContent
-          displayApp={displayApp} panelDragHandlers={panelDragHandlers} confirmClose={confirmClose}
-          handleDelete={handleDelete} handleStageChange={handleStageChange} handleUpdate={handleUpdate}
-          onAddEvent={onAddEvent} setNotesDirty={setNotesDirty} undoPendingId={undoPendingId}
-          handleUndoDelete={handleUndoDelete} handleUndoDismiss={handleUndoDismiss}
-          showDiscardDialog={showDiscardDialog} confirmDiscard={confirmDiscard} cancelDiscard={cancelDiscard}
+          displayApp={displayApp} panelDragHandlers={panelDragHandlers} actions={actions}
+          undoPendingId={undoPendingId} showDiscardDialog={showDiscardDialog}
         />
       </div>
     </div>

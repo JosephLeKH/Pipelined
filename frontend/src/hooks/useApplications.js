@@ -41,7 +41,7 @@ export const KEYS = {
 export function useApplications(filters = {}) {
   return useQuery({
     queryKey: KEYS.list(filters),
-    queryFn: () => fetchApplications(filters),
+    queryFn: ({ signal }) => fetchApplications(filters, { signal }),
     staleTime: QUERY_STALE_TIME_MS,
   });
 }
@@ -251,6 +251,7 @@ export function useBulkEditApplications() {
     mutationFn: (body) => bulkEditApplications(body),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: KEYS.all });
+      queryClient.invalidateQueries({ queryKey: KEYS.stats });
     },
   });
 }

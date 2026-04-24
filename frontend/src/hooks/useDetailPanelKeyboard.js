@@ -41,10 +41,13 @@ export function useDetailPanelKeyboard(panelRef, overlayRef, confirmClose, panel
   }, { enabled: panelOpen });
 
   useEffect(() => {
-    if (panelOpen && panelRef.current) {
+    if (!panelOpen) return;
+    const previouslyFocused = document.activeElement;
+    if (panelRef.current) {
       const first = panelRef.current.querySelector(FOCUSABLE_SELECTORS);
       first?.focus();
     }
+    return () => { previouslyFocused?.focus(); };
   }, [panelOpen, panelRef]);
 
   const handleOverlayClick = useCallback(
