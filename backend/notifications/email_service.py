@@ -80,7 +80,11 @@ class EmailService:
         verify_link = f"{settings.frontend_url}/verify-email?token={raw_token}"
         message = self._build_verification_message(to_email, verify_link)
         loop = asyncio.get_running_loop()
-        await loop.run_in_executor(None, self._send_smtp, to_email, message)
+        try:
+            await loop.run_in_executor(None, self._send_smtp, to_email, message)
+        except (smtplib.SMTPException, OSError) as exc:
+            logger.error("verification_email_failed", to=to_email, error=str(exc))
+            return
         logger.info("verification_email_sent", to=to_email)
 
     async def send_password_reset_email(self, to_email: str) -> None:
@@ -91,7 +95,11 @@ class EmailService:
         reset_link = f"{settings.frontend_url}/reset-password"
         message = self._build_reset_message(to_email, reset_link)
         loop = asyncio.get_running_loop()
-        await loop.run_in_executor(None, self._send_smtp, to_email, message)
+        try:
+            await loop.run_in_executor(None, self._send_smtp, to_email, message)
+        except (smtplib.SMTPException, OSError) as exc:
+            logger.error("password_reset_email_failed", to=to_email, error=str(exc))
+            return
         logger.info("password_reset_email_sent", to=to_email)
 
     async def send_text_email(self, to_email: str, subject: str, body: str) -> None:
@@ -105,7 +113,11 @@ class EmailService:
         msg["To"] = to_email
         msg.attach(MIMEText(body, "plain"))
         loop = asyncio.get_running_loop()
-        await loop.run_in_executor(None, self._send_smtp, to_email, msg)
+        try:
+            await loop.run_in_executor(None, self._send_smtp, to_email, msg)
+        except (smtplib.SMTPException, OSError) as exc:
+            logger.error("text_email_failed", to=to_email, subject=subject, error=str(exc))
+            return
         logger.info("text_email_sent", to=to_email, subject=subject)
 
 

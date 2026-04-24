@@ -8,6 +8,7 @@ import useAnalyticsData from "../hooks/useAnalyticsData";
 import { SPINNER_LG } from "../lib/designTokens";
 import { AnalyticsMainCharts, AnalyticsTagsTable, AnalyticsFunnelSection } from "../components/AnalyticsCharts";
 import EmptyState from "../components/EmptyState";
+import ErrorBoundary from "../components/ErrorBoundary";
 import NavBar from "../components/NavBar";
 
 const DATE_RANGES = [
@@ -80,11 +81,17 @@ function Analytics() {
             icon={BarChart3}
           />
         ) : (
-          <div className="flex flex-col gap-6">
-            <AnalyticsMainCharts analytics={analytics} />
-            {tagOfferRates.length > 0 && <AnalyticsTagsTable tagOfferRates={tagOfferRates} />}
-            <AnalyticsFunnelSection funnelData={funnelData} />
-          </div>
+          <ErrorBoundary fallback={
+            <div role="alert" className="rounded-lg border border-gray-200 bg-white p-8 text-center dark:border-gray-700 dark:bg-gray-800">
+              <p className="text-sm font-medium text-gray-900 dark:text-gray-100">Unable to load charts. Try refreshing the page.</p>
+            </div>
+          }>
+            <div className="flex flex-col gap-6">
+              <AnalyticsMainCharts analytics={analytics} />
+              {tagOfferRates.length > 0 && <AnalyticsTagsTable tagOfferRates={tagOfferRates} />}
+              <AnalyticsFunnelSection funnelData={funnelData} />
+            </div>
+          </ErrorBoundary>
         )}
       </main>
     </div>

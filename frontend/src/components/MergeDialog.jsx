@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 
 import X from "lucide-react/dist/esm/icons/x";
 import Loader2 from "lucide-react/dist/esm/icons/loader-2";
+import AlertTriangle from "lucide-react/dist/esm/icons/triangle-alert";
 
 import { BUTTON_PRIMARY, BUTTON_SECONDARY, BUTTON_GHOST, MODAL_BACKDROP, MODAL_CARD } from "../lib/designTokens";
 
@@ -107,6 +108,14 @@ export default function MergeDialog({ apps, onConfirm, onCancel, isPending = fal
           >
             <X className="h-4 w-4 text-gray-400" />
           </button>
+        </div>
+
+        {/* Warning */}
+        <div className="mx-6 mt-4 flex items-start gap-2.5 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 dark:border-amber-700 dark:bg-amber-900/30">
+          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" aria-hidden="true" />
+          <p className="text-sm text-amber-800 dark:text-amber-300">
+            Merging will combine these applications into one. The duplicate will be permanently deleted. This cannot be undone.
+          </p>
         </div>
 
         {/* Column headers */}

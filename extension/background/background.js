@@ -186,7 +186,12 @@ async function handleSave(payload) {
 
 export { handleSave };
 
-chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (sender.id !== chrome.runtime.id) {
+    sendResponse({ error: "Unauthorized" });
+    return;
+  }
+
   if (message.type === MSG.SAVE_APPLICATION) {
     handleSave(message.payload)
       .then(sendResponse)

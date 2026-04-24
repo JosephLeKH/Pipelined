@@ -20,6 +20,8 @@ from database import get_collection
 
 logger = structlog.get_logger()
 
+MAX_EXPORT_ROWS = 50_000
+
 
 async def export_applications(user_id: str, include_archived: bool = False) -> str:
     """Return all matching applications serialized as a CSV string."""
@@ -30,7 +32,9 @@ async def export_applications(user_id: str, include_archived: bool = False) -> s
     if not include_archived:
         mongo_filter["archived"] = {"$ne": True}
 
-    docs = await apps.find(mongo_filter, projection=EXPORT_PROJECTION).to_list(length=None)
+    docs = await apps.find(mongo_filter, projection=EXPORT_PROJECTION).to_list(length=MAX_EXPORT_ROWS)
+    if len(docs) == MAX_EXPORT_ROWS:
+        logger.warning("export_truncated", user_id=user_id, limit=MAX_EXPORT_ROWS)
 
     output = io.StringIO()
     writer = csv.writer(output)

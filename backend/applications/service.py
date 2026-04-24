@@ -8,6 +8,7 @@ from bson import ObjectId
 from bson.errors import InvalidId
 from motor.motor_asyncio import AsyncIOMotorCollection
 from pymongo import ReturnDocument
+from pymongo.errors import DuplicateKeyError
 
 from applications.schemas import ApplicationCreate, ApplicationListQuery, ApplicationUpdate
 from applications.service_ai import _apply_openai_fallback, _derive_company_domain, _score_and_update
@@ -164,7 +165,14 @@ async def create(user_id: str, body: ApplicationCreate) -> dict:
     body_dict["source_url"] = str(body.source_url) if body.source_url else None
     company_domain = _derive_company_domain(body_dict.get("source_url"), body.company)
     doc = _build_application_doc(uid, body_dict, normalised_company, normalised_role, stages, now, company_domain)
-    result = await apps.insert_one(doc)
+    try:
+        result = await apps.insert_one(doc)
+    except DuplicateKeyError:
+        existing = await apps.find_one(
+            {"user_id": uid, "normalised_company": normalised_company, "normalised_role": normalised_role},
+            projection={"_id": 1},
+        )
+        raise DuplicateApplicationError(str(existing["_id"])) if existing else DuplicateApplicationError("unknown")
     doc["_id"] = result.inserted_id
     logger.info("application_created", user_id=user_id, app_id=str(result.inserted_id))
     resume_text = user.get("resume_text", "") if user else ""

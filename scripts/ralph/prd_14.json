@@ -14,7 +14,7 @@
         "All backend tests pass: pytest tests/ -x"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "Security — HIGH severity. ReDoS can cause denial of service via crafted company search."
     },
     {
@@ -28,7 +28,7 @@
         "Normal content script → background communication still works"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "Security — HIGH severity. Without sender validation, malicious pages could invoke API calls."
     },
     {
@@ -42,7 +42,7 @@
         "All backend tests pass: pytest tests/ -x"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "Data integrity — MEDIUM severity. Users report occasional duplicate applications appearing."
     },
     {
@@ -56,7 +56,7 @@
         "All backend tests pass: pytest tests/ -x"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Performance — MEDIUM severity. Unbounded memory allocation is a production risk."
     },
     {
@@ -71,7 +71,7 @@
         "All backend tests pass: pytest tests/ -x"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Reliability — MEDIUM severity. Silent email failures make debugging impossible."
     },
     {
@@ -85,7 +85,7 @@
         "All extension tests pass: npm test"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Code quality — MEDIUM severity. 13 files with identical structure is a maintenance burden."
     },
     {
@@ -99,7 +99,7 @@
         "npm test passes all tests"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "UX safety — MEDIUM severity. Users should understand merge is destructive before confirming."
     },
     {
@@ -113,7 +113,7 @@
         "npm test passes all tests"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "notes": "UX resilience — prevents full page crash from chart rendering errors."
     }
   ]

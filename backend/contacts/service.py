@@ -1,5 +1,6 @@
 """Business logic for contacts: CRUD, application linking, and ping operations."""
 
+import re
 from datetime import datetime, timezone
 
 import structlog
@@ -62,7 +63,7 @@ async def list_contacts(
     contacts = get_collection("contacts")
     filt: dict = {"user_id": user_id}
     if company:
-        filt["company"] = {"$regex": company, "$options": "i"}
+        filt["company"] = {"$regex": re.escape(company), "$options": "i"}
     if relationship:
         filt["relationship"] = relationship
     if application_id:
