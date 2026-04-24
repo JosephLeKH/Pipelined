@@ -117,6 +117,16 @@ export async function fetchTags() {
   return client.get("/applications/tags");
 }
 
+/** Rename a tag across all of the current user's applications. */
+export async function renameTag({ oldTag, newTag }) {
+  return client.patch("/applications/tags/rename", { old_tag: oldTag, new_tag: newTag });
+}
+
+/** Remove a tag from all of the current user's applications. */
+export async function deleteTag(tag) {
+  return client.delete(`/applications/tags/${encodeURIComponent(tag)}`);
+}
+
 /**
  * Download the pipeline PDF report as a Blob.
  * Returns { blob, retryAfter } where retryAfter is seconds (number | null).

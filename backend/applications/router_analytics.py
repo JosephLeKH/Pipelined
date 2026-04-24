@@ -11,6 +11,7 @@ from applications.schemas_analytics import (
     FunnelStageResult,
     StatsResponse,
     TagCount,
+    TagRenameRequest,
 )
 from auth.dependencies import get_verified_user as get_current_user
 from middleware.rate_limit import RATE_REPORT, get_user_key, limiter
@@ -88,3 +89,29 @@ async def get_user_tags(
     user_id = str(user["_id"])
     tags = await service_analytics.get_user_tags(user_id)
     return {"data": {"tags": [TagCount(**t) for t in tags]}}
+
+
+@analytics_router.patch("/tags/rename", status_code=200)
+async def rename_tag(
+    body: TagRenameRequest,
+    user: dict = Depends(get_current_user),
+) -> dict:
+    """Rename a tag across all of the current user's applications."""
+    user_id = str(user["_id"])
+    old_tag = body.old_tag.strip().lower()
+    new_tag = body.new_tag.strip().lower()
+    if old_tag == new_tag:
+        return {"data": {"updated_count": 0}}
+    updated = await service_analytics.rename_tag(user_id, old_tag, new_tag)
+    return {"data": {"updated_count": updated}}
+
+
+@analytics_router.delete("/tags/{tag}", status_code=200)
+async def delete_tag(
+    tag: str,
+    user: dict = Depends(get_current_user),
+) -> dict:
+    """Remove a tag from all of the current user's applications."""
+    user_id = str(user["_id"])
+    updated = await service_analytics.delete_tag(user_id, tag.strip().lower())
+    return {"data": {"updated_count": updated}}

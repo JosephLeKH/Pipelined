@@ -213,3 +213,31 @@ async def get_user_tags(user_id: str) -> list[dict]:
         {"$project": {"_id": 0, "name": "$_id", "count": 1}},
     ]
     return await col.aggregate(pipeline).to_list(length=None)
+
+
+async def rename_tag(user_id: str, old_tag: str, new_tag: str) -> int:
+    """Rename a tag across all of a user's applications. Returns the number of updated documents."""
+    col = get_collection("applications")
+    uid = ObjectId(user_id)
+    # Two-step: add new tag, then remove old tag (atomic per document via $addToSet + $pull)
+    result = await col.update_many(
+        {"user_id": uid, "tags": old_tag},
+        [{"$set": {"tags": {
+            "$setUnion": [
+                {"$filter": {"input": "$tags", "cond": {"$ne": ["$$this", old_tag]}}},
+                [new_tag],
+            ]
+        }}}],
+    )
+    return result.modified_count
+
+
+async def delete_tag(user_id: str, tag: str) -> int:
+    """Remove a tag from all of a user's applications. Returns the number of updated documents."""
+    col = get_collection("applications")
+    uid = ObjectId(user_id)
+    result = await col.update_many(
+        {"user_id": uid, "tags": tag},
+        {"$pull": {"tags": tag}},
+    )
+    return result.modified_count

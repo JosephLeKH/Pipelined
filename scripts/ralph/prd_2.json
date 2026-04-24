@@ -342,7 +342,7 @@
         "npm run build passes (no Tailwind purge issues with dynamic dark: classes)"
       ],
       "priority": 18,
-      "passes": false,
+      "passes": true,
       "notes": "Dark mode is one of the most requested features by technical users. Tailwind's dark mode system makes this tractable."
     },
     {
@@ -384,7 +384,7 @@
         "npm test passes"
       ],
       "priority": 20,
-      "passes": false,
+      "passes": true,
       "notes": "Tags are freeform and currently have no autocomplete. Users who track 50+ applications inevitably create tag variants (e.g. 'big-tech' vs 'big tech' vs 'BigTech')."
     },
     {

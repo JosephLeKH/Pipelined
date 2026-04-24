@@ -12,6 +12,7 @@ import Menu from "lucide-react/dist/esm/icons/menu";
 import Moon from "lucide-react/dist/esm/icons/moon";
 import Settings from "lucide-react/dist/esm/icons/settings";
 import Sun from "lucide-react/dist/esm/icons/sun";
+import TagIcon from "lucide-react/dist/esm/icons/tag";
 import Trophy from "lucide-react/dist/esm/icons/trophy";
 import Monitor from "lucide-react/dist/esm/icons/monitor";
 import X from "lucide-react/dist/esm/icons/x";
@@ -29,6 +30,7 @@ const NAV_LINKS = [
   { to: "/calendar", label: "Calendar", Icon: CalendarDays },
   { to: "/analytics", label: "Analytics", Icon: BarChart2 },
   { to: "/activity", label: "Activity", Icon: Activity },
+  { to: "/tags", label: "Tags", Icon: TagIcon },
   { to: "/settings", label: "Settings", Icon: Settings },
 ];
 

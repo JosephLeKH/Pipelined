@@ -94,3 +94,10 @@ class FunnelStageResult(BaseModel):
     conversion_rate: float
     avg_days_in_stage: float | None
     dropped_count: int
+
+
+class TagRenameRequest(BaseModel):
+    model_config = ConfigDict(strict=True)
+
+    old_tag: str = Field(..., min_length=1, max_length=50)
+    new_tag: str = Field(..., min_length=1, max_length=50)

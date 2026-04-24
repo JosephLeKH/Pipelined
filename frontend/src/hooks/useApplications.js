@@ -16,6 +16,8 @@ import {
   fetchFunnel,
   fetchStats,
   fetchTags,
+  renameTag,
+  deleteTag,
   importApplicationsCsv,
   mergeApplications,
   restoreApplication,
@@ -252,6 +254,30 @@ export function useBulkEditApplications() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: KEYS.all });
       queryClient.invalidateQueries({ queryKey: KEYS.stats });
+    },
+  });
+}
+
+/** Rename a tag across all user applications. */
+export function useRenameTag() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ oldTag, newTag }) => renameTag({ oldTag, newTag }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: KEYS.tags });
+      queryClient.invalidateQueries({ queryKey: KEYS.all });
+    },
+  });
+}
+
+/** Delete a tag from all user applications. */
+export function useDeleteTag() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (tag) => deleteTag(tag),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: KEYS.tags });
+      queryClient.invalidateQueries({ queryKey: KEYS.all });
     },
   });
 }
