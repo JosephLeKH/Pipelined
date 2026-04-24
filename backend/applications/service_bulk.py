@@ -13,6 +13,7 @@ from pymongo import ReturnDocument
 
 from applications.schemas import BulkEditUpdate
 from applications.schemas_analytics import ImportResult, ImportRowError, MAX_IMPORT_ROWS
+from database import get_client
 from applications.service import fetch_user_stages
 from applications.service_constants import DELETED_PURGE_DAYS, INITIAL_STAGE, MERGEABLE_FIELDS
 from database import get_client, get_collection
@@ -82,14 +83,21 @@ async def bulk_edit(user_id: str, application_ids: list[str], update: BulkEditUp
     update_doc: dict = {"$set": set_fields}
     if update.current_stage is not None:
         update_doc["$push"] = {"stage_history": {"stage": update.current_stage, "transitioned_at": now}}
-    if update.tags_add:
+    if update.tags_add and update.tags_remove:
+        # Both add and remove: use a transaction to ensure atomicity (order matters)
+        pass  # handled after the main update
+    elif update.tags_add:
         update_doc["$addToSet"] = {"tags": {"$each": update.tags_add}}
-    if update.tags_remove and not update.tags_add:
+    elif update.tags_remove:
         update_doc["$pull"] = {"tags": {"$in": update.tags_remove}}
     result = await apps.update_many(q, update_doc)
     modified_count = result.modified_count
     if update.tags_add and update.tags_remove:
-        await apps.update_many(q, {"$pull": {"tags": {"$in": update.tags_remove}}})
+        client = get_client()
+        async with await client.start_session() as session:
+            async with session.start_transaction():
+                await apps.update_many(q, {"$addToSet": {"tags": {"$each": update.tags_add}}}, session=session)
+                await apps.update_many(q, {"$pull": {"tags": {"$in": update.tags_remove}}}, session=session)
     logger.info("bulk_edit_applied", user_id=user_id, count=modified_count)
     return modified_count
 

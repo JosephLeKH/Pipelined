@@ -14,7 +14,7 @@
         "All backend tests pass: pytest tests/ -x"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "Silent failures make sitemap/robots.txt serve stale data with no monitoring visibility."
     },
     {
@@ -28,13 +28,13 @@
         "All backend tests pass: pytest tests/ -x"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "tier_check silently falling back to 'free' could let paying users lose features; service_ai silently skipping AI parsing loses data."
     },
     {
       "id": "US-185",
       "title": "Add error handler to fire-and-forget AI scoring background task",
-      "description": "backend/applications/service.py lines 174-179: asyncio.create_task(_score_and_update(...)) is fire-and-forget — any exception is silently swallowed. Wrap the task body in a try/except that logs errors via structlog. The task should catch Exception (not just QuotaExceededError), log it with app_id and user_id context, and not re-raise.",
+      "description": "backend/applications/service.py lines 174-179: asyncio.create_task(_score_and_update(...)) is fire-and-forget \u2014 any exception is silently swallowed. Wrap the task body in a try/except that logs errors via structlog. The task should catch Exception (not just QuotaExceededError), log it with app_id and user_id context, and not re-raise.",
       "acceptanceCriteria": [
         "Background scoring task has try/except wrapping the full operation",
         "Caught exceptions are logged via structlog with app_id and user_id",
@@ -42,8 +42,8 @@
         "All backend tests pass: pytest tests/ -x"
       ],
       "priority": 1,
-      "passes": false,
-      "notes": "Without this, failed fit scores are invisible — users never get scores and nobody knows why."
+      "passes": true,
+      "notes": "Without this, failed fit scores are invisible \u2014 users never get scores and nobody knows why."
     },
     {
       "id": "US-186",
@@ -56,7 +56,7 @@
         "All backend tests pass: pytest tests/ -x"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "Race condition allows users to exceed daily AI limits. Low probability but real."
     },
     {
@@ -70,8 +70,8 @@
         "All backend tests pass: pytest tests/ -x"
       ],
       "priority": 2,
-      "passes": false,
-      "notes": "Data integrity issue — inconsistent tag state on partial failure."
+      "passes": true,
+      "notes": "Data integrity issue \u2014 inconsistent tag state on partial failure."
     },
     {
       "id": "US-188",
@@ -84,13 +84,13 @@
         "npm test passes all tests"
       ],
       "priority": 1,
-      "passes": false,
-      "notes": "Crashes Dashboard in private browsing mode — common user scenario."
+      "passes": true,
+      "notes": "Crashes Dashboard in private browsing mode \u2014 common user scenario."
     },
     {
       "id": "US-189",
       "title": "Log AuthContext fetchCurrentUser errors instead of silently swallowing",
-      "description": "frontend/src/context/AuthContext.jsx line 16: .catch(() => {}) silently swallows all errors from fetchCurrentUser(). Replace with .catch((err) => console.error('[auth] Failed to fetch current user:', err.message)) so auth failures are visible in browser console for debugging. Do NOT change the behavior — user should still see unauthenticated state, just with a log.",
+      "description": "frontend/src/context/AuthContext.jsx line 16: .catch(() => {}) silently swallows all errors from fetchCurrentUser(). Replace with .catch((err) => console.error('[auth] Failed to fetch current user:', err.message)) so auth failures are visible in browser console for debugging. Do NOT change the behavior \u2014 user should still see unauthenticated state, just with a log.",
       "acceptanceCriteria": [
         "AuthContext .catch() logs the error message via console.error",
         "Log includes '[auth]' prefix for filtering",
@@ -98,8 +98,8 @@
         "npm test passes all tests"
       ],
       "priority": 2,
-      "passes": false,
-      "notes": "Silent auth failures are the #1 debugging headache — this makes them visible."
+      "passes": true,
+      "notes": "Silent auth failures are the #1 debugging headache \u2014 this makes them visible."
     },
     {
       "id": "US-190",
@@ -113,7 +113,7 @@
         "npm test passes all tests"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Blocking dialogs are poor UX, especially on mobile."
     },
     {
@@ -126,8 +126,8 @@
         "All backend tests pass: pytest tests/ -x"
       ],
       "priority": 2,
-      "passes": false,
-      "notes": "Input validation at system boundary — prevents noisy 500 errors in logs."
+      "passes": true,
+      "notes": "Input validation at system boundary \u2014 prevents noisy 500 errors in logs."
     },
     {
       "id": "US-192",
@@ -139,8 +139,8 @@
         "npm test passes all tests"
       ],
       "priority": 2,
-      "passes": false,
-      "notes": "Performance — prevents unnecessary re-renders and refetches on large boards."
+      "passes": true,
+      "notes": "Performance \u2014 prevents unnecessary re-renders and refetches on large boards."
     }
   ]
 }

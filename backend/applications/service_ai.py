@@ -2,6 +2,7 @@
 
 from datetime import datetime, timezone
 
+import openai
 import structlog
 from bson import ObjectId
 
@@ -25,8 +26,8 @@ async def _apply_openai_fallback(body: ApplicationCreate) -> ApplicationCreate:
 
     try:
         parsed = await parse_with_openai(page_text)
-    except Exception:
-        logger.warning("openai_fallback_error")
+    except (openai.OpenAIError, ValueError, KeyError):
+        logger.warning("openai_fallback_error", exc_info=True)
         return body
 
     updates: dict = {}
@@ -80,15 +81,21 @@ async def _score_and_update(
     except QuotaExceededError as exc:
         logger.info("fit_score_skipped_quota", app_id=app_id, user_id=user_id, limit=exc.limit)
         return
+    except Exception:
+        logger.error("fit_score_scoring_failed", app_id=app_id, user_id=user_id, exc_info=True)
+        return
     if result.get("fit_score") is None:
         return
-    apps = get_collection("applications")
-    ai_analysis = {**result, "scored_at": datetime.now(timezone.utc)}
-    update_result = await apps.update_one(
-        {"_id": ObjectId(app_id), "user_id": ObjectId(user_id)},
-        {"$set": {"ai_analysis": ai_analysis}},
-    )
-    if update_result.matched_count == 0:
-        logger.warning("fit_score_user_mismatch", app_id=app_id, user_id=user_id)
-        return
-    logger.info("fit_score_saved", app_id=app_id, fit_score=result["fit_score"])
+    try:
+        apps = get_collection("applications")
+        ai_analysis = {**result, "scored_at": datetime.now(timezone.utc)}
+        update_result = await apps.update_one(
+            {"_id": ObjectId(app_id), "user_id": ObjectId(user_id)},
+            {"$set": {"ai_analysis": ai_analysis}},
+        )
+        if update_result.matched_count == 0:
+            logger.warning("fit_score_user_mismatch", app_id=app_id, user_id=user_id)
+            return
+        logger.info("fit_score_saved", app_id=app_id, fit_score=result["fit_score"])
+    except Exception:
+        logger.error("fit_score_persist_failed", app_id=app_id, user_id=user_id, exc_info=True)

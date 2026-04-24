@@ -24,7 +24,10 @@ import { trackEvent } from "../lib/analytics";
 function Dashboard() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isImportOpen, setIsImportOpen] = useState(false);
-  const [viewMode, setViewMode] = useState(() => localStorage.getItem(VIEW_MODE_STORAGE_KEY) ?? "list");
+  const [viewMode, setViewMode] = useState(() => {
+    try { return localStorage.getItem(VIEW_MODE_STORAGE_KEY) ?? "list"; }
+    catch { return "list"; }
+  });
   const { handleCsvExport, isLoading: isExporting } = useApplicationExport();
   const { filters, selectedId, includeArchived, handleSelect, handleClosePanel, handleClearFilters, handleViewFollowUps } = useDashboardFilters();
   const { data: selectedApp } = useApplication(selectedId);
@@ -37,7 +40,8 @@ function Dashboard() {
 
   const handleSetViewMode = useCallback((mode) => {
     setViewMode(mode);
-    localStorage.setItem(VIEW_MODE_STORAGE_KEY, mode);
+    try { localStorage.setItem(VIEW_MODE_STORAGE_KEY, mode); }
+    catch { console.warn("[dashboard] Failed to persist view mode to localStorage"); }
   }, []);
 
   const shortcutsEnabled = !isModalOpen && !isImportOpen;

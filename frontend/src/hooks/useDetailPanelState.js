@@ -6,11 +6,26 @@ import { useDeleteApplication, useRestoreApplication, useUpdateApplication } fro
 import { trackEvent } from "../lib/analytics";
 
 function useDetailPanelActions(cachedApp, setCachedApp, notesDirty, setNotesDirty, onClose, updateApp) {
+  const [showDiscardDialog, setShowDiscardDialog] = useState(false);
+
   const confirmClose = useCallback(() => {
-    if (notesDirty && !window.confirm("Discard unsaved notes?")) return;
+    if (notesDirty) {
+      setShowDiscardDialog(true);
+      return;
+    }
     setNotesDirty(false);
     onClose();
   }, [notesDirty, setNotesDirty, onClose]);
+
+  const confirmDiscard = useCallback(() => {
+    setShowDiscardDialog(false);
+    setNotesDirty(false);
+    onClose();
+  }, [setNotesDirty, onClose]);
+
+  const cancelDiscard = useCallback(() => {
+    setShowDiscardDialog(false);
+  }, []);
 
   const handleStageChange = useCallback((e) => {
     if (!cachedApp) return;
@@ -28,7 +43,7 @@ function useDetailPanelActions(cachedApp, setCachedApp, notesDirty, setNotesDirt
     [cachedApp, updateApp]
   );
 
-  return { confirmClose, handleStageChange, handleUpdate };
+  return { confirmClose, handleStageChange, handleUpdate, showDiscardDialog, confirmDiscard, cancelDiscard };
 }
 
 function useDetailPanelUndo(cachedApp, onClose, deleteApp, restoreApp) {
@@ -65,7 +80,7 @@ export function useDetailPanelState(application, onClose, resetDrag) {
     if (application) { setCachedApp(application); resetDrag(); }
   }, [application, resetDrag]);
 
-  const { confirmClose, handleStageChange, handleUpdate } = useDetailPanelActions(
+  const { confirmClose, handleStageChange, handleUpdate, showDiscardDialog, confirmDiscard, cancelDiscard } = useDetailPanelActions(
     cachedApp, setCachedApp, notesDirty, setNotesDirty, onClose, updateApp
   );
 
@@ -73,5 +88,5 @@ export function useDetailPanelState(application, onClose, resetDrag) {
     cachedApp, onClose, deleteApp, restoreApp
   );
 
-  return { cachedApp, setNotesDirty, undoPendingId, confirmClose, handleDelete, handleUndoDelete, handleUndoDismiss, handleStageChange, handleUpdate };
+  return { cachedApp, setNotesDirty, undoPendingId, confirmClose, handleDelete, handleUndoDelete, handleUndoDismiss, handleStageChange, handleUpdate, showDiscardDialog, confirmDiscard, cancelDiscard };
 }

@@ -22,6 +22,19 @@ logger = structlog.get_logger()
 
 router = APIRouter(prefix="/api/jobs", tags=["jobs"])
 
+
+def _parse_date(value: str | None) -> datetime | None:
+    """Parse ISO 8601 date string, raising 400 on invalid format."""
+    if value is None:
+        return None
+    try:
+        return datetime.fromisoformat(value)
+    except ValueError:
+        raise HTTPException(
+            status_code=400,
+            detail={"error": {"code": "INVALID_DATE", "message": "date_from must be ISO 8601 format"}},
+        )
+
 JOB_NOT_FOUND_DETAIL = {"code": "JOB_NOT_FOUND", "message": "Job listing not found."}
 
 
@@ -59,7 +72,7 @@ async def list_jobs(
         experience_level=experience_level,
         company_type=company_type,
         remote_status=remote_status,
-        date_from=datetime.fromisoformat(date_from) if date_from else None,
+        date_from=_parse_date(date_from),
         salary_min=salary_min,
         salary_max=salary_max,
         hide_applied=hide_applied,

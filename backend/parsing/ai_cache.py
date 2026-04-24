@@ -115,42 +115,33 @@ async def check_budget() -> bool:
 
 
 async def check_and_increment_quota(user_id: str) -> None:
-    """Check and increment the user's daily fit-score quota.
+    """Check and increment the user's daily fit-score quota atomically.
 
-    Resets the counter when the date has changed.
+    Uses findOneAndUpdate to prevent race conditions between concurrent requests.
     Raises QuotaExceededError if the daily limit is reached.
     Silently skips when DB is unavailable (e.g., unit tests).
     """
     today = datetime.now(timezone.utc).date().isoformat()
+    limit = settings.ai_fit_scores_daily_limit
     try:
         users = get_collection("users")
         oid = ObjectId(user_id)
-        user = await users.find_one({"_id": oid}, projection={"ai_usage": 1})
     except RuntimeError:
         return
-    if user is None:
-        return
 
-    ai_usage = user.get("ai_usage") or {}
-    last_reset = ai_usage.get("last_reset_date")
-    fit_scores_today = ai_usage.get("fit_scores_today", 0)
+    # Step 1: Atomically reset counter if the date has changed.
+    await users.update_one(
+        {"_id": oid, "ai_usage.last_reset_date": {"$ne": today}},
+        {"$set": {"ai_usage.last_reset_date": today, "ai_usage.fit_scores_today": 0}},
+    )
 
-    try:
-        if last_reset != today:
-            fit_scores_today = 0
-            await users.update_one(
-                {"_id": oid},
-                {"$set": {"ai_usage.last_reset_date": today, "ai_usage.fit_scores_today": 0}},
-            )
-
-        if fit_scores_today >= settings.ai_fit_scores_daily_limit:
-            raise QuotaExceededError(settings.ai_fit_scores_daily_limit)
-
-        await users.update_one({"_id": oid}, {"$inc": {"ai_usage.fit_scores_today": 1}})
-    except QuotaExceededError:
-        raise
-    except RuntimeError:
-        return
+    # Step 2: Atomically increment if under limit. Returns None if at/over limit.
+    result = await users.find_one_and_update(
+        {"_id": oid, "ai_usage.fit_scores_today": {"$lt": limit}},
+        {"$inc": {"ai_usage.fit_scores_today": 1}},
+    )
+    if result is None:
+        raise QuotaExceededError(limit)
 
 
 def get_ai_scores_remaining(user: dict) -> int:

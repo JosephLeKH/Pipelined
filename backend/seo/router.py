@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 import structlog
 from fastapi import APIRouter
 from fastapi.responses import PlainTextResponse, Response
+from pymongo.errors import PyMongoError
 
 from config import settings
 from database import get_collection
@@ -46,8 +47,8 @@ async def _get_latest_job_lastmod() -> str:
         doc = await jobs.find_one({}, sort=[("ingested_at", -1)], projection={"ingested_at": 1})
         if doc and doc.get("ingested_at"):
             return doc["ingested_at"].strftime("%Y-%m-%d")
-    except Exception:
-        pass
+    except PyMongoError:
+        logger.error("sitemap_job_lastmod_failed", exc_info=True)
     return datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
 
@@ -61,7 +62,8 @@ async def _get_active_share_slugs() -> list[str]:
             projection={"slug": 1},
         )
         return [doc["slug"] async for doc in cursor]
-    except Exception:
+    except PyMongoError:
+        logger.error("sitemap_share_slugs_failed", exc_info=True)
         return []
 
 

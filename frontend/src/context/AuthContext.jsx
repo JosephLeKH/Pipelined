@@ -13,7 +13,7 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     fetchCurrentUser()
       .then(setUser)
-      .catch(() => {})
+      .catch((err) => console.error("[auth] Failed to fetch current user:", err.message))
       .finally(() => setIsInitialized(true));
   }, []);
 

@@ -9,7 +9,22 @@ import { PanelBody } from "./DetailPanelBody";
 import UndoToast from "./UndoToast";
 import { usePanelDrag } from "../hooks/usePanelDrag";
 
-function PanelContent({ displayApp, panelDragHandlers, confirmClose, handleDelete, handleStageChange, handleUpdate, onAddEvent, setNotesDirty, undoPendingId, handleUndoDelete, handleUndoDismiss }) {
+function DiscardDialog({ onDiscard, onCancel }) {
+  return (
+    <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/40" role="alertdialog" aria-modal="true" aria-labelledby="discard-dialog-title">
+      <div className="mx-4 w-full max-w-sm rounded-lg bg-white p-5 shadow-lg dark:bg-gray-800">
+        <h3 id="discard-dialog-title" className="text-base font-semibold text-gray-900 dark:text-gray-100">Discard unsaved notes?</h3>
+        <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">Your changes will be lost.</p>
+        <div className="mt-4 flex justify-end gap-2">
+          <button type="button" onClick={onCancel} className="rounded-md px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">Cancel</button>
+          <button type="button" onClick={onDiscard} className="rounded-md bg-red-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-red-700">Discard</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PanelContent({ displayApp, panelDragHandlers, confirmClose, handleDelete, handleStageChange, handleUpdate, onAddEvent, setNotesDirty, undoPendingId, handleUndoDelete, handleUndoDismiss, showDiscardDialog, confirmDiscard, cancelDiscard }) {
   return (
     <>
       {displayApp && (
@@ -25,6 +40,7 @@ function PanelContent({ displayApp, panelDragHandlers, confirmClose, handleDelet
           />
         </div>
       )}
+      {showDiscardDialog && <DiscardDialog onDiscard={confirmDiscard} onCancel={cancelDiscard} />}
       {undoPendingId && (
         <UndoToast message="Application deleted." onUndo={handleUndoDelete} onDismiss={handleUndoDismiss} />
       )}
@@ -38,6 +54,7 @@ function DetailPanel({ application, onClose, onAddEvent }) {
   const { dragOffset, reset: resetDrag, handlers: panelDragHandlers } = usePanelDrag(onClose);
   const { cachedApp, setNotesDirty, undoPendingId, confirmClose, handleDelete,
     handleUndoDelete, handleUndoDismiss, handleStageChange, handleUpdate,
+    showDiscardDialog, confirmDiscard, cancelDiscard,
   } = useDetailPanelState(application, onClose, resetDrag);
   const panelOpen = Boolean(application);
   const { handlePanelKeyDown, handleOverlayClick } = useDetailPanelKeyboard(panelRef, overlayRef, confirmClose, panelOpen);
@@ -63,6 +80,7 @@ function DetailPanel({ application, onClose, onAddEvent }) {
           handleDelete={handleDelete} handleStageChange={handleStageChange} handleUpdate={handleUpdate}
           onAddEvent={onAddEvent} setNotesDirty={setNotesDirty} undoPendingId={undoPendingId}
           handleUndoDelete={handleUndoDelete} handleUndoDismiss={handleUndoDismiss}
+          showDiscardDialog={showDiscardDialog} confirmDiscard={confirmDiscard} cancelDiscard={cancelDiscard}
         />
       </div>
     </div>

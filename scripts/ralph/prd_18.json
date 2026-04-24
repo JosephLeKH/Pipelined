@@ -1,12 +1,12 @@
 {
   "project": "Pipelined",
   "branchName": "ralph/pipelined-v18",
-  "description": "Warm palette migration for remaining components — replace all slate-* Tailwind classes with gray-* (warm) equivalents and use semantic design tokens where applicable. These files were not covered by prd_16 (design tokens) or prd_17 (page-level redesign).",
+  "description": "Warm palette migration for remaining components \u2014 replace all slate-* Tailwind classes with gray-* (warm) equivalents and use semantic design tokens where applicable. These files were not covered by prd_16 (design tokens) or prd_17 (page-level redesign).",
   "userStories": [
     {
       "id": "US-237",
       "title": "Migrate Pricing and Activity pages to warm palette",
-      "description": "In frontend/src/pages/Pricing.jsx (22 slate refs) and frontend/src/pages/Activity.jsx (16 slate refs), replace all slate-* classes with gray-* equivalents. slate-50→gray-50, slate-100→gray-100, slate-200→gray-200, slate-300→gray-300, slate-400→gray-400, slate-500→gray-500, slate-600→gray-600, slate-700→gray-700, slate-800→gray-800, slate-900→gray-900. Also replace border classes: border-slate-*→border-gray-*. Use CARD_BASE token where cards use inline border+bg classes. Use BUTTON_PRIMARY/BUTTON_SECONDARY tokens where buttons use inline classes.",
+      "description": "In frontend/src/pages/Pricing.jsx (22 slate refs) and frontend/src/pages/Activity.jsx (16 slate refs), replace all slate-* classes with gray-* equivalents. slate-50\u2192gray-50, slate-100\u2192gray-100, slate-200\u2192gray-200, slate-300\u2192gray-300, slate-400\u2192gray-400, slate-500\u2192gray-500, slate-600\u2192gray-600, slate-700\u2192gray-700, slate-800\u2192gray-800, slate-900\u2192gray-900. Also replace border classes: border-slate-*\u2192border-gray-*. Use CARD_BASE token where cards use inline border+bg classes. Use BUTTON_PRIMARY/BUTTON_SECONDARY tokens where buttons use inline classes.",
       "acceptanceCriteria": [
         "Zero slate-* classes remain in Pricing.jsx",
         "Zero slate-* classes remain in Activity.jsx",
@@ -14,7 +14,7 @@
         "npm run build succeeds"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "Pricing is a public-facing page. Activity is frequently viewed."
     },
     {
@@ -28,13 +28,13 @@
         "npm run build succeeds"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "OfferComparison has table styling; PrepSection has form elements."
     },
     {
       "id": "US-239",
       "title": "Migrate FeedbackWidget, FilterBar, and CommandPalette to warm palette",
-      "description": "In frontend/src/components/FeedbackWidget.jsx (13 slate refs), frontend/src/components/FilterBar.jsx (12 slate refs), and frontend/src/components/CommandPalette.jsx (12 slate refs), replace all slate-* classes with gray-* equivalents. FeedbackWidget and CommandPalette are modal-like — use MODAL_BACKDROP/MODAL_CARD tokens where they have inline backdrop/card class combinations. FilterBar inputs should use INPUT_BASE where applicable.",
+      "description": "In frontend/src/components/FeedbackWidget.jsx (13 slate refs), frontend/src/components/FilterBar.jsx (12 slate refs), and frontend/src/components/CommandPalette.jsx (12 slate refs), replace all slate-* classes with gray-* equivalents. FeedbackWidget and CommandPalette are modal-like \u2014 use MODAL_BACKDROP/MODAL_CARD tokens where they have inline backdrop/card class combinations. FilterBar inputs should use INPUT_BASE where applicable.",
       "acceptanceCriteria": [
         "Zero slate-* classes remain in FeedbackWidget.jsx",
         "Zero slate-* classes remain in FilterBar.jsx",
@@ -43,13 +43,13 @@
         "npm run build succeeds"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "CommandPalette is a highly visible component. FeedbackWidget appears on every page."
     },
     {
       "id": "US-240",
       "title": "Migrate HeroSection and ApplicationRow components to warm palette",
-      "description": "In frontend/src/components/HeroSection.jsx (11 slate refs), frontend/src/components/ApplicationRow.jsx (8 slate refs), and frontend/src/components/ApplicationRowActions.jsx (10 slate refs), replace all slate-* classes with gray-* equivalents. HeroSection should use bg-surface-secondary for the hero background, font-display for headings. ApplicationRow is the most-rendered component in the dashboard — use BADGE_* tokens for status badges.",
+      "description": "In frontend/src/components/HeroSection.jsx (11 slate refs), frontend/src/components/ApplicationRow.jsx (8 slate refs), and frontend/src/components/ApplicationRowActions.jsx (10 slate refs), replace all slate-* classes with gray-* equivalents. HeroSection should use bg-surface-secondary for the hero background, font-display for headings. ApplicationRow is the most-rendered component in the dashboard \u2014 use BADGE_* tokens for status badges.",
       "acceptanceCriteria": [
         "Zero slate-* classes remain in HeroSection.jsx",
         "Zero slate-* classes remain in ApplicationRow.jsx",
@@ -57,8 +57,8 @@
         "npm run build succeeds"
       ],
       "priority": 1,
-      "passes": false,
-      "notes": "ApplicationRow is rendered for every application — high visual impact."
+      "passes": true,
+      "notes": "ApplicationRow is rendered for every application \u2014 high visual impact."
     },
     {
       "id": "US-241",
@@ -70,7 +70,7 @@
         "npm run build succeeds"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "Kanban view is a primary interaction mode."
     },
     {
@@ -83,8 +83,8 @@
         "npm run build succeeds"
       ],
       "priority": 2,
-      "passes": false,
-      "notes": "DetailPanel is the application detail view — seen constantly."
+      "passes": true,
+      "notes": "DetailPanel is the application detail view \u2014 seen constantly."
     },
     {
       "id": "US-243",
@@ -96,21 +96,21 @@
         "npm run build succeeds"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Auth and contact pages are part of core user flows."
     },
     {
       "id": "US-244",
       "title": "Migrate remaining small components to warm palette",
-      "description": "In frontend/src/components/ShortcutHelp.jsx (6 slate refs), frontend/src/components/WeeklyGoalSection.jsx (5 slate refs), frontend/src/components/SavedSearchesSidebar.jsx (5 slate refs), frontend/src/components/ResumeSection.jsx (5 slate refs), frontend/src/components/DigestSection.jsx (6 slate refs), frontend/src/components/NotesEditor.jsx (6 slate refs), frontend/src/components/PrepChecklist.jsx (4 slate refs), frontend/src/components/SaveSearchPopover.jsx (3 slate refs), frontend/src/components/OfferDetailsSection.jsx (3 slate refs), frontend/src/components/SharePipeline.jsx (4 slate refs), frontend/src/components/ShareTimeline.jsx (4 slate refs), frontend/src/components/TagInput.jsx (4 slate refs), frontend/src/components/PipelineStagesEditor.jsx (8 slate refs), frontend/src/components/NewEventFormFields.jsx (6 slate refs), frontend/src/components/NewEventForm.jsx (3 slate refs), frontend/src/components/CalendarEventDetail.jsx (9 slate refs), frontend/src/components/ManualAddForm.jsx (4 slate refs), frontend/src/components/JobFilters.jsx (2 slate refs), replace all slate-* classes with gray-* equivalents. This is a batch cleanup — do a find-and-replace of 'slate-' to 'gray-' in each file, then verify build passes.",
+      "description": "In frontend/src/components/ShortcutHelp.jsx (6 slate refs), frontend/src/components/WeeklyGoalSection.jsx (5 slate refs), frontend/src/components/SavedSearchesSidebar.jsx (5 slate refs), frontend/src/components/ResumeSection.jsx (5 slate refs), frontend/src/components/DigestSection.jsx (6 slate refs), frontend/src/components/NotesEditor.jsx (6 slate refs), frontend/src/components/PrepChecklist.jsx (4 slate refs), frontend/src/components/SaveSearchPopover.jsx (3 slate refs), frontend/src/components/OfferDetailsSection.jsx (3 slate refs), frontend/src/components/SharePipeline.jsx (4 slate refs), frontend/src/components/ShareTimeline.jsx (4 slate refs), frontend/src/components/TagInput.jsx (4 slate refs), frontend/src/components/PipelineStagesEditor.jsx (8 slate refs), frontend/src/components/NewEventFormFields.jsx (6 slate refs), frontend/src/components/NewEventForm.jsx (3 slate refs), frontend/src/components/CalendarEventDetail.jsx (9 slate refs), frontend/src/components/ManualAddForm.jsx (4 slate refs), frontend/src/components/JobFilters.jsx (2 slate refs), replace all slate-* classes with gray-* equivalents. This is a batch cleanup \u2014 do a find-and-replace of 'slate-' to 'gray-' in each file, then verify build passes.",
       "acceptanceCriteria": [
         "Zero slate-* classes remain in all listed files",
         "npm run build succeeds",
-        "No visual regressions — gray-* maps to warm palette"
+        "No visual regressions \u2014 gray-* maps to warm palette"
       ],
       "priority": 2,
-      "passes": false,
-      "notes": "Mechanical find-and-replace — slate-N maps 1:1 to warm gray-N in our tailwind config."
+      "passes": true,
+      "notes": "Mechanical find-and-replace \u2014 slate-N maps 1:1 to warm gray-N in our tailwind config."
     },
     {
       "id": "US-245",
@@ -122,8 +122,8 @@
         "grep -r 'slate-' frontend/src/ --include='*.jsx' --include='*.js' returns zero matches"
       ],
       "priority": 2,
-      "passes": false,
-      "notes": "Final sweep — after this story, zero slate references should remain in the frontend."
+      "passes": true,
+      "notes": "Final sweep \u2014 after this story, zero slate references should remain in the frontend."
     }
   ]
 }

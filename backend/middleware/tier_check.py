@@ -2,6 +2,8 @@
 
 import structlog
 from bson import ObjectId
+from bson.errors import InvalidId
+from pymongo.errors import PyMongoError
 
 from config import TIER_LIMITS, UNLIMITED, settings
 from database import get_collection
@@ -35,7 +37,7 @@ async def _get_user_tier(user_id: str) -> str:
         users = get_collection("users")
         doc = await users.find_one({"_id": ObjectId(user_id)}, projection={"tier": 1})
         return (doc or {}).get("tier", "free")
-    except Exception:
+    except (PyMongoError, InvalidId):
         logger.error("tier_lookup_failed", user_id=user_id, exc_info=True)
         return "free"
 
@@ -49,7 +51,7 @@ async def _count_resource(user_id: str, resource: str) -> int:
         col = get_collection(collection_name)
         uid = ObjectId(user_id)
         return await col.count_documents({"user_id": uid, "deleted": {"$ne": True}})
-    except Exception:
+    except (PyMongoError, InvalidId):
         logger.error("resource_count_failed", user_id=user_id, resource=resource, exc_info=True)
         return 0
 

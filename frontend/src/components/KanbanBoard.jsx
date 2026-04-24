@@ -63,7 +63,9 @@ function KanbanMobileView({ stages, mobileStage, setMobileStage, byStage, onSele
   );
 }
 
-function KanbanBoard({ filters = {}, onSelect }) {
+const DEFAULT_FILTERS = {};
+
+function KanbanBoard({ filters = DEFAULT_FILTERS, onSelect }) {
   const { user } = useAuth();
   const stages = user?.default_stages ?? STAGES;
   const { mobileStage, setMobileStage, handleMobileTouchStart, handleMobileTouchEnd } = useKanbanMobileSwipe(stages);
