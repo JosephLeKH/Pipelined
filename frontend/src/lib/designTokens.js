@@ -22,14 +22,16 @@ export const BUTTON_SECONDARY =
   "bg-white border border-border-default hover:border-border-strong text-gray-700 " +
   "hover:text-gray-900 font-medium rounded-md px-4 py-2 text-sm font-display " +
   "transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500/30 " +
-  "active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none";
+  "active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none " +
+  "dark:bg-gray-800 dark:border-dark-border dark:text-gray-300 dark:hover:text-gray-100 dark:hover:border-gray-500";
 
 /** Ghost button — transparent bg, muted text, surface hover. */
 export const BUTTON_GHOST =
   "bg-transparent text-gray-500 hover:text-gray-700 hover:bg-surface-secondary " +
   "rounded-md px-3 py-2 text-sm transition-colors focus:outline-none " +
   "focus:ring-2 focus:ring-brand-500/30 disabled:opacity-50 disabled:cursor-not-allowed " +
-  "disabled:pointer-events-none";
+  "disabled:pointer-events-none " +
+  "dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700";
 
 /** Danger button — red bg, white text. */
 export const BUTTON_DANGER =
@@ -65,18 +67,18 @@ export const MODAL_CARD =
   "dark:bg-gray-800 dark:border-dark-border";
 
 /** Nav container — white bg, bottom border, no gradient. */
-export const NAV_CONTAINER = "bg-white border-b border-border-default";
+export const NAV_CONTAINER = "bg-white border-b border-border-default dark:bg-gray-900 dark:border-dark-border";
 
 /** Nav link — muted text, warms on hover, Poppins, no background. */
 export const NAV_LINK =
-  "text-gray-500 hover:text-gray-900 text-sm font-display font-medium transition-colors px-3 py-2 rounded-md";
+  "text-gray-500 hover:text-gray-900 text-sm font-display font-medium transition-colors px-3 py-2 rounded-md dark:text-gray-400 dark:hover:text-gray-100";
 
 /** Active nav link — dark text, warm surface-secondary tint, Poppins. */
 export const NAV_LINK_ACTIVE =
-  "text-gray-900 bg-surface-secondary text-sm font-display font-medium px-3 py-2 rounded-md";
+  "text-gray-900 bg-surface-secondary text-sm font-display font-medium px-3 py-2 rounded-md dark:text-gray-100 dark:bg-gray-800";
 
 /** Nav brand / logo text — dark, Poppins semibold, tight tracking. */
-export const NAV_BRAND = "text-gray-900 font-display font-semibold text-lg tracking-tight";
+export const NAV_BRAND = "text-gray-900 font-display font-semibold text-lg tracking-tight dark:text-gray-100";
 
 /** Default badge — warm surface-secondary bg, muted text, pill shape, Poppins. */
 export const BADGE_DEFAULT =

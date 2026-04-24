@@ -25,7 +25,7 @@
         "UndoToast centers correctly with -translate-x-1/2",
         "npm run build succeeds"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "US-267",
