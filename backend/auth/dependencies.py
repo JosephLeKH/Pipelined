@@ -1,5 +1,7 @@
 """FastAPI dependency for extracting and validating the current authenticated user."""
 
+from datetime import datetime, timezone
+
 import jwt
 import structlog
 from fastapi import Cookie, Depends, HTTPException
@@ -45,6 +47,15 @@ async def get_current_user(
             status_code=401,
             detail={"code": "USER_NOT_FOUND", "message": "User no longer exists."},
         )
+
+    tokens_invalidated_at = user.get("tokens_invalidated_at")
+    if tokens_invalidated_at is not None and payload.iat is not None:
+        invalidated = tokens_invalidated_at if tokens_invalidated_at.tzinfo else tokens_invalidated_at.replace(tzinfo=timezone.utc)
+        if datetime.fromtimestamp(payload.iat, tz=timezone.utc) < invalidated:
+            raise HTTPException(
+                status_code=401,
+                detail={"code": "TOKEN_INVALIDATED", "message": "Token has been invalidated. Please log in again."},
+            )
 
     return user
 

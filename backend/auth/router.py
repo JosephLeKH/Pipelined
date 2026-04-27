@@ -1,5 +1,7 @@
 """Auth route handlers: register, login, logout, me, and token refresh."""
 
+from datetime import datetime, timezone
+
 import jwt
 import structlog
 from fastapi import APIRouter, Cookie, Depends, HTTPException, Request, Response
@@ -178,8 +180,6 @@ async def refresh(
     refresh_token: str | None = Cookie(default=None),
 ) -> dict:
     """Issue a new access token using the refresh token cookie."""
-    from datetime import datetime, timezone
-
     payload = _decode_refresh_token(refresh_token)
 
     user = await auth_service.get_user_by_id(payload.sub)

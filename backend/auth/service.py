@@ -74,8 +74,9 @@ def verify_password(plain: str, hashed: str) -> bool:
 
 def create_access_token(user_id: str) -> str:
     """Return a signed JWT access token for user_id with TTL from config."""
-    exp = datetime.now(timezone.utc) + timedelta(minutes=settings.jwt_access_ttl_minutes)
-    payload = {"sub": user_id, "exp": int(exp.timestamp()), "type": ACCESS_TOKEN_TYPE}
+    now = datetime.now(timezone.utc)
+    exp = now + timedelta(minutes=settings.jwt_access_ttl_minutes)
+    payload = {"sub": user_id, "exp": int(exp.timestamp()), "iat": int(now.timestamp()), "type": ACCESS_TOKEN_TYPE}
     return jwt.encode(payload, settings.jwt_secret, algorithm=JWT_ALGORITHM)
 
 
@@ -93,7 +94,7 @@ def decode_token(token: str) -> TokenPayload:
     Raises jwt.InvalidTokenError on bad signature, expiry, or malformed token.
     """
     data = jwt.decode(token, settings.jwt_secret, algorithms=[JWT_ALGORITHM])
-    return TokenPayload(sub=data["sub"], exp=data["exp"], type=data["type"])
+    return TokenPayload(sub=data["sub"], exp=data["exp"], type=data["type"], iat=data.get("iat"))
 
 
 REFERRAL_CODE_BYTES = 6  # secrets.token_urlsafe(6) → 8 base64 chars
