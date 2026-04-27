@@ -7,6 +7,8 @@ import pytest
 
 from parsing.fit_scorer import FIT_SCORE_FIELDS, score_fit
 
+pytestmark = pytest.mark.asyncio(loop_scope="session")
+
 
 def _make_openai_response(content: str) -> MagicMock:
     msg = MagicMock()
@@ -15,6 +17,7 @@ def _make_openai_response(content: str) -> MagicMock:
     choice.message = msg
     resp = MagicMock()
     resp.choices = [choice]
+    resp.usage = None
     return resp
 
 
@@ -26,7 +29,6 @@ VALID_PAYLOAD = {
 }
 
 
-@pytest.mark.asyncio
 async def test_score_fit_returns_valid_shape(monkeypatch):
     monkeypatch.setattr("parsing.fit_scorer.settings.openai_api_key", "test-key")
     monkeypatch.setattr("parsing.fit_scorer.settings.openai_model", "gpt-4o-mini")
@@ -46,7 +48,6 @@ async def test_score_fit_returns_valid_shape(monkeypatch):
     assert FIT_SCORE_FIELDS.issubset(result.keys())
 
 
-@pytest.mark.asyncio
 async def test_score_fit_returns_nulls_on_openai_error(monkeypatch):
     from openai import OpenAIError
 
@@ -67,7 +68,6 @@ async def test_score_fit_returns_nulls_on_openai_error(monkeypatch):
     assert result["summary"] is None
 
 
-@pytest.mark.asyncio
 async def test_score_fit_returns_nulls_on_invalid_json(monkeypatch):
     monkeypatch.setattr("parsing.fit_scorer.settings.openai_api_key", "test-key")
     monkeypatch.setattr("parsing.fit_scorer.settings.openai_model", "gpt-4o-mini")
@@ -83,7 +83,6 @@ async def test_score_fit_returns_nulls_on_invalid_json(monkeypatch):
     assert result["fit_score"] is None
 
 
-@pytest.mark.asyncio
 async def test_score_fit_returns_nulls_when_fit_score_out_of_range(monkeypatch):
     monkeypatch.setattr("parsing.fit_scorer.settings.openai_api_key", "test-key")
     monkeypatch.setattr("parsing.fit_scorer.settings.openai_model", "gpt-4o-mini")
@@ -100,7 +99,6 @@ async def test_score_fit_returns_nulls_when_fit_score_out_of_range(monkeypatch):
     assert result["fit_score"] is None
 
 
-@pytest.mark.asyncio
 async def test_score_fit_returns_nulls_when_missing_fields(monkeypatch):
     monkeypatch.setattr("parsing.fit_scorer.settings.openai_api_key", "test-key")
     monkeypatch.setattr("parsing.fit_scorer.settings.openai_model", "gpt-4o-mini")
@@ -117,7 +115,6 @@ async def test_score_fit_returns_nulls_when_missing_fields(monkeypatch):
     assert result["fit_score"] is None
 
 
-@pytest.mark.asyncio
 async def test_score_fit_returns_nulls_when_no_api_key(monkeypatch):
     monkeypatch.setattr("parsing.fit_scorer.settings.openai_api_key", "")
 
@@ -126,7 +123,6 @@ async def test_score_fit_returns_nulls_when_no_api_key(monkeypatch):
     assert result["fit_score"] is None
 
 
-@pytest.mark.asyncio
 async def test_score_fit_returns_nulls_when_empty_inputs(monkeypatch):
     monkeypatch.setattr("parsing.fit_scorer.settings.openai_api_key", "test-key")
 
@@ -135,7 +131,6 @@ async def test_score_fit_returns_nulls_when_empty_inputs(monkeypatch):
     assert result["fit_score"] is None
 
 
-@pytest.mark.asyncio
 async def test_score_fit_truncates_skills_to_limits(monkeypatch):
     monkeypatch.setattr("parsing.fit_scorer.settings.openai_api_key", "test-key")
     monkeypatch.setattr("parsing.fit_scorer.settings.openai_model", "gpt-4o-mini")

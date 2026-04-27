@@ -6,6 +6,7 @@ from unittest.mock import AsyncMock, patch
 import pytest
 
 import database
+from tests.conftest import as_anonymous
 
 pytestmark = pytest.mark.asyncio(loop_scope="session")
 
@@ -192,10 +193,11 @@ async def test_refresh_returns_401_when_access_token_used_as_refresh(client):
     access_token = reg.cookies["access_token"]
 
     # Act — pass access token where refresh token is expected
-    response = await client.post(
-        "/api/auth/refresh",
-        cookies={"refresh_token": access_token},
-    )
+    with as_anonymous(client):
+        response = await client.post(
+            "/api/auth/refresh",
+            cookies={"refresh_token": access_token},
+        )
 
     # Assert
     assert response.status_code == 401

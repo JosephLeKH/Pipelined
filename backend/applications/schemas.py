@@ -50,6 +50,7 @@ class ApplicationCreate(BaseModel):
     date_applied: datetime | None = None
     tags: list[str] = Field(default_factory=list, max_length=MAX_TAG_COUNT)
     page_text: str | None = Field(None, max_length=MAX_PAGE_TEXT_LENGTH)
+    custom_fields: dict[str, str | int | bool | list[str]] | None = None
 
 
 MAX_OFFER_TEXT_FIELD_LENGTH = 500

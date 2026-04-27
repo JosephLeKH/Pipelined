@@ -2,7 +2,6 @@
 
 from datetime import datetime, timezone
 
-import openai
 import structlog
 from bson import ObjectId
 
@@ -26,7 +25,7 @@ async def _apply_openai_fallback(body: ApplicationCreate) -> ApplicationCreate:
 
     try:
         parsed = await parse_with_openai(page_text)
-    except (openai.OpenAIError, ValueError, KeyError):
+    except Exception:
         logger.warning("openai_fallback_error", exc_info=True)
         return body
 

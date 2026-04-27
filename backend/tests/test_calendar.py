@@ -501,7 +501,6 @@ async def test_update_event_sets_prep_checklist_and_notes(client, test_user):
     assert data["prep_checklist"][1]["checked"] is True
 
 
-@pytest.mark.asyncio
 async def test_update_event_sets_prep_data(client, test_user):
     # Arrange
     _, cookies = test_user

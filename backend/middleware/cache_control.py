@@ -1,9 +1,6 @@
 """Cache-Control header middleware for API and static responses."""
 
-from starlette.middleware.base import BaseHTTPMiddleware
-from starlette.requests import Request
-from starlette.responses import Response
-from typing import Callable, Awaitable
+from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
 # Cache-Control values
 PRIVATE_NO_CACHE = "private, no-cache"
@@ -13,19 +10,37 @@ PUBLIC_1_DAY = "public, max-age=86400"
 _LONG_LIVED_PATHS = frozenset(["/sitemap.xml", "/robots.txt"])
 
 
-class CacheControlMiddleware(BaseHTTPMiddleware):
+class CacheControlMiddleware:
     """Set Cache-Control headers based on the response path."""
 
-    async def dispatch(self, request: Request, call_next: Callable[[Request], Awaitable[Response]]) -> Response:
-        """Inject Cache-Control headers into response."""
-        response = await call_next(request)
-        path = request.url.path
+    def __init__(self, app: ASGIApp) -> None:
+        self.app = app
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+
+        path = scope.get("path", "")
 
         if path in _LONG_LIVED_PATHS:
-            response.headers["Cache-Control"] = PUBLIC_1_DAY
+            cache_value = PUBLIC_1_DAY
         elif path.startswith("/api/public/"):
-            response.headers["Cache-Control"] = PUBLIC_5_MIN
+            cache_value = PUBLIC_5_MIN
         elif path.startswith("/api/"):
-            response.headers["Cache-Control"] = PRIVATE_NO_CACHE
+            cache_value = PRIVATE_NO_CACHE
+        else:
+            cache_value = None
 
-        return response
+        if cache_value is None:
+            await self.app(scope, receive, send)
+            return
+
+        async def send_with_cache(message: Message) -> None:
+            if message["type"] == "http.response.start":
+                headers = list(message.get("headers", []))
+                headers.append([b"cache-control", cache_value.encode()])
+                message = {**message, "headers": headers}
+            await send(message)
+
+        await self.app(scope, receive, send_with_cache)

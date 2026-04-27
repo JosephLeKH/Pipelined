@@ -1,0 +1,111 @@
+{
+  "project": "Pipelined",
+  "branchName": "main",
+  "status": "in_progress",
+  "description": "PRD-30: Design polish 4 — chart color tokens, change-password, landing page animations, and modal focus management",
+  "userStories": [
+    {
+      "id": "US-323",
+      "title": "Extract hardcoded chart colors in AnalyticsCharts to design tokens",
+      "description": "AnalyticsCharts.jsx has hardcoded hex colors at lines 16 and 65-217 that should be named constants: '#d97757' (brand orange), '#6a9bcc' (blue accent), '#788c5d' (green), '#9ca3af' (gray), '#e8e6dc' (warm sand). Create a CHART_COLORS constant at module scope in AnalyticsCharts.jsx and replace all inline hex strings with references to it. Also extract '#e8e6dc', '#f5f4f0', '#374151', '#4b5563' in animations.css shimmer gradient to CSS custom properties or move them into the Tailwind config. And extract '#141413', '#fafafa', '#6b5f4e', '#d4ccbd', '#6a9bcc' from index.css prose styles into CSS variables at :root.",
+      "acceptanceCriteria": [
+        "AnalyticsCharts.jsx has a CHART_COLORS constant at module scope with named keys",
+        "No bare hex strings remain in AnalyticsCharts.jsx (Google brand colors in GoogleAuthButton are exempt)",
+        "animations.css shimmer colors use CSS variables defined in index.css :root",
+        "index.css prose colors use CSS variables",
+        "npm run build succeeds",
+        "npm test passes"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "US-324",
+      "title": "Implement change-password endpoint (backend)",
+      "description": "Add POST /api/auth/change-password endpoint. Request body: { current_password: string, new_password: string }. The endpoint must: (1) verify the current password against the stored hash, (2) validate the new password meets strength requirements (min 8 chars, at least one uppercase, one digit), (3) hash and store the new password, (4) invalidate all existing refresh tokens for the user, (5) return 200 { data: { message: 'Password changed' } } on success, 400 with code CURRENT_PASSWORD_INCORRECT if current password wrong, 400 with code PASSWORD_TOO_WEAK if new password fails validation, 401 if not authenticated. Add tests in test_auth.py: test_change_password_success, test_change_password_wrong_current, test_change_password_too_weak, test_change_password_unauthenticated.",
+      "acceptanceCriteria": [
+        "POST /api/auth/change-password returns 200 with correct current password",
+        "Returns 400 CURRENT_PASSWORD_INCORRECT with wrong current password",
+        "Returns 400 PASSWORD_TOO_WEAK with weak new password",
+        "Returns 401 when not authenticated",
+        "Refresh tokens invalidated after password change",
+        "4 new tests pass in test_auth.py",
+        "pytest tests/ passes"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "US-325",
+      "title": "Wire change-password UI in SettingsAccountSection",
+      "description": "SettingsAccountSection.jsx has a TODO at line 30: 'wire to changePassword API when available'. Implement the full change-password flow: (1) Add POST /api/auth/change-password to frontend/src/api/auth.js, (2) Create useChangePassword hook in frontend/src/hooks/useAuth.js using useMutation, (3) Replace the placeholder 400ms delay in SettingsAccountSection with the real mutation, (4) Show success toast on success, show error message inline (current password incorrect or too weak) on 400 errors, (5) Clear the form on success. Remove the TODO comment.",
+      "acceptanceCriteria": [
+        "changePassword API function exists in frontend/src/api/auth.js",
+        "useChangePassword hook exists in frontend/src/hooks/useAuth.js",
+        "SettingsAccountSection uses real mutation (no placeholder delay)",
+        "Success shows toast notification",
+        "400 errors display inline error message with user-friendly text",
+        "Form clears on success",
+        "TODO comment removed",
+        "npm run build succeeds"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "US-326",
+      "title": "Add scroll-reveal animations to landing page feature section",
+      "description": "The landing page feature grid (6 cards below the hero) currently renders without any reveal animation. Add a lightweight scroll-reveal effect: as each feature card enters the viewport, it fades in and slides up slightly (translateY 16px → 0, opacity 0 → 1, 400ms ease-out). Use the IntersectionObserver API — no animation library. Each card should animate independently with a 80ms stagger delay between cards. Animation should only play once (not re-trigger on scroll up). Respect prefers-reduced-motion: if set, render cards at full opacity immediately without animation.",
+      "acceptanceCriteria": [
+        "Feature cards animate in on scroll (opacity 0→1, translateY 16px→0)",
+        "Cards have 80ms stagger between them",
+        "Animation plays once per page load",
+        "prefers-reduced-motion: shows cards immediately without animation",
+        "No animation libraries added (IntersectionObserver only)",
+        "npm run build succeeds",
+        "No console errors"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "US-327",
+      "title": "Focus trap in modal dialogs",
+      "description": "Modal dialogs in the app (DetailPanel, any overlay dialogs) should trap focus within the modal when open. Currently Tab can escape the modal and focus background elements, which is an accessibility issue. Implement a useFocusTrap hook in frontend/src/hooks/useFocusTrap.js that: (1) finds all focusable elements within a ref'd container, (2) intercepts Tab/Shift+Tab keydown to cycle within those elements, (3) sets initial focus to the first focusable element or a specified element on mount, (4) restores focus to the trigger element on unmount. Apply this hook to DetailPanel.jsx. Also ensure modals have role='dialog' and aria-modal='true'.",
+      "acceptanceCriteria": [
+        "useFocusTrap hook created in frontend/src/hooks/useFocusTrap.js",
+        "Tab key stays within DetailPanel when it's open",
+        "Shift+Tab cycles backwards within the modal",
+        "Focus restored to triggering element when modal closes",
+        "DetailPanel has role='dialog' and aria-modal='true'",
+        "npm run build succeeds"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "US-328",
+      "title": "Add empty state illustrations to Dashboard and Job Board",
+      "description": "When the Dashboard has no applications and the Job Board has no listings, currently only plain text is shown. Replace with styled empty states that are more engaging: (1) Dashboard empty state: a subtle SVG illustration (inline, no external deps) of a pipeline/funnel with a friendly message 'Add your first application to get started' and a CTA button that opens the manual-add flow, (2) Job Board empty state: a simple SVG of a briefcase with 'No listings match your filters' and a 'Clear filters' button. Use Tailwind classes, brand colors (text-brand-500, border-brand-200). The SVGs should be simple geometric shapes, not complex illustrations — 5-10 paths maximum.",
+      "acceptanceCriteria": [
+        "Dashboard shows SVG empty state when applications list is empty",
+        "Job Board shows SVG empty state when no listings match filters",
+        "Empty state has a CTA button (add application / clear filters)",
+        "SVGs use brand colors and are inline (no external assets)",
+        "Dark mode: empty states look correct with dark: variants",
+        "npm run build succeeds"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "US-329",
+      "title": "Keyboard shortcut help overlay (? key)",
+      "description": "The app supports keyboard shortcuts (K for kanban toggle, arrow keys, Escape, etc.) but there's no way to discover them. Add a keyboard shortcut help overlay triggered by pressing '?' (shift+/) when no input is focused. The overlay is a modal showing a 2-column grid of shortcut → description pairs. Shortcuts to document: ?, k (kanban toggle), / (focus search), Esc (close panel/clear search), Arrow keys (navigate list), Enter (open selected). Use the existing modal styling pattern. Pressing Escape or clicking outside dismisses it. Add a small '?' button in the bottom-right corner of the Dashboard as a discoverable trigger.",
+      "acceptanceCriteria": [
+        "Pressing '?' opens a keyboard shortcut help modal",
+        "Modal shows all documented shortcuts in a 2-column grid",
+        "Pressing Escape closes the modal",
+        "Clicking outside (backdrop) closes the modal",
+        "A '?' help button in dashboard bottom-right also opens the modal",
+        "Shortcut does not trigger when focus is in an input/textarea",
+        "npm run build succeeds"
+      ],
+      "status": "pending"
+    }
+  ]
+}

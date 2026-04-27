@@ -16,17 +16,15 @@ Exempt paths (handled by auth or browser-initiated flows):
 """
 
 import secrets
+from http.cookies import SimpleCookie
 
-from starlette.middleware.base import BaseHTTPMiddleware
-from starlette.requests import Request
-from starlette.responses import JSONResponse, Response
-from typing import Callable, Awaitable
+from starlette.types import ASGIApp, Receive, Scope, Send
 
 CSRF_COOKIE_NAME = "pipelined_csrf"
 CSRF_HEADER_NAME = "X-CSRF-Token"
 CSRF_TOKEN_BYTES = 32
 
-_MUTATION_METHODS = {"POST", "PATCH", "DELETE"}
+_MUTATION_METHODS = {b"POST", b"PATCH", b"DELETE"}
 
 _EXEMPT_PATHS = {
     "/health",
@@ -45,30 +43,56 @@ def generate_csrf_token() -> str:
     return secrets.token_hex(CSRF_TOKEN_BYTES)
 
 
-class CSRFMiddleware(BaseHTTPMiddleware):
+def _get_header(headers: list[tuple[bytes, bytes]], name: bytes) -> str | None:
+    """Extract a single header value from raw ASGI headers."""
+    for key, value in headers:
+        if key.lower() == name:
+            return value.decode("latin-1")
+    return None
+
+
+def _get_cookie(headers: list[tuple[bytes, bytes]], cookie_name: str) -> str | None:
+    """Extract a cookie value from raw ASGI Cookie headers."""
+    for key, value in headers:
+        if key.lower() == b"cookie":
+            sc = SimpleCookie(value.decode("latin-1"))
+            if cookie_name in sc:
+                return sc[cookie_name].value
+    return None
+
+
+_CSRF_ERROR_BODY = b'{"error":{"code":"CSRF_TOKEN_MISMATCH","message":"CSRF token mismatch."}}'
+
+
+class CSRFMiddleware:
     """Validate double-submit CSRF cookie on every mutating request."""
 
-    async def dispatch(self, request: Request, call_next: Callable[[Request], Awaitable[Response]]) -> Response:
-        if request.method in _MUTATION_METHODS and request.url.path not in _EXEMPT_PATHS:
-            cookie_token: str | None = request.cookies.get(CSRF_COOKIE_NAME)
-            header_token: str | None = request.headers.get(CSRF_HEADER_NAME)
+    def __init__(self, app: ASGIApp) -> None:
+        self.app = app
 
-            if not cookie_token or not header_token:
-                return _csrf_error_response()
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
 
-            if not secrets.compare_digest(cookie_token, header_token):
-                return _csrf_error_response()
+        method = scope.get("method", "").encode() if isinstance(scope.get("method"), str) else scope.get("method", b"")
+        path = scope.get("path", "")
 
-        return await call_next(request)
+        if method in _MUTATION_METHODS and path not in _EXEMPT_PATHS:
+            headers = scope.get("headers", [])
+            cookie_token = _get_cookie(headers, CSRF_COOKIE_NAME)
+            header_token = _get_header(headers, b"x-csrf-token")
 
+            if not cookie_token or not header_token or not secrets.compare_digest(cookie_token, header_token):
+                await send({
+                    "type": "http.response.start",
+                    "status": 403,
+                    "headers": [[b"content-type", b"application/json"]],
+                })
+                await send({
+                    "type": "http.response.body",
+                    "body": _CSRF_ERROR_BODY,
+                })
+                return
 
-def _csrf_error_response() -> JSONResponse:
-    return JSONResponse(
-        status_code=403,
-        content={
-            "error": {
-                "code": "CSRF_TOKEN_MISMATCH",
-                "message": "CSRF token mismatch.",
-            }
-        },
-    )
+        await self.app(scope, receive, send)
