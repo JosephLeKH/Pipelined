@@ -42,20 +42,7 @@ beforeAll(() => server.listen({ onUnhandledRequest: "warn" }));
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
-function makeApp(node) {
-  const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
-  return (
-    <ThemeProvider>
-      <QueryClientProvider client={qc}>
-        <AuthProvider>
-          <MemoryRouter>{node}</MemoryRouter>
-        </AuthProvider>
-      </QueryClientProvider>
-    </ThemeProvider>
-  );
-}
-
-function makeApp2(node) {
+function renderApp(node) {
   const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
     <ThemeProvider>
@@ -123,14 +110,14 @@ function makeProps(overrides = {}) {
 describe("ApplicationListBody", () => {
   it("should render the virtualized list when applications are provided", () => {
     const props = makeProps();
-    makeApp2(<ApplicationListBody {...props} />);
+    renderApp(<ApplicationListBody {...props} />);
 
     expect(screen.getByTestId("fixed-size-list")).toBeInTheDocument();
   });
 
   it("should show BulkActionBar when selectedIds has items", () => {
     const props = makeProps({ selectedIds: new Set(["app1"]) });
-    makeApp2(<ApplicationListBody {...props} />);
+    renderApp(<ApplicationListBody {...props} />);
 
     expect(screen.getByRole("toolbar", { name: /bulk actions/i })).toBeInTheDocument();
     expect(screen.getByText("1 selected")).toBeInTheDocument();
@@ -138,14 +125,14 @@ describe("ApplicationListBody", () => {
 
   it("should not show BulkActionBar when no items are selected", () => {
     const props = makeProps({ selectedIds: new Set() });
-    makeApp2(<ApplicationListBody {...props} />);
+    renderApp(<ApplicationListBody {...props} />);
 
     expect(screen.queryByRole("toolbar", { name: /bulk actions/i })).not.toBeInTheDocument();
   });
 
   it("should render UndoToast with delete message when undoAction type is delete", () => {
     const props = makeProps({ undoAction: { type: "delete", id: "app1" } });
-    makeApp2(<ApplicationListBody {...props} />);
+    renderApp(<ApplicationListBody {...props} />);
 
     expect(screen.getByTestId("undo-toast")).toBeInTheDocument();
     expect(screen.getByText("Application deleted.")).toBeInTheDocument();
@@ -153,7 +140,7 @@ describe("ApplicationListBody", () => {
 
   it("should render UndoToast with archive message when undoAction type is archive", () => {
     const props = makeProps({ undoAction: { type: "archive", id: "app1" } });
-    makeApp2(<ApplicationListBody {...props} />);
+    renderApp(<ApplicationListBody {...props} />);
 
     expect(screen.getByTestId("undo-toast")).toBeInTheDocument();
     expect(screen.getByText("Application archived.")).toBeInTheDocument();
@@ -161,7 +148,7 @@ describe("ApplicationListBody", () => {
 
   it("should render BulkDeleteConfirmModal when bulkDeletePending is true", () => {
     const props = makeProps({ bulkDeletePending: true, selectedIds: new Set(["app1"]) });
-    makeApp2(<ApplicationListBody {...props} />);
+    renderApp(<ApplicationListBody {...props} />);
 
     expect(screen.getByRole("dialog")).toBeInTheDocument();
     expect(screen.getAllByText(/delete 1 application/i).length).toBeGreaterThanOrEqual(1);
@@ -170,7 +157,7 @@ describe("ApplicationListBody", () => {
   it("should call setBulkDeletePending(false) when cancel is clicked in BulkDeleteConfirmModal", async () => {
     const setBulkDeletePending = vi.fn();
     const props = makeProps({ bulkDeletePending: true, selectedIds: new Set(["app1"]), setBulkDeletePending });
-    makeApp2(<ApplicationListBody {...props} />);
+    renderApp(<ApplicationListBody {...props} />);
 
     await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
 

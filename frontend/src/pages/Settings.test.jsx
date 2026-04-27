@@ -95,6 +95,16 @@ describe("Settings page", () => {
       expect(panel).toBeInTheDocument();
       expect(panel.id).toMatch(/^panel-/);
     });
+
+    it("should have aria-controls on active tab pointing to the tabpanel id", () => {
+      render(<Settings />, { wrapper: makeWrapper() });
+      const activeTab = screen.getAllByRole("tab").find(
+        (t) => t.getAttribute("aria-selected") === "true"
+      );
+      const panel = screen.getByRole("tabpanel");
+
+      expect(activeTab.getAttribute("aria-controls")).toBe(panel.id);
+    });
   });
 
   describe("pipeline stages section", () => {

@@ -15,36 +15,36 @@ const INITIAL_FORM = {
   notes: "",
 };
 
-function ContactFormNameField({ form, handleChange }) {
+function ContactFormNameField({ form, handleChange, disabled }) {
   return (
     <div className="col-span-2 flex flex-col gap-1">
       <label className="text-xs font-medium text-gray-600 dark:text-gray-400" htmlFor="contact-name">
         Name <span className="text-red-500">*</span>
       </label>
       <input id="contact-name" name="name" value={form.name} onChange={handleChange}
-        required maxLength={200} className={INPUT_BASE} placeholder="Jane Smith" />
+        required maxLength={200} className={INPUT_BASE} placeholder="Jane Smith" disabled={disabled} />
     </div>
   );
 }
 
-function ContactFormDetailFields({ form, handleChange }) {
+function ContactFormDetailFields({ form, handleChange, disabled }) {
   return (
     <>
       <div className="flex flex-col gap-1">
         <label className="text-xs font-medium text-gray-600 dark:text-gray-400" htmlFor="contact-company">Company</label>
-        <input id="contact-company" name="company" value={form.company} onChange={handleChange} maxLength={200} className={INPUT_BASE} placeholder="Acme Corp" />
+        <input id="contact-company" name="company" value={form.company} onChange={handleChange} maxLength={200} className={INPUT_BASE} placeholder="Acme Corp" disabled={disabled} />
       </div>
       <div className="flex flex-col gap-1">
         <label className="text-xs font-medium text-gray-600 dark:text-gray-400" htmlFor="contact-role">Role</label>
-        <input id="contact-role" name="role" value={form.role} onChange={handleChange} maxLength={200} className={INPUT_BASE} placeholder="Recruiter" />
+        <input id="contact-role" name="role" value={form.role} onChange={handleChange} maxLength={200} className={INPUT_BASE} placeholder="Recruiter" disabled={disabled} />
       </div>
       <div className="flex flex-col gap-1">
         <label className="text-xs font-medium text-gray-600 dark:text-gray-400" htmlFor="contact-email">Email</label>
-        <input id="contact-email" name="email" type="email" value={form.email} onChange={handleChange} maxLength={254} className={INPUT_BASE} placeholder="jane@acme.com" />
+        <input id="contact-email" name="email" type="email" value={form.email} onChange={handleChange} maxLength={254} className={INPUT_BASE} placeholder="jane@acme.com" disabled={disabled} />
       </div>
       <div className="flex flex-col gap-1">
         <label className="text-xs font-medium text-gray-600 dark:text-gray-400" htmlFor="contact-relationship">Relationship</label>
-        <select id="contact-relationship" name="relationship" value={form.relationship} onChange={handleChange} className={INPUT_BASE}>
+        <select id="contact-relationship" name="relationship" value={form.relationship} onChange={handleChange} className={INPUT_BASE} disabled={disabled}>
           {RELATIONSHIP_OPTIONS.map((r) => (<option key={r} value={r}>{r.replace("_", " ")}</option>))}
         </select>
       </div>
@@ -52,11 +52,11 @@ function ContactFormDetailFields({ form, handleChange }) {
   );
 }
 
-function ContactFormFields({ form, handleChange }) {
+function ContactFormFields({ form, handleChange, disabled }) {
   return (
     <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-      <ContactFormNameField form={form} handleChange={handleChange} />
-      <ContactFormDetailFields form={form} handleChange={handleChange} />
+      <ContactFormNameField form={form} handleChange={handleChange} disabled={disabled} />
+      <ContactFormDetailFields form={form} handleChange={handleChange} disabled={disabled} />
     </div>
   );
 }
@@ -87,6 +87,7 @@ function ContactForm({ applicationId, onDone }) {
 
   function handleChange(e) {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    setError(null);
   }
 
   function handleSubmit(e) {
@@ -102,14 +103,17 @@ function ContactForm({ applicationId, onDone }) {
           onDone?.();
         }
       },
-      onError: () => setError("Failed to create contact. Please try again."),
+      onError: (err) => {
+        const errorMsg = err?.response?.data?.error?.message || "Failed to create contact. Please try again.";
+        setError(errorMsg);
+      },
     });
   }
 
   return (
     <form onSubmit={handleSubmit} className={`flex flex-col gap-3 ${CARD_BASE} px-3 py-3`}>
-      <ContactFormFields form={form} handleChange={handleChange} />
-      {error && <p className="text-xs text-red-500">{error}</p>}
+      <ContactFormFields form={form} handleChange={handleChange} disabled={isPending} />
+      {error && <p className="text-xs text-red-500" role="alert">{error}</p>}
       <ContactFormActions isPending={isPending} nameValue={form.name} onDone={onDone} />
     </form>
   );

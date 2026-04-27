@@ -1,5 +1,6 @@
 """Business logic for contacts: CRUD, application linking, and ping operations."""
 
+import asyncio
 import re
 from datetime import datetime, timezone
 
@@ -111,11 +112,20 @@ async def delete(user_id: ObjectId, contact_id: str) -> None:
 async def link_application(user_id: ObjectId, contact_id: str, application_id: str) -> dict:
     """Add application to linked_applications (idempotent). Raises errors if not found."""
     apps = get_collection("applications")
-    app_doc = await apps.find_one({"_id": ObjectId(application_id), "user_id": user_id}, projection={"_id": 1})
-    if app_doc is None:
-        raise ApplicationNotFoundError
-
     contacts = get_collection("contacts")
+
+    # Validate both resources exist in parallel
+    app_check, contact_check = await asyncio.gather(
+        apps.find_one({"_id": ObjectId(application_id), "user_id": user_id}, projection={"_id": 1}),
+        contacts.find_one({"_id": ObjectId(contact_id), "user_id": user_id}, projection={"_id": 1}),
+    )
+
+    if app_check is None:
+        raise ApplicationNotFoundError
+    if contact_check is None:
+        raise ContactNotFoundError
+
+    # Update contact with linked application
     doc = await contacts.find_one_and_update(
         {"_id": ObjectId(contact_id), "user_id": user_id},
         {
@@ -124,8 +134,6 @@ async def link_application(user_id: ObjectId, contact_id: str, application_id: s
         },
         return_document=ReturnDocument.AFTER,
     )
-    if doc is None:
-        raise ContactNotFoundError
     logger.info("contact_linked", user_id=str(user_id), contact_id=contact_id, app_id=application_id)
     return doc
 

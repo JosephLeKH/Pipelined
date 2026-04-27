@@ -148,4 +148,15 @@ describe("BulkDeleteConfirmModal", () => {
 
     expect(onCancel).toHaveBeenCalledOnce();
   });
+
+  it("should call onCancel when Escape key is pressed", async () => {
+    const onCancel = vi.fn();
+    render(
+      <BulkDeleteConfirmModal count={1} onConfirm={vi.fn()} onCancel={onCancel} />
+    );
+
+    await userEvent.keyboard("{Escape}");
+
+    expect(onCancel).toHaveBeenCalledOnce();
+  });
 });
