@@ -1,0 +1,92 @@
+{
+  "project": "Pipelined",
+  "branchName": "main",
+  "description": "PRD-27: Design consistency pass — adopt tokens, add transitions, fix dark mode gaps",
+  "userStories": [
+    {
+      "id": "US-300",
+      "title": "Adopt INPUT_BASE token in FeedbackWidget form fields",
+      "description": "FeedbackWidget.jsx FeedbackFormFields (lines 112-129) has three form inputs (select, textarea, email input) with hardcoded Tailwind classes like 'w-full rounded-button border border-gray-200 bg-white px-2.5 py-1.5 text-sm...'. The INPUT_BASE token already covers these styles. Replace the inline classes on all three form fields with INPUT_BASE. INPUT_BASE is already imported in the file (search for existing imports). Keep any custom overrides (rows, maxLength, placeholder) as separate props.",
+      "acceptanceCriteria": [
+        "FeedbackWidget select uses INPUT_BASE",
+        "FeedbackWidget textarea uses INPUT_BASE",
+        "FeedbackWidget email input uses INPUT_BASE",
+        "npm run build succeeds"
+      ]
+    },
+    {
+      "id": "US-301",
+      "title": "Add transition-colors to CalendarEventsList buttons and fix dark mode",
+      "description": "CalendarEventsList.jsx has two buttons missing transitions: (1) Add Event button (line ~25) — add transition-colors. (2) Delete event button (line ~51) — add transition-colors and dark mode: 'dark:hover:bg-red-900/30 dark:text-gray-500'. Also fix delete button text-gray-300 to text-gray-400 (300 is too faint).",
+      "acceptanceCriteria": [
+        "Add Event button has transition-colors",
+        "Delete button has transition-colors and dark mode variants",
+        "Delete button uses text-gray-400 instead of text-gray-300",
+        "npm run build succeeds"
+      ]
+    },
+    {
+      "id": "US-302",
+      "title": "Add transition-colors to EmailVerificationBanner interactive elements",
+      "description": "EmailVerificationBanner.jsx has two interactive elements missing transition-colors: (1) Resend email link button (line ~64), (2) Dismiss X button (line ~74). Add transition-colors to both. Also add dark:hover:text-amber-200 support to the dismiss button (currently no dark hover).",
+      "acceptanceCriteria": [
+        "Resend button has transition-colors",
+        "Dismiss button has transition-colors",
+        "Dismiss button has dark hover variant",
+        "npm run build succeeds"
+      ]
+    },
+    {
+      "id": "US-303",
+      "title": "Add transition-colors to SharePipeline CopyButton and RevokeButton",
+      "description": "SharePipeline.jsx CopyButton (line ~42) and Revoke button (line ~66) have hover states but no transition-colors. Add transition-colors to both. Also standardize focus:ring-offset-1 to focus:ring-offset-2 on both buttons (matching the standardized offset from PRD-26).",
+      "acceptanceCriteria": [
+        "CopyButton has transition-colors",
+        "Revoke button has transition-colors",
+        "Both use focus:ring-offset-2",
+        "npm run build succeeds"
+      ]
+    },
+    {
+      "id": "US-304",
+      "title": "Add transition-colors to ApplicationListHeader sort buttons",
+      "description": "ApplicationListHeader.jsx ColumnHeader buttons (line ~8) have hover:text-gray-900 but no transition-colors. Add transition-colors to the ColumnHeader button className. Also fix focus:ring-offset-1 → focus:ring-offset-2 for consistency.",
+      "acceptanceCriteria": [
+        "ColumnHeader buttons have transition-colors",
+        "ColumnHeader buttons use focus:ring-offset-2",
+        "npm run build succeeds"
+      ]
+    },
+    {
+      "id": "US-305",
+      "title": "Standardize remaining focus:ring-offset-1 to focus:ring-offset-2 app-wide",
+      "description": "Audit all components for focus:ring-offset-1 (the old value) and change to focus:ring-offset-2 (the standard). PRD-26 fixed DetailPanelHeader. Remaining instances may be in CalendarEventsList, SharePipeline, and ApplicationListHeader. Use grep to find all instances. Do NOT change focus:ring-offset-0 — those are intentional.",
+      "acceptanceCriteria": [
+        "No focus:ring-offset-1 remains in any component (except intentional overrides)",
+        "All changed to focus:ring-offset-2",
+        "npm run build succeeds"
+      ]
+    },
+    {
+      "id": "US-306",
+      "title": "Create ICON_BUTTON token for icon-only buttons and adopt in NavBar and DetailPanelHeader",
+      "description": "Multiple components have icon-only buttons with duplicated styles. Create an ICON_BUTTON token in designTokens.js: 'rounded-full p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200'. Adopt in: (1) DetailPanelHeader close button, (2) NavBar theme toggle icon buttons. Do NOT adopt everywhere at once — just these two highest-visibility spots.",
+      "acceptanceCriteria": [
+        "ICON_BUTTON token exists in designTokens.js",
+        "DetailPanelHeader close button uses ICON_BUTTON",
+        "NavBar icon buttons use ICON_BUTTON where appropriate",
+        "npm run build succeeds"
+      ]
+    },
+    {
+      "id": "US-307",
+      "title": "Add font-display to section headings in SharePipeline and CalendarEventsList",
+      "description": "Poppins (font-display) is used for headings across the app, but SharePipeline h2 (line ~111) and CalendarEventsList legend text (line ~21) use the default sans font. Add font-display to these headings for consistency with the rest of the app's heading hierarchy.",
+      "acceptanceCriteria": [
+        "SharePipeline heading uses font-display",
+        "CalendarEventsList heading uses font-display",
+        "npm run build succeeds"
+      ]
+    }
+  ]
+}

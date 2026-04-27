@@ -1,0 +1,95 @@
+{
+  "project": "Pipelined",
+  "branchName": "main",
+  "description": "PRD-26: Micro-interaction polish and design token completion for Ramp/Linear aesthetic",
+  "status": "complete",
+  "userStories": [
+    {
+      "id": "US-292",
+      "title": "Add view toggle button design tokens to DashboardToolbar",
+      "description": "DashboardToolbar.jsx lines 9-10 use hardcoded class strings for the active/inactive view toggle (List/Board). Create BUTTON_TOGGLE_ACTIVE and BUTTON_TOGGLE_INACTIVE tokens in designTokens.js and adopt them. Active: 'bg-brand-500 text-white rounded-button transition-colors'. Inactive: 'bg-white text-gray-600 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 rounded-button transition-colors'.",
+      "acceptanceCriteria": [
+        "BUTTON_TOGGLE_ACTIVE and BUTTON_TOGGLE_INACTIVE tokens exist in designTokens.js",
+        "DashboardToolbar uses the new tokens instead of inline class strings",
+        "npm run build succeeds"
+      ]
+    },
+    {
+      "id": "US-293",
+      "title": "Create TOOLTIP token and standardize tooltip styling app-wide",
+      "description": "ApplicationRow.jsx has two tooltip elements (lines ~116-120 and ~138-142) with inline tooltip classes. Create a TOOLTIP token in designTokens.js: 'absolute z-10 whitespace-nowrap rounded-full bg-gray-800 px-2 py-1 text-xs text-white opacity-0 transition-opacity pointer-events-none group-hover:opacity-100'. Apply to both tooltip instances in ApplicationRow. Pill-shaped (rounded-full) matches modern SaaS standards.",
+      "acceptanceCriteria": [
+        "TOOLTIP token exists in designTokens.js",
+        "ApplicationRow tooltips use the TOOLTIP token",
+        "Tooltips render as pill-shaped with smooth opacity transition",
+        "npm run build succeeds"
+      ]
+    },
+    {
+      "id": "US-294",
+      "title": "Add transition-colors to all interactive buttons missing it",
+      "description": "Audit all button and interactive elements across the app and add 'transition-colors' where missing. Key targets: (1) ApplicationRow swipe action buttons (lines ~43-60), (2) DetailPanelHeader close button, (3) StatsBar MetricCard hover states, (4) NavBar mobile menu toggle. Every element with a hover: or active: state must have transition-colors for smooth feedback. Do NOT add transitions to elements that already have them.",
+      "acceptanceCriteria": [
+        "All buttons with hover/active states have transition-colors class",
+        "Swipe action buttons in ApplicationRow have transition-colors",
+        "No duplicate transition classes introduced",
+        "npm run build succeeds"
+      ]
+    },
+    {
+      "id": "US-295",
+      "title": "Standardize focus ring styling to focus:ring-2 focus:ring-brand-500 focus:ring-offset-2",
+      "description": "Audit buttons and interactive elements for inconsistent focus ring styling. The standard is: 'focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2'. Fix: (1) DetailPanelHeader.jsx close button has focus:ring-offset-1 → change to focus:ring-offset-2, (2) Any buttons using focus:ring-blue-500 → change to focus:ring-brand-500. Only fix elements that have inconsistent values — don't add focus rings to elements that intentionally omit them.",
+      "acceptanceCriteria": [
+        "DetailPanelHeader close button uses focus:ring-offset-2",
+        "No focus:ring-blue-500 remains (replaced with focus:ring-brand-500)",
+        "Existing intentional focus:ring-0 elements are unchanged",
+        "npm run build succeeds"
+      ]
+    },
+    {
+      "id": "US-296",
+      "title": "Add INPUT_READONLY token usage to all readonly/disabled form inputs",
+      "description": "designTokens.js has an INPUT_READONLY token. Scan SettingsProfileSection.jsx, SettingsAccountSection.jsx, and any other settings components for readonly or disabled inputs that use inline bg-gray-50/bg-gray-100 + text-gray-500 patterns. Replace with the INPUT_READONLY token. If the token doesn't exist yet, create it: 'w-full rounded-input border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400'.",
+      "acceptanceCriteria": [
+        "INPUT_READONLY token exists in designTokens.js",
+        "All readonly/disabled inputs in Settings sections use the token",
+        "Visual appearance unchanged",
+        "npm run build succeeds"
+      ]
+    },
+    {
+      "id": "US-297",
+      "title": "Add active:scale-[0.98] press feedback to all primary and secondary buttons",
+      "description": "Modern SaaS apps (Ramp, Linear) use subtle scale-down on button press for tactile feedback. The BUTTON_PRIMARY and BUTTON_SECONDARY tokens in designTokens.js should include 'active:scale-[0.98]' if not already present. Check if they already have it (PRD-22 may have added it). If not, add it. Also ensure BUTTON_DANGER has it.",
+      "acceptanceCriteria": [
+        "BUTTON_PRIMARY includes active:scale-[0.98]",
+        "BUTTON_SECONDARY includes active:scale-[0.98]",
+        "BUTTON_DANGER includes active:scale-[0.98]",
+        "npm run build succeeds"
+      ]
+    },
+    {
+      "id": "US-298",
+      "title": "Standardize modal entry animations with consistent timing",
+      "description": "Modals across the app should have consistent enter/exit animations. Check ManualAddForm, CsvImportModal, SettingsAccountSection delete modal, and CommandPalette for animation consistency. Each modal card should use 'animate-in fade-in slide-in-from-bottom-4 duration-200' or equivalent Tailwind animation. The backdrop should use 'animate-in fade-in duration-150'. If modals lack entry animations, add them.",
+      "acceptanceCriteria": [
+        "All modals have consistent fade-in animation on backdrop",
+        "All modal cards have consistent slide-up + fade-in animation",
+        "Animation durations are consistent (150ms backdrop, 200ms card)",
+        "npm run build succeeds"
+      ]
+    },
+    {
+      "id": "US-299",
+      "title": "Add hover:shadow-sm elevation change to KanbanCard for depth feedback",
+      "description": "KanbanBoard cards should have a subtle shadow elevation on hover to indicate interactivity, matching Linear's card hover pattern. In KanbanCard (or the card element within KanbanBoard.jsx), add 'hover:shadow-sm transition-shadow' to the card container. Also ensure the dragging state has 'shadow-lg rotate-[2deg]' for a polished drag feel.",
+      "acceptanceCriteria": [
+        "Kanban cards show shadow-sm on hover",
+        "Kanban cards have transition-shadow for smooth animation",
+        "Dragging cards show elevated shadow-lg",
+        "npm run build succeeds"
+      ]
+    }
+  ]
+}

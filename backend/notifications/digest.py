@@ -1,5 +1,6 @@
 """Weekly email digest: builds a job search summary and sends it to opted-in users."""
 
+import asyncio
 import datetime as dt
 from dataclasses import dataclass, field
 
@@ -166,9 +167,11 @@ def _build_digest_body(digest: WeeklyDigest) -> str:
 async def send_weekly_digest(user_id: str) -> bool:
     """Build and send the weekly digest for a user. Returns True on success."""
     try:
-        digest = await build_weekly_digest(user_id)
         users_col = get_collection("users")
-        user = await users_col.find_one({"_id": ObjectId(user_id)}, {"email": 1})
+        digest, user = await asyncio.gather(
+            build_weekly_digest(user_id),
+            users_col.find_one({"_id": ObjectId(user_id)}, {"email": 1}),
+        )
         if not user:
             logger.warning("digest_user_not_found", user_id=user_id)
             return False
