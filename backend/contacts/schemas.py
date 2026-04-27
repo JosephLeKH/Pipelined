@@ -10,7 +10,6 @@ ContactRelationship = Literal["recruiter", "referral", "mentor", "peer", "hiring
 MAX_NAME_LENGTH = 200
 MAX_COMPANY_LENGTH = 200
 MAX_ROLE_LENGTH = 200
-MAX_EMAIL_LENGTH = 254
 MAX_NOTES_LENGTH = 2000
 MAX_CONTACTS_LIMIT = 100
 DEFAULT_CONTACTS_LIMIT = 50
@@ -47,7 +46,7 @@ class ContactResponse(BaseModel):
     name: str
     company: str | None = None
     role: str | None = None
-    email: str | None = None
+    email: EmailStr | None = None
     linkedin_url: str | None = None
     notes: str | None = None
     relationship: str

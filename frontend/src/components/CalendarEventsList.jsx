@@ -33,17 +33,14 @@ function CalendarEventsList({ applicationId, onAddEvent }) {
       {!isLoading && events.length === 0 && (
         <p className="text-xs text-gray-400" role="status">No events yet.</p>
       )}
-      {events.length > 0 && (
-        <ul className="flex flex-col gap-1" aria-live="polite">
-          {events.map((ev) => {
+      <ul className="flex flex-col gap-1" aria-live="polite">
+        {events.map((ev) => {
             const colors = EVENT_TYPE_COLORS[ev.event_type] ?? DEFAULT_EVENT_COLOR;
             return (
               <li key={ev.id} className="flex items-center justify-between rounded border border-gray-100 px-3 py-2 dark:border-gray-700">
                 <div className="flex flex-col gap-0.5">
                   <span
                     className={`inline-block rounded px-1.5 py-0.5 text-xs font-medium ${colors.bg} ${colors.text}`}
-                    role="img"
-                    aria-label={`Event type: ${ev.event_type.replace("_", " ")}`}
                   >
                     {ev.event_type.replace("_", " ")}
                   </span>
@@ -62,8 +59,7 @@ function CalendarEventsList({ applicationId, onAddEvent }) {
               </li>
             );
           })}
-        </ul>
-      )}
+      </ul>
     </div>
   );
 }
