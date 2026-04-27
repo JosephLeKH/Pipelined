@@ -58,6 +58,45 @@ function makeWrapper() {
 }
 
 describe("Settings page", () => {
+  describe("tab navigation accessibility", () => {
+    it("should render nav with role tablist", () => {
+      render(<Settings />, { wrapper: makeWrapper() });
+      expect(screen.getByRole("tablist")).toBeInTheDocument();
+    });
+
+    it("should render all tab buttons with role tab", () => {
+      render(<Settings />, { wrapper: makeWrapper() });
+      const tabs = screen.getAllByRole("tab");
+      expect(tabs.length).toBeGreaterThan(0);
+    });
+
+    it("should have aria-selected=true on active tab and false on others", () => {
+      render(<Settings />, { wrapper: makeWrapper() });
+      const tabs = screen.getAllByRole("tab");
+      const selected = tabs.filter((t) => t.getAttribute("aria-selected") === "true");
+      const unselected = tabs.filter((t) => t.getAttribute("aria-selected") === "false");
+
+      expect(selected.length).toBe(1);
+      expect(unselected.length).toBe(tabs.length - 1);
+    });
+
+    it("should update aria-selected when a different tab is clicked", async () => {
+      render(<Settings />, { wrapper: makeWrapper() });
+      const profileTab = screen.getByRole("tab", { name: /^profile$/i });
+      await userEvent.click(profileTab);
+
+      expect(profileTab.getAttribute("aria-selected")).toBe("true");
+    });
+
+    it("should render tabpanel with id matching active tab", () => {
+      render(<Settings />, { wrapper: makeWrapper() });
+      const panel = screen.getByRole("tabpanel");
+
+      expect(panel).toBeInTheDocument();
+      expect(panel.id).toMatch(/^panel-/);
+    });
+  });
+
   describe("pipeline stages section", () => {
     it("should render the pipeline stages heading", async () => {
       // Arrange / Act

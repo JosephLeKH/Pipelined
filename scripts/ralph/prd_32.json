@@ -1,0 +1,58 @@
+{
+  "project": "Pipelined",
+  "branchName": "main",
+  "status": "in_progress",
+  "description": "PRD-32: Test coverage for core components and Settings accessibility",
+  "userStories": [
+    {
+      "id": "US-335",
+      "title": "Add test suite for ApplicationListBody component",
+      "description": "Create frontend/src/components/ApplicationListBody.test.jsx. The component (70 lines) orchestrates the main virtualized list, bulk action bar, merge dialog, undo toast, and delete confirm modal. Tests should cover: (1) renders row list when applications are passed, (2) bulk action bar appears when items are selected, (3) undo toast renders when undoState is set with action 'delete', (4) undo toast renders 'Archive' label when undoState action is 'archive', (5) merge dialog mounts when mergeTargetId is set. Pass all state via props — do not mock hooks. Use MSW only if the component fetches data directly (it does not; data flows via props from ApplicationsPage). Use describe/it('should ...') naming and Arrange-Act-Assert.",
+      "acceptanceCriteria": [
+        "ApplicationListBody.test.jsx created in frontend/src/components/",
+        "At least 5 test cases covering list rendering, bulk actions, undo toast variants, and merge dialog",
+        "No hook mocking — all state flows via props",
+        "All tests pass with npm test"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "US-336",
+      "title": "Add test suite for AnalyticsCharts component",
+      "description": "Create frontend/src/components/AnalyticsCharts.test.jsx. The component (238 lines) renders four recharts charts: WeeklyApplicationsChart, StageFunnelChart, ConversionFunnelChart, StageDistributionChart. It uses CONVERSION_HIGH_THRESHOLD=0.6, CONVERSION_LOW_THRESHOLD=0.3, and AVG_DAYS_HIGHLIGHT_THRESHOLD=21 for color logic. Tests should cover: (1) renders 'Weekly Applications' heading when weeklyData is provided, (2) renders 'Stage Distribution' heading, (3) renders 'Conversion Rates' heading, (4) renders 'Time in Stage' heading, (5) shows 0% conversion correctly when conversionData has rate=0. Mock recharts with vi.mock so chart rendering doesn't fail in JSDOM. Use describe/it('should ...') naming.",
+      "acceptanceCriteria": [
+        "AnalyticsCharts.test.jsx created in frontend/src/components/",
+        "At least 5 test cases covering chart headings and data rendering",
+        "recharts mocked to prevent JSDOM SVG errors",
+        "All tests pass with npm test"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "US-337",
+      "title": "Add ARIA role attributes to Settings page tab navigation",
+      "description": "In frontend/src/pages/Settings.jsx, the tab navigation (lines 36-49) lacks ARIA roles. Add: (1) role='tablist' to the nav container div (currently has className only), (2) role='tab', aria-selected={activeSection === id}, aria-controls={'panel-' + id} to each tab button (currently rendered via TAB_SECTIONS.map), (3) id={'panel-' + section.id} and role='tabpanel' to the content div that wraps the active section (around line 53). Do not change any visual styling — this is accessibility-only. Then add a test file Settings.test.jsx covering: (1) tab buttons have role='tab', (2) active tab has aria-selected='true', (3) inactive tabs have aria-selected='false'.",
+      "acceptanceCriteria": [
+        "Nav container has role='tablist'",
+        "Each tab button has role='tab' and aria-selected reflecting active state",
+        "Content wrapper has role='tabpanel' with matching id",
+        "Settings.test.jsx created with at least 3 accessibility tests",
+        "No visual regression — no Tailwind class changes",
+        "npm run build succeeds"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "US-338",
+      "title": "Add test suite for ApplicationRowActions component",
+      "description": "Create frontend/src/components/ApplicationRowActions.test.jsx. The component (213 lines) manages BulkActionBar, BulkDeleteConfirmModal, and single-row edit/merge dialogs. Tests should cover: (1) renders null when no application is selected (selectedIds empty), (2) BulkActionBar shows correct count when selectedIds has items, (3) clicking delete in bulk bar opens BulkDeleteConfirmModal, (4) confirming delete calls onBulkDelete, (5) cancel button in modal closes it without calling onBulkDelete. Use userEvent from @testing-library/user-event for clicks. Mock hook calls that hit the network (useApplications mutations) with vi.mock. Use describe/it('should ...') naming.",
+      "acceptanceCriteria": [
+        "ApplicationRowActions.test.jsx created in frontend/src/components/",
+        "At least 5 test cases covering null state, count display, delete confirmation flow, cancel",
+        "Network hooks mocked with vi.mock",
+        "All tests pass with npm test"
+      ],
+      "status": "pending"
+    }
+  ]
+}

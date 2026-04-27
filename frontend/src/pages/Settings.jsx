@@ -35,11 +35,14 @@ const NAV_ITEMS = [
 
 function TabNav({ activeSection, onSelect }) {
   return (
-    <nav className="mb-6 flex flex-wrap gap-1 border-b border-border-default pb-3">
+    <nav role="tablist" className="mb-6 flex flex-wrap gap-1 border-b border-border-default pb-3">
       {NAV_ITEMS.map(({ id, label }) => (
         <button
           key={id}
           type="button"
+          role="tab"
+          aria-selected={activeSection === id}
+          aria-controls={"panel-" + id}
           onClick={() => onSelect(id)}
           className={activeSection === id ? NAV_LINK_ACTIVE : NAV_LINK}
         >
@@ -160,7 +163,7 @@ function Settings() {
           Settings
         </h1>
         <TabNav activeSection={activeSection} onSelect={setActiveSection} />
-        <main>
+        <main id={"panel-" + activeSection} role="tabpanel">
           {renderSection(activeSection, user)}
         </main>
       </div>
