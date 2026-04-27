@@ -4,6 +4,7 @@ import Trash2 from "lucide-react/dist/esm/icons/trash-2";
 import X from "lucide-react/dist/esm/icons/x";
 
 import CompanyLogo from "./CompanyLogo";
+import { ICON_BUTTON } from "../lib/designTokens";
 
 export function DetailPanelHeader({ application, onClose, onDelete }) {
   return (
@@ -19,7 +20,7 @@ export function DetailPanelHeader({ application, onClose, onDelete }) {
         <button
           type="button"
           onClick={onClose}
-          className="rounded-full bg-gray-100 p-1.5 text-gray-500 hover:bg-gray-200 hover:text-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-400"
+          className={`${ICON_BUTTON} rounded-full bg-gray-100 hover:bg-gray-200 hover:text-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600`}
           aria-label="Close panel"
         >
           <X className="h-4 w-4" />
@@ -27,7 +28,7 @@ export function DetailPanelHeader({ application, onClose, onDelete }) {
         <button
           type="button"
           onClick={onDelete}
-          className="rounded-full p-1.5 text-gray-500 hover:bg-rose-50 hover:text-rose-500 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 dark:hover:bg-rose-900/30"
+          className={`${ICON_BUTTON} rounded-full hover:bg-rose-50 hover:text-rose-500 dark:hover:bg-rose-900/30`}
           aria-label="Delete application"
         >
           <Trash2 className="h-4 w-4" />

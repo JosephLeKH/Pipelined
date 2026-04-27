@@ -22,7 +22,7 @@ import { useTheme } from "../context/ThemeContext";
 import { resetUser, trackEvent } from "../lib/analytics";
 import { useApplications } from "../hooks/useApplications";
 import { OFFER_STAGE } from "../lib/constants";
-import { NAV_CONTAINER, NAV_BRAND, NAV_LINK, NAV_LINK_ACTIVE } from "../lib/designTokens";
+import { NAV_CONTAINER, NAV_BRAND, NAV_LINK, NAV_LINK_ACTIVE, ICON_BUTTON } from "../lib/designTokens";
 import NotificationBell from "./NotificationBell";
 
 const NAV_LINKS = [
@@ -87,7 +87,7 @@ function HamburgerButton({ mobileMenuOpen, setMobileMenuOpen }) {
       onClick={() => setMobileMenuOpen((prev) => !prev)}
       aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
       aria-expanded={mobileMenuOpen}
-      className="ml-auto rounded-md p-1.5 text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-100 md:hidden"
+      className={`ml-auto ${ICON_BUTTON} rounded-md text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-gray-100 md:hidden`}
     >
       {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
     </button>

@@ -28,14 +28,14 @@ function ContactsSection({ applicationId }) {
             <button
               type="button"
               onClick={() => setAddMode(CONTACTS_ADD_MODE_LINK)}
-              className="rounded px-2 py-1 text-xs text-brand-600 hover:bg-brand-50 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:ring-offset-1 dark:hover:bg-brand-900/30"
+              className="rounded px-2 py-1 text-xs text-brand-600 hover:bg-brand-50 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:ring-offset-2 dark:hover:bg-brand-900/30"
             >
               Link
             </button>
             <button
               type="button"
               onClick={() => setAddMode(CONTACTS_ADD_MODE_NEW)}
-              className="flex items-center gap-1 rounded px-2 py-1 text-xs text-brand-600 hover:bg-brand-50 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:ring-offset-1 dark:hover:bg-brand-900/30"
+              className="flex items-center gap-1 rounded px-2 py-1 text-xs text-brand-600 hover:bg-brand-50 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:ring-offset-2 dark:hover:bg-brand-900/30"
               aria-label="Add contact"
             >
               <Plus className="h-3.5 w-3.5" />

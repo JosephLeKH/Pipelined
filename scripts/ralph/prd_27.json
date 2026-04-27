@@ -1,6 +1,7 @@
 {
   "project": "Pipelined",
   "branchName": "main",
+  "status": "complete",
   "description": "PRD-27: Design consistency pass — adopt tokens, add transitions, fix dark mode gaps",
   "userStories": [
     {

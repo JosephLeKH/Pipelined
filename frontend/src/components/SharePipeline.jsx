@@ -39,7 +39,7 @@ function CopyButton({ url }) {
     <button
       type="button"
       onClick={handleCopy}
-      className="flex items-center gap-1.5 rounded px-2 py-1 text-xs text-brand-600 hover:bg-brand-50 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-1 dark:hover:bg-brand-900/30"
+      className="flex items-center gap-1.5 rounded px-2 py-1 text-xs text-brand-600 hover:bg-brand-50 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 dark:hover:bg-brand-900/30"
       aria-label={copied ? "Link copied" : "Copy share link"}
     >
       {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
@@ -63,7 +63,7 @@ function ActiveShare({ share, onRevoke, isRevoking }) {
         type="button"
         onClick={onRevoke}
         disabled={isRevoking}
-        className="flex items-center gap-1.5 self-start rounded px-2 py-1 text-xs text-red-600 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-1 disabled:opacity-50 dark:hover:bg-red-900/30"
+        className="flex items-center gap-1.5 self-start rounded px-2 py-1 text-xs text-red-600 hover:bg-red-50 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:opacity-50 dark:hover:bg-red-900/30"
       >
         {isRevoking
           ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -108,7 +108,7 @@ function SharePipeline() {
 
   return (
     <section aria-labelledby="share-heading" className="flex flex-col gap-3 rounded-card border border-gray-200 p-4 dark:border-gray-700">
-      <h2 id="share-heading" className="text-sm font-semibold text-gray-800 dark:text-gray-100">
+      <h2 id="share-heading" className="text-sm font-semibold font-display text-gray-800 dark:text-gray-100">
         Share Your Pipeline
       </h2>
       {isLoading ? (

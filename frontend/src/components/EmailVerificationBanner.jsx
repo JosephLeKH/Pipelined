@@ -61,7 +61,7 @@ function EmailVerificationBanner() {
             type="button"
             onClick={handleResend}
             disabled={isPending}
-            className="ml-1 text-sm font-medium text-amber-700 underline hover:text-amber-900 focus:outline-none disabled:opacity-50 dark:text-amber-400 dark:hover:text-amber-200"
+            className="ml-1 text-sm font-medium text-amber-700 underline hover:text-amber-900 transition-colors focus:outline-none disabled:opacity-50 dark:text-amber-400 dark:hover:text-amber-200"
           >
             {isPending ? "Sending…" : "Resend email"}
           </button>
@@ -71,7 +71,7 @@ function EmailVerificationBanner() {
         type="button"
         onClick={() => setVisible(false)}
         aria-label="Dismiss"
-        className="ml-4 rounded p-0.5 text-amber-400 hover:bg-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-500 dark:hover:bg-amber-800/30"
+        className="ml-4 rounded p-0.5 text-amber-400 hover:bg-amber-100 hover:text-amber-600 transition-colors focus:outline-none focus:ring-2 focus:ring-amber-500 dark:hover:bg-amber-800/30 dark:hover:text-amber-200"
       >
         <X className="h-3.5 w-3.5" />
       </button>

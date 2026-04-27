@@ -11,7 +11,7 @@ import Send from "lucide-react/dist/esm/icons/send";
 import { trackEvent } from "../lib/analytics";
 import { useAuth } from "../context/AuthContext";
 import { useFeedback } from "../hooks/useFeedback";
-import { CARD_BASE, BUTTON_PRIMARY, BUTTON_GHOST } from "../lib/designTokens";
+import { CARD_BASE, BUTTON_PRIMARY, BUTTON_GHOST, INPUT_BASE } from "../lib/designTokens";
 
 const FEEDBACK_MESSAGE_MAX = 500;
 const FEEDBACK_CATEGORIES = ["Bug", "Feature Request", "General"];
@@ -110,7 +110,7 @@ function FeedbackFormFields({ category, setCategory, message, setMessage, email,
       <div>
         <label htmlFor="fb-category" className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Category</label>
         <select id="fb-category" value={category} onChange={(e) => setCategory(e.target.value)}
-          className="w-full rounded-button border border-gray-200 bg-white px-2.5 py-1.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200">
+          className={INPUT_BASE}>
           {FEEDBACK_CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
         </select>
       </div>
@@ -118,14 +118,14 @@ function FeedbackFormFields({ category, setCategory, message, setMessage, email,
         <label htmlFor="fb-message" className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Message</label>
         <textarea id="fb-message" ref={textareaRef} rows={4} maxLength={FEEDBACK_MESSAGE_MAX} value={message}
           onChange={(e) => setMessage(e.target.value)} placeholder="Describe your feedback…"
-          className="w-full resize-none rounded-button border border-gray-200 bg-white px-2.5 py-1.5 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
+          className={`${INPUT_BASE} resize-none`}
         />
         <p className="mt-0.5 text-right text-xs text-gray-400">{message.length}/{FEEDBACK_MESSAGE_MAX}</p>
       </div>
       <div>
         <label htmlFor="fb-email" className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Email (optional)</label>
         <input id="fb-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com"
-          className="w-full rounded-button border border-gray-200 bg-white px-2.5 py-1.5 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
+          className={INPUT_BASE}
         />
       </div>
       <button type="submit" disabled={submitting || !message.trim()}

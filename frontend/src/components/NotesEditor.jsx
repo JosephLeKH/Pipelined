@@ -69,7 +69,7 @@ function NotesEditor({ applicationId, initialValue, onDirtyChange }) {
           <button
             type="button"
             onClick={handleEdit}
-            className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-1 dark:hover:bg-gray-700 dark:hover:text-gray-300"
+            className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 dark:hover:bg-gray-700 dark:hover:text-gray-300"
             aria-label="Edit notes"
           >
             <Pencil className="h-3.5 w-3.5" />

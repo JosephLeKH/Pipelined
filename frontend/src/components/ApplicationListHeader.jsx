@@ -5,7 +5,7 @@ function ColumnHeader({ field, label, sortBy, sortOrder, onSort }) {
   return (
     <button
       type="button"
-      className="flex items-center gap-1 text-xs font-medium text-gray-500 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:ring-offset-1 dark:text-gray-400 dark:hover:text-gray-100"
+      className="flex items-center gap-1 text-xs font-medium text-gray-500 hover:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:ring-offset-2 dark:text-gray-400 dark:hover:text-gray-100"
       onClick={() => onSort(field)}
     >
       {label}

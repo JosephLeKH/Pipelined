@@ -18,11 +18,11 @@ function CalendarEventsList({ applicationId, onAddEvent }) {
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-medium uppercase text-gray-400 dark:text-gray-500">Interviews & Events</span>
+        <span className="text-xs font-medium font-display uppercase text-gray-400 dark:text-gray-500">Interviews & Events</span>
         <button
           type="button"
           onClick={() => onAddEvent(applicationId)}
-          className="flex items-center gap-1 rounded px-2 py-1 text-xs text-brand-600 hover:bg-brand-50 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:ring-offset-1 dark:hover:bg-brand-900/30"
+          className="flex items-center gap-1 rounded px-2 py-1 text-xs text-brand-600 hover:bg-brand-50 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:ring-offset-2 dark:hover:bg-brand-900/30"
           aria-label="Add event"
         >
           <Plus className="h-3.5 w-3.5" />
@@ -48,7 +48,7 @@ function CalendarEventsList({ applicationId, onAddEvent }) {
             <button
               type="button"
               onClick={() => deleteEvent(ev.id)}
-              className="rounded p-1 text-gray-300 hover:bg-red-50 hover:text-red-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-1"
+              className="rounded p-1 text-gray-400 hover:bg-red-50 hover:text-red-500 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 dark:text-gray-500 dark:hover:bg-red-900/30"
               aria-label="Delete event"
             >
               <Trash2 className="h-3.5 w-3.5" />
