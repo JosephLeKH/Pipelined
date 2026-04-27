@@ -8,9 +8,9 @@ import { BUTTON_PRIMARY, BUTTON_SECONDARY, BUTTON_TOGGLE_ACTIVE, BUTTON_TOGGLE_I
 
 export function DashboardToolbar({ viewMode, onSetViewMode, isExporting, onImport, onExport, onAdd }) {
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
       <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Dashboard</h1>
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-1 sm:gap-2">
         <div className="flex rounded border border-gray-300 dark:border-gray-600">
           <button
             type="button"
