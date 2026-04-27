@@ -1,0 +1,107 @@
+{
+  "project": "Pipelined",
+  "branchName": "main",
+  "status": "in_progress",
+  "description": "PRD-34: Test coverage for high-impact untested components, input validation hardening, and mobile responsiveness fixes",
+  "userStories": [
+    {
+      "id": "US-344",
+      "title": "Add comprehensive test suite for NotesEditor component",
+      "description": "Create frontend/src/components/NotesEditor.test.jsx. The component (120 lines) manages inline editing of application notes with draft/saved value synchronization, character limit enforcement, and error handling. Tests must cover: (1) Toggle between edit and view modes via button click, (2) Character counter displays correct count and changes color at 120 and 150 char thresholds (green→amber→red), (3) Save success: API mutation called with trimmed text, saved state updates, edit mode exits, (4) Save error: error message displays, error clears on next input change, (5) Cancel: reverts to saved value without API call, (6) onDirtyChange callback invoked on state changes, (7) Read-only mode when disabled prop is true, (8) API error message surfaced from response. Use MSW to mock PATCH /api/applications/:id endpoint. Component manages complex state (isEditing, savedValue, draft, errorMsg) and is a critical UX component.",
+      "acceptanceCriteria": [
+        "NotesEditor.test.jsx created with 10+ test cases",
+        "Covers edit/view toggle, character counting, save/cancel flows, error handling",
+        "Character limit color feedback tested (green/amber/red thresholds)",
+        "onDirtyChange callback properly tested",
+        "Read-only disabled state tested",
+        "All tests pass with npm test",
+        "No visual regression"
+      ],
+      "status": "todo",
+      "estimatedEffort": "medium",
+      "impactScore": 90,
+      "rationale": "High-impact component with complex state management, untested UX flows, and user data modification. Character limit feedback is critical for user experience. Error handling touches API contract validation."
+    },
+    {
+      "id": "US-345",
+      "title": "Add responsive mobile layout to DashboardToolbar component",
+      "description": "Fix responsive design gaps in frontend/src/components/DashboardToolbar.jsx (47 lines, lines 10-44). Current layout uses `flex items-center justify-between` without responsive breakpoints, causing buttons to compress or wrap awkwardly on mobile (<640px). (1) Wrap title and button group in responsive containers using `flex flex-col sm:flex-row` for mobile-first stacking, (2) Add responsive gap: `gap-1 sm:gap-2` to reduce spacing on mobile, (3) Add responsive text sizing: `text-xs sm:text-sm` on button labels, (4) Add responsive padding: `px-2 sm:px-3` on button containers, (5) Consider collapsing secondary actions (Import/Export) into a dropdown menu icon on mobile to prevent overflow, (6) Test with Vitest for mobile breakpoint rendering. This toolbar is used daily by all users and poor mobile UX directly impacts user satisfaction.",
+      "acceptanceCriteria": [
+        "Buttons stack vertically on mobile (<640px), horizontally on desktop (≥640px)",
+        "Responsive gap sizing applied (gap-1 sm:gap-2)",
+        "Button text sizing responsive (text-xs sm:text-sm)",
+        "No text overflow on iPhone SE (375px width)",
+        "Dropdown menu added for secondary actions on mobile (optional enhancement)",
+        "Responsive test suite added with Vitest breakpoint checks",
+        "All tests pass with npm test",
+        "Manual testing on mobile device confirms usability"
+      ],
+      "status": "todo",
+      "estimatedEffort": "small",
+      "impactScore": 85,
+      "rationale": "User-facing component used daily. Poor mobile responsiveness directly impacts mobile-first users (estimated 40% of traffic). High-visibility, quick win with immediate UX impact."
+    },
+    {
+      "id": "US-346",
+      "title": "Add input validation and test suite for LoginForm component",
+      "description": "Enhance frontend/src/components/LoginForm.jsx (32 lines, untested) with client-side validation and comprehensive test coverage. (1) Add email format validation: display inline error if email doesn't match email regex pattern before submit, (2) Add password minimum length validation: show error if password < 8 chars, (3) Disable submit button when form is invalid (email invalid OR password empty), (4) Sanitize inputs: trim whitespace from email before API call, (5) Add loading state spinner on submit button during auth request, (6) Create LoginForm.test.jsx with tests for: email validation error display, password length validation, submit disabled state, successful submission flow, API error handling, error message display, submit button loading state. Use MSW to mock POST /api/auth/login. This is security-critical as it guards account access.",
+      "acceptanceCriteria": [
+        "Email validation shows error if invalid format (uses regex pattern)",
+        "Password min-length validation shows error if < 8 chars",
+        "Submit button disabled when email invalid or password empty",
+        "Email trimmed before API submission",
+        "Loading spinner visible on submit button during request",
+        "LoginForm.test.jsx created with 8+ test cases",
+        "Tests cover all validation branches, submission, error handling",
+        "All tests pass with npm test",
+        "No visual regression",
+        "Accessibility: error messages properly associated with inputs"
+      ],
+      "status": "todo",
+      "estimatedEffort": "small",
+      "impactScore": 95,
+      "rationale": "CRITICAL SECURITY: Authentication is high-risk surface. Missing client-side validation increases account takeover risk and poor UX (users get 422 errors from backend). No test coverage for auth flows. Password validation + email sanitization are foundational security practices."
+    },
+    {
+      "id": "US-347",
+      "title": "Harden contact creation validation in backend with email format and field constraints",
+      "description": "Improve backend/contacts/service.py and backend/contacts/schemas.py contact validation. Issues: (1) No email format validation (critical for contact data integrity), (2) No name/company length limits (data quality issue), (3) No XSS prevention (fields stored as-is in MongoDB), (4) No duplicate contact detection (user experience issue — multiple contacts for same email), (5) Missing integration tests for validation edge cases. Fixes: (1) In schemas.py, change email field to EmailStr (already done in PR-33, ensure it's used), (2) Add max_length constraints: name max 100 chars, company max 150 chars, role max 100 chars, (3) Add min_length: name min 1 char, (4) In service.py create() function, check for duplicate by (user_id, email) before insert — return DuplicateContactError, (5) Add integration tests: test_create_contact_rejects_invalid_email, test_create_contact_rejects_long_name, test_create_contact_rejects_duplicate_email. This hardens the contact data model against malformed/malicious input.",
+      "acceptanceCriteria": [
+        "Email field uses EmailStr validation in both ContactCreate and ContactUpdate",
+        "Max-length constraints on name (100), company (150), role (100)",
+        "Min-length constraints enforce non-empty required fields",
+        "Duplicate contact check prevents same (user_id, email) pairs",
+        "DuplicateContactError raised and mapped to 409 Conflict in router",
+        "Integration tests added for all validation edge cases",
+        "All existing tests still pass",
+        "Invalid inputs return 422 (Unprocessable Entity)",
+        "Duplicate contacts return 409 (Conflict)"
+      ],
+      "status": "todo",
+      "estimatedEffort": "medium",
+      "impactScore": 80,
+      "rationale": "Data integrity and security. Prevents malformed contact data, XSS injection via contact fields, and duplicate contact chaos. Backend is the trust boundary — validation must be strict here. Currently no validation beyond optional email regex in model."
+    },
+    {
+      "id": "US-348",
+      "title": "Add comprehensive test suite for SettingsAccountSection (password change and account deletion)",
+      "description": "Create frontend/src/components/SettingsAccountSection.test.jsx for the untested 199-line component. Component has two critical flows: (1) ChangePasswordCard (lines 19-108) — password change with validation (current required, new min-length, confirmation match), error message mapping for backend codes (CURRENT_PASSWORD_INCORRECT, PASSWORD_TOO_WEAK), (2) DangerZone (lines 110-187) — account deletion modal with destructive action confirmation. Tests must cover: (1) ChangePasswordCard: form validation (all fields required, passwords must match), field-level error display, successful password change flow with mutation, backend error code mapping (show CURRENT_PASSWORD_INCORRECT when returned), password visibility toggle (if implemented), success toast display, (2) DangerZone: modal opens on button click, modal closes on cancel, delete confirmation triggers mutation, error handling on delete failure, proper data destruction notification. (3) Accessibility: modal has aria-modal='true', aria-labelledby pointing to title, focus management, (4) Edge cases: network error during delete, token expiration during password change. Use MSW to mock PATCH /api/auth/password and DELETE /api/users/me. This is security and data-loss critical.",
+      "acceptanceCriteria": [
+        "SettingsAccountSection.test.jsx created with 15+ test cases",
+        "ChangePasswordCard tests: validation, error display, successful change, error code mapping",
+        "DangerZone tests: modal interaction, delete confirmation, error handling",
+        "Password validation tests: empty check, min-length, match check",
+        "Accessibility tests: modal attributes, focus management",
+        "Edge case tests: network errors, missing tokens",
+        "Success toast or confirmation message tested",
+        "All tests pass with npm test",
+        "No visual regression",
+        "Modal properly marked as destructive action"
+      ],
+      "status": "todo",
+      "estimatedEffort": "medium",
+      "impactScore": 88,
+      "rationale": "CRITICAL DATA LOSS RISK: Account deletion permanently removes user data. Password change is security-sensitive. Component handles these flows with ZERO test coverage. Untested destructive actions are highest-risk code. Error handling gaps could leave users stranded (e.g., deletion fails, user thinks account is deleted)."
+    }
+  ]
+}
