@@ -5,15 +5,15 @@ import { useRef, useMemo } from "react";
 import { useDetailPanelState } from "../hooks/useDetailPanelState";
 import { useDetailPanelKeyboard } from "../hooks/useDetailPanelKeyboard";
 import { DetailPanelHeader } from "./DetailPanelHeader";
-import { BUTTON_SECONDARY, BUTTON_DANGER } from "../lib/designTokens";
+import { BUTTON_SECONDARY, BUTTON_DANGER, MODAL_BACKDROP, MODAL_CARD } from "../lib/designTokens";
 import { PanelBody } from "./DetailPanelBody";
 import UndoToast from "./UndoToast";
 import { usePanelDrag } from "../hooks/usePanelDrag";
 
 function DiscardDialog({ onDiscard, onCancel }) {
   return (
-    <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm" role="alertdialog" aria-modal="true" aria-labelledby="discard-dialog-title">
-      <div className="mx-4 w-full max-w-sm rounded-2xl border border-border-default bg-white p-5 shadow-modal dark:bg-gray-800 dark:border-dark-border">
+    <div className={`${MODAL_BACKDROP} absolute`} role="alertdialog" aria-modal="true" aria-labelledby="discard-dialog-title">
+      <div className={`${MODAL_CARD} mx-4 w-full max-w-sm`}>
         <h3 id="discard-dialog-title" className="text-base font-semibold text-gray-900 dark:text-gray-100">Discard unsaved notes?</h3>
         <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">Your changes will be lost.</p>
         <div className="mt-4 flex justify-end gap-2">

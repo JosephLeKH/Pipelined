@@ -14,7 +14,8 @@
         "No layout breaks on mobile or desktop",
         "npm run build succeeds"
       ],
-      "passes": true
+      "passes": true,
+      "status": "complete"
     },
     {
       "id": "US-260",
@@ -27,7 +28,8 @@
         "Container uses py-20 and max-w-md",
         "npm run build succeeds"
       ],
-      "passes": true
+      "passes": true,
+      "status": "complete"
     },
     {
       "id": "US-261",
@@ -39,7 +41,8 @@
         "All text in MetricCard is readable in dark mode",
         "npm run build succeeds"
       ],
-      "passes": true
+      "passes": true,
+      "status": "complete"
     },
     {
       "id": "US-262",
@@ -52,7 +55,8 @@
         "BUTTON_GHOST does NOT include active:scale",
         "npm run build succeeds"
       ],
-      "passes": true
+      "passes": true,
+      "status": "complete"
     },
     {
       "id": "US-263",
@@ -64,7 +68,8 @@
         "No layout breaks on 320px viewport width",
         "npm run build succeeds"
       ],
-      "passes": true
+      "passes": true,
+      "status": "complete"
     },
     {
       "id": "US-264",
@@ -76,7 +81,8 @@
         "Buttons are excluded (they have cursor-pointer by default)",
         "npm run build succeeds"
       ],
-      "passes": true
+      "passes": true,
+      "status": "complete"
     }
   ],
   "status": "complete"

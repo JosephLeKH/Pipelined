@@ -14,7 +14,8 @@
         "No inline animate-spin rounded-full border patterns remain in pages/",
         "npm run build succeeds"
       ],
-      "passes": true
+      "passes": true,
+      "status": "complete"
     },
     {
       "id": "US-253",
@@ -26,7 +27,8 @@
         "Alert text content and role='alert' attributes preserved",
         "npm run build succeeds"
       ],
-      "passes": true
+      "passes": true,
+      "status": "complete"
     },
     {
       "id": "US-254",
@@ -38,7 +40,8 @@
         "Both validation check and error message use PASSWORD_MIN_LENGTH",
         "npm run build succeeds"
       ],
-      "passes": true
+      "passes": true,
+      "status": "complete"
     },
     {
       "id": "US-255",
@@ -50,7 +53,8 @@
         "ResumeSection.jsx also imports RESUME_MAX_MB from constants.js if it has a local copy",
         "npm run build succeeds"
       ],
-      "passes": true
+      "passes": true,
+      "status": "complete"
     },
     {
       "id": "US-256",
@@ -63,7 +67,8 @@
         "Modal p-6 padding and content preserved",
         "npm run build succeeds"
       ],
-      "passes": true
+      "passes": true,
+      "status": "complete"
     },
     {
       "id": "US-257",
@@ -76,7 +81,8 @@
         "All Settings section headings consistently use font-display",
         "npm run build succeeds"
       ],
-      "passes": true
+      "passes": true,
+      "status": "complete"
     },
     {
       "id": "US-258",
@@ -88,7 +94,9 @@
         "Visual appearance unchanged (gray bg, muted text, same sizing)",
         "npm run build succeeds"
       ],
-      "passes": true
+      "passes": true,
+      "status": "complete"
     }
-  ]
+  ],
+  "status": "complete"
 }

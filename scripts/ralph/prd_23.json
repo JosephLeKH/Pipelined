@@ -12,7 +12,8 @@
         "Panel slides in/out correctly with translate-y / translate-x classes",
         "npm run build succeeds"
       ],
-      "passes": true
+      "passes": true,
+      "status": "complete"
     },
     {
       "id": "US-266",
@@ -25,7 +26,8 @@
         "UndoToast centers correctly with -translate-x-1/2",
         "npm run build succeeds"
       ],
-      "passes": true
+      "passes": true,
+      "status": "complete"
     },
     {
       "id": "US-267",
@@ -38,7 +40,8 @@
         "NAV_BRAND has dark:text-gray-100",
         "npm run build succeeds"
       ],
-      "passes": true
+      "passes": true,
+      "status": "complete"
     },
     {
       "id": "US-268",
@@ -50,7 +53,8 @@
         "BUTTON_PRIMARY and BUTTON_DANGER unchanged",
         "npm run build succeeds"
       ],
-      "passes": true
+      "passes": true,
+      "status": "complete"
     },
     {
       "id": "US-269",
@@ -61,7 +65,8 @@
         "Button is readable and styled correctly in dark mode",
         "npm run build succeeds"
       ],
-      "passes": true
+      "passes": true,
+      "status": "complete"
     },
     {
       "id": "US-270",
@@ -73,7 +78,8 @@
         "OnboardingChecklist CheckCircle2 uses text-brand-500",
         "npm run build succeeds"
       ],
-      "passes": true
+      "passes": true,
+      "status": "complete"
     },
     {
       "id": "US-271",
@@ -84,7 +90,8 @@
         "No text-green-600 remains in RegisterForm.jsx",
         "npm run build succeeds"
       ],
-      "passes": true
+      "passes": true,
+      "status": "complete"
     }
   ],
   "status": "complete"

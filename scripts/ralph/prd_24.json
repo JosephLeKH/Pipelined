@@ -14,7 +14,8 @@
         "Base font-size is 14px with line-height 1.6",
         "npm run build succeeds"
       ],
-      "passes": true
+      "passes": true,
+      "status": "complete"
     },
     {
       "id": "US-276",
@@ -26,7 +27,8 @@
         "borderRadius.button is '0.5rem' (8px)",
         "npm run build succeeds"
       ],
-      "passes": true
+      "passes": true,
+      "status": "complete"
     },
     {
       "id": "US-277",
@@ -38,7 +40,8 @@
         "Dark mode icon variants unchanged (dark:text-gray-400 stays for dark mode icons)",
         "npm run build succeeds"
       ],
-      "passes": true
+      "passes": true,
+      "status": "complete"
     },
     {
       "id": "US-278",
@@ -51,7 +54,8 @@
         "No warm brown rgba values remain in border or shadow tokens",
         "npm run build succeeds"
       ],
-      "passes": true
+      "passes": true,
+      "status": "complete"
     },
     {
       "id": "US-279",
@@ -63,7 +67,8 @@
         "MODAL_CARD uses 'shadow-modal' instead of 'shadow-sm'",
         "npm run build succeeds"
       ],
-      "passes": true
+      "passes": true,
+      "status": "complete"
     },
     {
       "id": "US-280",
@@ -77,7 +82,8 @@
         "surface-tertiary is '#e7e5e4'",
         "gray-500 through gray-950 are unchanged",
         "npm run build succeeds"
-      ]
+      ],
+      "status": "complete"
     },
     {
       "id": "US-281",
@@ -89,7 +95,8 @@
         "NavBar container has py-3 minimum padding",
         "npm run build succeeds"
       ],
-      "passes": true
+      "passes": true,
+      "status": "complete"
     },
     {
       "id": "US-282",
@@ -99,7 +106,9 @@
         "No Lora references remain in index.css, tailwind.config.js, or index.html",
         "npm run build succeeds"
       ],
-      "passes": true
+      "passes": true,
+      "status": "complete"
     }
-  ]
+  ],
+  "status": "complete"
 }

@@ -13,7 +13,8 @@
         "No emerald classes remain in auth pages",
         "npm run build succeeds"
       ],
-      "passes": true
+      "passes": true,
+      "status": "complete"
     },
     {
       "id": "US-246",
@@ -24,7 +25,8 @@
         "No emerald classes remain in Pricing.jsx",
         "npm run build succeeds"
       ],
-      "passes": true
+      "passes": true,
+      "status": "complete"
     },
     {
       "id": "US-247",
@@ -35,7 +37,8 @@
         "Screen readers can announce the stale status",
         "npm run build succeeds"
       ],
-      "passes": true
+      "passes": true,
+      "status": "complete"
     },
     {
       "id": "US-248",
@@ -46,7 +49,8 @@
         "All section h2 elements in pages use font-display",
         "npm run build succeeds"
       ],
-      "passes": true
+      "passes": true,
+      "status": "complete"
     },
     {
       "id": "US-249",
@@ -58,7 +62,8 @@
         "Typo -trangray-x-1/2 corrected to -translate-x-1/2",
         "npm run build succeeds"
       ],
-      "passes": true
+      "passes": true,
+      "status": "complete"
     },
     {
       "id": "US-250",
@@ -70,7 +75,8 @@
         "DetailPanelHeader delete button uses focus:ring-brand-500",
         "npm run build succeeds"
       ],
-      "passes": true
+      "passes": true,
+      "status": "complete"
     },
     {
       "id": "US-251",
@@ -82,7 +88,9 @@
         "Consistent transition-colors duration-150 on interactive cards",
         "npm run build succeeds"
       ],
-      "passes": true
+      "passes": true,
+      "status": "complete"
     }
-  ]
+  ],
+  "status": "complete"
 }
