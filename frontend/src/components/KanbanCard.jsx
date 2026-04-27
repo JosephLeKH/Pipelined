@@ -40,8 +40,8 @@ function KanbanCard({ application, onSelect }) {
         dndKeyDown?.(e);
       }}
       data-testid="kanban-card"
-      className={`relative cursor-pointer p-3 transition-colors duration-150 hover:border-border-strong ${CARD_BASE} ${
-        isDragging ? "rotate-[2deg] scale-[1.05] opacity-80 shadow-md transition-transform" : ""
+      className={`relative cursor-pointer p-3 transition-all duration-150 hover:border-border-strong hover:shadow-sm ${CARD_BASE} ${
+        isDragging ? "rotate-[2deg] scale-[1.05] opacity-80 shadow-lg" : ""
       }`}
     >
       {stale && (

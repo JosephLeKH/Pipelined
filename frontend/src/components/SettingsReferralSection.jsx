@@ -10,7 +10,7 @@ import Star from "lucide-react/dist/esm/icons/star";
 
 import { trackEvent } from "../lib/analytics";
 import { COPY_RESET_MS } from "../lib/constants";
-import { CARD_BASE, BUTTON_SECONDARY } from "../lib/designTokens";
+import { CARD_BASE, BUTTON_SECONDARY, INPUT_READONLY } from "../lib/designTokens";
 
 const SUPER_REFERRER_THRESHOLD = 3;
 
@@ -59,7 +59,7 @@ function SettingsReferralSection({ user }) {
             readOnly
             value={referralLink}
             aria-label="Referral link"
-            className="flex-1 rounded-button border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-700 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
+            className={`flex-1 ${INPUT_READONLY}`}
           />
           <button
             type="button"

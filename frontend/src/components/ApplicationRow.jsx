@@ -8,7 +8,7 @@ import LayoutDashboard from "lucide-react/dist/esm/icons/layout-dashboard";
 import Pencil from "lucide-react/dist/esm/icons/pencil";
 
 import { STAGE_COLORS, DEFAULT_STAGE_COLOR } from "../lib/constants";
-import { BADGE_BASE } from "../lib/designTokens";
+import { BADGE_BASE, TOOLTIP } from "../lib/designTokens";
 import { formatDate, isStale, isFollowUpOverdue } from "../lib/dateUtils";
 import { useSwipeAction } from "../hooks/useSwipeAction";
 import { RowMenu } from "./ApplicationRowActions";
@@ -43,7 +43,7 @@ function SwipeActions({ onArchive, onFollowUp, revealed }) {
       <button
         type="button"
         aria-label="Set follow-up"
-        className="flex w-20 flex-col items-center justify-center gap-1 bg-amber-500 text-white text-xs font-medium hover:bg-amber-600 active:bg-amber-700"
+        className="flex w-20 flex-col items-center justify-center gap-1 bg-amber-500 text-white text-xs font-medium hover:bg-amber-600 active:bg-amber-700 transition-colors"
         onClick={onFollowUp}
       >
         <CalendarClock className="h-5 w-5" aria-hidden="true" />
@@ -52,7 +52,7 @@ function SwipeActions({ onArchive, onFollowUp, revealed }) {
       <button
         type="button"
         aria-label="Archive application"
-        className="flex w-20 flex-col items-center justify-center gap-1 bg-rose-500 text-white text-xs font-medium hover:bg-rose-600 active:bg-rose-700"
+        className="flex w-20 flex-col items-center justify-center gap-1 bg-rose-500 text-white text-xs font-medium hover:bg-rose-600 active:bg-rose-700 transition-colors"
         onClick={onArchive}
       >
         <Archive className="h-5 w-5" aria-hidden="true" />
@@ -114,7 +114,7 @@ function ApplicationRow({
               />
               <span
                 role="tooltip"
-                className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 whitespace-nowrap rounded-button bg-gray-800 px-2 py-1 text-xs text-white opacity-0 group-hover/stale:opacity-100"
+                className={`${TOOLTIP} left-4 top-1/2 -translate-y-1/2 group-hover/stale:opacity-100`}
               >
                 No updates in 14 days — consider following up
               </span>
@@ -136,7 +136,7 @@ function ApplicationRow({
               <Bell className="h-4 w-4 text-amber-500" data-testid="follow-up-bell" aria-label={`Follow-up due ${formatDate(application.follow_up_date)}`} />
               <span
                 role="tooltip"
-                className="pointer-events-none absolute left-5 top-1/2 z-10 -translate-y-1/2 whitespace-nowrap rounded bg-gray-800 px-2 py-1 text-xs text-white opacity-0 group-hover/followup:opacity-100"
+                className={`${TOOLTIP} left-5 top-1/2 -translate-y-1/2 group-hover/followup:opacity-100`}
               >
                 Follow-up due {formatDate(application.follow_up_date)}
               </span>

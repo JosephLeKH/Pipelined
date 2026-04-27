@@ -87,7 +87,7 @@ function HamburgerButton({ mobileMenuOpen, setMobileMenuOpen }) {
       onClick={() => setMobileMenuOpen((prev) => !prev)}
       aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
       aria-expanded={mobileMenuOpen}
-      className="ml-auto rounded-md p-1.5 text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-100 md:hidden"
+      className="ml-auto rounded-md p-1.5 text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-100 md:hidden"
     >
       {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
     </button>

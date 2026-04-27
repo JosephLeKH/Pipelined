@@ -88,7 +88,7 @@ function KanbanBoard({ filters = DEFAULT_FILTERS, onSelect }) {
       </div>
       <DragOverlay>
         {activeApp ? (
-          <div className="rotate-1 rounded-card bg-white p-3 opacity-90 shadow-md ring-1 ring-gray-300 dark:bg-gray-800 dark:ring-gray-600">
+          <div className="rotate-[2deg] rounded-card bg-white p-3 opacity-90 shadow-lg ring-1 ring-gray-300 dark:bg-gray-800 dark:ring-gray-600">
             <p className="truncate font-semibold text-gray-900 dark:text-gray-100">{activeApp.company}</p>
             <p className="mt-0.5 truncate text-sm text-gray-600 dark:text-gray-400">{activeApp.role_title}</p>
           </div>

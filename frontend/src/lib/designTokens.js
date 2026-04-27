@@ -114,6 +114,18 @@ export const INPUT_READONLY =
   "border border-gray-200 rounded-md bg-gray-50 text-gray-500 text-sm px-3 py-2 font-sans w-full cursor-not-allowed " +
   "dark:bg-gray-900 dark:border-gray-700 dark:text-gray-400";
 
+/** Toggle button — active state (solid brand). Used in view mode toggles. */
+export const BUTTON_TOGGLE_ACTIVE =
+  "bg-brand-500 text-white rounded-button transition-colors";
+
+/** Toggle button — inactive state (neutral surface). Used in view mode toggles. */
+export const BUTTON_TOGGLE_INACTIVE =
+  "bg-white text-gray-600 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 rounded-button transition-colors";
+
+/** Tooltip — pill-shaped, small text, opacity-based show/hide via group-hover. */
+export const TOOLTIP =
+  "absolute z-10 whitespace-nowrap rounded-full bg-gray-800 px-2 py-1 text-xs text-white opacity-0 transition-opacity pointer-events-none group-hover:opacity-100";
+
 /** Small loading spinner — 24px, brand-500 color, used in inline/compact loading states. */
 export const SPINNER_SM = "h-6 w-6 animate-spin rounded-full border-2 border-brand-500 border-t-transparent";
 

@@ -4,10 +4,7 @@ import LayoutGrid from "lucide-react/dist/esm/icons/layout-grid";
 import List from "lucide-react/dist/esm/icons/list";
 import Loader2 from "lucide-react/dist/esm/icons/loader-2";
 
-import { BUTTON_PRIMARY, BUTTON_SECONDARY } from "../lib/designTokens";
-
-const VIEW_BTN_ACTIVE = "bg-brand-500 text-white";
-const VIEW_BTN_INACTIVE = "bg-white text-gray-600 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700";
+import { BUTTON_PRIMARY, BUTTON_SECONDARY, BUTTON_TOGGLE_ACTIVE, BUTTON_TOGGLE_INACTIVE } from "../lib/designTokens";
 
 export function DashboardToolbar({ viewMode, onSetViewMode, isExporting, onImport, onExport, onAdd }) {
   return (
@@ -20,7 +17,7 @@ export function DashboardToolbar({ viewMode, onSetViewMode, isExporting, onImpor
             aria-label="List view"
             aria-pressed={viewMode === "list"}
             onClick={() => onSetViewMode("list")}
-            className={`rounded-l px-2 py-1.5 transition-colors ${viewMode === "list" ? VIEW_BTN_ACTIVE : VIEW_BTN_INACTIVE}`}
+            className={`rounded-l px-2 py-1.5 transition-colors ${viewMode === "list" ? BUTTON_TOGGLE_ACTIVE : BUTTON_TOGGLE_INACTIVE}`}
           >
             <List className="h-4 w-4" />
           </button>
@@ -29,7 +26,7 @@ export function DashboardToolbar({ viewMode, onSetViewMode, isExporting, onImpor
             aria-label="Kanban view"
             aria-pressed={viewMode === "kanban"}
             onClick={() => onSetViewMode("kanban")}
-            className={`rounded-r px-2 py-1.5 transition-colors ${viewMode === "kanban" ? VIEW_BTN_ACTIVE : VIEW_BTN_INACTIVE}`}
+            className={`rounded-r px-2 py-1.5 transition-colors ${viewMode === "kanban" ? BUTTON_TOGGLE_ACTIVE : BUTTON_TOGGLE_INACTIVE}`}
           >
             <LayoutGrid className="h-4 w-4" />
           </button>

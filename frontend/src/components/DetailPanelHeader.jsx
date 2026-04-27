@@ -19,7 +19,7 @@ export function DetailPanelHeader({ application, onClose, onDelete }) {
         <button
           type="button"
           onClick={onClose}
-          className="rounded-full bg-gray-100 p-1.5 text-gray-500 hover:bg-gray-200 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-1 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-400"
+          className="rounded-full bg-gray-100 p-1.5 text-gray-500 hover:bg-gray-200 hover:text-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-400"
           aria-label="Close panel"
         >
           <X className="h-4 w-4" />
@@ -27,7 +27,7 @@ export function DetailPanelHeader({ application, onClose, onDelete }) {
         <button
           type="button"
           onClick={onDelete}
-          className="rounded-full p-1.5 text-gray-500 hover:bg-rose-50 hover:text-rose-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-1 dark:hover:bg-rose-900/30"
+          className="rounded-full p-1.5 text-gray-500 hover:bg-rose-50 hover:text-rose-500 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 dark:hover:bg-rose-900/30"
           aria-label="Delete application"
         >
           <Trash2 className="h-4 w-4" />
