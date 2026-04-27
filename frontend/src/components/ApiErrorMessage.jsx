@@ -24,7 +24,7 @@ function ApiErrorMessage({ error, onRetry }) {
         <button
           type="button"
           onClick={onRetry}
-          className="rounded border border-red-300 px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-100"
+          className="rounded border border-red-300 px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-100 transition-colors"
         >
           Retry
         </button>

@@ -68,7 +68,7 @@ function DesktopActions({ user, ThemeIcon, theme, handleCycleTheme, handleLogout
   return (
     <div className="ml-auto hidden items-center gap-2 md:flex">
       <NotificationBell />
-      <button type="button" onClick={handleCycleTheme} aria-label={THEME_LABELS[theme]} className="rounded-md p-1.5 text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-100">
+      <button type="button" onClick={handleCycleTheme} aria-label={THEME_LABELS[theme]} className={`${ICON_BUTTON}`}>
         <ThemeIcon className="h-4 w-4" />
       </button>
       <UserAvatar user={user} />

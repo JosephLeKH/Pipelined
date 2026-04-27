@@ -2,7 +2,7 @@
   "project": "Pipelined",
   "branchName": "main",
   "status": "complete",
-  "description": "PRD-27: Design consistency pass — adopt tokens, add transitions, fix dark mode gaps",
+  "description": "PRD-27: Design consistency pass \u2014 adopt tokens, add transitions, fix dark mode gaps",
   "userStories": [
     {
       "id": "US-300",
@@ -13,18 +13,20 @@
         "FeedbackWidget textarea uses INPUT_BASE",
         "FeedbackWidget email input uses INPUT_BASE",
         "npm run build succeeds"
-      ]
+      ],
+      "status": "complete"
     },
     {
       "id": "US-301",
       "title": "Add transition-colors to CalendarEventsList buttons and fix dark mode",
-      "description": "CalendarEventsList.jsx has two buttons missing transitions: (1) Add Event button (line ~25) — add transition-colors. (2) Delete event button (line ~51) — add transition-colors and dark mode: 'dark:hover:bg-red-900/30 dark:text-gray-500'. Also fix delete button text-gray-300 to text-gray-400 (300 is too faint).",
+      "description": "CalendarEventsList.jsx has two buttons missing transitions: (1) Add Event button (line ~25) \u2014 add transition-colors. (2) Delete event button (line ~51) \u2014 add transition-colors and dark mode: 'dark:hover:bg-red-900/30 dark:text-gray-500'. Also fix delete button text-gray-300 to text-gray-400 (300 is too faint).",
       "acceptanceCriteria": [
         "Add Event button has transition-colors",
         "Delete button has transition-colors and dark mode variants",
         "Delete button uses text-gray-400 instead of text-gray-300",
         "npm run build succeeds"
-      ]
+      ],
+      "status": "complete"
     },
     {
       "id": "US-302",
@@ -35,7 +37,8 @@
         "Dismiss button has transition-colors",
         "Dismiss button has dark hover variant",
         "npm run build succeeds"
-      ]
+      ],
+      "status": "complete"
     },
     {
       "id": "US-303",
@@ -46,38 +49,42 @@
         "Revoke button has transition-colors",
         "Both use focus:ring-offset-2",
         "npm run build succeeds"
-      ]
+      ],
+      "status": "complete"
     },
     {
       "id": "US-304",
       "title": "Add transition-colors to ApplicationListHeader sort buttons",
-      "description": "ApplicationListHeader.jsx ColumnHeader buttons (line ~8) have hover:text-gray-900 but no transition-colors. Add transition-colors to the ColumnHeader button className. Also fix focus:ring-offset-1 → focus:ring-offset-2 for consistency.",
+      "description": "ApplicationListHeader.jsx ColumnHeader buttons (line ~8) have hover:text-gray-900 but no transition-colors. Add transition-colors to the ColumnHeader button className. Also fix focus:ring-offset-1 \u2192 focus:ring-offset-2 for consistency.",
       "acceptanceCriteria": [
         "ColumnHeader buttons have transition-colors",
         "ColumnHeader buttons use focus:ring-offset-2",
         "npm run build succeeds"
-      ]
+      ],
+      "status": "complete"
     },
     {
       "id": "US-305",
       "title": "Standardize remaining focus:ring-offset-1 to focus:ring-offset-2 app-wide",
-      "description": "Audit all components for focus:ring-offset-1 (the old value) and change to focus:ring-offset-2 (the standard). PRD-26 fixed DetailPanelHeader. Remaining instances may be in CalendarEventsList, SharePipeline, and ApplicationListHeader. Use grep to find all instances. Do NOT change focus:ring-offset-0 — those are intentional.",
+      "description": "Audit all components for focus:ring-offset-1 (the old value) and change to focus:ring-offset-2 (the standard). PRD-26 fixed DetailPanelHeader. Remaining instances may be in CalendarEventsList, SharePipeline, and ApplicationListHeader. Use grep to find all instances. Do NOT change focus:ring-offset-0 \u2014 those are intentional.",
       "acceptanceCriteria": [
         "No focus:ring-offset-1 remains in any component (except intentional overrides)",
         "All changed to focus:ring-offset-2",
         "npm run build succeeds"
-      ]
+      ],
+      "status": "complete"
     },
     {
       "id": "US-306",
       "title": "Create ICON_BUTTON token for icon-only buttons and adopt in NavBar and DetailPanelHeader",
-      "description": "Multiple components have icon-only buttons with duplicated styles. Create an ICON_BUTTON token in designTokens.js: 'rounded-full p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200'. Adopt in: (1) DetailPanelHeader close button, (2) NavBar theme toggle icon buttons. Do NOT adopt everywhere at once — just these two highest-visibility spots.",
+      "description": "Multiple components have icon-only buttons with duplicated styles. Create an ICON_BUTTON token in designTokens.js: 'rounded-full p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200'. Adopt in: (1) DetailPanelHeader close button, (2) NavBar theme toggle icon buttons. Do NOT adopt everywhere at once \u2014 just these two highest-visibility spots.",
       "acceptanceCriteria": [
         "ICON_BUTTON token exists in designTokens.js",
         "DetailPanelHeader close button uses ICON_BUTTON",
         "NavBar icon buttons use ICON_BUTTON where appropriate",
         "npm run build succeeds"
-      ]
+      ],
+      "status": "complete"
     },
     {
       "id": "US-307",
@@ -87,7 +94,8 @@
         "SharePipeline heading uses font-display",
         "CalendarEventsList heading uses font-display",
         "npm run build succeeds"
-      ]
+      ],
+      "status": "complete"
     }
   ]
 }

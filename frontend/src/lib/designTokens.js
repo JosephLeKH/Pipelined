@@ -126,9 +126,9 @@ export const BUTTON_TOGGLE_INACTIVE =
 export const TOOLTIP =
   "absolute z-10 whitespace-nowrap rounded-full bg-gray-800 px-2 py-1 text-xs text-white opacity-0 transition-opacity pointer-events-none group-hover:opacity-100";
 
-/** Icon-only button base — padding, focus ring, transition. Add rounding and hover colors per use. */
+/** Icon-only button base — rounded-full, padding, hover states, focus ring, transition. */
 export const ICON_BUTTON =
-  "p-1.5 text-gray-500 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 dark:text-gray-400";
+  "rounded-full p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200";
 
 /** Small loading spinner — 24px, brand-500 color, used in inline/compact loading states. */
 export const SPINNER_SM = "h-6 w-6 animate-spin rounded-full border-2 border-brand-500 border-t-transparent";

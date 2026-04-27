@@ -48,7 +48,7 @@ function CalendarEventsList({ applicationId, onAddEvent }) {
             <button
               type="button"
               onClick={() => deleteEvent(ev.id)}
-              className="rounded p-1 text-gray-400 hover:bg-red-50 hover:text-red-500 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 dark:text-gray-500 dark:hover:bg-red-900/30"
+              className="rounded p-1 text-gray-400 hover:bg-red-50 hover:text-red-500 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 dark:text-gray-400 dark:hover:bg-red-900/30"
               aria-label="Delete event"
             >
               <Trash2 className="h-3.5 w-3.5" />

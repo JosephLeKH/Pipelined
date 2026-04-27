@@ -1,0 +1,95 @@
+{
+  "project": "Pipelined",
+  "branchName": "main",
+  "status": "pending",
+  "description": "PRD-28: Design consistency pass 2 — transitions, dark mode gaps, and spacing patterns",
+  "userStories": [
+    {
+      "id": "US-308",
+      "title": "Add transition-colors to interactive elements missing smooth hover states",
+      "description": "Several components have hover states without transition-colors, causing abrupt color changes. Add transition-colors to: (1) ApiErrorMessage.jsx retry button (line 27), (2) ApplicationRowActions.jsx RowMenu button (line 50), (3) ApplicationRowActions.jsx delete menu item (line 26), (4) ApplicationTimeline.jsx expand button (line 91), (5) ContactCard.jsx ping button (line 64), (6) ContactCard.jsx unlink button (line 75).",
+      "acceptanceCriteria": [
+        "ApiErrorMessage retry button has transition-colors",
+        "ApplicationRowActions RowMenu button has transition-colors",
+        "ApplicationRowActions delete menu item has transition-colors",
+        "ApplicationTimeline expand button has transition-colors",
+        "ContactCard ping and unlink buttons have transition-colors",
+        "npm run build succeeds"
+      ]
+    },
+    {
+      "id": "US-309",
+      "title": "Add missing dark mode variants to hover states in ApplicationRowActions",
+      "description": "ApplicationRowActions.jsx delete menu item (line 26) has hover:bg-red-50 but no dark:hover variant. Add dark:text-red-400 and dark:hover:bg-red-900/20. Also ensure the regular menu items on lines 16 and 21 have proper dark mode applied.",
+      "acceptanceCriteria": [
+        "Delete menu item has dark:text-red-400",
+        "Delete menu item has dark:hover:bg-red-900/20",
+        "Archive/Unarchive menu items maintain dark mode consistency",
+        "npm run build succeeds"
+      ]
+    },
+    {
+      "id": "US-310",
+      "title": "Add transition-colors and dark mode to JobRow hover state",
+      "description": "JobRow.jsx (line 24) has className='flex items-center gap-4 border-b border-gray-100 px-4 hover:bg-gray-50' without transition-colors and missing dark:border-gray-700 and dark:hover:bg-gray-700. Add both transition-colors and dark mode variants.",
+      "acceptanceCriteria": [
+        "JobRow has transition-colors on hover",
+        "JobRow has dark:border-gray-700",
+        "JobRow has dark:hover:bg-gray-700",
+        "npm run build succeeds"
+      ]
+    },
+    {
+      "id": "US-311",
+      "title": "Add transition-colors to ApplicationRowActions RowMenu icon button",
+      "description": "ApplicationRowActions.jsx RowMenu button (line 50) has className='rounded p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-700...' missing transition-colors. Add transition-colors and ensure dark mode has dark:hover:bg-gray-700 dark:hover:text-gray-200.",
+      "acceptanceCriteria": [
+        "RowMenu button has transition-colors",
+        "RowMenu button has dark:hover:bg-gray-700",
+        "RowMenu button has dark:hover:text-gray-200",
+        "npm run build succeeds"
+      ]
+    },
+    {
+      "id": "US-312",
+      "title": "Add transition-colors to CommandPalette command items",
+      "description": "CommandPalette.jsx command items (around line 180-200 in the render section) have hover:bg-gray-50 without transition-colors. Find the command item button/div and add transition-colors. Verify dark:hover:bg-gray-700 is present.",
+      "acceptanceCriteria": [
+        "Command items have transition-colors",
+        "Command items have dark:hover:bg-gray-700 or equivalent dark mode",
+        "npm run build succeeds"
+      ]
+    },
+    {
+      "id": "US-313",
+      "title": "Standardize dropdown menu item spacing across components",
+      "description": "Multiple dropdown menus use px-4 py-2 for menu items (ApplicationRowActions lines 16, 21, 26). Create or adopt a MENU_ITEM token in designTokens.js with: 'w-full px-4 py-2 text-left text-sm transition-colors'. Apply it to ApplicationRowActions menu items and any other dropdown menus in the codebase.",
+      "acceptanceCriteria": [
+        "MENU_ITEM token exists in designTokens.js (or reuse existing pattern)",
+        "ApplicationRowActions menu items use standardized token",
+        "Menu items have transition-colors",
+        "npm run build succeeds"
+      ]
+    },
+    {
+      "id": "US-314",
+      "title": "Add focus:ring-offset-2 to interactive elements missing proper focus ring offset",
+      "description": "Several components have focus states but use non-standard focus ring offsets. Audit and standardize: (1) ApplicationRowActions RowMenu button (line 50) — check if focus:ring-offset-2 is present, (2) ApplicationTimeline expand button (line 91) — verify focus:ring-offset-2, (3) ContactCard buttons (lines 64, 75) — ensure focus:ring-offset-2.",
+      "acceptanceCriteria": [
+        "All focus:ring states use focus:ring-offset-2",
+        "No focus:ring-offset-0 or focus:ring-offset-1 on non-intentional elements",
+        "npm run build succeeds"
+      ]
+    },
+    {
+      "id": "US-315",
+      "title": "Fix AnalyticsCharts CustomTooltip to use design tokens or consistent styling",
+      "description": "AnalyticsCharts.jsx CustomTooltip div (line 35) uses hardcoded 'rounded-lg border border-border-default bg-white px-3 py-2 shadow-card text-sm dark:border-gray-700 dark:bg-gray-800'. This should either adopt a design token (CARD_BASE with size override) or be extracted as a constant. Consider whether this could use CARD_BASE + additional padding overrides.",
+      "acceptanceCriteria": [
+        "CustomTooltip uses consistent styling approach",
+        "Either adopts CARD_BASE or is defined as a named constant",
+        "npm run build succeeds"
+      ]
+    }
+  ]
+}
