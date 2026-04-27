@@ -3,7 +3,7 @@
 from datetime import datetime
 from typing import Literal
 
-from pydantic import AnyHttpUrl, BaseModel, ConfigDict, Field
+from pydantic import AnyHttpUrl, BaseModel, ConfigDict, EmailStr, Field
 
 ContactRelationship = Literal["recruiter", "referral", "mentor", "peer", "hiring_manager", "other"]
 
@@ -22,7 +22,7 @@ class ContactCreate(BaseModel):
     name: str = Field(min_length=1, max_length=MAX_NAME_LENGTH)
     company: str | None = Field(None, max_length=MAX_COMPANY_LENGTH)
     role: str | None = Field(None, max_length=MAX_ROLE_LENGTH)
-    email: str | None = Field(None, max_length=MAX_EMAIL_LENGTH)
+    email: EmailStr | None = None
     linkedin_url: AnyHttpUrl | None = None
     notes: str | None = Field(None, max_length=MAX_NOTES_LENGTH)
     relationship: ContactRelationship = "other"
@@ -35,7 +35,7 @@ class ContactUpdate(BaseModel):
     name: str | None = Field(None, min_length=1, max_length=MAX_NAME_LENGTH)
     company: str | None = Field(None, max_length=MAX_COMPANY_LENGTH)
     role: str | None = Field(None, max_length=MAX_ROLE_LENGTH)
-    email: str | None = Field(None, max_length=MAX_EMAIL_LENGTH)
+    email: EmailStr | None = None
     linkedin_url: AnyHttpUrl | None = None
     notes: str | None = Field(None, max_length=MAX_NOTES_LENGTH)
     relationship: ContactRelationship | None = None

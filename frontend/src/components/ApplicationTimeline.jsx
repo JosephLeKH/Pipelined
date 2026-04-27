@@ -52,7 +52,11 @@ function StageTimelineNode({ node }) {
   const colors = STAGE_COLORS[node.stage] ?? DEFAULT_STAGE_COLOR;
   return (
     <li className="flex items-start gap-3 pb-3" data-testid="timeline-stage-node">
-      <span className={`mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full ${colors.dot}`} />
+      <span
+        className={`mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full ${colors.dot}`}
+        aria-label={`Stage: ${node.stage}`}
+        role="img"
+      />
       <div>
         <p className="text-sm font-medium text-gray-800">{node.label}</p>
         <p className="text-xs text-gray-400">{formatDate(node.date)}</p>
@@ -99,11 +103,11 @@ function ApplicationTimeline({ stageHistory, applicationId }) {
       </button>
       {isExpanded && (
         nodes.length === 0 ? (
-          <p className="text-xs text-gray-400" data-testid="timeline-empty">
+          <p className="text-xs text-gray-400" data-testid="timeline-empty" role="status">
             No activity yet
           </p>
         ) : (
-          <ol className="flex flex-col" data-testid="timeline">
+          <ol className="flex flex-col" data-testid="timeline" aria-live="polite" aria-label="Application timeline">
             {nodes.map((node, i) =>
               node.kind === "stage"
                 ? <StageTimelineNode key={`s-${i}`} node={node} />
