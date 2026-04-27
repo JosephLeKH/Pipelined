@@ -14,7 +14,7 @@ export function LoginForm({ email, setEmail, password, setPassword, error, isPen
       <div className="mb-5">
         <div className="mb-1.5 flex items-center justify-between">
           <label htmlFor="password" className={INPUT_LABEL}>Password</label>
-          <Link to="/forgot-password" className="text-brand-500 hover:text-brand-600 text-sm">Forgot password?</Link>
+          <Link to="/forgot-password" className="text-brand-500 hover:text-brand-600 transition-colors text-sm">Forgot password?</Link>
         </div>
         <input id="password" type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} className={INPUT_BASE} placeholder="••••••••" />
       </div>

@@ -84,12 +84,12 @@ function SortableStageItem({ id, value, onRename, onRemove, canRemove }) {
       style={{ transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1 }}
       className={`flex items-center gap-2 ${CARD_BASE} px-3 py-2`}
     >
-      <button type="button" {...attributes} {...listeners} aria-label="Drag to reorder" className="cursor-grab text-gray-400 hover:text-gray-600 focus:outline-none dark:text-gray-500 dark:hover:text-gray-300">
+      <button type="button" {...attributes} {...listeners} aria-label="Drag to reorder" className="cursor-grab text-gray-400 hover:text-gray-600 transition-colors focus:outline-none dark:text-gray-500 dark:hover:text-gray-300">
         <GripVertical className="h-4 w-4" />
       </button>
       <input type="text" value={value} maxLength={STAGE_NAME_MAX_LENGTH} onChange={(e) => onRename(id, e.target.value)} className="flex-1 rounded border-0 bg-transparent text-sm text-gray-800 focus:outline-none focus:ring-1 focus:ring-brand-500/30 dark:text-gray-200" aria-label={`Stage name: ${value}`} />
       {canRemove && (
-        <button type="button" onClick={() => onRemove(id)} aria-label={`Remove stage ${value}`} className="text-gray-300 hover:text-red-500 focus:outline-none focus:ring-2 focus:ring-red-400 dark:text-gray-500 dark:hover:text-red-400">
+        <button type="button" onClick={() => onRemove(id)} aria-label={`Remove stage ${value}`} className="text-gray-300 hover:text-red-500 transition-colors focus:outline-none focus:ring-2 focus:ring-red-400 dark:text-gray-500 dark:hover:text-red-400">
           <Trash2 className="h-4 w-4" />
         </button>
       )}

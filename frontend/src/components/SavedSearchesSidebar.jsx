@@ -50,7 +50,7 @@ export default function SavedSearchesSidebar({ onApply }) {
                 type="button"
                 aria-label="Delete saved search"
                 onClick={(e) => handleDelete(e, s.id)}
-                className="rounded p-0.5 text-gray-400 hover:text-red-500"
+                className="rounded p-0.5 text-gray-400 hover:text-red-500 transition-colors"
               >
                 <Trash2 className="h-3.5 w-3.5" />
               </button>

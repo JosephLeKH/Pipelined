@@ -26,7 +26,7 @@ export function ChecklistItem({ item, onToggle, onDelete }) {
       <button
         type="button"
         onClick={() => onDelete(item.id)}
-        className="flex-shrink-0 rounded p-0.5 text-gray-300 hover:text-red-500 focus:outline-none focus:ring-2 focus:ring-red-400"
+        className="flex-shrink-0 rounded p-0.5 text-gray-300 hover:text-red-500 transition-colors focus:outline-none focus:ring-2 focus:ring-red-400"
         aria-label={`Delete checklist item: ${item.text}`}
       >
         <Trash2 className="h-3.5 w-3.5" />

@@ -92,7 +92,7 @@ function JobCard({ job, onSelect }) {
           type="button"
           onClick={(e) => e.stopPropagation()}
           aria-label="Bookmark job"
-          className="rounded-full p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-700"
+          className="rounded-full p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-600 transition-colors dark:hover:bg-gray-700"
         >
           <Bookmark className="h-4 w-4" />
         </button>

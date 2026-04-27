@@ -57,7 +57,7 @@ function FollowUpSection({ application, onUpdate }) {
           <button
             type="button"
             onClick={() => onUpdate({ follow_up_date: null })}
-            className="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+            className="text-xs text-gray-400 hover:text-gray-600 transition-colors dark:hover:text-gray-300"
           >
             Clear
           </button>

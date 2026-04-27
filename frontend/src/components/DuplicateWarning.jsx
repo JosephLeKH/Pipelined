@@ -6,7 +6,7 @@ export function DuplicateWarning({ existingId }) {
       An application for this role and company already exists.{" "}
       <a
         href={`/dashboard?application=${existingId}`}
-        className="font-medium underline hover:text-amber-900"
+        className="font-medium underline hover:text-amber-900 transition-colors"
       >
         View existing application
       </a>

@@ -117,7 +117,7 @@ function TagInput({ value = [], onChange, placeholder = "Add a tag…", id }) {
               type="button"
               aria-label={`Remove tag ${tag}`}
               onClick={(e) => { e.stopPropagation(); removeTag(tag); }}
-              className="rounded-full hover:bg-brand-200 dark:hover:bg-brand-800 p-0.5"
+              className="rounded-full hover:bg-brand-200 dark:hover:bg-brand-800 p-0.5 transition-colors"
             >
               <XIcon className="h-2.5 w-2.5" />
             </button>
@@ -160,7 +160,7 @@ function TagInput({ value = [], onChange, placeholder = "Add a tag…", id }) {
               className={`cursor-pointer px-3 py-1.5 text-sm ${
                 i === activeIndex
                   ? "bg-brand-50 text-brand-700 dark:bg-brand-900/30 dark:text-brand-300"
-                  : "text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700"
+                  : "text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700 transition-colors"
               }`}
             >
               {tag}

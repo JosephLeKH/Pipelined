@@ -1,0 +1,92 @@
+{
+  "project": "Pipelined",
+  "branchName": "main",
+  "status": "pending",
+  "description": "PRD-29: Design consistency pass 3 — transition-colors on remaining interactive elements",
+  "userStories": [
+    {
+      "id": "US-316",
+      "title": "Add transition-colors to NavBar buttons (logout, theme toggle)",
+      "description": "NavBar.jsx has multiple buttons with hover states but missing transition-colors: (1) Logout button (line 75) — has hover:bg-gray-100 hover:text-gray-900, (2) Mobile menu button (line 90) — uses ICON_BUTTON with hover states but missing transition-colors, (3) Theme toggle button (line 111) — has hover:bg-gray-100 hover:text-gray-900. Add transition-colors to all three buttons.",
+      "acceptanceCriteria": [
+        "NavBar logout button has transition-colors",
+        "NavBar mobile menu button has transition-colors",
+        "NavBar theme toggle button has transition-colors",
+        "npm run build succeeds"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "US-317",
+      "title": "Add transition-colors to form interactive elements (inputs, buttons, dropdowns)",
+      "description": "Multiple form components have interactive elements missing transition-colors: (1) TagInput.jsx hover states (line ~50-70), (2) ContactForm.jsx form fields and buttons (lines ~40-120), (3) JobFilters.jsx filter toggles and dropdowns (line ~30-80). Audit these components and add transition-colors to all hover/focus interactive states.",
+      "acceptanceCriteria": [
+        "TagInput interactive elements have transition-colors",
+        "ContactForm fields and buttons have transition-colors",
+        "JobFilters controls have transition-colors",
+        "npm run build succeeds"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "US-318",
+      "title": "Add transition-colors to card and list row hover states",
+      "description": "Multiple list/card components have row hover states missing transition-colors: (1) JobCard.jsx (line ~30-50), (2) KanbanCard.jsx (line ~40-60), (3) PrepChecklist.jsx (line ~50-90), (4) SavedSearchesSidebar.jsx search item rows. These components have hover:bg-gray-50 or similar without transition-colors. Add transition-colors to all row hover states.",
+      "acceptanceCriteria": [
+        "JobCard rows have transition-colors on hover",
+        "KanbanCard has transition-colors",
+        "PrepChecklist items have transition-colors",
+        "SavedSearchesSidebar items have transition-colors",
+        "npm run build succeeds"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "US-319",
+      "title": "Add transition-colors to detail panel and modal interactive elements",
+      "description": "Detail panel and modal components have buttons and interactive elements missing transition-colors: (1) DetailPanelBody.jsx buttons (line ~100-150), (2) CsvImportModal.jsx buttons (line ~60-100), (3) FeedbackWidget.jsx form elements (line ~70-120). Audit and add transition-colors to all interactive hover states.",
+      "acceptanceCriteria": [
+        "DetailPanelBody interactive elements have transition-colors",
+        "CsvImportModal buttons have transition-colors",
+        "FeedbackWidget form elements have transition-colors",
+        "npm run build succeeds"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "US-320",
+      "title": "Add transition-colors to utility and helper component buttons",
+      "description": "Utility components have buttons missing transition-colors: (1) UndoToast.jsx undo button (line ~40), (2) GoogleAuthButton.jsx (line ~20), (3) FollowUpBanner.jsx action button (line ~30), (4) DuplicateWarning.jsx merge/dismiss buttons (line ~35-50). Add transition-colors to all button hover states.",
+      "acceptanceCriteria": [
+        "UndoToast button has transition-colors",
+        "GoogleAuthButton has transition-colors",
+        "FollowUpBanner button has transition-colors",
+        "DuplicateWarning buttons have transition-colors",
+        "npm run build succeeds"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "US-321",
+      "title": "Add transition-colors to command and search interface elements",
+      "description": "Command palette and search components: (1) CommandPalette.jsx command item selection states (line ~180-200), (2) SearchInput-like components in various places. These need smooth transitions between selected and unselected states. Add transition-colors where missing.",
+      "acceptanceCriteria": [
+        "CommandPalette command items have smooth color transitions",
+        "Search input focus/unfocus states have transition-colors",
+        "npm run build succeeds"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "US-322",
+      "title": "Add transition-colors to all remaining interactive elements (comprehensive audit)",
+      "description": "After addressing US-316 through US-321, perform a final comprehensive grep across all components to ensure no interactive elements with hover/focus states are missing transition-colors. Use: grep -r 'hover:' src/components/*.jsx | grep -v 'transition-colors' | grep -v '.test.jsx' and fix any remaining matches.",
+      "acceptanceCriteria": [
+        "grep -r 'hover:' shows 0 matches without transition-colors (excluding test files)",
+        "npm run build succeeds",
+        "npm test passes"
+      ],
+      "status": "pending"
+    }
+  ]
+}

@@ -72,7 +72,7 @@ function DesktopActions({ user, ThemeIcon, theme, handleCycleTheme, handleLogout
         <ThemeIcon className="h-4 w-4" />
       </button>
       <UserAvatar user={user} />
-      <button type="button" onClick={handleLogout} aria-label="Log out" className="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-100">
+      <button type="button" onClick={handleLogout} aria-label="Log out" className="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-100">
         <LogOut className="h-4 w-4" />
         Log out
       </button>
@@ -87,7 +87,7 @@ function HamburgerButton({ mobileMenuOpen, setMobileMenuOpen }) {
       onClick={() => setMobileMenuOpen((prev) => !prev)}
       aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
       aria-expanded={mobileMenuOpen}
-      className={`ml-auto ${ICON_BUTTON} rounded-md text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-gray-100 md:hidden`}
+      className={`ml-auto ${ICON_BUTTON} transition-colors rounded-md text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-gray-100 md:hidden`}
     >
       {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
     </button>
@@ -108,10 +108,10 @@ function MobileMenu({ navLinks, pathname, closeMobileMenu, ThemeIcon, theme, han
         );
       })}
       <div className="mt-2 flex items-center gap-2 border-t border-gray-100 pt-2 dark:border-gray-700">
-        <button type="button" onClick={handleCycleTheme} aria-label={THEME_LABELS[theme]} className="rounded-md p-1.5 text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-100">
+        <button type="button" onClick={handleCycleTheme} aria-label={THEME_LABELS[theme]} className="rounded-md p-1.5 text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-100">
           <ThemeIcon className="h-4 w-4" />
         </button>
-        <button type="button" onClick={handleLogout} aria-label="Log out" className="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-100">
+        <button type="button" onClick={handleLogout} aria-label="Log out" className="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-100">
           <LogOut className="h-4 w-4" />
           Log out
         </button>

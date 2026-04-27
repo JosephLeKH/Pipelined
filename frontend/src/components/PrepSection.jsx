@@ -24,7 +24,7 @@ function QuestionItem({ question, onDelete }) {
       <button
         type="button"
         onClick={onDelete}
-        className="flex-shrink-0 rounded p-0.5 text-gray-300 hover:text-red-500 focus:outline-none focus:ring-2 focus:ring-red-400"
+        className="flex-shrink-0 rounded p-0.5 text-gray-300 hover:text-red-500 transition-colors focus:outline-none focus:ring-2 focus:ring-red-400"
         aria-label={`Delete question: ${question}`}
       >
         <Trash2 className="h-3.5 w-3.5" />
@@ -130,7 +130,7 @@ function PrepChecklistSection({ checklist, onAddItem, onToggleItem, onDeleteItem
             <p className="text-xs text-gray-400 mb-1">Suggestions:</p>
             {PREP_CHECKLIST_STARTER_SUGGESTIONS.map((suggestion) => (
               <button key={suggestion} type="button" onClick={() => onAddItem(suggestion)}
-                className="text-left text-xs text-brand-600 hover:text-brand-800 hover:underline focus:outline-none focus:ring-2 focus:ring-brand-500 rounded">
+                className="text-left text-xs text-brand-600 hover:text-brand-800 hover:underline transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 rounded">
                 + {suggestion}
               </button>
             ))}

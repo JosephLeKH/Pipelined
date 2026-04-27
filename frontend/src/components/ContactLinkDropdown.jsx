@@ -75,7 +75,7 @@ function ContactLinkDropdown({ applicationId, linkedIds = [], onDone }) {
       <button
         type="button"
         onClick={() => onDone?.()}
-        className="self-end text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+        className="self-end text-xs text-gray-400 hover:text-gray-600 transition-colors dark:hover:text-gray-300"
       >
         Cancel
       </button>

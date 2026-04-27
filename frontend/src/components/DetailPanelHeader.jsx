@@ -20,7 +20,7 @@ export function DetailPanelHeader({ application, onClose, onDelete }) {
         <button
           type="button"
           onClick={onClose}
-          className={`${ICON_BUTTON} bg-gray-100 hover:bg-gray-200 hover:text-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600`}
+          className={`${ICON_BUTTON} transition-colors bg-gray-100 hover:bg-gray-200 hover:text-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600`}
           aria-label="Close panel"
         >
           <X className="h-4 w-4" />
@@ -28,7 +28,7 @@ export function DetailPanelHeader({ application, onClose, onDelete }) {
         <button
           type="button"
           onClick={onDelete}
-          className={`${ICON_BUTTON} hover:bg-rose-50 hover:text-rose-500 dark:hover:bg-rose-900/30`}
+          className={`${ICON_BUTTON} transition-colors hover:bg-rose-50 hover:text-rose-500 dark:hover:bg-rose-900/30`}
           aria-label="Delete application"
         >
           <Trash2 className="h-4 w-4" />

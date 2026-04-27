@@ -97,7 +97,7 @@ function TemplateRow({ template }) {
             type="button"
             onClick={() => setEditing(true)}
             aria-label={`Rename ${template.name}`}
-            className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:hover:bg-gray-700 dark:hover:text-gray-200"
+            className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:hover:bg-gray-700 dark:hover:text-gray-200"
           >
             <Pencil className="h-4 w-4" />
           </button>
@@ -107,7 +107,7 @@ function TemplateRow({ template }) {
           onClick={() => deleteMutate(template.id)}
           disabled={isDeleting}
           aria-label={`Delete ${template.name}`}
-          className="rounded p-1 text-gray-400 hover:bg-rose-50 hover:text-rose-600 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:hover:bg-rose-900/20 dark:hover:text-rose-400"
+          className="rounded p-1 text-gray-400 hover:bg-rose-50 hover:text-rose-600 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:hover:bg-rose-900/20 dark:hover:text-rose-400"
         >
           <Trash2 className="h-4 w-4" />
         </button>
