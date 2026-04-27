@@ -101,7 +101,7 @@ function AddStageInput({ newStageName, onNameChange, onAdd }) {
   return (
     <div className="flex items-center gap-2">
       <input type="text" value={newStageName} onChange={(e) => onNameChange(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); onAdd(); } }} placeholder="New stage name" maxLength={STAGE_NAME_MAX_LENGTH} aria-label="New stage name" className={`${INPUT_BASE} flex-1`} />
-      <button type="button" onClick={onAdd} disabled={!newStageName.trim()} aria-label="Add stage" className="flex items-center gap-1 rounded-button bg-gray-100 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-200 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">
+      <button type="button" onClick={onAdd} disabled={!newStageName.trim()} aria-label="Add stage" className="flex items-center gap-1 rounded-button bg-gray-100 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-200 transition-colors disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">
         <Plus className="h-4 w-4" />
         Add
       </button>

@@ -25,7 +25,7 @@ function FilterChip({ label, active, onClick }) {
       className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium capitalize transition-colors ${
         active
           ? "bg-brand-500 text-white"
-          : "bg-surface-secondary text-gray-600 hover:bg-surface-tertiary"
+          : "bg-surface-secondary text-gray-600 hover:bg-surface-tertiary transition-colors"
       }`}
     >
       {label.replace(/_/g, " ")}

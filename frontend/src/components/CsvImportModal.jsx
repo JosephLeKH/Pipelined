@@ -120,7 +120,7 @@ function CsvImportModal({ isOpen, onClose }) {
         <ImportResultDisplay result={result} errorsExpanded={errorsExpanded} setErrorsExpanded={setErrorsExpanded} />
         <div className="flex justify-end gap-2 border-t border-border-default px-6 py-4">
           <button type="button" onClick={handleClose} className={`${BUTTON_SECONDARY} text-sm`}>Close</button>
-          <button type="button" onClick={handleImport} disabled={!file || isPending} aria-label="Import CSV" className={`${BUTTON_PRIMARY} text-sm flex items-center gap-2`}>
+          <button type="button" onClick={handleImport} disabled={!file || isPending} aria-label="Import CSV" className={`${BUTTON_PRIMARY} text-sm flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed`}>
             {isPending
               ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
               : <Upload className="h-4 w-4" aria-hidden="true" />}

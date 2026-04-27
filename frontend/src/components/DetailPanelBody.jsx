@@ -125,7 +125,7 @@ export function PanelBody({ application, handleStageChange, handleUpdate, onAddE
                 className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
                   active
                     ? `${color.activeBg} border-transparent text-white`
-                    : `border-gray-300 bg-white text-gray-600 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700`
+                    : `border-gray-300 bg-white text-gray-600 hover:bg-gray-50 transition-colors dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700`
                 }`}
               >
                 {s}

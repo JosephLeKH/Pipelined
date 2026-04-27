@@ -169,7 +169,7 @@ export function PrepSection({ initialPrepData, onPrepChange }) {
   return (
     <div className="border-b border-gray-100 dark:border-gray-700">
       <button type="button" onClick={() => setIsOpen((o) => !o)}
-        className="flex w-full items-center justify-between px-6 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-brand-500"
+        className="flex w-full items-center justify-between px-6 py-3 text-left hover:bg-gray-50 transition-colors dark:hover:bg-gray-700/50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-brand-500"
         aria-expanded={isOpen}>
         <span className="text-xs font-medium uppercase text-gray-400">Interview Prep</span>
         {isOpen ? <ChevronDown className="h-4 w-4 text-gray-500" /> : <ChevronRight className="h-4 w-4 text-gray-500" />}

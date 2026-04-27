@@ -10,7 +10,7 @@ export function FormActions({ isPending, onCancel }) {
       <button type="button" onClick={onCancel} className={`${BUTTON_SECONDARY} text-sm`}>
         Cancel
       </button>
-      <button type="submit" disabled={isPending} className={`${BUTTON_PRIMARY} text-sm flex items-center gap-2`}>
+      <button type="submit" disabled={isPending} className={`${BUTTON_PRIMARY} text-sm flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed`}>
         {isPending ? (
           <>
             <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />

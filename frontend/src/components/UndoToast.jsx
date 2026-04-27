@@ -37,7 +37,7 @@ function UndoToast({ message, onUndo, onDismiss, duration = TOAST_DURATION_MS })
         <button
           type="button"
           onClick={() => onUndoRef.current()}
-          className="shrink-0 rounded px-2 py-1 text-sm font-medium text-brand-400 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-400"
+          className="shrink-0 rounded px-2 py-1 text-sm font-medium text-brand-400 hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-400"
         >
           Undo
         </button>

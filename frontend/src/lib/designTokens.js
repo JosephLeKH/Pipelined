@@ -44,6 +44,7 @@ export const INPUT_BASE =
   "border border-gray-300 rounded-md bg-white text-gray-900 " +
   "placeholder:text-gray-400 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/20 " +
   "focus:outline-none transition-colors text-sm px-3 py-2 font-sans w-full " +
+  "disabled:opacity-50 disabled:cursor-not-allowed " +
   "dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 dark:placeholder:text-gray-500";
 
 /** Form field label — Poppins, warm gray. */

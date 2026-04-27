@@ -126,7 +126,7 @@ function DangerZone() {
             <button
               type="button"
               onClick={() => setShowModal(true)}
-              className="mt-4 rounded-button border border-rose-300 px-4 py-2 text-sm font-medium text-rose-700 hover:bg-rose-100 focus:outline-none focus:ring-2 focus:ring-rose-400 focus:ring-offset-2 dark:border-rose-700 dark:text-rose-300 dark:hover:bg-rose-900/40"
+              className="mt-4 rounded-button border border-rose-300 px-4 py-2 text-sm font-medium text-rose-700 hover:bg-rose-100 transition-colors focus:outline-none focus:ring-2 focus:ring-rose-400 focus:ring-offset-2 dark:border-rose-700 dark:text-rose-300 dark:hover:bg-rose-900/40"
             >
               Delete account
             </button>

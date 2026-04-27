@@ -67,7 +67,7 @@ function ContactFormActions({ isPending, nameValue, onDone }) {
       <button
         type="submit"
         disabled={isPending || !nameValue.trim()}
-        className={`${BUTTON_PRIMARY} text-xs px-3 py-1.5 active:scale-[0.98]`}
+        className={`${BUTTON_PRIMARY} text-xs px-3 py-1.5 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed`}
       >
         {isPending ? "Saving…" : "Add Contact"}
       </button>

@@ -74,7 +74,7 @@ function ResumeFileCard({ uploadedFile, isDeleting, isUploading, onDelete }) {
         </div>
       </div>
       <button type="button" onClick={onDelete} disabled={isDeleting || isUploading} aria-label="Remove resume"
-        className="flex items-center gap-1.5 rounded-button px-3 py-1.5 text-sm text-rose-600 hover:bg-rose-50 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-rose-400 dark:hover:bg-rose-900/30">
+        className="flex items-center gap-1.5 rounded-button px-3 py-1.5 text-sm text-rose-600 hover:bg-rose-50 transition-colors disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-rose-400 dark:hover:bg-rose-900/30">
         {isDeleting
           ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
           : <X className="h-4 w-4" aria-hidden="true" />}

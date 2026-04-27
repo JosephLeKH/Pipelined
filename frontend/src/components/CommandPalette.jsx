@@ -44,7 +44,7 @@ function PaletteRow({ item, isActive, activate, highlightRef, hint, children }) 
       type="button"
       onClick={() => activate(item)}
       className={`flex w-full items-center gap-2 px-3 py-2 text-left text-sm transition-colors ${
-        isActive ? "bg-brand-50 dark:bg-brand-900/30" : "hover:bg-gray-50 dark:hover:bg-gray-700"
+        isActive ? "bg-brand-50 dark:bg-brand-900/30" : "hover:bg-gray-50 transition-colors dark:hover:bg-gray-700"
       }`}
     >
       {children}

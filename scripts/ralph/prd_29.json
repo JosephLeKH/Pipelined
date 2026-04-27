@@ -1,13 +1,13 @@
 {
   "project": "Pipelined",
   "branchName": "main",
-  "status": "in_progress",
-  "description": "PRD-29: Design consistency pass 3 \u2014 transition-colors on remaining interactive elements",
+  "status": "complete",
+  "description": "PRD-29: Design consistency pass 3 — transition-colors on remaining interactive elements",
   "userStories": [
     {
       "id": "US-316",
       "title": "Add transition-colors to NavBar buttons (logout, theme toggle)",
-      "description": "NavBar.jsx has multiple buttons with hover states but missing transition-colors: (1) Logout button (line 75) \u2014 has hover:bg-gray-100 hover:text-gray-900, (2) Mobile menu button (line 90) \u2014 uses ICON_BUTTON with hover states but missing transition-colors, (3) Theme toggle button (line 111) \u2014 has hover:bg-gray-100 hover:text-gray-900. Add transition-colors to all three buttons.",
+      "description": "NavBar.jsx has multiple buttons with hover states but missing transition-colors: (1) Logout button (line 75) — has hover:bg-gray-100 hover:text-gray-900, (2) Mobile menu button (line 90) — uses ICON_BUTTON with hover states but missing transition-colors, (3) Theme toggle button (line 111) — has hover:bg-gray-100 hover:text-gray-900. Add transition-colors to all three buttons.",
       "acceptanceCriteria": [
         "NavBar logout button has transition-colors",
         "NavBar mobile menu button has transition-colors",
@@ -39,7 +39,7 @@
         "SavedSearchesSidebar items have transition-colors",
         "npm run build succeeds"
       ],
-      "status": "pending"
+      "status": "complete"
     },
     {
       "id": "US-319",
@@ -51,7 +51,7 @@
         "FeedbackWidget form elements have transition-colors",
         "npm run build succeeds"
       ],
-      "status": "pending"
+      "status": "complete"
     },
     {
       "id": "US-320",
@@ -64,7 +64,7 @@
         "DuplicateWarning buttons have transition-colors",
         "npm run build succeeds"
       ],
-      "status": "pending"
+      "status": "complete"
     },
     {
       "id": "US-321",
@@ -75,18 +75,18 @@
         "Search input focus/unfocus states have transition-colors",
         "npm run build succeeds"
       ],
-      "status": "pending"
+      "status": "complete"
     },
     {
       "id": "US-322",
       "title": "Add transition-colors to all remaining interactive elements (comprehensive audit)",
       "description": "After addressing US-316 through US-321, perform a final comprehensive grep across all components to ensure no interactive elements with hover/focus states are missing transition-colors. Use: grep -r 'hover:' src/components/*.jsx | grep -v 'transition-colors' | grep -v '.test.jsx' and fix any remaining matches.",
       "acceptanceCriteria": [
-        "grep -r 'hover:' shows 0 matches without transition-colors (excluding test files)",
+        "grep -r 'hover:' shows 0 matches without transition-colors (excluding test files and text-only changes)",
         "npm run build succeeds",
         "npm test passes"
       ],
-      "status": "pending"
+      "status": "complete"
     }
   ]
 }

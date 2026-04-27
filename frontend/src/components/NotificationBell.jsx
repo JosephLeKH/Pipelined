@@ -28,7 +28,7 @@ function NotificationItem({ notification }) {
 
   return (
     <li
-      className={`flex cursor-pointer items-start gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 ${
+      className={`flex cursor-pointer items-start gap-3 px-4 py-3 hover:bg-gray-50 transition-colors dark:hover:bg-gray-700/50 ${
         notification.read ? "opacity-60" : ""
       }`}
       onClick={handleClick}
