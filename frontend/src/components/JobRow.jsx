@@ -21,7 +21,7 @@ function JobRow({ job, style }) {
   return (
     <div
       style={style}
-      className="flex items-center gap-4 border-b border-gray-100 px-4 hover:bg-gray-50"
+      className="flex items-center gap-4 border-b border-gray-100 px-4 hover:bg-gray-50 transition-colors dark:border-gray-700 dark:hover:bg-gray-700"
       role="row"
       data-testid="job-row"
     >

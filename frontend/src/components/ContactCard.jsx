@@ -61,7 +61,7 @@ function ContactCard({ contact, applicationId }) {
             type="button"
             disabled={pinging}
             onClick={() => ping({ contactId: contact.id })}
-            className="rounded p-1 text-gray-400 hover:bg-brand-50 hover:text-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:opacity-50 dark:hover:bg-brand-900/30"
+            className="rounded p-1 text-gray-400 hover:bg-brand-50 hover:text-brand-600 transition-colors dark:text-gray-500 dark:hover:bg-brand-900/30 dark:hover:text-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:opacity-50"
             aria-label="Mark as pinged"
             title="Mark as pinged"
           >
@@ -72,7 +72,7 @@ function ContactCard({ contact, applicationId }) {
               type="button"
               disabled={unlinking}
               onClick={() => unlink({ contactId: contact.id, applicationId })}
-              className="rounded p-1 text-gray-400 hover:bg-rose-50 hover:text-rose-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:opacity-50 dark:hover:bg-rose-900/30"
+              className="rounded p-1 text-gray-400 hover:bg-rose-50 hover:text-rose-500 transition-colors dark:text-gray-500 dark:hover:bg-rose-900/30 dark:hover:text-rose-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:opacity-50"
               aria-label="Unlink contact"
               title="Unlink from application"
             >

@@ -1,8 +1,8 @@
 {
   "project": "Pipelined",
   "branchName": "main",
-  "status": "pending",
-  "description": "PRD-28: Design consistency pass 2 — transitions, dark mode gaps, and spacing patterns",
+  "status": "complete",
+  "description": "PRD-28: Design consistency pass 2 \u2014 transitions, dark mode gaps, and spacing patterns",
   "userStories": [
     {
       "id": "US-308",
@@ -15,7 +15,8 @@
         "ApplicationTimeline expand button has transition-colors",
         "ContactCard ping and unlink buttons have transition-colors",
         "npm run build succeeds"
-      ]
+      ],
+      "status": "complete"
     },
     {
       "id": "US-309",
@@ -26,7 +27,8 @@
         "Delete menu item has dark:hover:bg-red-900/20",
         "Archive/Unarchive menu items maintain dark mode consistency",
         "npm run build succeeds"
-      ]
+      ],
+      "status": "complete"
     },
     {
       "id": "US-310",
@@ -37,7 +39,8 @@
         "JobRow has dark:border-gray-700",
         "JobRow has dark:hover:bg-gray-700",
         "npm run build succeeds"
-      ]
+      ],
+      "status": "complete"
     },
     {
       "id": "US-311",
@@ -48,7 +51,8 @@
         "RowMenu button has dark:hover:bg-gray-700",
         "RowMenu button has dark:hover:text-gray-200",
         "npm run build succeeds"
-      ]
+      ],
+      "status": "complete"
     },
     {
       "id": "US-312",
@@ -58,7 +62,8 @@
         "Command items have transition-colors",
         "Command items have dark:hover:bg-gray-700 or equivalent dark mode",
         "npm run build succeeds"
-      ]
+      ],
+      "status": "complete"
     },
     {
       "id": "US-313",
@@ -69,17 +74,19 @@
         "ApplicationRowActions menu items use standardized token",
         "Menu items have transition-colors",
         "npm run build succeeds"
-      ]
+      ],
+      "status": "complete"
     },
     {
       "id": "US-314",
       "title": "Add focus:ring-offset-2 to interactive elements missing proper focus ring offset",
-      "description": "Several components have focus states but use non-standard focus ring offsets. Audit and standardize: (1) ApplicationRowActions RowMenu button (line 50) — check if focus:ring-offset-2 is present, (2) ApplicationTimeline expand button (line 91) — verify focus:ring-offset-2, (3) ContactCard buttons (lines 64, 75) — ensure focus:ring-offset-2.",
+      "description": "Several components have focus states but use non-standard focus ring offsets. Audit and standardize: (1) ApplicationRowActions RowMenu button (line 50) \u2014 check if focus:ring-offset-2 is present, (2) ApplicationTimeline expand button (line 91) \u2014 verify focus:ring-offset-2, (3) ContactCard buttons (lines 64, 75) \u2014 ensure focus:ring-offset-2.",
       "acceptanceCriteria": [
         "All focus:ring states use focus:ring-offset-2",
         "No focus:ring-offset-0 or focus:ring-offset-1 on non-intentional elements",
         "npm run build succeeds"
-      ]
+      ],
+      "status": "complete"
     },
     {
       "id": "US-315",
@@ -89,7 +96,8 @@
         "CustomTooltip uses consistent styling approach",
         "Either adopts CARD_BASE or is defined as a named constant",
         "npm run build succeeds"
-      ]
+      ],
+      "status": "complete"
     }
   ]
 }

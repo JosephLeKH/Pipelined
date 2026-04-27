@@ -13,17 +13,17 @@ function RowMenuDropdown({ application, onArchive, onUnarchive, onDelete, onClos
   return (
     <div role="menu" className="absolute right-0 z-20 mt-1 w-36 rounded-card border border-gray-200 bg-white shadow-card dark:bg-gray-800 dark:border-gray-700">
       {application.archived ? (
-        <button role="menuitem" type="button" className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-700"
+        <button role="menuitem" type="button" className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 transition-colors dark:text-gray-200 dark:hover:bg-gray-700"
           onClick={() => { onClose(); onUnarchive(application.id); }}>
           Unarchive
         </button>
       ) : (
-        <button role="menuitem" type="button" className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-700"
+        <button role="menuitem" type="button" className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 transition-colors dark:text-gray-200 dark:hover:bg-gray-700"
           onClick={() => { onClose(); onArchive(application.id); }}>
           Archive
         </button>
       )}
-      <button role="menuitem" type="button" className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50"
+      <button role="menuitem" type="button" className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 transition-colors dark:text-red-400 dark:hover:bg-red-900/20"
         onClick={() => { onClose(); onDelete(application.id); }}>
         Delete
       </button>
@@ -47,7 +47,7 @@ export function RowMenu({ application, onArchive, onUnarchive, onDelete }) {
   return (
     <div ref={menuRef} className="relative shrink-0" onClick={(e) => e.stopPropagation()}>
       <button type="button" aria-label="Application actions"
-        className="rounded p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-500"
+        className="rounded p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
         onClick={() => setOpen((v) => !v)}>
         <MoreHorizontal className="h-4 w-4" />
       </button>
@@ -143,7 +143,7 @@ function BulkEditControls({ followUpDate, setFollowUpDate, tagsAdd, setTagsAdd, 
       <input type="text" aria-label="Tags to add" placeholder="Tags to add…" value={tagsAdd} onChange={(e) => setTagsAdd(e.target.value)} disabled={isBusy || overLimit} className={`w-36 ${inputCls}`} />
       <input type="text" aria-label="Tags to remove" placeholder="Tags to remove…" value={tagsRemove} onChange={(e) => setTagsRemove(e.target.value)} disabled={isBusy || overLimit} className={`w-36 ${inputCls}`} />
       <button type="button" disabled={isBusy || overLimit} onClick={onApply}
-        className="flex items-center gap-1 rounded border border-brand-600 px-3 py-1 text-sm font-medium text-brand-700 hover:bg-brand-50 disabled:opacity-50 disabled:cursor-not-allowed dark:border-brand-400 dark:text-brand-300">
+        className="flex items-center gap-1 rounded border border-brand-600 px-3 py-1 text-sm font-medium text-brand-700 hover:bg-brand-50 transition-colors dark:border-brand-400 dark:text-brand-300 dark:hover:bg-brand-900/20 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2">
         {isEditing ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" /> : null}
         Apply
       </button>

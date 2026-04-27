@@ -32,7 +32,7 @@ function avgDaysColorClass(days) {
 function CustomTooltip({ active, payload, label, formatter }) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="rounded-lg border border-border-default bg-white px-3 py-2 shadow-card text-sm dark:border-gray-700 dark:bg-gray-800">
+    <div className={`${CARD_BASE} px-3 py-2 text-sm`}>
       {label != null && <p className="mb-1 text-xs text-gray-400">{label}</p>}
       {payload.map((entry) => (
         <p key={entry.dataKey} className="text-gray-700 dark:text-gray-300">
