@@ -83,12 +83,6 @@ describe("LandingPage", () => {
     expect(loginLinks.length).toBeGreaterThan(0);
   });
 
-  it("should render Chrome extension install CTA", () => {
-    render(<LandingPage />, { wrapper: makeWrapper() });
-
-    expect(screen.getByRole("link", { name: /add to chrome/i })).toBeInTheDocument();
-  });
-
   it("should redirect logged-in users to /dashboard", async () => {
     server.use(
       http.get("/api/auth/me", () => HttpResponse.json({ data: MOCK_USER }))

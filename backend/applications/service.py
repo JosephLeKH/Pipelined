@@ -140,50 +140,58 @@ def _build_application_doc(
     }
 
 
-async def create(user_id: str, body: ApplicationCreate) -> dict:
-    """Create a new application. Raises DuplicateApplicationError on collision.
-
-    When source='extension' and role_title or company is missing, triggers OpenAI
-    fallback parsing. If OpenAI fails, saves with whatever partial data exists.
-    """
-    uid = ObjectId(user_id)
-    apps = get_collection("applications")
-    needs_fallback = body.source == "extension" and (not body.role_title or not body.company)
-    if needs_fallback:
-        body = await _apply_openai_fallback(body)
-    normalised_company = (body.company or "").lower()
-    normalised_role = (body.role_title or "").lower()
+async def _check_duplicate(
+    apps: AsyncIOMotorCollection, uid: ObjectId, company: str, role: str
+) -> None:
+    """Raise DuplicateApplicationError if (user, company, role) already exists."""
     existing = await apps.find_one(
-        {"user_id": uid, "normalised_company": normalised_company, "normalised_role": normalised_role},
+        {"user_id": uid, "normalised_company": company, "normalised_role": role},
         projection={"_id": 1},
     )
     if existing:
         raise DuplicateApplicationError(str(existing["_id"]))
+
+
+async def _insert_or_raise_duplicate(
+    apps: AsyncIOMotorCollection, uid: ObjectId, doc: dict, company: str, role: str
+) -> ObjectId:
+    """Insert document, raising DuplicateApplicationError on unique-key conflict."""
+    try:
+        result = await apps.insert_one(doc)
+    except DuplicateKeyError:
+        existing = await apps.find_one(
+            {"user_id": uid, "normalised_company": company, "normalised_role": role},
+            projection={"_id": 1},
+        )
+        raise DuplicateApplicationError(str(existing["_id"])) if existing else DuplicateApplicationError("unknown")
+    return result.inserted_id
+
+
+async def create(user_id: str, body: ApplicationCreate) -> dict:
+    """Create a new application. Raises DuplicateApplicationError on collision."""
+    uid = ObjectId(user_id)
+    apps = get_collection("applications")
+    if body.source == "extension" and (not body.role_title or not body.company):
+        body = await _apply_openai_fallback(body)
+    normalised_company = (body.company or "").lower()
+    normalised_role = (body.role_title or "").lower()
+    await _check_duplicate(apps, uid, normalised_company, normalised_role)
     stages, user = await asyncio.gather(fetch_user_stages(uid), get_user_by_id(user_id))
     now = datetime.now(timezone.utc)
     body_dict = body.model_dump(exclude={"page_text"})
     body_dict["source_url"] = str(body.source_url) if body.source_url else None
     company_domain = _derive_company_domain(body_dict.get("source_url"), body.company)
     doc = _build_application_doc(uid, body_dict, normalised_company, normalised_role, stages, now, company_domain)
-    try:
-        result = await apps.insert_one(doc)
-    except DuplicateKeyError:
-        existing = await apps.find_one(
-            {"user_id": uid, "normalised_company": normalised_company, "normalised_role": normalised_role},
-            projection={"_id": 1},
-        )
-        raise DuplicateApplicationError(str(existing["_id"])) if existing else DuplicateApplicationError("unknown")
-    doc["_id"] = result.inserted_id
-    logger.info("application_created", user_id=user_id, app_id=str(result.inserted_id))
+    inserted_id = await _insert_or_raise_duplicate(apps, uid, doc, normalised_company, normalised_role)
+    doc["_id"] = inserted_id
+    logger.info("application_created", user_id=user_id, app_id=str(inserted_id))
     resume_text = user.get("resume_text", "") if user else ""
     if resume_text:
-        job_description = " ".join(filter(None, [body.role_title, body.company, body.page_text]))
-        asyncio.create_task(
-            _score_and_update(
-                str(result.inserted_id), user_id, resume_text, job_description,
-                role_title=body.role_title or "", company=body.company or "",
-            )
-        )
+        job_desc = " ".join(filter(None, [body.role_title, body.company, body.page_text]))
+        asyncio.create_task(_score_and_update(
+            str(inserted_id), user_id, resume_text, job_desc,
+            role_title=body.role_title or "", company=body.company or "",
+        ))
     return doc
 
 
@@ -245,61 +253,39 @@ async def update(user_id: str, app_id: str, updates: ApplicationUpdate) -> dict 
     return result
 
 
-async def delete(user_id: str, app_id: str) -> bool:
-    """Soft-delete an application by setting deleted=True. Returns True if found."""
-    uid = ObjectId(user_id)
-    aid = ObjectId(app_id)
+async def _toggle_flag(
+    user_id: str, app_id: str, flag: str, value: bool,
+    extra_filter: dict | None = None,
+) -> dict | None:
+    """Toggle a boolean flag (deleted/archived) with timestamp. Shared by CRUD ops."""
+    uid, aid = ObjectId(user_id), ObjectId(app_id)
     now = datetime.now(timezone.utc)
+    query = {"_id": aid, "user_id": uid, **(extra_filter or {})}
+    set_fields: dict = {flag: value, "updated_at": now, f"{flag}_at": now if value else None}
     result = await get_collection("applications").find_one_and_update(
-        {"_id": aid, "user_id": uid, "deleted": {"$ne": True}},
-        {"$set": {"deleted": True, "deleted_at": now, "updated_at": now}},
+        query, {"$set": set_fields}, return_document=ReturnDocument.AFTER,
     )
-    if result is None:
-        return False
-    logger.info("application_soft_deleted", user_id=user_id, app_id=app_id)
-    return True
+    if result:
+        logger.info(f"application_{flag}_{'set' if value else 'unset'}", user_id=user_id, app_id=app_id)
+    return result
+
+
+async def delete(user_id: str, app_id: str) -> bool:
+    """Soft-delete an application. Returns True if found."""
+    result = await _toggle_flag(user_id, app_id, "deleted", True, extra_filter={"deleted": {"$ne": True}})
+    return result is not None
 
 
 async def restore(user_id: str, app_id: str) -> dict | None:
-    """Restore a soft-deleted application. Returns updated doc, or None if not found."""
-    uid = ObjectId(user_id)
-    aid = ObjectId(app_id)
-    now = datetime.now(timezone.utc)
-    result = await get_collection("applications").find_one_and_update(
-        {"_id": aid, "user_id": uid, "deleted": True},
-        {"$set": {"deleted": False, "deleted_at": None, "updated_at": now}},
-        return_document=ReturnDocument.AFTER,
-    )
-    if result:
-        logger.info("application_restored", user_id=user_id, app_id=app_id)
-    return result
+    """Restore a soft-deleted application."""
+    return await _toggle_flag(user_id, app_id, "deleted", False, extra_filter={"deleted": True})
 
 
 async def archive(user_id: str, app_id: str) -> dict | None:
-    """Set archived=True and archived_at=now. Returns updated doc, or None if not found."""
-    uid = ObjectId(user_id)
-    aid = ObjectId(app_id)
-    now = datetime.now(timezone.utc)
-    result = await get_collection("applications").find_one_and_update(
-        {"_id": aid, "user_id": uid},
-        {"$set": {"archived": True, "archived_at": now, "updated_at": now}},
-        return_document=ReturnDocument.AFTER,
-    )
-    if result:
-        logger.info("application_archived", user_id=user_id, app_id=app_id)
-    return result
+    """Set archived=True. Returns updated doc, or None if not found."""
+    return await _toggle_flag(user_id, app_id, "archived", True)
 
 
 async def unarchive(user_id: str, app_id: str) -> dict | None:
-    """Set archived=False and archived_at=None. Returns updated doc, or None if not found."""
-    uid = ObjectId(user_id)
-    aid = ObjectId(app_id)
-    now = datetime.now(timezone.utc)
-    result = await get_collection("applications").find_one_and_update(
-        {"_id": aid, "user_id": uid},
-        {"$set": {"archived": False, "archived_at": None, "updated_at": now}},
-        return_document=ReturnDocument.AFTER,
-    )
-    if result:
-        logger.info("application_unarchived", user_id=user_id, app_id=app_id)
-    return result
+    """Set archived=False. Returns updated doc, or None if not found."""
+    return await _toggle_flag(user_id, app_id, "archived", False)

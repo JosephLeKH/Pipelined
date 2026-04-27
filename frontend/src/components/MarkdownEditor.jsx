@@ -68,7 +68,7 @@ function MarkdownEditor({ id, value, onChange, maxLength, className }) {
             type="button"
             aria-label="Markdown supported"
             onClick={() => setShowCheatsheet((v) => !v)}
-            className="rounded p-1 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:hover:text-gray-300"
+            className="rounded p-1 text-gray-500 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:hover:text-gray-300"
           >
             <HelpCircle className="h-3.5 w-3.5" />
           </button>

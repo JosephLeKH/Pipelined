@@ -1,0 +1,99 @@
+{
+  "project": "Pipelined",
+  "branchName": "main",
+  "description": "PRD-25: Fix pre-existing frontend test failures and complete design token adoption",
+  "status": "complete",
+  "userStories": [
+    {
+      "id": "US-283",
+      "title": "Fix Analytics date range test assertions to match component styling",
+      "description": "The Analytics.test.jsx file asserts that active date range buttons have class 'bg-brand-600', but AnalyticsDateRangePicker in Analytics.jsx uses 'bg-brand-500'. Update the two test assertions (lines ~121 and ~130) from /bg-brand-600/ to /bg-brand-500/ to match the actual component implementation.",
+      "acceptanceCriteria": [
+        "Analytics.test.jsx assertions match the actual bg-brand-500 class used in AnalyticsDateRangePicker",
+        "Both 'should highlight the active date range button' and 'should switch date range on button click' tests pass",
+        "npm test Analytics.test passes"
+      ]
+    },
+    {
+      "id": "US-284",
+      "title": "Fix ManualAddForm duplicate submit buttons causing 9 test failures",
+      "description": "ManualAddForm has two sets of Cancel/Submit buttons: (1) FormActions rendered inside the form via ManualAddFormFields line 58, and (2) footer buttons in ManualAddForm.jsx lines 44-47. This causes 'Found multiple elements with role button and name Add Application' in 9 tests. Fix: Remove the FormActions import and render from ManualAddFormFields.jsx (delete line 6 import and line 58 render). Add id='manual-add-form' to the <form> element in ManualAddForm.jsx so the footer submit button's form='manual-add-form' attribute works. Also remove the duplicate border-t in FormActions since the footer already has one.",
+      "acceptanceCriteria": [
+        "Only one 'Add Application' button exists in the rendered ManualAddForm",
+        "Form submission still works via the footer submit button",
+        "ManualAddForm.test.jsx passes all 9 previously-failing tests",
+        "npm run build succeeds"
+      ]
+    },
+    {
+      "id": "US-285",
+      "title": "Fix HeroSection test to match actual component content",
+      "description": "HeroSection.test.jsx asserts screen.getByText('Install Extension') but HeroSection only renders 'Get Started Free'. Remove the 'Install Extension' assertion from the test (line 18) since the component deliberately uses a single CTA without an extension install button.",
+      "acceptanceCriteria": [
+        "HeroSection.test.jsx passes",
+        "Test still verifies 'Get Started Free' renders"
+      ]
+    },
+    {
+      "id": "US-286",
+      "title": "Fix LandingPage test for non-existent Chrome extension CTA",
+      "description": "LandingPage.test.jsx has a test 'should render Chrome extension install CTA' that expects a link with text 'add to chrome', but LandingPage has no such element. Remove this test case entirely since there is no Chrome extension install CTA on the landing page.",
+      "acceptanceCriteria": [
+        "LandingPage.test.jsx passes all remaining tests",
+        "The 'should render Chrome extension install CTA' test is removed"
+      ]
+    },
+    {
+      "id": "US-287",
+      "title": "Fix Dashboard modal overlay test to use mount/unmount pattern",
+      "description": "Dashboard.test.jsx test 'should open ManualAddForm modal overlay when Add Application header button is clicked' assumes the modal overlay is always in the DOM (hidden with opacity classes). But ManualAddForm returns null when isOpen=false (mount/unmount pattern). Fix the test: instead of querying modal-overlay before click, click the Add Application button first, then queryByTestId('modal-overlay') and assert it exists in the DOM.",
+      "acceptanceCriteria": [
+        "Dashboard.test.jsx modal overlay test passes",
+        "Test correctly verifies modal appears after button click",
+        "npm test Dashboard.test passes"
+      ]
+    },
+    {
+      "id": "US-288",
+      "title": "Fix remaining icon colors from text-gray-400 to text-gray-500",
+      "description": "PRD-24 changed icon colors from text-gray-400 to text-gray-500 for WCAG AA compliance, but 7 icons were missed: (1) EmptyState.jsx:12 'h-12 w-12 text-gray-400', (2) CsvImportModal.jsx:104 close button text-gray-400, (3) DetailPanelHeader.jsx:30 delete button text-gray-400, (4) ApplicationRowActions.jsx:50 more menu text-gray-400, (5) JobCard.jsx:95 bookmark text-gray-400, (6) MarkdownEditor.jsx:71 help icon text-gray-400, (7) FeedbackWidget.jsx:48 dismiss button text-gray-400. Change each to text-gray-500. Do NOT change dark mode variants (dark:text-gray-400 stays).",
+      "acceptanceCriteria": [
+        "All 7 listed icon elements use text-gray-500 instead of text-gray-400",
+        "Dark mode icon variants unchanged",
+        "npm run build succeeds"
+      ]
+    },
+    {
+      "id": "US-289",
+      "title": "Adopt design tokens in DashboardToolbar button styles",
+      "description": "DashboardToolbar.jsx has inline button styles that should use design tokens: (1) Import/Export buttons (~line 35-36) with inline 'rounded border border-gray-300 bg-white px-4 py-2...' should use BUTTON_SECONDARY. (2) 'Add Application' button (~line 42) with inline 'rounded bg-brand-500 px-4 py-2...' should use BUTTON_PRIMARY. Import BUTTON_PRIMARY and BUTTON_SECONDARY from designTokens.js and replace inline classes.",
+      "acceptanceCriteria": [
+        "DashboardToolbar import/export buttons use BUTTON_SECONDARY token",
+        "DashboardToolbar add button uses BUTTON_PRIMARY token",
+        "Visual appearance is consistent with other tokenized buttons",
+        "npm run build succeeds"
+      ]
+    },
+    {
+      "id": "US-290",
+      "title": "Adopt MODAL_BACKDROP and MODAL_CARD tokens in DetailPanel discard dialog",
+      "description": "DetailPanel.jsx has an inline discard confirmation dialog (~line 14-15) with hardcoded 'absolute inset-0 z-50 flex items-center justify-center bg-black/40' and 'mx-4 w-full max-w-sm rounded-lg bg-white p-5 shadow-lg'. Replace with MODAL_BACKDROP and MODAL_CARD tokens from designTokens.js. Keep the max-w-sm override since this is a smaller confirmation dialog.",
+      "acceptanceCriteria": [
+        "DetailPanel discard dialog uses MODAL_BACKDROP for overlay",
+        "DetailPanel discard dialog uses MODAL_CARD for card container",
+        "npm run build succeeds"
+      ]
+    },
+    {
+      "id": "US-291",
+      "title": "Extract _build_application_doc helper to reduce create() function length",
+      "description": "applications/service.py is 305 lines (exceeds 300-line limit) and the create() function is 45 lines (exceeds 40-line limit). Extract the document building logic from create() into a separate _prepare_create_doc() helper that handles normalization, duplicate check, stage fetching, and doc construction. This reduces create() to ~30 lines focused on the insert + scoring logic. The file length should drop below 300 lines after removing blank lines or collapsing the two duplicate-check blocks into a shared helper.",
+      "acceptanceCriteria": [
+        "create() function is 40 lines or fewer",
+        "applications/service.py is 300 lines or fewer",
+        "All existing tests pass unchanged",
+        "No behavior change"
+      ]
+    }
+  ]
+}

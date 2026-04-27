@@ -117,6 +117,7 @@ class ApplicationResponse(BaseModel):
     compensation: str | None = None
     location: str | None = None
     remote_status: str | None = None
+    stages: list[str] = Field(default_factory=list)
     stage_history: list[StageHistoryEntry] = Field(default_factory=list)
     archived: bool = False
     archived_at: datetime | None = None

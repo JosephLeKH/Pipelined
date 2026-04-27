@@ -2,7 +2,6 @@
 
 import { INPUT_BASE } from "../lib/designTokens";
 import { DuplicateWarning } from "./DuplicateWarning";
-import { FormActions } from "./FormActions";
 import FormField from "./FormField";
 import TagInput from "./TagInput";
 import TemplateBar from "./TemplateBar";
@@ -17,7 +16,7 @@ export function ManualAddFormFields({ hook }) {
           location, setLocation, stage, setStage, stageOptions,
           remoteStatus, setRemoteStatus, companyType, setCompanyType,
           tags, setTags, fieldErrors, applyTemplate,
-          isDuplicate, existingId, mutationError, isPending, handleClose } = hook;
+          isDuplicate, existingId, mutationError } = hook;
   return (
     <>
       <TemplateBar
@@ -55,7 +54,6 @@ export function ManualAddFormFields({ hook }) {
           {mutationError.message ?? GENERIC_ERROR_MSG}
         </p>
       )}
-      <FormActions isPending={isPending} onCancel={handleClose} />
     </>
   );
 }

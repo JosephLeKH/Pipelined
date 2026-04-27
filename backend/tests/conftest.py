@@ -52,6 +52,43 @@ async def client(app):
         yield c
 
 
+from contextlib import contextmanager
+
+
+@contextmanager
+def as_user(client, cookies: dict):
+    """Temporarily swap the client's cookie jar to act as a specific user.
+
+    httpx 0.28 deprecated per-request cookies=, so tests that need multi-user
+    isolation must swap the client's cookie jar directly.
+    """
+    saved = list(client.cookies.jar)
+    client.cookies.clear()
+    client.cookies.set(CSRF_COOKIE_NAME, TEST_CSRF_TOKEN)
+    for k, v in cookies.items():
+        client.cookies.set(k, v)
+    try:
+        yield
+    finally:
+        client.cookies.clear()
+        for morsel in saved:
+            client.cookies.jar.set_cookie(morsel)
+
+
+@contextmanager
+def as_anonymous(client):
+    """Temporarily clear all auth cookies so requests appear unauthenticated."""
+    saved = list(client.cookies.jar)
+    client.cookies.clear()
+    client.cookies.set(CSRF_COOKIE_NAME, TEST_CSRF_TOKEN)
+    try:
+        yield
+    finally:
+        client.cookies.clear()
+        for morsel in saved:
+            client.cookies.jar.set_cookie(morsel)
+
+
 async def verify_user_by_id(user_id: str) -> None:
     """Set email_verified=True for a user document (test helper, not a fixture)."""
     if database.db is not None:

@@ -5,7 +5,7 @@ from datetime import datetime, timedelta, timezone
 import pytest
 
 from database import get_collection
-from tests.conftest import verify_user_by_id
+from tests.conftest import as_anonymous, as_user, verify_user_by_id
 
 # Use session-scoped event loop for all tests so Motor's connection pool
 # (bound to the session loop in the `app` fixture) is reachable from test bodies.
@@ -189,31 +189,20 @@ async def test_list_applications_returns_envelope_with_meta(client, test_user):
     assert body["meta"]["next_cursor"] is None
 
 
-async def test_list_applications_scoped_to_current_user(client):
-    # Arrange — register two separate users
-    resp_a = await client.post(
-        "/api/auth/register",
-        json={"email": "a@test.com", "password": "TestPass123!", "display_name": "A"},
-    )
-    cookies_a = dict(resp_a.cookies)
-    await verify_user_by_id(resp_a.json()["data"]["id"])
+async def test_list_applications_scoped_to_current_user(client, test_user, other_user):
+    # Arrange — create one app per user using cookie jar swapping
+    _, cookies_a = test_user
+    _, cookies_b = other_user
 
-    resp_b = await client.post(
-        "/api/auth/register",
-        json={"email": "b@test.com", "password": "TestPass123!", "display_name": "B"},
-    )
-    cookies_b = dict(resp_b.cookies)
-    await verify_user_by_id(resp_b.json()["data"]["id"])
+    with as_user(client, cookies_a):
+        await client.post("/api/applications", json=APP_PAYLOAD)
 
-    await client.post("/api/applications", json=APP_PAYLOAD, cookies=cookies_a)
-    await client.post(
-        "/api/applications",
-        json={**APP_PAYLOAD, "company": "Other Co"},
-        cookies=cookies_b,
-    )
+    with as_user(client, cookies_b):
+        await client.post("/api/applications", json={**APP_PAYLOAD, "company": "Other Co"})
 
-    # Act
-    response = await client.get("/api/applications", cookies=cookies_a)
+    # Act — list as user A
+    with as_user(client, cookies_a):
+        response = await client.get("/api/applications")
 
     # Assert
     body = response.json()
@@ -371,27 +360,17 @@ async def test_get_application_returns_full_doc(client, test_user):
     assert "stage_history" in data
 
 
-async def test_get_application_returns_404_for_wrong_user(client):
-    # Arrange — two users
-    resp_a = await client.post(
-        "/api/auth/register",
-        json={"email": "owner@test.com", "password": "TestPass123!", "display_name": "Owner"},
-    )
-    cookies_a = dict(resp_a.cookies)
-    await verify_user_by_id(resp_a.json()["data"]["id"])
-
-    resp_b = await client.post(
-        "/api/auth/register",
-        json={"email": "other@test.com", "password": "TestPass123!", "display_name": "Other"},
-    )
-    cookies_b = dict(resp_b.cookies)
-    await verify_user_by_id(resp_b.json()["data"]["id"])
-
-    create_resp = await client.post("/api/applications", json=APP_PAYLOAD, cookies=cookies_a)
+async def test_get_application_returns_404_for_wrong_user(client, test_user, other_user):
+    # Arrange — user A creates an app
+    _, cookies_a = test_user
+    _, cookies_b = other_user
+    with as_user(client, cookies_a):
+        create_resp = await client.post("/api/applications", json=APP_PAYLOAD)
     app_id = create_resp.json()["data"]["id"]
 
-    # Act
-    response = await client.get(f"/api/applications/{app_id}", cookies=cookies_b)
+    # Act — user B tries to access A's app
+    with as_user(client, cookies_b):
+        response = await client.get(f"/api/applications/{app_id}")
 
     # Assert
     assert response.status_code == 404
@@ -400,11 +379,13 @@ async def test_get_application_returns_404_for_wrong_user(client):
 async def test_get_application_returns_401_without_auth(client, test_user):
     # Arrange
     _, cookies = test_user
-    create_resp = await client.post("/api/applications", json=APP_PAYLOAD, cookies=cookies)
+    with as_user(client, cookies):
+        create_resp = await client.post("/api/applications", json=APP_PAYLOAD)
     app_id = create_resp.json()["data"]["id"]
 
     # Act
-    response = await client.get(f"/api/applications/{app_id}")
+    with as_anonymous(client):
+        response = await client.get(f"/api/applications/{app_id}")
 
     # Assert
     assert response.status_code == 401
@@ -453,11 +434,13 @@ async def test_update_application_returns_404_for_missing_app(client, test_user)
 async def test_update_application_returns_401_without_auth(client, test_user):
     # Arrange
     _, cookies = test_user
-    create_resp = await client.post("/api/applications", json=APP_PAYLOAD, cookies=cookies)
+    with as_user(client, cookies):
+        create_resp = await client.post("/api/applications", json=APP_PAYLOAD)
     app_id = create_resp.json()["data"]["id"]
 
     # Act
-    response = await client.patch(f"/api/applications/{app_id}", json={"compensation": "$100k"})
+    with as_anonymous(client):
+        response = await client.patch(f"/api/applications/{app_id}", json={"compensation": "$100k"})
 
     # Assert
     assert response.status_code == 401
@@ -569,11 +552,13 @@ async def test_delete_application_returns_404_for_missing_app(client, test_user)
 async def test_delete_application_returns_401_without_auth(client, test_user):
     # Arrange
     _, cookies = test_user
-    create_resp = await client.post("/api/applications", json=APP_PAYLOAD, cookies=cookies)
+    with as_user(client, cookies):
+        create_resp = await client.post("/api/applications", json=APP_PAYLOAD)
     app_id = create_resp.json()["data"]["id"]
 
     # Act
-    response = await client.delete(f"/api/applications/{app_id}")
+    with as_anonymous(client):
+        response = await client.delete(f"/api/applications/{app_id}")
 
     # Assert
     assert response.status_code == 401
@@ -727,9 +712,12 @@ async def test_remove_stage_removes_inactive_stage(client, test_user):
         cookies=cookies,
     )
 
-    # Assert
-    assert response.status_code == 200
-    stages = response.json()["data"]["stages"]
+    # Assert — DELETE returns 204 per API contract
+    assert response.status_code == 204
+
+    # Verify stage was removed
+    detail = await client.get(f"/api/applications/{app_id}", cookies=cookies)
+    stages = detail.json()["data"]["stages"]
     assert "Custom Stage" not in stages
 
 
@@ -851,9 +839,8 @@ async def test_bulk_delete_removes_applications_and_returns_count(client, test_u
         "DELETE", "/api/applications/bulk", json={"ids": [id1, id2]}, cookies=cookies
     )
 
-    # Assert
-    assert response.status_code == 200
-    assert response.json()["data"]["deleted_count"] == 2
+    # Assert — DELETE returns 204 per API contract
+    assert response.status_code == 204
     get1 = await client.get(f"/api/applications/{id1}", cookies=cookies)
     assert get1.status_code == 404
 
@@ -895,18 +882,20 @@ async def test_bulk_delete_only_deletes_own_applications(client, test_user):
     })
     other_cookies = dict(resp_other.cookies)
     await verify_user_by_id(resp_other.json()["data"]["id"])
-    r_other = await client.post("/api/applications", json=APP_PAYLOAD, cookies=other_cookies)
+    with as_user(client, other_cookies):
+        r_other = await client.post("/api/applications", json=APP_PAYLOAD)
     other_id = r_other.json()["data"]["id"]
 
     # Act — attempt to delete another user's application
-    response = await client.request(
-        "DELETE", "/api/applications/bulk", json={"ids": [other_id]}, cookies=cookies
-    )
+    with as_user(client, cookies):
+        response = await client.request(
+            "DELETE", "/api/applications/bulk", json={"ids": [other_id]}
+        )
 
-    # Assert — deleted_count is 0; other user's app is untouched
-    assert response.status_code == 200
-    assert response.json()["data"]["deleted_count"] == 0
-    verify = await client.get(f"/api/applications/{other_id}", cookies=other_cookies)
+    # Assert — returns 204 but other user's app is untouched
+    assert response.status_code == 204
+    with as_user(client, other_cookies):
+        verify = await client.get(f"/api/applications/{other_id}")
     assert verify.status_code == 200
 
 
@@ -984,21 +973,23 @@ async def test_bulk_stage_update_only_updates_own_applications(client, test_user
     })
     other_cookies = dict(resp_other.cookies)
     await verify_user_by_id(resp_other.json()["data"]["id"])
-    r_other = await client.post("/api/applications", json=APP_PAYLOAD, cookies=other_cookies)
-    other_id = r_other.json()["data"]["id"]
+    with as_user(client, other_cookies):
+        r_other = await client.post("/api/applications", json=APP_PAYLOAD)
+        other_id = r_other.json()["data"]["id"]
 
     # Act — attempt to update another user's application stage
-    response = await client.patch(
-        "/api/applications/bulk-stage",
-        json={"ids": [other_id], "stage": "Rejected"},
-        cookies=cookies,
-    )
+    with as_user(client, cookies):
+        response = await client.patch(
+            "/api/applications/bulk-stage",
+            json={"ids": [other_id], "stage": "Rejected"},
+        )
 
     # Assert — updated_count is 0; other user's app is untouched
     assert response.status_code == 200
     assert response.json()["data"]["updated_count"] == 0
-    verify = await client.get(f"/api/applications/{other_id}", cookies=other_cookies)
-    assert verify.json()["data"]["current_stage"] == "Applied"
+    with as_user(client, other_cookies):
+        verify = await client.get(f"/api/applications/{other_id}")
+        assert verify.json()["data"]["current_stage"] == "Applied"
 
 
 async def test_get_analytics_returns_expected_shape(client, test_user):
@@ -1261,10 +1252,31 @@ async def test_deleted_applications_excluded_from_list(client, test_user):
 
 
 async def test_stats_applied_this_week_counts_current_week_applications(client, test_user):
-    # Arrange — create one app (default date_applied = now, i.e. this week)
-    _, cookies = test_user
-    post_resp = await client.post("/api/applications", json=APP_PAYLOAD, cookies=cookies)
-    assert post_resp.status_code == 201
+    # Arrange — insert directly into DB with a date guaranteed to be within current week
+    from datetime import date, timedelta
+    from bson import ObjectId
+    user, cookies = test_user
+    today = date.today()
+    wednesday = today - timedelta(days=today.weekday() - 2)
+    mid_week_dt = datetime(wednesday.year, wednesday.month, wednesday.day, 12, 0, 0, tzinfo=timezone.utc)
+    col = get_collection("applications")
+    await col.insert_one({
+        "user_id": ObjectId(user["id"]),
+        "role_title": "Stats Week Role",
+        "company": "Stats Week Corp",
+        "normalised_company": "stats week corp",
+        "normalised_role": "stats week role",
+        "current_stage": "Applied",
+        "stages": ["Applied"],
+        "stage_history": [{"stage": "Applied", "transitioned_at": mid_week_dt}],
+        "source": "manual",
+        "date_applied": mid_week_dt,
+        "created_at": mid_week_dt,
+        "updated_at": mid_week_dt,
+        "tags": [],
+        "archived": False,
+        "deleted": False,
+    })
 
     # Act
     response = await client.get("/api/applications/stats", cookies=cookies)
@@ -1598,25 +1610,27 @@ async def test_merge_across_users_returns_404(client, test_user):
     other_cookies = dict(resp_other.cookies)
     await verify_user_by_id(resp_other.json()["data"]["id"])
 
-    other_resp = await client.post("/api/applications", json={
-        "role_title": "Dev",
-        "company": "OtherCo",
-        "source": "manual",
-    }, cookies=other_cookies)
-    other_id = other_resp.json()["data"]["id"]
+    with as_user(client, other_cookies):
+        other_resp = await client.post("/api/applications", json={
+            "role_title": "Dev",
+            "company": "OtherCo",
+            "source": "manual",
+        })
+        other_id = other_resp.json()["data"]["id"]
 
-    target_resp = await client.post("/api/applications", json={
-        "role_title": "Dev",
-        "company": "MyCo",
-        "source": "manual",
-    }, cookies=cookies)
-    target_id = target_resp.json()["data"]["id"]
+    with as_user(client, cookies):
+        target_resp = await client.post("/api/applications", json={
+            "role_title": "Dev",
+            "company": "MyCo",
+            "source": "manual",
+        })
+        target_id = target_resp.json()["data"]["id"]
 
-    # Act — try to merge other user's app as source
-    response = await client.post("/api/applications/merge", json={
-        "source_id": other_id,
-        "target_id": target_id,
-    }, cookies=cookies)
+        # Act — try to merge other user's app as source
+        response = await client.post("/api/applications/merge", json={
+            "source_id": other_id,
+            "target_id": target_id,
+        })
 
     # Assert — cannot see other user's app; returns 404
     assert response.status_code == 404
@@ -1737,21 +1751,23 @@ async def test_bulk_edit_only_updates_own_applications(client, test_user):
     })
     other_cookies = dict(resp_other.cookies)
     await verify_user_by_id(resp_other.json()["data"]["id"])
-    r_other = await client.post("/api/applications", json=APP_PAYLOAD, cookies=other_cookies)
-    other_id = r_other.json()["data"]["id"]
+    with as_user(client, other_cookies):
+        r_other = await client.post("/api/applications", json=APP_PAYLOAD)
+        other_id = r_other.json()["data"]["id"]
 
     # Act — attempt to bulk-edit another user's application
-    response = await client.post(
-        "/api/applications/bulk-update",
-        json={"application_ids": [other_id], "update": {"current_stage": "Rejected"}},
-        cookies=cookies,
-    )
+    with as_user(client, cookies):
+        response = await client.post(
+            "/api/applications/bulk-update",
+            json={"application_ids": [other_id], "update": {"current_stage": "Rejected"}},
+        )
 
     # Assert — updated_count is 0; other user's app is untouched
     assert response.status_code == 200
     assert response.json()["data"]["updated_count"] == 0
-    verify = await client.get(f"/api/applications/{other_id}", cookies=other_cookies)
-    assert verify.json()["data"]["current_stage"] == "Applied"
+    with as_user(client, other_cookies):
+        verify = await client.get(f"/api/applications/{other_id}")
+        assert verify.json()["data"]["current_stage"] == "Applied"
 
 
 # ---------------------------------------------------------------------------
@@ -1969,14 +1985,15 @@ async def test_tags_does_not_return_other_users_tags(client, test_user):
     })
     other_cookies = dict(resp_other.cookies)
     await verify_user_by_id(resp_other.json()["data"]["id"])
-    await client.post(
-        "/api/applications",
-        json={"role_title": "Designer", "company": "Other Co", "source": "manual", "tags": ["faang"]},
-        cookies=other_cookies,
-    )
+    with as_user(client, other_cookies):
+        await client.post(
+            "/api/applications",
+            json={"role_title": "Designer", "company": "Other Co", "source": "manual", "tags": ["faang"]},
+        )
 
     # Act — fetch tags as the original user (no apps with tags)
-    response = await client.get("/api/applications/tags", cookies=cookies)
+    with as_user(client, cookies):
+        response = await client.get("/api/applications/tags")
 
     # Assert
     data = response.json()["data"]

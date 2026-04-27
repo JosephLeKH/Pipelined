@@ -47,7 +47,7 @@ export function RowMenu({ application, onArchive, onUnarchive, onDelete }) {
   return (
     <div ref={menuRef} className="relative shrink-0" onClick={(e) => e.stopPropagation()}>
       <button type="button" aria-label="Application actions"
-        className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-500"
+        className="rounded p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-500"
         onClick={() => setOpen((v) => !v)}>
         <MoreHorizontal className="h-4 w-4" />
       </button>

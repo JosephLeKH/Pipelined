@@ -40,6 +40,15 @@ function renderRow(overrides = {}) {
 }
 
 describe("ApplicationRow — desktop interactions", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(NOW_ISO));
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it("should call onSelect when row is clicked", () => {
     const { onSelect } = renderRow();
 

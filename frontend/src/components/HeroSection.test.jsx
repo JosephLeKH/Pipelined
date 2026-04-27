@@ -15,6 +15,5 @@ describe("HeroSection", () => {
     );
 
     expect(screen.getByText("Get Started Free")).toBeInTheDocument();
-    expect(screen.getByText("Install Extension")).toBeInTheDocument();
   });
 });

@@ -8,12 +8,13 @@ import { MODAL_BACKDROP, MODAL_CARD, BUTTON_PRIMARY, BUTTON_SECONDARY, BUTTON_GH
 
 function ManualAddForm({ isOpen, onClose }) {
   const hook = useManualAddForm({ isOpen, onClose });
-  const { dialogRef, handleClose, handleDialogKeyDown, handleOverlayClick, handleSubmit } = hook;
+  const { overlayRef, dialogRef, handleClose, handleDialogKeyDown, handleOverlayClick, handleSubmit, isPending } = hook;
 
   if (!isOpen) return null;
 
   return (
     <div
+      ref={overlayRef}
       className={`${MODAL_BACKDROP} cursor-pointer`}
       data-testid="modal-overlay"
       onClick={handleOverlayClick}
@@ -38,12 +39,12 @@ function ManualAddForm({ isOpen, onClose }) {
             <X className="h-5 w-5 text-gray-500" />
           </button>
         </div>
-        <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4 px-6 py-4">
+        <form id="manual-add-form" onSubmit={handleSubmit} noValidate className="flex flex-col gap-4 px-6 py-4">
           <ManualAddFormFields hook={hook} />
         </form>
         <div className="flex justify-end gap-2 border-t border-border-default px-6 py-4">
           <button type="button" onClick={handleClose} className={`${BUTTON_SECONDARY} text-sm`}>Cancel</button>
-          <button type="submit" form="manual-add-form" className={`${BUTTON_PRIMARY} text-sm`}>Add Application</button>
+          <button type="submit" form="manual-add-form" disabled={isPending} className={`${BUTTON_PRIMARY} text-sm`}>{isPending ? "Saving…" : "Add Application"}</button>
         </div>
       </div>
     </div>

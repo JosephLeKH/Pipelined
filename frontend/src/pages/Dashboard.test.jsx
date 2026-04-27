@@ -132,18 +132,17 @@ describe("Dashboard", () => {
   it("should open ManualAddForm modal overlay when Add Application header button is clicked", async () => {
     // Arrange
     render(<Dashboard />, { wrapper: makeWrapper() });
-    const overlay = screen.getByTestId("modal-overlay");
 
-    // Assert — overlay is hidden before click
-    expect(overlay).toHaveClass("opacity-0");
+    // Assert — overlay is not in the DOM before click
+    expect(screen.queryByTestId("modal-overlay")).not.toBeInTheDocument();
 
     // Act — click the header-level "Add Application" button (type="button")
     const buttons = screen.getAllByRole("button", { name: /add application/i });
     const headerBtn = buttons.find((el) => el.type === "button" && !el.closest("form"));
     await userEvent.click(headerBtn);
 
-    // Assert — overlay becomes visible
-    expect(overlay).toHaveClass("opacity-100");
+    // Assert — overlay is now mounted in the DOM
+    expect(screen.getByTestId("modal-overlay")).toBeInTheDocument();
   });
 
   it("should render StatsBar metrics after stats load", async () => {

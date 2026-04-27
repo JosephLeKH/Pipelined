@@ -45,7 +45,7 @@ function NPSBannerView({ onScore, onDismiss }) {
         type="button"
         onClick={onDismiss}
         aria-label="Dismiss survey"
-        className="shrink-0 rounded p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+        className="shrink-0 rounded p-1 text-gray-500 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
       >
         <X className="h-4 w-4" />
       </button>

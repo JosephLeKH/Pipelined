@@ -5,19 +5,20 @@ import { useRef, useMemo } from "react";
 import { useDetailPanelState } from "../hooks/useDetailPanelState";
 import { useDetailPanelKeyboard } from "../hooks/useDetailPanelKeyboard";
 import { DetailPanelHeader } from "./DetailPanelHeader";
+import { BUTTON_SECONDARY, BUTTON_DANGER } from "../lib/designTokens";
 import { PanelBody } from "./DetailPanelBody";
 import UndoToast from "./UndoToast";
 import { usePanelDrag } from "../hooks/usePanelDrag";
 
 function DiscardDialog({ onDiscard, onCancel }) {
   return (
-    <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/40" role="alertdialog" aria-modal="true" aria-labelledby="discard-dialog-title">
-      <div className="mx-4 w-full max-w-sm rounded-lg bg-white p-5 shadow-lg dark:bg-gray-800">
+    <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm" role="alertdialog" aria-modal="true" aria-labelledby="discard-dialog-title">
+      <div className="mx-4 w-full max-w-sm rounded-2xl border border-border-default bg-white p-5 shadow-modal dark:bg-gray-800 dark:border-dark-border">
         <h3 id="discard-dialog-title" className="text-base font-semibold text-gray-900 dark:text-gray-100">Discard unsaved notes?</h3>
         <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">Your changes will be lost.</p>
         <div className="mt-4 flex justify-end gap-2">
-          <button type="button" onClick={onCancel} className="rounded-md px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">Cancel</button>
-          <button type="button" onClick={onDiscard} className="rounded-md bg-red-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-red-700">Discard</button>
+          <button type="button" onClick={onCancel} className={`${BUTTON_SECONDARY} px-3 py-1.5 text-sm`}>Cancel</button>
+          <button type="button" onClick={onDiscard} className={`${BUTTON_DANGER} px-3 py-1.5 text-sm`}>Discard</button>
         </div>
       </div>
     </div>

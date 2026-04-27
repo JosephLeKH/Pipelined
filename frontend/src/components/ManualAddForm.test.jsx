@@ -248,9 +248,9 @@ describe("ManualAddForm", () => {
     const focusableEls = Array.from(dialog.querySelectorAll(FOCUSABLE));
     const lastEl = focusableEls[focusableEls.length - 1];
 
-    // Act — focus last element and fire Tab
+    // Act — focus last element and fire Tab on the inner card (which has onKeyDown)
     lastEl.focus();
-    fireEvent.keyDown(dialog, { key: "Tab", shiftKey: false });
+    fireEvent.keyDown(dialog.firstElementChild, { key: "Tab", shiftKey: false });
 
     // Assert — focus wrapped to first element
     expect(document.activeElement).toBe(focusableEls[0]);

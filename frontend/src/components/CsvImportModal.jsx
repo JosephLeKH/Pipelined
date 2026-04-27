@@ -101,7 +101,7 @@ function CsvImportModal({ isOpen, onClose }) {
       <div className={MODAL_CARD} onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between border-b border-border-default px-6 py-4">
           <h2 id="csv-import-heading" className="text-base font-display font-semibold text-gray-900 dark:text-gray-100">Import CSV</h2>
-          <button type="button" onClick={handleClose} aria-label="Close import modal" className="rounded-button p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:hover:bg-gray-700 dark:hover:text-gray-200">
+          <button type="button" onClick={handleClose} aria-label="Close import modal" className="rounded-button p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:hover:bg-gray-700 dark:hover:text-gray-200">
             <X className="h-4 w-4" />
           </button>
         </div>

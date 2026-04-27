@@ -27,7 +27,7 @@ export function DetailPanelHeader({ application, onClose, onDelete }) {
         <button
           type="button"
           onClick={onDelete}
-          className="rounded-full p-1.5 text-gray-400 hover:bg-rose-50 hover:text-rose-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-1 dark:hover:bg-rose-900/30"
+          className="rounded-full p-1.5 text-gray-500 hover:bg-rose-50 hover:text-rose-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-1 dark:hover:bg-rose-900/30"
           aria-label="Delete application"
         >
           <Trash2 className="h-4 w-4" />
