@@ -712,3 +712,67 @@ async def test_me_returns_referral_fields(client):
     assert "referral_code" in data
     assert "referral_count" in data
     assert data["referral_count"] == 0
+
+
+async def test_change_password_success(client):
+    # Arrange
+    reg = await client.post("/api/auth/register", json=REGISTER_PAYLOAD)
+    cookies = dict(reg.cookies)
+
+    # Act
+    response = await client.post(
+        "/api/auth/change-password",
+        json={"current_password": "TestPass123!", "new_password": "NewPass456!"},
+        cookies=cookies,
+    )
+
+    # Assert
+    assert response.status_code == 200
+    assert response.json()["data"]["message"] == "Password changed"
+
+
+async def test_change_password_wrong_current(client):
+    # Arrange
+    reg = await client.post("/api/auth/register", json=REGISTER_PAYLOAD)
+    cookies = dict(reg.cookies)
+
+    # Act
+    response = await client.post(
+        "/api/auth/change-password",
+        json={"current_password": "WrongPass123!", "new_password": "NewPass456!"},
+        cookies=cookies,
+    )
+
+    # Assert
+    assert response.status_code == 400
+    assert response.json()["detail"]["code"] == "CURRENT_PASSWORD_INCORRECT"
+
+
+async def test_change_password_too_weak(client):
+    # Arrange
+    reg = await client.post("/api/auth/register", json=REGISTER_PAYLOAD)
+    cookies = dict(reg.cookies)
+
+    # Act
+    response = await client.post(
+        "/api/auth/change-password",
+        json={"current_password": "TestPass123!", "new_password": "alllowercase1"},
+        cookies=cookies,
+    )
+
+    # Assert
+    assert response.status_code == 400
+    assert response.json()["detail"]["code"] == "PASSWORD_TOO_WEAK"
+
+
+async def test_change_password_unauthenticated(client):
+    # Act
+    from tests.conftest import as_anonymous
+    with as_anonymous(client):
+        response = await client.post(
+            "/api/auth/change-password",
+            json={"current_password": "TestPass123!", "new_password": "NewPass456!"},
+        )
+
+    # Assert
+    assert response.status_code == 401

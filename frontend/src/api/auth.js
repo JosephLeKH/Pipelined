@@ -59,3 +59,7 @@ export async function verifyEmail(token) {
 export async function resendVerification() {
   return client.post("/auth/resend-verification");
 }
+
+export async function changePassword(current_password, new_password) {
+  return client.post("/auth/change-password", { current_password, new_password });
+}

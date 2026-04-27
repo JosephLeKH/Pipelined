@@ -2,43 +2,45 @@
 
 import { useState, useCallback } from "react";
 
+import { toast } from "sonner";
 import Loader2 from "lucide-react/dist/esm/icons/loader-2";
 import TriangleAlert from "lucide-react/dist/esm/icons/alert-triangle";
 
-import { CARD_BASE, INPUT_BASE, INPUT_LABEL, BUTTON_PRIMARY, BUTTON_SECONDARY, BUTTON_DANGER, SUCCESS_BANNER, MODAL_BACKDROP, MODAL_CARD } from "../lib/designTokens";
+import { CARD_BASE, INPUT_BASE, INPUT_LABEL, BUTTON_PRIMARY, BUTTON_SECONDARY, BUTTON_DANGER, MODAL_BACKDROP, MODAL_CARD } from "../lib/designTokens";
 import { PASSWORD_MIN_LENGTH } from "../lib/constants";
+import { useChangePassword } from "../hooks/useAuth";
+
+const ERROR_MESSAGES = {
+  CURRENT_PASSWORD_INCORRECT: "Current password is incorrect.",
+  PASSWORD_TOO_WEAK: "New password must have at least 8 characters, one uppercase letter, and one digit.",
+};
 
 function ChangePasswordCard() {
   const [current, setCurrent] = useState("");
   const [newPw, setNewPw] = useState("");
   const [confirm, setConfirm] = useState("");
   const [pwError, setPwError] = useState(null);
-  const [pwSaved, setPwSaved] = useState(false);
-  const [isPending, setIsPending] = useState(false);
+  const { mutateAsync: changePassword, isPending } = useChangePassword();
 
   const handleSubmit = useCallback(async () => {
     setPwError(null);
-    setPwSaved(false);
     if (!current) { setPwError("Current password is required."); return; }
     if (newPw.length < PASSWORD_MIN_LENGTH) {
       setPwError(`New password must be at least ${PASSWORD_MIN_LENGTH} characters.`);
       return;
     }
     if (newPw !== confirm) { setPwError("Passwords do not match."); return; }
-    setIsPending(true);
     try {
-      // TODO: wire to changePassword API when available (US-future)
-      await new Promise((r) => setTimeout(r, 400));
-      setPwSaved(true);
+      await changePassword({ current_password: current, new_password: newPw });
+      toast.success("Password changed successfully.");
       setCurrent("");
       setNewPw("");
       setConfirm("");
-    } catch {
-      setPwError("Failed to change password. Please try again.");
-    } finally {
-      setIsPending(false);
+    } catch (err) {
+      const code = err?.response?.data?.detail?.code;
+      setPwError(ERROR_MESSAGES[code] ?? "Failed to change password. Please try again.");
     }
-  }, [current, newPw, confirm]);
+  }, [current, newPw, confirm, changePassword]);
 
   return (
     <div className={`${CARD_BASE} p-6`}>
@@ -87,11 +89,6 @@ function ChangePasswordCard() {
         </div>
         {pwError && (
           <p role="alert" className="text-sm text-red-600 dark:text-red-400">{pwError}</p>
-        )}
-        {pwSaved && !isPending && (
-          <p role="alert" className={SUCCESS_BANNER}>
-            Password changed successfully.
-          </p>
         )}
         <div className="flex justify-end">
           <button

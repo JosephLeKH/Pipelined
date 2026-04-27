@@ -42,11 +42,11 @@
   /* Shimmer background — uses surface-tertiary (#e8e6dc) per design system.
      Defined here (not Tailwind utilities) so the gradient lives in CSS, not JSX. */
   .shimmer-bg {
-    background: linear-gradient(to right, #e8e6dc 0%, #f5f4f0 50%, #e8e6dc 100%);
+    background: linear-gradient(to right, var(--color-shimmer-base) 0%, var(--color-shimmer-highlight) 50%, var(--color-shimmer-base) 100%);
     background-size: 200% 100%;
   }
   .dark .shimmer-bg {
-    background: linear-gradient(to right, #374151 0%, #4b5563 50%, #374151 100%);
+    background: linear-gradient(to right, var(--color-shimmer-dark-base) 0%, var(--color-shimmer-dark-highlight) 50%, var(--color-shimmer-dark-base) 100%);
     background-size: 200% 100%;
   }
   .animate-pulse-dot   { animation: pulse-dot   2s    ease     infinite; }

@@ -1,5 +1,6 @@
 /** Landing page: public marketing entry point explaining Pipelined's features. */
 
+import { useEffect, useRef } from "react";
 import { Link, Navigate } from "react-router-dom";
 
 import BarChart2 from "lucide-react/dist/esm/icons/bar-chart-2";
@@ -98,7 +99,32 @@ function LandingNav() {
   );
 }
 
+const STAGGER_MS = 80;
+
 function FeaturesSection() {
+  const gridRef = useRef(null);
+
+  useEffect(() => {
+    const grid = gridRef.current;
+    if (!grid) return;
+
+    const cards = Array.from(grid.querySelectorAll(".scroll-reveal"));
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const index = cards.indexOf(entry.target);
+          setTimeout(() => entry.target.classList.add("in-view"), index * STAGGER_MS);
+          observer.unobserve(entry.target);
+        });
+      },
+      { threshold: 0.1 },
+    );
+
+    cards.forEach((card) => observer.observe(card));
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <section id="features" className="mx-auto max-w-6xl px-6 py-24 md:px-10">
       <h2 className="mb-4 text-center text-3xl font-display font-semibold tracking-tight text-gray-900">
@@ -107,9 +133,9 @@ function FeaturesSection() {
       <p className="mx-auto mb-12 max-w-2xl text-center font-sans text-lg leading-relaxed text-gray-500">
         From the first click to the final offer, Pipelined has every step covered.
       </p>
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      <div ref={gridRef} className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {FEATURES.map(({ icon: Icon, title, description }) => (
-          <div key={title} className={`${CARD_BASE} flex flex-col gap-3 p-6`}>
+          <div key={title} className={`${CARD_BASE} scroll-reveal flex flex-col gap-3 p-6`}>
             <Icon className="h-6 w-6 text-gray-500" aria-hidden="true" />
             <h3 className="text-base font-display font-semibold text-gray-900">{title}</h3>
             <p className="font-sans text-sm leading-relaxed text-gray-500">{description}</p>

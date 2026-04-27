@@ -8,6 +8,7 @@ from auth import service as auth_service
 from auth.dependencies import get_current_user
 from auth.email_verification import create_verification_token
 from auth.schemas import (
+    ChangePasswordRequest,
     ForgotPasswordRequest,
     GithubAuthRequest,
     GoogleAuthRequest,
@@ -26,9 +27,12 @@ from auth.oauth_service import (
 from auth.service import (
     REFRESH_TOKEN_TYPE,
     RESET_TOKEN_TTL_HOURS,
+    CurrentPasswordIncorrectError,
     DuplicateEmailError,
+    PasswordWeakError,
     TokenExpiredError,
     TokenInvalidError,
+    change_password,
     create_access_token,
     create_password_reset_token,
     create_refresh_token,
@@ -174,6 +178,8 @@ async def refresh(
     refresh_token: str | None = Cookie(default=None),
 ) -> dict:
     """Issue a new access token using the refresh token cookie."""
+    from datetime import datetime, timezone
+
     payload = _decode_refresh_token(refresh_token)
 
     user = await auth_service.get_user_by_id(payload.sub)
@@ -182,6 +188,15 @@ async def refresh(
             status_code=401,
             detail={"code": "USER_NOT_FOUND", "message": "User no longer exists."},
         )
+
+    tokens_invalidated_at = user.get("tokens_invalidated_at")
+    if tokens_invalidated_at is not None and payload.iat is not None:
+        invalidated = tokens_invalidated_at if tokens_invalidated_at.tzinfo else tokens_invalidated_at.replace(tzinfo=timezone.utc)
+        if datetime.fromtimestamp(payload.iat, tz=timezone.utc) < invalidated:
+            raise HTTPException(
+                status_code=401,
+                detail={"code": "TOKEN_INVALIDATED", "message": "Token has been invalidated. Please log in again."},
+            )
 
     _set_cookie(response, ACCESS_COOKIE, create_access_token(payload.sub), ACCESS_MAX_AGE)
     logger.info("token_refreshed", user_id=payload.sub)
@@ -238,6 +253,28 @@ async def github_auth(body: GithubAuthRequest, response: Response) -> dict:
     _set_auth_cookies(response, str(user["_id"]))
     logger.info("github_user_authenticated", user_id=str(user["_id"]))
     return {"data": UserResponse.from_doc(user)}
+
+
+@router.post("/change-password", status_code=200)
+async def change_password_endpoint(
+    body: ChangePasswordRequest,
+    user: dict = Depends(get_current_user),
+) -> dict:
+    """Change the authenticated user's password after verifying the current one."""
+    try:
+        await change_password(str(user["_id"]), body.current_password, body.new_password)
+    except CurrentPasswordIncorrectError:
+        raise HTTPException(
+            status_code=400,
+            detail={"code": "CURRENT_PASSWORD_INCORRECT", "message": "Current password is incorrect."},
+        )
+    except PasswordWeakError:
+        raise HTTPException(
+            status_code=400,
+            detail={"code": "PASSWORD_TOO_WEAK", "message": "New password must have at least 8 characters, one uppercase letter, and one digit."},
+        )
+    logger.info("password_changed", user_id=str(user["_id"]))
+    return {"data": {"message": "Password changed"}}
 
 
 RESET_LINK_SENT_MESSAGE = "If that email is registered, a reset link has been sent."

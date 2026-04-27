@@ -79,6 +79,14 @@ class TokenPayload(BaseModel):
     sub: str
     exp: int
     type: str
+    iat: int | None = None
+
+
+class ChangePasswordRequest(BaseModel):
+    model_config = ConfigDict(strict=True)
+
+    current_password: str = Field(min_length=1, max_length=128)
+    new_password: str = Field(min_length=8, max_length=128)
 
 
 class ForgotPasswordRequest(BaseModel):

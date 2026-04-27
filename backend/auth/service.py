@@ -4,6 +4,7 @@ OAuth logic (Google, GitHub) lives in auth/oauth_service.py.
 """
 
 import hashlib
+import re
 import secrets
 from datetime import datetime, timedelta, timezone
 
@@ -52,6 +53,14 @@ class TokenInvalidError(Exception):
     """Raised when a password reset token hash is not found."""
 
 
+class CurrentPasswordIncorrectError(Exception):
+    """Raised when the supplied current password does not match the stored hash."""
+
+
+class PasswordWeakError(Exception):
+    """Raised when the new password fails strength requirements."""
+
+
 def hash_password(plain: str) -> str:
     """Return a bcrypt hash of plain using work factor 12."""
     salt = bcrypt.gensalt(rounds=BCRYPT_WORK_FACTOR)
@@ -72,8 +81,9 @@ def create_access_token(user_id: str) -> str:
 
 def create_refresh_token(user_id: str) -> str:
     """Return a signed JWT refresh token for user_id with TTL from config."""
-    exp = datetime.now(timezone.utc) + timedelta(days=settings.jwt_refresh_ttl_days)
-    payload = {"sub": user_id, "exp": int(exp.timestamp()), "type": REFRESH_TOKEN_TYPE}
+    now = datetime.now(timezone.utc)
+    exp = now + timedelta(days=settings.jwt_refresh_ttl_days)
+    payload = {"sub": user_id, "exp": int(exp.timestamp()), "iat": int(now.timestamp()), "type": REFRESH_TOKEN_TYPE}
     return jwt.encode(payload, settings.jwt_secret, algorithm=JWT_ALGORITHM)
 
 
@@ -269,3 +279,31 @@ async def reset_password(token: str, new_password: str) -> None:
         },
     )
     logger.info("password_reset_completed", user_id=str(user["_id"]))
+
+
+PASSWORD_UPPERCASE_RE = re.compile(r"[A-Z]")
+PASSWORD_DIGIT_RE = re.compile(r"[0-9]")
+
+
+async def change_password(user_id: str, current_password: str, new_password: str) -> None:
+    """Change a user's password after verifying the current one.
+
+    Raises CurrentPasswordIncorrectError if current_password is wrong.
+    Raises PasswordWeakError if new_password fails strength requirements.
+    Invalidates existing refresh tokens by updating tokens_invalidated_at.
+    """
+    users = get_collection("users")
+    user = await users.find_one({"_id": ObjectId(user_id)})
+
+    if not verify_password(current_password, user["password_hash"]):
+        raise CurrentPasswordIncorrectError
+
+    if not PASSWORD_UPPERCASE_RE.search(new_password) or not PASSWORD_DIGIT_RE.search(new_password):
+        raise PasswordWeakError
+
+    new_hash = hash_password(new_password)
+    await users.update_one(
+        {"_id": ObjectId(user_id)},
+        {"$set": {"password_hash": new_hash, "tokens_invalidated_at": datetime.now(timezone.utc)}},
+    )
+    logger.info("password_changed", user_id=user_id)

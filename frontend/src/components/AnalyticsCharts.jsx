@@ -14,6 +14,8 @@ import { ResponsiveContainer } from "recharts/es6/component/ResponsiveContainer"
 import { CARD_BASE } from "../lib/designTokens";
 
 const CHART_COLORS = ["#d97757", "#6a9bcc", "#788c5d", "#9ca3af", "#d1d5db"];
+const CHART_GRID_COLOR = "#e8e6dc";
+const CHART_TICK_COLOR = "#9ca3af";
 const CONVERSION_HIGH_THRESHOLD = 0.6;
 const CONVERSION_LOW_THRESHOLD = 0.3;
 const AVG_DAYS_HIGHLIGHT_THRESHOLD = 21;
@@ -62,9 +64,9 @@ function WeeklyApplicationsChart({ data }) {
     <ChartCard title="Applications per Week" description="How many applications you submitted each week">
       <ResponsiveContainer width="100%" height={240}>
         <BarChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e8e6dc" />
-          <XAxis dataKey="week" tick={{ fontSize: 11, fill: "#9ca3af" }} />
-          <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: "#9ca3af" }} />
+          <CartesianGrid strokeDasharray="3 3" stroke={CHART_GRID_COLOR} />
+          <XAxis dataKey="week" tick={{ fontSize: 11, fill: CHART_TICK_COLOR }} />
+          <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: CHART_TICK_COLOR }} />
           <Tooltip content={<CustomTooltip />} />
           <Bar dataKey="count" name="Applications" fill={CHART_COLORS[0]} radius={[3, 3, 0, 0]} />
         </BarChart>
@@ -78,9 +80,9 @@ function StageFunnelChart({ data }) {
     <ChartCard title="Stage Funnel" description="Distribution of applications across pipeline stages">
       <ResponsiveContainer width="100%" height={240}>
         <BarChart data={data} layout="vertical">
-          <CartesianGrid strokeDasharray="3 3" stroke="#e8e6dc" />
-          <XAxis type="number" allowDecimals={false} tick={{ fontSize: 11, fill: "#9ca3af" }} />
-          <YAxis type="category" dataKey="stage" tick={{ fontSize: 11, fill: "#9ca3af" }} width={90} />
+          <CartesianGrid strokeDasharray="3 3" stroke={CHART_GRID_COLOR} />
+          <XAxis type="number" allowDecimals={false} tick={{ fontSize: 11, fill: CHART_TICK_COLOR }} />
+          <YAxis type="category" dataKey="stage" tick={{ fontSize: 11, fill: CHART_TICK_COLOR }} width={90} />
           <Tooltip content={<CustomTooltip />} />
           <Bar dataKey="count" name="Applications" fill={CHART_COLORS[1]} radius={[0, 3, 3, 0]} />
         </BarChart>
@@ -94,9 +96,9 @@ function ResponseRateChart({ data }) {
     <ChartCard title="Response Rate by Month" description="Percentage of applications that received a response">
       <ResponsiveContainer width="100%" height={240}>
         <LineChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e8e6dc" />
-          <XAxis dataKey="month" tick={{ fontSize: 11, fill: "#9ca3af" }} />
-          <YAxis domain={[0, 1]} tickFormatter={(v) => `${Math.round(v * 100)}%`} tick={{ fontSize: 11, fill: "#9ca3af" }} />
+          <CartesianGrid strokeDasharray="3 3" stroke={CHART_GRID_COLOR} />
+          <XAxis dataKey="month" tick={{ fontSize: 11, fill: CHART_TICK_COLOR }} />
+          <YAxis domain={[0, 1]} tickFormatter={(v) => `${Math.round(v * 100)}%`} tick={{ fontSize: 11, fill: CHART_TICK_COLOR }} />
           <Tooltip content={<CustomTooltip formatter={(v) => `${Math.round(v * 100)}%`} />} />
           <Legend />
           <Line type="monotone" dataKey="rate" name="Response Rate" stroke={CHART_COLORS[2]} dot={false} strokeWidth={2} />
@@ -111,9 +113,9 @@ function TopCompaniesChart({ data }) {
     <ChartCard title="Top 10 Companies Applied To" description="Companies you've applied to most frequently">
       <ResponsiveContainer width="100%" height={240}>
         <BarChart data={data} layout="vertical">
-          <CartesianGrid strokeDasharray="3 3" stroke="#e8e6dc" />
-          <XAxis type="number" allowDecimals={false} tick={{ fontSize: 11, fill: "#9ca3af" }} />
-          <YAxis type="category" dataKey="company" tick={{ fontSize: 11, fill: "#9ca3af" }} width={100} />
+          <CartesianGrid strokeDasharray="3 3" stroke={CHART_GRID_COLOR} />
+          <XAxis type="number" allowDecimals={false} tick={{ fontSize: 11, fill: CHART_TICK_COLOR }} />
+          <YAxis type="category" dataKey="company" tick={{ fontSize: 11, fill: CHART_TICK_COLOR }} width={100} />
           <Tooltip content={<CustomTooltip />} />
           <Bar dataKey="count" name="Applications" fill={CHART_COLORS[3]} radius={[0, 3, 3, 0]} />
         </BarChart>
@@ -212,9 +214,9 @@ function FunnelBarChart({ data }) {
     <ChartCard title="Stage Conversion Funnel" description="Applications entering each stage">
       <ResponsiveContainer width="100%" height={Math.max(180, data.length * 40)}>
         <BarChart data={data} layout="vertical">
-          <CartesianGrid strokeDasharray="3 3" stroke="#e8e6dc" />
-          <XAxis type="number" allowDecimals={false} tick={{ fontSize: 11, fill: "#9ca3af" }} />
-          <YAxis type="category" dataKey="stage" tick={{ fontSize: 11, fill: "#9ca3af" }} width={110} />
+          <CartesianGrid strokeDasharray="3 3" stroke={CHART_GRID_COLOR} />
+          <XAxis type="number" allowDecimals={false} tick={{ fontSize: 11, fill: CHART_TICK_COLOR }} />
+          <YAxis type="category" dataKey="stage" tick={{ fontSize: 11, fill: CHART_TICK_COLOR }} width={110} />
           <Tooltip content={<CustomTooltip />} />
           <Bar dataKey="entered_count" name="Applications Entered" fill={CHART_COLORS[4]} radius={[0, 3, 3, 0]} />
         </BarChart>

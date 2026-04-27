@@ -1,8 +1,8 @@
 {
   "project": "Pipelined",
   "branchName": "main",
-  "status": "in_progress",
-  "description": "PRD-30: Design polish 4 — chart color tokens, change-password, landing page animations, and modal focus management",
+  "status": "complete",
+  "description": "PRD-30: Design polish 4 \u2014 chart color tokens, change-password, landing page animations, and modal focus management",
   "userStories": [
     {
       "id": "US-323",
@@ -16,7 +16,7 @@
         "npm run build succeeds",
         "npm test passes"
       ],
-      "status": "pending"
+      "status": "complete"
     },
     {
       "id": "US-324",
@@ -31,7 +31,7 @@
         "4 new tests pass in test_auth.py",
         "pytest tests/ passes"
       ],
-      "status": "pending"
+      "status": "complete"
     },
     {
       "id": "US-325",
@@ -47,14 +47,14 @@
         "TODO comment removed",
         "npm run build succeeds"
       ],
-      "status": "pending"
+      "status": "complete"
     },
     {
       "id": "US-326",
       "title": "Add scroll-reveal animations to landing page feature section",
-      "description": "The landing page feature grid (6 cards below the hero) currently renders without any reveal animation. Add a lightweight scroll-reveal effect: as each feature card enters the viewport, it fades in and slides up slightly (translateY 16px → 0, opacity 0 → 1, 400ms ease-out). Use the IntersectionObserver API — no animation library. Each card should animate independently with a 80ms stagger delay between cards. Animation should only play once (not re-trigger on scroll up). Respect prefers-reduced-motion: if set, render cards at full opacity immediately without animation.",
+      "description": "The landing page feature grid (6 cards below the hero) currently renders without any reveal animation. Add a lightweight scroll-reveal effect: as each feature card enters the viewport, it fades in and slides up slightly (translateY 16px \u2192 0, opacity 0 \u2192 1, 400ms ease-out). Use the IntersectionObserver API \u2014 no animation library. Each card should animate independently with a 80ms stagger delay between cards. Animation should only play once (not re-trigger on scroll up). Respect prefers-reduced-motion: if set, render cards at full opacity immediately without animation.",
       "acceptanceCriteria": [
-        "Feature cards animate in on scroll (opacity 0→1, translateY 16px→0)",
+        "Feature cards animate in on scroll (opacity 0\u21921, translateY 16px\u21920)",
         "Cards have 80ms stagger between them",
         "Animation plays once per page load",
         "prefers-reduced-motion: shows cards immediately without animation",
@@ -62,7 +62,7 @@
         "npm run build succeeds",
         "No console errors"
       ],
-      "status": "pending"
+      "status": "complete"
     },
     {
       "id": "US-327",
@@ -76,12 +76,12 @@
         "DetailPanel has role='dialog' and aria-modal='true'",
         "npm run build succeeds"
       ],
-      "status": "pending"
+      "status": "complete"
     },
     {
       "id": "US-328",
       "title": "Add empty state illustrations to Dashboard and Job Board",
-      "description": "When the Dashboard has no applications and the Job Board has no listings, currently only plain text is shown. Replace with styled empty states that are more engaging: (1) Dashboard empty state: a subtle SVG illustration (inline, no external deps) of a pipeline/funnel with a friendly message 'Add your first application to get started' and a CTA button that opens the manual-add flow, (2) Job Board empty state: a simple SVG of a briefcase with 'No listings match your filters' and a 'Clear filters' button. Use Tailwind classes, brand colors (text-brand-500, border-brand-200). The SVGs should be simple geometric shapes, not complex illustrations — 5-10 paths maximum.",
+      "description": "When the Dashboard has no applications and the Job Board has no listings, currently only plain text is shown. Replace with styled empty states that are more engaging: (1) Dashboard empty state: a subtle SVG illustration (inline, no external deps) of a pipeline/funnel with a friendly message 'Add your first application to get started' and a CTA button that opens the manual-add flow, (2) Job Board empty state: a simple SVG of a briefcase with 'No listings match your filters' and a 'Clear filters' button. Use Tailwind classes, brand colors (text-brand-500, border-brand-200). The SVGs should be simple geometric shapes, not complex illustrations \u2014 5-10 paths maximum.",
       "acceptanceCriteria": [
         "Dashboard shows SVG empty state when applications list is empty",
         "Job Board shows SVG empty state when no listings match filters",
@@ -90,12 +90,12 @@
         "Dark mode: empty states look correct with dark: variants",
         "npm run build succeeds"
       ],
-      "status": "pending"
+      "status": "complete"
     },
     {
       "id": "US-329",
       "title": "Keyboard shortcut help overlay (? key)",
-      "description": "The app supports keyboard shortcuts (K for kanban toggle, arrow keys, Escape, etc.) but there's no way to discover them. Add a keyboard shortcut help overlay triggered by pressing '?' (shift+/) when no input is focused. The overlay is a modal showing a 2-column grid of shortcut → description pairs. Shortcuts to document: ?, k (kanban toggle), / (focus search), Esc (close panel/clear search), Arrow keys (navigate list), Enter (open selected). Use the existing modal styling pattern. Pressing Escape or clicking outside dismisses it. Add a small '?' button in the bottom-right corner of the Dashboard as a discoverable trigger.",
+      "description": "The app supports keyboard shortcuts (K for kanban toggle, arrow keys, Escape, etc.) but there's no way to discover them. Add a keyboard shortcut help overlay triggered by pressing '?' (shift+/) when no input is focused. The overlay is a modal showing a 2-column grid of shortcut \u2192 description pairs. Shortcuts to document: ?, k (kanban toggle), / (focus search), Esc (close panel/clear search), Arrow keys (navigate list), Enter (open selected). Use the existing modal styling pattern. Pressing Escape or clicking outside dismisses it. Add a small '?' button in the bottom-right corner of the Dashboard as a discoverable trigger.",
       "acceptanceCriteria": [
         "Pressing '?' opens a keyboard shortcut help modal",
         "Modal shows all documented shortcuts in a 2-column grid",
@@ -105,7 +105,7 @@
         "Shortcut does not trigger when focus is in an input/textarea",
         "npm run build succeeds"
       ],
-      "status": "pending"
+      "status": "complete"
     }
   ]
 }

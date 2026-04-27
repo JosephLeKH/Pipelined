@@ -2,20 +2,37 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --color-body-bg: #fafafa;
+  --color-body-text: #141413;
+  --color-prose-blockquote-border: #d4ccbd;
+  --color-prose-blockquote-text: #6b5f4e;
+  --color-prose-link: #6a9bcc;
+  --color-shimmer-base: #e8e6dc;
+  --color-shimmer-highlight: #f5f4f0;
+  --color-shimmer-dark-base: #374151;
+  --color-shimmer-dark-highlight: #4b5563;
+}
+
+.dark {
+  --color-prose-blockquote-border: #4a4139;
+  --color-prose-blockquote-text: #b0aea5;
+}
+
 @layer base {
   body {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     font-size: 14px;
     line-height: 1.6;
     letter-spacing: -0.01em;
-    color: #141413;
-    background-color: #fafafa;
+    color: var(--color-body-text);
+    background-color: var(--color-body-bg);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
   .dark body {
-    background-color: #141413;
+    background-color: var(--color-body-text);
   }
 
   ::selection {
@@ -106,15 +123,15 @@
 }
 
 .markdown-preview blockquote {
-  border-left: 3px solid #d4ccbd;
+  border-left: 3px solid var(--color-prose-blockquote-border);
   padding-left: 1em;
   margin-left: 0;
-  color: #6b5f4e;
+  color: var(--color-prose-blockquote-text);
   margin-bottom: 0.75em;
 }
 
 .markdown-preview a {
-  color: #6a9bcc;
+  color: var(--color-prose-link);
   text-decoration: underline;
 }
 
@@ -123,9 +140,9 @@
   background-color: rgba(255, 255, 255, 0.08);
 }
 .dark .markdown-preview blockquote {
-  border-left-color: #4a4139;
-  color: #b0aea5;
+  border-left-color: var(--color-prose-blockquote-border);
+  color: var(--color-prose-blockquote-text);
 }
 .dark .markdown-preview a {
-  color: #6a9bcc;
+  color: var(--color-prose-link);
 }
