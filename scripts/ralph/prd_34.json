@@ -1,7 +1,7 @@
 {
   "project": "Pipelined",
   "branchName": "main",
-  "status": "in_progress",
+  "status": "completed",
   "description": "PRD-34: Test coverage for high-impact untested components, input validation hardening, and mobile responsiveness fixes",
   "userStories": [
     {
@@ -17,7 +17,7 @@
         "All tests pass with npm test",
         "No visual regression"
       ],
-      "status": "todo",
+      "status": "completed",
       "estimatedEffort": "medium",
       "impactScore": 90,
       "rationale": "High-impact component with complex state management, untested UX flows, and user data modification. Character limit feedback is critical for user experience. Error handling touches API contract validation."
@@ -36,7 +36,7 @@
         "All tests pass with npm test",
         "Manual testing on mobile device confirms usability"
       ],
-      "status": "todo",
+      "status": "completed",
       "estimatedEffort": "small",
       "impactScore": 85,
       "rationale": "User-facing component used daily. Poor mobile responsiveness directly impacts mobile-first users (estimated 40% of traffic). High-visibility, quick win with immediate UX impact."
@@ -57,7 +57,7 @@
         "No visual regression",
         "Accessibility: error messages properly associated with inputs"
       ],
-      "status": "todo",
+      "status": "completed",
       "estimatedEffort": "small",
       "impactScore": 95,
       "rationale": "CRITICAL SECURITY: Authentication is high-risk surface. Missing client-side validation increases account takeover risk and poor UX (users get 422 errors from backend). No test coverage for auth flows. Password validation + email sanitization are foundational security practices."
@@ -77,7 +77,7 @@
         "Invalid inputs return 422 (Unprocessable Entity)",
         "Duplicate contacts return 409 (Conflict)"
       ],
-      "status": "todo",
+      "status": "completed",
       "estimatedEffort": "medium",
       "impactScore": 80,
       "rationale": "Data integrity and security. Prevents malformed contact data, XSS injection via contact fields, and duplicate contact chaos. Backend is the trust boundary — validation must be strict here. Currently no validation beyond optional email regex in model."
@@ -98,7 +98,7 @@
         "No visual regression",
         "Modal properly marked as destructive action"
       ],
-      "status": "todo",
+      "status": "completed",
       "estimatedEffort": "medium",
       "impactScore": 88,
       "rationale": "CRITICAL DATA LOSS RISK: Account deletion permanently removes user data. Password change is security-sensitive. Component handles these flows with ZERO test coverage. Untested destructive actions are highest-risk code. Error handling gaps could leave users stranded (e.g., deletion fails, user thinks account is deleted)."
