@@ -79,7 +79,7 @@ async def test_list_contacts_returns_all(client, test_user):
     # Arrange
     _, cookies = test_user
     await _create_contact(client, cookies)
-    await _create_contact(client, cookies, {"name": "Bob Mentor", "relationship": "mentor"})
+    await _create_contact(client, cookies, {"name": "Bob Mentor", "email": "bob@example.com", "relationship": "mentor"})
 
     # Act
     resp = await client.get("/api/contacts/", cookies=cookies)
@@ -93,8 +93,8 @@ async def test_list_contacts_returns_all(client, test_user):
 async def test_list_contacts_filter_by_relationship(client, test_user):
     # Arrange
     _, cookies = test_user
-    await _create_contact(client, cookies, {"name": "Alice", "relationship": "recruiter"})
-    await _create_contact(client, cookies, {"name": "Bob", "relationship": "mentor"})
+    await _create_contact(client, cookies, {"name": "Alice", "email": "alice@example.com", "relationship": "recruiter"})
+    await _create_contact(client, cookies, {"name": "Bob", "email": "bob@example.com", "relationship": "mentor"})
 
     # Act
     resp = await client.get("/api/contacts/?relationship=recruiter", cookies=cookies)
@@ -108,8 +108,8 @@ async def test_list_contacts_filter_by_relationship(client, test_user):
 async def test_list_contacts_filter_by_company(client, test_user):
     # Arrange
     _, cookies = test_user
-    await _create_contact(client, cookies, {"name": "Carol", "company": "TechCo"})
-    await _create_contact(client, cookies, {"name": "Dave", "company": "OtherCo"})
+    await _create_contact(client, cookies, {"name": "Carol", "email": "carol@example.com", "company": "TechCo"})
+    await _create_contact(client, cookies, {"name": "Dave", "email": "dave@example.com", "company": "OtherCo"})
 
     # Act
     resp = await client.get("/api/contacts/?company=TechCo", cookies=cookies)
@@ -327,7 +327,7 @@ async def test_list_contacts_filter_by_application_id(client, test_user):
         json={"application_id": app_id},
         cookies=cookies,
     )
-    await _create_contact(client, cookies, {"name": "Unlinked Contact"})
+    await _create_contact(client, cookies, {"name": "Unlinked Contact", "email": "unlinked@example.com"})
 
     # Act
     resp = await client.get(f"/api/contacts/?application_id={app_id}", cookies=cookies)
@@ -337,3 +337,61 @@ async def test_list_contacts_filter_by_application_id(client, test_user):
     data = resp.json()["data"]
     assert len(data) == 1
     assert data[0]["id"] == contact_id
+
+
+# ---------------------------------------------------------------------------
+# Validation edge cases
+# ---------------------------------------------------------------------------
+
+
+async def test_create_contact_rejects_invalid_email(client, test_user):
+    # Arrange
+    _, cookies = test_user
+
+    # Act
+    resp = await client.post("/api/contacts/", json={"name": "Test", "email": "not-an-email"}, cookies=cookies)
+
+    # Assert
+    assert resp.status_code == 422
+
+
+async def test_create_contact_rejects_long_name(client, test_user):
+    # Arrange
+    _, cookies = test_user
+    long_name = "a" * 201
+
+    # Act
+    resp = await client.post("/api/contacts/", json={"name": long_name}, cookies=cookies)
+
+    # Assert
+    assert resp.status_code == 422
+
+
+async def test_create_contact_rejects_duplicate_email(client, test_user):
+    # Arrange
+    _, cookies = test_user
+    await _create_contact(client, cookies, {"name": "First Contact", "email": "dup@example.com"})
+
+    # Act
+    resp = await client.post(
+        "/api/contacts/",
+        json={"name": "Second Contact", "email": "dup@example.com"},
+        cookies=cookies,
+    )
+
+    # Assert
+    assert resp.status_code == 409
+    assert resp.json()["detail"]["code"] == "DUPLICATE_CONTACT"
+
+
+async def test_create_contact_without_email_allows_duplicate_names(client, test_user):
+    # Arrange: contacts without email should not trigger duplicate check
+    _, cookies = test_user
+
+    # Act
+    resp1 = await client.post("/api/contacts/", json={"name": "No Email One"}, cookies=cookies)
+    resp2 = await client.post("/api/contacts/", json={"name": "No Email Two"}, cookies=cookies)
+
+    # Assert
+    assert resp1.status_code == 201
+    assert resp2.status_code == 201

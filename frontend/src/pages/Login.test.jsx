@@ -73,25 +73,29 @@ describe("Login", () => {
   it("should show error when email is empty on submit", async () => {
     render(<Login />, { wrapper: makeWrapper() });
 
+    // Focus the email field and blur it to trigger validation error
+    await userEvent.click(screen.getByLabelText("Email"));
     await userEvent.click(screen.getByRole("button", { name: "Sign in" }));
 
-    expect(await screen.findByRole("alert")).toHaveTextContent("Email is required.");
+    expect(await screen.findByRole("alert")).toHaveTextContent("Enter a valid email address.");
   });
 
   it("should show error when password is empty on submit", async () => {
     render(<Login />, { wrapper: makeWrapper() });
 
     await userEvent.type(screen.getByLabelText("Email"), "alice@example.com");
+    // Focus and blur the password field to trigger validation error
+    await userEvent.click(screen.getByLabelText("Password"));
     await userEvent.click(screen.getByRole("button", { name: "Sign in" }));
 
-    expect(await screen.findByRole("alert")).toHaveTextContent("Password is required.");
+    expect(await screen.findByRole("alert")).toHaveTextContent("Password must be at least 8 characters.");
   });
 
   it("should show error message on invalid credentials", async () => {
     render(<Login />, { wrapper: makeWrapper() });
 
     await userEvent.type(screen.getByLabelText("Email"), "wrong@example.com");
-    await userEvent.type(screen.getByLabelText("Password"), "badpass");
+    await userEvent.type(screen.getByLabelText("Password"), "wrongpass123");
     await userEvent.click(screen.getByRole("button", { name: "Sign in" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent("Incorrect email or password.");

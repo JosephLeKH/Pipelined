@@ -21,6 +21,10 @@ class ContactNotFoundError(Exception):
     """Raised when a contact does not exist for this user."""
 
 
+class DuplicateContactError(Exception):
+    """Raised when a contact with the same email already exists for this user."""
+
+
 class ApplicationNotFoundError(Exception):
     """Raised when the linked application does not exist for this user."""
 
@@ -32,6 +36,10 @@ def _now() -> datetime:
 async def create(user_id: ObjectId, body: ContactCreate) -> dict:
     """Insert a new contact and return the full document."""
     contacts = get_collection("contacts")
+    if body.email:
+        existing = await contacts.find_one({"user_id": user_id, "email": str(body.email)}, projection={"_id": 1})
+        if existing:
+            raise DuplicateContactError
     now = _now()
     doc: dict = {
         "user_id": user_id,

@@ -13,7 +13,7 @@ from contacts.schemas import (
     MAX_CONTACTS_LIMIT,
     DEFAULT_CONTACTS_LIMIT,
 )
-from contacts.service import ApplicationNotFoundError, ContactNotFoundError
+from contacts.service import ApplicationNotFoundError, ContactNotFoundError, DuplicateContactError
 
 router = APIRouter(prefix="/api/contacts", tags=["contacts"])
 
@@ -40,7 +40,10 @@ async def create_contact(
                 "max_allowed": exc.max_allowed,
             }},
         )
-    doc = await contact_service.create(user["_id"], body)
+    try:
+        doc = await contact_service.create(user["_id"], body)
+    except DuplicateContactError:
+        raise HTTPException(status_code=409, detail={"code": "DUPLICATE_CONTACT", "message": "A contact with this email already exists."})
     return {"data": ContactResponse.from_doc(doc)}
 
 
