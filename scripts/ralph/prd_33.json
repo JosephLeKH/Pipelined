@@ -1,0 +1,71 @@
+{
+  "project": "Pipelined",
+  "branchName": "main",
+  "status": "complete",
+  "description": "PRD-33: Accessibility improvements, ContactForm UX, and input validation hardening",
+  "userStories": [
+    {
+      "id": "US-339",
+      "title": "Add test suite for ContactForm component",
+      "description": "Create frontend/src/components/ContactForm.test.jsx. The component (130 lines) renders a form to create a new contact, optionally linking it to an application. Tests cover: form submission with onDone callback, applicationId linking flow, link failure still calls onDone, form clears after success, error display on failure, error clears on input change, loading state on submit button, inputs disabled during submission, cancel button calls onDone, label-input associations (accessibility), relationship select id, email validation, maxLength enforcement, and field state updates. Use MSW to mock POST /api/contacts and POST /api/contacts/:id/link-application.",
+      "acceptanceCriteria": [
+        "ContactForm.test.jsx created with 21 tests passing",
+        "Covers submission, linking, error handling, loading state, accessibility, and validation",
+        "Uses MSW for API mocking",
+        "All tests pass with npm test"
+      ],
+      "status": "complete"
+    },
+    {
+      "id": "US-340",
+      "title": "Improve ContactForm UX — disabled state, error feedback, and API error surfacing",
+      "description": "In frontend/src/components/ContactForm.jsx: (1) Pass disabled={isPending} to all input/select fields via ContactFormFields/ContactFormNameField/ContactFormDetailFields so the form locks during submission, (2) Call setError(null) in handleChange to clear the error when the user edits after a failure, (3) In onError handler, surface the API error message via err?.response?.data?.error?.message before falling back to the generic string, (4) Add role='alert' to the error paragraph for screen reader announcement.",
+      "acceptanceCriteria": [
+        "Inputs are disabled while mutation is pending",
+        "Error clears on any input change",
+        "API error message is shown when available",
+        "Error paragraph has role='alert'",
+        "No visual regression"
+      ],
+      "status": "complete"
+    },
+    {
+      "id": "US-341",
+      "title": "Harden contact email validation with EmailStr",
+      "description": "In backend/contacts/schemas.py, change the email field in both ContactCreate and ContactUpdate from `str | None = Field(None, max_length=MAX_EMAIL_LENGTH)` to `EmailStr | None = None`. This uses Pydantic's built-in RFC 5322 email validation and removes the redundant max_length constraint (EmailStr already enforces reasonable limits). Import EmailStr from pydantic.",
+      "acceptanceCriteria": [
+        "ContactCreate.email uses EmailStr | None",
+        "ContactUpdate.email uses EmailStr | None",
+        "Invalid email addresses now return 422 from the API",
+        "Existing tests still pass"
+      ],
+      "status": "complete"
+    },
+    {
+      "id": "US-342",
+      "title": "Accessibility pass on ApplicationTimeline component",
+      "description": "In frontend/src/components/ApplicationTimeline.jsx: (1) Add role='img' and aria-label='Stage: {node.stage}' to the colored dot span in StageTimelineNode — color-only indicators are inaccessible, (2) Add role='status' to the 'No activity yet' empty state paragraph, (3) Add aria-live='polite' and aria-label='Application timeline' to the ol element so screen readers announce additions.",
+      "acceptanceCriteria": [
+        "Stage dot has role='img' with descriptive aria-label",
+        "Empty state paragraph has role='status'",
+        "Timeline ol has aria-live='polite' and aria-label",
+        "No visual regression"
+      ],
+      "status": "complete"
+    },
+    {
+      "id": "US-343",
+      "title": "Accessibility and semantic improvements for CalendarEventsList",
+      "description": "In frontend/src/components/CalendarEventsList.jsx: (1) Change the section heading from span to h3 for correct heading semantics, (2) Add role='status' to loading and empty state paragraphs, (3) Wrap the events list in a ul with aria-live='polite', converting each event div to an li, (4) Add descriptive aria-label to delete buttons including event type and date (was just 'Delete event'), (5) Add role='img' + aria-label to event type badge spans so color is not the only indicator.",
+      "acceptanceCriteria": [
+        "Heading uses h3 instead of span",
+        "Loading and empty states have role='status'",
+        "Events rendered as ul > li with aria-live='polite'",
+        "Delete buttons have descriptive aria-label including event type and date",
+        "Event type badges have role='img' with aria-label",
+        "No visual regression"
+      ],
+      "status": "complete"
+    }
+  ]
+}
