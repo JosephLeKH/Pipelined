@@ -79,7 +79,7 @@ function TemplateRow({ template }) {
               onClick={handleRename}
               disabled={isUpdating}
               aria-label="Confirm rename"
-              className="rounded p-1 text-brand-600 hover:bg-brand-50 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:hover:bg-brand-900/20"
+              className="rounded p-1 text-brand-600 hover:bg-brand-50 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500/30 disabled:opacity-50 disabled:cursor-not-allowed dark:hover:bg-brand-900/20"
             >
               <Check className="h-4 w-4" />
             </button>
@@ -87,7 +87,7 @@ function TemplateRow({ template }) {
               type="button"
               onClick={() => { setName(template.name); setEditing(false); }}
               aria-label="Cancel rename"
-              className="rounded p-1 text-gray-400 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:hover:bg-gray-700"
+              className="rounded p-1 text-gray-400 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:hover:bg-gray-700"
             >
               <X className="h-4 w-4" />
             </button>
@@ -107,7 +107,7 @@ function TemplateRow({ template }) {
           onClick={() => deleteMutate(template.id)}
           disabled={isDeleting}
           aria-label={`Delete ${template.name}`}
-          className="rounded p-1 text-gray-400 hover:bg-rose-50 hover:text-rose-600 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:hover:bg-rose-900/20 dark:hover:text-rose-400"
+          className="rounded p-1 text-gray-400 hover:bg-rose-50 hover:text-rose-600 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500/30 disabled:opacity-50 disabled:cursor-not-allowed dark:hover:bg-rose-900/20 dark:hover:text-rose-400"
         >
           <Trash2 className="h-4 w-4" />
         </button>
