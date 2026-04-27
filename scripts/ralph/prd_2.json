@@ -1,7 +1,7 @@
 {
   "project": "Pipelined",
   "branchName": "ralph/pipelined-v2",
-  "description": "Pipelined v2 \u2014 Bug fixes, missing UI features, auth completions, search, analytics, and new power-user capabilities built on top of the complete v1 foundation.",
+  "description": "Pipelined v2 — Bug fixes, missing UI features, auth completions, search, analytics, and new power-user capabilities built on top of the complete v1 foundation.",
   "userStories": [
     {
       "id": "US-040",
@@ -17,7 +17,7 @@
       ],
       "priority": 1,
       "passes": true,
-      "notes": "Found in codebase review: applications/service.py line 127 \u2014 duplicate check is purely exact-match on stored values. No normalisation step."
+      "notes": "Found in codebase review: applications/service.py line 127 — duplicate check is purely exact-match on stored values. No normalisation step."
     },
     {
       "id": "US-041",
@@ -25,14 +25,14 @@
       "description": "As a user, if one extension save fails (network error, 500), the save queue should recover and process subsequent saves. Currently a thrown error in executeSave breaks the Promise chain and all subsequent saves silently drop.",
       "acceptanceCriteria": [
         "In extension/background/background.js, the saveQueue promise chain uses .catch() after each executeSave() call so a single failure does not permanently poison the queue",
-        "On save failure, the error is logged to console.error and the banner is updated with an error state message ('Save failed \u2014 try again')",
+        "On save failure, the error is logged to console.error and the banner is updated with an error state message ('Save failed — try again')",
         "The popup's recent saves list is NOT updated on failure (no stale entry)",
         "Extension tests add a test: when executeSave rejects, the next queued save still executes",
         "All existing extension tests still pass"
       ],
       "priority": 2,
       "passes": true,
-      "notes": "Found in codebase review: background.js line 120 \u2014 saveQueue = saveQueue.then(...) with no .catch(). A throw in executeSave breaks all future saves."
+      "notes": "Found in codebase review: background.js line 120 — saveQueue = saveQueue.then(...) with no .catch(). A throw in executeSave breaks all future saves."
     },
     {
       "id": "US-042",
@@ -47,7 +47,7 @@
       ],
       "priority": 3,
       "passes": true,
-      "notes": "Found in codebase review: applications/service.py line 176 \u2014 next_cursor = str(docs[-1]['_id']) crashes when docs is empty."
+      "notes": "Found in codebase review: applications/service.py line 176 — next_cursor = str(docs[-1]['_id']) crashes when docs is empty."
     },
     {
       "id": "US-043",
@@ -62,12 +62,12 @@
       ],
       "priority": 4,
       "passes": true,
-      "notes": "Found in codebase review: cal/service.py line 103 \u2014 unbounded query. Potential performance/DoS risk."
+      "notes": "Found in codebase review: cal/service.py line 103 — unbounded query. Potential performance/DoS risk."
     },
     {
       "id": "US-044",
       "title": "Production secrets validation at startup",
-      "description": "As an operator, the app should refuse to start in production if critical secrets are still set to their insecure dev defaults. Currently JWT_SECRET defaults to 'dev-secret-change-in-production' and OPENAI_API_KEY can be empty \u2014 both silently pass in prod.",
+      "description": "As an operator, the app should refuse to start in production if critical secrets are still set to their insecure dev defaults. Currently JWT_SECRET defaults to 'dev-secret-change-in-production' and OPENAI_API_KEY can be empty — both silently pass in prod.",
       "acceptanceCriteria": [
         "In backend/config.py, a validate_production_secrets() function is added",
         "If DEBUG=False and JWT_SECRET equals the default dev string, the function raises a RuntimeError with a clear message",
@@ -79,7 +79,7 @@
       ],
       "priority": 5,
       "passes": true,
-      "notes": "Found in codebase review: config.py \u2014 jwt_secret has insecure default, no runtime guard."
+      "notes": "Found in codebase review: config.py — jwt_secret has insecure default, no runtime guard."
     },
     {
       "id": "US-045",
@@ -104,11 +104,11 @@
       "title": "Stale application amber dot visual indicator",
       "description": "As a user, I want a visual nudge on applications I haven't touched in 14+ days so I know which ones need follow-up. The backend has updated_at on every application but the frontend never uses it for the stale indicator that was originally specced.",
       "acceptanceCriteria": [
-        "In frontend/src/lib/constants.js, STALE_APPLICATION_DAYS = 14 is defined (or already exists \u2014 use it)",
-        "ApplicationList renders a small amber dot (\u25cf) on the left of each row where Date.now() - updated_at > STALE_APPLICATION_DAYS * 86400 * 1000",
-        "The dot has an aria-label='Stale application \u2014 no updates in 14+ days' for accessibility",
-        "Hovering the dot shows a Tailwind tooltip: 'No updates in 14 days \u2014 consider following up'",
-        "StatsBar shows a new 'Needs follow-up' count metric alongside the existing four stats \u2014 computed as the count of active applications that are stale",
+        "In frontend/src/lib/constants.js, STALE_APPLICATION_DAYS = 14 is defined (or already exists — use it)",
+        "ApplicationList renders a small amber dot (●) on the left of each row where Date.now() - updated_at > STALE_APPLICATION_DAYS * 86400 * 1000",
+        "The dot has an aria-label='Stale application — no updates in 14+ days' for accessibility",
+        "Hovering the dot shows a Tailwind tooltip: 'No updates in 14 days — consider following up'",
+        "StatsBar shows a new 'Needs follow-up' count metric alongside the existing four stats — computed as the count of active applications that are stale",
         "The backend GET /api/applications/stats adds a stale_count field: applications where updated_at < now - 14 days AND stage not in inactive stages",
         "test_applications.py adds a test for the stale_count aggregation",
         "Vitest test for ApplicationList verifies the amber dot renders for a stale application",
@@ -125,10 +125,10 @@
       "description": "As a user, I want to see a chronological timeline of an application's history (stage changes, calendar events added, notes updated) in the detail panel so I can understand the full journey at a glance.",
       "acceptanceCriteria": [
         "DetailPanel.jsx adds a 'Timeline' tab alongside the existing view (or collapsible section below notes)",
-        "The timeline renders stage_history entries from the application document as timeline nodes with date, from_stage \u2192 to_stage",
+        "The timeline renders stage_history entries from the application document as timeline nodes with date, from_stage → to_stage",
         "Calendar events linked to this application are fetched and interspersed in the timeline by date",
         "Timeline nodes are sorted chronologically (oldest at top)",
-        "Each stage_history node shows: date formatted as 'Mon D, YYYY', stage transition label (e.g. 'Applied \u2192 Phone Screen')",
+        "Each stage_history node shows: date formatted as 'Mon D, YYYY', stage transition label (e.g. 'Applied → Phone Screen')",
         "Each calendar event node shows: event type icon, title, date",
         "If stage_history is empty and no events exist, shows 'No activity yet' empty state",
         "Vitest test verifies: timeline renders stage_history entries in correct order, calendar events appear at correct positions",
@@ -334,7 +334,7 @@
       "acceptanceCriteria": [
         "Tailwind CSS config already has darkMode: 'class' (verify and set if not already)",
         "A ThemeContext is created in frontend/src/context/ThemeContext.jsx that: reads system preference via window.matchMedia('(prefers-color-scheme: dark)'), persists user override to localStorage under key 'pipelined_theme' ('light' | 'dark' | 'system'), applies the 'dark' class to document.documentElement",
-        "NavBar adds a sun/moon icon toggle button that cycles: system \u2192 light \u2192 dark \u2192 system",
+        "NavBar adds a sun/moon icon toggle button that cycles: system → light → dark → system",
         "All existing Tailwind classes are reviewed and dark: variants added for: background colors, text colors, border colors, card backgrounds in NavBar, Dashboard, ApplicationList, DetailPanel, FilterBar, CalendarGrid, JobBoard, StatsBar",
         "The login and register pages also support dark mode",
         "Vitest test for ThemeContext: verifies class is toggled on documentElement, preference is persisted to localStorage, system preference is respected on initial load",
@@ -369,7 +369,7 @@
       "title": "Tag autocomplete and tag management page",
       "description": "As a user who uses tags extensively, I want autocomplete suggestions when adding tags to applications (so I reuse existing tags instead of creating near-duplicates like 'fintech' and 'FinTech'), and a dedicated tag management page where I can rename or merge tags across all applications.",
       "acceptanceCriteria": [
-        "GET /api/tags returns { data: [{ tag: str, count: int }] } \u2014 all distinct tags used by the current user with application count, sorted by count descending",
+        "GET /api/tags returns { data: [{ tag: str, count: int }] } — all distinct tags used by the current user with application count, sorted by count descending",
         "PATCH /api/tags/rename accepts { old_tag: str, new_tag: str }; updates tags array in all user's applications atomically using updateMany; returns { data: { updated_count: int } }",
         "DELETE /api/tags/{tag} removes the tag from all user's applications; returns { data: { updated_count: int } }",
         "ManualAddForm.jsx and DetailPanel.jsx tag inputs use a Combobox-style input: typing shows matching suggestions from GET /api/tags, user can select a suggestion or type a new tag",
@@ -393,7 +393,7 @@
       "description": "As a new developer or contributor, I need a comprehensive README at the project root explaining what Pipelined is, how to set it up locally, how to run tests, and how to deploy to production. Currently there is no README anywhere in the project.",
       "acceptanceCriteria": [
         "README.md is created at the project root",
-        "Sections: Project overview (1 paragraph), Architecture diagram (ASCII or text-based showing FARM stack + extension), Prerequisites (Node 20, Python 3.12, MongoDB Atlas or local, Chrome), Quick start (step-by-step: clone \u2192 .env setup \u2192 backend start \u2192 frontend start \u2192 extension load), Running tests (backend pytest, frontend vitest, extension jest), Environment variables table (all vars from .env.example with descriptions), Deployment section (Docker build, ECS Fargate notes), Contributing section pointing to style guides",
+        "Sections: Project overview (1 paragraph), Architecture diagram (ASCII or text-based showing FARM stack + extension), Prerequisites (Node 20, Python 3.12, MongoDB Atlas or local, Chrome), Quick start (step-by-step: clone → .env setup → backend start → frontend start → extension load), Running tests (backend pytest, frontend vitest, extension jest), Environment variables table (all vars from .env.example with descriptions), Deployment section (Docker build, ECS Fargate notes), Contributing section pointing to style guides",
         "The .env.example at project root already has all variables; README links to it",
         "README.md is under 400 lines",
         "No broken links in the README",
@@ -403,5 +403,6 @@
       "passes": true,
       "notes": "There is no README.md anywhere in the project. This is a critical gap for onboarding and open-source credibility."
     }
-  ]
+  ],
+  "status": "complete"
 }
