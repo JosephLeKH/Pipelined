@@ -63,3 +63,7 @@ export async function resendVerification() {
 export async function changePassword(current_password, new_password) {
   return client.post("/auth/change-password", { current_password, new_password });
 }
+
+export async function deleteAccount() {
+  return client.delete("/auth/me");
+}

@@ -3,6 +3,7 @@
 OAuth logic (Google, GitHub) lives in auth/oauth_service.py.
 """
 
+import asyncio
 import hashlib
 import re
 import secrets
@@ -308,3 +309,23 @@ async def change_password(user_id: str, current_password: str, new_password: str
         {"$set": {"password_hash": new_hash, "tokens_invalidated_at": datetime.now(timezone.utc)}},
     )
     logger.info("password_changed", user_id=user_id)
+
+
+async def delete_user(user_id: str) -> None:
+    """Delete the user and all their data across collections.
+
+    Cascades to applications, calendar_events, and contacts in parallel.
+    """
+    oid = ObjectId(user_id)
+    users = get_collection("users")
+    applications = get_collection("applications")
+    calendar_events = get_collection("calendar_events")
+    contacts = get_collection("contacts")
+
+    await asyncio.gather(
+        applications.delete_many({"user_id": user_id}),
+        calendar_events.delete_many({"user_id": user_id}),
+        contacts.delete_many({"user_id": user_id}),
+        users.delete_one({"_id": oid}),
+    )
+    logger.info("user_deleted", user_id=user_id)

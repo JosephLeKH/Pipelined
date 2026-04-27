@@ -2,13 +2,14 @@
 
 import { useState, useCallback } from "react";
 
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import Loader2 from "lucide-react/dist/esm/icons/loader-2";
 import TriangleAlert from "lucide-react/dist/esm/icons/alert-triangle";
 
 import { CARD_BASE, INPUT_BASE, INPUT_LABEL, BUTTON_PRIMARY, BUTTON_SECONDARY, BUTTON_DANGER, MODAL_BACKDROP, MODAL_CARD } from "../lib/designTokens";
 import { PASSWORD_MIN_LENGTH } from "../lib/constants";
-import { useChangePassword } from "../hooks/useAuth";
+import { useChangePassword, useDeleteAccount } from "../hooks/useAuth";
 
 const ERROR_MESSAGES = {
   CURRENT_PASSWORD_INCORRECT: "Current password is incorrect.",
@@ -108,6 +109,18 @@ function ChangePasswordCard() {
 
 function DangerZone() {
   const [showModal, setShowModal] = useState(false);
+  const navigate = useNavigate();
+  const { mutateAsync: deleteAccount, isPending } = useDeleteAccount();
+
+  const handleDelete = useCallback(async () => {
+    try {
+      await deleteAccount();
+      toast.success("Account deleted.");
+      navigate("/");
+    } catch {
+      toast.error("Failed to delete account. Please try again.");
+    }
+  }, [deleteAccount, navigate]);
 
   return (
     <>
@@ -158,8 +171,11 @@ function DangerZone() {
               </button>
               <button
                 type="button"
-                className={`rounded-button ${BUTTON_DANGER}`}
+                onClick={handleDelete}
+                disabled={isPending}
+                className={`flex items-center gap-2 rounded-button ${BUTTON_DANGER}`}
               >
+                {isPending && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
                 Delete my account
               </button>
             </div>

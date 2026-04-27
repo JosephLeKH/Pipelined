@@ -39,6 +39,7 @@ from auth.service import (
     create_password_reset_token,
     create_refresh_token,
     decode_token,
+    delete_user,
     reset_password,
     update_user_profile,
     verify_password,
@@ -253,6 +254,18 @@ async def github_auth(body: GithubAuthRequest, response: Response) -> dict:
     _set_auth_cookies(response, str(user["_id"]))
     logger.info("github_user_authenticated", user_id=str(user["_id"]))
     return {"data": UserResponse.from_doc(user)}
+
+
+@router.delete("/me", status_code=204)
+async def delete_me(
+    response: Response,
+    user: dict = Depends(get_current_user),
+) -> None:
+    """Permanently delete the authenticated user and all their data."""
+    await delete_user(str(user["_id"]))
+    response.delete_cookie(ACCESS_COOKIE)
+    response.delete_cookie(REFRESH_COOKIE)
+    logger.info("user_account_deleted", user_id=str(user["_id"]))
 
 
 @router.post("/change-password", status_code=200)

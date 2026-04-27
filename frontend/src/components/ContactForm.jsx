@@ -54,7 +54,7 @@ function ContactFormDetailFields({ form, handleChange }) {
 
 function ContactFormFields({ form, handleChange }) {
   return (
-    <div className="grid grid-cols-2 gap-2">
+    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
       <ContactFormNameField form={form} handleChange={handleChange} />
       <ContactFormDetailFields form={form} handleChange={handleChange} />
     </div>

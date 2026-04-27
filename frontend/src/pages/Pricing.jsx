@@ -132,6 +132,7 @@ function ProTierCard() {
 
       <button
         type="button"
+        aria-label="Upgrade to Pro plan — coming soon"
         className="mb-8 w-full rounded-xl bg-brand-500 px-6 py-3 text-sm font-semibold text-white hover:bg-brand-600 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
       >
         Upgrade to Pro — coming soon

@@ -1,0 +1,76 @@
+{
+  "project": "Pipelined",
+  "branchName": "main",
+  "status": "complete",
+  "description": "PRD-31: Account deletion, missing tests, and mobile responsiveness fixes",
+  "userStories": [
+    {
+      "id": "US-330",
+      "title": "Implement DELETE /api/auth/me endpoint with cascade delete",
+      "description": "Add DELETE /api/auth/me endpoint that: (1) requires authentication via get_current_user dependency, (2) deletes all collections owned by the user — applications, calendar_events, contacts, and the user document itself — using asyncio.gather for parallel deletes, (3) clears auth cookies, (4) returns 204 No Content. Add delete_user service function in auth/service.py that accepts user_id and performs the cascade delete. Add tests: test_delete_account_success (verifies 204, cookies cleared, user not found after), test_delete_account_unauthenticated (verifies 401).",
+      "acceptanceCriteria": [
+        "DELETE /api/auth/me returns 204 for authenticated user",
+        "All user applications are deleted from the applications collection",
+        "All user calendar_events are deleted",
+        "All user contacts are deleted",
+        "The user document is deleted from the users collection",
+        "Auth cookies are cleared in the response",
+        "Returns 401 when not authenticated",
+        "Uses asyncio.gather for parallel collection deletes",
+        "Tests test_delete_account_success and test_delete_account_unauthenticated pass"
+      ],
+      "status": "complete"
+    },
+    {
+      "id": "US-331",
+      "title": "Wire delete account UI to call DELETE /api/auth/me",
+      "description": "In SettingsAccountSection.jsx, wire the 'Delete my account' button (currently a no-op) to: (1) call a new deleteAccount API function (api/auth.js), (2) use a useDeleteAccount mutation hook (hooks/useAuth.js), (3) on success: clear auth context, redirect to landing page ('/'), show success toast. Add isPending spinner to the delete button. Add a useDeleteAccount hook that invalidates the auth query and calls logout after delete. The modal cancel button should remain functional.",
+      "acceptanceCriteria": [
+        "Clicking 'Delete my account' calls DELETE /api/auth/me",
+        "Button shows spinner while request is in flight",
+        "On success: user is logged out, redirected to '/', toast shown",
+        "On error: toast error message shown, modal stays open",
+        "Cancel button still closes modal without action",
+        "deleteAccount function added to api/auth.js",
+        "useDeleteAccount hook added to hooks/useAuth.js"
+      ],
+      "status": "complete"
+    },
+    {
+      "id": "US-332",
+      "title": "Add Calendar page test file",
+      "description": "Create frontend/src/pages/Calendar.test.jsx with tests covering: (1) renders loading skeleton when isLoading is true, (2) renders error message when error is present, (3) renders CalendarView when events data is loaded, (4) navigation to previous/next month works, (5) clicking an event opens the detail panel. Use MSW to mock GET /api/calendar/events. Follow the Arrange-Act-Assert pattern with describe/it('should ...') naming.",
+      "acceptanceCriteria": [
+        "Calendar.test.jsx file created in frontend/src/pages/",
+        "At least 4 test cases covering loading, error, data, and navigation states",
+        "Uses MSW to mock API responses",
+        "All tests pass with npm test"
+      ],
+      "status": "complete"
+    },
+    {
+      "id": "US-333",
+      "title": "Add Pricing page test file with accessibility checks",
+      "description": "Create frontend/src/pages/Pricing.test.jsx with tests covering: (1) renders Free and Pro tier cards, (2) renders correct pricing amounts, (3) CTA buttons have accessible aria-labels, (4) feature list items are visible, (5) plan comparison table renders with correct data. Add aria-label to CTA buttons in Pricing.jsx if missing. Use describe/it('should ...') naming and Arrange-Act-Assert pattern.",
+      "acceptanceCriteria": [
+        "Pricing.test.jsx file created in frontend/src/pages/",
+        "At least 4 test cases",
+        "CTA buttons in Pricing.jsx have aria-labels",
+        "All tests pass with npm test"
+      ],
+      "status": "complete"
+    },
+    {
+      "id": "US-334",
+      "title": "Fix ContactForm mobile responsiveness",
+      "description": "In ContactForm.jsx, the name/email row uses grid-cols-2 (line ~57) without a responsive breakpoint, causing a cramped two-column layout on narrow screens. Change it to 'grid grid-cols-1 sm:grid-cols-2 gap-4' so it stacks on mobile and side-by-side on tablet+. Also verify any other layout assumptions in the form are mobile-safe.",
+      "acceptanceCriteria": [
+        "Name and email fields stack vertically on mobile (< 640px)",
+        "Name and email fields appear side-by-side on tablet+ (>= 640px)",
+        "No other layout regressions in ContactForm",
+        "npm run build succeeds"
+      ],
+      "status": "complete"
+    }
+  ]
+}

@@ -776,3 +776,38 @@ async def test_change_password_unauthenticated(client):
 
     # Assert
     assert response.status_code == 401
+
+
+# ---------------------------------------------------------------------------
+# DELETE /api/auth/me — account deletion
+# ---------------------------------------------------------------------------
+
+
+async def test_delete_account_success(client):
+    # Arrange
+    reg = await client.post("/api/auth/register", json=REGISTER_PAYLOAD)
+    cookies = dict(reg.cookies)
+    user_id = reg.json()["data"]["id"]
+
+    # Act
+    response = await client.delete("/api/auth/me", cookies=cookies)
+
+    # Assert
+    assert response.status_code == 204
+    assert "access_token" not in response.cookies or response.cookies.get("access_token") == ""
+
+    # Verify user no longer exists
+    users = database.get_collection("users")
+    from bson import ObjectId
+    doc = await users.find_one({"_id": ObjectId(user_id)})
+    assert doc is None
+
+
+async def test_delete_account_unauthenticated(client):
+    # Act
+    from tests.conftest import as_anonymous
+    with as_anonymous(client):
+        response = await client.delete("/api/auth/me")
+
+    # Assert
+    assert response.status_code == 401
