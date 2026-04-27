@@ -5,7 +5,7 @@ import { useState, useRef, useEffect } from "react";
 import Loader2 from "lucide-react/dist/esm/icons/loader-2";
 import MoreHorizontal from "lucide-react/dist/esm/icons/more-horizontal";
 
-import { BUTTON_DANGER, BUTTON_PRIMARY, BUTTON_SECONDARY, INPUT_BASE, MODAL_BACKDROP, MODAL_CARD } from "../lib/designTokens";
+import { BUTTON_DANGER, BUTTON_PRIMARY, BUTTON_SECONDARY, INPUT_BASE, MODAL_BACKDROP, MODAL_CARD, MENU_ITEM } from "../lib/designTokens";
 import { useAuth } from "../context/AuthContext";
 import { BULK_EDIT_MAX_IDS } from "../lib/constants";
 
@@ -13,17 +13,17 @@ function RowMenuDropdown({ application, onArchive, onUnarchive, onDelete, onClos
   return (
     <div role="menu" className="absolute right-0 z-20 mt-1 w-36 rounded-card border border-gray-200 bg-white shadow-card dark:bg-gray-800 dark:border-gray-700">
       {application.archived ? (
-        <button role="menuitem" type="button" className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 transition-colors dark:text-gray-200 dark:hover:bg-gray-700"
+        <button role="menuitem" type="button" className={`${MENU_ITEM} text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-700`}
           onClick={() => { onClose(); onUnarchive(application.id); }}>
           Unarchive
         </button>
       ) : (
-        <button role="menuitem" type="button" className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 transition-colors dark:text-gray-200 dark:hover:bg-gray-700"
+        <button role="menuitem" type="button" className={`${MENU_ITEM} text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-700`}
           onClick={() => { onClose(); onArchive(application.id); }}>
           Archive
         </button>
       )}
-      <button role="menuitem" type="button" className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 transition-colors dark:text-red-400 dark:hover:bg-red-900/20"
+      <button role="menuitem" type="button" className={`${MENU_ITEM} text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20`}
         onClick={() => { onClose(); onDelete(application.id); }}>
         Delete
       </button>
