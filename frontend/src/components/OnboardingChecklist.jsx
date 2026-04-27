@@ -118,7 +118,7 @@ function OnboardingChecklist({ onAdd }) {
           {!hasExtensionApp && (
             <a
               href={EXTENSION_STEP_HREF}
-              className="ml-8 text-xs text-brand-600 underline hover:text-brand-700 transition-colors dark:text-brand-400"
+              className="ml-8 text-xs text-brand-600 underline hover:text-brand-700 transition-colors dark:text-brand-400 dark:hover:text-brand-300"
             >
               Get the extension
             </a>
@@ -135,7 +135,7 @@ function OnboardingChecklist({ onAdd }) {
             <button
               type="button"
               onClick={onAdd}
-              className="ml-8 text-xs text-brand-600 underline hover:text-brand-700 transition-colors dark:text-brand-400"
+              className="ml-8 text-xs text-brand-600 underline hover:text-brand-700 transition-colors dark:text-brand-400 dark:hover:text-brand-300"
             >
               Add Application
             </button>
@@ -152,7 +152,7 @@ function OnboardingChecklist({ onAdd }) {
             <button
               type="button"
               onClick={() => navigate("/settings")}
-              className="ml-8 text-xs text-brand-600 underline hover:text-brand-700 transition-colors dark:text-brand-400"
+              className="ml-8 text-xs text-brand-600 underline hover:text-brand-700 transition-colors dark:text-brand-400 dark:hover:text-brand-300"
             >
               Go to Settings
             </button>

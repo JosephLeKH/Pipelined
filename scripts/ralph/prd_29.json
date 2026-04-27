@@ -1,20 +1,20 @@
 {
   "project": "Pipelined",
   "branchName": "main",
-  "status": "pending",
-  "description": "PRD-29: Design consistency pass 3 — transition-colors on remaining interactive elements",
+  "status": "in_progress",
+  "description": "PRD-29: Design consistency pass 3 \u2014 transition-colors on remaining interactive elements",
   "userStories": [
     {
       "id": "US-316",
       "title": "Add transition-colors to NavBar buttons (logout, theme toggle)",
-      "description": "NavBar.jsx has multiple buttons with hover states but missing transition-colors: (1) Logout button (line 75) — has hover:bg-gray-100 hover:text-gray-900, (2) Mobile menu button (line 90) — uses ICON_BUTTON with hover states but missing transition-colors, (3) Theme toggle button (line 111) — has hover:bg-gray-100 hover:text-gray-900. Add transition-colors to all three buttons.",
+      "description": "NavBar.jsx has multiple buttons with hover states but missing transition-colors: (1) Logout button (line 75) \u2014 has hover:bg-gray-100 hover:text-gray-900, (2) Mobile menu button (line 90) \u2014 uses ICON_BUTTON with hover states but missing transition-colors, (3) Theme toggle button (line 111) \u2014 has hover:bg-gray-100 hover:text-gray-900. Add transition-colors to all three buttons.",
       "acceptanceCriteria": [
         "NavBar logout button has transition-colors",
         "NavBar mobile menu button has transition-colors",
         "NavBar theme toggle button has transition-colors",
         "npm run build succeeds"
       ],
-      "status": "pending"
+      "status": "complete"
     },
     {
       "id": "US-317",
@@ -26,7 +26,7 @@
         "JobFilters controls have transition-colors",
         "npm run build succeeds"
       ],
-      "status": "pending"
+      "status": "complete"
     },
     {
       "id": "US-318",

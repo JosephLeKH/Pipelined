@@ -28,7 +28,7 @@ export default function SavedSearchesSidebar({ onApply }) {
         {searches.map((s) => (
           <li
             key={s.id}
-            className="flex cursor-pointer items-center justify-between rounded px-2 py-1.5 text-sm hover:bg-gray-50 dark:hover:bg-gray-700"
+            className="flex cursor-pointer items-center justify-between rounded px-2 py-1.5 text-sm hover:bg-gray-50 transition-colors dark:hover:bg-gray-700"
             onClick={() => onApply(s)}
           >
             <div className="flex flex-col">
