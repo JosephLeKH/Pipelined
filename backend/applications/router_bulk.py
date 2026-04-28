@@ -41,8 +41,8 @@ async def bulk_delete_applications(
 ) -> dict:
     """Delete multiple applications, returning a stack_id for undo within 2 hours."""
     user_id = str(user["_id"])
-    deleted_count, stack_id = await service_bulk.bulk_delete(user_id, body.ids)
-    return {"data": BulkDeleteResponse(deleted_count=deleted_count, stack_id=stack_id)}
+    deleted_count, stack_id, failed_ids = await service_bulk.bulk_delete(user_id, body.ids)
+    return {"data": BulkDeleteResponse(deleted_count=deleted_count, stack_id=stack_id, failed_ids=failed_ids)}
 
 
 @bulk_router.patch("/undo/{stack_id}", status_code=200)

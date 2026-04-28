@@ -844,6 +844,7 @@ async def test_bulk_delete_removes_applications_and_returns_count(client, test_u
     data = response.json()["data"]
     assert data["deleted_count"] == 2
     assert data["stack_id"]
+    assert data["failed_ids"] == []
     get1 = await client.get(f"/api/applications/{id1}", cookies=cookies)
     assert get1.status_code == 404
 
@@ -864,7 +865,7 @@ async def test_bulk_delete_returns_422_on_empty_ids(client, test_user):
 async def test_bulk_delete_returns_422_on_too_many_ids(client, test_user):
     # Arrange
     _, cookies = test_user
-    ids = ["aaaaaaaaaaaaaaaaaaaaaaaa"] * 101
+    ids = ["aaaaaaaaaaaaaaaaaaaaaaaa"] * 501
 
     # Act
     response = await client.request(

@@ -310,4 +310,36 @@ describe("DetailPanel", () => {
     // Assert — focus wrapped to last element
     expect(document.activeElement).toBe(focusableEls[focusableEls.length - 1]);
   });
+
+  it("should be visually hidden when application is null", () => {
+    // Arrange / Act
+    render(<DetailPanel application={null} onClose={() => {}} />, { wrapper: makeWrapper() });
+
+    // Assert — overlay has opacity-0 / pointer-events-none, panel is closed
+    const overlay = screen.getByTestId("panel-overlay");
+    expect(overlay).toHaveClass("opacity-0");
+    expect(overlay).toHaveClass("pointer-events-none");
+  });
+
+  it("should revert stage optimistically when stage update fails", async () => {
+    // Arrange — PATCH will fail
+    server.use(
+      http.patch("/api/applications/:id", () =>
+        HttpResponse.json({ error: { code: "INTERNAL_ERROR", message: "Server error" } }, { status: 500 })
+      )
+    );
+    render(<DetailPanel application={APP} onClose={() => {}} />, { wrapper: makeWrapper() });
+
+    const stageGroup = screen.getByRole("group", { name: /stage/i });
+    await waitFor(() => expect(within(stageGroup).getAllByRole("button").length).toBeGreaterThan(1));
+
+    // Act — click a different stage; optimistic update fires then rolls back on error
+    await userEvent.click(within(stageGroup).getByRole("button", { name: "Offer" }));
+
+    // Assert — after server error, original stage is restored
+    await waitFor(() => {
+      const activeStage = within(stageGroup).getByRole("button", { name: "Applied", pressed: true });
+      expect(activeStage).toBeInTheDocument();
+    });
+  });
 });

@@ -192,7 +192,7 @@ class StageAddRequest(BaseModel):
     position: int = Field(ge=0)
 
 
-MAX_BULK_IDS = 100
+MAX_BULK_IDS = 500
 
 
 class BulkDeleteRequest(BaseModel):
@@ -204,6 +204,7 @@ class BulkDeleteRequest(BaseModel):
 class BulkDeleteResponse(BaseModel):
     deleted_count: int
     stack_id: str
+    failed_ids: list[str] = []
 
 
 class UndoRestoreResponse(BaseModel):

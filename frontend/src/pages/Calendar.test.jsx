@@ -10,6 +10,7 @@ import { describe, it, expect, beforeAll, afterAll, afterEach } from "vitest";
 import { AuthProvider } from "../context/AuthContext";
 import { ThemeProvider } from "../context/ThemeContext";
 import Calendar from "./Calendar";
+import { passthroughHandlers } from "../test/passthroughHandlers";
 
 const MOCK_EVENT = {
   id: "evt1",
@@ -42,9 +43,10 @@ const server = setupServer(
   http.get("/api/notifications/unread-count", () =>
     HttpResponse.json({ data: { count: 0 } })
   ),
+  ...passthroughHandlers,
 );
 
-beforeAll(() => server.listen({ onUnhandledRequest: "warn" }));
+beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
@@ -113,5 +115,20 @@ describe("Calendar page", () => {
     await waitFor(() => {
       expect(screen.queryByText(/no interviews scheduled/i)).not.toBeInTheDocument();
     });
+  });
+
+  it("should show error state when calendar event loading fails", async () => {
+    server.use(
+      http.get("/api/calendar/events", () =>
+        HttpResponse.json({ error: { code: "INTERNAL_ERROR", message: "Server error" } }, { status: 500 })
+      )
+    );
+    const Wrapper = makeWrapper();
+
+    render(<Calendar />, { wrapper: Wrapper });
+
+    await waitFor(() => {
+      expect(screen.getAllByRole("alert").length).toBeGreaterThan(0);
+    }, { timeout: 3000 });
   });
 });

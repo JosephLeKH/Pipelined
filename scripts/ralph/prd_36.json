@@ -1,0 +1,90 @@
+{
+  "id": "PRD-36",
+  "title": "Error states, loading polish, accessibility hardening, and validation improvements",
+  "status": "done",
+  "priority": "high",
+  "description": "PRD-36 addresses five areas of polish and hardening: (1) Calendar page error state so users get clear feedback when event loading fails, (2) Dashboard stats loading skeleton for a jank-free initial load, (3) FilterBar comprehensive ARIA labels for screen-reader users, (4) Bulk delete input validation and partial-failure reporting on the backend, (5) DetailPanel loading/error/pending state tests to prevent regressions.",
+  "userStories": [
+    {
+      "id": "US-356",
+      "title": "Calendar page should display error feedback when event loading fails",
+      "description": "Calendar.jsx handles isLoading but has no error state. When useCalendarEvents() returns an error the user sees a blank page with no feedback. Add an ErrorState render when error is truthy so users understand the failure and can retry.",
+      "acceptanceCriteria": [
+        "When useCalendarEvents returns an error, Calendar page shows an ErrorState component with a descriptive message and retry button",
+        "Error state does not appear during normal load — only when error is truthy",
+        "Loading skeleton still renders while isLoading is true",
+        "Test added: 'should show error state when calendar event loading fails'"
+      ],
+      "status": "done",
+      "estimatedEffort": "small",
+      "impactScore": 72,
+      "rationale": "Silent failures destroy user trust. Without an error state users assume the app is broken or their events were deleted. A clear error message with retry is the minimum viable feedback loop."
+    },
+    {
+      "id": "US-357",
+      "title": "Dashboard stats section should show loading skeleton instead of empty cards during initial load",
+      "description": "Dashboard.jsx renders stats cards during load but doesn't conditionally show a loading skeleton, causing a flash of empty/zero values. Add a shimmer skeleton while useApplicationStats isLoading is true so users see intentional feedback instead of incorrect data.",
+      "acceptanceCriteria": [
+        "StatsBar or stats section shows 4 animated skeleton cards while isLoading is true",
+        "Once data arrives, skeleton is replaced by real values without layout shift",
+        "Existing stats tests still pass",
+        "Test added: 'should render loading skeleton while stats are loading'"
+      ],
+      "status": "done",
+      "estimatedEffort": "small",
+      "impactScore": 68,
+      "rationale": "Empty stats flash makes users think they have no tracked applications. A loading skeleton sets the correct expectation and gives a more polished feel on first load."
+    },
+    {
+      "id": "US-358",
+      "title": "FilterBar should have complete ARIA labels and semantic structure for screen readers",
+      "description": "FilterBar.jsx lacks aria-label on checkbox groups, no aria-live region for filter change announcements, and some inputs lack associated labels via htmlFor. Improve accessibility so screen reader users can discover, navigate, and use filters without confusion.",
+      "acceptanceCriteria": [
+        "Main filter container has role='region' and aria-label='Filter Controls'",
+        "Each checkbox group has an aria-label describing what it filters (e.g. 'Filter by status')",
+        "An aria-live='polite' region announces the active filter count when filters change",
+        "All checkboxes have associated <label> elements via htmlFor/id pairing",
+        "No visual regressions — ARIA changes are additive",
+        "Automated test checks aria-label presence on key filter groups"
+      ],
+      "status": "done",
+      "estimatedEffort": "small",
+      "impactScore": 65,
+      "rationale": "Screen reader users cannot effectively filter their applications without proper ARIA semantics. This is a legal accessibility requirement (WCAG 2.1 AA) and directly impacts inclusivity."
+    },
+    {
+      "id": "US-359",
+      "title": "Bulk delete endpoint should validate input array size and report partial failures",
+      "description": "The bulk delete endpoint accepts an unbounded array of IDs with no max-size validation. A malicious or buggy client could pass 10,000+ IDs, causing OOM or timeout. Add a BulkDeleteRequest schema with a max-length constraint and update the response to include deleted_ids and failed_ids so callers can handle partial failures.",
+      "acceptanceCriteria": [
+        "POST /api/applications/bulk-delete rejects requests with more than 500 IDs (422 response)",
+        "POST /api/applications/bulk-delete rejects empty arrays (422 response)",
+        "Successful response body includes { deleted_count, failed_ids } fields",
+        "Backend test: 'test_bulk_delete_rejects_oversized_request' (>500 IDs → 422)",
+        "Backend test: 'test_bulk_delete_rejects_empty_array' ([] → 422)",
+        "Existing bulk delete happy-path tests still pass"
+      ],
+      "status": "done",
+      "estimatedEffort": "small",
+      "impactScore": 70,
+      "rationale": "Unbounded array inputs are a DoS vector. Adding max-length validation is a one-line Pydantic constraint that prevents resource exhaustion and gives callers actionable failure data."
+    },
+    {
+      "id": "US-360",
+      "title": "DetailPanel tests should cover loading, error, and mutation-pending states",
+      "description": "DetailPanel.jsx is the primary interaction surface for editing applications but its tests lack coverage for async states. Add tests for: loading spinner while data fetches, error message when fetch fails, save button disabled while mutation is pending, and success feedback after save.",
+      "acceptanceCriteria": [
+        "Test: 'should display loading state while fetching application detail'",
+        "Test: 'should display error state when application detail fetch fails'",
+        "Test: 'should disable save actions while mutation is in progress'",
+        "All new tests use MSW handlers or mock hook return values — no direct fetch mocks",
+        "Tests follow Arrange → Act → Assert structure with blank lines between sections",
+        "No existing tests broken by additions"
+      ],
+      "status": "done",
+      "estimatedEffort": "medium",
+      "impactScore": 63,
+      "rationale": "DetailPanel regressions are high-impact: any breakage affects every application edit workflow. Without async-state tests, loading/error/pending UI can silently break without CI catching it."
+    }
+  ]
+}

@@ -130,8 +130,15 @@ function FilterBar() {
   const { stages, companyTypes, remoteStatuses, selectedTags, dateFrom, dateTo,
     includeArchived, searchValue, handleSearchChange, updateFilter, toggleArchived } = useFilterParams();
 
+  const activeFilterCount = stages.length + companyTypes.length + remoteStatuses.length + selectedTags.length
+    + (dateFrom ? 1 : 0) + (dateTo ? 1 : 0) + (includeArchived ? 1 : 0) + (searchValue.trim() ? 1 : 0);
+  const filterSummary = activeFilterCount === 0
+    ? "No filters active"
+    : `${activeFilterCount} filter${activeFilterCount !== 1 ? "s" : ""} active`;
+
   return (
-    <div className="flex flex-col gap-3">
+    <div role="region" aria-label="Filter Controls" className="flex flex-col gap-3">
+      <span className="sr-only" aria-live="polite" aria-atomic="true">{filterSummary}</span>
       {includeArchived && <ArchivedBanner />}
       <div className="flex gap-6 overflow-x-auto rounded-card bg-white p-4 shadow-card border border-gray-200/60 dark:bg-gray-800 dark:border-gray-700 md:flex-wrap">
         <SearchFieldset searchValue={searchValue} onSearchChange={handleSearchChange} />

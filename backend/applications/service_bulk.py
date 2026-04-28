@@ -23,23 +23,33 @@ UNDO_STACK_TTL_HOURS = 2
 CONFLICT_STAGE = "offer"
 
 
-async def bulk_delete(user_id: str, ids: list[str]) -> tuple[int, str]:
-    """Delete multiple applications, storing an undo snapshot. Returns (deleted_count, stack_id)."""
+async def bulk_delete(user_id: str, ids: list[str]) -> tuple[int, str, list[str]]:
+    """Delete multiple applications, storing an undo snapshot. Returns (deleted_count, stack_id, failed_ids)."""
     uid = ObjectId(user_id)
-    try:
-        oid_list = [ObjectId(i) for i in ids]
-    except (ValueError, TypeError, InvalidId):
-        return 0, ""
+    valid_oids: list[ObjectId] = []
+    invalid_ids: list[str] = []
+    for raw_id in ids:
+        try:
+            valid_oids.append(ObjectId(raw_id))
+        except (ValueError, TypeError, InvalidId):
+            invalid_ids.append(raw_id)
+
+    if not valid_oids:
+        return 0, "", ids
+
     db_client = get_client()
     apps = get_collection("applications")
     events = get_collection("calendar_events")
     undo_stack = get_collection("undo_stack")
 
     snapshots = await apps.find(
-        {"_id": {"$in": oid_list}, "user_id": uid}
+        {"_id": {"$in": valid_oids}, "user_id": uid}
     ).to_list(length=None)
     if not snapshots:
-        return 0, ""
+        return 0, "", ids
+
+    found_ids = {str(doc["_id"]) for doc in snapshots}
+    failed_ids = invalid_ids + [raw_id for raw_id in ids if raw_id not in found_ids and raw_id not in invalid_ids]
 
     now = datetime.now(timezone.utc)
     insert_result = await undo_stack.insert_one({
@@ -55,16 +65,16 @@ async def bulk_delete(user_id: str, ids: list[str]) -> tuple[int, str]:
     async with await db_client.start_session() as session:
         async with session.start_transaction():
             result = await apps.delete_many(
-                {"_id": {"$in": oid_list}, "user_id": uid}, session=session
+                {"_id": {"$in": valid_oids}, "user_id": uid}, session=session
             )
             deleted_count = result.deleted_count
             if deleted_count > 0:
                 await events.delete_many(
-                    {"application_id": {"$in": oid_list}, "user_id": uid}, session=session
+                    {"application_id": {"$in": valid_oids}, "user_id": uid}, session=session
                 )
 
     logger.info("bulk_applications_deleted", user_id=user_id, count=deleted_count, stack_id=stack_id)
-    return deleted_count, stack_id
+    return deleted_count, stack_id, failed_ids
 
 
 async def undo_bulk_delete(user_id: str, stack_id: str) -> dict | None:
