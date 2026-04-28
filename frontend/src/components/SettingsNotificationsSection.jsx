@@ -75,14 +75,17 @@ function SettingsNotificationsSection() {
   const [values, setValues] = useState(() =>
     Object.fromEntries(TOGGLES.map((t) => [t.field, user?.[t.field] ?? t.defaultVal]))
   );
+  const [saveError, setSaveError] = useState(null);
 
   const handleToggle = useCallback(
     async (field, next) => {
       setValues((prev) => ({ ...prev, [field]: next }));
+      setSaveError(null);
       try {
         await mutateAsync({ [field]: next });
       } catch {
         setValues((prev) => ({ ...prev, [field]: !next }));
+        setSaveError("Failed to save. Please try again.");
       }
     },
     [mutateAsync]
@@ -96,6 +99,9 @@ function SettingsNotificationsSection() {
       <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
         Control which alerts and digests you receive.
       </p>
+      {saveError && (
+        <p role="alert" className="mb-3 text-sm text-red-600 dark:text-red-400">{saveError}</p>
+      )}
       <div className="divide-y divide-gray-100 dark:divide-gray-700">
         {TOGGLES.map((t) => (
           <ToggleSwitch

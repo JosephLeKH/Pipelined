@@ -1,0 +1,114 @@
+{
+  "id": "PRD-39",
+  "title": "Error state and test coverage for ContactLinkDropdown, TemplateBar, SettingsNotifications, ContactCard, WeeklyGoalSection, and TemplateSaveModal",
+  "status": "done",
+  "priority": "high",
+  "description": "PRD-39 addresses six gaps found in a post-PRD-38 audit: (1) ContactLinkDropdown swallows fetch errors from useContacts — users see 'No contacts found.' on a network failure with no retry path; (2) TemplateBar drops useTemplates fetch errors entirely — the dropdown silently disappears; (3) SettingsNotificationsSection reverts toggles silently on mutation failure — users have no indication their change was rejected; (4) ContactCard has no test coverage despite being the primary contact display component; (5) WeeklyGoalSection has no tests despite having validation logic and success/error states; (6) TemplateSaveModal has no tests despite having validation, keyboard handling, and API integration.",
+  "userStories": [
+    {
+      "id": "US-371",
+      "title": "ContactLinkDropdown swallows fetch errors — add error state with retry",
+      "description": "ContactLinkDropdown calls useContacts({}) but only destructures data and isLoading (line 13). When the contacts endpoint fails, the loading indicator disappears and 'No contacts found.' is shown — users believe they simply have no contacts. Destructure error and refetch, show an inline error message with a retry button, and add test coverage for the error and retry paths.",
+      "acceptanceCriteria": [
+        "useContacts({}) destructures error and refetch in addition to data and isLoading",
+        "When error is truthy, an inline error message renders inside the dropdown: 'Failed to load contacts.'",
+        "Error message is visible as role='alert'",
+        "A retry button with aria-label='Retry loading contacts' calls refetch",
+        "Retry button uses BUTTON_SECONDARY design token",
+        "Test file created or extended: frontend/src/components/ContactLinkDropdown.test.jsx",
+        "Test: 'should show error state when contacts fetch fails'",
+        "Test: 'should call refetch when retry is clicked'",
+        "Test: 'should filter and render matching contacts'",
+        "No visual regressions on loading and happy-path states"
+      ],
+      "status": "done",
+      "estimatedEffort": "small",
+      "impactScore": 78,
+      "rationale": "ContactLinkDropdown is shown inside the detail panel during a deliberate networking action. Silently showing 'No contacts found.' on a network failure causes users to think their contact list is empty — a trust-breaking failure. The useContacts hook already returns error and refetch from useQuery."
+    },
+    {
+      "id": "US-372",
+      "title": "TemplateBar drops useTemplates fetch errors silently — show inline error message",
+      "description": "TemplateBar calls useTemplates() but only destructures data (line 10). When the templates endpoint fails, the dropdown simply does not render (the component falls back to an empty flex div), giving users no indication of failure. Add error and isLoading destructuring and show a small inline error message so users understand the template system is temporarily unavailable.",
+      "acceptanceCriteria": [
+        "useTemplates() destructures error and isLoading in addition to data",
+        "When isLoading is true, a loading indicator or disabled state is shown in the template area",
+        "When error is truthy, an inline error message 'Failed to load templates.' is visible as role='alert'",
+        "No visual regressions on happy path (templates list renders normally)",
+        "Existing 'Save as template' button remains functional regardless of fetch state"
+      ],
+      "status": "done",
+      "estimatedEffort": "small",
+      "impactScore": 68,
+      "rationale": "TemplateBar is shown on the manual-add flow — a high-intent path where users are actively trying to save time. Silently hiding the template dropdown on a network failure causes users to think their templates were deleted. The fix is a one-line destructure change plus a conditional render."
+    },
+    {
+      "id": "US-373",
+      "title": "SettingsNotificationsSection silently reverts toggles on failure — add error feedback",
+      "description": "SettingsNotificationsSection.jsx line 84: the catch block reverts the optimistic toggle update but provides no user feedback. The toggle visually snaps back with no explanation, which looks like a UI bug or accidental click. Add a save error state that is set on catch and cleared on the next successful save, rendered as a role='alert' message below the toggle list.",
+      "acceptanceCriteria": [
+        "A saveError state is added to SettingsNotificationsSection",
+        "The catch block sets saveError to 'Failed to save. Please try again.'",
+        "saveError is cleared at the start of each handleToggle call",
+        "The error message renders as role='alert' in the section",
+        "Test: 'should show error message when toggle save fails'",
+        "Test: 'should clear error message on next successful save'",
+        "Test: 'should revert toggle state when save fails'",
+        "No visual regressions on happy path"
+      ],
+      "status": "done",
+      "estimatedEffort": "small",
+      "impactScore": 65,
+      "rationale": "A toggle that silently snaps back looks broken, not like an error. Users with intermittent connectivity will retry repeatedly or assume the feature is buggy. The fix is a single useState addition and a one-line catch update."
+    },
+    {
+      "id": "US-374",
+      "title": "ContactCard has no tests — add ContactCard.test.jsx",
+      "description": "ContactCard.jsx renders the name, role/company, relationship badge, stale dot, last-contacted label, 'Mark as pinged' button, and 'Unlink contact' button. It has no test coverage. Add a comprehensive test suite covering all rendering states and button interactions.",
+      "acceptanceCriteria": [
+        "Test file created: frontend/src/components/ContactCard.test.jsx",
+        "Test: 'should render contact name, role, and company'",
+        "Test: 'should show stale dot when contact has not been contacted in 14+ days'",
+        "Test: 'should not show stale dot when contact is recent'",
+        "Test: 'should render relationship badge with correct label'",
+        "Test: 'should call ping mutation when Mark as pinged is clicked'",
+        "Test: 'should call unlink mutation when Unlink contact is clicked'",
+        "Test: 'should not render unlink button when applicationId is not provided'",
+        "Mocks usePingContact and useUnlinkContact from hooks/useContacts",
+        "Mocks isStaleContact from lib/dateUtils to control stale state deterministically",
+        "Tests follow Arrange → Act → Assert with blank lines between sections",
+        "No existing tests broken"
+      ],
+      "status": "done",
+      "estimatedEffort": "small",
+      "impactScore": 62,
+      "rationale": "ContactCard is rendered for every linked contact in the detail panel. It has mutations (ping, unlink), conditional renders (stale dot, unlink button), and date formatting. Without tests, any refactor risks silent regressions in contact interaction flows."
+    },
+    {
+      "id": "US-375",
+      "title": "WeeklyGoalSection and TemplateSaveModal have no tests — add test coverage",
+      "description": "WeeklyGoalSection.jsx has validation logic (range check, integer check), success/error states, and a pending spinner — none of which are tested. TemplateSaveModal.jsx has client-side validation, keyboard shortcuts (Enter to save, Escape to close), and a mutation — also untested. Add a test suite for each.",
+      "acceptanceCriteria": [
+        "Test file created: frontend/src/components/WeeklyGoalSection.test.jsx",
+        "Test: 'should render input with initial weekly goal value'",
+        "Test: 'should show validation error when goal is out of range'",
+        "Test: 'should call onSaveGoal with parsed number when save is clicked'",
+        "Test: 'should show success message after save'",
+        "Test: 'should show error message when save fails'",
+        "Test file created: frontend/src/components/TemplateSaveModal.test.jsx",
+        "Test: 'should not render when isOpen is false'",
+        "Test: 'should render template name input when open'",
+        "Test: 'should show validation error when name is empty'",
+        "Test: 'should call createTemplate mutation with trimmed name'",
+        "Test: 'should call onClose when Cancel is clicked'",
+        "Mocks useCreateTemplate from hooks/useTemplates",
+        "Tests follow Arrange → Act → Assert with blank lines between sections",
+        "No existing tests broken"
+      ],
+      "status": "done",
+      "estimatedEffort": "medium",
+      "impactScore": 58,
+      "rationale": "WeeklyGoalSection is rendered on the Settings page and wires up to a user mutation — regressions in goal validation or save flow would be invisible without tests. TemplateSaveModal is the entry point for saving templates and has multiple interactive paths that need verification."
+    }
+  ]
+}

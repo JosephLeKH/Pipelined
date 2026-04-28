@@ -7,13 +7,19 @@ import { INPUT_BASE, BUTTON_SECONDARY } from "../lib/designTokens";
 import TemplateSaveModal from "./TemplateSaveModal";
 
 function TemplateBar({ onApply, fields }) {
-  const { data: templates } = useTemplates();
+  const { data: templates, isLoading, error } = useTemplates();
   const [showSaveModal, setShowSaveModal] = useState(false);
 
   return (
     <>
       <div className="flex items-center gap-2">
-        {templates?.length > 0 ? (
+        {error ? (
+          <p role="alert" className="flex-1 text-xs text-red-600 dark:text-red-400">
+            Failed to load templates.
+          </p>
+        ) : isLoading ? (
+          <div className="flex-1" />
+        ) : templates?.length > 0 ? (
           <select
             aria-label="Use template"
             defaultValue=""

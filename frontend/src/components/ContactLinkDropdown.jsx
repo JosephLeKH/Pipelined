@@ -5,12 +5,13 @@ import { useState } from "react";
 import Search from "lucide-react/dist/esm/icons/search";
 
 import { useContacts, useLinkContact } from "../hooks/useContacts";
+import { BUTTON_SECONDARY } from "../lib/designTokens";
 
 const MIN_SEARCH_LEN = 1;
 
 function ContactLinkDropdown({ applicationId, linkedIds = [], onDone }) {
   const [query, setQuery] = useState("");
-  const { data, isLoading } = useContacts({});
+  const { data, isLoading, error, refetch } = useContacts({});
   const { mutate: linkContact, isPending } = useLinkContact();
 
   const allContacts = Array.isArray(data) ? data : (data?.data ?? []);
@@ -47,7 +48,20 @@ function ContactLinkDropdown({ applicationId, linkedIds = [], onDone }) {
         />
       </div>
       {isLoading && <p className="text-xs text-gray-400">Loading…</p>}
-      {!isLoading && filtered.length === 0 && (
+      {error && (
+        <div role="alert" className="flex items-center justify-between gap-2">
+          <p className="text-xs text-red-600 dark:text-red-400">Failed to load contacts.</p>
+          <button
+            type="button"
+            onClick={() => refetch()}
+            aria-label="Retry loading contacts"
+            className={`${BUTTON_SECONDARY} px-2 py-1 text-xs`}
+          >
+            Retry
+          </button>
+        </div>
+      )}
+      {!isLoading && !error && filtered.length === 0 && (
         <p className="text-xs text-gray-400">No contacts found.</p>
       )}
       <ul className="flex max-h-40 flex-col gap-1 overflow-y-auto">
