@@ -13,6 +13,7 @@ import bcrypt
 import jwt
 import structlog
 from bson import ObjectId
+from bson.errors import InvalidId
 
 from auth.constants import DEFAULT_STAGES, DEFAULT_TIMEZONE  # noqa: F401
 from auth.schemas import TokenPayload
@@ -172,7 +173,10 @@ async def get_user_by_email(email: str) -> dict | None:
 async def get_user_by_id(user_id: str) -> dict | None:
     """Return the user document matching user_id, or None if not found."""
     users = get_collection("users")
-    return await users.find_one({"_id": ObjectId(user_id)})
+    try:
+        return await users.find_one({"_id": ObjectId(user_id)})
+    except InvalidId:
+        return None
 
 
 def _ensure_utc(dt: datetime) -> datetime:
@@ -283,6 +287,7 @@ async def reset_password(token: str, new_password: str) -> None:
     logger.info("password_reset_completed", user_id=str(user["_id"]))
 
 
+PASSWORD_MIN_LENGTH = 8
 PASSWORD_UPPERCASE_RE = re.compile(r"[A-Z]")
 PASSWORD_DIGIT_RE = re.compile(r"[0-9]")
 
@@ -296,11 +301,17 @@ async def change_password(user_id: str, current_password: str, new_password: str
     """
     users = get_collection("users")
     user = await users.find_one({"_id": ObjectId(user_id)})
+    if user is None:
+        raise CurrentPasswordIncorrectError
 
     if not verify_password(current_password, user["password_hash"]):
         raise CurrentPasswordIncorrectError
 
-    if not PASSWORD_UPPERCASE_RE.search(new_password) or not PASSWORD_DIGIT_RE.search(new_password):
+    if (
+        len(new_password) < PASSWORD_MIN_LENGTH
+        or not PASSWORD_UPPERCASE_RE.search(new_password)
+        or not PASSWORD_DIGIT_RE.search(new_password)
+    ):
         raise PasswordWeakError
 
     new_hash = hash_password(new_password)

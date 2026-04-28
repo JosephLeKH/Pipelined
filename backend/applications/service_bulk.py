@@ -13,7 +13,6 @@ from pymongo import ReturnDocument
 
 from applications.schemas import BulkEditUpdate
 from applications.schemas_analytics import ImportResult, ImportRowError, MAX_IMPORT_ROWS
-from database import get_client
 from applications.service import fetch_user_stages
 from applications.service_constants import DELETED_PURGE_DAYS, INITIAL_STAGE, MERGEABLE_FIELDS
 from database import get_client, get_collection
