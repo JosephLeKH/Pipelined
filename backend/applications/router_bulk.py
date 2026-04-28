@@ -7,9 +7,11 @@ from applications import service_bulk
 from applications.schemas import (
     ApplicationResponse,
     BulkDeleteRequest,
+    BulkDeleteResponse,
     BulkEditRequest,
     BulkStageUpdateRequest,
     StageAddRequest,
+    UndoRestoreResponse,
     MAX_BULK_EDIT_IDS,
 )
 from applications.schemas_analytics import (
@@ -32,14 +34,31 @@ TIER_LIMIT_EXCEEDED_DETAIL = {
 }
 
 
-@bulk_router.delete("/bulk", status_code=204)
+@bulk_router.delete("/bulk", status_code=200)
 async def bulk_delete_applications(
     body: BulkDeleteRequest,
     user: dict = Depends(get_current_user),
-) -> None:
-    """Delete multiple applications and their linked calendar events."""
+) -> dict:
+    """Delete multiple applications, returning a stack_id for undo within 2 hours."""
     user_id = str(user["_id"])
-    await service_bulk.bulk_delete(user_id, body.ids)
+    deleted_count, stack_id = await service_bulk.bulk_delete(user_id, body.ids)
+    return {"data": BulkDeleteResponse(deleted_count=deleted_count, stack_id=stack_id)}
+
+
+@bulk_router.patch("/undo/{stack_id}", status_code=200)
+async def undo_bulk_delete(
+    stack_id: str,
+    user: dict = Depends(get_current_user),
+) -> dict:
+    """Restore applications from an undo stack. Returns {restored, conflicts, conflict_ids}."""
+    user_id = str(user["_id"])
+    result = await service_bulk.undo_bulk_delete(user_id, stack_id)
+    if result is None:
+        raise HTTPException(
+            status_code=404,
+            detail={"code": "UNDO_STACK_NOT_FOUND", "message": "Undo stack entry not found or expired."},
+        )
+    return {"data": UndoRestoreResponse(**result)}
 
 
 @bulk_router.patch("/bulk-stage", status_code=200)

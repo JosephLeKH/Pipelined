@@ -120,8 +120,11 @@ async def ensure_indexes() -> None:
     ai_cache = get_collection("ai_cache")
     ai_budget = get_collection("ai_budget")
     app_templates = get_collection("application_templates")
+    undo_stack = get_collection("undo_stack")
 
     await asyncio.gather(
         _ensure_app_event_listing_indexes(apps, events, listings),
         _ensure_user_support_indexes(users, shares, contacts, notifications, ai_cache, ai_budget, app_templates),
+        undo_stack.create_index("expires_at", expireAfterSeconds=0, name="undo_stack_ttl"),
+        undo_stack.create_index([("user_id", 1), ("created_at", -1)], name="undo_stack_user_date"),
     )

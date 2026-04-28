@@ -62,6 +62,11 @@ export async function bulkDeleteApplications(ids) {
   return client.delete("/applications/bulk", { data: { ids } });
 }
 
+/** Restore bulk-deleted applications from undo stack. */
+export async function undoBulkDelete(stackId) {
+  return client.patch(`/applications/undo/${stackId}`);
+}
+
 /** Bulk update stage for multiple applications. */
 export async function bulkUpdateApplicationStage(ids, stage) {
   return client.patch("/applications/bulk-stage", { ids, stage });

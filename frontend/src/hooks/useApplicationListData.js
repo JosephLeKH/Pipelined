@@ -15,6 +15,7 @@ import {
   useMergeApplications,
   useRestoreApplication,
   useUnarchiveApplication,
+  useUndoBulkDelete,
 } from "./useApplications";
 
 export function useApplicationListData(filters) {
@@ -43,6 +44,7 @@ export function useApplicationListData(filters) {
   const bulkStageMutation = useBulkUpdateApplicationStage();
   const bulkEditMutation = useBulkEditApplications();
   const mergeMutation = useMergeApplications();
+  const undoBulkMutation = useUndoBulkDelete();
   return {
     searchParams, setSearchParams, undoAction, setUndoAction,
     selectedIds, setSelectedIds, bulkDeletePending, setBulkDeletePending,
@@ -50,6 +52,6 @@ export function useApplicationListData(filters) {
     listRef, windowHeight, queryClient, sortBy, sortOrder, queryFilters,
     applications, isLoading, isFetching, error, refetch,
     archiveMutation, unarchiveMutation, deleteMutation, restoreMutation,
-    bulkDeleteMutation, bulkStageMutation, bulkEditMutation, mergeMutation,
+    bulkDeleteMutation, bulkStageMutation, bulkEditMutation, mergeMutation, undoBulkMutation,
   };
 }

@@ -22,6 +22,7 @@ import {
   mergeApplications,
   restoreApplication,
   unarchiveApplication,
+  undoBulkDelete,
   updateApplication,
 } from "../api/applications";
 import { QUERY_STALE_TIME_MS, STATS_STALE_TIME_MS } from "../lib/constants";
@@ -278,6 +279,18 @@ export function useDeleteTag() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: KEYS.tags });
       queryClient.invalidateQueries({ queryKey: KEYS.all });
+    },
+  });
+}
+
+/** Restore bulk-deleted applications from undo stack. */
+export function useUndoBulkDelete() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (stackId) => undoBulkDelete(stackId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: KEYS.all });
+      queryClient.invalidateQueries({ queryKey: KEYS.stats });
     },
   });
 }

@@ -19,17 +19,39 @@ from database import get_client, get_collection
 
 logger = structlog.get_logger()
 
+UNDO_STACK_TTL_HOURS = 2
+CONFLICT_STAGE = "offer"
 
-async def bulk_delete(user_id: str, ids: list[str]) -> int:
-    """Delete multiple applications and their linked calendar_events. Returns deleted_count."""
+
+async def bulk_delete(user_id: str, ids: list[str]) -> tuple[int, str]:
+    """Delete multiple applications, storing an undo snapshot. Returns (deleted_count, stack_id)."""
     uid = ObjectId(user_id)
     try:
         oid_list = [ObjectId(i) for i in ids]
     except (ValueError, TypeError, InvalidId):
-        return 0
+        return 0, ""
     db_client = get_client()
     apps = get_collection("applications")
     events = get_collection("calendar_events")
+    undo_stack = get_collection("undo_stack")
+
+    snapshots = await apps.find(
+        {"_id": {"$in": oid_list}, "user_id": uid}
+    ).to_list(length=None)
+    if not snapshots:
+        return 0, ""
+
+    now = datetime.now(timezone.utc)
+    insert_result = await undo_stack.insert_one({
+        "user_id": uid,
+        "action": "delete",
+        "count": len(snapshots),
+        "snapshot": snapshots,
+        "created_at": now,
+        "expires_at": now + timedelta(hours=UNDO_STACK_TTL_HOURS),
+    })
+    stack_id = str(insert_result.inserted_id)
+
     async with await db_client.start_session() as session:
         async with session.start_transaction():
             result = await apps.delete_many(
@@ -40,8 +62,52 @@ async def bulk_delete(user_id: str, ids: list[str]) -> int:
                 await events.delete_many(
                     {"application_id": {"$in": oid_list}, "user_id": uid}, session=session
                 )
-    logger.info("bulk_applications_deleted", user_id=user_id, count=deleted_count)
-    return deleted_count
+
+    logger.info("bulk_applications_deleted", user_id=user_id, count=deleted_count, stack_id=stack_id)
+    return deleted_count, stack_id
+
+
+async def undo_bulk_delete(user_id: str, stack_id: str) -> dict | None:
+    """Restore applications from an undo stack entry. Returns {restored, conflicts, conflict_ids} or None."""
+    uid = ObjectId(user_id)
+    try:
+        stack_oid = ObjectId(stack_id)
+    except (ValueError, TypeError, InvalidId):
+        return None
+
+    undo_stack = get_collection("undo_stack")
+    apps = get_collection("applications")
+    now = datetime.now(timezone.utc)
+
+    entry = await undo_stack.find_one({
+        "_id": stack_oid,
+        "user_id": uid,
+        "expires_at": {"$gt": now},
+    })
+    if entry is None:
+        return None
+
+    snapshots = entry.get("snapshot", [])
+    restored = 0
+    conflict_ids: list[str] = []
+
+    for doc in snapshots:
+        doc_id = doc["_id"]
+        normalised_company = doc.get("normalised_company", "")
+        normalised_role = doc.get("normalised_role", "")
+        existing = await apps.find_one(
+            {"user_id": uid, "normalised_company": normalised_company, "normalised_role": normalised_role},
+            projection={"_id": 1},
+        )
+        if existing:
+            conflict_ids.append(str(doc_id))
+        else:
+            await apps.insert_one(doc)
+            restored += 1
+
+    await undo_stack.delete_one({"_id": stack_oid})
+    logger.info("bulk_undo_restored", user_id=user_id, stack_id=stack_id, restored=restored, conflicts=len(conflict_ids))
+    return {"restored": restored, "conflicts": len(conflict_ids), "conflict_ids": conflict_ids}
 
 
 async def bulk_update_stage(user_id: str, ids: list[str], stage: str) -> int:

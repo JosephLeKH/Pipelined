@@ -198,6 +198,17 @@ class BulkDeleteRequest(BaseModel):
     ids: list[str] = Field(min_length=1, max_length=MAX_BULK_IDS)
 
 
+class BulkDeleteResponse(BaseModel):
+    deleted_count: int
+    stack_id: str
+
+
+class UndoRestoreResponse(BaseModel):
+    restored: int
+    conflicts: int
+    conflict_ids: list[str]
+
+
 class BulkStageUpdateRequest(BaseModel):
     model_config = ConfigDict(strict=True)
 

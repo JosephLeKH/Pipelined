@@ -38,7 +38,9 @@ export function ApplicationListBody({ d, rowActions, bulkActions, onSelect }) {
   const hasSelection = selectedIds.size > 0;
   const allSelected = applications.length > 0 && selectedIds.size === applications.length;
   const mergeApps = mergeDialogOpen ? applications.filter((a) => selectedIds.has(a.id)) : null;
-  const undoMessage = undoAction?.type === "delete" ? "Application deleted." : "Application archived.";
+  const undoMessage = undoAction?.type === "bulk_delete"
+    ? `Deleted ${undoAction.count} application${undoAction.count === 1 ? "" : "s"}.`
+    : undoAction?.type === "delete" ? "Application deleted." : "Application archived.";
   const rowData = { applications, onSelect, onArchive: handleArchive, onUnarchive: handleUnarchive, onDelete: handleDelete, selectedIds, onToggle: handleToggle, hasSelection, focusedIdx };
   return (
     <>

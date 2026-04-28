@@ -839,8 +839,11 @@ async def test_bulk_delete_removes_applications_and_returns_count(client, test_u
         "DELETE", "/api/applications/bulk", json={"ids": [id1, id2]}, cookies=cookies
     )
 
-    # Assert — DELETE returns 204 per API contract
-    assert response.status_code == 204
+    # Assert
+    assert response.status_code == 200
+    data = response.json()["data"]
+    assert data["deleted_count"] == 2
+    assert data["stack_id"]
     get1 = await client.get(f"/api/applications/{id1}", cookies=cookies)
     assert get1.status_code == 404
 
@@ -892,8 +895,8 @@ async def test_bulk_delete_only_deletes_own_applications(client, test_user):
             "DELETE", "/api/applications/bulk", json={"ids": [other_id]}
         )
 
-    # Assert — returns 204 but other user's app is untouched
-    assert response.status_code == 204
+    # Assert — returns 200 but other user's app is untouched
+    assert response.status_code == 200
     with as_user(client, other_cookies):
         verify = await client.get(f"/api/applications/{other_id}")
     assert verify.status_code == 200
@@ -2116,3 +2119,99 @@ async def test_report_body_is_non_empty_bytes(client, test_user):
     # Assert
     assert response.status_code == 200
     assert len(response.content) > 0
+
+
+# ---------------------------------------------------------------------------
+# PATCH /api/applications/undo/{stack_id}  (undo bulk delete)
+# ---------------------------------------------------------------------------
+
+
+async def test_bulk_delete_creates_undo_stack(client, test_user):
+    # Arrange
+    _, cookies = test_user
+    r = await client.post("/api/applications", json=APP_PAYLOAD, cookies=cookies)
+    app_id = r.json()["data"]["id"]
+
+    # Act
+    resp = await client.request(
+        "DELETE", "/api/applications/bulk", json={"ids": [app_id]}, cookies=cookies
+    )
+
+    # Assert — stack_id returned and app is gone
+    assert resp.status_code == 200
+    data = resp.json()["data"]
+    assert data["deleted_count"] == 1
+    assert len(data["stack_id"]) == 24
+    get_resp = await client.get(f"/api/applications/{app_id}", cookies=cookies)
+    assert get_resp.status_code == 404
+
+
+async def test_undo_restores_apps(client, test_user):
+    # Arrange
+    _, cookies = test_user
+    r1 = await client.post("/api/applications", json=APP_PAYLOAD, cookies=cookies)
+    r2 = await client.post("/api/applications", json={**APP_PAYLOAD, "company": "Undo Corp"}, cookies=cookies)
+    id1, id2 = r1.json()["data"]["id"], r2.json()["data"]["id"]
+    del_resp = await client.request(
+        "DELETE", "/api/applications/bulk", json={"ids": [id1, id2]}, cookies=cookies
+    )
+    stack_id = del_resp.json()["data"]["stack_id"]
+
+    # Act
+    undo_resp = await client.patch(f"/api/applications/undo/{stack_id}", cookies=cookies)
+
+    # Assert
+    assert undo_resp.status_code == 200
+    result = undo_resp.json()["data"]
+    assert result["restored"] == 2
+    assert result["conflicts"] == 0
+    assert result["conflict_ids"] == []
+    get1 = await client.get(f"/api/applications/{id1}", cookies=cookies)
+    assert get1.status_code == 200
+
+
+async def test_undo_detects_conflicts(client, test_user):
+    # Arrange: delete an app, then re-create it with same role+company before undoing
+    _, cookies = test_user
+    r = await client.post("/api/applications", json=APP_PAYLOAD, cookies=cookies)
+    app_id = r.json()["data"]["id"]
+    del_resp = await client.request(
+        "DELETE", "/api/applications/bulk", json={"ids": [app_id]}, cookies=cookies
+    )
+    stack_id = del_resp.json()["data"]["stack_id"]
+
+    # Re-create the same app (creates conflict)
+    await client.post("/api/applications", json=APP_PAYLOAD, cookies=cookies)
+
+    # Act
+    undo_resp = await client.patch(f"/api/applications/undo/{stack_id}", cookies=cookies)
+
+    # Assert
+    assert undo_resp.status_code == 200
+    result = undo_resp.json()["data"]
+    assert result["restored"] == 0
+    assert result["conflicts"] == 1
+    assert app_id in result["conflict_ids"]
+
+
+async def test_undo_stack_expires(client, test_user):
+    # Arrange: manually insert an expired undo stack entry
+    _, cookies = test_user
+    undo_stack = get_collection("undo_stack")
+    past = datetime.now(timezone.utc) - timedelta(hours=3)
+    insert = await undo_stack.insert_one({
+        "user_id": "000000000000000000000000",
+        "action": "delete",
+        "count": 0,
+        "snapshot": [],
+        "created_at": past,
+        "expires_at": past,
+    })
+    expired_id = str(insert.inserted_id)
+
+    # Act — try to undo an expired entry
+    resp = await client.patch(f"/api/applications/undo/{expired_id}", cookies=cookies)
+
+    # Assert — 404 because expired or wrong user
+    assert resp.status_code == 404
+    assert resp.json()["detail"]["code"] == "UNDO_STACK_NOT_FOUND"

@@ -6,7 +6,7 @@ import { KEYS } from "./useApplications";
 
 export function useApplicationListRowActions(data) {
   const {
-    archiveMutation, deleteMutation, restoreMutation, unarchiveMutation,
+    archiveMutation, deleteMutation, restoreMutation, unarchiveMutation, undoBulkMutation,
     queryClient, queryFilters, setUndoAction, undoAction,
     searchParams, setSearchParams, sortBy, sortOrder,
   } = data;
@@ -48,10 +48,11 @@ export function useApplicationListRowActions(data) {
 
   const handleUndo = useCallback(() => {
     if (!undoAction) return;
-    if (undoAction.type === "delete") restoreMutation.mutate(undoAction.id);
+    if (undoAction.type === "bulk_delete") undoBulkMutation.mutate(undoAction.stackId);
+    else if (undoAction.type === "delete") restoreMutation.mutate(undoAction.id);
     else unarchiveMutation.mutate(undoAction.id);
     setUndoAction(null);
-  }, [undoAction, restoreMutation, unarchiveMutation, setUndoAction]);
+  }, [undoAction, restoreMutation, unarchiveMutation, undoBulkMutation, setUndoAction]);
 
   return { handleSort, handleArchive, handleUnarchive, handleDelete, handleUndo };
 }

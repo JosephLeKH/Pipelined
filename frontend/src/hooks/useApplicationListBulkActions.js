@@ -6,7 +6,7 @@ import { toast } from "sonner";
 export function useApplicationListBulkActions(data) {
   const {
     bulkDeleteMutation, bulkStageMutation, bulkEditMutation, mergeMutation,
-    selectedIds, setSelectedIds, setBulkDeletePending, setMergeDialogOpen, applications,
+    selectedIds, setSelectedIds, setBulkDeletePending, setMergeDialogOpen, setUndoAction, applications,
   } = data;
 
   const handleToggle = useCallback((id) => {
@@ -28,9 +28,13 @@ export function useApplicationListBulkActions(data) {
   const handleBulkDeleteConfirm = useCallback(() => {
     const count = selectedIds.size;
     bulkDeleteMutation.mutate([...selectedIds], {
-      onSuccess: () => { setSelectedIds(new Set()); setBulkDeletePending(false); toast.success(`Deleted ${count} application${count === 1 ? "" : "s"}`); },
+      onSuccess: (data) => {
+        setSelectedIds(new Set());
+        setBulkDeletePending(false);
+        setUndoAction({ type: "bulk_delete", stackId: data?.stack_id, count });
+      },
     });
-  }, [bulkDeleteMutation, selectedIds, setSelectedIds, setBulkDeletePending]);
+  }, [bulkDeleteMutation, selectedIds, setSelectedIds, setBulkDeletePending, setUndoAction]);
 
   const handleBulkMoveToStage = useCallback((stage) => {
     const count = selectedIds.size;

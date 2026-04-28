@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
-const TOAST_DURATION_MS = 5000;
+const TOAST_DURATION_MS = 10000;
 
 function UndoToast({ message, onUndo, onDismiss, duration = TOAST_DURATION_MS }) {
   const [barWidth, setBarWidth] = useState(100);
