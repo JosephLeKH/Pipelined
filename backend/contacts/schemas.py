@@ -77,3 +77,9 @@ class LinkApplicationRequest(BaseModel):
     model_config = ConfigDict(strict=True)
 
     application_id: str = Field(min_length=1)
+
+
+class RelationshipSuggestionResponse(BaseModel):
+    suggested_type: str
+    confidence: float
+    reason: str

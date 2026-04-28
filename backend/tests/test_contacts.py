@@ -432,6 +432,115 @@ async def test_update_contact_rejects_duplicate_email(client, test_user):
     assert resp.json()["detail"]["code"] == "DUPLICATE_CONTACT"
 
 
+# ---------------------------------------------------------------------------
+# GET /api/contacts/suggest-type
+# ---------------------------------------------------------------------------
+
+
+async def test_suggest_type_returns_recruiter_when_company_appears_5_or_more_times(client, test_user):
+    # Arrange: create 5 applications at the same company under different roles
+    _, cookies = test_user
+    roles = ["Engineer I", "Engineer II", "Engineer III", "Engineer IV", "Engineer V"]
+    app_ids = []
+    for role in roles:
+        resp = await client.post(
+            "/api/applications",
+            json={"role_title": role, "company": "BigCo", "source": "manual"},
+            cookies=cookies,
+        )
+        app_ids.append(resp.json()["data"]["id"])
+
+    # Act
+    resp = await client.get(
+        f"/api/contacts/suggest-type?application_id={app_ids[-1]}",
+        cookies=cookies,
+    )
+
+    # Assert
+    assert resp.status_code == 200
+    data = resp.json()["data"]
+    assert data["suggested_type"] == "recruiter"
+    assert data["confidence"] >= 0.7
+    assert "BigCo" in data["reason"]
+
+
+async def test_suggest_type_returns_hiring_manager_for_single_application(client, test_user):
+    # Arrange
+    _, cookies = test_user
+    resp = await client.post(
+        "/api/applications",
+        json={"role_title": "Unique Role XYZ", "company": "Solo Corp", "source": "manual"},
+        cookies=cookies,
+    )
+    app_id = resp.json()["data"]["id"]
+
+    # Act
+    resp = await client.get(
+        f"/api/contacts/suggest-type?application_id={app_id}",
+        cookies=cookies,
+    )
+
+    # Assert
+    assert resp.status_code == 200
+    data = resp.json()["data"]
+    assert data["suggested_type"] == "hiring_manager"
+    assert data["confidence"] > 0.5
+
+
+async def test_suggest_type_uses_email_domain_for_recruiter_detection(client, test_user):
+    # Arrange: create 5 apps with source_url from techcorp.com → company_domain = techcorp.com
+    _, cookies = test_user
+    for i in range(5):
+        await client.post(
+            "/api/applications",
+            json={
+                "role_title": f"TechCorp Role {i}",
+                "company": f"TechCorp {i}",
+                "source": "manual",
+                "source_url": f"https://techcorp.com/jobs/{i}",
+            },
+            cookies=cookies,
+        )
+
+    # Act: suggest via email only
+    resp = await client.get(
+        "/api/contacts/suggest-type?email=recruiter@techcorp.com",
+        cookies=cookies,
+    )
+
+    # Assert
+    assert resp.status_code == 200
+    data = resp.json()["data"]
+    assert data["suggested_type"] == "recruiter"
+    assert data["confidence"] >= 0.7
+    assert "techcorp.com" in data["reason"]
+
+
+async def test_suggest_type_returns_other_when_no_matching_history(client, test_user):
+    # Arrange: no applications, unknown email domain
+    _, cookies = test_user
+
+    # Act
+    resp = await client.get(
+        "/api/contacts/suggest-type?email=unknown@unrecognized-domain-xyz.com",
+        cookies=cookies,
+    )
+
+    # Assert
+    assert resp.status_code == 200
+    data = resp.json()["data"]
+    assert data["suggested_type"] == "other"
+    assert data["confidence"] <= 0.5
+
+
+async def test_suggest_type_requires_auth(client):
+    # Act
+    resp = await client.get("/api/contacts/suggest-type?email=test@example.com")
+
+    # Assert
+    assert resp.status_code == 401
+
+
 async def test_contact_isolation_across_users(client, test_user, other_user):
     # Arrange: user 1 creates a contact
     _, cookies1 = test_user

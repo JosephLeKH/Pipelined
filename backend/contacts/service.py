@@ -2,7 +2,7 @@
 
 import asyncio
 import re
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 import structlog
 from bson import ObjectId
@@ -15,6 +15,8 @@ logger = structlog.get_logger()
 
 MAX_CONTACTS_LIST = 100
 STALE_CONTACT_DAYS = 14
+RECRUITER_APP_THRESHOLD = 5
+SUGGESTION_WINDOW_DAYS = 7
 
 
 class ContactNotFoundError(Exception):
@@ -189,3 +191,69 @@ async def ping(user_id: ObjectId, contact_id: str) -> dict:
         raise ContactNotFoundError
     logger.info("contact_pinged", user_id=str(user_id), contact_id=contact_id)
     return doc
+
+
+async def suggest_relationship_type(
+    user_id: ObjectId,
+    application_id: str | None,
+    email: str | None,
+) -> dict:
+    """Return a suggested relationship type with confidence and reason."""
+    apps = get_collection("applications")
+    events = get_collection("calendar_events")
+
+    if application_id:
+        app = await apps.find_one(
+            {"_id": ObjectId(application_id), "user_id": user_id},
+            projection={"normalised_company": 1, "company": 1},
+        )
+        if app is None:
+            return {"suggested_type": "other", "confidence": 0.3, "reason": "Application not found."}
+
+        normalised_company = app.get("normalised_company", "")
+        company = app.get("company", normalised_company)
+
+        company_count, upcoming_event = await asyncio.gather(
+            apps.count_documents({"user_id": user_id, "normalised_company": normalised_company}),
+            events.find_one({
+                "application_id": ObjectId(application_id),
+                "user_id": user_id,
+                "date": {"$gte": _now(), "$lte": _now() + timedelta(days=SUGGESTION_WINDOW_DAYS)},
+            }, projection={"_id": 1}),
+        )
+
+        if company_count >= RECRUITER_APP_THRESHOLD:
+            return {
+                "suggested_type": "recruiter",
+                "confidence": 0.8,
+                "reason": f"You've applied to {company} {company_count} times — likely a recruiter.",
+            }
+        if upcoming_event:
+            return {
+                "suggested_type": "hiring_manager",
+                "confidence": 0.65,
+                "reason": "You have an interview scheduled for this application.",
+            }
+        return {
+            "suggested_type": "hiring_manager",
+            "confidence": 0.6,
+            "reason": f"You're actively interviewing at {company}.",
+        }
+
+    if email and "@" in email:
+        domain = email.split("@", 1)[1].lower()
+        domain_count = await apps.count_documents({"user_id": user_id, "company_domain": domain})
+        if domain_count >= RECRUITER_APP_THRESHOLD:
+            return {
+                "suggested_type": "recruiter",
+                "confidence": 0.75,
+                "reason": f"Their @{domain} domain matches a company you've applied to {domain_count} times.",
+            }
+        if domain_count >= 1:
+            return {
+                "suggested_type": "hiring_manager",
+                "confidence": 0.55,
+                "reason": f"Their @{domain} domain matches a company in your application history.",
+            }
+
+    return {"suggested_type": "other", "confidence": 0.3, "reason": "No matching application history found."}

@@ -10,6 +10,7 @@ from contacts.schemas import (
     ContactResponse,
     ContactUpdate,
     LinkApplicationRequest,
+    RelationshipSuggestionResponse,
     MAX_CONTACTS_LIMIT,
     DEFAULT_CONTACTS_LIMIT,
 )
@@ -68,6 +69,20 @@ async def list_contacts(
 
 CONTACT_NOT_FOUND_DETAIL = {"code": "CONTACT_NOT_FOUND", "message": "Contact not found."}
 APPLICATION_NOT_FOUND_DETAIL = {"code": "APPLICATION_NOT_FOUND", "message": "Application not found."}
+
+
+@router.get("/suggest-type")
+async def suggest_relationship_type(
+    application_id: str | None = Query(None),
+    email: str | None = Query(None),
+    user: dict = Depends(get_current_user),
+) -> dict:
+    suggestion = await contact_service.suggest_relationship_type(
+        user_id=user["_id"],
+        application_id=application_id,
+        email=email,
+    )
+    return {"data": RelationshipSuggestionResponse(**suggestion)}
 
 
 @router.get("/{contact_id}")

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { useCreateContact, useLinkContact } from "../hooks/useContacts";
+import { useCreateContact, useLinkContact, useRelationshipSuggestion } from "../hooks/useContacts";
 import { RELATIONSHIP_OPTIONS } from "../lib/constants";
 import { INPUT_BASE, CARD_BASE, BUTTON_PRIMARY } from "../lib/designTokens";
 
@@ -27,7 +27,18 @@ function ContactFormNameField({ form, handleChange, disabled }) {
   );
 }
 
-function ContactFormDetailFields({ form, handleChange, disabled }) {
+function RelationshipSuggestionHint({ suggestion }) {
+  if (!suggestion) return null;
+  const { suggested_type, confidence, reason } = suggestion;
+  return (
+    <p className="text-xs text-brand-600 dark:text-brand-400">
+      Suggestion: <span className="font-medium">{suggested_type.replace("_", " ")}</span>
+      {" "}({Math.round(confidence * 100)}% confidence) — {reason}
+    </p>
+  );
+}
+
+function ContactFormDetailFields({ form, handleChange, disabled, suggestion }) {
   return (
     <>
       <div className="flex flex-col gap-1">
@@ -42,21 +53,22 @@ function ContactFormDetailFields({ form, handleChange, disabled }) {
         <label className="text-xs font-medium text-gray-600 dark:text-gray-400" htmlFor="contact-email">Email</label>
         <input id="contact-email" name="email" type="email" value={form.email} onChange={handleChange} maxLength={254} className={INPUT_BASE} placeholder="jane@acme.com" disabled={disabled} />
       </div>
-      <div className="flex flex-col gap-1">
+      <div className="col-span-2 flex flex-col gap-1">
         <label className="text-xs font-medium text-gray-600 dark:text-gray-400" htmlFor="contact-relationship">Relationship</label>
         <select id="contact-relationship" name="relationship" value={form.relationship} onChange={handleChange} className={INPUT_BASE} disabled={disabled}>
           {RELATIONSHIP_OPTIONS.map((r) => (<option key={r} value={r}>{r.replace("_", " ")}</option>))}
         </select>
+        <RelationshipSuggestionHint suggestion={suggestion} />
       </div>
     </>
   );
 }
 
-function ContactFormFields({ form, handleChange, disabled }) {
+function ContactFormFields({ form, handleChange, disabled, suggestion }) {
   return (
     <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
       <ContactFormNameField form={form} handleChange={handleChange} disabled={disabled} />
-      <ContactFormDetailFields form={form} handleChange={handleChange} disabled={disabled} />
+      <ContactFormDetailFields form={form} handleChange={handleChange} disabled={disabled} suggestion={suggestion} />
     </div>
   );
 }
@@ -83,6 +95,8 @@ function ContactForm({ applicationId, onDone }) {
   const [error, setError] = useState(null);
   const { mutate: createContact, isPending: creating } = useCreateContact();
   const { mutate: linkContact, isPending: linking } = useLinkContact();
+  const { data: suggestionRes } = useRelationshipSuggestion(applicationId, form.email);
+  const suggestion = suggestionRes?.data ?? null;
   const isPending = creating || linking;
 
   function handleChange(e) {
@@ -112,7 +126,7 @@ function ContactForm({ applicationId, onDone }) {
 
   return (
     <form onSubmit={handleSubmit} className={`flex flex-col gap-3 ${CARD_BASE} px-3 py-3`}>
-      <ContactFormFields form={form} handleChange={handleChange} disabled={isPending} />
+      <ContactFormFields form={form} handleChange={handleChange} disabled={isPending} suggestion={suggestion} />
       {error && <p className="text-xs text-red-500" role="alert">{error}</p>}
       <ContactFormActions isPending={isPending} nameValue={form.name} onDone={onDone} />
     </form>

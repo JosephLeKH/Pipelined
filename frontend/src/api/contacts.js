@@ -41,3 +41,11 @@ export async function linkContactToApplication(contactId, applicationId) {
 export async function unlinkContactFromApplication(contactId, applicationId) {
   return client.patch(`/contacts/${contactId}/unlink`, { application_id: applicationId });
 }
+
+/** Fetch a relationship type suggestion based on application context or email. */
+export async function fetchRelationshipSuggestion({ applicationId, email } = {}) {
+  const params = new URLSearchParams();
+  if (applicationId) params.set("application_id", applicationId);
+  if (email) params.set("email", email);
+  return client.get(`/contacts/suggest-type?${params.toString()}`);
+}

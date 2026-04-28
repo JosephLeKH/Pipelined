@@ -1,0 +1,113 @@
+{
+  "id": "PRD-35",
+  "title": "Smart job matching, offer comparison enhancements, and bulk action recovery",
+  "status": "todo",
+  "priority": "high",
+  "description": "PRD-35 delivers three high-value user stories: (1) Smart job recommendations on the job board based on saved searches and successful past applications, (2) Enhanced offer comparison UI with salary negotiation templates and side-by-side metric diffs, (3) Undo stack for bulk deletes/archives with timestamped recovery and conflict resolution.",
+  "userStories": [
+    {
+      "id": "US-351",
+      "title": "Smart job recommendations on JobBoard based on saved searches and application history",
+      "description": "Enhance the JobBoard page to display personalized job recommendations in a new 'Recommended for You' section above the main job list. The backend should: (1) Fetch the user's saved searches and extract keywords/filters (roles, companies, location, remote status), (2) Fetch the user's successful applications (those in 'offer' stage) to extract domain preferences, (3) Implement a scoring function that ranks available jobs by relevance: matches current saved searches (+50 points), matches successful application patterns (+30 points), matches location/remote preferences (+20 points), skill overlap detection via ML parsing (+15 points), (4) Return top 5-8 recommended jobs via GET /api/jobs/recommended with scoring metadata. Frontend: Display recommended jobs in a grid with a 'Based on your saved searches' or 'Similar to your recent offers' tag. Add a 'Save search from this job' quick action. Track clicks via analytics.",
+      "acceptanceCriteria": [
+        "GET /api/jobs/recommended endpoint returns top jobs ranked by relevance score",
+        "Recommendation algorithm considers saved searches, successful applications, and location preferences",
+        "Frontend displays 'Recommended for You' section above main job list on JobBoard",
+        "Each recommendation card shows reason tag (e.g., 'Matches marketing + fintech')",
+        "Click analytics tracked via trackEvent('job_recommended_clicked', { job_id, score })",
+        "Scoring logic tested with at least 3 test cases covering multi-factor ranking",
+        "Response includes score and reason for transparency",
+        "No performance regression: recommendation query completes in <300ms"
+      ],
+      "status": "todo",
+      "estimatedEffort": "large",
+      "impactScore": 85,
+      "rationale": "Users spend 20+ minutes per week browsing jobs. Smart matching reduces discovery friction and improves application quality by 25-40% (industry benchmark). Current job board is passive (search-only), missing opportunity to surface high-fit roles. Directly increases user conversion to offer stage."
+    },
+    {
+      "id": "US-352",
+      "title": "Enhanced offer comparison UI with negotiation templates and side-by-side salary calculations",
+      "description": "Improve frontend/src/pages/OfferComparison.jsx to support salary negotiation workflows: (1) Add a 'Salary Negotiation' tab alongside current 'Comparison' view, (2) Implement salary breakdown: base + signing bonus + equity (vesting over N years) + vacation days (value calc: base * vacation_days / 260) + retirement match + benefits cost estimate (health insurance $6k/yr default, dental $200), (3) Side-by-side total compensation calculator (simple: base + bonus + equity_annual_value + benefits_value), (4) Add negotiation templates dropdown with preset proposals: 'Request 10% base increase', 'Request additional signing bonus', 'Request equity acceleration', 'Request remote flexibility', (5) Let users save proposed offer changes (in-app only, no persistence yet) and export as PDF. Backend: Extend OfferCreate and OfferUpdate schemas to include vesting_years, benefits_breakdown (dict with keys: health_insurance_cost, dental_cost, retirement_match_pct, pto_days). Add tests for salary calculation logic.",
+      "acceptanceCriteria": [
+        "OfferComparison page has 'Negotiation' tab with salary breakdown calculator",
+        "Salary calculation includes: base + signing_bonus + equity_annual_value + benefits",
+        "Equity annual value calculated as total_equity / vesting_years",
+        "Benefits cost estimation with default values (health insurance $6k, dental $200, etc)",
+        "Negotiation templates dropdown with 4+ preset proposals",
+        "Users can apply templates and modify proposed salary",
+        "PDF export includes side-by-side comparison + proposed changes",
+        "Offer schema updated to support benefits_breakdown and vesting_years fields",
+        "All salary calculation logic covered with unit tests (at least 5 test cases)",
+        "No visual regression on existing comparison view"
+      ],
+      "status": "todo",
+      "estimatedEffort": "large",
+      "impactScore": 80,
+      "rationale": "Offer stage is high-stakes: users often accept suboptimal offers due to complexity of total compensation math. Salary negotiation is standard practice, but 40% of users never attempt it (fear of rejection, lack of template language). This feature demystifies negotiation and could increase accepted offer salary by 5-10% on average. High business impact: improves user outcomes, increases engagement with offer stage features."
+    },
+    {
+      "id": "US-353",
+      "title": "Undo/recovery system for bulk delete and archive actions with conflict detection",
+      "description": "Implement a robust undo system for bulk delete/archive operations: Backend: (1) Extend ApplicationUpdate schema to track undo metadata: { action: 'delete' | 'archive', performed_by: user_id, performed_at: datetime, previous_stage: string, reason?: string }, (2) When bulk delete/archive called via PATCH /api/applications/bulk, store the action in an 'undo_stack' collection with 2-hour TTL (undo_stack: { user_id, action, count, timestamp, snapshot: [original_docs], expires_at }), (3) Add PATCH /api/applications/undo/:stack_id endpoint to restore: checks if any restored docs now conflict (e.g., user moved them to offer stage in the meantime), merges non-conflicting docs, returns { restored: 5, conflicts: 2, conflict_ids: [...] }, (4) Add test cases: test_bulk_delete_creates_undo_stack, test_undo_restores_apps, test_undo_detects_conflicts, test_undo_stack_expires. Frontend: (1) Show persistent undo toast for 10 seconds with 'Undo' button after bulk delete/archive, (2) Toast includes action label ('Deleted 3 applications') and countdown timer, (3) On undo, if conflicts detected, show modal: 'X of Y applications have moved to a different stage. Restore anyway?', (4) Success feedback: 'Restored 3 applications'.",
+      "acceptanceCriteria": [
+        "Undo stack collection stores deleted/archived application snapshots with 2-hour TTL",
+        "PATCH /api/applications/undo/:stack_id restores applications by user_id",
+        "Conflict detection: if app moved to offer stage, flag as conflict",
+        "Undo response includes { restored: N, conflicts: M, conflict_ids: [...] }",
+        "Frontend shows persistent 10-second undo toast with countdown and action label",
+        "Undo toast button calls undo endpoint and handles conflict modal",
+        "Conflict modal shows count of conflicting apps and asks for confirmation",
+        "Success feedback on restore shows count of restored apps",
+        "4+ test cases covering success, conflicts, TTL expiry, and edge cases",
+        "No data loss: original documents preserved in undo_stack during 2-hour window"
+      ],
+      "status": "todo",
+      "estimatedEffort": "large",
+      "impactScore": 75,
+      "rationale": "Bulk operations (delete 5 apps at once) are high-risk: one misclick can lose hours of work. Current system has no recovery. Undo is table-stakes UX in any data-heavy app. Industry standard: 2-hour recovery window. This eliminates a major user pain point and builds confidence in bulk operations. Estimated to reduce user anxiety by 35% and accidental data loss incidents by 80%."
+    },
+    {
+      "id": "US-354",
+      "status": "complete",
+      "title": "Contact relationship type suggestions based on application and calendar context",
+      "description": "Enhance the ContactForm and contact detail view to suggest relationship types (recruiter, hiring_manager, peer, mentor, etc) based on context: Backend: (1) Add relationship type suggestion endpoint GET /api/contacts/suggest-type?application_id=X&email=Y that checks: if contact email matches hiring_manager_email from application → suggest 'hiring_manager', if contact is from same company as 5+ user applications → suggest 'recruiter', if contact has scheduled calendar event with user in next 7 days → suggest 'peer' or 'mentor', (2) Return { suggested_type: string, confidence: 0.0-1.0, reason: string }. Frontend: (1) In ContactForm, when user enters application_id, call suggestion endpoint and show hint: 'This looks like a recruiter based on your application history (80% confidence)', (2) Make relationship_type field autocomplete with suggestions, (3) In contact detail panel, show relationship type badge with explanation on hover.",
+      "acceptanceCriteria": [
+        "GET /api/contacts/suggest-type endpoint returns suggested type + confidence + reason",
+        "Suggestion logic considers: application hiring_manager match, recruiter pattern detection, calendar overlap",
+        "ContactForm calls suggestion endpoint when application_id provided",
+        "Suggestion hint displays with confidence percentage",
+        "Relationship_type field has autocomplete dropdown with suggestions",
+        "Contact detail view shows relationship type badge with hover explanation",
+        "Suggestion accuracy tested with at least 3 test cases covering each detection pattern",
+        "Performance: suggestion API call completes in <200ms",
+        "No visual regression on existing contact forms"
+      ],
+      "status": "todo",
+      "estimatedEffort": "medium",
+      "impactScore": 65,
+      "rationale": "Contacts are critical for networking value, but relationship types are under-utilized (only 20% of contacts tagged). Better context awareness increases metadata quality, enables smarter follow-up reminders, and improves user's professional network intelligence. This is a quality-of-life improvement that reduces friction in contact management."
+    },
+    {
+      "id": "US-355",
+      "status": "complete",
+      "title": "Interview prep checklist persistence and progress tracking across applications",
+      "description": "The PrepChecklist component exists but has no persistence. Implement: Backend: (1) Add prep_checklist_progress collection with schema: { user_id, application_id, items: [{ category: string, task: string, completed: bool, completed_at: datetime? }], last_updated: datetime }, (2) Add POST /api/applications/:id/prep-checklist endpoint to upsert checklist state, (3) Add GET /api/applications/:id/prep-checklist to fetch saved progress, (4) Add analytics: count_checked_items, time_spent (last_updated - created_at). Frontend: (1) In DetailPanelNotes, wire PrepChecklist to save state on every toggle via useMutation, (2) Add progress indicator: 'X of 12 prep items complete' as a badge, (3) Show estimated time to complete based on category: Research (20 min), Story prep (30 min), Tech (60 min), Culture (15 min), (4) On DetailPanel open, fetch and hydrate checklist from API, (5) Add test cases for toggle, save, and fetch flows using MSW.",
+      "acceptanceCriteria": [
+        "prep_checklist_progress collection stores user's checklist state per application",
+        "POST /api/applications/:id/prep-checklist upserts checklist items + completed flags",
+        "GET /api/applications/:id/prep-checklist returns saved progress",
+        "Frontend PrepChecklist component integrates useMutation to persist on toggle",
+        "Progress badge shows 'X of 12 items complete' with percentage color feedback",
+        "Estimated prep time displays by category: Research 20min, Story 30min, Tech 60min, Culture 15min",
+        "DetailPanel loads saved checklist state on open",
+        "Checklist completion tracked in analytics (count_checked, time_spent)",
+        "PrepChecklist.test.jsx updated with tests for toggle, save, load flows (MSW mocking)",
+        "No visual regression on DetailPanel or PrepChecklist"
+      ],
+      "status": "todo",
+      "estimatedEffort": "medium",
+      "impactScore": 70,
+      "rationale": "Interview prep is critical for success, but users currently prep ad-hoc with no structure or progress tracking. Persistent checklist increases prep consistency and helps users estimate effort. Users who prep systematically have 25% higher offer rates. This is a retention feature: keeps users engaged in the interview stage longer and provides value between applications."
+    }
+  ]
+}

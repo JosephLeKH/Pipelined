@@ -7,6 +7,7 @@ import {
   deleteContact,
   fetchContact,
   fetchContacts,
+  fetchRelationshipSuggestion,
   linkContactToApplication,
   unlinkContactFromApplication,
   updateContact,
@@ -20,6 +21,7 @@ export const CONTACT_KEYS = {
   details: () => [...CONTACT_KEYS.all, "detail"],
   detail: (id) => [...CONTACT_KEYS.details(), id],
   byApplication: (applicationId) => [...CONTACT_KEYS.lists(), { applicationId }],
+  suggestion: (applicationId, email) => [...CONTACT_KEYS.all, "suggestion", applicationId, email],
 };
 
 /** List contacts with optional filters. */
@@ -100,6 +102,18 @@ export function useUnlinkContact() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: CONTACT_KEYS.all });
     },
+  });
+}
+
+/** Fetch relationship type suggestion based on application context or email. */
+export function useRelationshipSuggestion(applicationId, email) {
+  const hasEmail = Boolean(email) && email.includes("@") && email.split("@")[1]?.length > 0;
+  const enabled = hasEmail || Boolean(applicationId);
+  return useQuery({
+    queryKey: CONTACT_KEYS.suggestion(applicationId, email),
+    queryFn: () => fetchRelationshipSuggestion({ applicationId, email }),
+    enabled,
+    staleTime: 60_000,
   });
 }
 
