@@ -33,20 +33,31 @@ def _now() -> datetime:
     return datetime.now(timezone.utc)
 
 
+def _normalize_email(email: str) -> str:
+    return email.strip().lower()
+
+
+async def _check_duplicate_email(contacts, user_id: ObjectId, email: str, exclude_id: ObjectId | None = None) -> None:
+    """Raise DuplicateContactError if the (user_id, email) pair already exists."""
+    filt: dict = {"user_id": user_id, "email": {"$regex": f"^{re.escape(_normalize_email(email))}$", "$options": "i"}}
+    if exclude_id:
+        filt["_id"] = {"$ne": exclude_id}
+    if await contacts.find_one(filt, projection={"_id": 1}):
+        raise DuplicateContactError
+
+
 async def create(user_id: ObjectId, body: ContactCreate) -> dict:
     """Insert a new contact and return the full document."""
     contacts = get_collection("contacts")
     if body.email:
-        existing = await contacts.find_one({"user_id": user_id, "email": str(body.email)}, projection={"_id": 1})
-        if existing:
-            raise DuplicateContactError
+        await _check_duplicate_email(contacts, user_id, str(body.email))
     now = _now()
     doc: dict = {
         "user_id": user_id,
         "name": body.name,
         "company": body.company,
         "role": body.role,
-        "email": body.email,
+        "email": str(body.email).strip().lower() if body.email else None,
         "linkedin_url": str(body.linkedin_url) if body.linkedin_url else None,
         "notes": body.notes,
         "relationship": body.relationship,
@@ -91,6 +102,8 @@ async def get(user_id: ObjectId, contact_id: str) -> dict | None:
 async def update(user_id: ObjectId, contact_id: str, body: ContactUpdate) -> dict:
     """Apply partial update to a contact. Raises ContactNotFoundError if not found."""
     contacts = get_collection("contacts")
+    if body.email:
+        await _check_duplicate_email(contacts, user_id, str(body.email), exclude_id=ObjectId(contact_id))
     raw = {k: v for k, v in body.model_dump(exclude_unset=True).items() if v is not None or k in body.model_fields_set}
     raw["updated_at"] = _now()
 

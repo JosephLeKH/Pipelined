@@ -35,18 +35,18 @@ function NotesEditor({ applicationId, initialValue, onDirtyChange }) {
   };
 
   const handleSave = () => {
+    const trimmed = draft.trim();
     updateApp(
-      { id: applicationId, body: { notes: draft } },
+      { id: applicationId, body: { notes: trimmed } },
       {
         onSuccess: () => {
-          setSavedValue(draft);
+          setSavedValue(trimmed);
+          setDraft(trimmed);
           setIsEditing(false);
           setErrorMsg(null);
         },
         onError: () => {
           setErrorMsg("Failed to save notes. Please try again.");
-          setDraft(savedValue);
-          setIsEditing(false);
         },
       }
     );

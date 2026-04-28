@@ -395,3 +395,52 @@ async def test_create_contact_without_email_allows_duplicate_names(client, test_
     # Assert
     assert resp1.status_code == 201
     assert resp2.status_code == 201
+
+
+async def test_create_contact_rejects_duplicate_email_case_insensitive(client, test_user):
+    # Arrange
+    _, cookies = test_user
+    await _create_contact(client, cookies, {"name": "Case Test One", "email": "casedupe@example.com"})
+
+    # Act — same email in different case
+    resp = await client.post(
+        "/api/contacts/",
+        json={"name": "Case Test Two", "email": "CASEDUPE@EXAMPLE.COM"},
+        cookies=cookies,
+    )
+
+    # Assert
+    assert resp.status_code == 409
+    assert resp.json()["detail"]["code"] == "DUPLICATE_CONTACT"
+
+
+async def test_update_contact_rejects_duplicate_email(client, test_user):
+    # Arrange: two contacts with distinct emails
+    _, cookies = test_user
+    await _create_contact(client, cookies, {"name": "Alpha", "email": "alpha@example.com"})
+    beta = (await _create_contact(client, cookies, {"name": "Beta", "email": "beta@example.com"}))["data"]
+
+    # Act: try to change Beta's email to Alpha's
+    resp = await client.patch(
+        f"/api/contacts/{beta['id']}",
+        json={"email": "alpha@example.com"},
+        cookies=cookies,
+    )
+
+    # Assert
+    assert resp.status_code == 409
+    assert resp.json()["detail"]["code"] == "DUPLICATE_CONTACT"
+
+
+async def test_contact_isolation_across_users(client, test_user, other_user):
+    # Arrange: user 1 creates a contact
+    _, cookies1 = test_user
+    _, cookies2 = other_user
+    created = (await _create_contact(client, cookies1, {"name": "Private", "email": "private@example.com"}))["data"]
+    contact_id = created["id"]
+
+    # Act: user 2 tries to access it
+    resp = await client.get(f"/api/contacts/{contact_id}", cookies=cookies2)
+
+    # Assert: should be invisible to other user
+    assert resp.status_code == 404

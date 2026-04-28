@@ -25,14 +25,17 @@ function ChangePasswordCard() {
 
   const handleSubmit = useCallback(async () => {
     setPwError(null);
-    if (!current) { setPwError("Current password is required."); return; }
-    if (newPw.length < PASSWORD_MIN_LENGTH) {
+    const trimmedCurrent = current.trim();
+    const trimmedNew = newPw.trim();
+    const trimmedConfirm = confirm.trim();
+    if (!trimmedCurrent) { setPwError("Current password is required."); return; }
+    if (trimmedNew.length < PASSWORD_MIN_LENGTH) {
       setPwError(`New password must be at least ${PASSWORD_MIN_LENGTH} characters.`);
       return;
     }
-    if (newPw !== confirm) { setPwError("Passwords do not match."); return; }
+    if (trimmedNew !== trimmedConfirm) { setPwError("Passwords do not match."); return; }
     try {
-      await changePassword({ current_password: current, new_password: newPw });
+      await changePassword({ current_password: trimmedCurrent, new_password: trimmedNew });
       toast.success("Password changed successfully.");
       setCurrent("");
       setNewPw("");

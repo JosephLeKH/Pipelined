@@ -91,6 +91,8 @@ async def update_contact(
         doc = await contact_service.update(user["_id"], contact_id, body)
     except ContactNotFoundError:
         raise HTTPException(status_code=404, detail=CONTACT_NOT_FOUND_DETAIL)
+    except DuplicateContactError:
+        raise HTTPException(status_code=409, detail={"code": "DUPLICATE_CONTACT", "message": "A contact with this email already exists."})
     return {"data": ContactResponse.from_doc(doc)}
 
 

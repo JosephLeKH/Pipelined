@@ -161,7 +161,7 @@ describe("NotesEditor — error handling", () => {
     expect(screen.getByRole("alert")).toHaveTextContent(/failed to save/i);
   });
 
-  it("should clear error message when entering edit mode again", async () => {
+  it("should keep edit mode open after save error (allowing retry)", async () => {
     mockMutate = vi.fn((_args, { onError }) => onError());
     renderEditor({ initialValue: "Old" });
 
@@ -169,7 +169,20 @@ describe("NotesEditor — error handling", () => {
     await userEvent.click(screen.getByRole("button", { name: /save/i }));
     expect(screen.getByRole("alert")).toBeInTheDocument();
 
+    // User stays in edit mode — Save/Cancel still visible, not the edit pencil
+    expect(screen.getByRole("button", { name: /save/i })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /edit notes/i })).not.toBeInTheDocument();
+  });
+
+  it("should clear error message when cancelling after save error", async () => {
+    mockMutate = vi.fn((_args, { onError }) => onError());
+    renderEditor({ initialValue: "Old" });
+
     await userEvent.click(screen.getByRole("button", { name: /edit notes/i }));
+    await userEvent.click(screen.getByRole("button", { name: /save/i }));
+    expect(screen.getByRole("alert")).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
 });
