@@ -21,6 +21,14 @@ MAX_LOCATION_LENGTH = 200
 MAX_STAGE_LENGTH = 50
 MAX_PAGE_TEXT_LENGTH = 3200
 MAX_NOTES_LENGTH = 5000  # SYNC: frontend/src/lib/constants.js NOTES_MAX_LENGTH
+MAX_PREP_CHECKLIST_ITEM_LENGTH = 200  # SYNC: frontend/src/lib/constants.js PREP_CHECKLIST_ITEM_MAX_LENGTH
+MAX_PREP_CHECKLIST_ITEMS = 30
+
+
+class PrepChecklistItem(BaseModel):
+    id: str
+    text: str = Field(min_length=1, max_length=MAX_PREP_CHECKLIST_ITEM_LENGTH)
+    checked: bool = False
 
 
 class StageHistoryEntry(BaseModel):
@@ -104,6 +112,7 @@ class ApplicationUpdate(BaseModel):
     deadline: datetime | None = Field(None, strict=False)
     custom_fields: dict[str, str | int | bool | list[str]] | None = None
     documents: dict[str, Document] | None = None  # resume and cover_letter
+    prep_checklist: list[PrepChecklistItem] | None = Field(None, max_length=MAX_PREP_CHECKLIST_ITEMS)
 
 
 class ApplicationResponse(BaseModel):
@@ -132,6 +141,7 @@ class ApplicationResponse(BaseModel):
     deadline: datetime | None = None
     custom_fields: dict[str, str | int | bool | list[str]] | None = None
     documents: dict[str, Document] | None = None  # resume and cover_letter
+    prep_checklist: list[PrepChecklistItem] = Field(default_factory=list)
 
     @classmethod
     def from_doc(cls, doc: dict) -> "ApplicationResponse":
@@ -196,6 +206,12 @@ class BulkStageUpdateRequest(BaseModel):
 
 
 MAX_BULK_EDIT_IDS = 50
+
+
+class PrepChecklistUpsertRequest(BaseModel):
+    model_config = ConfigDict(strict=True)
+
+    checklist: list[PrepChecklistItem] = Field(default_factory=list, max_length=MAX_PREP_CHECKLIST_ITEMS)
 
 
 class BulkEditUpdate(BaseModel):

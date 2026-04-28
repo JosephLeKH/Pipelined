@@ -14,6 +14,7 @@ from applications.schemas import (
     ApplicationListQuery,
     ApplicationResponse,
     ApplicationUpdate,
+    PrepChecklistUpsertRequest,
     ValidCompanyType,
     ValidRemoteStatus,
     ValidSortField,
@@ -223,3 +224,37 @@ async def unarchive_application(
     if doc is None:
         raise HTTPException(status_code=404, detail=APP_NOT_FOUND_DETAIL)
     return {"data": ApplicationResponse.from_doc(doc)}
+
+
+def _prep_checklist_response(doc: dict) -> dict:
+    checklist = doc.get("prep_checklist", [])
+    checked = sum(1 for item in checklist if item.get("checked"))
+    return {"checklist": checklist, "checked_count": checked, "total": len(checklist)}
+
+
+@router.get("/{app_id}/prep-checklist", status_code=200)
+async def get_prep_checklist(
+    app_id: str,
+    user: dict = Depends(get_current_user),
+) -> dict:
+    """Return the prep checklist and completion progress for an application."""
+    user_id = str(user["_id"])
+    doc = await app_service.get(user_id, app_id)
+    if doc is None:
+        raise HTTPException(status_code=404, detail=APP_NOT_FOUND_DETAIL)
+    return {"data": _prep_checklist_response(doc)}
+
+
+@router.post("/{app_id}/prep-checklist", status_code=200)
+async def upsert_prep_checklist(
+    app_id: str,
+    body: PrepChecklistUpsertRequest,
+    user: dict = Depends(get_current_user),
+) -> dict:
+    """Replace the prep checklist for an application."""
+    user_id = str(user["_id"])
+    update = ApplicationUpdate.model_construct(_fields_set={"prep_checklist"}, prep_checklist=body.checklist)
+    doc = await app_service.update(user_id, app_id, update)
+    if doc is None:
+        raise HTTPException(status_code=404, detail=APP_NOT_FOUND_DETAIL)
+    return {"data": _prep_checklist_response(doc)}

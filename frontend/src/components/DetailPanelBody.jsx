@@ -1,17 +1,19 @@
 /** PanelBody and its helpers: field display, follow-up date, tags, and full detail layout. */
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 
 import ExternalLink from "lucide-react/dist/esm/icons/external-link";
 import AlertTriangle from "lucide-react/dist/esm/icons/alert-triangle";
 
 import { INPUT_BASE } from "../lib/designTokens";
-import { STAGE_COLORS, DEFAULT_STAGE_COLOR, MS_PER_DAY } from "../lib/constants";
+import { STAGE_COLORS, DEFAULT_STAGE_COLOR, MS_PER_DAY, PREP_CHECKLIST_STARTER_SUGGESTIONS } from "../lib/constants";
 import { useAuth } from "../context/AuthContext";
+import { useUpdateApplication } from "../hooks/useApplications";
 import ContactsSection from "./ContactsSection";
 import { DetailPanelNotes } from "./DetailPanelNotes";
 import { DetailPanelTimeline } from "./DetailPanelTimeline";
 import OfferDetailsSection from "./OfferDetailsSection";
+import { ChecklistItem, AddChecklistItem } from "./PrepChecklist";
 import ResumeFitSection from "./ResumeFitSection";
 import TagInput from "./TagInput";
 import { formatDate } from "../lib/dateUtils";
@@ -79,6 +81,73 @@ function TagsSection({ application, onUpdate }) {
   );
 }
 
+function ApplicationPrepSection({ applicationId, initialChecklist }) {
+  const [checklist, setChecklist] = useState(initialChecklist ?? []);
+  const { mutate: updateApp } = useUpdateApplication();
+
+  const handleToggle = useCallback((itemId) => {
+    setChecklist((prev) => {
+      const updated = prev.map((item) =>
+        item.id === itemId ? { ...item, checked: !item.checked } : item
+      );
+      updateApp({ id: applicationId, body: { prep_checklist: updated } });
+      return updated;
+    });
+  }, [applicationId, updateApp]);
+
+  const handleAdd = useCallback((text) => {
+    setChecklist((prev) => {
+      const updated = [...prev, { id: crypto.randomUUID(), text, checked: false }];
+      updateApp({ id: applicationId, body: { prep_checklist: updated } });
+      return updated;
+    });
+  }, [applicationId, updateApp]);
+
+  const handleDelete = useCallback((itemId) => {
+    setChecklist((prev) => {
+      const updated = prev.filter((item) => item.id !== itemId);
+      updateApp({ id: applicationId, body: { prep_checklist: updated } });
+      return updated;
+    });
+  }, [applicationId, updateApp]);
+
+  const checkedCount = checklist.filter((i) => i.checked).length;
+
+  return (
+    <div className="flex flex-col gap-1.5">
+      <div className="flex items-center justify-between">
+        <span className="text-xs font-medium uppercase text-gray-400 dark:text-gray-500">Prep Checklist</span>
+        {checklist.length > 0 && (
+          <span className={`text-xs font-medium tabular-nums ${checkedCount === checklist.length ? "text-green-600 dark:text-green-400" : "text-gray-500"}`}>
+            {checkedCount} / {checklist.length}
+          </span>
+        )}
+      </div>
+      <div className="flex flex-col gap-0.5">
+        {checklist.map((item) => (
+          <ChecklistItem key={item.id} item={item} onToggle={handleToggle} onDelete={handleDelete} />
+        ))}
+        {checklist.length === 0 && (
+          <div className="flex flex-col gap-1 py-1">
+            <p className="text-xs text-gray-400 dark:text-gray-500 mb-1">Suggestions:</p>
+            {PREP_CHECKLIST_STARTER_SUGGESTIONS.map((s) => (
+              <button
+                key={s}
+                type="button"
+                onClick={() => handleAdd(s)}
+                className="text-left text-xs text-brand-600 hover:text-brand-800 hover:underline transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 rounded dark:text-brand-400 dark:hover:text-brand-300"
+              >
+                + {s}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+      <AddChecklistItem onAdd={handleAdd} />
+    </div>
+  );
+}
+
 export function PanelBody({ application, handleStageChange, handleUpdate, onAddEvent, onDirtyChange }) {
   const { user } = useAuth();
   const stageOptions = user?.default_stages ?? [];
@@ -140,6 +209,7 @@ export function PanelBody({ application, handleStageChange, handleUpdate, onAddE
         <OfferDetailsSection application={application} onUpdate={handleUpdate} />
       )}
       <DetailPanelNotes applicationId={application.id} initialValue={application.notes} onDirtyChange={onDirtyChange} />
+      <ApplicationPrepSection applicationId={application.id} initialChecklist={application.prep_checklist} />
       <DetailPanelTimeline stageHistory={application.stage_history} applicationId={application.id} onAddEvent={onAddEvent} />
       <ContactsSection applicationId={application.id} />
       {(application.ai_analysis || user?.ai_scores_remaining_today === 0) && user?.has_resume && (
