@@ -7,7 +7,7 @@ import Activity from "lucide-react/dist/esm/icons/activity";
 
 import NavBar from "../components/NavBar";
 import { useActivityFeed } from "../hooks/useActivity";
-import { CARD_BASE, SPINNER_SM } from "../lib/designTokens";
+import { BUTTON_SECONDARY, CARD_BASE, SPINNER_SM } from "../lib/designTokens";
 
 const TIME_RANGES = [
   { label: "Last 7 days", days: 7 },
@@ -101,6 +101,22 @@ function ActivityHeader({ days, total, isLoading, onDaysChange }) {
   );
 }
 
+function ActivityError({ onRetry }) {
+  return (
+    <div className={`${CARD_BASE} flex flex-col items-center gap-3 px-6 py-16 text-center`}>
+      <p className="text-sm font-medium text-rose-600">Failed to load activity.</p>
+      <button
+        type="button"
+        onClick={onRetry}
+        aria-label="Retry loading activity"
+        className={BUTTON_SECONDARY}
+      >
+        Try again
+      </button>
+    </div>
+  );
+}
+
 function ActivityTimeline({ isLoading, entries, onEntryClick }) {
   if (isLoading) {
     return (
@@ -140,7 +156,7 @@ function ActivityTimeline({ isLoading, entries, onEntryClick }) {
 function ActivityPage() {
   const [days, setDays] = useState(30);
   const navigate = useNavigate();
-  const { data: feedEnv, isLoading } = useActivityFeed({ days });
+  const { data: feedEnv, isLoading, error, refetch } = useActivityFeed({ days });
   const entries = feedEnv?.data ?? [];
   const total = feedEnv?.meta?.total ?? 0;
 
@@ -158,7 +174,9 @@ function ActivityPage() {
       <NavBar />
       <main className="mx-auto max-w-2xl px-4 sm:px-6 py-8">
         <ActivityHeader days={days} total={total} isLoading={isLoading} onDaysChange={setDays} />
-        <ActivityTimeline isLoading={isLoading} entries={entries} onEntryClick={handleEntryClick} />
+        {error
+          ? <ActivityError onRetry={refetch} />
+          : <ActivityTimeline isLoading={isLoading} entries={entries} onEntryClick={handleEntryClick} />}
       </main>
     </div>
   );

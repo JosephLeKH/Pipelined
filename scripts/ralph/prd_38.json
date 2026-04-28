@@ -1,0 +1,110 @@
+{
+  "id": "PRD-38",
+  "title": "Error state hardening and test coverage for Activity, Analytics, Tags, and KanbanColumn",
+  "status": "done",
+  "priority": "high",
+  "description": "PRD-38 addresses five gaps found in a post-PRD-37 audit: (1) Activity page has no error handling at all \u2014 useActivityFeed error is never destructured and users see a blank page on failure; (2) Analytics error state is static text with no retry button; (3) Tags page silently swallows fetch errors \u2014 only mutation errors are shown; (4) Tags page has zero test coverage despite being a full CRUD page; (5) KanbanColumn is the core Kanban sub-component but has no tests.",
+  "userStories": [
+    {
+      "id": "US-366",
+      "title": "Activity page shows blank page when feed fails \u2014 add error state with retry",
+      "description": "ActivityPage in pages/Activity.jsx calls useActivityFeed() but never destructures the error field (line 143: only data and isLoading are used). When the feed endpoint fails, the page silently renders the empty state ('No activity yet'), giving users no indication something went wrong and no way to retry. Add an ActivityError component with a retry button, wire it to refetch from the hook, and cover it in tests.",
+      "acceptanceCriteria": [
+        "useActivityFeed() destructures error and refetch in addition to data and isLoading",
+        "When error is truthy, an ActivityError component renders instead of ActivityTimeline",
+        "ActivityError shows 'Failed to load activity' message visible to the user",
+        "ActivityError includes a retry button with aria-label='Retry loading activity'",
+        "Retry button uses BUTTON_SECONDARY design token (consistent with OfferComparison ErrorState)",
+        "Retry button calls refetch from the useActivityFeed hook",
+        "Test: 'should show error state when activity feed fails'",
+        "Test: 'should call refetch when retry button is clicked'",
+        "No visual regressions on loading, empty, and happy-path states"
+      ],
+      "status": "done",
+      "estimatedEffort": "small",
+      "impactScore": 80,
+      "rationale": "A blank page with no error indication is the worst possible failure UX. Users see 'No activity yet' on a failed API call and think their data is gone. The fix is mechanical and the pattern exists in OfferComparison.jsx \u2014 replicate it here."
+    },
+    {
+      "id": "US-367",
+      "title": "Analytics error state is unrecoverable \u2014 add retry button",
+      "description": "Analytics.jsx renders AnalyticsError() when useAnalyticsData().error is truthy, but AnalyticsError is a static component that only shows 'Failed to load analytics.' \u2014 no retry button, no refetch call. The useAnalytics() hook already returns refetch via useQuery. Thread refetch through useAnalyticsData and pass onRetry to AnalyticsError so users can recover from transient network failures without a full page reload.",
+      "acceptanceCriteria": [
+        "useAnalyticsData hook also returns refetch from the underlying useAnalytics query",
+        "Analytics.jsx destructures refetch and passes it as onRetry to AnalyticsError",
+        "AnalyticsError accepts onRetry prop and renders a retry button",
+        "Retry button has aria-label='Retry loading analytics'",
+        "Retry button uses BUTTON_SECONDARY design token",
+        "Test: 'should show retry button when analytics loading fails'",
+        "Test: 'should call refetch when retry is clicked'",
+        "No visual regressions on happy-path analytics layout"
+      ],
+      "status": "done",
+      "estimatedEffort": "small",
+      "impactScore": 76,
+      "rationale": "Analytics is a premium feature users visit deliberately. A hard-fail with no recovery forces a browser reload \u2014 a high-friction path. The underlying refetch is already available from useQuery; surfacing it requires minimal code."
+    },
+    {
+      "id": "US-368",
+      "title": "Tags page swallows fetch errors \u2014 add error state with retry",
+      "description": "Tags.jsx calls useTags() but only destructures data and isLoading (line 117). When the fetch fails, the loading spinner disappears and the empty state renders ('No tags yet'), giving users no indication of failure. useTags() returns a full useQuery result including error and refetch. Destructure both, add a fetch error UI consistent with other pages, and add test coverage.",
+      "acceptanceCriteria": [
+        "useTags() destructures error and refetch in addition to data and isLoading",
+        "When error is truthy, a fetch error banner renders above (or instead of) the table",
+        "Error message reads 'Failed to load tags' and is visible as role='alert'",
+        "A retry button with aria-label='Retry loading tags' calls refetch",
+        "Retry button uses BUTTON_SECONDARY design token",
+        "Existing mutation error banner still shown for rename/delete failures",
+        "Test: 'should show error state when tags fetch fails'",
+        "Test: 'should call refetch when retry is clicked'",
+        "No visual regressions on loading, empty, and table states"
+      ],
+      "status": "done",
+      "estimatedEffort": "small",
+      "impactScore": 72,
+      "rationale": "Tags is a management page \u2014 users who visit it are performing a deliberate CRUD action. Silently showing 'No tags yet' on a fetch error causes users to believe their tags were deleted, which undermines trust in the platform."
+    },
+    {
+      "id": "US-369",
+      "title": "Tags page has zero test coverage \u2014 add Tags.test.jsx",
+      "description": "Tags.jsx is the only page in pages/ without a test file. It is a non-trivial CRUD page with loading, error, empty, and table states, plus an inline rename editor and a delete confirmation modal. Add a comprehensive test suite that covers all states and interactions.",
+      "acceptanceCriteria": [
+        "Test file created: frontend/src/pages/Tags.test.jsx",
+        "Test: 'should show loading spinner while tags are fetching'",
+        "Test: 'should show fetch error state with retry button when tags load fails'",
+        "Test: 'should show empty state when no tags exist'",
+        "Test: 'should render tags table with name, count, and action buttons'",
+        "Test: 'should show inline editor when rename button is clicked'",
+        "Test: 'should open delete confirm modal when delete button is clicked'",
+        "Test: 'should call deleteTag mutation when modal confirm is clicked'",
+        "Mocks useTags, useRenameTag, useDeleteTag from hooks/useApplications",
+        "Tests follow Arrange \u2192 Act \u2192 Assert with blank lines between sections",
+        "No existing tests broken"
+      ],
+      "status": "done",
+      "estimatedEffort": "medium",
+      "impactScore": 68,
+      "rationale": "Tag management is a high-traffic feature used daily by active users. With zero tests, any refactor \u2014 including the error state fix in US-368 \u2014 is unverified. Adding tests now creates a safety net for all future changes."
+    },
+    {
+      "id": "US-370",
+      "title": "KanbanColumn is the core drag-and-drop component but has no tests",
+      "description": "KanbanColumn.jsx is the droppable column used by KanbanBoard (which has 3 test files) but KanbanColumn itself has no tests. It handles: stage label, application count badge, empty droppable zone, list of KanbanCard children, and isOver highlight on drag hover. Add a test suite covering the main rendering paths.",
+      "acceptanceCriteria": [
+        "Test file created: frontend/src/components/KanbanColumn.test.jsx",
+        "Test: 'should render stage name and application count badge'",
+        "Test: 'should render empty drop zone when no applications'",
+        "Test: 'should render a KanbanCard for each application'",
+        "Test: 'should call onSelect when a card is clicked'",
+        "Mocks @dnd-kit/core (useDroppable) and @dnd-kit/sortable (SortableContext, verticalListSortingStrategy)",
+        "Mocks KanbanCard to a simple stub to avoid deep rendering",
+        "Tests follow Arrange \u2192 Act \u2192 Assert with blank lines between sections",
+        "No existing tests broken"
+      ],
+      "status": "done",
+      "estimatedEffort": "small",
+      "impactScore": 62,
+      "rationale": "KanbanColumn is rendered on the most-visited page (Dashboard). Three KanbanBoard integration test files exist but they mock away KanbanColumn. Without unit tests, column-specific behaviour (empty zone, count badge, stage colours) can regress silently."
+    }
+  ]
+}

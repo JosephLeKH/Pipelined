@@ -1,6 +1,6 @@
 /** Tests for Analytics page — renders charts, empty state, date range selector. */
 
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
@@ -180,6 +180,37 @@ describe("Analytics", () => {
     // Offer avg_days = 25.0 > 21 → rose
     const cell = screen.getByText("25.0d");
     expect(cell.className).toMatch(/text-rose/);
+  });
+
+  it("should show retry button when analytics loading fails", async () => {
+    server.use(
+      http.get("/api/applications/analytics", () => HttpResponse.error()),
+    );
+
+    renderAnalytics();
+
+    expect(await screen.findByText("Failed to load analytics.")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /retry loading analytics/i })).toBeInTheDocument();
+  });
+
+  it("should call refetch when retry is clicked", async () => {
+    let callCount = 0;
+    server.use(
+      http.get("/api/applications/analytics", () => {
+        callCount += 1;
+        return HttpResponse.error();
+      }),
+    );
+
+    renderAnalytics();
+
+    await screen.findByText("Failed to load analytics.");
+    const before = callCount;
+
+    fireEvent.click(screen.getByRole("button", { name: /retry loading analytics/i }));
+
+    await new Promise((r) => setTimeout(r, 50));
+    expect(callCount).toBeGreaterThan(before);
   });
 
   it("should show dash for last stage conversion", async () => {

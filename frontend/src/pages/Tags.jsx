@@ -10,6 +10,7 @@ import Tag from "lucide-react/dist/esm/icons/tag";
 
 import { useTags, useRenameTag, useDeleteTag } from "../hooks/useApplications";
 import { BUTTON_SECONDARY, BUTTON_DANGER, BUTTON_GHOST, INPUT_BASE, CARD_BASE, SPINNER_LG, MODAL_BACKDROP, MODAL_CARD } from "../lib/designTokens";
+import AlertCircle from "lucide-react/dist/esm/icons/alert-circle";
 import EmptyState from "../components/EmptyState";
 import NavBar from "../components/NavBar";
 
@@ -114,7 +115,7 @@ function TagsTable({ tags, onRename, onDelete }) {
 }
 
 function Tags() {
-  const { data: tagsData, isLoading } = useTags();
+  const { data: tagsData, isLoading, error: fetchError, refetch } = useTags();
   const renameMutation = useRenameTag();
   const deleteMutation = useDeleteTag();
   const [deleteTarget, setDeleteTarget] = useState(null);
@@ -141,6 +142,25 @@ function Tags() {
           <h1 className="font-display text-xl font-semibold text-gray-900 dark:text-gray-100">Tags</h1>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Manage tags across all your applications.</p>
         </div>
+
+        {fetchError && (
+          <div role="alert" className="mb-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-2">
+                <AlertCircle className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
+                <span>Failed to load tags.</span>
+              </div>
+              <button
+                type="button"
+                onClick={refetch}
+                aria-label="Retry loading tags"
+                className={`${BUTTON_SECONDARY} text-sm`}
+              >
+                Try again
+              </button>
+            </div>
+          </div>
+        )}
 
         {mutationError && (
           <div role="alert" className="mb-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400">

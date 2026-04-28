@@ -5,7 +5,7 @@ import { useState } from "react";
 import BarChart3 from "lucide-react/dist/esm/icons/bar-chart-3";
 
 import useAnalyticsData from "../hooks/useAnalyticsData";
-import { SPINNER_LG } from "../lib/designTokens";
+import { BUTTON_SECONDARY, SPINNER_LG } from "../lib/designTokens";
 import { AnalyticsMainCharts, AnalyticsTagsTable, AnalyticsFunnelSection } from "../components/AnalyticsCharts";
 import EmptyState from "../components/EmptyState";
 import ErrorBoundary from "../components/ErrorBoundary";
@@ -29,11 +29,21 @@ function AnalyticsLoading() {
   );
 }
 
-function AnalyticsError() {
+function AnalyticsError({ onRetry }) {
   return (
     <div className="flex min-h-screen flex-col bg-surface-secondary dark:bg-gray-900">
       <NavBar />
-      <main className="p-6 text-center text-rose-600">Failed to load analytics.</main>
+      <main className="flex flex-1 flex-col items-center justify-center gap-4 text-rose-600">
+        <p>Failed to load analytics.</p>
+        <button
+          type="button"
+          onClick={onRetry}
+          aria-label="Retry loading analytics"
+          className={BUTTON_SECONDARY}
+        >
+          Try again
+        </button>
+      </main>
     </div>
   );
 }
@@ -61,10 +71,10 @@ function AnalyticsDateRangePicker({ days, setDays }) {
 
 function Analytics() {
   const [days, setDays] = useState(90);
-  const { analytics, funnelData, tagOfferRates, hasEnoughData, isLoading, error } = useAnalyticsData(days);
+  const { analytics, funnelData, tagOfferRates, hasEnoughData, isLoading, error, refetch } = useAnalyticsData(days);
 
   if (isLoading) return <AnalyticsLoading />;
-  if (error) return <AnalyticsError />;
+  if (error) return <AnalyticsError onRetry={refetch} />;
 
   return (
     <div className="flex min-h-screen flex-col bg-surface-secondary dark:bg-gray-900">

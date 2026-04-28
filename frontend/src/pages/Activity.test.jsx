@@ -135,6 +135,37 @@ describe("ActivityPage", () => {
     expect(await screen.findByText("No activity yet")).toBeDefined();
   });
 
+  it("should show error state when activity feed fails", async () => {
+    server.use(
+      http.get("/api/activity", () => HttpResponse.error()),
+    );
+
+    render(<ActivityPage />, { wrapper: makeWrapper() });
+
+    expect(await screen.findByText("Failed to load activity.")).toBeDefined();
+    expect(screen.getByRole("button", { name: /retry loading activity/i })).toBeDefined();
+  });
+
+  it("should call refetch when retry button is clicked", async () => {
+    let callCount = 0;
+    server.use(
+      http.get("/api/activity", () => {
+        callCount += 1;
+        return HttpResponse.error();
+      }),
+    );
+
+    render(<ActivityPage />, { wrapper: makeWrapper() });
+
+    await screen.findByText("Failed to load activity.");
+    const before = callCount;
+
+    fireEvent.click(screen.getByRole("button", { name: /retry loading activity/i }));
+
+    await new Promise((r) => setTimeout(r, 50));
+    expect(callCount).toBeGreaterThan(before);
+  });
+
   it("should navigate to dashboard on entry click", async () => {
     capturedLocation = null;
 
