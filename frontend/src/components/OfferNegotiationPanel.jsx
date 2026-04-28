@@ -1,10 +1,11 @@
 /** Negotiation tab: template picker + auto-filled script for a selected offer. */
 
 import { useState, useCallback } from "react";
+import { toast } from "sonner";
 import Check from "lucide-react/dist/esm/icons/check";
 import Copy from "lucide-react/dist/esm/icons/copy";
 
-import { NEGOTIATION_TEMPLATES } from "../lib/constants";
+import { NEGOTIATION_TEMPLATES, COPY_RESET_MS } from "../lib/constants";
 import { INPUT_BASE, BUTTON_SECONDARY, CARD_BASE } from "../lib/designTokens";
 
 function TotalCompBreakdown({ offer }) {
@@ -46,7 +47,9 @@ export function OfferNegotiationPanel({ apps }) {
   const handleCopy = useCallback(() => {
     navigator.clipboard.writeText(script).then(() => {
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      setTimeout(() => setCopied(false), COPY_RESET_MS);
+    }).catch(() => {
+      toast.error("Failed to copy script to clipboard.");
     });
   }, [script]);
 

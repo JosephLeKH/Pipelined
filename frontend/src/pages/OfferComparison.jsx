@@ -25,7 +25,8 @@ function fmtCell(fieldType, value) {
 function EditableCellInput({ value, fieldType, handleBlur }) {
   return (
     <input
-      type={fieldType === "currency" ? "number" : "text"}
+      type="text"
+      inputMode={fieldType === "currency" ? "numeric" : "text"}
       defaultValue={value ?? ""}
       autoFocus
       onBlur={handleBlur}
@@ -50,23 +51,44 @@ function EditableCellDisplay({ value, fieldType, onEdit }) {
 
 function EditableCell({ appId, fieldKey, fieldType, value, offerDetails, onSave }) {
   const [editing, setEditing] = useState(false);
+  const [validationError, setValidationError] = useState(null);
 
   const handleBlur = useCallback(
     (e) => {
       const raw = e.target.value;
-      let newVal = null;
-      if (raw !== "") {
-        newVal = fieldType === "currency" ? (isNaN(parseInt(raw, 10)) ? null : parseInt(raw, 10)) : raw;
+      if (raw === "") {
+        setValidationError(null);
+        onSave(appId, fieldKey, null, offerDetails);
+        setEditing(false);
+        return;
       }
-      onSave(appId, fieldKey, newVal, offerDetails);
+      if (fieldType === "currency") {
+        const numVal = Number(raw);
+        if (!Number.isFinite(numVal) || numVal < 0) {
+          setValidationError("Enter a valid non-negative number.");
+          return;
+        }
+        setValidationError(null);
+        onSave(appId, fieldKey, Math.round(numVal), offerDetails);
+      } else {
+        setValidationError(null);
+        onSave(appId, fieldKey, raw, offerDetails);
+      }
       setEditing(false);
     },
     [appId, fieldKey, fieldType, offerDetails, onSave]
   );
 
-  return editing
-    ? <EditableCellInput value={value} fieldType={fieldType} handleBlur={handleBlur} />
-    : <EditableCellDisplay value={value} fieldType={fieldType} onEdit={() => setEditing(true)} />;
+  return (
+    <div>
+      {editing
+        ? <EditableCellInput value={value} fieldType={fieldType} handleBlur={handleBlur} />
+        : <EditableCellDisplay value={value} fieldType={fieldType} onEdit={() => setEditing(true)} />}
+      {validationError && (
+        <p role="alert" className="mt-1 text-xs text-rose-600">{validationError}</p>
+      )}
+    </div>
+  );
 }
 
 function LoadingState() {
@@ -80,12 +102,20 @@ function LoadingState() {
   );
 }
 
-function ErrorState() {
+function ErrorState({ onRetry }) {
   return (
     <>
       <NavBar />
-      <div className="flex min-h-[60vh] items-center justify-center text-rose-600">
-        Failed to load offers.
+      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 text-rose-600">
+        <p>Failed to load offers.</p>
+        <button
+          type="button"
+          onClick={onRetry}
+          aria-label="Retry loading offers"
+          className={BUTTON_SECONDARY}
+        >
+          Try again
+        </button>
       </div>
     </>
   );
@@ -216,7 +246,7 @@ function TabBar({ activeTab, onTabChange }) {
 }
 
 function OfferComparison() {
-  const { data, isLoading, error } = useApplications({ stage: OFFER_STAGE, limit: 100 });
+  const { data, isLoading, error, refetch } = useApplications({ stage: OFFER_STAGE, limit: 100 });
   const { mutate: updateApp } = useUpdateApplication();
   const [winnerId, setWinnerId] = useState(null);
   const [activeTab, setActiveTab] = useState("compare");
@@ -237,7 +267,7 @@ function OfferComparison() {
   }, []);
 
   if (isLoading) return <LoadingState />;
-  if (error) return <ErrorState />;
+  if (error) return <ErrorState onRetry={refetch} />;
 
   const apps = data?.data ?? [];
   if (apps.length === 0) return <EmptyState />;

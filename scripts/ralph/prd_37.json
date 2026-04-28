@@ -1,0 +1,105 @@
+{
+  "id": "PRD-37",
+  "title": "Test coverage for new components, input hardening, and UX recovery flows",
+  "status": "done",
+  "priority": "high",
+  "description": "PRD-37 closes five gaps left after PRD-35/36: (1) test coverage for the two new PRD-35 components (JobRecommendations, OfferNegotiationPanel), (2) clipboard error handling in OfferNegotiationPanel, (3) numeric input validation in OfferComparison editable cells, (4) null-safe negotiation template builder for incomplete offer data, (5) retry flow in OfferComparison error state.",
+  "userStories": [
+    {
+      "id": "US-361",
+      "title": "JobRecommendations component needs test coverage for loading, error, and empty states",
+      "description": "JobRecommendations.jsx was added in PRD-35 but has no test file. It renders a 'Recommended for You' section with score badges and reason tags. Without tests, any refactor or hook change can silently break it. Add a comprehensive test suite covering: loading skeleton, error state from failed API, empty state when no recommendations exist, and happy-path rendering of recommendation cards with reason tags.",
+      "acceptanceCriteria": [
+        "Test file created: frontend/src/components/JobRecommendations.test.jsx",
+        "Test: 'should show loading skeleton while recommendations are fetching'",
+        "Test: 'should show error message when recommendations endpoint fails'",
+        "Test: 'should show empty state when no recommendations are returned'",
+        "Test: 'should render recommendation cards with reason tag and score badge'",
+        "All tests use MSW handlers to mock /api/jobs/recommended responses",
+        "Tests follow Arrange \u2192 Act \u2192 Assert with blank lines between sections",
+        "No existing tests broken"
+      ],
+      "status": "done",
+      "estimatedEffort": "small",
+      "impactScore": 75,
+      "rationale": "New features with zero test coverage are regression traps. JobRecommendations surfaces personalized content \u2014 any silent breakage directly harms the most engaged users. Four focused tests provide the minimum safety net."
+    },
+    {
+      "id": "US-362",
+      "title": "OfferNegotiationPanel needs test coverage and clipboard error handling",
+      "description": "OfferNegotiationPanel.jsx (113 lines, PRD-35) has no tests and a silent clipboard failure mode. The navigator.clipboard.writeText() call has no .catch() handler \u2014 if clipboard permission is denied or the API fails, the user sees nothing. Add a test suite covering template selection, script rendering, copy success, and copy failure. Fix the clipboard handler to show an error toast on failure.",
+      "acceptanceCriteria": [
+        "Test file created: frontend/src/components/OfferNegotiationPanel.test.jsx",
+        "Test: 'should render negotiation script for selected template'",
+        "Test: 'should show Copied! feedback after successful clipboard write'",
+        "Test: 'should show error toast when clipboard write fails'",
+        "Test: 'should update script when different template is selected'",
+        "Clipboard failure handled with .catch() that calls an error toast (not silent fail)",
+        "Tests mock navigator.clipboard.writeText via vi.spyOn",
+        "No existing tests broken"
+      ],
+      "status": "done",
+      "estimatedEffort": "small",
+      "impactScore": 72,
+      "rationale": "Clipboard API fails silently on HTTP, in some browsers, and when permissions are denied. Users attempting to copy negotiation scripts would get no feedback. This is both a UX bug and a test gap on a core feature."
+    },
+    {
+      "id": "US-363",
+      "title": "OfferComparison editable cells should reject invalid and negative numeric inputs",
+      "description": "EditableCell in OfferComparison.jsx uses parseInt() to parse currency values, which silently accepts '123abc' as 123 and doesn't reject negative values. A user entering '-50000' as a base salary would persist garbage data to the offer_details object. Fix the parser to use Number() with an explicit non-negative check. Show an inline validation error message below the cell when the value is invalid so the user knows why their edit was rejected.",
+      "acceptanceCriteria": [
+        "parseInt replaced with Number() + Number.isFinite() + >= 0 check",
+        "Negative numbers rejected (e.g., '-50000' \u2192 validation error shown)",
+        "Strings like '100abc' rejected (Number('100abc') === NaN \u2192 validation error shown)",
+        "Empty string allowed (clears the field)",
+        "Valid integers (e.g., '95000') saved correctly",
+        "Inline validation error message displayed below the cell when input is invalid",
+        "Test: 'should reject negative salary input with validation error'",
+        "Test: 'should reject non-numeric input with validation error'",
+        "Test: 'should accept valid integer salary input'"
+      ],
+      "status": "done",
+      "estimatedEffort": "small",
+      "impactScore": 70,
+      "rationale": "Offer comparison is a financial decision-making tool. Corrupt or negative salary data in comparisons could mislead users into making bad career decisions. Input hardening at the UI layer prevents invalid data reaching the DB."
+    },
+    {
+      "id": "US-364",
+      "title": "Negotiation template builder should handle incomplete offer data gracefully",
+      "description": "The NEGOTIATION_TEMPLATES.build() functions in constants.js access app.role_title, app.company, and app.offer_details.base_salary without null checks. If offer_details is null or the application was just created without salary data, the template renders with placeholder text like 'the role at your company' without warning the user that their offer data is incomplete. Add null checks that return an actionable message when required fields are missing.",
+      "acceptanceCriteria": [
+        "build() functions check for app.company, app.role_title, and app.offer_details.base_salary",
+        "When any required field is missing, return a descriptive message: 'Add offer details (company, role, base salary) to generate this script'",
+        "Message shown in the script textarea area so user can see it in context",
+        "Valid offers with all fields still generate correct script text",
+        "Test: 'should show incomplete data message when offer_details is null'",
+        "Test: 'should show incomplete data message when base_salary is missing'",
+        "Test: 'should generate correct script when all fields are present'",
+        "No visual regressions on the panel layout"
+      ],
+      "status": "done",
+      "estimatedEffort": "small",
+      "impactScore": 65,
+      "rationale": "Users open OfferNegotiationPanel immediately after reaching the offer stage, before they've filled in all offer details. Showing garbled templates with empty placeholders undermines confidence in the feature at the worst possible moment."
+    },
+    {
+      "id": "US-365",
+      "title": "OfferComparison error state should include a retry button to reload offers",
+      "description": "When useApplications() fails in OfferComparison.jsx, the page shows 'Failed to load offers' with no recovery path. Users must manually reload the browser. Add a retry button to the error state that calls the React Query refetch function. The button should use the existing design system button styling and include aria-label='Retry loading offers'.",
+      "acceptanceCriteria": [
+        "Error state in OfferComparison.jsx includes a 'Try again' button",
+        "Button calls React Query refetch (passed from useApplications hook)",
+        "Button has aria-label='Retry loading offers' for accessibility",
+        "Button uses existing design system secondary button styling (not an ad-hoc style)",
+        "After successful retry, offers load and error state disappears",
+        "Test: 'should show retry button when offer loading fails'",
+        "Test: 'should reload offers when retry button is clicked'",
+        "No visual regressions on happy-path offer comparison layout"
+      ],
+      "status": "done",
+      "estimatedEffort": "small",
+      "impactScore": 62,
+      "rationale": "Error-with-no-recovery is a dead end for users. A single retry button costs one hour of work and prevents users from abandoning the offer comparison flow due to a transient network error."
+    }
+  ]
+}

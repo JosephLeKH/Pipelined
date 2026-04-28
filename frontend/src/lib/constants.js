@@ -88,7 +88,7 @@ export const SALARY_FILTER_MIN = 0;
 export const SALARY_FILTER_MAX = 500_000;
 export const SALARY_FILTER_STEP = 10_000;
 
-export const BULK_MAX_IDS = 100;
+export const BULK_MAX_IDS = 500;
 
 export const BULK_EDIT_MAX_IDS = 50;
 
@@ -162,15 +162,19 @@ export const OFFER_FIELDS = [
   { key: "notes", label: "Notes", type: "text" },
 ];
 
+const INCOMPLETE_OFFER_MSG =
+  "Add offer details (company, role, base salary) to generate this script.";
+
 export const NEGOTIATION_TEMPLATES = [
   {
     id: "counter_salary",
     label: "Counter — Higher Base",
     build: (app) => {
-      const role = app.role_title ?? "the role";
-      const company = app.company ?? "your company";
+      const role = app.role_title;
+      const company = app.company;
       const base = app.offer_details?.base_salary;
-      const baseStr = base ? `$${Number(base).toLocaleString()}` : "[current base]";
+      if (!role || !company || !base) return INCOMPLETE_OFFER_MSG;
+      const baseStr = `$${Number(base).toLocaleString()}`;
       return `Hi [Hiring Manager],\n\nThank you so much for the offer to join ${company} as ${role}. I'm genuinely excited about this opportunity and the team.\n\nAfter careful consideration of my experience and market data, I was hoping we could discuss the base salary. The current offer of ${baseStr} is slightly below what I was targeting. Would you be open to [target]?\n\nI'm very enthusiastic about the role and confident I can make an immediate impact. I appreciate your consideration and look forward to your response.\n\nBest regards,\n[Your Name]`;
     },
   },
@@ -178,8 +182,9 @@ export const NEGOTIATION_TEMPLATES = [
     id: "equity_ask",
     label: "Counter — More Equity",
     build: (app) => {
-      const role = app.role_title ?? "the role";
-      const company = app.company ?? "your company";
+      const role = app.role_title;
+      const company = app.company;
+      if (!role || !company) return INCOMPLETE_OFFER_MSG;
       return `Hi [Hiring Manager],\n\nThank you for the offer for the ${role} position at ${company}. I'm very excited about joining the team.\n\nI'd love to discuss the equity component of the package. Given my long-term commitment to ${company}'s mission, I'd like to explore whether there's flexibility to increase the equity grant from the current amount to [target equity].\n\nI believe this adjustment would better reflect the value I'll bring and align our long-term interests. Happy to discuss further at your convenience.\n\nBest regards,\n[Your Name]`;
     },
   },
@@ -187,8 +192,9 @@ export const NEGOTIATION_TEMPLATES = [
     id: "signing_bonus",
     label: "Ask — Signing Bonus",
     build: (app) => {
-      const company = app.company ?? "your company";
-      const role = app.role_title ?? "the role";
+      const company = app.company;
+      const role = app.role_title;
+      if (!role || !company) return INCOMPLETE_OFFER_MSG;
       return `Hi [Hiring Manager],\n\nThank you for the offer to join ${company} as ${role}. I'm thrilled about the opportunity.\n\nI wanted to ask whether there's flexibility to include a signing bonus. I have some transition costs and deferred compensation from my current position that I'd be leaving behind. A signing bonus of [amount] would help bridge this gap.\n\nI'm committed to making this work and look forward to contributing to the team from day one.\n\nBest regards,\n[Your Name]`;
     },
   },
@@ -196,8 +202,9 @@ export const NEGOTIATION_TEMPLATES = [
     id: "remote_flexibility",
     label: "Ask — Remote Flexibility",
     build: (app) => {
-      const company = app.company ?? "your company";
-      const role = app.role_title ?? "the role";
+      const company = app.company;
+      const role = app.role_title;
+      if (!role || !company) return INCOMPLETE_OFFER_MSG;
       return `Hi [Hiring Manager],\n\nThank you for the offer for ${role} at ${company}. I'm very excited to join the team.\n\nI wanted to discuss the remote/hybrid policy. I work most effectively with some flexibility in location and was wondering if we could explore a [X days remote] arrangement. I'm confident this won't impact my availability or output — I'm happy to come in whenever collaboration is needed.\n\nThank you for considering this. I'm eager to find an arrangement that works for everyone.\n\nBest regards,\n[Your Name]`;
     },
   },
