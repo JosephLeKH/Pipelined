@@ -149,13 +149,56 @@ export const OFFER_STAGE = "Offer";
 
 export const OFFER_FIELDS = [
   { key: "base_salary", label: "Base Salary", type: "currency" },
-  { key: "total_comp", label: "Total Comp", type: "currency" },
   { key: "equity", label: "Equity", type: "text" },
+  { key: "equity_annual_value", label: "Equity (Annual $)", type: "currency" },
+  { key: "vesting_years", label: "Vesting (years)", type: "text" },
   { key: "signing_bonus", label: "Signing Bonus", type: "currency" },
+  { key: "total_comp", label: "Total Comp", type: "currency" },
   { key: "benefits", label: "Benefits", type: "text" },
   { key: "start_date", label: "Start Date", type: "text" },
   { key: "location", label: "Location", type: "text" },
   { key: "remote_policy", label: "Remote Policy", type: "text" },
   { key: "deadline", label: "Deadline", type: "text" },
   { key: "notes", label: "Notes", type: "text" },
+];
+
+export const NEGOTIATION_TEMPLATES = [
+  {
+    id: "counter_salary",
+    label: "Counter — Higher Base",
+    build: (app) => {
+      const role = app.role_title ?? "the role";
+      const company = app.company ?? "your company";
+      const base = app.offer_details?.base_salary;
+      const baseStr = base ? `$${Number(base).toLocaleString()}` : "[current base]";
+      return `Hi [Hiring Manager],\n\nThank you so much for the offer to join ${company} as ${role}. I'm genuinely excited about this opportunity and the team.\n\nAfter careful consideration of my experience and market data, I was hoping we could discuss the base salary. The current offer of ${baseStr} is slightly below what I was targeting. Would you be open to [target]?\n\nI'm very enthusiastic about the role and confident I can make an immediate impact. I appreciate your consideration and look forward to your response.\n\nBest regards,\n[Your Name]`;
+    },
+  },
+  {
+    id: "equity_ask",
+    label: "Counter — More Equity",
+    build: (app) => {
+      const role = app.role_title ?? "the role";
+      const company = app.company ?? "your company";
+      return `Hi [Hiring Manager],\n\nThank you for the offer for the ${role} position at ${company}. I'm very excited about joining the team.\n\nI'd love to discuss the equity component of the package. Given my long-term commitment to ${company}'s mission, I'd like to explore whether there's flexibility to increase the equity grant from the current amount to [target equity].\n\nI believe this adjustment would better reflect the value I'll bring and align our long-term interests. Happy to discuss further at your convenience.\n\nBest regards,\n[Your Name]`;
+    },
+  },
+  {
+    id: "signing_bonus",
+    label: "Ask — Signing Bonus",
+    build: (app) => {
+      const company = app.company ?? "your company";
+      const role = app.role_title ?? "the role";
+      return `Hi [Hiring Manager],\n\nThank you for the offer to join ${company} as ${role}. I'm thrilled about the opportunity.\n\nI wanted to ask whether there's flexibility to include a signing bonus. I have some transition costs and deferred compensation from my current position that I'd be leaving behind. A signing bonus of [amount] would help bridge this gap.\n\nI'm committed to making this work and look forward to contributing to the team from day one.\n\nBest regards,\n[Your Name]`;
+    },
+  },
+  {
+    id: "remote_flexibility",
+    label: "Ask — Remote Flexibility",
+    build: (app) => {
+      const company = app.company ?? "your company";
+      const role = app.role_title ?? "the role";
+      return `Hi [Hiring Manager],\n\nThank you for the offer for ${role} at ${company}. I'm very excited to join the team.\n\nI wanted to discuss the remote/hybrid policy. I work most effectively with some flexibility in location and was wondering if we could explore a [X days remote] arrangement. I'm confident this won't impact my availability or output — I'm happy to come in whenever collaboration is needed.\n\nThank you for considering this. I'm eager to find an arrangement that works for everyone.\n\nBest regards,\n[Your Name]`;
+    },
+  },
 ];

@@ -10,6 +10,7 @@ import SaveSearchPopover from "../components/SaveSearchPopover";
 import SavedSearchesSidebar from "../components/SavedSearchesSidebar";
 import { JobBoardContent } from "../components/JobBoardContent";
 import { JobFilters } from "../components/JobFilters";
+import { JobRecommendations } from "../components/JobRecommendations";
 import { useJobBoardState } from "../hooks/useJobBoardState";
 import { BUTTON_SECONDARY } from "../lib/designTokens";
 
@@ -46,7 +47,8 @@ function JobBoard() {
         <aside className="hidden w-56 shrink-0 lg:block">
           <SavedSearchesSidebar onApply={handleApplySavedSearch} />
         </aside>
-        <div className="flex min-w-0 flex-1 flex-col gap-4">
+        <div className="flex min-w-0 flex-1 flex-col gap-6">
+          {!hasActiveFilters && <JobRecommendations onSelectJob={setSelectedJob} />}
           <JobBoardContent isLoading={isLoading} error={error} jobs={jobs} total={total} hasFilters={hasActiveFilters} hasMore={hasMore} onClearFilters={handleClearFilters} onLoadMore={handleLoadMore} onSelectJob={setSelectedJob} refetch={refetch} />
         </div>
       </div>

@@ -37,6 +37,11 @@ class JobListingResponse(BaseModel):
         )
 
 
+class JobRecommendationResponse(JobListingResponse):
+    score: int
+    reason: str
+
+
 class JobListQuery(BaseModel):
     model_config = ConfigDict(strict=False)
 

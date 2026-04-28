@@ -18,8 +18,8 @@ describe("OfferDetailsSection", () => {
     render(<OfferDetailsSection application={mockApp} onUpdate={vi.fn()} />);
 
     expect(screen.getByRole("button", { name: /offer details/i })).toBeInTheDocument();
-    expect(screen.getByText(/base salary/i)).toBeInTheDocument();
-    expect(screen.getByText(/equity/i)).toBeInTheDocument();
+    expect(screen.getByText("Base Salary")).toBeInTheDocument();
+    expect(screen.getByText("Equity")).toBeInTheDocument();
   });
 
   it("should collapse and expand when toggle is clicked", () => {
@@ -37,10 +37,10 @@ describe("OfferDetailsSection", () => {
   it("should enter edit mode on field click", () => {
     render(<OfferDetailsSection application={mockApp} onUpdate={vi.fn()} />);
 
-    const equityBtn = screen.getByRole("button", { name: /edit equity/i });
+    const equityBtn = screen.getByRole("button", { name: "Edit Equity" });
     fireEvent.click(equityBtn);
 
-    expect(screen.getByRole("textbox", { name: /equity/i })).toBeInTheDocument();
+    expect(screen.getByRole("textbox", { name: "Equity" })).toBeInTheDocument();
   });
 
   it("should call onUpdate with merged offer_details on currency field blur", () => {
@@ -63,10 +63,10 @@ describe("OfferDetailsSection", () => {
     const onUpdate = vi.fn();
     render(<OfferDetailsSection application={mockApp} onUpdate={onUpdate} />);
 
-    const equityBtn = screen.getByRole("button", { name: /edit equity/i });
+    const equityBtn = screen.getByRole("button", { name: "Edit Equity" });
     fireEvent.click(equityBtn);
 
-    const input = screen.getByRole("textbox", { name: /equity/i });
+    const input = screen.getByRole("textbox", { name: "Equity" });
     fireEvent.change(input, { target: { value: "" } });
     fireEvent.blur(input, { target: { value: "" } });
 

@@ -83,8 +83,11 @@ class OfferDetails(BaseModel):
     base_salary: int | None = None
     total_comp: int | None = None
     equity: str | None = Field(None, max_length=MAX_OFFER_TEXT_FIELD_LENGTH)
+    equity_annual_value: int | None = None
+    vesting_years: int | None = None
     signing_bonus: int | None = None
     benefits: str | None = Field(None, max_length=MAX_OFFER_TEXT_FIELD_LENGTH)
+    benefits_breakdown: dict | None = None
     start_date: str | None = Field(None, max_length=50)
     location: str | None = Field(None, max_length=MAX_LOCATION_LENGTH)
     remote_policy: str | None = Field(None, max_length=MAX_OFFER_TEXT_FIELD_LENGTH)

@@ -81,9 +81,9 @@ describe("OfferComparison", () => {
 
     renderPage();
 
-    expect(screen.getByText(/base salary/i)).toBeInTheDocument();
-    expect(screen.getByText(/total comp/i)).toBeInTheDocument();
-    expect(screen.getByText(/equity/i)).toBeInTheDocument();
+    expect(screen.getByText("Base Salary")).toBeInTheDocument();
+    expect(screen.getByText("Total Comp")).toBeInTheDocument();
+    expect(screen.getByText("Equity")).toBeInTheDocument();
   });
 
   it("should trigger confetti and show winner badge on mark winner", async () => {

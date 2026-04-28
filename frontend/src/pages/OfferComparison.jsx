@@ -2,13 +2,17 @@
 
 import { useState, useCallback } from "react";
 import confetti from "canvas-confetti";
+import Download from "lucide-react/dist/esm/icons/download";
+import Handshake from "lucide-react/dist/esm/icons/handshake";
+import LayoutDashboard from "lucide-react/dist/esm/icons/layout-dashboard";
 import Trophy from "lucide-react/dist/esm/icons/trophy";
 
 import NavBar from "../components/NavBar";
+import { OfferNegotiationPanel } from "../components/OfferNegotiationPanel";
 import { useApplications } from "../hooks/useApplications";
 import { useUpdateApplication } from "../hooks/useApplications";
 import { OFFER_FIELDS, OFFER_STAGE } from "../lib/constants";
-import { INPUT_BASE, SPINNER_SM } from "../lib/designTokens";
+import { INPUT_BASE, SPINNER_SM, BUTTON_SECONDARY } from "../lib/designTokens";
 import { formatUSD } from "../lib/currencyUtils";
 
 const CONFETTI_CONFIG = { particleCount: 150, spread: 80, origin: { y: 0.5 } };
@@ -104,7 +108,7 @@ function EmptyState() {
 
 function OfferComparisonHeader() {
   return (
-    <h1 className="mb-6 font-display text-2xl font-bold text-gray-900 dark:text-gray-100">
+    <h1 className="font-display text-2xl font-bold text-gray-900 dark:text-gray-100">
       Offer Comparison
     </h1>
   );
@@ -183,10 +187,39 @@ function OfferComparisonTable({ apps, winnerId, handleSave, handleMarkWinner }) 
   );
 }
 
+const TABS = [
+  { id: "compare", label: "Compare", Icon: LayoutDashboard },
+  { id: "negotiate", label: "Negotiate", Icon: Handshake },
+];
+
+function TabBar({ activeTab, onTabChange }) {
+  return (
+    <div className="flex gap-1 rounded-lg bg-gray-100 p-1 dark:bg-gray-800" role="tablist">
+      {TABS.map(({ id, label, Icon }) => (
+        <button
+          key={id}
+          role="tab"
+          aria-selected={activeTab === id}
+          onClick={() => onTabChange(id)}
+          className={`flex items-center gap-1.5 rounded-md px-4 py-1.5 text-sm font-medium transition-colors ${
+            activeTab === id
+              ? "bg-white text-gray-900 shadow-sm dark:bg-gray-700 dark:text-gray-100"
+              : "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+          }`}
+        >
+          <Icon className="h-4 w-4" aria-hidden="true" />
+          {label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 function OfferComparison() {
   const { data, isLoading, error } = useApplications({ stage: OFFER_STAGE, limit: 100 });
   const { mutate: updateApp } = useUpdateApplication();
   const [winnerId, setWinnerId] = useState(null);
+  const [activeTab, setActiveTab] = useState("compare");
 
   const handleSave = useCallback(
     (appId, fieldKey, newVal, currentOfferDetails) => {
@@ -213,8 +246,25 @@ function OfferComparison() {
     <>
       <NavBar />
       <main className="px-4 sm:px-6 py-8">
-        <OfferComparisonHeader />
-        <OfferComparisonTable apps={apps} winnerId={winnerId} handleSave={handleSave} handleMarkWinner={handleMarkWinner} />
+        <div className="mb-6 flex items-center justify-between gap-4">
+          <OfferComparisonHeader />
+          <div className="flex items-center gap-3">
+            <TabBar activeTab={activeTab} onTabChange={setActiveTab} />
+            <button
+              type="button"
+              onClick={() => window.print()}
+              className={`flex items-center gap-1.5 ${BUTTON_SECONDARY}`}
+              aria-label="Export as PDF"
+            >
+              <Download className="h-4 w-4" aria-hidden="true" />
+              Export PDF
+            </button>
+          </div>
+        </div>
+        {activeTab === "compare" && (
+          <OfferComparisonTable apps={apps} winnerId={winnerId} handleSave={handleSave} handleMarkWinner={handleMarkWinner} />
+        )}
+        {activeTab === "negotiate" && <OfferNegotiationPanel apps={apps} />}
       </main>
     </>
   );

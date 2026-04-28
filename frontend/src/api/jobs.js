@@ -24,3 +24,8 @@ export async function fetchJobs(filters = {}) {
 export async function fetchJob(id) {
   return client.get(`/jobs/${id}`);
 }
+
+/** Fetch personalized job recommendations for the authenticated user. */
+export async function fetchRecommendedJobs() {
+  return client.get("/jobs/recommended");
+}

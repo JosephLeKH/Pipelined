@@ -12,6 +12,7 @@ from jobs.schemas import (
     MAX_PAGE_SIZE,
     JobListQuery,
     JobListingResponse,
+    JobRecommendationResponse,
     ValidCompanyType,
     ValidExperienceLevel,
     ValidRemoteStatus,
@@ -90,6 +91,24 @@ async def list_jobs(
             "per_page": per_page,
         },
     }
+
+
+@router.get("/recommended", status_code=200)
+async def get_recommended_jobs(
+    user: dict = Depends(get_current_user),
+) -> dict:
+    """Return personalized job recommendations for the authenticated user."""
+    user_id = str(user["_id"])
+    docs = await jobs_service.get_recommended_listings(user_id)
+    items = [
+        JobRecommendationResponse(
+            **JobListingResponse.from_doc(d).model_dump(),
+            score=d["_recommendation_score"],
+            reason=d["_recommendation_reason"],
+        )
+        for d in docs
+    ]
+    return {"data": items}
 
 
 @router.get("/{listing_id}", status_code=200)

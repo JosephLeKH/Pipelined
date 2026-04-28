@@ -98,6 +98,93 @@ async def _fetch_listings_and_count(
     return total, docs
 
 
+MAX_RECOMMENDATIONS = 8
+CANDIDATE_POOL_LIMIT = 200
+SCORE_SAVED_SEARCH_MATCH = 50
+SCORE_OFFER_PATTERN_MATCH = 30
+SCORE_ATTRIBUTE_MATCH = 20
+
+
+def _score_job(
+    doc: dict,
+    search_terms: list[str],
+    search_filters: list[dict],
+    offer_remotes: set[str],
+    offer_company_types: set[str],
+) -> tuple[int, str]:
+    """Return (score, reason) for a single job doc."""
+    score = 0
+    reasons: list[str] = []
+    role = (doc.get("role") or "").lower()
+    company = (doc.get("company") or "").lower()
+
+    for term in search_terms:
+        if term and (term in role or term in company):
+            score += SCORE_SAVED_SEARCH_MATCH
+            reasons.append(f'matches your search "{term}"')
+            break
+
+    for sf in search_filters:
+        remote = sf.get("remote_status")
+        company_type = sf.get("company_type")
+        if remote and doc.get("remote_status") == remote:
+            score += SCORE_SAVED_SEARCH_MATCH
+            reasons.append(f"{remote} role")
+            break
+        if company_type and doc.get("company_type") == company_type:
+            score += SCORE_SAVED_SEARCH_MATCH
+            reasons.append(f"{company_type} company")
+            break
+
+    if doc.get("remote_status") in offer_remotes:
+        score += SCORE_OFFER_PATTERN_MATCH
+        reasons.append("similar to your offers")
+    if doc.get("company_type") in offer_company_types:
+        score += SCORE_ATTRIBUTE_MATCH
+
+    return score, reasons[0] if reasons else "relevant to your profile"
+
+
+async def get_recommended_listings(user_id: str) -> list[dict]:
+    """Return up to MAX_RECOMMENDATIONS scored job docs for the user."""
+    import asyncio
+    from saved_searches.service import list_saved_searches  # noqa: PLC0415
+
+    col = get_collection("job_listings")
+    apps_col = get_collection("applications")
+    uid_obj = ObjectId(user_id)
+
+    saved_searches_coro = list_saved_searches(user_id)
+    offer_apps_coro = apps_col.find(
+        {"user_id": uid_obj, "stage": "offer"},
+        projection={"remote_status": 1, "company_type": 1, "_id": 0},
+    ).to_list(length=50)
+    saved_searches, offer_apps = await asyncio.gather(saved_searches_coro, offer_apps_coro)
+
+    search_terms: list[str] = [
+        (s.get("query") or "").lower() for s in saved_searches if s.get("query")
+    ]
+    search_filters: list[dict] = [s.get("filters", {}) for s in saved_searches]
+    offer_remotes: set[str] = {a["remote_status"] for a in offer_apps if a.get("remote_status")}
+    offer_company_types: set[str] = {a["company_type"] for a in offer_apps if a.get("company_type")}
+
+    candidate_filter: dict = {"is_stale": {"$ne": True}}
+    candidates = await col.find(candidate_filter).sort("ingested_at", -1).limit(CANDIDATE_POOL_LIMIT).to_list(length=CANDIDATE_POOL_LIMIT)
+
+    scored: list[tuple[int, str, dict]] = []
+    for doc in candidates:
+        score, reason = _score_job(doc, search_terms, search_filters, offer_remotes, offer_company_types)
+        scored.append((score, reason, doc))
+
+    scored.sort(key=lambda t: t[0], reverse=True)
+    result = []
+    for score, reason, doc in scored[:MAX_RECOMMENDATIONS]:
+        doc["_recommendation_score"] = score
+        doc["_recommendation_reason"] = reason
+        result.append(doc)
+    return result
+
+
 async def get_listing(listing_id: str) -> dict | None:
     """Return a single job listing doc by id, or None if not found."""
     col = get_collection("job_listings")
