@@ -21,6 +21,29 @@ import { useDashboardFilters } from "../hooks/useDashboardFilters";
 import { VIEW_MODE_STORAGE_KEY } from "../lib/constants";
 import { trackEvent } from "../lib/analytics";
 
+function DashboardContent({ viewMode, onSetViewMode, isExporting, onExport, filters, onSelect, onAdd, onImportCsv, shortcutsEnabled, onClearFilters, selectedApp, onClosePanel, isModalOpen, isImportOpen, onCloseModal, onCloseImport, followUpsDue, onViewFollowUps }) {
+  return (
+    <main className="flex-1 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 space-y-6">
+        <DashboardToolbar viewMode={viewMode} onSetViewMode={onSetViewMode} isExporting={isExporting} onImport={onImportCsv} onExport={onExport} onAdd={onAdd} />
+        <OnboardingChecklist onAdd={onAdd} />
+        <FollowUpBanner followUpsDue={followUpsDue} onView={onViewFollowUps} />
+        <GoalProgress />
+        <StatsBar />
+        <FilterBar />
+        {viewMode === "kanban" ? (
+          <KanbanBoard filters={filters} onSelect={onSelect} />
+        ) : (
+          <ApplicationList filters={filters} onSelect={onSelect} onAdd={onAdd} onImportCsv={onImportCsv} shortcutsEnabled={shortcutsEnabled} onClearFilters={onClearFilters} />
+        )}
+        <DetailPanel application={selectedApp ?? null} onClose={onClosePanel} />
+        <ManualAddForm isOpen={isModalOpen} onClose={onCloseModal} />
+        <CsvImportModal isOpen={isImportOpen} onClose={onCloseImport} />
+      </div>
+    </main>
+  );
+}
+
 function Dashboard() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isImportOpen, setIsImportOpen] = useState(false);
@@ -32,42 +55,27 @@ function Dashboard() {
   const { filters, selectedId, includeArchived, handleSelect, handleClosePanel, handleClearFilters, handleViewFollowUps } = useDashboardFilters();
   const { data: selectedApp } = useApplication(selectedId);
   const { data: stats } = useApplicationStats();
-
   const handleExport = useCallback(async () => {
     await handleCsvExport(includeArchived);
     trackEvent("csv_exported", { count: stats?.data?.total_applied ?? 0 });
   }, [handleCsvExport, includeArchived, stats]);
-
   const handleSetViewMode = useCallback((mode) => {
     setViewMode(mode);
     try { localStorage.setItem(VIEW_MODE_STORAGE_KEY, mode); }
     catch { console.warn("[dashboard] Failed to persist view mode to localStorage"); }
   }, []);
-
   const shortcutsEnabled = !isModalOpen && !isImportOpen;
   useHotkeys("a", () => setIsModalOpen(true), { enabled: shortcutsEnabled });
-
   return (
     <div className="flex min-h-screen flex-col bg-surface-secondary">
       <NavBar />
-      <main className="flex-1 py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 space-y-6">
-          <DashboardToolbar viewMode={viewMode} onSetViewMode={handleSetViewMode} isExporting={isExporting} onImport={() => setIsImportOpen(true)} onExport={handleExport} onAdd={() => setIsModalOpen(true)} />
-          <OnboardingChecklist onAdd={() => setIsModalOpen(true)} />
-          <FollowUpBanner followUpsDue={stats?.follow_ups_due ?? 0} onView={handleViewFollowUps} />
-          <GoalProgress />
-          <StatsBar />
-          <FilterBar />
-          {viewMode === "kanban" ? (
-            <KanbanBoard filters={filters} onSelect={handleSelect} />
-          ) : (
-            <ApplicationList filters={filters} onSelect={handleSelect} onAdd={() => setIsModalOpen(true)} onImportCsv={() => setIsImportOpen(true)} shortcutsEnabled={shortcutsEnabled} onClearFilters={handleClearFilters} />
-          )}
-          <DetailPanel application={selectedApp ?? null} onClose={handleClosePanel} />
-          <ManualAddForm isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-          <CsvImportModal isOpen={isImportOpen} onClose={() => setIsImportOpen(false)} />
-        </div>
-      </main>
+      <DashboardContent
+        viewMode={viewMode} onSetViewMode={handleSetViewMode} isExporting={isExporting} onExport={handleExport}
+        filters={filters} onSelect={handleSelect} onAdd={() => setIsModalOpen(true)} onImportCsv={() => setIsImportOpen(true)}
+        shortcutsEnabled={shortcutsEnabled} onClearFilters={handleClearFilters} selectedApp={selectedApp} onClosePanel={handleClosePanel}
+        isModalOpen={isModalOpen} isImportOpen={isImportOpen} onCloseModal={() => setIsModalOpen(false)} onCloseImport={() => setIsImportOpen(false)}
+        followUpsDue={stats?.follow_ups_due ?? 0} onViewFollowUps={handleViewFollowUps}
+      />
     </div>
   );
 }

@@ -73,10 +73,12 @@ function OnboardingChecklist({ onAdd }) {
   ].filter(Boolean);
 
   useEffect(() => {
-    completedSteps.forEach((step) => {
-      trackEvent("onboarding_step_completed", { step });
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const steps = [
+      hasExtensionApp && "install_extension",
+      hasAddedApp && "add_application",
+      hasCustomStages && "customize_stages",
+    ].filter(Boolean);
+    steps.forEach((step) => trackEvent("onboarding_step_completed", { step }));
   }, [hasExtensionApp, hasAddedApp, hasCustomStages]);
 
   const handleDismiss = () => {

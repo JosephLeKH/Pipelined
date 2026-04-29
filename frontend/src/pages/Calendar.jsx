@@ -52,33 +52,12 @@ function Calendar() {
   const today = new Date();
   const [month, setMonth] = useState(today.getMonth() + 1);
   const [year, setYear] = useState(today.getFullYear());
-
   const { data: eventsEnv, isLoading: eventsLoading, error: eventsError, refetch: eventsRefetch } = useCalendarEvents(month, year);
   const events = eventsEnv?.data ?? [];
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [newEventForm, setNewEventForm] = useState(null);
-
-  const handleMonthChange = useCallback((m, y) => {
-    setMonth(m);
-    setYear(y);
-  }, []);
-
-  const handleEventClick = useCallback((event) => {
-    setSelectedEvent(event);
-  }, []);
-
-  const handleDayClick = useCallback((date) => {
-    setNewEventForm({ date, applicationId: null });
-  }, []);
-
-  const handleCloseEventDetail = useCallback(() => {
-    setSelectedEvent(null);
-  }, []);
-
-  const handleCloseForm = useCallback(() => {
-    setNewEventForm(null);
-  }, []);
-
+  const handleMonthChange = useCallback((m, y) => { setMonth(m); setYear(y); }, []);
+  const handleDayClick = useCallback((date) => setNewEventForm({ date, applicationId: null }), []);
   return (
     <div className="flex min-h-screen flex-col bg-surface-secondary dark:bg-dark-bg">
       <NavBar />
@@ -92,10 +71,10 @@ function Calendar() {
         selectedEvent={selectedEvent}
         newEventForm={newEventForm}
         onMonthChange={handleMonthChange}
-        onEventClick={handleEventClick}
+        onEventClick={setSelectedEvent}
         onDayClick={handleDayClick}
-        onCloseEventDetail={handleCloseEventDetail}
-        onCloseForm={handleCloseForm}
+        onCloseEventDetail={() => setSelectedEvent(null)}
+        onCloseForm={() => setNewEventForm(null)}
       />
     </div>
   );

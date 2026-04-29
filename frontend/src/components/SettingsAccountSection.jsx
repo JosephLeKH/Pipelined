@@ -16,6 +16,15 @@ const ERROR_MESSAGES = {
   PASSWORD_TOO_WEAK: "New password must have at least 8 characters, one uppercase letter, and one digit.",
 };
 
+function PasswordField({ id, label, value, onChange }) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <label htmlFor={id} className={INPUT_LABEL}>{label}</label>
+      <input id={id} type="password" value={value} onChange={onChange} className={INPUT_BASE} />
+    </div>
+  );
+}
+
 function ChangePasswordCard() {
   const [current, setCurrent] = useState("");
   const [newPw, setNewPw] = useState("");
@@ -37,9 +46,7 @@ function ChangePasswordCard() {
     try {
       await changePassword({ current_password: trimmedCurrent, new_password: trimmedNew });
       toast.success("Password changed successfully.");
-      setCurrent("");
-      setNewPw("");
-      setConfirm("");
+      setCurrent(""); setNewPw(""); setConfirm("");
     } catch (err) {
       const code = err?.response?.data?.detail?.code;
       setPwError(ERROR_MESSAGES[code] ?? "Failed to change password. Please try again.");
@@ -48,61 +55,39 @@ function ChangePasswordCard() {
 
   return (
     <div className={`${CARD_BASE} p-6`}>
-      <h2 className="mb-1 text-lg font-semibold font-display text-gray-900 dark:text-gray-100">
-        Change password
-      </h2>
+      <h2 className="mb-1 text-lg font-semibold font-display text-gray-900 dark:text-gray-100">Change password</h2>
       <p className="mb-5 text-sm text-gray-500 dark:text-gray-400">
         Update your account password. Choose a strong password you don't use elsewhere.
       </p>
       <div className="flex max-w-sm flex-col gap-4">
-        <div className="flex flex-col gap-1.5">
-          <label htmlFor="pw-current" className={INPUT_LABEL}>
-            Current password
-          </label>
-          <input
-            id="pw-current"
-            type="password"
-            value={current}
-            onChange={(e) => setCurrent(e.target.value)}
-            className={INPUT_BASE}
-          />
-        </div>
-        <div className="flex flex-col gap-1.5">
-          <label htmlFor="pw-new" className={INPUT_LABEL}>
-            New password
-          </label>
-          <input
-            id="pw-new"
-            type="password"
-            value={newPw}
-            onChange={(e) => setNewPw(e.target.value)}
-            className={INPUT_BASE}
-          />
-        </div>
-        <div className="flex flex-col gap-1.5">
-          <label htmlFor="pw-confirm" className={INPUT_LABEL}>
-            Confirm new password
-          </label>
-          <input
-            id="pw-confirm"
-            type="password"
-            value={confirm}
-            onChange={(e) => setConfirm(e.target.value)}
-            className={INPUT_BASE}
-          />
-        </div>
-        {pwError && (
-          <p role="alert" className="text-sm text-red-600 dark:text-red-400">{pwError}</p>
-        )}
+        <PasswordField id="pw-current" label="Current password" value={current} onChange={(e) => setCurrent(e.target.value)} />
+        <PasswordField id="pw-new" label="New password" value={newPw} onChange={(e) => setNewPw(e.target.value)} />
+        <PasswordField id="pw-confirm" label="Confirm new password" value={confirm} onChange={(e) => setConfirm(e.target.value)} />
+        {pwError && <p role="alert" className="text-sm text-red-600 dark:text-red-400">{pwError}</p>}
         <div className="flex justify-end">
-          <button
-            type="button"
-            onClick={handleSubmit}
-            disabled={isPending}
-            className={`flex items-center gap-2 ${BUTTON_PRIMARY}`}
-          >
+          <button type="button" onClick={handleSubmit} disabled={isPending} className={`flex items-center gap-2 ${BUTTON_PRIMARY}`}>
             {isPending && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
             Change password
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DeleteAccountModal({ onClose, onConfirm, isPending }) {
+  return (
+    <div className={MODAL_BACKDROP} role="dialog" aria-modal="true" aria-labelledby="delete-acct-title">
+      <div className={`${MODAL_CARD} max-w-sm p-6`}>
+        <h3 id="delete-acct-title" className="text-base font-semibold text-gray-900 dark:text-gray-100">Delete account?</h3>
+        <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+          This will permanently delete your account and all data. This action cannot be undone.
+        </p>
+        <div className="mt-5 flex justify-end gap-3">
+          <button type="button" onClick={onClose} className={BUTTON_SECONDARY}>Cancel</button>
+          <button type="button" onClick={onConfirm} disabled={isPending} className={`flex items-center gap-2 ${BUTTON_DANGER}`}>
+            {isPending && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
+            Delete my account
           </button>
         </div>
       </div>
@@ -146,45 +131,7 @@ function DangerZone() {
           </div>
         </div>
       </div>
-
-      {showModal && (
-        <div
-          className={MODAL_BACKDROP}
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="delete-acct-title"
-        >
-          <div className={`${MODAL_CARD} max-w-sm p-6`}>
-            <h3
-              id="delete-acct-title"
-              className="text-base font-semibold text-gray-900 dark:text-gray-100"
-            >
-              Delete account?
-            </h3>
-            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-              This will permanently delete your account and all data. This action cannot be undone.
-            </p>
-            <div className="mt-5 flex justify-end gap-3">
-              <button
-                type="button"
-                onClick={() => setShowModal(false)}
-                className={BUTTON_SECONDARY}
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={handleDelete}
-                disabled={isPending}
-                className={`flex items-center gap-2 ${BUTTON_DANGER}`}
-              >
-                {isPending && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
-                Delete my account
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {showModal && <DeleteAccountModal onClose={() => setShowModal(false)} onConfirm={handleDelete} isPending={isPending} />}
     </>
   );
 }

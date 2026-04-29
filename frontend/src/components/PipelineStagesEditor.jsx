@@ -46,15 +46,8 @@ function useStagesEditor(initialStages, onSave) {
     if (!over || active.id === over.id) return;
     setStages((prev) => arrayMove(prev, prev.findIndex((s) => s.id === active.id), prev.findIndex((s) => s.id === over.id)));
   }, []);
-
-  const handleRename = useCallback((id, value) => {
-    setStages((prev) => prev.map((s) => (s.id === id ? { ...s, name: value } : s)));
-  }, []);
-
-  const handleRemove = useCallback((id) => {
-    setStages((prev) => prev.filter((s) => s.id !== id));
-  }, []);
-
+  const handleRename = useCallback((id, value) => setStages((prev) => prev.map((s) => (s.id === id ? { ...s, name: value } : s))), []);
+  const handleRemove = useCallback((id) => setStages((prev) => prev.filter((s) => s.id !== id)), []);
   const handleAdd = useCallback(() => {
     const trimmed = newStageName.trim();
     if (!trimmed) return;

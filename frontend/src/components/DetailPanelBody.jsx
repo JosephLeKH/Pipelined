@@ -81,6 +81,43 @@ function TagsSection({ application, onUpdate }) {
   );
 }
 
+function PrepChecklistView({ checklist, onToggle, onDelete, onAdd }) {
+  const checkedCount = checklist.filter((i) => i.checked).length;
+  return (
+    <div className="flex flex-col gap-1.5">
+      <div className="flex items-center justify-between">
+        <span className="text-xs font-medium uppercase text-gray-400 dark:text-gray-500">Prep Checklist</span>
+        {checklist.length > 0 && (
+          <span className={`text-xs font-medium tabular-nums ${checkedCount === checklist.length ? "text-green-600 dark:text-green-400" : "text-gray-500"}`}>
+            {checkedCount} / {checklist.length}
+          </span>
+        )}
+      </div>
+      <div className="flex flex-col gap-0.5">
+        {checklist.map((item) => (
+          <ChecklistItem key={item.id} item={item} onToggle={onToggle} onDelete={onDelete} />
+        ))}
+        {checklist.length === 0 && (
+          <div className="flex flex-col gap-1 py-1">
+            <p className="text-xs text-gray-400 dark:text-gray-500 mb-1">Suggestions:</p>
+            {PREP_CHECKLIST_STARTER_SUGGESTIONS.map((s) => (
+              <button
+                key={s}
+                type="button"
+                onClick={() => onAdd(s)}
+                className="text-left text-xs text-brand-600 hover:text-brand-800 hover:underline transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 rounded dark:text-brand-400 dark:hover:text-brand-300"
+              >
+                + {s}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+      <AddChecklistItem onAdd={onAdd} />
+    </div>
+  );
+}
+
 function ApplicationPrepSection({ applicationId, initialChecklist }) {
   const [checklist, setChecklist] = useState(initialChecklist ?? []);
   const { mutate: updateApp } = useUpdateApplication();
@@ -111,39 +148,44 @@ function ApplicationPrepSection({ applicationId, initialChecklist }) {
     });
   }, [applicationId, updateApp]);
 
-  const checkedCount = checklist.filter((i) => i.checked).length;
+  return <PrepChecklistView checklist={checklist} onToggle={handleToggle} onAdd={handleAdd} onDelete={handleDelete} />;
+}
 
+function JobPostingLink({ url }) {
+  if (!url) return null;
+  return (
+    <a href={url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-sm text-brand-600 hover:underline" aria-label="Job posting">
+      <ExternalLink className="h-3.5 w-3.5" />
+      Job posting
+    </a>
+  );
+}
+
+function StageSelector({ stageOptions, currentStage, onStageChange }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <div className="flex items-center justify-between">
-        <span className="text-xs font-medium uppercase text-gray-400 dark:text-gray-500">Prep Checklist</span>
-        {checklist.length > 0 && (
-          <span className={`text-xs font-medium tabular-nums ${checkedCount === checklist.length ? "text-green-600 dark:text-green-400" : "text-gray-500"}`}>
-            {checkedCount} / {checklist.length}
-          </span>
-        )}
+      <span className="text-xs font-medium uppercase text-gray-400 dark:text-gray-500">Stage</span>
+      <div role="group" aria-label="Stage" className="flex flex-wrap gap-1.5">
+        {[...stageOptions, ...(stageOptions.includes(currentStage) ? [] : [currentStage])].map((s) => {
+          const active = s === currentStage;
+          const color = STAGE_COLORS[s] ?? DEFAULT_STAGE_COLOR;
+          return (
+            <button
+              key={s}
+              type="button"
+              onClick={() => onStageChange({ target: { value: s } })}
+              aria-pressed={active}
+              className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
+                active
+                  ? `${color.activeBg} border-transparent text-white`
+                  : `border-gray-300 bg-white text-gray-600 hover:bg-gray-50 transition-colors dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700`
+              }`}
+            >
+              {s}
+            </button>
+          );
+        })}
       </div>
-      <div className="flex flex-col gap-0.5">
-        {checklist.map((item) => (
-          <ChecklistItem key={item.id} item={item} onToggle={handleToggle} onDelete={handleDelete} />
-        ))}
-        {checklist.length === 0 && (
-          <div className="flex flex-col gap-1 py-1">
-            <p className="text-xs text-gray-400 dark:text-gray-500 mb-1">Suggestions:</p>
-            {PREP_CHECKLIST_STARTER_SUGGESTIONS.map((s) => (
-              <button
-                key={s}
-                type="button"
-                onClick={() => handleAdd(s)}
-                className="text-left text-xs text-brand-600 hover:text-brand-800 hover:underline transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 rounded dark:text-brand-400 dark:hover:text-brand-300"
-              >
-                + {s}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-      <AddChecklistItem onAdd={handleAdd} />
     </div>
   );
 }
@@ -161,48 +203,8 @@ export function PanelBody({ application, handleStageChange, handleUpdate, onAddE
         <DetailField label="Compensation" value={application.compensation} />
         <DetailField label="Company Type" value={application.company_type} />
       </div>
-      {application.source_url && (
-        <a
-          href={application.source_url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-1 text-sm text-brand-600 hover:underline"
-          aria-label="Job posting"
-        >
-          <ExternalLink className="h-3.5 w-3.5" />
-          Job posting
-        </a>
-      )}
-      <div className="flex flex-col gap-1.5">
-        <span className="text-xs font-medium uppercase text-gray-400 dark:text-gray-500">
-          Stage
-        </span>
-        <div
-          role="group"
-          aria-label="Stage"
-          className="flex flex-wrap gap-1.5"
-        >
-          {[...stageOptions, ...(stageOptions.includes(application.current_stage) ? [] : [application.current_stage])].map((s) => {
-            const active = s === application.current_stage;
-            const color = STAGE_COLORS[s] ?? DEFAULT_STAGE_COLOR;
-            return (
-              <button
-                key={s}
-                type="button"
-                onClick={() => handleStageChange({ target: { value: s } })}
-                aria-pressed={active}
-                className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
-                  active
-                    ? `${color.activeBg} border-transparent text-white`
-                    : `border-gray-300 bg-white text-gray-600 hover:bg-gray-50 transition-colors dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700`
-                }`}
-              >
-                {s}
-              </button>
-            );
-          })}
-        </div>
-      </div>
+      <JobPostingLink url={application.source_url} />
+      <StageSelector stageOptions={stageOptions} currentStage={application.current_stage} onStageChange={handleStageChange} />
       <TagsSection application={application} onUpdate={handleUpdate} />
       <FollowUpSection application={application} onUpdate={handleUpdate} />
       {application.current_stage === "Offer" && (
@@ -213,10 +215,7 @@ export function PanelBody({ application, handleStageChange, handleUpdate, onAddE
       <DetailPanelTimeline stageHistory={application.stage_history} applicationId={application.id} onAddEvent={onAddEvent} />
       <ContactsSection applicationId={application.id} />
       {(application.ai_analysis || user?.ai_scores_remaining_today === 0) && user?.has_resume && (
-        <ResumeFitSection
-          analysis={application.ai_analysis}
-          aiScoresRemainingToday={user?.ai_scores_remaining_today}
-        />
+        <ResumeFitSection analysis={application.ai_analysis} aiScoresRemainingToday={user?.ai_scores_remaining_today} />
       )}
     </div>
   );

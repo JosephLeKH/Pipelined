@@ -36,7 +36,7 @@ export function useJobBoardState() {
   const hasActiveFilters = Boolean(q || roleType || experienceLevel || remoteStatus || companyType || salaryMin || salaryMax);
   const filterKey = [q, roleType, experienceLevel, remoteStatus, companyType, salaryMin, salaryMax].join("|||");
 
-  useEffect(() => { setPerPage(DEFAULT_PER_PAGE); }, [filterKey]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { setPerPage(DEFAULT_PER_PAGE); }, [filterKey, setPerPage]);
 
   const filters = useMemo(() => {
     const f = { page: 1, per_page: perPage };
