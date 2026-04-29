@@ -28,7 +28,7 @@ export function KanbanColumn({ stage, applications, onSelect }) {
         ref={setNodeRef}
         style={{ maxHeight: COLUMN_MAX_HEIGHT_PX }}
         className={`flex flex-col gap-2 overflow-y-auto p-2 transition-colors ${
-          isOver ? "bg-brand-50" : "bg-surface-secondary"
+          isOver ? "bg-surface-secondary ring-2 ring-inset ring-brand-300" : "bg-surface-secondary"
         }`}
       >
         <SortableContext items={applications.map((a) => a.id)} strategy={verticalListSortingStrategy}>

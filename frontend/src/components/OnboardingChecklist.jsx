@@ -25,7 +25,7 @@ function StepRow({ id, label, description, done }) {
         : <Circle className="mt-0.5 h-5 w-5 shrink-0 text-gray-300 dark:text-gray-600" />
       }
       <div className="min-w-0">
-        <p className={`text-sm font-medium ${done ? "text-gray-400 line-through dark:text-gray-500" : "text-gray-900 dark:text-gray-100"}`}>
+        <p className={`text-sm font-medium ${done ? "text-gray-400 dark:text-gray-500" : "text-gray-900 dark:text-gray-100"}`}>
           {label}
         </p>
         {!done && description && (
@@ -89,14 +89,14 @@ function OnboardingChecklist({ onAdd }) {
 
   if (showSuccess) {
     return (
-      <div className="mb-4 rounded-lg border border-brand-200 bg-brand-50 p-4 text-center dark:border-brand-800 dark:bg-brand-900/20">
-        <p className="font-semibold text-brand-800 dark:text-brand-300">You are all set!</p>
+      <div className="mb-4 rounded-lg border border-border-default border-l-4 border-l-brand-500 bg-white p-4 text-center dark:bg-gray-800 dark:border-dark-border dark:border-l-brand-500">
+        <p className="font-semibold text-brand-700 dark:text-brand-300">You are all set!</p>
       </div>
     );
   }
 
   return (
-    <div className="mb-4 rounded-lg border border-brand-200 bg-brand-50 p-4 dark:border-brand-800 dark:bg-brand-900/20">
+    <div className="mb-4 rounded-lg border border-border-default border-l-4 border-l-brand-500 bg-white p-4 dark:bg-gray-800 dark:border-dark-border dark:border-l-brand-500">
       <div className="mb-3 flex items-center justify-between">
         <h2 className="font-semibold text-gray-900 dark:text-gray-100">Get started with Pipelined</h2>
         <button

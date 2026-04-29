@@ -98,8 +98,8 @@ describe("OnboardingChecklist", () => {
     render(<OnboardingChecklist onAdd={vi.fn()} />, { wrapper: Wrapper });
     const step2Label = await screen.findByText("Add your first application");
 
-    // Assert — step 2 label should be struck through (done)
-    expect(step2Label).toHaveClass("line-through");
+    // Assert — step 2 label should be muted (done)
+    expect(step2Label).toHaveClass("text-gray-400");
   });
 
   it("should show step 1 as checked when extension app exists", async () => {
@@ -117,8 +117,8 @@ describe("OnboardingChecklist", () => {
     render(<OnboardingChecklist onAdd={vi.fn()} />, { wrapper: Wrapper });
     const step1Label = await screen.findByText("Install the Chrome extension");
 
-    // Assert — step 1 label should be struck through (done)
-    expect(step1Label).toHaveClass("line-through");
+    // Assert — step 1 label should be muted (done)
+    expect(step1Label).toHaveClass("text-gray-400");
   });
 
   it("should call onAdd when Add Application action is clicked", () => {
