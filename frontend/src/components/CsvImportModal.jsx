@@ -105,19 +105,20 @@ function CsvImportModal({ isOpen, onClose }) {
             <X className="h-4 w-4" />
           </button>
         </div>
-        <div className="p-6">
-        <p className="mb-3 text-sm text-gray-500 dark:text-gray-400">
-          Upload a CSV with the following columns (required: <strong>company</strong>,{" "}
-          <strong>role_title</strong>):
-        </p>
-        <code className="mb-4 block overflow-x-auto whitespace-nowrap rounded bg-gray-100 px-3 py-2 text-xs text-gray-700 dark:bg-gray-700 dark:text-gray-300">
-          {SAMPLE_HEADERS}
-        </code>
-        <input ref={fileRef} type="file" accept={ACCEPTED_MIME} onChange={handleFileChange} aria-label="CSV file" autoFocus
-          className="mb-4 block w-full text-sm text-gray-600 file:mr-3 file:rounded file:border-0 file:bg-brand-50 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-brand-700 hover:file:bg-brand-100 dark:text-gray-300 dark:file:bg-brand-900/30 dark:file:text-brand-300"
-        />
-        {localError && <p role="alert" className="mb-3 text-sm text-red-600 dark:text-red-400">{localError}</p>}
-        <ImportResultDisplay result={result} errorsExpanded={errorsExpanded} setErrorsExpanded={setErrorsExpanded} />
+        <div className="px-6 py-4">
+          <p className="mb-3 text-sm text-gray-500 dark:text-gray-400">
+            Upload a CSV with the following columns (required: <strong>company</strong>,{" "}
+            <strong>role_title</strong>):
+          </p>
+          <code className="mb-4 block overflow-x-auto whitespace-nowrap rounded bg-gray-100 px-3 py-2 text-xs text-gray-700 dark:bg-gray-700 dark:text-gray-300">
+            {SAMPLE_HEADERS}
+          </code>
+          <input ref={fileRef} type="file" accept={ACCEPTED_MIME} onChange={handleFileChange} aria-label="CSV file" autoFocus
+            className="mb-4 block w-full text-sm text-gray-600 file:mr-3 file:rounded file:border-0 file:bg-brand-50 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-brand-700 hover:file:bg-brand-100 dark:text-gray-300 dark:file:bg-brand-900/30 dark:file:text-brand-300"
+          />
+          {localError && <p role="alert" className="mb-3 text-sm text-red-600 dark:text-red-400">{localError}</p>}
+          <ImportResultDisplay result={result} errorsExpanded={errorsExpanded} setErrorsExpanded={setErrorsExpanded} />
+        </div>
         <div className="flex justify-end gap-2 border-t border-border-default px-6 py-4">
           <button type="button" onClick={handleClose} className={`${BUTTON_SECONDARY} text-sm`}>Close</button>
           <button type="button" onClick={handleImport} disabled={!file || isPending} aria-label="Import CSV" className={`${BUTTON_PRIMARY} text-sm flex items-center gap-2`}>
@@ -126,7 +127,6 @@ function CsvImportModal({ isOpen, onClose }) {
               : <Upload className="h-4 w-4" aria-hidden="true" />}
             Import
           </button>
-        </div>
         </div>
       </div>
     </div>

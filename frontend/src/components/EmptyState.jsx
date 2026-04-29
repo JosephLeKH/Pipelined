@@ -16,9 +16,9 @@ function EmptyState({ title, description, icon: Icon, svg, actionButton }) {
       )}
       {buttons.length > 0 && (
         <div className="flex flex-wrap justify-center gap-2">
-          {buttons.map((btn, i) => (
+          {buttons.map((btn) => (
             <button
-              key={i}
+              key={btn.label}
               type="button"
               onClick={btn.onClick}
               className={`${BUTTON_PRIMARY} text-sm`}

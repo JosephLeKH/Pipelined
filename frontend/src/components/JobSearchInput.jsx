@@ -36,7 +36,7 @@ export default function JobSearchInput() {
       <SearchIcon className="pointer-events-none absolute left-3 h-4 w-4 text-gray-500" aria-hidden="true" />
       <input
         type="text"
-        aria-label="search jobs"
+        aria-label="Search jobs"
         value={searchValue}
         onChange={handleChange}
         placeholder="Role, company, description..."
