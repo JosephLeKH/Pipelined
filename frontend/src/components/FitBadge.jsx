@@ -12,7 +12,7 @@ function fitColor(score) {
     return "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400";
   }
   if (score >= FIT_MED_MIN) {
-    return "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-400";
+    return "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400";
   }
   if (score >= FIT_LOW_MIN) {
     return "bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-400";

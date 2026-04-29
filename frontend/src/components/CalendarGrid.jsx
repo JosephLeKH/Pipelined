@@ -110,7 +110,7 @@ function CalendarHeader({ month, year, onPrev, onNext, onToday }) {
         <button
           type="button"
           onClick={onToday}
-          className={`rounded-button ${BUTTON_SECONDARY}`}
+          className={BUTTON_SECONDARY}
         >
           Today
         </button>
@@ -118,7 +118,7 @@ function CalendarHeader({ month, year, onPrev, onNext, onToday }) {
           type="button"
           onClick={onPrev}
           aria-label="Previous month"
-          className={`rounded-button ${BUTTON_SECONDARY} p-1.5`}
+          className={`${BUTTON_SECONDARY} p-1.5`}
         >
           <ChevronLeft className="h-4 w-4" />
         </button>
@@ -126,7 +126,7 @@ function CalendarHeader({ month, year, onPrev, onNext, onToday }) {
           type="button"
           onClick={onNext}
           aria-label="Next month"
-          className={`rounded-button ${BUTTON_SECONDARY} p-1.5`}
+          className={`${BUTTON_SECONDARY} p-1.5`}
         >
           <ChevronRight className="h-4 w-4" />
         </button>

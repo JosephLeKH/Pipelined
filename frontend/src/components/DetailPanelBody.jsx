@@ -42,7 +42,7 @@ function FollowUpSection({ application, onUpdate }) {
         Follow up
       </label>
       {isOverdue && (
-        <div className="flex items-center gap-1.5 rounded bg-yellow-50 px-2 py-1.5 text-xs text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400">
+        <div className="flex items-center gap-1.5 rounded bg-amber-50 px-2 py-1.5 text-xs text-amber-700 dark:bg-amber-900/20 dark:text-amber-400">
           <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
           Follow-up overdue by {overdueDays} day{overdueDays !== 1 ? "s" : ""}
         </div>
