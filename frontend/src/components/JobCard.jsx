@@ -46,7 +46,7 @@ function JobCard({ job, onSelect }) {
       </div>
 
       {/* Role title */}
-      <h3 className="pr-2 text-base font-semibold font-sans leading-snug text-gray-700">
+      <h3 className="pr-2 text-base font-semibold font-display leading-snug text-gray-700">
         {job.role ?? "Untitled Role"}
       </h3>
 

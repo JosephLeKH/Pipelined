@@ -54,7 +54,7 @@ function NewEventForm({ initialDate, initialApplicationId, onClose }) {
             <X className="h-5 w-5 text-gray-500" />
           </button>
         </div>
-        <form onSubmit={hook.handleSubmit} className="flex flex-col gap-4 px-6 py-4">
+        <form id="new-event-form" onSubmit={hook.handleSubmit} className="flex flex-col gap-4 px-6 py-4">
           <AppSelector apps={hook.apps} applicationId={hook.applicationId} onApplicationChange={hook.setApplicationId} />
           <NewEventFormFields eventType={hook.eventType} setEventType={hook.setEventType}
             date={hook.date} setDate={hook.setDate} time={hook.time} setTime={hook.setTime}
