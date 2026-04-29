@@ -30,7 +30,9 @@ function PanelContent({ displayApp, panelDragHandlers, actions, undoPendingId, s
     <>
       {displayApp && (
         <div key={displayApp.id} className="flex h-full flex-col overflow-y-auto animate-slideInRight">
-          <div className="mx-auto mt-2.5 h-1 w-10 shrink-0 rounded-full bg-gray-300 touch-none md:hidden" aria-hidden="true" {...panelDragHandlers} />
+          <div className="flex w-full shrink-0 touch-none items-center justify-center py-3 md:hidden" aria-hidden="true" {...panelDragHandlers}>
+            <div className="h-1 w-10 rounded-full bg-gray-300" />
+          </div>
           <DetailPanelHeader application={displayApp} onClose={actions.onClose} onDelete={actions.onDelete} />
           <PanelBody
             application={displayApp}

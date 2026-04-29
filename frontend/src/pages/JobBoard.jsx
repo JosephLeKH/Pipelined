@@ -28,7 +28,7 @@ function JobBoard() {
   return (
     <main className="flex min-h-screen flex-col gap-6 bg-surface-secondary px-4 py-8 sm:px-6">
       <div className="flex flex-col gap-3">
-        <h1 className="font-display text-xl font-semibold text-gray-900">Job Board</h1>
+        <h1 className="font-display text-2xl font-semibold text-gray-900">Job Board</h1>
         <div className="flex items-center gap-3">
           <div className="flex-1"><JobSearchInput /></div>
           {hasActiveFilters && (

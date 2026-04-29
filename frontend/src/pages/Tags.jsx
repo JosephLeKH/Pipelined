@@ -139,7 +139,7 @@ function Tags() {
       <NavBar />
       <main className="flex-1 px-4 sm:px-6 py-8">
         <div className="mb-6">
-          <h1 className="font-display text-xl font-semibold text-gray-900 dark:text-gray-100">Tags</h1>
+          <h1 className="font-display text-2xl font-semibold text-gray-900 dark:text-gray-100">Tags</h1>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Manage tags across all your applications.</p>
         </div>
 
