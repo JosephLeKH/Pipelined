@@ -1,0 +1,99 @@
+{
+  "id": "PRD-44",
+  "title": "Test coverage for GoogleAuthButton, JobFilters, SaveSearchPopover, SavedSearchesSidebar, ManualAddFormFields, and JobSearchInput",
+  "description": "Adds Vitest + React Testing Library test suites for the six highest-complexity untested components: GoogleAuthButton (OAuth flow), JobFilters (URL-driven filter chips), SaveSearchPopover (save dialog), SavedSearchesSidebar (sidebar with delete), ManualAddFormFields (composite form), and JobSearchInput (debounced search).",
+  "userStories": [
+    {
+      "id": "US-398",
+      "title": "GoogleAuthButton renders and handles click",
+      "description": "As a developer, I want tests verifying the Google auth button renders with the correct label, delegates clicks to google.accounts.id.prompt, and handles the no-google case gracefully.",
+      "acceptanceCriteria": [
+        "Renders button with default label 'Continue with Google'",
+        "Renders button with custom label when provided",
+        "Calls google.accounts.id.prompt on click",
+        "Does not throw when window.google is absent",
+        "Renders with data-testid='google-auth-button'"
+      ],
+      "status": "done",
+      "estimatedEffort": "S",
+      "impactScore": 80
+    },
+    {
+      "id": "US-399",
+      "title": "JobFilters renders chips and toggles URL params",
+      "description": "As a developer, I want tests verifying filter group labels render, chips are marked active from URL params, and toggling updates/clears the param.",
+      "acceptanceCriteria": [
+        "Renders Role and Experience group labels",
+        "Renders chips for all role type options",
+        "Active chip has bg-brand-500 class when param matches",
+        "Clicking active chip removes the param (clears active style)"
+      ],
+      "status": "done",
+      "estimatedEffort": "S",
+      "impactScore": 75
+    },
+    {
+      "id": "US-400",
+      "title": "SaveSearchPopover save flow",
+      "description": "As a developer, I want tests verifying the save popover dialog renders, Save is disabled without a name, mutate is called with correct payload, Cancel calls onClose, and name is capped at 100 chars.",
+      "acceptanceCriteria": [
+        "Dialog has aria-label 'Save this search'",
+        "Save button disabled when name is empty",
+        "mutate called with trimmed name and filters (excluding page/per_page)",
+        "onClose called when Cancel is clicked",
+        "Name input capped at MAX_SAVE_NAME_LENGTH (100)"
+      ],
+      "status": "done",
+      "estimatedEffort": "S",
+      "impactScore": 70
+    },
+    {
+      "id": "US-401",
+      "title": "SavedSearchesSidebar renders and deletes",
+      "description": "As a developer, I want tests verifying the sidebar returns null when empty, renders search names, shows new-match badges, calls onApply on row click, and calls delete mutation on trash click.",
+      "acceptanceCriteria": [
+        "Returns null when searches array is empty",
+        "Renders search name for each saved search",
+        "Shows new_matches_count badge when count > 0",
+        "Calls onApply with search object on row click",
+        "Calls deleteMutation.mutate with search id on delete click"
+      ],
+      "status": "done",
+      "estimatedEffort": "S",
+      "impactScore": 65
+    },
+    {
+      "id": "US-402",
+      "title": "ManualAddFormFields form field rendering and interaction",
+      "description": "As a developer, I want tests verifying required inputs have aria-required, DuplicateWarning shows on duplicate, mutation error alert appears, and onChange callbacks fire.",
+      "acceptanceCriteria": [
+        "Role title input has aria-required='true'",
+        "Company input has aria-required='true'",
+        "DuplicateWarning rendered when isDuplicate is true",
+        "Error alert shown when mutationError is set and no duplicate",
+        "setRoleTitle called with new value on input change"
+      ],
+      "status": "done",
+      "estimatedEffort": "S",
+      "impactScore": 60
+    },
+    {
+      "id": "US-403",
+      "title": "JobSearchInput renders and debounces",
+      "description": "As a developer, I want tests verifying the search input renders with the correct aria-label, initializes from URL q param, and updates its controlled value on change.",
+      "acceptanceCriteria": [
+        "Input has aria-label 'search jobs'",
+        "Initializes value from q search param",
+        "Updates controlled value on change",
+        "Debounce timer runs without throwing"
+      ],
+      "status": "done",
+      "estimatedEffort": "XS",
+      "impactScore": 55
+    }
+  ],
+  "status": "done",
+  "estimatedEffort": "M",
+  "impactScore": 68,
+  "rationale": "Continued systematic test coverage expansion targeting the remaining untested components by line-count priority. GoogleAuthButton and JobFilters are critical UI surfaces with no prior coverage."
+}
