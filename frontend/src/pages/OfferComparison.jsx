@@ -9,8 +9,7 @@ import Trophy from "lucide-react/dist/esm/icons/trophy";
 
 import NavBar from "../components/NavBar";
 import { OfferNegotiationPanel } from "../components/OfferNegotiationPanel";
-import { useApplications } from "../hooks/useApplications";
-import { useUpdateApplication } from "../hooks/useApplications";
+import { useApplications, useUpdateApplication } from "../hooks/useApplications";
 import { OFFER_FIELDS, OFFER_STAGE } from "../lib/constants";
 import { INPUT_BASE, SPINNER_SM, BUTTON_SECONDARY } from "../lib/designTokens";
 import { formatUSD } from "../lib/currencyUtils";

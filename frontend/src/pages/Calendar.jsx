@@ -80,7 +80,7 @@ function Calendar() {
   }, []);
 
   return (
-    <div className="flex min-h-screen flex-col bg-gray-50 dark:bg-gray-900">
+    <div className="flex min-h-screen flex-col bg-surface-secondary dark:bg-dark-bg">
       <NavBar />
       <CalendarContent
         month={month}
