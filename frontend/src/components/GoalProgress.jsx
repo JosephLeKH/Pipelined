@@ -7,6 +7,7 @@ import Flame from "lucide-react/dist/esm/icons/flame";
 
 import { useApplicationStats } from "../hooks/useApplications";
 import { useAuth } from "../context/AuthContext";
+import { CARD_BASE } from "../lib/designTokens";
 
 const RING_RADIUS = 36;
 const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
@@ -38,7 +39,7 @@ function GoalProgress() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center gap-4 rounded-lg bg-white p-4 shadow-sm dark:bg-gray-800">
+      <div className={`flex items-center gap-4 p-4 ${CARD_BASE}`}>
         <div className="h-20 w-20 animate-pulse rounded-full bg-gray-200 dark:bg-gray-700" />
         <div className="flex flex-col gap-2">
           <div className="h-4 w-32 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
@@ -49,7 +50,7 @@ function GoalProgress() {
   }
 
   return (
-    <div className="flex items-center gap-4 rounded-lg bg-white p-4 shadow-sm dark:bg-gray-800" aria-label="Weekly goal progress">
+    <div className={`flex items-center gap-4 p-4 ${CARD_BASE}`} aria-label="Weekly goal progress">
       <svg
         width={RING_RADIUS * 2 + 8}
         height={RING_RADIUS * 2 + 8}
