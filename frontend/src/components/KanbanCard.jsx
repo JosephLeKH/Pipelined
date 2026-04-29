@@ -41,7 +41,7 @@ function KanbanCard({ application, onSelect }) {
       }}
       data-testid="kanban-card"
       className={`relative cursor-pointer p-3 transition-all duration-150 hover:border-border-strong hover:shadow-sm ${CARD_BASE} ${
-        isDragging ? "rotate-[2deg] scale-[1.05] opacity-80 shadow-lg" : ""
+        isDragging ? "scale-[1.02] opacity-80 shadow-lg" : ""
       }`}
     >
       {stale && (
