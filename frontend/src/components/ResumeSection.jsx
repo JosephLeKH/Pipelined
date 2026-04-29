@@ -37,7 +37,7 @@ function ResumeSection({ hasResume, isUploading, isDeleting, onResumeUpload, onR
 
   return (
     <section className={`${CARD_BASE} p-6`}>
-      <h2 className="mb-1 text-base font-semibold text-gray-900 dark:text-gray-100">
+      <h2 className="mb-1 font-display text-base font-semibold text-gray-900 dark:text-gray-100">
         Resume
       </h2>
       <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">
@@ -52,7 +52,7 @@ function ResumeSection({ hasResume, isUploading, isDeleting, onResumeUpload, onR
         <p role="alert" className="mb-4 text-sm text-red-600 dark:text-red-400">{resumeError}</p>
       )}
       <div className="flex flex-wrap items-center gap-3">
-        <label className={`flex cursor-pointer items-center gap-2 rounded-button ${BUTTON_PRIMARY} focus-within:ring-offset-2 active:scale-[0.98]`}>
+        <label className={`flex cursor-pointer items-center gap-2 ${BUTTON_PRIMARY} focus-within:ring-offset-2`}>
           {isUploading && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
           {hasResume ? "Replace resume" : "Upload resume"}
           <input

@@ -5,7 +5,7 @@ import { CARD_BASE } from "../lib/designTokens";
 function DigestSection({ digestEnabled, isDigestPending, onDigestToggle }) {
   return (
     <section className={`${CARD_BASE} p-6`}>
-      <h2 className="mb-1 text-base font-semibold text-gray-900 dark:text-gray-100">
+      <h2 className="mb-1 font-display text-base font-semibold text-gray-900 dark:text-gray-100">
         Weekly digest email
       </h2>
       <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">
