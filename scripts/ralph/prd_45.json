@@ -1,0 +1,107 @@
+{
+  "id": "PRD-45",
+  "title": "Complete test coverage for remaining untested components",
+  "description": "Adds Vitest + React Testing Library test suites for the final 8 untested components: DigestSection, NewEventFormFields, ManualAddFormCategoryRow, ManualAddFormDateRow, AuthLayout, FormField, SkeletonRow, and SkeletonCalendarCell. This completes 100% test coverage across all components in frontend/src/components/.",
+  "userStories": [
+    {
+      "id": "US-404",
+      "title": "DigestSection toggle behavior",
+      "description": "As a developer, I want tests verifying the digest toggle shows correct labels, reflects aria-checked state, calls onDigestToggle with the toggled value, and disables when pending.",
+      "acceptanceCriteria": [
+        "Shows 'Enabled' label when digestEnabled is true",
+        "Shows 'Disabled' label when digestEnabled is false",
+        "aria-checked=true when digestEnabled is true",
+        "Calls onDigestToggle(!digestEnabled) on click",
+        "Switch is disabled when isDigestPending is true"
+      ],
+      "status": "done",
+      "estimatedEffort": "XS",
+      "impactScore": 70
+    },
+    {
+      "id": "US-405",
+      "title": "NewEventFormFields renders and calls setters",
+      "description": "As a developer, I want tests verifying all event form fields render with bound values, setters are called on change, and error message is displayed.",
+      "acceptanceCriteria": [
+        "Event type select is accessible via aria-label",
+        "Date input shows bound value",
+        "setEventType called on select change with valid option value",
+        "setDate called on date input change",
+        "formError message rendered when set"
+      ],
+      "status": "done",
+      "estimatedEffort": "XS",
+      "impactScore": 65
+    },
+    {
+      "id": "US-406",
+      "title": "ManualAddFormCategoryRow renders and calls setters",
+      "description": "As a developer, I want tests verifying Remote Status and Company Type selects render with bound values and call their setters on change.",
+      "acceptanceCriteria": [
+        "Remote Status select shows bound value",
+        "Company Type select shows bound value",
+        "setRemoteStatus called with new value on change",
+        "setCompanyType called with new value on change"
+      ],
+      "status": "done",
+      "estimatedEffort": "XS",
+      "impactScore": 60
+    },
+    {
+      "id": "US-407",
+      "title": "ManualAddFormDateRow renders and calls setters",
+      "description": "As a developer, I want tests verifying Date Applied and Compensation inputs render with bound values and call their setters on change.",
+      "acceptanceCriteria": [
+        "Date Applied input shows bound value",
+        "Compensation input shows bound value",
+        "setDateApplied called with new date on change",
+        "setCompensation called with new value on change"
+      ],
+      "status": "done",
+      "estimatedEffort": "XS",
+      "impactScore": 55
+    },
+    {
+      "id": "US-408",
+      "title": "AuthLayout renders brand and children",
+      "description": "As a developer, I want tests verifying AuthLayout renders the Pipelined brand heading and passes children through.",
+      "acceptanceCriteria": [
+        "Renders 'Pipelined' brand heading",
+        "Renders children"
+      ],
+      "status": "done",
+      "estimatedEffort": "XS",
+      "impactScore": 50
+    },
+    {
+      "id": "US-409",
+      "title": "FormField label association and error display",
+      "description": "As a developer, I want tests verifying FormField renders its label, associates it with the input, shows error text when present, and omits it when absent.",
+      "acceptanceCriteria": [
+        "Renders label text",
+        "Label associates with input via htmlFor",
+        "Renders error message when error prop is set",
+        "Does not render error element when error is absent"
+      ],
+      "status": "done",
+      "estimatedEffort": "XS",
+      "impactScore": 48
+    },
+    {
+      "id": "US-410",
+      "title": "SkeletonRow and SkeletonCalendarCell accessibility",
+      "description": "As a developer, I want tests verifying both skeleton components render with their data-testid and aria-hidden=true for accessibility.",
+      "acceptanceCriteria": [
+        "SkeletonRow has data-testid='skeleton-row' and aria-hidden=true",
+        "SkeletonCalendarCell has data-testid='skeleton-calendar-cell' and aria-hidden=true"
+      ],
+      "status": "done",
+      "estimatedEffort": "XS",
+      "impactScore": 45
+    }
+  ],
+  "status": "done",
+  "estimatedEffort": "S",
+  "impactScore": 58,
+  "rationale": "Final sweep to achieve 100% test coverage of all components in frontend/src/components/. All components now have at least one Vitest test suite."
+}
