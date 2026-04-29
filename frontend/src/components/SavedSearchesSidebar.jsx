@@ -23,7 +23,7 @@ export default function SavedSearchesSidebar({ onApply }) {
 
   return (
     <div className={`${CARD_BASE} p-4 shadow-card`}>
-      <h2 className="mb-3 text-sm font-semibold text-gray-700 dark:text-gray-300">Saved Searches</h2>
+      <h2 className="mb-3 font-display text-sm font-semibold text-gray-700 dark:text-gray-300">Saved Searches</h2>
       <ul className="flex flex-col gap-1" aria-label="Saved searches list">
         {searches.map((s) => (
           <li

@@ -146,7 +146,7 @@ function PublicPipeline() {
   const pipeline = data?.data ?? data;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-surface-secondary">
       <PipelineHeader pipeline={pipeline} />
       <ApplicationsSection pipeline={pipeline} />
     </div>

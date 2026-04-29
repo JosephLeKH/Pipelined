@@ -108,7 +108,7 @@ function ShareTimeline() {
 
   return (
     <section aria-labelledby="timeline-share-heading" className="flex flex-col gap-3 rounded-card border border-gray-200 p-4 dark:border-gray-700">
-      <h2 id="timeline-share-heading" className="text-sm font-semibold text-gray-800 dark:text-gray-100">
+      <h2 id="timeline-share-heading" className="font-display text-sm font-semibold text-gray-800 dark:text-gray-100">
         Share Your Timeline
       </h2>
       {isLoading ? (

@@ -98,7 +98,7 @@ function OnboardingChecklist({ onAdd }) {
   return (
     <div className="mb-4 rounded-lg border border-border-default border-l-4 border-l-brand-500 bg-white p-4 dark:bg-gray-800 dark:border-dark-border dark:border-l-brand-500">
       <div className="mb-3 flex items-center justify-between">
-        <h2 className="font-semibold text-gray-900 dark:text-gray-100">Get started with Pipelined</h2>
+        <h2 className="font-display font-semibold text-gray-900 dark:text-gray-100">Get started with Pipelined</h2>
         <button
           type="button"
           onClick={handleDismiss}

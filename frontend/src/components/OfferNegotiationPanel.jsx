@@ -20,7 +20,7 @@ function TotalCompBreakdown({ offer }) {
 
   return (
     <div className={`${CARD_BASE} p-4 flex flex-col gap-2`}>
-      <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-500">Annual Value Breakdown</h3>
+      <h3 className="font-display text-xs font-semibold uppercase tracking-wide text-gray-500">Annual Value Breakdown</h3>
       <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
         <span className="text-gray-500">Base Salary</span>
         <span className="font-medium text-gray-900 dark:text-gray-100 text-right">{fmt(base)}</span>

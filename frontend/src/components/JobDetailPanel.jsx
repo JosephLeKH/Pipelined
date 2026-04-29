@@ -48,7 +48,7 @@ function RequirementsList({ requirements }) {
   const items = Array.isArray(requirements) ? requirements : [requirements];
   return (
     <div>
-      <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-400">
+      <h3 className="mb-2 font-display text-xs font-semibold uppercase tracking-wider text-gray-400">
         Requirements
       </h3>
       <ul className="flex flex-col gap-1.5 text-sm text-gray-700 dark:text-gray-300">
@@ -159,7 +159,7 @@ function JobDetailPanel({ job, onClose }) {
 
           {job.description && (
             <div>
-              <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-400">
+              <h3 className="mb-2 font-display text-xs font-semibold uppercase tracking-wider text-gray-400">
                 Description
               </h3>
               <p className="whitespace-pre-wrap text-sm leading-relaxed text-gray-700 dark:text-gray-300">

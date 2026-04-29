@@ -156,7 +156,7 @@ function Pricing() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+    <div className="min-h-screen bg-surface-secondary dark:bg-gray-950">
       <PricingHeader />
 
       <main className="mx-auto max-w-5xl px-6 py-16">

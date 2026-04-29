@@ -14,7 +14,7 @@ function DiscardDialog({ onDiscard, onCancel }) {
   return (
     <div className={`${MODAL_BACKDROP} absolute`} role="alertdialog" aria-modal="true" aria-labelledby="discard-dialog-title">
       <div className={`${MODAL_CARD} mx-4 w-full max-w-sm`}>
-        <h3 id="discard-dialog-title" className="text-base font-semibold text-gray-900 dark:text-gray-100">Discard unsaved notes?</h3>
+        <h3 id="discard-dialog-title" className="font-display text-base font-semibold text-gray-900 dark:text-gray-100">Discard unsaved notes?</h3>
         <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">Your changes will be lost.</p>
         <div className="mt-4 flex justify-end gap-2">
           <button type="button" onClick={onCancel} className={`${BUTTON_SECONDARY} px-3 py-1.5 text-sm`}>Cancel</button>

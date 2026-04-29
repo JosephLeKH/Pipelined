@@ -162,7 +162,7 @@ function PublicTimeline() {
   const timeline = data?.data ?? data;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-surface-secondary">
       <TimelineHeader timeline={timeline} />
       <main className="mx-auto max-w-2xl px-6 py-8">
         <ApplicationsTimeline timeline={timeline} />
