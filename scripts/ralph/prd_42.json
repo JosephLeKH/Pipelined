@@ -1,0 +1,136 @@
+{
+  "id": "PRD-42",
+  "title": "Test coverage for PrepSection, SharePipeline, ShareTimeline, SettingsResumeSection, SettingsUsageSection, and SettingsReferralSection",
+  "status": "done",
+  "priority": "high",
+  "description": "PRD-42 adds test suites for six untested components identified in the post-PRD-41 audit. PrepSection is a complex collapsible interview prep panel with notes, checklist, and practice questions — its debounce, toggle, and item-management logic are completely untested. SharePipeline and ShareTimeline are symmetric share-link management components with loading/active/empty states. SettingsResumeSection has file validation and upload feedback. SettingsUsageSection renders usage meters with aria progressbars. SettingsReferralSection has copy-to-clipboard and super-referrer badge logic.",
+  "userStories": [
+    {
+      "id": "US-386",
+      "title": "PrepSection has no tests — add PrepSection.test.jsx",
+      "description": "PrepSection.jsx is a 186-line collapsible interview prep panel with notes textarea, checklist, and practice questions. It manages local state via a custom usePrepData hook with debounced save. Toggle, add/delete items, and the question cap at MAX_PREP_QUESTIONS are all untested.",
+      "acceptanceCriteria": [
+        "Test file created: frontend/src/components/PrepSection.test.jsx",
+        "Test: 'should render collapsed by default with Interview Prep toggle button'",
+        "Test: 'should expand when toggle button is clicked'",
+        "Test: 'should show prep notes textarea after expanding'",
+        "Test: 'should call onPrepChange when a practice question is added'",
+        "Test: 'should delete a practice question when its delete button is clicked'",
+        "Test: 'should disable add question input when max questions reached'",
+        "Mocks PrepChecklist (ChecklistItem, AddChecklistItem) as stubs to avoid deep rendering",
+        "Tests follow Arrange → Act → Assert with blank lines between sections",
+        "No existing tests broken"
+      ],
+      "status": "done",
+      "estimatedEffort": "medium",
+      "impactScore": 82,
+      "rationale": "PrepSection is the interview prep panel surfaced in the detail panel for every application. Its add/delete/debounce interactions are non-trivial state flows with no regression coverage."
+    },
+    {
+      "id": "US-387",
+      "title": "SharePipeline has no tests — add SharePipeline.test.jsx",
+      "description": "SharePipeline.jsx renders a share link card that shows a loading spinner, a 'Generate link' button (no share), or an active share URL with copy and revoke. Three hooks are involved: useMyShare, useCreateShare, useRevokeShare. The copy-to-clipboard state toggle and revoke flow are untested.",
+      "acceptanceCriteria": [
+        "Test file created: frontend/src/components/SharePipeline.test.jsx",
+        "Test: 'should show loading spinner when share data is loading'",
+        "Test: 'should show Generate link button when there is no share'",
+        "Test: 'should call createShare when Generate link is clicked'",
+        "Test: 'should render active share URL when share exists'",
+        "Test: 'should call revokeShare when Revoke link is clicked'",
+        "Test: 'should show Copied! after Copy link is clicked'",
+        "Mocks useMyShare, useCreateShare, useRevokeShare from hooks/useSharing",
+        "Mocks navigator.clipboard.writeText",
+        "Tests follow Arrange → Act → Assert with blank lines between sections",
+        "No existing tests broken"
+      ],
+      "status": "done",
+      "estimatedEffort": "small",
+      "impactScore": 74,
+      "rationale": "SharePipeline is a Settings section with async state (loading/create/revoke) and clipboard interaction. Regressions in the copy state toggle or revoke callback wiring are invisible without tests."
+    },
+    {
+      "id": "US-388",
+      "title": "ShareTimeline has no tests — add ShareTimeline.test.jsx",
+      "description": "ShareTimeline.jsx is structurally identical to SharePipeline but uses useMyTimelineShare, useCreateTimelineShare, and useRevokeTimelineShare. Same test surface: loading, no-share, active-share, copy, revoke.",
+      "acceptanceCriteria": [
+        "Test file created: frontend/src/components/ShareTimeline.test.jsx",
+        "Test: 'should show loading spinner when share data is loading'",
+        "Test: 'should show Generate link button when there is no share'",
+        "Test: 'should call createShare when Generate link is clicked'",
+        "Test: 'should render active share URL when share exists'",
+        "Test: 'should call revokeShare when Revoke link is clicked'",
+        "Test: 'should show Copied! after Copy link is clicked'",
+        "Mocks useMyTimelineShare, useCreateTimelineShare, useRevokeTimelineShare from hooks/useSharing",
+        "Mocks navigator.clipboard.writeText",
+        "Tests follow Arrange → Act → Assert with blank lines between sections",
+        "No existing tests broken"
+      ],
+      "status": "done",
+      "estimatedEffort": "small",
+      "impactScore": 70,
+      "rationale": "ShareTimeline mirrors SharePipeline. The same hook wiring and clipboard logic is duplicated — without symmetric tests, one copy could silently drift."
+    },
+    {
+      "id": "US-389",
+      "title": "SettingsResumeSection has no tests — add SettingsResumeSection.test.jsx",
+      "description": "SettingsResumeSection.jsx has an upload drop zone, file type/size validation, success and error banners, and an AI score usage meter. The file validation path (non-PDF rejected, oversized file rejected) and success/error banner display are all untested.",
+      "acceptanceCriteria": [
+        "Test file created: frontend/src/components/SettingsResumeSection.test.jsx",
+        "Test: 'should show upload drop zone when user has no resume'",
+        "Test: 'should show file card when user has a resume'",
+        "Test: 'should show success banner after successful upload'",
+        "Test: 'should show error when a non-PDF file is selected'",
+        "Test: 'should render AI score meter with progressbar'",
+        "Mocks useAuth from context/AuthContext",
+        "Mocks useUploadResume and useDeleteResume from hooks/useAuth",
+        "Tests follow Arrange → Act → Assert with blank lines between sections",
+        "No existing tests broken"
+      ],
+      "status": "done",
+      "estimatedEffort": "medium",
+      "impactScore": 66,
+      "rationale": "SettingsResumeSection is the entry point for resume upload, which gates AI fit scoring. File validation and upload feedback are critical user-facing flows with no coverage."
+    },
+    {
+      "id": "US-390",
+      "title": "SettingsUsageSection has no tests — add SettingsUsageSection.test.jsx",
+      "description": "SettingsUsageSection.jsx renders three UsageMeter progressbars for Applications, Contacts, and AI fit scores. It is a pure presentational component accepting a user prop — straightforward to test and worth covering as a regression guard for the aria progressbar attributes.",
+      "acceptanceCriteria": [
+        "Test file created: frontend/src/components/SettingsUsageSection.test.jsx",
+        "Test: 'should render Usage & Plan heading'",
+        "Test: 'should render progressbar for Applications with correct aria-valuenow'",
+        "Test: 'should render progressbar for Contacts with correct aria-valuenow'",
+        "Test: 'should render progressbar for AI fit scores today with correct aria-valuenow'",
+        "Test: 'should show zero usage when user prop has no counts'",
+        "No mocks required — component is purely presentational",
+        "Tests follow Arrange → Act → Assert with blank lines between sections",
+        "No existing tests broken"
+      ],
+      "status": "done",
+      "estimatedEffort": "small",
+      "impactScore": 56,
+      "rationale": "SettingsUsageSection displays plan limits to all free-tier users on the Settings page. Regressions in the aria progressbar values or the Free Plan badge would be invisible without tests."
+    },
+    {
+      "id": "US-391",
+      "title": "SettingsReferralSection has no tests — add SettingsReferralSection.test.jsx",
+      "description": "SettingsReferralSection.jsx displays a referral link, a copy button with toggling state, a referral count, and a Super Referrer badge when referral_count >= 3. The copy interaction and badge threshold logic are untested.",
+      "acceptanceCriteria": [
+        "Test file created: frontend/src/components/SettingsReferralSection.test.jsx",
+        "Test: 'should render referral link input when user has a referral code'",
+        "Test: 'should show no referral code message when user has no code'",
+        "Test: 'should show Copied after copy button is clicked'",
+        "Test: 'should show Super Referrer badge when referral count is 3 or more'",
+        "Test: 'should not show Super Referrer badge when referral count is below threshold'",
+        "Mocks navigator.clipboard.writeText",
+        "Mocks sonner toast",
+        "Tests follow Arrange → Act → Assert with blank lines between sections",
+        "No existing tests broken"
+      ],
+      "status": "done",
+      "estimatedEffort": "small",
+      "impactScore": 52,
+      "rationale": "SettingsReferralSection has branching logic for the super-referrer badge and clipboard interaction. Without tests, the badge threshold and copy state toggle are invisible to regression."
+    }
+  ]
+}
