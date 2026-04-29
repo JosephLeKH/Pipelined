@@ -40,7 +40,7 @@ function SettingsUsageSection({ user }) {
     <div className={`${CARD_BASE} p-6`}>
       <div className="mb-5 flex items-start justify-between gap-4">
         <div>
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          <h2 className="font-display text-lg font-semibold text-gray-900 dark:text-gray-100">
             Usage & Plan
           </h2>
           <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">

@@ -93,7 +93,7 @@ function SettingsNotificationsSection() {
 
   return (
     <div className={`${CARD_BASE} p-6`}>
-      <h2 className="mb-1 text-lg font-semibold text-gray-900 dark:text-gray-100">
+      <h2 className="mb-1 font-display text-lg font-semibold text-gray-900 dark:text-gray-100">
         Notifications
       </h2>
       <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">

@@ -41,7 +41,7 @@ function SettingsReferralSection({ user }) {
     <div className={`${CARD_BASE} p-6`}>
       <div className="mb-4 flex items-center gap-2">
         <Gift className="h-5 w-5 text-brand-500" aria-hidden="true" />
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Invite Friends</h2>
+        <h2 className="font-display text-lg font-semibold text-gray-900 dark:text-gray-100">Invite Friends</h2>
         {isSuperReferrer && (
           <span className="ml-auto flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">
             <Star className="h-3 w-3" aria-hidden="true" />
