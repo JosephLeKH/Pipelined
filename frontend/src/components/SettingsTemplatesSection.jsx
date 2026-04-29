@@ -7,7 +7,7 @@ import Pencil from "lucide-react/dist/esm/icons/pencil";
 import Trash2 from "lucide-react/dist/esm/icons/trash-2";
 import X from "lucide-react/dist/esm/icons/x";
 
-import { CARD_BASE, INPUT_BASE } from "../lib/designTokens";
+import { CARD_BASE, INPUT_BASE, BUTTON_SECONDARY } from "../lib/designTokens";
 import { useDeleteTemplate, useTemplates, useUpdateTemplate } from "../hooks/useTemplates";
 
 function TemplateRow({ template }) {
@@ -117,7 +117,7 @@ function TemplateRow({ template }) {
 }
 
 function SettingsTemplatesSection() {
-  const { data: templates, isLoading, error } = useTemplates();
+  const { data: templates, isLoading, error, refetch } = useTemplates();
 
   return (
     <div className={`${CARD_BASE} p-6`}>
@@ -130,9 +130,19 @@ function SettingsTemplatesSection() {
         <p className="text-sm text-gray-500 dark:text-gray-400">Loading…</p>
       )}
       {error && (
-        <p role="alert" className="text-sm text-red-600 dark:text-red-400">
-          Failed to load templates.
-        </p>
+        <div className="flex flex-col gap-2">
+          <p role="alert" className="text-sm text-red-600 dark:text-red-400">
+            Failed to load templates.
+          </p>
+          <button
+            type="button"
+            onClick={refetch}
+            aria-label="Retry loading templates"
+            className={`self-start ${BUTTON_SECONDARY}`}
+          >
+            Try again
+          </button>
+        </div>
       )}
       {!isLoading && !error && templates?.length === 0 && (
         <p className="text-sm text-gray-500 dark:text-gray-400">

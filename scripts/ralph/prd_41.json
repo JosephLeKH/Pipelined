@@ -1,0 +1,128 @@
+{
+  "id": "PRD-41",
+  "title": "Error hardening and test coverage for SettingsTemplatesSection, SettingsProfileSection, JobDetailPanel, UpgradePlanModal, and PublicPipeline",
+  "status": "done",
+  "priority": "high",
+  "description": "PRD-41 addresses five gaps found in a post-PRD-40 audit: (1) SettingsTemplatesSection silently shows 'Failed to load templates.' on a fetch error with no retry path — the same swallowed-error pattern fixed for ContactsSection in PRD-40; (2) SettingsProfileSection has save/error/success flows, avatar logic, and a TimezoneSelector but zero test coverage; (3) JobDetailPanel is the slide-in panel used on every job board interaction — it has a save-to-pipeline mutation flow and close-on-backdrop but no tests; (4) UpgradePlanModal uses a custom window event listener and Escape-key dismiss with no tests; (5) PublicPipeline is the public share page with loading/not-found states and document.title side effects but no test file.",
+  "userStories": [
+    {
+      "id": "US-381",
+      "title": "SettingsTemplatesSection swallows useTemplates fetch errors — add retry button and test coverage",
+      "description": "SettingsTemplatesSection.jsx (line 120) calls useTemplates() destructuring data, isLoading, and error. When error is truthy (line 133), it renders 'Failed to load templates.' as a role='alert' paragraph but provides no retry path. Users must reload the entire page to recover. Destructure refetch from useTemplates, add a retry button with aria-label='Retry loading templates' styled with BUTTON_SECONDARY immediately after the error message, and add a full test suite covering all render states.",
+      "acceptanceCriteria": [
+        "useTemplates destructures refetch in addition to data, isLoading, error",
+        "When error is truthy, 'Failed to load templates.' renders as role='alert'",
+        "A retry button with aria-label='Retry loading templates' is rendered below the error message",
+        "Retry button uses BUTTON_SECONDARY design token",
+        "Test file created: frontend/src/components/SettingsTemplatesSection.test.jsx",
+        "Test: 'should show loading state while templates are fetching'",
+        "Test: 'should show error state with retry button when fetch fails'",
+        "Test: 'should call refetch when retry is clicked'",
+        "Test: 'should show empty state when no templates exist'",
+        "Test: 'should render a TemplateRow for each template'",
+        "Test: 'should enter edit mode when rename button is clicked'",
+        "Test: 'should call updateMutate when confirm rename is clicked'",
+        "Test: 'should call deleteMutate when delete button is clicked'",
+        "Mocks useTemplates, useUpdateTemplate, useDeleteTemplate from hooks/useTemplates",
+        "No existing tests broken"
+      ],
+      "status": "done",
+      "estimatedEffort": "medium",
+      "impactScore": 82,
+      "rationale": "SettingsTemplatesSection is rendered on the Templates tab of Settings, which users visit to manage their saved templates. A silent error state with no retry forces a full page reload — the exact pattern fixed for ContactsSection in US-376. The component also has inline rename keyboard handling (Enter/Escape) and a delete flow that are unverified."
+    },
+    {
+      "id": "US-382",
+      "title": "SettingsProfileSection has no tests — add SettingsProfileSection.test.jsx",
+      "description": "SettingsProfileSection.jsx is the Profile settings card. It computes an avatar color from the user's display name using a deterministic AVATAR_COLORS array, manages displayName and timezone local state, calls useUpdateUser mutateAsync on save, and shows a SUCCESS_BANNER on success or a red error message on failure. None of this is tested. Add a test suite covering avatar display, the save success and error paths, and the display name input.",
+      "acceptanceCriteria": [
+        "Test file created: frontend/src/components/SettingsProfileSection.test.jsx",
+        "Test: 'should render Profile heading'",
+        "Test: 'should display initials avatar when user has no avatar_url'",
+        "Test: 'should display img avatar when user has avatar_url'",
+        "Test: 'should show success banner after saving profile'",
+        "Test: 'should show error message when save fails'",
+        "Test: 'should disable Save profile button while save is pending'",
+        "Mocks useAuth from context/AuthContext",
+        "Mocks useUpdateUser from hooks/useAuth",
+        "Mocks TimezoneSelector as a simple stub",
+        "Tests follow Arrange → Act → Assert with blank lines between sections",
+        "No existing tests broken"
+      ],
+      "status": "done",
+      "estimatedEffort": "small",
+      "impactScore": 70,
+      "rationale": "SettingsProfileSection is the first section users see on the Settings page. The save/error/success banner flow and the avatar color derivation logic are non-trivial. Without tests, regressions in the mutateAsync error path or banner rendering go undetected."
+    },
+    {
+      "id": "US-383",
+      "title": "JobDetailPanel has no tests — add JobDetailPanel.test.jsx",
+      "description": "JobDetailPanel.jsx is the slide-in dialog shown when a user clicks any job card on the job board. It renders a dialog with company logo, metadata row, description, requirements, apply link, and a Save to Pipeline button that calls useCreateApplication. After a successful save, the button state changes to 'Saved!' and a success toast fires. On failure a toast shows 'Failed to save. Are you signed in?'. The backdrop button closes the panel. None of this is tested.",
+      "acceptanceCriteria": [
+        "Test file created: frontend/src/components/JobDetailPanel.test.jsx",
+        "Test: 'should render the job role and company'",
+        "Test: 'should call onClose when backdrop is clicked'",
+        "Test: 'should call onClose when the X close button is clicked'",
+        "Test: 'should render apply link when apply_url is provided'",
+        "Test: 'should not render apply link when apply_url is absent'",
+        "Test: 'should show Saved! after successful save to pipeline'",
+        "Test: 'should show stale badge when job.is_stale is true'",
+        "Mocks useCreateApplication from hooks/useApplications",
+        "Mocks CompanyLogo as a stub",
+        "Tests follow Arrange → Act → Assert with blank lines between sections",
+        "No existing tests broken"
+      ],
+      "status": "done",
+      "estimatedEffort": "small",
+      "impactScore": 66,
+      "rationale": "JobDetailPanel is opened from every job card click on the job board — the primary conversion path from job browsing to pipeline tracking. The save mutation flow and post-save state change are the most critical behaviors and neither is covered."
+    },
+    {
+      "id": "US-384",
+      "title": "UpgradePlanModal has no tests — add UpgradePlanModal.test.jsx",
+      "description": "UpgradePlanModal.jsx listens for a custom DOM event (pipelined:tier_limit_exceeded) on window and shows a modal when it fires. It supports three close paths: clicking the backdrop, clicking the X button, and pressing Escape. An Upgrade button navigates to /pricing. The modal is hidden initially (visible=false renders null). None of this is tested.",
+      "acceptanceCriteria": [
+        "Test file created: frontend/src/components/UpgradePlanModal.test.jsx",
+        "Test: 'should not render modal initially'",
+        "Test: 'should show modal after pipelined:tier_limit_exceeded event'",
+        "Test: 'should show resource label and usage when event has limit details'",
+        "Test: 'should close when backdrop is clicked'",
+        "Test: 'should close when X button is clicked'",
+        "Test: 'should close when Escape key is pressed'",
+        "Test: 'should navigate to /pricing and close when Upgrade to Pro is clicked'",
+        "Mocks useNavigate from react-router-dom",
+        "Dispatches window events using new CustomEvent(TIER_LIMIT_EXCEEDED_EVENT, { detail: ... })",
+        "Imports TIER_LIMIT_EXCEEDED_EVENT constant from the component file",
+        "Tests follow Arrange → Act → Assert with blank lines between sections",
+        "No existing tests broken"
+      ],
+      "status": "done",
+      "estimatedEffort": "small",
+      "impactScore": 60,
+      "rationale": "UpgradePlanModal is triggered by a custom event dispatched from the API client on any TIER_LIMIT_EXCEEDED 403 response — a global system boundary. The event-listener setup/teardown, keyboard dismiss, and navigation are non-obvious behaviors that deserve test coverage."
+    },
+    {
+      "id": "US-385",
+      "title": "PublicPipeline page has no tests — add PublicPipeline.test.jsx",
+      "description": "PublicPipeline.jsx is the public read-only share page accessed via a slug URL. It renders a loading spinner while fetching, a NotFoundState on error or missing data, and — on success — a PipelineHeader with the owner's display name, a PublicStatsBar, and a list of PublicAppRow entries. It also sets document.title and og:title meta tags as side effects. It is the only page with no test file.",
+      "acceptanceCriteria": [
+        "Test file created: frontend/src/pages/PublicPipeline.test.jsx",
+        "Test: 'should show loading state while pipeline data is loading'",
+        "Test: 'should show not found state when fetch returns an error'",
+        "Test: 'should render the pipeline owner display name in the header'",
+        "Test: 'should render stat cards for total applied and active count'",
+        "Test: 'should render a row for each application in the pipeline'",
+        "Test: 'should update document.title with the owner display name'",
+        "Mocks usePublicPipeline from hooks/useSharing",
+        "Mocks useParams to return a test slug",
+        "Mocks trackEvent from lib/analytics",
+        "Tests follow Arrange → Act → Assert with blank lines between sections",
+        "No existing tests broken"
+      ],
+      "status": "done",
+      "estimatedEffort": "small",
+      "impactScore": 54,
+      "rationale": "PublicPipeline is the only page with zero test coverage. It handles three distinct render states (loading, not-found, success), modifies global document state as a side effect, and is the primary surface for the viral share-your-pipeline feature."
+    }
+  ]
+}

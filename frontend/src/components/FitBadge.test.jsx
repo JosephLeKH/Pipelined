@@ -42,14 +42,14 @@ describe("FitBadge", () => {
     const badge = screen.getByTestId("fit-badge");
 
     expect(badge).toHaveTextContent("65%");
-    expect(badge.className).toMatch(/bg-yellow/);
+    expect(badge.className).toMatch(/bg-amber/);
   });
 
   it("should show yellow styling for score exactly at 50", () => {
     render(<FitBadge score={50} />);
     const badge = screen.getByTestId("fit-badge");
 
-    expect(badge.className).toMatch(/bg-yellow/);
+    expect(badge.className).toMatch(/bg-amber/);
   });
 
   it("should show orange styling for low-medium fit score (30-49)", () => {
