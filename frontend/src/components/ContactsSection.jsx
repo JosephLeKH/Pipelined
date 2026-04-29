@@ -5,6 +5,7 @@ import { useState } from "react";
 import Plus from "lucide-react/dist/esm/icons/plus";
 
 import { useApplicationContacts } from "../hooks/useContacts";
+import { BUTTON_SECONDARY } from "../lib/designTokens";
 import ContactCard from "./ContactCard";
 import ContactForm from "./ContactForm";
 import ContactLinkDropdown from "./ContactLinkDropdown";
@@ -13,7 +14,7 @@ const CONTACTS_ADD_MODE_NEW = "new";
 const CONTACTS_ADD_MODE_LINK = "link";
 
 function ContactsSection({ applicationId }) {
-  const { data, isLoading } = useApplicationContacts(applicationId);
+  const { data, isLoading, error, refetch } = useApplicationContacts(applicationId);
   const [addMode, setAddMode] = useState(null);
 
   const contacts = Array.isArray(data) ? data : (data?.data ?? []);
@@ -45,7 +46,20 @@ function ContactsSection({ applicationId }) {
         )}
       </div>
       {isLoading && <p className="text-xs text-gray-400">Loading…</p>}
-      {!isLoading && contacts.length === 0 && !addMode && (
+      {error && (
+        <div role="alert" className="flex items-center justify-between gap-2">
+          <p className="text-xs text-red-600 dark:text-red-400">Failed to load contacts.</p>
+          <button
+            type="button"
+            onClick={() => refetch()}
+            aria-label="Retry loading contacts"
+            className={`${BUTTON_SECONDARY} px-2 py-1 text-xs`}
+          >
+            Retry
+          </button>
+        </div>
+      )}
+      {!isLoading && !error && contacts.length === 0 && !addMode && (
         <p className="text-xs text-gray-400">No contacts yet.</p>
       )}
       {contacts.map((contact) => (

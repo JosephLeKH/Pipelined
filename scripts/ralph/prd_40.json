@@ -1,0 +1,120 @@
+{
+  "id": "PRD-40",
+  "title": "Error state hardening and test coverage for ContactsSection, PipelineStagesEditor, NewEventForm, DashboardToolbar, and SettingsPipelineSection",
+  "status": "done",
+  "priority": "high",
+  "description": "PRD-40 addresses five gaps found in a post-PRD-39 audit: (1) ContactsSection swallows fetch errors from useApplicationContacts — users see 'No contacts yet.' on a network failure with no retry path; (2) ContactsSection has no test coverage despite being a compound CRUD component; (3) PipelineStagesEditor is a drag-to-reorder settings component with validation logic but no tests; (4) NewEventForm is a modal form with no tests; (5) DashboardToolbar and SettingsPipelineSection — high-traffic components with no tests.",
+  "userStories": [
+    {
+      "id": "US-376",
+      "title": "ContactsSection swallows useApplicationContacts fetch errors — add error state, retry, and test coverage",
+      "description": "ContactsSection.jsx calls useApplicationContacts(applicationId) but only destructures data and isLoading (line 16). When the contacts endpoint fails, the loading indicator disappears and 'No contacts yet.' is shown — users believe they have no contacts when in fact there was a network failure. Destructure error and refetch, show an inline error message with a retry button, and add a full test suite.",
+      "acceptanceCriteria": [
+        "useApplicationContacts destructures error and refetch in addition to data and isLoading",
+        "When error is truthy, a message 'Failed to load contacts.' renders as role='alert'",
+        "A retry button with aria-label='Retry loading contacts' calls refetch",
+        "Retry button uses BUTTON_SECONDARY design token",
+        "Test file created: frontend/src/components/ContactsSection.test.jsx",
+        "Test: 'should show loading state while contacts are fetching'",
+        "Test: 'should show error state with retry when contacts fetch fails'",
+        "Test: 'should call refetch when retry is clicked'",
+        "Test: 'should show empty state when no contacts'",
+        "Test: 'should render a ContactCard for each contact'",
+        "Test: 'should toggle to link mode when Link button is clicked'",
+        "Test: 'should toggle to new mode when New button is clicked'",
+        "Mocks useApplicationContacts from hooks/useContacts",
+        "Mocks ContactCard and ContactLinkDropdown and ContactForm as stubs",
+        "No existing tests broken"
+      ],
+      "status": "done",
+      "estimatedEffort": "medium",
+      "impactScore": 80,
+      "rationale": "ContactsSection is shown in the detail panel for every application. A silent 'No contacts yet.' on failure causes users to think their networking data is gone — the highest-trust feature in the app. The fix follows the same useQuery error pattern used in US-368, US-371."
+    },
+    {
+      "id": "US-377",
+      "title": "PipelineStagesEditor has no tests — add PipelineStagesEditor.test.jsx",
+      "description": "PipelineStagesEditor.jsx is the drag-to-reorder stage editor used in SettingsPipelineSection. It has local validation (min 2 stages, max 10 stages), add/remove/rename logic, and an async save callback. None of this is tested. Add a test suite covering the main paths.",
+      "acceptanceCriteria": [
+        "Test file created: frontend/src/components/PipelineStagesEditor.test.jsx",
+        "Test: 'should render initial stages list'",
+        "Test: 'should show validation error when fewer than 2 stages after remove'",
+        "Test: 'should add a new stage when Add is clicked'",
+        "Test: 'should call onSave with stage names when Save stages is clicked'",
+        "Test: 'should show saveError prop as an error message'",
+        "Mocks @dnd-kit/core (DndContext, useSensor, useSensors, PointerSensor, KeyboardSensor) and @dnd-kit/sortable (SortableContext, useSortable, sortableKeyboardCoordinates, verticalListSortingStrategy, arrayMove)",
+        "Tests follow Arrange → Act → Assert with blank lines between sections",
+        "No existing tests broken"
+      ],
+      "status": "done",
+      "estimatedEffort": "small",
+      "impactScore": 68,
+      "rationale": "PipelineStagesEditor is a settings-level CRUD component with non-trivial validation. Regressions in stage count limits or save behavior would be invisible without tests."
+    },
+    {
+      "id": "US-378",
+      "title": "NewEventForm has no tests — add NewEventForm.test.jsx",
+      "description": "NewEventForm.jsx is the modal form for adding calendar events. It renders a dialog with application search, event type/date/time/notes fields, and Save/Cancel buttons. The business logic is in useNewEventForm, but the modal shell (render, close on Cancel, submit delegation, pending state) has no tests.",
+      "acceptanceCriteria": [
+        "Test file created: frontend/src/components/NewEventForm.test.jsx",
+        "Test: 'should render the modal dialog'",
+        "Test: 'should call onClose when Cancel is clicked'",
+        "Test: 'should call onClose when the X close button is clicked'",
+        "Test: 'should disable Save Event button while form is pending'",
+        "Mocks useNewEventForm from hooks/useNewEventForm",
+        "Mocks useAppSelector from hooks/useAppSelector",
+        "Mocks NewEventFormFields as a simple stub to avoid deep rendering",
+        "Tests follow Arrange → Act → Assert with blank lines between sections",
+        "No existing tests broken"
+      ],
+      "status": "done",
+      "estimatedEffort": "small",
+      "impactScore": 62,
+      "rationale": "NewEventForm is the primary entry point for calendar event creation, opened from multiple places (Calendar page, Dashboard). Without tests, modal lifecycle regressions (double-close, stuck pending state) go undetected."
+    },
+    {
+      "id": "US-379",
+      "title": "DashboardToolbar has no tests — add DashboardToolbar.test.jsx",
+      "description": "DashboardToolbar.jsx is the header toolbar for Dashboard with view toggle (list/kanban), Import CSV, Export CSV (with pending spinner), and Add Application buttons. It is a pure presentational component with well-defined props — easy to test and high-value as a regression guard.",
+      "acceptanceCriteria": [
+        "Test file created: frontend/src/components/DashboardToolbar.test.jsx",
+        "Test: 'should render Dashboard heading'",
+        "Test: 'should mark list view button as pressed when viewMode is list'",
+        "Test: 'should mark kanban view button as pressed when viewMode is kanban'",
+        "Test: 'should call onSetViewMode with list when List view is clicked'",
+        "Test: 'should call onSetViewMode with kanban when Kanban view is clicked'",
+        "Test: 'should show spinner and disable Export CSV while isExporting'",
+        "Test: 'should call onAdd when Add Application is clicked'",
+        "No mocks required — component is purely presentational",
+        "Tests follow Arrange → Act → Assert with blank lines between sections",
+        "No existing tests broken"
+      ],
+      "status": "done",
+      "estimatedEffort": "small",
+      "impactScore": 58,
+      "rationale": "DashboardToolbar is rendered on every Dashboard visit. The view toggle, import/export, and add buttons are core workflow entry points. Pure presentational components are the easiest to test — no reason to leave them uncovered."
+    },
+    {
+      "id": "US-380",
+      "title": "SettingsPipelineSection has no tests — add SettingsPipelineSection.test.jsx",
+      "description": "SettingsPipelineSection.jsx composes PipelineStagesEditor and WeeklyGoalSection, wires them to useUpdateUser mutations, and shows success/error banners. It is the primary Settings page section for pipeline management and has no tests.",
+      "acceptanceCriteria": [
+        "Test file created: frontend/src/components/SettingsPipelineSection.test.jsx",
+        "Test: 'should render Pipeline Stages heading'",
+        "Test: 'should show PipelineStagesEditor when user has stages'",
+        "Test: 'should show success banner after save'",
+        "Test: 'should show streak badge when user has a weekly streak'",
+        "Mocks useAuth from context/AuthContext",
+        "Mocks useUpdateUser from hooks/useAuth",
+        "Mocks PipelineStagesEditor as a stub that calls onSave with a test stage list",
+        "Mocks WeeklyGoalSection as a stub",
+        "Tests follow Arrange → Act → Assert with blank lines between sections",
+        "No existing tests broken"
+      ],
+      "status": "done",
+      "estimatedEffort": "small",
+      "impactScore": 54,
+      "rationale": "SettingsPipelineSection orchestrates mutation callbacks and success/error state from two sub-components. Without tests, the save flow and banner rendering logic are unverified."
+    }
+  ]
+}
