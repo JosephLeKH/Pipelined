@@ -41,7 +41,7 @@ function TemplateBar({ onApply, fields }) {
         <button
           type="button"
           onClick={() => setShowSaveModal(true)}
-          className={`shrink-0 rounded-button ${BUTTON_SECONDARY}`}
+          className={`shrink-0 ${BUTTON_SECONDARY}`}
         >
           Save as template
         </button>

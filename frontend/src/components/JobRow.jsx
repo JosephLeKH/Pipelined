@@ -73,7 +73,7 @@ function JobRow({ job, style }) {
             href={job.apply_url}
             target="_blank"
             rel="noopener noreferrer"
-            className={`flex items-center gap-1 rounded-button ${BUTTON_PRIMARY} text-xs px-2.5 py-1 active:scale-[0.98]`}
+            className={`flex items-center gap-1 ${BUTTON_PRIMARY} text-xs px-2.5 py-1`}
             aria-label={`Apply to ${job.role ?? "this role"} at ${job.company ?? "this company"}`}
           >
             Apply

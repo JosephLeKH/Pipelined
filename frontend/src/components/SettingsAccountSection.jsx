@@ -168,7 +168,7 @@ function DangerZone() {
               <button
                 type="button"
                 onClick={() => setShowModal(false)}
-                className={`rounded-button ${BUTTON_SECONDARY}`}
+                className={BUTTON_SECONDARY}
               >
                 Cancel
               </button>
@@ -176,7 +176,7 @@ function DangerZone() {
                 type="button"
                 onClick={handleDelete}
                 disabled={isPending}
-                className={`flex items-center gap-2 rounded-button ${BUTTON_DANGER}`}
+                className={`flex items-center gap-2 ${BUTTON_DANGER}`}
               >
                 {isPending && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
                 Delete my account

@@ -127,7 +127,7 @@ function BulkMoveControls({ stageOptions, selectedStage, setSelectedStage, isMov
         {stageOptions.map((s) => <option key={s} value={s}>{s}</option>)}
       </select>
       <button type="button" disabled={!selectedStage || isBusy} onClick={onMove}
-        className={`${BUTTON_PRIMARY} flex items-center gap-1 px-3 py-1 active:scale-[0.98]`}>
+        className={`${BUTTON_PRIMARY} flex items-center gap-1 px-3 py-1`}>
         {isMoving ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" /> : null}
         Move
       </button>

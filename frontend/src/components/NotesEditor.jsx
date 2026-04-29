@@ -100,7 +100,7 @@ function NotesEditor({ applicationId, initialValue, onDirtyChange }) {
               <button
                 type="button"
                 onClick={handleSave}
-                className={`${BUTTON_PRIMARY} text-xs px-2 py-1 active:scale-[0.98]`}
+                className={`${BUTTON_PRIMARY} text-xs px-2 py-1`}
               >
                 Save
               </button>

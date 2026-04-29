@@ -84,7 +84,7 @@ function NoShare({ onCreate, isCreating }) {
         type="button"
         onClick={onCreate}
         disabled={isCreating}
-        className={`flex items-center gap-1.5 self-start rounded-button ${BUTTON_PRIMARY} active:scale-[0.98]`}
+        className={`flex items-center gap-1.5 self-start ${BUTTON_PRIMARY}`}
       >
         {isCreating
           ? <Loader2 className="h-4 w-4 animate-spin" />

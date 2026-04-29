@@ -40,7 +40,7 @@ class ErrorBoundary extends Component {
           <button
             type="button"
             onClick={this.handleReset}
-            className={`flex items-center gap-2 rounded-button active:scale-[0.98] ${BUTTON_PRIMARY}`}
+            className={`flex items-center gap-2 ${BUTTON_PRIMARY}`}
           >
             <RefreshCw className="h-4 w-4" />
             Try again

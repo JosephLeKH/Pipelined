@@ -65,7 +65,7 @@ function SettingsReferralSection({ user }) {
             type="button"
             onClick={handleCopy}
             aria-label="Copy referral link"
-            className={`flex items-center gap-1.5 rounded-button ${BUTTON_SECONDARY} active:scale-[0.97]`}
+            className={`flex items-center gap-1.5 ${BUTTON_SECONDARY}`}
           >
             {copied ? (
               <CheckCircle className="h-4 w-4 text-green-500" aria-hidden="true" />

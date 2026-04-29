@@ -58,7 +58,7 @@ export default function SaveSearchPopover({ currentFilters, onClose }) {
           type="button"
           onClick={handleSave}
           disabled={!name.trim() || createMutation.isPending}
-          className={`${BUTTON_PRIMARY} text-sm px-3 py-1.5 active:scale-[0.98]`}
+          className={`${BUTTON_PRIMARY} text-sm px-3 py-1.5`}
         >
           Save
         </button>
