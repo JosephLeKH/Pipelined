@@ -27,33 +27,31 @@ function NotificationItem({ notification }) {
   }
 
   return (
-    <li
-      className={`flex cursor-pointer items-start gap-3 px-4 py-3 hover:bg-gray-50 transition-colors dark:hover:bg-gray-700/50 ${
-        notification.read ? "opacity-60" : ""
-      }`}
-      onClick={handleClick}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => e.key === "Enter" && handleClick()}
-    >
-      <Icon
-        className={`mt-0.5 h-4 w-4 shrink-0 ${
-          notification.read
-            ? "text-gray-400 dark:text-gray-500"
-            : "text-gray-600 dark:text-gray-400"
-        }`}
-      />
-      <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-medium text-gray-900 dark:text-gray-100">
-          {notification.title}
-        </p>
-        <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400 line-clamp-2">
-          {notification.body}
-        </p>
-      </div>
-      {!notification.read && (
-        <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-brand-500" aria-label="Unread" />
-      )}
+    <li className={notification.read ? "opacity-60" : ""}>
+      <button
+        type="button"
+        onClick={handleClick}
+        className="flex w-full items-start gap-3 px-4 py-3 text-left hover:bg-gray-50 transition-colors dark:hover:bg-gray-700/50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-brand-500"
+      >
+        <Icon
+          className={`mt-0.5 h-4 w-4 shrink-0 ${
+            notification.read
+              ? "text-gray-400 dark:text-gray-500"
+              : "text-gray-600 dark:text-gray-400"
+          }`}
+        />
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-sm font-medium text-gray-900 dark:text-gray-100">
+            {notification.title}
+          </p>
+          <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400 line-clamp-2">
+            {notification.body}
+          </p>
+        </div>
+        {!notification.read && (
+          <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-brand-500" aria-label="Unread" />
+        )}
+      </button>
     </li>
   );
 }

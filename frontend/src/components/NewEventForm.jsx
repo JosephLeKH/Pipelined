@@ -43,13 +43,13 @@ function NewEventForm({ initialDate, initialApplicationId, onClose }) {
       onClick={hook.handleOverlayClick}
       role="dialog"
       aria-modal="true"
-      aria-label="New calendar event"
+      aria-labelledby="new-event-heading"
     >
       <div className={MODAL_CARD}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b border-border-default px-6 py-4">
-          <h2 className="font-display text-lg font-semibold text-gray-900 dark:text-gray-100">New Event</h2>
+          <h2 id="new-event-heading" className="font-display text-lg font-semibold text-gray-900 dark:text-gray-100">New Event</h2>
           <button type="button" onClick={onClose} className={`${BUTTON_GHOST} p-2`} aria-label="Close form">
             <X className="h-5 w-5 text-gray-500" />
           </button>

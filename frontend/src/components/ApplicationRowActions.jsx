@@ -143,7 +143,7 @@ function BulkEditControls({ followUpDate, setFollowUpDate, tagsAdd, setTagsAdd, 
       <input type="text" aria-label="Tags to add" placeholder="Tags to add…" value={tagsAdd} onChange={(e) => setTagsAdd(e.target.value)} disabled={isBusy || overLimit} className={`w-36 ${inputCls}`} />
       <input type="text" aria-label="Tags to remove" placeholder="Tags to remove…" value={tagsRemove} onChange={(e) => setTagsRemove(e.target.value)} disabled={isBusy || overLimit} className={`w-36 ${inputCls}`} />
       <button type="button" disabled={isBusy || overLimit} onClick={onApply}
-        className="flex items-center gap-1 rounded border border-brand-600 px-3 py-1 text-sm font-medium text-brand-700 hover:bg-brand-50 transition-colors dark:border-brand-400 dark:text-brand-300 dark:hover:bg-brand-900/20 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2">
+        className={`${BUTTON_PRIMARY} flex items-center gap-1 px-3 py-1`}>
         {isEditing ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" /> : null}
         Apply
       </button>
