@@ -1,0 +1,131 @@
+{
+  "id": "PRD-43",
+  "title": "Test coverage for ResumeFitSection, ResumeSection, JobBoardContent, ApplicationListEmpty, TemplateBar, and TimezoneSelector",
+  "status": "done",
+  "priority": "high",
+  "description": "PRD-43 adds test suites for six more untested components. ResumeFitSection has branching quota-exceeded, null, and data states with matched/missing skills. ResumeSection has file size validation and success/error banners. JobBoardContent is a critical job board rendering component with loading, error, empty, and list states. ApplicationListEmpty is the fallback renderer for Dashboard list view with multiple states. TemplateBar has hook-driven template loading and a modal trigger. TimezoneSelector is a pure grouped-select utility.",
+  "userStories": [
+    {
+      "id": "US-392",
+      "title": "ResumeFitSection has no tests — add ResumeFitSection.test.jsx",
+      "description": "ResumeFitSection.jsx renders AI fit analysis: quota-exceeded message when aiScoresRemainingToday is 0 and no score, null when analysis is absent, and a score/summary/skills display when analysis is present. All three branches are untested.",
+      "acceptanceCriteria": [
+        "Test file created: frontend/src/components/ResumeFitSection.test.jsx",
+        "Test: 'should return null when analysis is absent'",
+        "Test: 'should show quota exceeded message when aiScoresRemainingToday is 0 and no score'",
+        "Test: 'should render fit score when analysis has a score'",
+        "Test: 'should render analysis summary when provided'",
+        "Test: 'should render matched skills as badges'",
+        "Test: 'should render missing skills as badges'",
+        "Mocks FitBadge as a stub",
+        "Mocks trackEvent from lib/analytics",
+        "Tests follow Arrange → Act → Assert with blank lines between sections",
+        "No existing tests broken"
+      ],
+      "status": "done",
+      "estimatedEffort": "small",
+      "impactScore": 80,
+      "rationale": "ResumeFitSection is the primary AI analysis surface in the detail panel. Its quota-exceeded and no-analysis branches are invisible to regression without tests."
+    },
+    {
+      "id": "US-393",
+      "title": "ResumeSection has no tests — add ResumeSection.test.jsx",
+      "description": "ResumeSection.jsx is a pure presentational component accepting hasResume, isUploading, isDeleting, onResumeUpload, and onResumeDelete props. It has file size validation, success/error banners, and conditional Remove button. All state branches are untested.",
+      "acceptanceCriteria": [
+        "Test file created: frontend/src/components/ResumeSection.test.jsx",
+        "Test: 'should render Upload resume label when hasResume is false'",
+        "Test: 'should render Replace resume label when hasResume is true'",
+        "Test: 'should show Remove resume button when hasResume is true'",
+        "Test: 'should show success banner after successful upload'",
+        "Test: 'should show error when file exceeds size limit'",
+        "Tests follow Arrange → Act → Assert with blank lines between sections",
+        "No existing tests broken"
+      ],
+      "status": "done",
+      "estimatedEffort": "small",
+      "impactScore": 74,
+      "rationale": "ResumeSection is the upload entry point in the profile settings. File validation and success/error state are the critical paths that should not regress."
+    },
+    {
+      "id": "US-394",
+      "title": "JobBoardContent has no tests — add JobBoardContent.test.jsx",
+      "description": "JobBoardContent.jsx is a named-export compound component with five distinct render paths: loading skeleton, API error, empty state (no filters, with filters), job card grid, and load-more button. None is tested.",
+      "acceptanceCriteria": [
+        "Test file created: frontend/src/components/JobBoardContent.test.jsx",
+        "Test: 'should show loading skeleton when isLoading is true'",
+        "Test: 'should show error message when error is set'",
+        "Test: 'should show empty state when jobs array is empty'",
+        "Test: 'should show Clear filters button in empty state when hasFilters is true'",
+        "Test: 'should render a JobCard for each job'",
+        "Test: 'should show Load more button when hasMore is true'",
+        "Test: 'should call onLoadMore when Load more is clicked'",
+        "Mocks JobCard as a stub",
+        "Mocks ApiErrorMessage as a stub",
+        "Tests follow Arrange → Act → Assert with blank lines between sections",
+        "No existing tests broken"
+      ],
+      "status": "done",
+      "estimatedEffort": "small",
+      "impactScore": 68,
+      "rationale": "JobBoardContent is rendered on every job board visit and has 5 distinct visual states. Regressions in error or empty-state rendering are invisible without tests."
+    },
+    {
+      "id": "US-395",
+      "title": "ApplicationListEmpty has no tests — add ApplicationListEmpty.test.jsx",
+      "description": "ApplicationListEmpty.jsx is the fallback renderer for the Dashboard list view with states for loading (skeleton rows), error, filtered empty, unfiltered empty, and null (when applications exist). All states untested.",
+      "acceptanceCriteria": [
+        "Test file created: frontend/src/components/ApplicationListEmpty.test.jsx",
+        "Test: 'should show skeleton rows while loading'",
+        "Test: 'should show error when error is set'",
+        "Test: 'should show filtered empty state with clear button when filters are active'",
+        "Test: 'should call onClearFilters when clear button is clicked'",
+        "Test: 'should show empty state when no applications and no filters'",
+        "Test: 'should return null when applications exist'",
+        "Mocks ApiErrorMessage, EmptyState, SkeletonRow as stubs",
+        "Tests follow Arrange → Act → Assert with blank lines between sections",
+        "No existing tests broken"
+      ],
+      "status": "done",
+      "estimatedEffort": "small",
+      "impactScore": 62,
+      "rationale": "ApplicationListEmpty is rendered on every Dashboard list view transition. Regressions in the skeleton, error, or empty states are the most noticeable UI failures."
+    },
+    {
+      "id": "US-396",
+      "title": "TemplateBar has no tests — add TemplateBar.test.jsx",
+      "description": "TemplateBar.jsx loads templates via useTemplates and renders a select dropdown (with templates), error alert (on failure), or empty state. It also opens TemplateSaveModal when 'Save as template' is clicked and calls onApply when a template is selected.",
+      "acceptanceCriteria": [
+        "Test file created: frontend/src/components/TemplateBar.test.jsx",
+        "Test: 'should show error alert when templates fetch fails'",
+        "Test: 'should render template dropdown when templates are available'",
+        "Test: 'should call onApply with the selected template when one is chosen'",
+        "Test: 'should open TemplateSaveModal when Save as template is clicked'",
+        "Mocks useTemplates from hooks/useTemplates",
+        "Mocks TemplateSaveModal as a stub that renders a sentinel when isOpen is true",
+        "Tests follow Arrange → Act → Assert with blank lines between sections",
+        "No existing tests broken"
+      ],
+      "status": "done",
+      "estimatedEffort": "small",
+      "impactScore": 56,
+      "rationale": "TemplateBar is the template-apply and template-save entry point in ManualAddForm. The hook integration and modal trigger have no regression coverage."
+    },
+    {
+      "id": "US-397",
+      "title": "TimezoneSelector has no tests — add TimezoneSelector.test.jsx",
+      "description": "TimezoneSelector.jsx renders a grouped IANA timezone select. It uses Intl.supportedValuesOf to build option groups and calls onChange on selection. The component is used in SettingsProfileSection (mocked there), so it needs its own targeted tests.",
+      "acceptanceCriteria": [
+        "Test file created: frontend/src/components/TimezoneSelector.test.jsx",
+        "Test: 'should render a select with aria-label Timezone'",
+        "Test: 'should display the passed value as selected'",
+        "Test: 'should call onChange when a new timezone is selected'",
+        "Tests follow Arrange → Act → Assert with blank lines between sections",
+        "No existing tests broken"
+      ],
+      "status": "done",
+      "estimatedEffort": "small",
+      "impactScore": 48,
+      "rationale": "TimezoneSelector is a shared utility select used in profile settings. Its value binding and onChange wiring should have at least a smoke-test to catch regressions."
+    }
+  ]
+}
