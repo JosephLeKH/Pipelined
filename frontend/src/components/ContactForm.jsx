@@ -6,8 +6,7 @@ import { useCreateContact, useLinkContact, useRelationshipSuggestion } from "../
 import { RELATIONSHIP_OPTIONS } from "../lib/constants";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-
-const SELECT_CLS = "border border-input rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:border-ring focus:ring-1 focus:ring-ring/20 focus:outline-none transition-colors text-sm px-3 py-2 font-sans w-full disabled:opacity-50 disabled:cursor-not-allowed";
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "./ui/select";
 
 const INITIAL_FORM = {
   name: "",
@@ -58,9 +57,14 @@ function ContactFormDetailFields({ form, handleChange, disabled, suggestion }) {
       </div>
       <div className="col-span-2 flex flex-col gap-1">
         <label className="text-xs font-medium text-muted-foreground" htmlFor="contact-relationship">Relationship</label>
-        <select id="contact-relationship" name="relationship" value={form.relationship} onChange={handleChange} className={SELECT_CLS} disabled={disabled}>
-          {RELATIONSHIP_OPTIONS.map((r) => (<option key={r} value={r}>{r.replace("_", " ")}</option>))}
-        </select>
+        <Select value={form.relationship} onValueChange={(value) => handleChange({ target: { name: "relationship", value } })}>
+          <SelectTrigger id="contact-relationship" disabled={disabled}>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {RELATIONSHIP_OPTIONS.map((r) => (<SelectItem key={r} value={r}>{r.replace("_", " ")}</SelectItem>))}
+          </SelectContent>
+        </Select>
         <RelationshipSuggestionHint suggestion={suggestion} />
       </div>
     </>
