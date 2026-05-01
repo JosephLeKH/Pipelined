@@ -13,6 +13,7 @@ import { useAuth } from "../context/AuthContext";
 import { useFeedback } from "../hooks/useFeedback";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 
 const FEEDBACK_MESSAGE_MAX = 500;
 const FEEDBACK_CATEGORIES = ["Bug", "Feature Request", "General"];
@@ -20,7 +21,6 @@ const NPS_DISMISSED_KEY = "pipelined_nps_dismissed";
 const NPS_DAYS_THRESHOLD = 7;
 const NPS_SCORES = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-const SELECT_CLS = "border border-input rounded-md bg-background text-foreground focus:border-ring focus:ring-1 focus:ring-ring/20 focus:outline-none transition-colors text-sm px-3 py-2 font-sans w-full";
 const TEXTAREA_CLS = "border border-input rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:border-ring focus:ring-1 focus:ring-ring/20 focus:outline-none transition-colors text-sm px-3 py-2 font-sans w-full";
 
 function NPSBannerView({ onScore, onDismiss }) {
@@ -117,10 +117,14 @@ function FeedbackFormFields({ category, setCategory, message, setMessage, email,
     <>
       <div>
         <label htmlFor="fb-category" className="mb-1 block text-xs font-medium text-muted-foreground">Category</label>
-        <select id="fb-category" value={category} onChange={(e) => setCategory(e.target.value)}
-          className={SELECT_CLS}>
-          {FEEDBACK_CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
-        </select>
+        <Select value={category} onValueChange={setCategory}>
+          <SelectTrigger id="fb-category">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {FEEDBACK_CATEGORIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+          </SelectContent>
+        </Select>
       </div>
       <div>
         <label htmlFor="fb-message" className="mb-1 block text-xs font-medium text-muted-foreground">Message</label>
