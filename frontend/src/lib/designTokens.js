@@ -17,44 +17,41 @@ export const BUTTON_PRIMARY =
   "font-display transition-colors duration-150 focus:outline-none focus:ring-2 " +
   "focus:ring-brand-500/30 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none";
 
-/** Secondary button — white bg, warm border, warm text. */
+/** Secondary button — secondary bg, warm border, secondary text. */
 export const BUTTON_SECONDARY =
-  "bg-white border border-border-default hover:border-border-strong text-gray-700 " +
-  "hover:text-gray-900 font-medium rounded-md px-4 py-2 text-sm font-display " +
+  "bg-secondary border border-border-default hover:border-border-strong text-secondary-foreground " +
+  "hover:text-foreground font-medium rounded-md px-4 py-2 text-sm font-display " +
   "transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500/30 " +
-  "active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none " +
-  "dark:bg-gray-800 dark:border-dark-border dark:text-gray-300 dark:hover:text-gray-100 dark:hover:border-gray-500";
+  "active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none";
 
 /** Ghost button — transparent bg, muted text, surface hover. */
 export const BUTTON_GHOST =
-  "bg-transparent text-gray-500 hover:text-gray-700 hover:bg-surface-secondary " +
+  "bg-transparent text-muted-foreground hover:text-foreground hover:bg-surface-secondary " +
   "rounded-md px-3 py-2 text-sm transition-colors focus:outline-none " +
   "focus:ring-2 focus:ring-brand-500/30 disabled:opacity-50 disabled:cursor-not-allowed " +
-  "disabled:pointer-events-none " +
-  "dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700";
+  "disabled:pointer-events-none";
 
-/** Danger button — red bg, white text. */
+/** Danger button — destructive bg, destructive-foreground text. */
 export const BUTTON_DANGER =
-  "bg-red-600 hover:bg-red-700 text-white font-medium rounded-md px-4 py-2 text-sm " +
-  "font-display transition-colors focus:outline-none focus:ring-2 focus:ring-red-500/30 " +
+  "bg-destructive hover:bg-destructive/90 text-destructive-foreground font-medium rounded-md px-4 py-2 text-sm " +
+  "font-display transition-colors focus:outline-none focus:ring-2 focus:ring-destructive/30 " +
   "active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none";
 
-/** Text input, select, textarea base styles — neutral palette, Inter body text. */
+/** Text input, select, textarea base styles — semantic palette, Inter body text. */
 export const INPUT_BASE =
-  "border border-gray-300 rounded-md bg-white text-gray-900 " +
-  "placeholder:text-gray-400 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/20 " +
+  "border border-input rounded-md bg-background text-foreground " +
+  "placeholder:text-muted-foreground focus:border-brand-500 focus:ring-1 focus:ring-brand-500/20 " +
   "focus:outline-none transition-colors text-sm px-3 py-2 font-sans w-full " +
-  "disabled:opacity-50 disabled:cursor-not-allowed " +
-  "dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 dark:placeholder:text-gray-500";
+  "disabled:opacity-50 disabled:cursor-not-allowed";
 
-/** Form field label — Poppins, warm gray. */
-export const INPUT_LABEL = "text-sm font-medium text-gray-700 mb-1.5 font-display";
+/** Form field label — Poppins, foreground color. */
+export const INPUT_LABEL = "text-sm font-medium text-foreground mb-1.5 font-display";
 
 /** Helper text below a form field. */
-export const INPUT_HELPER = "text-xs text-gray-400 mt-1";
+export const INPUT_HELPER = "text-xs text-muted-foreground mt-1";
 
 /** Validation error text below a form field. */
-export const INPUT_ERROR = "text-xs text-red-600 mt-1";
+export const INPUT_ERROR = "text-xs text-destructive mt-1";
 
 /** Badge / pill base — pill shape, small text. Combine with stage-specific color classes. */
 export const BADGE_BASE = "rounded-badge text-xs font-medium px-2.5 py-1 inline-flex items-center gap-1";
@@ -78,12 +75,12 @@ export const NAV_LINK =
 export const NAV_LINK_ACTIVE =
   "text-brand-600 text-sm font-display font-semibold px-3 py-2 rounded-md dark:text-brand-400";
 
-/** Nav brand / logo text — dark, Poppins semibold, tight tracking. */
-export const NAV_BRAND = "text-gray-900 font-display font-semibold text-lg tracking-tight dark:text-gray-100";
+/** Nav brand / logo text — foreground, Poppins semibold, tight tracking. */
+export const NAV_BRAND = "text-foreground font-display font-semibold text-lg tracking-tight";
 
 /** Default badge — warm surface-secondary bg, muted text, pill shape, Poppins. */
 export const BADGE_DEFAULT =
-  "bg-surface-secondary text-gray-600 text-xs font-display font-medium px-2 py-0.5 rounded-full";
+  "bg-surface-secondary text-muted-foreground text-xs font-display font-medium px-2 py-0.5 rounded-full";
 
 /** Success badge — muted emerald pastel bg, border-defined, pill shape. Maps to Offer pipeline status. */
 export const BADGE_SUCCESS =

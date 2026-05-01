@@ -1,0 +1,133 @@
+{
+  "id": "PRD-47",
+  "title": "Semantic color token cleanup across banners, badges, charts, and designTokens",
+  "description": "Replace remaining hardcoded Tailwind color values (gray-*, red-*, blue-*, amber-*, green-*, rose-*) with semantic design tokens across banner components, FitBadge, AnalyticsCharts, ApplicationRow swipe actions, and designTokens.js itself. This is a continuation of the systematic token migration.",
+  "userStories": [
+    {
+      "id": "US-510",
+      "title": "Fix designTokens.js — replace hardcoded gray/red/blue with semantic tokens",
+      "description": "As a developer, the designTokens.js constants should use semantic CSS variable-based tokens exclusively. Currently BUTTON_SECONDARY, BUTTON_GHOST, INPUT_BASE, INPUT_LABEL, INPUT_HELPER, INPUT_ERROR, NAV_BRAND, BADGE_DEFAULT, and BADGE_INFO contain hardcoded gray-*, red-*, and blue-* Tailwind classes.",
+      "acceptanceCriteria": [
+        "BUTTON_SECONDARY uses text-foreground, bg-secondary, text-secondary-foreground instead of text-gray-700/900/300/100/500",
+        "BUTTON_GHOST uses text-muted-foreground, hover:text-foreground instead of text-gray-500/700/400/200",
+        "BUTTON_DANGER uses bg-destructive, text-destructive-foreground, hover:bg-destructive/90 instead of red-600/700/500/30",
+        "INPUT_BASE uses border-input, bg-background, text-foreground, placeholder:text-muted-foreground instead of gray-300, bg-white, gray-900, gray-400, dark:bg-gray-800, dark:border-gray-600, dark:text-gray-100, dark:placeholder:text-gray-500",
+        "INPUT_LABEL uses text-foreground instead of text-gray-700",
+        "INPUT_HELPER uses text-muted-foreground instead of text-gray-400",
+        "INPUT_ERROR uses text-destructive instead of text-red-600",
+        "NAV_BRAND uses text-foreground instead of text-gray-900 dark:text-gray-100",
+        "BADGE_DEFAULT uses text-muted-foreground instead of text-gray-600",
+        "npm run build passes with no errors"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Read src/lib/designTokens.js first to see the full file before editing. Be careful — these tokens are imported in many components. Only change the color class strings inside the token constants, not the token names or structure. Do NOT change BADGE_INFO (bg-blue-50/border-blue-200 is intentional brand coloring)."
+    },
+    {
+      "id": "US-511",
+      "title": "Create shadcn Alert UI component",
+      "description": "As a developer, I need a reusable shadcn-style Alert component at src/components/ui/alert.jsx with default and destructive variants, so banner/warning components can use it for consistent styling.",
+      "acceptanceCriteria": [
+        "File src/components/ui/alert.jsx exists and exports named Alert, AlertTitle, AlertDescription functions",
+        "Alert accepts variant prop ('default' | 'destructive'), className, and all standard div props",
+        "Default variant uses bg-card border border-border text-foreground",
+        "Destructive variant uses border-destructive/50 text-destructive dark:border-destructive bg-destructive/5",
+        "AlertTitle renders as a div with font-medium leading-none tracking-tight",
+        "AlertDescription renders as a div with text-sm text-muted-foreground",
+        "Uses cn() from @/lib/utils for className merging",
+        "npm run build passes with no errors"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Keep under 40 lines. No radix-ui primitive needed. Model it after shadcn/ui Alert source pattern: role='alert' on the root div."
+    },
+    {
+      "id": "US-512",
+      "title": "Fix FollowUpBanner hardcoded amber colors with semantic tokens",
+      "description": "As a developer, FollowUpBanner uses hardcoded amber-* classes for its warning styling. These should be replaced with semantic tokens for theme consistency.",
+      "acceptanceCriteria": [
+        "border-amber-200 bg-amber-50 in src/components/FollowUpBanner.jsx replaced with border-amber-200/60 bg-amber-50 dark:bg-amber-950/20 dark:border-amber-700/40 (acceptable — warning amber is intentional semantic color for follow-up urgency)",
+        "Actually: replace with bg-card border-border approach — use bg-muted/50 border-border for the container, text-foreground for heading, text-muted-foreground for body text",
+        "text-amber-600 icon color replaced with text-primary",
+        "hover:bg-amber-100 on dismiss button replaced with hover:bg-muted",
+        "focus:ring-amber-500 replaced with focus:ring-ring",
+        "npm run build passes with no errors"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "Read src/components/FollowUpBanner.jsx before editing. The goal is to use semantic tokens that work in both light and dark mode. If amber feels intentional for the warning urgency, keep bg-amber-50/border-amber-200 but fix the interactive element colors (hover, focus rings) to use semantic tokens."
+    },
+    {
+      "id": "US-513",
+      "title": "Fix EmailVerificationBanner hardcoded amber colors with semantic tokens",
+      "description": "As a developer, EmailVerificationBanner uses hardcoded amber-* classes extensively. Replace interactive element and focus colors with semantic tokens while preserving the warning amber intent for the container.",
+      "acceptanceCriteria": [
+        "focus:ring-amber-500 on buttons replaced with focus:ring-ring",
+        "hover:bg-amber-100 replaced with hover:bg-amber-100 dark:hover:bg-amber-800/30 (acceptable for intentional amber warning) or hover:bg-muted",
+        "text-amber-600 on icons replaced with text-amber-600 dark:text-amber-400 (already correct) or text-primary",
+        "All focus:ring-* values use focus:ring-ring",
+        "npm run build passes with no errors"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": "Read src/components/EmailVerificationBanner.jsx before editing. This is a warning-style banner so amber container colors (bg-amber-50, border-amber-200) are acceptable and intentional. Focus ONLY on: focus ring colors → focus:ring-ring, and any hover backgrounds that don't have dark mode variants."
+    },
+    {
+      "id": "US-514",
+      "title": "Fix OfflineBanner and DuplicateWarning hardcoded amber colors",
+      "description": "As a developer, OfflineBanner uses bg-amber-500 for its bar and DuplicateWarning uses amber-* classes for its inline warning. Replace with semantic tokens.",
+      "acceptanceCriteria": [
+        "In src/components/OfflineBanner.jsx, bg-amber-500 replaced with bg-destructive (offline is an error state, not just a warning)",
+        "In src/components/DuplicateWarning.jsx, border-amber-300 bg-amber-50 text-amber-800 replaced with border-border bg-muted text-foreground (or border-amber-300/60 bg-amber-50/80 if amber intent must be kept)",
+        "hover:text-amber-900 on the link in DuplicateWarning replaced with hover:text-foreground",
+        "npm run build passes with no errors"
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": "Read both files before editing. OfflineBanner is a full-width fixed bar — bg-destructive fits its critical error nature. DuplicateWarning is inline — bg-muted with text-foreground is clean and theme-safe."
+    },
+    {
+      "id": "US-515",
+      "title": "Fix FitBadge hardcoded green/amber/orange/red badge colors",
+      "description": "As a developer, FitBadge uses hardcoded green/amber/orange/red Tailwind classes for its score tiers. Replace with consistent semantic tokens that work in both themes.",
+      "acceptanceCriteria": [
+        "In src/components/FitBadge.jsx, the 'high' tier (currently bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400) kept as-is OR replaced with a named STATUS_HIGH constant — this green is intentional for positive signal",
+        "The 'medium' tier (bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400) kept as-is or extracted to STATUS_MEDIUM constant",
+        "The 'low' tier (bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-400) kept as-is or extracted to STATUS_LOW constant",
+        "The 'critical' tier (bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400) replaced with bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive for consistency with the destructive token system",
+        "npm run build passes with no errors"
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": "Read src/components/FitBadge.jsx first. The green/amber/orange tiers are intentional semantic colors for a scoring scale — don't strip them. The red tier should map to destructive. The goal is consistency on the 'error/critical' end, not neutralizing all color signals."
+    },
+    {
+      "id": "US-516",
+      "title": "Fix ApplicationRow swipe action hardcoded amber/rose colors",
+      "description": "As a developer, the swipe action buttons in ApplicationRow use hardcoded bg-amber-500 and bg-rose-500 Tailwind classes. The archive (rose) action should use destructive tokens.",
+      "acceptanceCriteria": [
+        "In src/components/ApplicationRow.jsx, bg-rose-500 hover:bg-rose-600 active:bg-rose-700 on the archive swipe button replaced with bg-destructive hover:bg-destructive/90 active:bg-destructive/80",
+        "bg-amber-500 hover:bg-amber-600 active:bg-amber-700 on the follow-up swipe button kept as-is (amber is intentional for follow-up urgency signal) OR replaced with bg-primary hover:bg-primary/90",
+        "npm run build passes with no errors"
+      ],
+      "priority": 7,
+      "passes": false,
+      "notes": "Read src/components/ApplicationRow.jsx first. Only change the rose archive button to destructive. The amber follow-up button is a judgment call — if you change it, use bg-primary (brand color). Do not change anything else in this file."
+    },
+    {
+      "id": "US-517",
+      "title": "Fix AnalyticsCharts hardcoded hex and amber/rose metric colors",
+      "description": "As a developer, AnalyticsCharts uses hardcoded hex color values and amber/rose Tailwind classes for metric display. Replace hex with brand tokens and metric colors with semantic tokens.",
+      "acceptanceCriteria": [
+        "In src/components/AnalyticsCharts.jsx, CHART_GRID_COLOR = '#e8e6dc' replaced with a CSS variable reference or kept as-is if it matches border-border CSS var value",
+        "CHART_TICK_COLOR = '#9ca3af' replaced with 'var(--muted-foreground)' or equivalent CSS variable",
+        "text-amber-600 dark:text-amber-400 on medium-rate metric replaced with text-amber-600 dark:text-amber-400 (acceptable intentional) or text-foreground",
+        "text-rose-600 dark:text-rose-400 on low-rate and high-days metrics replaced with text-destructive",
+        "npm run build passes with no errors"
+      ],
+      "priority": 8,
+      "passes": false,
+      "notes": "Read src/components/AnalyticsCharts.jsx first. The CHART_COLORS hex array (#d97757 etc) are intentional brand palette colors — do NOT change those. Only change CHART_GRID_COLOR, CHART_TICK_COLOR, and the rose/amber metric text classes. For CSS var in JS: use 'var(--color-muted-foreground)' or check what CSS variable name tailwind uses."
+    }
+  ]
+}
