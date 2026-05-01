@@ -12,8 +12,8 @@ import { Legend } from "recharts/es6/component/Legend";
 import { ResponsiveContainer } from "recharts/es6/component/ResponsiveContainer";
 
 const CHART_COLORS = ["#d97757", "#6a9bcc", "#788c5d", "#9ca3af", "#d1d5db"];
-const CHART_GRID_COLOR = "#e8e6dc";
-const CHART_TICK_COLOR = "#9ca3af";
+const CHART_GRID_COLOR = "hsl(var(--border))";
+const CHART_TICK_COLOR = "hsl(var(--muted-foreground))";
 const CONVERSION_HIGH_THRESHOLD = 0.6;
 const CONVERSION_LOW_THRESHOLD = 0.3;
 const AVG_DAYS_HIGHLIGHT_THRESHOLD = 21;
@@ -21,12 +21,12 @@ const AVG_DAYS_HIGHLIGHT_THRESHOLD = 21;
 function rateColorClass(rate) {
   if (rate > CONVERSION_HIGH_THRESHOLD) return "text-primary font-medium";
   if (rate >= CONVERSION_LOW_THRESHOLD) return "text-amber-600 dark:text-amber-400 font-medium";
-  return "text-rose-600 dark:text-rose-400 font-medium";
+  return "text-destructive font-medium";
 }
 
 function avgDaysColorClass(days) {
   if (days == null) return "";
-  return days > AVG_DAYS_HIGHLIGHT_THRESHOLD ? "text-rose-600 dark:text-rose-400" : "";
+  return days > AVG_DAYS_HIGHLIGHT_THRESHOLD ? "text-destructive" : "";
 }
 
 function CustomTooltip({ active, payload, label, formatter }) {
