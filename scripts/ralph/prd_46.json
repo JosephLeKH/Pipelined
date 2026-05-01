@@ -108,7 +108,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 7,
-      "passes": false,
+      "passes": true,
       "notes": "Single one-line change. The border-border token handles light/dark automatically."
     },
     {

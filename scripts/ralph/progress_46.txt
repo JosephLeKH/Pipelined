@@ -55,3 +55,10 @@ Started: Fri May  1 09:50:34 PDT 2026
 - File stayed at 121 lines — well under the 300-line limit, no split needed
 - Build passes with no errors
 - Committed as: feat: US-506 - Replace raw <select> and <textarea> in OfferNegotiationPanel with shadcn components
+
+## US-507 — Fix SkeletonCalendarCell hardcoded border colors to use design token
+- Replaced `border-gray-100 dark:border-gray-700` with `border-border` in the outer div className
+- border-border is the semantic design token that handles light/dark automatically via CSS variable
+- No other hardcoded gray/color classes remain in the file
+- Build passes with no errors
+- Committed as: feat: US-507 - Fix SkeletonCalendarCell hardcoded border colors to use design token
