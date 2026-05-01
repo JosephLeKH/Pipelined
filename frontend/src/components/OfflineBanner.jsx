@@ -25,7 +25,7 @@ function OfflineBanner() {
       role="status"
       aria-live="polite"
       data-testid="offline-banner"
-      className="fixed inset-x-0 top-0 z-50 bg-amber-500 px-4 py-2 text-center text-sm font-medium text-white"
+      className="fixed inset-x-0 top-0 z-50 bg-destructive px-4 py-2 text-center text-sm font-medium text-destructive-foreground"
     >
       You are offline — changes may not save
     </div>
