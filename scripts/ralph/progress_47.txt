@@ -20,3 +20,11 @@ Completed: Fri May  1 2026
 ### Learnings
 - Semantic CSS variable tokens (bg-secondary, text-foreground, bg-destructive, border-input, text-muted-foreground) handle both light and dark modes automatically — explicit dark: variants can be removed when switching
 - The shadcn/Tailwind CSS variable convention means `bg-secondary` resolves to the correct value in both themes without any dark: override needed
+
+## US-511 - Create shadcn Alert UI component
+- Created frontend/src/components/ui/alert.jsx with Alert, AlertTitle, AlertDescription exports
+- Alert uses role="alert", variant prop (default/destructive), VARIANT_CLASSES constant for no-magic-values compliance
+- AlertTitle: font-medium leading-none tracking-tight; AlertDescription: text-sm text-muted-foreground
+- File is 42 lines, within 40-line function limit (each function is small)
+- npm run build passed cleanly
+- Committed: feat: US-511 - Create shadcn Alert UI component

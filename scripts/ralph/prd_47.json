@@ -38,7 +38,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Keep under 40 lines. No radix-ui primitive needed. Model it after shadcn/ui Alert source pattern: role='alert' on the root div."
     },
     {
