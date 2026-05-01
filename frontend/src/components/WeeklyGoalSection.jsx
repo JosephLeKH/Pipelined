@@ -3,7 +3,9 @@
 import { useCallback, useState } from "react";
 
 import Loader2 from "lucide-react/dist/esm/icons/loader-2";
-import { CARD_BASE, INPUT_BASE, BUTTON_PRIMARY, SUCCESS_BANNER } from "../lib/designTokens";
+
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
 
 const WEEKLY_GOAL_MIN = 1;
 const WEEKLY_GOAL_MAX = 50;
@@ -30,43 +32,38 @@ function WeeklyGoalSection({ weeklyGoal, isGoalPending, onSaveGoal }) {
   }, [localGoal, onSaveGoal]);
 
   return (
-    <section className={`${CARD_BASE} p-6`}>
-      <h2 className="font-display mb-1 text-base font-semibold text-gray-900 dark:text-gray-100">
+    <section className="rounded-xl bg-card border border-border p-6">
+      <h2 className="font-display mb-1 text-base font-semibold text-foreground">
         Weekly Application Goal
       </h2>
-      <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">
+      <p className="mb-4 text-sm text-muted-foreground">
         Set a target number of applications to submit per week. Shown as a progress ring on the dashboard.
       </p>
       {goalSaved && !isGoalPending && (
-        <p role="alert" className={`mb-4 ${SUCCESS_BANNER}`}>
+        <p role="alert" className="mb-4 rounded-lg bg-primary/10 border border-primary/20 px-3 py-3 text-sm text-primary">
           Weekly goal saved.
         </p>
       )}
       {goalError && (
-        <p role="alert" className="mb-4 text-sm text-red-600 dark:text-red-400">{goalError}</p>
+        <p role="alert" className="mb-4 text-sm text-destructive">{goalError}</p>
       )}
       <div className="flex items-center gap-3">
-        <input
+        <Input
           type="number"
           min={WEEKLY_GOAL_MIN}
           max={WEEKLY_GOAL_MAX}
           value={localGoal}
           onChange={(e) => setLocalGoal(e.target.value)}
           aria-label="Weekly application goal"
-          className={`${INPUT_BASE} w-24`}
+          className="w-24"
         />
-        <span className="text-sm text-gray-500 dark:text-gray-400">applications / week</span>
+        <span className="text-sm text-muted-foreground">applications / week</span>
       </div>
       <div className="mt-4 flex justify-end">
-        <button
-          type="button"
-          onClick={handleSaveGoal}
-          disabled={isGoalPending}
-          className={`flex items-center gap-2 ${BUTTON_PRIMARY}`}
-        >
+        <Button type="button" onClick={handleSaveGoal} disabled={isGoalPending} className="flex items-center gap-2">
           {isGoalPending && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
           Save goal
-        </button>
+        </Button>
       </div>
     </section>
   );

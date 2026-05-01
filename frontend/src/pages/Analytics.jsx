@@ -5,7 +5,7 @@ import { useState } from "react";
 import BarChart3 from "lucide-react/dist/esm/icons/bar-chart-3";
 
 import useAnalyticsData from "../hooks/useAnalyticsData";
-import { BUTTON_SECONDARY, SPINNER_LG } from "../lib/designTokens";
+import { Button } from "../components/ui/button";
 import { AnalyticsMainCharts, AnalyticsTagsTable, AnalyticsFunnelSection } from "../components/AnalyticsCharts";
 import EmptyState from "../components/EmptyState";
 import ErrorBoundary from "../components/ErrorBoundary";
@@ -20,10 +20,10 @@ const DATE_RANGES = [
 
 function AnalyticsLoading() {
   return (
-    <div className="flex min-h-screen flex-col bg-surface-secondary dark:bg-gray-900">
+    <div className="flex min-h-screen flex-col bg-background">
       <NavBar />
       <main className="flex flex-1 items-center justify-center">
-        <div className={SPINNER_LG} />
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-border border-t-primary" />
       </main>
     </div>
   );
@@ -31,18 +31,13 @@ function AnalyticsLoading() {
 
 function AnalyticsError({ onRetry }) {
   return (
-    <div className="flex min-h-screen flex-col bg-surface-secondary dark:bg-gray-900">
+    <div className="flex min-h-screen flex-col bg-background">
       <NavBar />
-      <main className="flex flex-1 flex-col items-center justify-center gap-4 text-rose-600">
+      <main className="flex flex-1 flex-col items-center justify-center gap-4 text-destructive">
         <p>Failed to load analytics.</p>
-        <button
-          type="button"
-          onClick={onRetry}
-          aria-label="Retry loading analytics"
-          className={BUTTON_SECONDARY}
-        >
+        <Button variant="outline" onClick={onRetry} aria-label="Retry loading analytics">
           Try again
-        </button>
+        </Button>
       </main>
     </div>
   );
@@ -50,20 +45,21 @@ function AnalyticsError({ onRetry }) {
 
 function AnalyticsDateRangePicker({ days, setDays }) {
   return (
-    <div className="flex items-center gap-1 rounded-full border border-gray-200 bg-white p-1 dark:border-gray-700 dark:bg-gray-800">
+    <div className="flex items-center gap-1 rounded-full border border-border bg-card p-1">
       {DATE_RANGES.map(({ label, value }) => (
-        <button
+        <Button
           key={label}
           type="button"
+          variant="ghost"
           onClick={() => setDays(value)}
-          className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+          className={`rounded-full px-3 py-1 text-xs font-medium h-auto ${
             days === value
-              ? "bg-brand-500 text-white"
-              : "text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
+              ? "bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground"
+              : "text-muted-foreground hover:bg-muted"
           }`}
         >
           {label}
-        </button>
+        </Button>
       ))}
     </div>
   );
@@ -77,11 +73,11 @@ function Analytics() {
   if (error) return <AnalyticsError onRetry={refetch} />;
 
   return (
-    <div className="flex min-h-screen flex-col bg-surface-secondary dark:bg-gray-900">
+    <div className="flex min-h-screen flex-col bg-background">
       <NavBar />
       <main className="flex-1 px-4 sm:px-6 py-8">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-          <h1 className="font-display text-2xl font-semibold text-gray-900 dark:text-gray-100">Analytics</h1>
+          <h1 className="font-display text-2xl font-semibold text-foreground">Analytics</h1>
           <AnalyticsDateRangePicker days={days} setDays={setDays} />
         </div>
         {!hasEnoughData ? (
@@ -92,8 +88,8 @@ function Analytics() {
           />
         ) : (
           <ErrorBoundary fallback={
-            <div role="alert" className="rounded-lg border border-gray-200 bg-white p-8 text-center dark:border-gray-700 dark:bg-gray-800">
-              <p className="text-sm font-medium text-gray-900 dark:text-gray-100">Unable to load charts. Try refreshing the page.</p>
+            <div role="alert" className="rounded-lg border border-border bg-card p-8 text-center">
+              <p className="text-sm font-medium text-foreground">Unable to load charts. Try refreshing the page.</p>
             </div>
           }>
             <div className="flex flex-col gap-6">

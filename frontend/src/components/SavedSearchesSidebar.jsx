@@ -6,7 +6,7 @@ import {
   useSavedSearches,
   useDeleteSavedSearch,
 } from "../hooks/useSavedSearches";
-import { CARD_BASE } from "../lib/designTokens";
+import { Button } from "./ui/button";
 
 export default function SavedSearchesSidebar({ onApply }) {
   const { data: searches = [] } = useSavedSearches();
@@ -22,38 +22,40 @@ export default function SavedSearchesSidebar({ onApply }) {
   }
 
   return (
-    <div className={`${CARD_BASE} p-4 shadow-card`}>
-      <h2 className="mb-3 font-display text-sm font-semibold text-gray-700 dark:text-gray-300">Saved Searches</h2>
+    <div className="rounded-xl bg-card border border-border p-4 shadow-sm">
+      <h2 className="mb-3 font-display text-sm font-semibold text-foreground">Saved Searches</h2>
       <ul className="flex flex-col gap-1" aria-label="Saved searches list">
         {searches.map((s) => (
           <li
             key={s.id}
-            className="flex cursor-pointer items-center justify-between rounded px-2 py-1.5 text-sm hover:bg-gray-50 transition-colors dark:hover:bg-gray-700"
+            className="flex cursor-pointer items-center justify-between rounded px-2 py-1.5 text-sm hover:bg-muted transition-colors"
             onClick={() => onApply(s)}
           >
             <div className="flex flex-col">
-              <span className="font-medium text-gray-800 dark:text-gray-200">{s.name}</span>
+              <span className="font-medium text-foreground">{s.name}</span>
               {s.query && (
-                <span className="text-xs text-gray-500 dark:text-gray-400">"{s.query}"</span>
+                <span className="text-xs text-muted-foreground">"{s.query}"</span>
               )}
             </div>
             <div className="flex items-center gap-2">
               {s.new_matches_count > 0 && (
                 <span
-                  className="rounded-full bg-brand-100 px-2 py-0.5 text-xs font-semibold text-brand-700 dark:bg-brand-900/30 dark:text-brand-300"
+                  className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary"
                   aria-label={`${s.new_matches_count} new matches`}
                 >
                   {s.new_matches_count}
                 </span>
               )}
-              <button
+              <Button
                 type="button"
+                variant="ghost"
+                size="icon"
                 aria-label="Delete saved search"
                 onClick={(e) => handleDelete(e, s.id)}
-                className="rounded p-0.5 text-gray-400 hover:text-red-500 transition-colors"
+                className="h-6 w-6 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
               >
                 <Trash2 className="h-3.5 w-3.5" />
-              </button>
+              </Button>
             </div>
           </li>
         ))}

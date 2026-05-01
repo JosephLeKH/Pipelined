@@ -13,12 +13,7 @@ import ZapIcon from "lucide-react/dist/esm/icons/zap";
 
 import { useAuth } from "../context/AuthContext";
 import HeroSection from "../components/HeroSection";
-import {
-  BUTTON_PRIMARY,
-  CARD_BASE,
-  NAV_BRAND,
-  NAV_LINK,
-} from "../lib/designTokens";
+import { Button } from "../components/ui/button";
 
 const FEATURES = [
   {
@@ -77,22 +72,22 @@ const FOOTER_LINKS = {
 
 function LandingNav() {
   return (
-    <header className="sticky top-0 z-50 border-b border-border-default bg-white">
+    <header className="sticky top-0 z-50 border-b border-border bg-background">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4 md:px-10">
-        <Link to="/" className={`${NAV_BRAND} flex items-center gap-2`}>
-          <GitBranch className="h-5 w-5 text-brand-500" aria-hidden="true" />
+        <Link to="/" className="font-display font-semibold text-lg tracking-tight text-foreground flex items-center gap-2">
+          <GitBranch className="h-5 w-5 text-primary" aria-hidden="true" />
           Pipelined
         </Link>
         <nav className="flex items-center gap-2">
-          <a href="#features" className={`${NAV_LINK} hidden sm:block`}>
+          <a href="#features" className="text-muted-foreground hover:text-foreground text-sm font-display font-medium transition-colors px-3 py-2 rounded-md hidden sm:block">
             Features
           </a>
-          <Link to="/login" className={NAV_LINK}>
+          <Link to="/login" className="text-muted-foreground hover:text-foreground text-sm font-display font-medium transition-colors px-3 py-2 rounded-md">
             Log in
           </Link>
-          <Link to="/register" className={BUTTON_PRIMARY}>
-            Get Started
-          </Link>
+          <Button asChild>
+            <Link to="/register">Get Started</Link>
+          </Button>
         </nav>
       </div>
     </header>
@@ -127,18 +122,18 @@ function FeaturesSection() {
 
   return (
     <section id="features" className="mx-auto max-w-6xl px-6 py-24 md:px-10">
-      <h2 className="mb-4 text-center text-3xl font-display font-semibold tracking-tight text-gray-900">
+      <h2 className="mb-4 text-center text-3xl font-display font-semibold tracking-tight text-foreground">
         Everything you need to land the job
       </h2>
-      <p className="mx-auto mb-12 max-w-2xl text-center font-sans text-lg leading-relaxed text-gray-500">
+      <p className="mx-auto mb-12 max-w-2xl text-center font-sans text-lg leading-relaxed text-muted-foreground">
         From the first click to the final offer, Pipelined has every step covered.
       </p>
       <div ref={gridRef} className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {FEATURES.map(({ icon: Icon, title, description }) => (
-          <div key={title} className={`${CARD_BASE} scroll-reveal flex flex-col gap-3 p-6`}>
-            <Icon className="h-6 w-6 text-gray-500" aria-hidden="true" />
-            <h3 className="text-base font-display font-semibold text-gray-900">{title}</h3>
-            <p className="font-sans text-sm leading-relaxed text-gray-500">{description}</p>
+          <div key={title} className="rounded-xl bg-card border border-border scroll-reveal flex flex-col gap-3 p-6">
+            <Icon className="h-6 w-6 text-muted-foreground" aria-hidden="true" />
+            <h3 className="text-base font-display font-semibold text-foreground">{title}</h3>
+            <p className="font-sans text-sm leading-relaxed text-muted-foreground">{description}</p>
           </div>
         ))}
       </div>
@@ -148,17 +143,17 @@ function FeaturesSection() {
 
 function BottomCTA() {
   return (
-    <section className="bg-surface-secondary py-24 text-center">
+    <section className="bg-muted py-24 text-center">
       <div className="mx-auto max-w-2xl px-6">
-        <h2 className="mb-4 text-3xl font-display font-semibold tracking-tight text-gray-900">
+        <h2 className="mb-4 text-3xl font-display font-semibold tracking-tight text-foreground">
           Start tracking your applications today
         </h2>
-        <p className="mb-8 font-sans text-lg leading-relaxed text-gray-500">
+        <p className="mb-8 font-sans text-lg leading-relaxed text-muted-foreground">
           Free forever. No credit card required.
         </p>
-        <Link to="/register" className={`${BUTTON_PRIMARY} inline-flex items-center`}>
-          Get Started Free
-        </Link>
+        <Button asChild className="inline-flex items-center">
+          <Link to="/register">Get Started Free</Link>
+        </Button>
       </div>
     </section>
   );
@@ -166,12 +161,12 @@ function BottomCTA() {
 
 function LandingFooter() {
   return (
-    <footer className="border-t border-border-default bg-white">
+    <footer className="border-t border-border bg-background">
       <div className="mx-auto max-w-6xl px-6 py-12 md:px-10">
         <div className="mb-10 grid grid-cols-2 gap-8 sm:grid-cols-3">
           {Object.entries(FOOTER_LINKS).map(([heading, items]) => (
             <div key={heading}>
-              <p className="mb-3 font-display text-xs font-semibold uppercase tracking-wider text-gray-400">
+              <p className="mb-3 font-display text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 {heading}
               </p>
               <ul className="space-y-2">
@@ -180,14 +175,14 @@ function LandingFooter() {
                     {to ? (
                       <Link
                         to={to}
-                        className="font-sans text-sm text-gray-500 transition-colors hover:text-gray-900"
+                        className="font-sans text-sm text-muted-foreground transition-colors hover:text-foreground"
                       >
                         {label}
                       </Link>
                     ) : (
                       <a
                         href={href}
-                        className="font-sans text-sm text-gray-500 transition-colors hover:text-gray-900"
+                        className="font-sans text-sm text-muted-foreground transition-colors hover:text-foreground"
                       >
                         {label}
                       </a>
@@ -198,7 +193,7 @@ function LandingFooter() {
             </div>
           ))}
         </div>
-        <div className="border-t border-border-default pt-6 text-center font-sans text-sm text-gray-400">
+        <div className="border-t border-border pt-6 text-center font-sans text-sm text-muted-foreground">
           © {new Date().getFullYear()} Pipelined. All rights reserved.
         </div>
       </div>
@@ -211,7 +206,7 @@ function LandingPage() {
   if (user) return <Navigate to="/dashboard" replace />;
 
   return (
-    <div className="flex min-h-screen flex-col bg-white">
+    <div className="flex min-h-screen flex-col bg-background">
       <LandingNav />
       <main>
         <HeroSection />

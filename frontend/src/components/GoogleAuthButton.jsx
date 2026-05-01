@@ -4,6 +4,7 @@ import { useEffect, useCallback } from "react";
 
 import { useGoogleAuth } from "../hooks/useAuth";
 import { useAuth } from "../context/AuthContext";
+import { Button } from "./ui/button";
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID ?? "";
 
@@ -61,15 +62,16 @@ function GoogleAuthButton({ label = "Continue with Google", onSuccess, onError }
   }, []);
 
   return (
-    <button
+    <Button
       type="button"
+      variant="outline"
       onClick={handleClick}
-      className="flex w-full items-center justify-center gap-3 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:ring-offset-2 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+      className="w-full gap-3 shadow-sm"
       data-testid="google-auth-button"
     >
       <GoogleIcon />
       {label}
-    </button>
+    </Button>
   );
 }
 

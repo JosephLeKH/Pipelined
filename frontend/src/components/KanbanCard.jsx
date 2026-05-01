@@ -3,8 +3,8 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { formatRelative, isStale, isFollowUpOverdue } from "../lib/dateUtils";
-import { CARD_BASE } from "../lib/designTokens";
 import { STAGE_COLORS, DEFAULT_STAGE_COLOR } from "../lib/constants";
+import { cn } from "../lib/utils";
 import CompanyLogo from "./CompanyLogo";
 import FitBadge from "./FitBadge";
 
@@ -25,7 +25,6 @@ function KanbanCard({ application, onSelect }) {
 
   const stale = isStale(application.updated_at);
   const followUpOverdue = isFollowUpOverdue(application.follow_up_date);
-  const color = STAGE_COLORS[application.current_stage] ?? DEFAULT_STAGE_COLOR;
   const dndKeyDown = listeners?.onKeyDown;
 
   return (
@@ -40,9 +39,11 @@ function KanbanCard({ application, onSelect }) {
         dndKeyDown?.(e);
       }}
       data-testid="kanban-card"
-      className={`relative cursor-pointer p-3 transition-all duration-150 hover:border-border-strong hover:shadow-sm ${CARD_BASE} ${
-        isDragging ? "scale-[1.02] opacity-80 shadow-lg" : ""
-      }`}
+      className={cn(
+        "relative cursor-pointer rounded-xl border border-border bg-card p-3 text-card-foreground shadow-sm",
+        "transition-all duration-150 hover:border-border hover:shadow-md",
+        isDragging && "scale-[1.02] opacity-80 shadow-lg"
+      )}
     >
       {stale && (
         <span
@@ -60,15 +61,15 @@ function KanbanCard({ application, onSelect }) {
       )}
       <div className="flex items-center gap-2 pr-4">
         <CompanyLogo company_domain={application.company_domain ?? null} company={application.company ?? ""} size={20} />
-        <p className="truncate font-semibold text-gray-900 dark:text-gray-100">
+        <p className="truncate font-semibold text-foreground">
           {application.company}
         </p>
       </div>
-      <p className="mt-0.5 truncate text-sm text-gray-600 dark:text-gray-400">
+      <p className="mt-0.5 truncate text-sm text-muted-foreground">
         {application.role_title}
       </p>
       <div className="mt-1 flex items-center justify-between">
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-muted-foreground">
           {formatRelative(application.date_applied)}
         </p>
         <FitBadge score={application.ai_analysis?.fit_score ?? null} />

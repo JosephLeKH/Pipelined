@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 
-import { INPUT_BASE, INPUT_LABEL, BUTTON_PRIMARY } from "../lib/designTokens";
 import { PASSWORD_MIN_LENGTH } from "../lib/constants";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -20,7 +22,7 @@ function PasswordStrengthList({ password }) {
       {PASSWORD_REQUIREMENTS.map((req) => {
         const met = req.test(password);
         return (
-          <li key={req.key} className={`flex items-center gap-1.5 text-xs ${met ? "text-brand-600" : "text-gray-500"}`}>
+          <li key={req.key} className={`flex items-center gap-1.5 text-xs ${met ? "text-primary" : "text-muted-foreground"}`}>
             <span aria-hidden="true">{met ? "✓" : "○"}</span>
             {req.label}
           </li>
@@ -41,37 +43,37 @@ export function RegisterForm({ displayName, setDisplayName, email, setEmail, pas
   return (
     <form onSubmit={onSubmit} noValidate>
       <div className="mb-4">
-        <label htmlFor="display-name" className={`block ${INPUT_LABEL}`}>Name</label>
-        <input id="display-name" type="text" autoComplete="name" value={displayName} onChange={(e) => setDisplayName(e.target.value)} className={INPUT_BASE} placeholder="Jane Smith" />
+        <Label htmlFor="display-name" className="mb-1.5 block font-display text-sm font-medium">Name</Label>
+        <Input id="display-name" type="text" autoComplete="name" value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="Jane Smith" />
       </div>
       <div className="mb-4">
-        <label htmlFor="email" className={`block ${INPUT_LABEL}`}>Email</label>
-        <input
+        <Label htmlFor="email" className="mb-1.5 block font-display text-sm font-medium">Email</Label>
+        <Input
           id="email"
           type="email"
           autoComplete="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           onBlur={() => setEmailTouched(true)}
-          className={INPUT_BASE}
           placeholder="you@example.com"
           aria-describedby={emailError ? "email-error" : undefined}
+          aria-invalid={!!emailError}
         />
-        {emailError && <p id="email-error" className="mt-1 text-xs text-red-600">{emailError}</p>}
+        {emailError && <p id="email-error" role="alert" className="mt-1 text-xs text-destructive">{emailError}</p>}
       </div>
       <div className="mb-5">
-        <label htmlFor="password" className={`block ${INPUT_LABEL}`}>Password</label>
-        <input id="password" type="password" autoComplete="new-password" value={password} onChange={(e) => setPassword(e.target.value)} className={INPUT_BASE} placeholder="Min. 8 characters" />
+        <Label htmlFor="password" className="mb-1.5 block font-display text-sm font-medium">Password</Label>
+        <Input id="password" type="password" autoComplete="new-password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Min. 8 characters" />
         <PasswordStrengthList password={password} />
       </div>
       {error && (
-        <p role="alert" className="mb-4 rounded-lg bg-rose-50 border border-rose-200 px-3 py-2 text-sm text-rose-800 dark:bg-rose-900/20 dark:border-rose-800 dark:text-rose-300">
+        <p role="alert" className="mb-4 rounded-lg bg-destructive/10 border border-destructive/20 px-3 py-2 text-sm text-destructive">
           {error}
         </p>
       )}
-      <button type="submit" disabled={isSubmitDisabled} className={`w-full ${BUTTON_PRIMARY}`}>
+      <Button type="submit" disabled={isSubmitDisabled} className="w-full">
         {isPending ? "Creating account…" : "Create account"}
-      </button>
+      </Button>
     </form>
   );
 }

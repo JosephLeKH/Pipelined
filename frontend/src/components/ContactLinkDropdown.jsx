@@ -5,7 +5,7 @@ import { useState } from "react";
 import Search from "lucide-react/dist/esm/icons/search";
 
 import { useContacts, useLinkContact } from "../hooks/useContacts";
-import { BUTTON_SECONDARY } from "../lib/designTokens";
+import { Button } from "./ui/button";
 
 const MIN_SEARCH_LEN = 1;
 
@@ -35,64 +35,61 @@ function ContactLinkDropdown({ applicationId, linkedIds = [], onDone }) {
   }
 
   return (
-    <div className="flex flex-col gap-2 rounded border border-gray-200 px-3 py-2.5 dark:border-gray-700">
-      <div className="flex items-center gap-1.5 rounded border border-gray-300 px-2 py-1 dark:border-gray-600">
-        <Search className="h-3.5 w-3.5 shrink-0 text-gray-400" />
+    <div className="flex flex-col gap-2 rounded border border-border px-3 py-2.5">
+      <div className="flex items-center gap-1.5 rounded border border-border px-2 py-1">
+        <Search className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
         <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search contacts…"
-          className="flex-1 bg-transparent text-sm text-gray-800 placeholder-gray-400 focus:outline-none dark:text-gray-200"
+          className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
           aria-label="Search contacts to link"
         />
       </div>
-      {isLoading && <p className="text-xs text-gray-400">Loading…</p>}
+      {isLoading && <p className="text-xs text-muted-foreground">Loading…</p>}
       {error && (
         <div role="alert" className="flex items-center justify-between gap-2">
-          <p className="text-xs text-red-600 dark:text-red-400">Failed to load contacts.</p>
-          <button
-            type="button"
-            onClick={() => refetch()}
-            aria-label="Retry loading contacts"
-            className={`${BUTTON_SECONDARY} px-2 py-1 text-xs`}
-          >
+          <p className="text-xs text-destructive">Failed to load contacts.</p>
+          <Button type="button" variant="outline" size="sm" onClick={() => refetch()} aria-label="Retry loading contacts">
             Retry
-          </button>
+          </Button>
         </div>
       )}
       {!isLoading && !error && filtered.length === 0 && (
-        <p className="text-xs text-gray-400">No contacts found.</p>
+        <p className="text-xs text-muted-foreground">No contacts found.</p>
       )}
       <ul className="flex max-h-40 flex-col gap-1 overflow-y-auto">
         {filtered.map((contact) => (
           <li key={contact.id}>
-            <button
+            <Button
               type="button"
+              variant="ghost"
               disabled={isPending}
               onClick={() => handleLink(contact.id)}
-              className="flex w-full items-center justify-between rounded px-2 py-1.5 text-left text-sm hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:ring-offset-2 disabled:opacity-50 dark:hover:bg-gray-700"
+              className="h-auto w-full justify-between px-2 py-1.5 text-left text-sm hover:bg-muted"
             >
               <div className="flex flex-col gap-0.5 min-w-0">
-                <span className="truncate font-medium text-gray-900 dark:text-gray-100">{contact.name}</span>
+                <span className="truncate font-medium text-foreground">{contact.name}</span>
                 {(contact.role || contact.company) && (
-                  <span className="truncate text-xs text-gray-500 dark:text-gray-400">
+                  <span className="truncate text-xs text-muted-foreground">
                     {[contact.role, contact.company].filter(Boolean).join(" · ")}
                   </span>
                 )}
               </div>
-              <span className="ml-2 shrink-0 text-xs text-brand-600 dark:text-brand-400">Link</span>
-            </button>
+              <span className="ml-2 shrink-0 text-xs text-primary">Link</span>
+            </Button>
           </li>
         ))}
       </ul>
-      <button
+      <Button
         type="button"
+        variant="link"
         onClick={() => onDone?.()}
-        className="self-end text-xs text-gray-400 hover:text-gray-600 transition-colors dark:hover:text-gray-300"
+        className="self-end h-auto p-0 text-xs text-muted-foreground hover:text-foreground"
       >
         Cancel
-      </button>
+      </Button>
     </div>
   );
 }

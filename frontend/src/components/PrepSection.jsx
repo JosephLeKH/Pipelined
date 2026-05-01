@@ -13,22 +13,22 @@ import {
   MAX_PREP_QUESTIONS,
   PREP_CHECKLIST_STARTER_SUGGESTIONS,
 } from "../lib/constants";
-import { INPUT_BASE } from "../lib/designTokens";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
 import { ChecklistItem, AddChecklistItem } from "./PrepChecklist";
+
+const TEXTAREA_CLS = "border border-input rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:border-ring focus:ring-1 focus:ring-ring/20 focus:outline-none transition-colors text-sm px-3 py-2 font-sans w-full";
 
 function QuestionItem({ question, onDelete }) {
   return (
     <div className="flex items-start gap-2 py-1">
-      <span className="mt-0.5 flex-shrink-0 text-gray-400 text-sm">•</span>
-      <span className="flex-1 text-sm text-gray-700 dark:text-gray-300">{question}</span>
-      <button
-        type="button"
-        onClick={onDelete}
-        className="flex-shrink-0 rounded p-0.5 text-gray-300 hover:text-red-500 transition-colors focus:outline-none focus:ring-2 focus:ring-red-400"
-        aria-label={`Delete question: ${question}`}
-      >
+      <span className="mt-0.5 flex-shrink-0 text-muted-foreground text-sm">•</span>
+      <span className="flex-1 text-sm text-foreground">{question}</span>
+      <Button type="button" variant="ghost" size="icon" onClick={onDelete}
+        className="h-6 w-6 flex-shrink-0 text-muted-foreground/50 hover:text-destructive hover:bg-destructive/10"
+        aria-label={`Delete question: ${question}`}>
         <Trash2 className="h-3.5 w-3.5" />
-      </button>
+      </Button>
     </div>
   );
 }
@@ -46,17 +46,17 @@ function AddQuestionItem({ onAdd, disabled }) {
 
   return (
     <div className="flex items-center gap-2 pt-1">
-      <Plus className="h-4 w-4 flex-shrink-0 text-gray-500" />
-      <input
+      <Plus className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
+      <Input
         type="text"
         value={text}
         onChange={(e) => setText(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder={disabled ? `Max ${MAX_PREP_QUESTIONS} questions` : "Add question and press Enter"}
         disabled={disabled}
-        className={`${INPUT_BASE} flex-1 px-2 py-1 disabled:opacity-50 disabled:cursor-not-allowed`}
         aria-label="New practice question"
         maxLength={200}
+        className="flex-1"
       />
     </div>
   );
@@ -102,7 +102,7 @@ function usePrepData(initialPrepData, onPrepChange) {
 function PrepNotesField({ notes, onNotesChange }) {
   return (
     <div>
-      <label htmlFor="prep-notes" className="text-xs font-medium text-gray-500 dark:text-gray-400">Prep Notes</label>
+      <label htmlFor="prep-notes" className="text-xs font-medium text-muted-foreground">Prep Notes</label>
       <textarea
         id="prep-notes"
         value={notes}
@@ -110,9 +110,9 @@ function PrepNotesField({ notes, onNotesChange }) {
         maxLength={PREP_NOTES_MAX_LENGTH}
         placeholder="Add your prep notes here…"
         rows={4}
-        className={`${INPUT_BASE} mt-1 resize-none`}
+        className={`${TEXTAREA_CLS} mt-1 resize-none`}
       />
-      <p className="mt-1 text-right text-xs text-gray-400">{notes.length} / {PREP_NOTES_MAX_LENGTH}</p>
+      <p className="mt-1 text-right text-xs text-muted-foreground">{notes.length} / {PREP_NOTES_MAX_LENGTH}</p>
     </div>
   );
 }
@@ -120,19 +120,19 @@ function PrepNotesField({ notes, onNotesChange }) {
 function PrepChecklistSection({ checklist, onAddItem, onToggleItem, onDeleteItem }) {
   return (
     <div>
-      <span className="text-xs font-medium text-gray-500 dark:text-gray-400">Checklist</span>
+      <span className="text-xs font-medium text-muted-foreground">Checklist</span>
       <div className="mt-1 flex flex-col gap-0.5">
         {checklist.map((item) => (
           <ChecklistItem key={item.id} item={item} onToggle={onToggleItem} onDelete={onDeleteItem} />
         ))}
         {checklist.length === 0 && (
           <div className="flex flex-col gap-1 py-1">
-            <p className="text-xs text-gray-400 mb-1">Suggestions:</p>
+            <p className="text-xs text-muted-foreground mb-1">Suggestions:</p>
             {PREP_CHECKLIST_STARTER_SUGGESTIONS.map((suggestion) => (
-              <button key={suggestion} type="button" onClick={() => onAddItem(suggestion)}
-                className="text-left text-xs text-brand-600 hover:text-brand-800 hover:underline transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 rounded">
+              <Button key={suggestion} type="button" variant="link" onClick={() => onAddItem(suggestion)}
+                className="h-auto p-0 text-xs justify-start">
                 + {suggestion}
-              </button>
+              </Button>
             ))}
           </div>
         )}
@@ -145,7 +145,7 @@ function PrepChecklistSection({ checklist, onAddItem, onToggleItem, onDeleteItem
 function PrepQuestionsSection({ questions, onAddQuestion, onDeleteQuestion }) {
   return (
     <div>
-      <span className="text-xs font-medium text-gray-500 dark:text-gray-400">Practice Questions</span>
+      <span className="text-xs font-medium text-muted-foreground">Practice Questions</span>
       <div className="mt-1 flex flex-col gap-0.5">
         {questions.map((q, idx) => (
           <QuestionItem key={idx} question={q} onDelete={() => onDeleteQuestion(idx)} />
@@ -167,13 +167,13 @@ export function PrepSection({ initialPrepData, onPrepChange }) {
   const [isOpen, setIsOpen] = useState(false);
   const { notes, checklist, questions, handleNotesChange, handleAddItem, handleToggleItem, handleDeleteItem, handleAddQuestion, handleDeleteQuestion } = usePrepData(initialPrepData, onPrepChange);
   return (
-    <div className="border-b border-gray-100 dark:border-gray-700">
-      <button type="button" onClick={() => setIsOpen((o) => !o)}
-        className="flex w-full items-center justify-between px-6 py-3 text-left hover:bg-gray-50 transition-colors dark:hover:bg-gray-700/50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-brand-500"
+    <div className="border-b border-border">
+      <Button type="button" variant="ghost" onClick={() => setIsOpen((o) => !o)}
+        className="flex w-full items-center justify-between px-6 py-3 text-left h-auto rounded-none hover:bg-muted/50 focus:ring-inset"
         aria-expanded={isOpen}>
-        <span className="text-xs font-medium uppercase text-gray-400">Interview Prep</span>
-        {isOpen ? <ChevronDown className="h-4 w-4 text-gray-500" /> : <ChevronRight className="h-4 w-4 text-gray-500" />}
-      </button>
+        <span className="text-xs font-medium uppercase text-muted-foreground">Interview Prep</span>
+        {isOpen ? <ChevronDown className="h-4 w-4 text-muted-foreground" /> : <ChevronRight className="h-4 w-4 text-muted-foreground" />}
+      </Button>
       {isOpen && (
         <div className="px-6 pb-4 flex flex-col gap-4">
           <PrepNotesField notes={notes} onNotesChange={handleNotesChange} />

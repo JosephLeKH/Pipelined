@@ -1,6 +1,6 @@
 /** Settings usage section — tier badge, usage meters, and upgrade teaser. */
 
-import { CARD_BASE } from "../lib/designTokens";
+import { Button } from "./ui/button";
 
 const APP_LIMIT = 100;
 const CONTACT_LIMIT = 50;
@@ -11,14 +11,14 @@ function UsageMeter({ label, used, max }) {
   return (
     <div className="flex flex-col gap-1.5">
       <div className="flex items-center justify-between">
-        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{label}</span>
-        <span className="text-sm text-gray-500 dark:text-gray-400">
+        <span className="text-sm font-medium text-foreground">{label}</span>
+        <span className="text-sm text-muted-foreground">
           {used} / {max}
         </span>
       </div>
-      <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
+      <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
         <div
-          className="h-full rounded-full bg-brand-500 transition-all duration-300"
+          className="h-full rounded-full bg-primary transition-all duration-300"
           style={{ width: `${pct}%` }}
           role="progressbar"
           aria-valuenow={used}
@@ -37,17 +37,17 @@ function SettingsUsageSection({ user }) {
   const aiScores = user?.ai_scores_today ?? 0;
 
   return (
-    <div className={`${CARD_BASE} p-6`}>
+    <div className="rounded-xl bg-card border border-border p-6">
       <div className="mb-5 flex items-start justify-between gap-4">
         <div>
-          <h2 className="font-display text-lg font-semibold text-gray-900 dark:text-gray-100">
+          <h2 className="font-display text-lg font-semibold text-foreground">
             Usage & Plan
           </h2>
-          <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">
+          <p className="mt-0.5 text-sm text-muted-foreground">
             Your current usage against plan limits.
           </p>
         </div>
-        <span className="rounded-badge bg-brand-50 px-3 py-1 text-sm font-medium text-brand-700 dark:bg-brand-900/20 dark:text-brand-300">
+        <span className="rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
           Free Plan
         </span>
       </div>
@@ -58,18 +58,18 @@ function SettingsUsageSection({ user }) {
         <UsageMeter label="AI fit scores today" used={aiScores} max={AI_SCORE_LIMIT} />
       </div>
 
-      <div className="mt-6 border-t border-gray-100 pt-5 dark:border-gray-700">
-        <p className="mb-3 text-sm text-gray-600 dark:text-gray-400">
+      <div className="mt-6 border-t border-border pt-5">
+        <p className="mb-3 text-sm text-muted-foreground">
           Upgrade to Pro for unlimited applications, contacts, and AI scoring.
         </p>
-        <button
+        <Button
           type="button"
           disabled
           title="Coming soon"
-          className="flex cursor-not-allowed items-center gap-2 rounded-button bg-brand-500 px-4 py-2 text-sm font-medium text-white opacity-60"
+          className="cursor-not-allowed gap-2 opacity-60"
         >
           Upgrade to Pro — Coming soon
-        </button>
+        </Button>
       </div>
     </div>
   );

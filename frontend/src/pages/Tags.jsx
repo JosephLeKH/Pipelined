@@ -7,30 +7,36 @@ import Pencil from "lucide-react/dist/esm/icons/pencil";
 import Trash2 from "lucide-react/dist/esm/icons/trash-2";
 import XIcon from "lucide-react/dist/esm/icons/x";
 import Tag from "lucide-react/dist/esm/icons/tag";
+import AlertCircle from "lucide-react/dist/esm/icons/alert-circle";
 
 import { useTags, useRenameTag, useDeleteTag } from "../hooks/useApplications";
-import { BUTTON_SECONDARY, BUTTON_DANGER, BUTTON_GHOST, INPUT_BASE, CARD_BASE, SPINNER_LG, MODAL_BACKDROP, MODAL_CARD } from "../lib/designTokens";
-import AlertCircle from "lucide-react/dist/esm/icons/alert-circle";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
 import EmptyState from "../components/EmptyState";
 import NavBar from "../components/NavBar";
 
 function DeleteConfirmModal({ tag, count, onConfirm, onCancel, isPending }) {
   return (
-    <div role="dialog" aria-modal="true" aria-labelledby="delete-tag-heading" className={MODAL_BACKDROP}>
-      <div className={`w-full max-w-sm ${MODAL_CARD}`}>
-        <h3 id="delete-tag-heading" className="font-display text-lg font-semibold text-gray-900 dark:text-gray-100">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="delete-tag-heading"
+      className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+    >
+      <div className="w-full max-w-sm rounded-2xl bg-card border border-border shadow-lg p-6 mx-auto relative">
+        <h3 id="delete-tag-heading" className="font-display text-lg font-semibold text-foreground">
           Delete tag
         </h3>
-        <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-          This will remove <span className="font-medium text-gray-900 dark:text-gray-100">&ldquo;{tag}&rdquo;</span> from {count} {count === 1 ? "application" : "applications"}. This cannot be undone.
+        <p className="mt-2 text-sm text-muted-foreground">
+          This will remove <span className="font-medium text-foreground">&ldquo;{tag}&rdquo;</span> from {count} {count === 1 ? "application" : "applications"}. This cannot be undone.
         </p>
         <div className="mt-4 flex justify-end gap-2">
-          <button type="button" onClick={onCancel} disabled={isPending} className={`${BUTTON_SECONDARY} text-sm`}>
+          <Button variant="outline" size="sm" onClick={onCancel} disabled={isPending}>
             Cancel
-          </button>
-          <button type="button" onClick={onConfirm} disabled={isPending} className={`${BUTTON_DANGER} text-sm`}>
-            {isPending ? "Deleting\u2026" : "Delete"}
-          </button>
+          </Button>
+          <Button variant="destructive" size="sm" onClick={onConfirm} disabled={isPending}>
+            {isPending ? "Deleting…" : "Delete"}
+          </Button>
         </div>
       </div>
     </div>
@@ -53,13 +59,20 @@ function TagNameEditor({ name, onSave, onCancel }) {
 
   return (
     <div className="flex items-center gap-2">
-      <input type="text" value={value} onChange={(e) => setValue(e.target.value)} onKeyDown={handleKeyDown} autoFocus className={`${INPUT_BASE} max-w-xs`} />
-      <button type="button" onClick={handleSave} aria-label="Save" className={`${BUTTON_GHOST} p-1.5`}>
+      <Input
+        type="text"
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        onKeyDown={handleKeyDown}
+        autoFocus
+        className="max-w-xs"
+      />
+      <Button type="button" variant="ghost" onClick={handleSave} aria-label="Save" className="p-1.5 h-auto">
         <Check className="h-4 w-4 text-green-600" />
-      </button>
-      <button type="button" onClick={onCancel} aria-label="Cancel" className={`${BUTTON_GHOST} p-1.5`}>
-        <XIcon className="h-4 w-4 text-gray-500" />
-      </button>
+      </Button>
+      <Button type="button" variant="ghost" onClick={onCancel} aria-label="Cancel" className="p-1.5 h-auto">
+        <XIcon className="h-4 w-4 text-muted-foreground" />
+      </Button>
     </div>
   );
 }
@@ -68,25 +81,41 @@ function TagRow({ tag, onRename, onDelete }) {
   const [editing, setEditing] = useState(false);
 
   return (
-    <tr className="border-b border-gray-100 dark:border-gray-700 last:border-b-0">
+    <tr className="border-b border-border last:border-b-0">
       <td className="px-4 py-3">
         {editing ? (
-          <TagNameEditor name={tag.name} onSave={(newName) => { onRename(tag.name, newName); setEditing(false); }} onCancel={() => setEditing(false)} />
+          <TagNameEditor
+            name={tag.name}
+            onSave={(newName) => { onRename(tag.name, newName); setEditing(false); }}
+            onCancel={() => setEditing(false)}
+          />
         ) : (
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-100 px-2.5 py-0.5 text-sm font-medium text-brand-700 dark:bg-brand-900/40 dark:text-brand-300">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-2.5 py-0.5 text-sm font-medium text-primary">
             {tag.name}
           </span>
         )}
       </td>
-      <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400 tabular-nums">{tag.count}</td>
+      <td className="px-4 py-3 text-sm text-muted-foreground tabular-nums">{tag.count}</td>
       <td className="px-4 py-3">
         <div className="flex items-center gap-1">
-          <button type="button" onClick={() => setEditing(true)} aria-label={`Rename tag ${tag.name}`} className={`${BUTTON_GHOST} p-1.5`}>
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => setEditing(true)}
+            aria-label={`Rename tag ${tag.name}`}
+            className="p-1.5 h-auto"
+          >
             <Pencil className="h-3.5 w-3.5" />
-          </button>
-          <button type="button" onClick={() => onDelete(tag)} aria-label={`Delete tag ${tag.name}`} className={`${BUTTON_GHOST} p-1.5 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300`}>
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => onDelete(tag)}
+            aria-label={`Delete tag ${tag.name}`}
+            className="p-1.5 h-auto text-destructive hover:text-destructive"
+          >
             <Trash2 className="h-3.5 w-3.5" />
-          </button>
+          </Button>
         </div>
       </td>
     </tr>
@@ -95,13 +124,13 @@ function TagRow({ tag, onRename, onDelete }) {
 
 function TagsTable({ tags, onRename, onDelete }) {
   return (
-    <div className={`${CARD_BASE} overflow-hidden`}>
+    <div className="rounded-xl bg-card border border-border overflow-hidden">
       <table className="w-full">
         <thead>
-          <tr className="border-b border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800/50">
-            <th className="px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">Tag</th>
-            <th className="px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">Applications</th>
-            <th className="px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">Actions</th>
+          <tr className="border-b border-border bg-muted">
+            <th className="px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground">Tag</th>
+            <th className="px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground">Applications</th>
+            <th className="px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -135,41 +164,38 @@ function Tags() {
   const mutationError = renameMutation.error || deleteMutation.error;
 
   return (
-    <div className="flex min-h-screen flex-col bg-surface-secondary dark:bg-gray-900">
+    <div className="flex min-h-screen flex-col bg-background">
       <NavBar />
       <main className="flex-1 px-4 sm:px-6 py-8">
         <div className="mb-6">
-          <h1 className="font-display text-2xl font-semibold text-gray-900 dark:text-gray-100">Tags</h1>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Manage tags across all your applications.</p>
+          <h1 className="font-display text-2xl font-semibold text-foreground">Tags</h1>
+          <p className="mt-1 text-sm text-muted-foreground">Manage tags across all your applications.</p>
         </div>
 
         {fetchError && (
-          <div role="alert" className="mb-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400">
+          <div role="alert" className="mb-4 rounded-md border border-destructive/20 bg-destructive/10 px-4 py-3 text-sm text-destructive">
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-2">
                 <AlertCircle className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
                 <span>Failed to load tags.</span>
               </div>
-              <button
-                type="button"
-                onClick={refetch}
-                aria-label="Retry loading tags"
-                className={`${BUTTON_SECONDARY} text-sm`}
-              >
+              <Button variant="outline" size="sm" onClick={refetch} aria-label="Retry loading tags">
                 Try again
-              </button>
+              </Button>
             </div>
           </div>
         )}
 
         {mutationError && (
-          <div role="alert" className="mb-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400">
+          <div role="alert" className="mb-4 rounded-md border border-destructive/20 bg-destructive/10 px-4 py-3 text-sm text-destructive">
             {mutationError.response?.data?.error?.message ?? "Something went wrong. Please try again."}
           </div>
         )}
 
         {isLoading ? (
-          <div className="flex items-center justify-center py-16"><div className={SPINNER_LG} /></div>
+          <div className="flex items-center justify-center py-16">
+            <div className="h-10 w-10 animate-spin rounded-full border-4 border-border border-t-primary" />
+          </div>
         ) : tags.length === 0 ? (
           <EmptyState title="No tags yet" description="Add tags to your applications to organise and filter them." icon={Tag} />
         ) : (
@@ -177,7 +203,13 @@ function Tags() {
         )}
 
         {deleteTarget && (
-          <DeleteConfirmModal tag={deleteTarget.name} count={deleteTarget.count} onConfirm={handleDeleteConfirm} onCancel={() => setDeleteTarget(null)} isPending={deleteMutation.isPending} />
+          <DeleteConfirmModal
+            tag={deleteTarget.name}
+            count={deleteTarget.count}
+            onConfirm={handleDeleteConfirm}
+            onCancel={() => setDeleteTarget(null)}
+            isPending={deleteMutation.isPending}
+          />
         )}
       </main>
     </div>

@@ -1,0 +1,147 @@
+{
+  "id": "PRD-46",
+  "title": "Replace raw HTML form controls with shadcn components and fix hardcoded color tokens",
+  "description": "Systematic upgrade of raw <select> and <textarea> elements to shadcn/ui equivalents, and replacement of hardcoded Tailwind color values (red-*, gray-*) with semantic design tokens (destructive, border) for consistency and theme-correctness across the frontend.",
+  "userStories": [
+    {
+      "id": "US-501",
+      "title": "Create shadcn Textarea UI component",
+      "description": "As a developer, I need a reusable shadcn-style Textarea component at src/components/ui/textarea.jsx so other stories can import it. Model it after the existing Input component — use cn() for className merging, forward all props, export as named export.",
+      "acceptanceCriteria": [
+        "File src/components/ui/textarea.jsx exists and exports a named Textarea function",
+        "Textarea accepts className, disabled, and all standard textarea HTML props via ...props spread",
+        "Default className applies: flex min-h-[80px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
+        "Uses cn() from @/lib/utils for className merging",
+        "npm run build passes with no errors"
+      ],
+      "priority": 1,
+      "passes": true,
+      "notes": "No radix-ui primitive needed — just a styled wrapper around a plain <textarea>. Keep under 40 lines."
+    },
+    {
+      "id": "US-502",
+      "title": "Replace raw <select> in ContactForm with shadcn Select",
+      "description": "As a user, the relationship dropdown in the contact form should use the shadcn Select component for consistent styling and accessibility, replacing the raw <select> element and removing the SELECT_CLS constant.",
+      "acceptanceCriteria": [
+        "Raw <select> at line ~62 in src/components/ContactForm.jsx replaced with Select/SelectTrigger/SelectContent/SelectItem from @/components/ui/select",
+        "SELECT_CLS constant removed from ContactForm.jsx",
+        "All RELATIONSHIP_OPTIONS still render as SelectItem elements",
+        "Selected value still controlled via form.relationship state",
+        "onChange still calls handleChange or equivalent to update form state",
+        "disabled prop still propagated to SelectTrigger",
+        "npm run build passes with no errors"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "shadcn Select uses onValueChange (not onChange). The value prop goes on Select root. Pass disabled to SelectTrigger. Import from src/components/ui/select.jsx using individual named exports, not a barrel."
+    },
+    {
+      "id": "US-503",
+      "title": "Replace raw <select> in FeedbackWidget with shadcn Select",
+      "description": "As a user, the category dropdown in the feedback widget should use the shadcn Select component, replacing the raw <select> element and removing the SELECT_CLS constant.",
+      "acceptanceCriteria": [
+        "Raw <select> at line ~120 in src/components/FeedbackWidget.jsx replaced with Select/SelectTrigger/SelectContent/SelectItem",
+        "SELECT_CLS constant removed from FeedbackWidget.jsx",
+        "All category options still render as SelectItem elements with correct values",
+        "Selected value still controlled via form.category state",
+        "onChange calls still update the form state correctly",
+        "npm run build passes with no errors"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "Use onValueChange on the Select root to update state. Keep consistent with US-502 pattern."
+    },
+    {
+      "id": "US-504",
+      "title": "Replace raw <textarea> in FeedbackWidget with shadcn Textarea",
+      "description": "As a user, the message textarea in the feedback widget should use the shadcn Textarea component, replacing the raw <textarea> element and removing the TEXTAREA_CLS constant.",
+      "acceptanceCriteria": [
+        "Raw <textarea> at line ~127 in src/components/FeedbackWidget.jsx replaced with Textarea from @/components/ui/textarea",
+        "TEXTAREA_CLS constant removed from FeedbackWidget.jsx",
+        "value and onChange props still bound to form.message state",
+        "placeholder still preserved",
+        "rows/resize behavior preserved via className if needed",
+        "npm run build passes with no errors"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": "Textarea component must exist (US-501 creates it). Import from src/components/ui/textarea.jsx."
+    },
+    {
+      "id": "US-505",
+      "title": "Replace raw <textarea> in NewEventFormFields with shadcn Textarea",
+      "description": "As a user, the notes textarea in the new event form should use the shadcn Textarea component, replacing the raw <textarea> element and removing the TEXTAREA_CLASSES constant.",
+      "acceptanceCriteria": [
+        "Raw <textarea> at line ~41 in src/components/NewEventFormFields.jsx replaced with Textarea from @/components/ui/textarea",
+        "TEXTAREA_CLASSES constant removed from NewEventFormFields.jsx",
+        "value bound to notes state, onChange still calls setNotes",
+        "id='event-notes' preserved for label association",
+        "npm run build passes with no errors"
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": "Textarea component must exist (US-501 creates it). The TEXTAREA_CLASSES string duplicates the Textarea component's default styles — just delete it."
+    },
+    {
+      "id": "US-506",
+      "title": "Replace raw <select> and <textarea> in OfferNegotiationPanel with shadcn components",
+      "description": "As a user, the offer selector, template selector, and notes textarea in the offer negotiation panel should use shadcn Select and Textarea components, replacing raw elements and removing SELECT_CLS.",
+      "acceptanceCriteria": [
+        "Raw <select> at line ~64 in src/components/OfferNegotiationPanel.jsx replaced with Select/SelectTrigger/SelectContent/SelectItem",
+        "Raw <select> at line ~80 replaced with shadcn Select",
+        "Raw <textarea> at line ~110 replaced with Textarea from @/components/ui/textarea",
+        "SELECT_CLS constant removed from OfferNegotiationPanel.jsx",
+        "All controlled state (selectedOfferId, templateKey, customScript) still correctly updated",
+        "npm run build passes with no errors"
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": "Two selects and one textarea. Use onValueChange for selects. This file may be close to 300-line limit — check and split if needed."
+    },
+    {
+      "id": "US-507",
+      "title": "Fix SkeletonCalendarCell hardcoded border colors to use design token",
+      "description": "As a developer, the skeleton calendar cell should use the semantic border-border token instead of hardcoded gray values for theme consistency.",
+      "acceptanceCriteria": [
+        "In src/components/SkeletonCalendarCell.jsx, border-gray-100 and dark:border-gray-700 replaced with border-border",
+        "No other hardcoded gray or color classes remain in the file",
+        "npm run build passes with no errors"
+      ],
+      "priority": 7,
+      "passes": false,
+      "notes": "Single one-line change. The border-border token handles light/dark automatically."
+    },
+    {
+      "id": "US-508",
+      "title": "Fix NotificationBell badge to use semantic destructive token",
+      "description": "As a developer, the notification count badge should use bg-destructive and text-destructive-foreground tokens instead of hardcoded bg-red-500 text-white for theme consistency.",
+      "acceptanceCriteria": [
+        "In src/components/NotificationBell.jsx, bg-red-500 replaced with bg-destructive",
+        "text-white on the badge replaced with text-destructive-foreground",
+        "npm run build passes with no errors"
+      ],
+      "priority": 8,
+      "passes": false,
+      "notes": "Single targeted change on the badge span around line 103. text-destructive-foreground ensures contrast in both themes."
+    },
+    {
+      "id": "US-509",
+      "title": "Fix ApiErrorMessage hardcoded red colors to use semantic destructive tokens",
+      "description": "As a developer, ApiErrorMessage should use semantic destructive tokens instead of hardcoded Tailwind red- classes so error states look correct in both light and dark themes.",
+      "acceptanceCriteria": [
+        "In src/components/ApiErrorMessage.jsx, border-red-200 replaced with border-destructive/30",
+        "bg-red-50 replaced with bg-destructive/5",
+        "text-red-500 replaced with text-destructive",
+        "text-red-800 replaced with text-destructive",
+        "border-red-300 replaced with border-destructive/40",
+        "text-red-700 replaced with text-destructive",
+        "hover:bg-red-100 replaced with hover:bg-destructive/10",
+        "hover:text-red-700 replaced with hover:text-destructive",
+        "npm run build passes with no errors"
+      ],
+      "priority": 9,
+      "passes": false,
+      "notes": "All red- classes in this file are purely for error state styling — they should all map to destructive tokens. Use /opacity suffixes for backgrounds to avoid covering the card background."
+    }
+  ]
+}

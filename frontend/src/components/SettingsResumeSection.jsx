@@ -10,7 +10,7 @@ import X from "lucide-react/dist/esm/icons/x";
 import { useAuth } from "../context/AuthContext";
 import { useDeleteResume, useUploadResume } from "../hooks/useAuth";
 import { AI_SCORE_LIMIT, RESUME_ACCEPT, RESUME_MAX_MB } from "../lib/constants";
-import { CARD_BASE, SUCCESS_BANNER } from "../lib/designTokens";
+import { Button } from "./ui/button";
 
 function formatBytes(bytes) {
   if (bytes < 1024) return `${bytes} B`;
@@ -61,25 +61,24 @@ function useResumeUpload() {
 
 function ResumeFileCard({ uploadedFile, isDeleting, isUploading, onDelete }) {
   return (
-    <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 dark:border-gray-700 dark:bg-gray-900">
+    <div className="flex items-center justify-between rounded-lg border border-border bg-muted/50 px-4 py-3">
       <div className="flex items-center gap-3">
-        <FileText className="h-5 w-5 text-brand-500 shrink-0" aria-hidden="true" />
+        <FileText className="h-5 w-5 text-primary shrink-0" aria-hidden="true" />
         <div>
-          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          <p className="text-sm font-medium text-foreground">
             {uploadedFile?.name ?? "resume.pdf"}
           </p>
           {uploadedFile?.size && (
-            <p className="text-xs text-gray-400">{formatBytes(uploadedFile.size)}</p>
+            <p className="text-xs text-muted-foreground">{formatBytes(uploadedFile.size)}</p>
           )}
         </div>
       </div>
-      <button type="button" onClick={onDelete} disabled={isDeleting || isUploading} aria-label="Remove resume"
-        className="flex items-center gap-1.5 rounded-button px-3 py-1.5 text-sm text-rose-600 hover:bg-rose-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-rose-400 dark:hover:bg-rose-900/30">
+      <Button type="button" variant="ghost" size="sm" onClick={onDelete} disabled={isDeleting || isUploading} aria-label="Remove resume" className="text-destructive hover:bg-destructive/10 hover:text-destructive">
         {isDeleting
           ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
           : <X className="h-4 w-4" aria-hidden="true" />}
         Remove
-      </button>
+      </Button>
     </div>
   );
 }
@@ -93,21 +92,21 @@ function ResumeDropZone({ isDragOver, setIsDragOver, isUploading, fileInputRef, 
         onDrop={onDrop}
         onClick={() => fileInputRef.current?.click()}
         onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") fileInputRef.current?.click(); }}
-        className={`flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed p-8 text-center transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 ${
+        className={`flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed p-8 text-center transition-colors focus:outline-none focus:ring-2 focus:ring-ring ${
           isDragOver
-            ? "border-brand-500 bg-brand-50 dark:bg-brand-900/10"
-            : "border-gray-300 hover:border-brand-500 dark:border-gray-600 dark:hover:border-brand-400"
+            ? "border-primary bg-primary/10"
+            : "border-border hover:border-primary"
         }`}
         aria-label="Upload resume — drag and drop or click to browse"
       >
         {isUploading
-          ? <Loader2 className="h-8 w-8 animate-spin text-brand-500" aria-hidden="true" />
-          : <UploadCloud className={`h-8 w-8 ${isDragOver ? "text-brand-500" : "text-gray-400"}`} aria-hidden="true" />}
+          ? <Loader2 className="h-8 w-8 animate-spin text-primary" aria-hidden="true" />
+          : <UploadCloud className={`h-8 w-8 ${isDragOver ? "text-primary" : "text-muted-foreground"}`} aria-hidden="true" />}
         <div>
-          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          <p className="text-sm font-medium text-foreground">
             {isUploading ? "Uploading…" : "Drop your resume here or click to browse"}
           </p>
-          <p className="mt-0.5 text-xs text-gray-400">PDF only · max {RESUME_MAX_MB} MB</p>
+          <p className="mt-0.5 text-xs text-muted-foreground">PDF only · max {RESUME_MAX_MB} MB</p>
         </div>
       </div>
       <input ref={fileInputRef} type="file" accept={RESUME_ACCEPT} className="sr-only"
@@ -118,16 +117,16 @@ function ResumeDropZone({ isDragOver, setIsDragOver, isUploading, fileInputRef, 
 
 function AiScoreMeter({ aiScores, aiPct }) {
   return (
-    <div className={`${CARD_BASE} p-6`}>
-      <h3 className="font-display mb-1 text-base font-semibold text-gray-900 dark:text-gray-100">AI fit scoring</h3>
-      <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">Daily usage resets at midnight UTC.</p>
+    <div className="rounded-xl bg-card border border-border p-6">
+      <h3 className="font-display mb-1 text-base font-semibold text-foreground">AI fit scoring</h3>
+      <p className="mb-4 text-sm text-muted-foreground">Daily usage resets at midnight UTC.</p>
       <div className="flex flex-col gap-1.5">
         <div className="flex items-center justify-between">
-          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Fit scores used today</span>
-          <span className="text-sm text-gray-500 dark:text-gray-400">{aiScores} / {AI_SCORE_LIMIT}</span>
+          <span className="text-sm font-medium text-foreground">Fit scores used today</span>
+          <span className="text-sm text-muted-foreground">{aiScores} / {AI_SCORE_LIMIT}</span>
         </div>
-        <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
-          <div className="h-full rounded-full bg-brand-500 transition-all duration-300" style={{ width: `${aiPct}%` }}
+        <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+          <div className="h-full rounded-full bg-primary transition-all duration-300" style={{ width: `${aiPct}%` }}
             role="progressbar" aria-valuenow={aiScores} aria-valuemin={0} aria-valuemax={AI_SCORE_LIMIT}
             aria-label="AI fit scores used today" />
         </div>
@@ -145,18 +144,18 @@ function SettingsResumeSection() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className={`${CARD_BASE} p-6`}>
-        <h2 className="font-display mb-1 text-lg font-semibold text-gray-900 dark:text-gray-100">Resume & AI</h2>
-        <p className="mb-5 text-sm text-gray-500 dark:text-gray-400">
+      <div className="rounded-xl bg-card border border-border p-6">
+        <h2 className="font-display mb-1 text-lg font-semibold text-foreground">Resume & AI</h2>
+        <p className="mb-5 text-sm text-muted-foreground">
           Upload your resume to enable AI fit scoring on new applications.
         </p>
         {resumeSuccess && (
-          <p role="alert" className={`mb-4 ${SUCCESS_BANNER}`}>
+          <p role="alert" className="mb-4 rounded-lg bg-primary/10 border border-primary/20 px-3 py-3 text-sm text-primary">
             Resume uploaded successfully.
           </p>
         )}
         {resumeError && (
-          <p role="alert" className="mb-4 text-sm text-red-600 dark:text-red-400">{resumeError}</p>
+          <p role="alert" className="mb-4 text-sm text-destructive">{resumeError}</p>
         )}
         {hasResume ? (
           <ResumeFileCard uploadedFile={uploadedFile} isDeleting={isDeleting} isUploading={isUploading} onDelete={handleDelete} />

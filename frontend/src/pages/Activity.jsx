@@ -7,7 +7,7 @@ import Activity from "lucide-react/dist/esm/icons/activity";
 
 import NavBar from "../components/NavBar";
 import { useActivityFeed } from "../hooks/useActivity";
-import { BUTTON_SECONDARY, CARD_BASE, SPINNER_SM } from "../lib/designTokens";
+import { Button } from "../components/ui/button";
 
 const TIME_RANGES = [
   { label: "Last 7 days", days: 7 },
@@ -17,7 +17,7 @@ const TIME_RANGES = [
 ];
 
 const TYPE_STYLES = {
-  applied: "bg-brand-500",
+  applied: "bg-primary",
   stage_change: "bg-accent-blue",
   event_created: "bg-amber-500",
 };
@@ -37,32 +37,31 @@ function entryLabel(entry) {
 }
 
 function TimelineEntry({ entry, onClick }) {
-  const dotClass = TYPE_STYLES[entry.type] ?? "bg-gray-400";
+  const dotClass = TYPE_STYLES[entry.type] ?? "bg-muted-foreground";
   const ts = new Date(entry.timestamp);
   const dateStr = ts.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
   const timeStr = ts.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
 
   return (
-    <button
+    <Button
       type="button"
+      variant="ghost"
       onClick={() => onClick(entry.application_id)}
-      className="group relative flex w-full items-start gap-4 rounded-md px-2 py-3 text-left transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/50"
+      className="group relative h-auto w-full items-start justify-start gap-4 rounded-md px-2 py-3 text-left hover:bg-muted/50"
     >
-      {/* Timeline dot */}
       <div className="mt-1.5 flex-shrink-0">
-        <span className={`block h-3 w-3 rounded-full ${dotClass} ring-2 ring-white dark:ring-gray-800`} />
+        <span className={`block h-3 w-3 rounded-full ${dotClass} ring-2 ring-card`} />
       </div>
 
-      {/* Content */}
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-medium text-gray-900 group-hover:text-brand-600 dark:text-gray-100 dark:group-hover:text-brand-400">
+        <p className="text-sm font-medium text-foreground group-hover:text-primary">
           {entryLabel(entry)}
         </p>
-        <p className="mt-0.5 text-xs text-gray-400">
+        <p className="mt-0.5 text-xs text-muted-foreground">
           {dateStr} · {timeStr}
         </p>
       </div>
-    </button>
+    </Button>
   );
 }
 
@@ -70,31 +69,32 @@ function ActivityHeader({ days, total, isLoading, onDaysChange }) {
   return (
     <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <h1 className="flex items-center gap-2 font-display text-2xl font-semibold text-gray-900 dark:text-gray-100">
-          <Activity className="h-5 w-5 text-gray-600" />
+        <h1 className="flex items-center gap-2 font-display text-2xl font-semibold text-foreground">
+          <Activity className="h-5 w-5 text-muted-foreground" />
           Activity
         </h1>
         {!isLoading && (
-          <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">
+          <p className="mt-0.5 text-sm text-muted-foreground">
             {total} action{total !== 1 ? "s" : ""}
           </p>
         )}
       </div>
 
-      <div className="flex items-center gap-1 rounded-full border border-gray-200 bg-white p-1 dark:border-gray-700 dark:bg-gray-800">
+      <div className="flex items-center gap-1 rounded-full border border-border bg-card p-1">
         {TIME_RANGES.map((range) => (
-          <button
+          <Button
             key={range.days}
             type="button"
+            variant="ghost"
             onClick={() => onDaysChange(range.days)}
-            className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+            className={`rounded-full px-3 py-1 text-xs font-medium h-auto ${
               days === range.days
-                ? "bg-brand-600 text-white"
-                : "text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
+                ? "bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground"
+                : "text-muted-foreground hover:bg-muted"
             }`}
           >
             {range.label}
-          </button>
+          </Button>
         ))}
       </div>
     </div>
@@ -103,16 +103,11 @@ function ActivityHeader({ days, total, isLoading, onDaysChange }) {
 
 function ActivityError({ onRetry }) {
   return (
-    <div className={`${CARD_BASE} flex flex-col items-center gap-3 px-6 py-16 text-center`}>
-      <p className="text-sm font-medium text-rose-600">Failed to load activity.</p>
-      <button
-        type="button"
-        onClick={onRetry}
-        aria-label="Retry loading activity"
-        className={BUTTON_SECONDARY}
-      >
+    <div className="rounded-xl bg-card border border-border flex flex-col items-center gap-3 px-6 py-16 text-center">
+      <p className="text-sm font-medium text-destructive">Failed to load activity.</p>
+      <Button variant="outline" onClick={onRetry} aria-label="Retry loading activity">
         Try again
-      </button>
+      </Button>
     </div>
   );
 }
@@ -121,17 +116,17 @@ function ActivityTimeline({ isLoading, entries, onEntryClick }) {
   if (isLoading) {
     return (
       <div className="flex justify-center py-16">
-        <div className={SPINNER_SM} />
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-border border-t-primary" />
       </div>
     );
   }
 
   if (entries.length === 0) {
     return (
-      <div className={`${CARD_BASE} px-6 py-16 text-center`}>
-        <Activity className="mx-auto mb-3 h-10 w-10 text-gray-300 dark:text-gray-600" />
-        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">No activity yet</p>
-        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+      <div className="rounded-xl bg-card border border-border px-6 py-16 text-center">
+        <Activity className="mx-auto mb-3 h-10 w-10 text-muted-foreground/40" />
+        <p className="text-sm font-medium text-foreground">No activity yet</p>
+        <p className="mt-1 text-xs text-muted-foreground">
           Actions will appear here as you apply, move stages, and schedule interviews.
         </p>
       </div>
@@ -139,8 +134,8 @@ function ActivityTimeline({ isLoading, entries, onEntryClick }) {
   }
 
   return (
-    <div className={`${CARD_BASE} px-4`}>
-      <div className="relative border-l border-gray-200 pl-4 dark:border-gray-700 ml-1.5">
+    <div className="rounded-xl bg-card border border-border px-4">
+      <div className="relative border-l border-border pl-4 ml-1.5">
         {entries.map((entry, idx) => (
           <TimelineEntry
             key={`${entry.type}-${entry.application_id}-${idx}`}
@@ -170,7 +165,7 @@ function ActivityPage() {
   );
 
   return (
-    <div className="min-h-screen bg-surface-secondary dark:bg-gray-900">
+    <div className="min-h-screen bg-background">
       <NavBar />
       <main className="mx-auto max-w-2xl px-4 sm:px-6 py-8">
         <ActivityHeader days={days} total={total} isLoading={isLoading} onDaysChange={setDays} />

@@ -4,8 +4,10 @@ import { useState } from "react";
 
 import { Link } from "react-router-dom";
 
-import { INPUT_BASE, INPUT_LABEL, BUTTON_PRIMARY } from "../lib/designTokens";
 import { PASSWORD_MIN_LENGTH } from "../lib/constants";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -34,48 +36,46 @@ export function LoginForm({ email, setEmail, password, setPassword, error, isPen
   return (
     <form onSubmit={handleSubmit} noValidate>
       <div className="mb-4">
-        <label htmlFor="email" className={`block ${INPUT_LABEL}`}>Email</label>
-        <input
+        <Label htmlFor="email" className="mb-1.5 block font-display text-sm font-medium">Email</Label>
+        <Input
           id="email"
           type="email"
           autoComplete="email"
           value={email}
           onChange={handleEmailChange}
           onBlur={() => setEmailTouched(true)}
-          className={INPUT_BASE}
           placeholder="you@example.com"
           aria-describedby={emailError ? "email-error" : undefined}
           aria-invalid={!!emailError}
         />
-        {emailError && <p id="email-error" role="alert" className="mt-1 text-xs text-red-600">{emailError}</p>}
+        {emailError && <p id="email-error" role="alert" className="mt-1 text-xs text-destructive">{emailError}</p>}
       </div>
       <div className="mb-5">
         <div className="mb-1.5 flex items-center justify-between">
-          <label htmlFor="password" className={INPUT_LABEL}>Password</label>
-          <Link to="/forgot-password" className="text-brand-500 hover:text-brand-600 transition-colors text-sm">Forgot password?</Link>
+          <Label htmlFor="password" className="font-display text-sm font-medium">Password</Label>
+          <Link to="/forgot-password" className="text-primary hover:text-primary/80 transition-colors text-sm">Forgot password?</Link>
         </div>
-        <input
+        <Input
           id="password"
           type="password"
           autoComplete="current-password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           onBlur={() => setPasswordTouched(true)}
-          className={INPUT_BASE}
           placeholder="••••••••"
           aria-describedby={passwordError ? "password-error" : undefined}
           aria-invalid={!!passwordError}
         />
-        {passwordError && <p id="password-error" role="alert" className="mt-1 text-xs text-red-600">{passwordError}</p>}
+        {passwordError && <p id="password-error" role="alert" className="mt-1 text-xs text-destructive">{passwordError}</p>}
       </div>
       {error && (
-        <p role="alert" className="mb-4 rounded-lg bg-rose-50 border border-rose-200 px-3 py-2 text-sm text-rose-800 dark:bg-rose-900/20 dark:border-rose-800 dark:text-rose-300">
+        <p role="alert" className="mb-4 rounded-lg bg-destructive/10 border border-destructive/20 px-3 py-2 text-sm text-destructive">
           {error}
         </p>
       )}
-      <button type="submit" disabled={isPending || isInvalid} className={`w-full ${BUTTON_PRIMARY}`}>
+      <Button type="submit" disabled={isPending || isInvalid} className="w-full">
         {isPending ? "Signing in…" : "Sign in"}
-      </button>
+      </Button>
     </form>
   );
 }

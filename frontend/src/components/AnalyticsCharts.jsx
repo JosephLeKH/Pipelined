@@ -11,8 +11,6 @@ import { Tooltip } from "recharts/es6/component/Tooltip";
 import { Legend } from "recharts/es6/component/Legend";
 import { ResponsiveContainer } from "recharts/es6/component/ResponsiveContainer";
 
-import { CARD_BASE } from "../lib/designTokens";
-
 const CHART_COLORS = ["#d97757", "#6a9bcc", "#788c5d", "#9ca3af", "#d1d5db"];
 const CHART_GRID_COLOR = "#e8e6dc";
 const CHART_TICK_COLOR = "#9ca3af";
@@ -21,7 +19,7 @@ const CONVERSION_LOW_THRESHOLD = 0.3;
 const AVG_DAYS_HIGHLIGHT_THRESHOLD = 21;
 
 function rateColorClass(rate) {
-  if (rate > CONVERSION_HIGH_THRESHOLD) return "text-brand-600 dark:text-brand-400 font-medium";
+  if (rate > CONVERSION_HIGH_THRESHOLD) return "text-primary font-medium";
   if (rate >= CONVERSION_LOW_THRESHOLD) return "text-amber-600 dark:text-amber-400 font-medium";
   return "text-rose-600 dark:text-rose-400 font-medium";
 }
@@ -34,10 +32,10 @@ function avgDaysColorClass(days) {
 function CustomTooltip({ active, payload, label, formatter }) {
   if (!active || !payload?.length) return null;
   return (
-    <div className={`${CARD_BASE} px-3 py-2 text-sm`}>
-      {label != null && <p className="mb-1 text-xs text-gray-400">{label}</p>}
+    <div className="rounded-xl bg-card border border-border px-3 py-2 text-sm">
+      {label != null && <p className="mb-1 text-xs text-muted-foreground">{label}</p>}
       {payload.map((entry) => (
-        <p key={entry.dataKey} className="text-gray-700 dark:text-gray-300">
+        <p key={entry.dataKey} className="text-foreground">
           {entry.name}: {formatter ? formatter(entry.value) : entry.value}
         </p>
       ))}
@@ -47,11 +45,11 @@ function CustomTooltip({ active, payload, label, formatter }) {
 
 function ChartCard({ title, description, children }) {
   return (
-    <div className={`${CARD_BASE} p-6`}>
+    <div className="rounded-xl bg-card border border-border p-6">
       <div className="mb-4">
-        <h2 className="font-display text-sm font-medium text-gray-900 dark:text-gray-100">{title}</h2>
+        <h2 className="font-display text-sm font-medium text-foreground">{title}</h2>
         {description && (
-          <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">{description}</p>
+          <p className="mt-0.5 text-xs text-muted-foreground">{description}</p>
         )}
       </div>
       {children}
@@ -141,19 +139,19 @@ function AnalyticsTagsTable({ tagOfferRates }) {
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-gray-200 dark:border-gray-700">
-              <th className="pb-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400">Tag</th>
-              <th className="pb-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400">Applications</th>
-              <th className="pb-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400">Offers</th>
-              <th className="pb-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400">Offer Rate</th>
+            <tr className="border-b border-border">
+              <th className="pb-2 text-left text-xs font-medium text-muted-foreground">Tag</th>
+              <th className="pb-2 text-right text-xs font-medium text-muted-foreground">Applications</th>
+              <th className="pb-2 text-right text-xs font-medium text-muted-foreground">Offers</th>
+              <th className="pb-2 text-right text-xs font-medium text-muted-foreground">Offer Rate</th>
             </tr>
           </thead>
           <tbody>
             {tagOfferRates.map((row) => (
-              <tr key={row.tag} className="border-b border-gray-100 dark:border-gray-800 last:border-0">
-                <td className="py-2 pr-4 text-gray-700 dark:text-gray-300">{row.tag}</td>
-                <td className="py-2 text-right text-gray-700 dark:text-gray-300">{row.application_count}</td>
-                <td className="py-2 text-right text-gray-500 dark:text-gray-400">{row.offer_count}</td>
+              <tr key={row.tag} className="border-b border-border last:border-0">
+                <td className="py-2 pr-4 text-foreground">{row.tag}</td>
+                <td className="py-2 text-right text-foreground">{row.application_count}</td>
+                <td className="py-2 text-right text-muted-foreground">{row.offer_count}</td>
                 <td className={`py-2 text-right ${rateColorClass(row.offer_rate)}`}>
                   {`${Math.round(row.offer_rate * 100)}%`}
                 </td>
@@ -168,13 +166,13 @@ function AnalyticsTagsTable({ tagOfferRates }) {
 
 function ConversionRatesRow({ row, isLast }) {
   return (
-    <tr className="border-b border-gray-100 dark:border-gray-800 last:border-0">
-      <td className="py-2 pr-4 text-gray-700 dark:text-gray-300">{row.stage}</td>
-      <td className="py-2 text-right text-gray-700 dark:text-gray-300">{row.entered_count}</td>
-      <td className="py-2 text-right text-gray-500 dark:text-gray-400">
+    <tr className="border-b border-border last:border-0">
+      <td className="py-2 pr-4 text-foreground">{row.stage}</td>
+      <td className="py-2 text-right text-foreground">{row.entered_count}</td>
+      <td className="py-2 text-right text-muted-foreground">
         {isLast ? "—" : row.exited_to_next_count}
       </td>
-      <td className={`py-2 text-right ${isLast ? "text-gray-400 dark:text-gray-600" : rateColorClass(row.conversion_rate)}`}>
+      <td className={`py-2 text-right ${isLast ? "text-muted-foreground/50" : rateColorClass(row.conversion_rate)}`}>
         {isLast ? "—" : `${Math.round(row.conversion_rate * 100)}%`}
       </td>
       <td className={`py-2 text-right ${avgDaysColorClass(row.avg_days_in_stage)}`}>
@@ -190,12 +188,12 @@ function ConversionRatesTable({ data }) {
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-gray-200 dark:border-gray-700">
-              <th className="pb-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400">Stage</th>
-              <th className="pb-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400">Entered</th>
-              <th className="pb-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400">Converted</th>
-              <th className="pb-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400">Rate</th>
-              <th className="pb-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400">Avg Days</th>
+            <tr className="border-b border-border">
+              <th className="pb-2 text-left text-xs font-medium text-muted-foreground">Stage</th>
+              <th className="pb-2 text-right text-xs font-medium text-muted-foreground">Entered</th>
+              <th className="pb-2 text-right text-xs font-medium text-muted-foreground">Converted</th>
+              <th className="pb-2 text-right text-xs font-medium text-muted-foreground">Rate</th>
+              <th className="pb-2 text-right text-xs font-medium text-muted-foreground">Avg Days</th>
             </tr>
           </thead>
           <tbody>

@@ -3,7 +3,7 @@
 import { Component } from "react";
 
 import RefreshCw from "lucide-react/dist/esm/icons/refresh-cw";
-import { BUTTON_PRIMARY } from "../lib/designTokens";
+import { Button } from "./ui/button";
 
 class ErrorBoundary extends Component {
   constructor(props) {
@@ -33,18 +33,14 @@ class ErrorBoundary extends Component {
           role="alert"
           className="flex flex-col items-center gap-4 py-16 text-center"
         >
-          <p className="text-lg font-semibold text-gray-900">Something went wrong</p>
-          <p className="text-sm text-gray-500">
+          <p className="text-lg font-semibold text-foreground">Something went wrong</p>
+          <p className="text-sm text-muted-foreground">
             {this.state.error?.message || "An unexpected error occurred."}
           </p>
-          <button
-            type="button"
-            onClick={this.handleReset}
-            className={`flex items-center gap-2 ${BUTTON_PRIMARY}`}
-          >
+          <Button type="button" onClick={this.handleReset} className="flex items-center gap-2">
             <RefreshCw className="h-4 w-4" />
             Try again
-          </button>
+          </Button>
         </div>
       );
     }

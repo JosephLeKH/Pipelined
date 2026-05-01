@@ -16,16 +16,16 @@ function Register() {
 
   return (
     <AuthLayout>
-      <h1 className="font-display text-xl font-semibold text-gray-900">Create your account</h1>
-      <p className="mt-1 mb-6 text-sm text-gray-500">Start tracking your job search today</p>
+      <h1 className="font-display text-xl font-semibold text-foreground">Create your account</h1>
+      <p className="mt-1 mb-6 text-sm text-muted-foreground">Start tracking your job search today</p>
       <GoogleAuthButton label="Sign up with Google" onSuccess={handleGoogleSuccess} onError={handleGoogleError} />
       <div className="mt-3">
         <GithubAuthButton label="Sign up with GitHub" />
       </div>
       <div className="my-5 flex items-center gap-3">
-        <hr className="flex-1 border-gray-200 dark:border-gray-700" />
-        <span className="text-xs text-gray-400">or</span>
-        <hr className="flex-1 border-gray-200 dark:border-gray-700" />
+        <hr className="flex-1 border-border" />
+        <span className="text-xs text-muted-foreground">or</span>
+        <hr className="flex-1 border-border" />
       </div>
       <RegisterForm
         displayName={displayName} setDisplayName={setDisplayName}
@@ -33,9 +33,9 @@ function Register() {
         password={password} setPassword={setPassword}
         error={error} isPending={isPending} onSubmit={handleSubmit}
       />
-      <p className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
+      <p className="mt-6 text-center text-sm text-muted-foreground">
         Already have an account?{" "}
-        <Link to="/login" className="text-brand-500 hover:text-brand-600 text-sm">Log in</Link>
+        <Link to="/login" className="text-primary hover:text-primary/80 text-sm">Log in</Link>
       </p>
     </AuthLayout>
   );

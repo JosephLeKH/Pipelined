@@ -10,7 +10,7 @@ function CompanyLogo({ company_domain, company, size = 32 }) {
   if (!company_domain || hasError) {
     return (
       <span
-        className="inline-flex shrink-0 items-center justify-center rounded-full bg-surface-secondary text-gray-500 font-display font-medium"
+        className="inline-flex shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground font-display font-medium"
         style={{ width: size, height: size, fontSize: Math.round(size * 0.45) }}
         aria-hidden="true"
         data-testid="company-logo-fallback"

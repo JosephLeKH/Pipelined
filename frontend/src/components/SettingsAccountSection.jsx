@@ -7,9 +7,18 @@ import { toast } from "sonner";
 import Loader2 from "lucide-react/dist/esm/icons/loader-2";
 import TriangleAlert from "lucide-react/dist/esm/icons/alert-triangle";
 
-import { CARD_BASE, INPUT_BASE, INPUT_LABEL, BUTTON_PRIMARY, BUTTON_SECONDARY, BUTTON_DANGER, MODAL_BACKDROP, MODAL_CARD } from "../lib/designTokens";
 import { PASSWORD_MIN_LENGTH } from "../lib/constants";
 import { useChangePassword, useDeleteAccount } from "../hooks/useAuth";
+import { Button } from "./ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "./ui/dialog";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
 
 const ERROR_MESSAGES = {
   CURRENT_PASSWORD_INCORRECT: "Current password is incorrect.",
@@ -19,8 +28,8 @@ const ERROR_MESSAGES = {
 function PasswordField({ id, label, value, onChange }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor={id} className={INPUT_LABEL}>{label}</label>
-      <input id={id} type="password" value={value} onChange={onChange} className={INPUT_BASE} />
+      <Label htmlFor={id}>{label}</Label>
+      <Input id={id} type="password" value={value} onChange={onChange} />
     </div>
   );
 }
@@ -54,44 +63,46 @@ function ChangePasswordCard() {
   }, [current, newPw, confirm, changePassword]);
 
   return (
-    <div className={`${CARD_BASE} p-6`}>
-      <h2 className="mb-1 text-lg font-semibold font-display text-gray-900 dark:text-gray-100">Change password</h2>
-      <p className="mb-5 text-sm text-gray-500 dark:text-gray-400">
-        Update your account password. Choose a strong password you don't use elsewhere.
+    <div className="rounded-xl bg-card border border-border p-6">
+      <h2 className="mb-1 text-lg font-semibold font-display text-foreground">Change password</h2>
+      <p className="mb-5 text-sm text-muted-foreground">
+        Update your account password. Choose a strong password you don&apos;t use elsewhere.
       </p>
       <div className="flex max-w-sm flex-col gap-4">
         <PasswordField id="pw-current" label="Current password" value={current} onChange={(e) => setCurrent(e.target.value)} />
         <PasswordField id="pw-new" label="New password" value={newPw} onChange={(e) => setNewPw(e.target.value)} />
         <PasswordField id="pw-confirm" label="Confirm new password" value={confirm} onChange={(e) => setConfirm(e.target.value)} />
-        {pwError && <p role="alert" className="text-sm text-red-600 dark:text-red-400">{pwError}</p>}
+        {pwError && <p role="alert" className="text-sm text-destructive">{pwError}</p>}
         <div className="flex justify-end">
-          <button type="button" onClick={handleSubmit} disabled={isPending} className={`flex items-center gap-2 ${BUTTON_PRIMARY}`}>
+          <Button type="button" onClick={handleSubmit} disabled={isPending} className="flex items-center gap-2">
             {isPending && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
             Change password
-          </button>
+          </Button>
         </div>
       </div>
     </div>
   );
 }
 
-function DeleteAccountModal({ onClose, onConfirm, isPending }) {
+function DeleteAccountModal({ isOpen, onClose, onConfirm, isPending }) {
   return (
-    <div className={MODAL_BACKDROP} role="dialog" aria-modal="true" aria-labelledby="delete-acct-title">
-      <div className={`${MODAL_CARD} max-w-sm p-6`}>
-        <h3 id="delete-acct-title" className="text-base font-semibold text-gray-900 dark:text-gray-100">Delete account?</h3>
-        <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+    <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
+      <DialogContent className="sm:max-w-sm">
+        <DialogHeader>
+          <DialogTitle>Delete account?</DialogTitle>
+        </DialogHeader>
+        <p className="text-sm text-muted-foreground">
           This will permanently delete your account and all data. This action cannot be undone.
         </p>
-        <div className="mt-5 flex justify-end gap-3">
-          <button type="button" onClick={onClose} className={BUTTON_SECONDARY}>Cancel</button>
-          <button type="button" onClick={onConfirm} disabled={isPending} className={`flex items-center gap-2 ${BUTTON_DANGER}`}>
+        <DialogFooter>
+          <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
+          <Button type="button" variant="destructive" onClick={onConfirm} disabled={isPending} className="flex items-center gap-2">
             {isPending && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
             Delete my account
-          </button>
-        </div>
-      </div>
-    </div>
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 
@@ -112,7 +123,7 @@ function DangerZone() {
 
   return (
     <>
-      <div className="rounded-card border border-rose-200 bg-rose-50 p-6 dark:border-rose-800 dark:bg-rose-900/20">
+      <div className="rounded-xl border border-rose-200 bg-rose-50 p-6 dark:border-rose-800 dark:bg-rose-900/20">
         <div className="flex items-start gap-3">
           <TriangleAlert className="mt-0.5 h-5 w-5 shrink-0 text-rose-600 dark:text-rose-400" aria-hidden="true" />
           <div className="flex-1">
@@ -121,17 +132,14 @@ function DangerZone() {
               Permanently delete your account and all associated data — applications, calendar events,
               contacts, and resume. This cannot be undone.
             </p>
-            <button
-              type="button"
-              onClick={() => setShowModal(true)}
-              className="mt-4 rounded-button border border-rose-300 px-4 py-2 text-sm font-medium text-rose-700 hover:bg-rose-100 transition-colors focus:outline-none focus:ring-2 focus:ring-rose-400 focus:ring-offset-2 dark:border-rose-700 dark:text-rose-300 dark:hover:bg-rose-900/40"
-            >
+            <Button type="button" variant="outline" onClick={() => setShowModal(true)}
+              className="mt-4 border-rose-300 text-rose-700 hover:bg-rose-100 hover:text-rose-700 focus:ring-rose-400 dark:border-rose-700 dark:text-rose-300 dark:hover:bg-rose-900/40">
               Delete account
-            </button>
+            </Button>
           </div>
         </div>
       </div>
-      {showModal && <DeleteAccountModal onClose={() => setShowModal(false)} onConfirm={handleDelete} isPending={isPending} />}
+      <DeleteAccountModal isOpen={showModal} onClose={() => setShowModal(false)} onConfirm={handleDelete} isPending={isPending} />
     </>
   );
 }

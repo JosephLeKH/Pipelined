@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { useCreateSavedSearch } from "../hooks/useSavedSearches";
-import { BUTTON_PRIMARY, BUTTON_GHOST, INPUT_BASE, CARD_BASE } from "../lib/designTokens";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
 
 const MAX_SAVE_NAME_LENGTH = 100;
 
@@ -33,35 +34,30 @@ export default function SaveSearchPopover({ currentFilters, onClose }) {
     <div
       role="dialog"
       aria-label="Save this search"
-      className={`absolute right-0 top-10 z-30 w-64 ${CARD_BASE} p-4 shadow-card`}
+      className="rounded-xl bg-card border border-border absolute right-0 top-10 z-30 w-64 p-4 shadow-lg"
     >
-      <p className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Name this search</p>
-      <input
+      <p className="mb-2 text-sm font-medium text-foreground">Name this search</p>
+      <Input
         type="text"
         aria-label="Saved search name"
         value={name}
         onChange={(e) => setName(e.target.value.slice(0, MAX_SAVE_NAME_LENGTH))}
         placeholder="e.g. SWE Intern Remote"
-        className={INPUT_BASE}
         onKeyDown={(e) => e.key === "Enter" && handleSave()}
         autoFocus
       />
       <div className="mt-3 flex justify-end gap-2">
-        <button
-          type="button"
-          onClick={onClose}
-          className="text-gray-600 hover:bg-gray-100 rounded-button active:scale-[0.98] transition-all duration-150 font-medium text-sm px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:text-gray-300 dark:hover:bg-gray-700"
-        >
+        <Button type="button" variant="ghost" size="sm" onClick={onClose}>
           Cancel
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
+          size="sm"
           onClick={handleSave}
           disabled={!name.trim() || createMutation.isPending}
-          className={`${BUTTON_PRIMARY} text-sm px-3 py-1.5`}
         >
           Save
-        </button>
+        </Button>
       </div>
     </div>
   );

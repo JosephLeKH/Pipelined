@@ -4,7 +4,9 @@ import { useState, useCallback } from "react";
 
 import Plus from "lucide-react/dist/esm/icons/plus";
 import Trash2 from "lucide-react/dist/esm/icons/trash-2";
-import { INPUT_BASE } from "../lib/designTokens";
+
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
 
 export function ChecklistItem({ item, onToggle, onDelete }) {
   return (
@@ -14,23 +16,20 @@ export function ChecklistItem({ item, onToggle, onDelete }) {
         id={`checklist-item-${item.id}`}
         checked={item.checked}
         onChange={() => onToggle(item.id)}
-        className="mt-0.5 h-4 w-4 flex-shrink-0 cursor-pointer rounded border-gray-300 text-brand-600 focus:ring-brand-500"
+        className="mt-0.5 h-4 w-4 flex-shrink-0 cursor-pointer rounded border-border accent-primary focus:ring-ring"
         aria-label={item.text}
       />
       <label
         htmlFor={`checklist-item-${item.id}`}
-        className={`flex-1 cursor-pointer text-sm ${item.checked ? "text-gray-400 line-through" : "text-gray-700 dark:text-gray-300"}`}
+        className={`flex-1 cursor-pointer text-sm ${item.checked ? "text-muted-foreground line-through" : "text-foreground"}`}
       >
         {item.text}
       </label>
-      <button
-        type="button"
-        onClick={() => onDelete(item.id)}
-        className="flex-shrink-0 rounded p-0.5 text-gray-300 hover:text-red-500 transition-colors focus:outline-none focus:ring-2 focus:ring-red-400 dark:text-gray-500 dark:hover:text-red-400"
-        aria-label={`Delete checklist item: ${item.text}`}
-      >
+      <Button type="button" variant="ghost" size="icon" onClick={() => onDelete(item.id)}
+        className="h-6 w-6 flex-shrink-0 text-muted-foreground/50 hover:text-destructive hover:bg-destructive/10"
+        aria-label={`Delete checklist item: ${item.text}`}>
         <Trash2 className="h-3.5 w-3.5" />
-      </button>
+      </Button>
     </div>
   );
 }
@@ -51,16 +50,16 @@ export function AddChecklistItem({ onAdd }) {
 
   return (
     <div className="flex items-center gap-2 pt-1">
-      <Plus className="h-4 w-4 flex-shrink-0 text-gray-500" />
-      <input
+      <Plus className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
+      <Input
         type="text"
         value={text}
         onChange={(e) => setText(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder="Add item and press Enter"
-        className={`${INPUT_BASE} flex-1 px-2 py-1`}
         aria-label="New checklist item"
         maxLength={200}
+        className="flex-1"
       />
     </div>
   );

@@ -5,6 +5,8 @@ import { useState } from "react";
 import Bell from "lucide-react/dist/esm/icons/bell";
 import X from "lucide-react/dist/esm/icons/x";
 
+import { Button } from "./ui/button";
+
 function FollowUpBanner({ followUpsDue, onView }) {
   const [dismissed, setDismissed] = useState(false);
 
@@ -23,21 +25,14 @@ function FollowUpBanner({ followUpsDue, onView }) {
         </span>
       </div>
       <div className="flex items-center gap-2">
-        <button
-          type="button"
-          onClick={onView}
-          className="rounded px-3 py-1 text-xs font-medium text-amber-700 hover:bg-amber-100 transition-colors focus:outline-none focus:ring-2 focus:ring-amber-500 dark:text-amber-400 dark:hover:bg-amber-800/30"
-        >
+        <Button type="button" variant="ghost" size="sm" onClick={onView}
+          className="text-xs font-medium text-amber-700 hover:bg-amber-100 focus:ring-amber-500 dark:text-amber-400 dark:hover:bg-amber-800/30">
           View
-        </button>
-        <button
-          type="button"
-          onClick={() => setDismissed(true)}
-          aria-label="Dismiss"
-          className="rounded p-1 text-amber-400 hover:bg-amber-100 transition-colors focus:outline-none focus:ring-2 focus:ring-amber-500 dark:hover:bg-amber-800/30"
-        >
+        </Button>
+        <Button type="button" variant="ghost" size="icon" onClick={() => setDismissed(true)} aria-label="Dismiss"
+          className="h-7 w-7 text-amber-400 hover:bg-amber-100 focus:ring-amber-500 dark:hover:bg-amber-800/30">
           <X className="h-3.5 w-3.5" />
-        </button>
+        </Button>
       </div>
     </div>
   );

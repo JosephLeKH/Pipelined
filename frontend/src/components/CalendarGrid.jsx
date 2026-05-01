@@ -9,7 +9,7 @@ import ChevronRight from "lucide-react/dist/esm/icons/chevron-right";
 import { useCalendarEvents } from "../hooks/useCalendar";
 import { DEFAULT_EVENT_COLOR, EVENT_TYPE_COLORS, WEEK_DAYS } from "../lib/constants";
 import { toISODate, formatDateLong, formatTime } from "../lib/dateUtils";
-import { BUTTON_SECONDARY } from "../lib/designTokens";
+import { Button } from "./ui/button";
 import ApiErrorMessage from "./ApiErrorMessage";
 import SkeletonCalendarCell from "./SkeletonCalendarCell";
 
@@ -51,7 +51,7 @@ function EventChip({ event, onEventClick }) {
     <button
       type="button"
       onClick={(e) => { e.stopPropagation(); onEventClick(event); }}
-      className={`flex w-full items-center gap-1 truncate rounded-full border px-2 py-0.5 text-left text-xs font-medium ${colors.bg} ${colors.text} ${colors.border} hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-brand-500`}
+      className={`flex w-full items-center gap-1 truncate rounded-full border px-2 py-0.5 text-left text-xs font-medium ${colors.bg} ${colors.text} ${colors.border} hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-ring`}
       title={label}
       aria-label={label}
     >
@@ -76,17 +76,17 @@ function DayCell({ date, isCurrentMonth, events, onDayClick, onEventClick }) {
       onClick={() => onDayClick(date)}
       onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") onDayClick(date); }}
       aria-label={formatDateLong(date)}
-      className={`min-h-[48px] cursor-pointer border border-gray-100 p-1.5 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-brand-500 dark:border-gray-700 dark:hover:bg-gray-700 md:min-h-[80px] ${
-        isCurrentMonth ? "bg-white dark:bg-gray-800" : "bg-gray-50 dark:bg-gray-900"
+      className={`min-h-[48px] cursor-pointer border border-border p-1.5 transition-colors hover:bg-muted focus:outline-none focus:ring-2 focus:ring-inset focus:ring-ring md:min-h-[80px] ${
+        isCurrentMonth ? "bg-card" : "bg-muted/50"
       }`}
     >
       <span
         className={`inline-flex h-6 w-6 items-center justify-center rounded-full text-xs font-medium ${
           isToday
-            ? "bg-brand-500/10 text-brand-600 dark:bg-brand-500/20 dark:text-brand-400"
+            ? "bg-primary/10 text-primary"
             : isCurrentMonth
-            ? "text-gray-900 dark:text-gray-100"
-            : "text-gray-400 dark:text-gray-500"
+            ? "text-foreground"
+            : "text-muted-foreground"
         }`}
       >
         {date.getDate()}
@@ -103,33 +103,31 @@ function DayCell({ date, isCurrentMonth, events, onDayClick, onEventClick }) {
 function CalendarHeader({ month, year, onPrev, onNext, onToday }) {
   return (
     <div className="flex items-center justify-between px-4 py-3">
-      <h2 className="font-display text-xl font-semibold text-gray-900 dark:text-gray-100">
+      <h2 className="font-display text-xl font-semibold text-foreground">
         {MONTH_NAMES[month - 1]} {year}
       </h2>
       <div className="flex items-center gap-2">
-        <button
-          type="button"
-          onClick={onToday}
-          className={BUTTON_SECONDARY}
-        >
+        <Button type="button" variant="outline" onClick={onToday}>
           Today
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
+          variant="outline"
           onClick={onPrev}
           aria-label="Previous month"
-          className={`${BUTTON_SECONDARY} p-1.5`}
+          className="p-1.5 h-auto"
         >
           <ChevronLeft className="h-4 w-4" />
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
+          variant="outline"
           onClick={onNext}
           aria-label="Next month"
-          className={`${BUTTON_SECONDARY} p-1.5`}
+          className="p-1.5 h-auto"
         >
           <ChevronRight className="h-4 w-4" />
-        </button>
+        </Button>
       </div>
     </div>
   );
@@ -216,11 +214,11 @@ function CalendarGrid({ month, year, onMonthChange, onEventClick, onDayClick }) 
   }, [onMonthChange]);
 
   return (
-    <div className="overflow-hidden rounded-card border border-border-default bg-white dark:border-gray-700 dark:bg-gray-800">
+    <div className="overflow-hidden rounded-xl border border-border bg-card">
       <CalendarHeader month={month} year={year} onPrev={handlePrev} onNext={handleNext} onToday={handleToday} />
-      <div className="grid grid-cols-7 border-t border-gray-200 dark:border-gray-700">
+      <div className="grid grid-cols-7 border-t border-border">
         {WEEK_DAYS.map((d) => (
-          <div key={d} className="border-b border-gray-200 py-2 text-center text-xs font-display font-medium uppercase text-gray-500 dark:border-gray-700 dark:text-gray-400">
+          <div key={d} className="border-b border-border py-2 text-center text-xs font-display font-medium uppercase text-muted-foreground">
             {d}
           </div>
         ))}

@@ -35,7 +35,7 @@ describe("JobFilters", () => {
     renderWithRouter("?role_type=full_time");
 
     const fullTimeBtn = screen.getByRole("button", { name: /full time/i });
-    expect(fullTimeBtn).toHaveClass("bg-brand-500");
+    expect(fullTimeBtn).toHaveClass("bg-primary");
   });
 
   it("should clear param when clicking an already-active chip", () => {
@@ -43,10 +43,10 @@ describe("JobFilters", () => {
 
     const fullTimeBtn = screen.getByRole("button", { name: /full time/i });
 
-    expect(fullTimeBtn).toHaveClass("bg-brand-500");
+    expect(fullTimeBtn).toHaveClass("bg-primary");
 
     fireEvent.click(fullTimeBtn);
 
-    expect(fullTimeBtn).not.toHaveClass("bg-brand-500");
+    expect(fullTimeBtn).not.toHaveClass("bg-primary");
   });
 });

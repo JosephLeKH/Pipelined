@@ -4,39 +4,38 @@ import MapPin from "lucide-react/dist/esm/icons/map-pin";
 import ExternalLink from "lucide-react/dist/esm/icons/external-link";
 
 import { formatDate } from "../lib/dateUtils";
-import { BUTTON_PRIMARY } from "../lib/designTokens";
 
 const REMOTE_COLORS = {
   remote: "text-green-700",
-  hybrid: "text-brand-700",
+  hybrid: "text-primary",
   onsite: "text-amber-700",
-  unknown: "text-gray-500",
+  unknown: "text-muted-foreground",
 };
 
 function JobRow({ job, style }) {
   const datePosted = job.date_posted ? formatDate(job.date_posted) : "—";
 
-  const remoteColor = REMOTE_COLORS[job.remote_status] ?? "text-gray-500";
+  const remoteColor = REMOTE_COLORS[job.remote_status] ?? "text-muted-foreground";
 
   return (
     <div
       style={style}
-      className="flex items-center gap-4 border-b border-gray-100 px-4 hover:bg-gray-50 transition-colors dark:border-gray-700 dark:hover:bg-gray-700"
+      className="flex items-center gap-4 border-b border-border px-4 hover:bg-muted transition-colors"
       role="row"
       data-testid="job-row"
     >
       <div className="flex min-w-0 flex-1 items-center gap-4">
         <div className="flex min-w-0 flex-col">
-          <span className="truncate font-medium text-gray-900">
+          <span className="truncate font-medium text-foreground">
             {job.role ?? "Untitled Role"}
           </span>
-          <span className="truncate text-sm text-gray-500">
+          <span className="truncate text-sm text-muted-foreground">
             {job.company ?? "Unknown Company"}
           </span>
         </div>
 
         {job.location && (
-          <span className="hidden items-center gap-1 text-sm text-gray-500 md:flex">
+          <span className="hidden items-center gap-1 text-sm text-muted-foreground md:flex">
             <MapPin className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
             <span className="truncate">{job.location}</span>
           </span>
@@ -49,7 +48,7 @@ function JobRow({ job, style }) {
         )}
 
         {job.experience_level && (
-          <span className="hidden shrink-0 text-sm text-gray-500 xl:block">
+          <span className="hidden shrink-0 text-sm text-muted-foreground xl:block">
             {job.experience_level}
           </span>
         )}
@@ -57,9 +56,9 @@ function JobRow({ job, style }) {
 
       <div className="flex shrink-0 items-center gap-3">
         {job.salary_range && (
-          <span className="hidden text-sm text-gray-500 lg:block">{job.salary_range}</span>
+          <span className="hidden text-sm text-muted-foreground lg:block">{job.salary_range}</span>
         )}
-        <span className="hidden text-xs text-gray-400 sm:block">{datePosted}</span>
+        <span className="hidden text-xs text-muted-foreground sm:block">{datePosted}</span>
         {job.is_stale && (
           <span
             className="rounded-full bg-amber-100 px-1.5 py-0.5 text-xs font-medium text-amber-800"
@@ -73,7 +72,7 @@ function JobRow({ job, style }) {
             href={job.apply_url}
             target="_blank"
             rel="noopener noreferrer"
-            className={`flex items-center gap-1 ${BUTTON_PRIMARY} text-xs px-2.5 py-1`}
+            className="flex items-center gap-1 rounded-md bg-primary text-primary-foreground text-xs px-2.5 py-1 font-medium transition-colors hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
             aria-label={`Apply to ${job.role ?? "this role"} at ${job.company ?? "this company"}`}
           >
             Apply

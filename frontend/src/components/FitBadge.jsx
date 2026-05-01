@@ -6,7 +6,7 @@ const FIT_LOW_MIN = 30;
 
 function fitColor(score) {
   if (score === null || score === undefined) {
-    return "bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400";
+    return "bg-muted text-muted-foreground";
   }
   if (score >= FIT_HIGH_MIN) {
     return "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400";

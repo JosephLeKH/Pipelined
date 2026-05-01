@@ -4,7 +4,10 @@ import { useState } from "react";
 
 import { useCreateContact, useLinkContact, useRelationshipSuggestion } from "../hooks/useContacts";
 import { RELATIONSHIP_OPTIONS } from "../lib/constants";
-import { INPUT_BASE, CARD_BASE, BUTTON_PRIMARY } from "../lib/designTokens";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+
+const SELECT_CLS = "border border-input rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:border-ring focus:ring-1 focus:ring-ring/20 focus:outline-none transition-colors text-sm px-3 py-2 font-sans w-full disabled:opacity-50 disabled:cursor-not-allowed";
 
 const INITIAL_FORM = {
   name: "",
@@ -18,11 +21,11 @@ const INITIAL_FORM = {
 function ContactFormNameField({ form, handleChange, disabled }) {
   return (
     <div className="col-span-2 flex flex-col gap-1">
-      <label className="text-xs font-medium text-gray-600 dark:text-gray-400" htmlFor="contact-name">
-        Name <span className="text-red-500">*</span>
+      <label className="text-xs font-medium text-muted-foreground" htmlFor="contact-name">
+        Name <span className="text-destructive">*</span>
       </label>
-      <input id="contact-name" name="name" value={form.name} onChange={handleChange}
-        required maxLength={200} className={INPUT_BASE} placeholder="Jane Smith" disabled={disabled} />
+      <Input id="contact-name" name="name" value={form.name} onChange={handleChange}
+        required maxLength={200} placeholder="Jane Smith" disabled={disabled} />
     </div>
   );
 }
@@ -31,7 +34,7 @@ function RelationshipSuggestionHint({ suggestion }) {
   if (!suggestion) return null;
   const { suggested_type, confidence, reason } = suggestion;
   return (
-    <p className="text-xs text-brand-600 dark:text-brand-400">
+    <p className="text-xs text-primary">
       Suggestion: <span className="font-medium">{suggested_type.replace("_", " ")}</span>
       {" "}({Math.round(confidence * 100)}% confidence) — {reason}
     </p>
@@ -42,20 +45,20 @@ function ContactFormDetailFields({ form, handleChange, disabled, suggestion }) {
   return (
     <>
       <div className="flex flex-col gap-1">
-        <label className="text-xs font-medium text-gray-600 dark:text-gray-400" htmlFor="contact-company">Company</label>
-        <input id="contact-company" name="company" value={form.company} onChange={handleChange} maxLength={200} className={INPUT_BASE} placeholder="Acme Corp" disabled={disabled} />
+        <label className="text-xs font-medium text-muted-foreground" htmlFor="contact-company">Company</label>
+        <Input id="contact-company" name="company" value={form.company} onChange={handleChange} maxLength={200} placeholder="Acme Corp" disabled={disabled} />
       </div>
       <div className="flex flex-col gap-1">
-        <label className="text-xs font-medium text-gray-600 dark:text-gray-400" htmlFor="contact-role">Role</label>
-        <input id="contact-role" name="role" value={form.role} onChange={handleChange} maxLength={200} className={INPUT_BASE} placeholder="Recruiter" disabled={disabled} />
+        <label className="text-xs font-medium text-muted-foreground" htmlFor="contact-role">Role</label>
+        <Input id="contact-role" name="role" value={form.role} onChange={handleChange} maxLength={200} placeholder="Recruiter" disabled={disabled} />
       </div>
       <div className="flex flex-col gap-1">
-        <label className="text-xs font-medium text-gray-600 dark:text-gray-400" htmlFor="contact-email">Email</label>
-        <input id="contact-email" name="email" type="email" value={form.email} onChange={handleChange} maxLength={254} className={INPUT_BASE} placeholder="jane@acme.com" disabled={disabled} />
+        <label className="text-xs font-medium text-muted-foreground" htmlFor="contact-email">Email</label>
+        <Input id="contact-email" name="email" type="email" value={form.email} onChange={handleChange} maxLength={254} placeholder="jane@acme.com" disabled={disabled} />
       </div>
       <div className="col-span-2 flex flex-col gap-1">
-        <label className="text-xs font-medium text-gray-600 dark:text-gray-400" htmlFor="contact-relationship">Relationship</label>
-        <select id="contact-relationship" name="relationship" value={form.relationship} onChange={handleChange} className={INPUT_BASE} disabled={disabled}>
+        <label className="text-xs font-medium text-muted-foreground" htmlFor="contact-relationship">Relationship</label>
+        <select id="contact-relationship" name="relationship" value={form.relationship} onChange={handleChange} className={SELECT_CLS} disabled={disabled}>
           {RELATIONSHIP_OPTIONS.map((r) => (<option key={r} value={r}>{r.replace("_", " ")}</option>))}
         </select>
         <RelationshipSuggestionHint suggestion={suggestion} />
@@ -76,16 +79,10 @@ function ContactFormFields({ form, handleChange, disabled, suggestion }) {
 function ContactFormActions({ isPending, nameValue, onDone }) {
   return (
     <div className="flex items-center gap-2">
-      <button
-        type="submit"
-        disabled={isPending || !nameValue.trim()}
-        className={`${BUTTON_PRIMARY} text-xs px-3 py-1.5`}
-      >
+      <Button type="submit" size="sm" disabled={isPending || !nameValue.trim()}>
         {isPending ? "Saving…" : "Add Contact"}
-      </button>
-      <button type="button" onClick={() => onDone?.()} className="text-gray-500 hover:bg-gray-100 rounded-button active:scale-[0.98] transition-all duration-150 font-medium text-xs px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:text-gray-400 dark:hover:bg-gray-700">
-        Cancel
-      </button>
+      </Button>
+      <Button type="button" variant="ghost" size="sm" onClick={() => onDone?.()}>Cancel</Button>
     </div>
   );
 }
@@ -125,9 +122,9 @@ function ContactForm({ applicationId, onDone }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className={`flex flex-col gap-3 ${CARD_BASE} px-3 py-3`}>
+    <form onSubmit={handleSubmit} className="flex flex-col gap-3 rounded-xl bg-card border border-border px-3 py-3">
       <ContactFormFields form={form} handleChange={handleChange} disabled={isPending} suggestion={suggestion} />
-      {error && <p className="text-xs text-red-500" role="alert">{error}</p>}
+      {error && <p className="text-xs text-destructive" role="alert">{error}</p>}
       <ContactFormActions isPending={isPending} nameValue={form.name} onDone={onDone} />
     </form>
   );

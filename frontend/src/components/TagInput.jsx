@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import XIcon from "lucide-react/dist/esm/icons/x";
 
 import { useTags } from "../hooks/useApplications";
-import { INPUT_BASE } from "../lib/designTokens";
+import { Button } from "./ui/button";
 import { DROPDOWN_CLOSE_DELAY_MS } from "../lib/constants";
 
 const PREDEFINED_TAGS = [
@@ -23,15 +23,6 @@ const PREDEFINED_TAGS = [
 
 const MAX_SUGGESTIONS = 8;
 
-/**
- * TagInput combobox.
- *
- * Props:
- *   value       – string[] of current tags
- *   onChange    – (tags: string[]) => void
- *   placeholder – string  (optional)
- *   id          – string  (optional, for htmlFor association)
- */
 function TagInput({ value = [], onChange, placeholder = "Add a tag…", id }) {
   const [inputValue, setInputValue] = useState("");
   const [open, setOpen] = useState(false);
@@ -67,9 +58,7 @@ function TagInput({ value = [], onChange, placeholder = "Add a tag…", id }) {
   }
 
   function removeLastTag() {
-    if (value.length > 0) {
-      onChange(value.slice(0, -1));
-    }
+    if (value.length > 0) onChange(value.slice(0, -1));
   }
 
   function handleKeyDown(e) {
@@ -104,23 +93,25 @@ function TagInput({ value = [], onChange, placeholder = "Add a tag…", id }) {
   return (
     <div className="relative">
       <div
-        className={`${INPUT_BASE} flex min-h-[38px] flex-wrap gap-1.5 rounded-input px-2.5 py-1.5`}
+        className="flex min-h-[38px] flex-wrap gap-1.5 rounded-md border border-input bg-transparent px-2.5 py-1.5 text-sm shadow-sm transition-colors cursor-text w-full"
         onClick={() => inputRef.current?.focus()}
       >
         {value.map((tag) => (
           <span
             key={tag}
-            className="flex items-center gap-1 rounded-full bg-brand-100 px-2 py-0.5 text-xs font-medium text-brand-700 dark:bg-brand-900/40 dark:text-brand-300"
+            className="flex items-center gap-1 rounded-full bg-primary/15 px-2 py-0.5 text-xs font-medium text-primary"
           >
             {tag}
-            <button
+            <Button
               type="button"
+              variant="ghost"
+              size="icon"
               aria-label={`Remove tag ${tag}`}
               onClick={(e) => { e.stopPropagation(); removeTag(tag); }}
-              className="rounded-full hover:bg-brand-200 dark:hover:bg-brand-800 p-0.5 transition-colors"
+              className="h-4 w-4 rounded-full p-0 hover:bg-primary/25"
             >
               <XIcon className="h-2.5 w-2.5" />
-            </button>
+            </Button>
           </span>
         ))}
         <input
@@ -137,7 +128,7 @@ function TagInput({ value = [], onChange, placeholder = "Add a tag…", id }) {
           onBlur={() => setTimeout(() => setOpen(false), DROPDOWN_CLOSE_DELAY_MS)}
           onKeyDown={handleKeyDown}
           placeholder={value.length === 0 ? placeholder : ""}
-          className="min-w-[120px] flex-1 bg-transparent text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none dark:text-gray-100 dark:placeholder:text-gray-500"
+          className="min-w-[120px] flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
           aria-autocomplete="list"
           aria-expanded={open && suggestions.length > 0}
           role="combobox"
@@ -149,7 +140,7 @@ function TagInput({ value = [], onChange, placeholder = "Add a tag…", id }) {
         <ul
           ref={listRef}
           role="listbox"
-          className="absolute z-50 mt-1 max-h-48 w-full overflow-y-auto rounded-input border border-gray-200 bg-white py-1 shadow-lg dark:border-gray-700 dark:bg-gray-800"
+          className="absolute z-50 mt-1 max-h-48 w-full overflow-y-auto rounded-md border border-border bg-card py-1 shadow-lg"
         >
           {suggestions.map((tag, i) => (
             <li
@@ -157,10 +148,10 @@ function TagInput({ value = [], onChange, placeholder = "Add a tag…", id }) {
               role="option"
               aria-selected={i === activeIndex}
               onMouseDown={(e) => { e.preventDefault(); addTag(tag); }}
-              className={`cursor-pointer px-3 py-1.5 text-sm ${
+              className={`cursor-pointer px-3 py-1.5 text-sm transition-colors ${
                 i === activeIndex
-                  ? "bg-brand-50 text-brand-700 dark:bg-brand-900/30 dark:text-brand-300"
-                  : "text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700 transition-colors"
+                  ? "bg-primary/10 text-primary"
+                  : "text-foreground hover:bg-muted"
               }`}
             >
               {tag}

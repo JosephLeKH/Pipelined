@@ -1,5 +1,6 @@
 /** Vite configuration for Pipelined frontend. */
 
+import path from "path";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
@@ -7,6 +8,11 @@ const BUILD_HASH = Date.now().toString(36);
 
 export default defineConfig({
   plugins: [react()],
+  resolve: {
+    alias: {
+      "@": path.resolve(path.dirname(new URL(import.meta.url).pathname), "./src"),
+    },
+  },
   define: {
     __BUILD_HASH__: JSON.stringify(BUILD_HASH),
   },

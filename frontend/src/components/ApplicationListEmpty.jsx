@@ -1,6 +1,7 @@
 /** Loading skeleton, error, and empty-state renders for ApplicationList. */
 
 import { SKELETON_ROW_COUNT } from "../lib/constants";
+import { Button } from "./ui/button";
 import ApiErrorMessage from "./ApiErrorMessage";
 import EmptyState from "./EmptyState";
 import SkeletonRow from "./SkeletonRow";
@@ -35,12 +36,12 @@ export function ApplicationListEmpty({ isLoading, error, refetch, applications, 
     const hasFilters = Object.keys(filters).length > 0;
     if (hasFilters) {
       return (
-        <div className="py-16 text-center text-gray-500">
+        <div className="py-16 text-center text-muted-foreground">
           <p>No applications match your filters.</p>
           {onClearFilters && (
-            <button type="button" onClick={onClearFilters} className="mt-3 text-sm text-brand-600 hover:underline">
+            <Button type="button" variant="link" onClick={onClearFilters} className="mt-3 h-auto p-0 text-sm">
               Clear all filters
-            </button>
+            </Button>
           )}
         </div>
       );

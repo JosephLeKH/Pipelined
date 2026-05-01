@@ -5,20 +5,22 @@ import { useRef, useMemo } from "react";
 import { useDetailPanelState } from "../hooks/useDetailPanelState";
 import { useDetailPanelKeyboard } from "../hooks/useDetailPanelKeyboard";
 import { DetailPanelHeader } from "./DetailPanelHeader";
-import { BUTTON_SECONDARY, BUTTON_DANGER, MODAL_BACKDROP, MODAL_CARD } from "../lib/designTokens";
+import { Button } from "./ui/button";
 import { PanelBody } from "./DetailPanelBody";
 import UndoToast from "./UndoToast";
 import { usePanelDrag } from "../hooks/usePanelDrag";
 
 function DiscardDialog({ onDiscard, onCancel }) {
   return (
-    <div className={`${MODAL_BACKDROP} absolute`} role="alertdialog" aria-modal="true" aria-labelledby="discard-dialog-title">
-      <div className={`${MODAL_CARD} mx-4 w-full max-w-sm`}>
-        <h3 id="discard-dialog-title" className="font-display text-base font-semibold text-gray-900 dark:text-gray-100">Discard unsaved notes?</h3>
-        <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">Your changes will be lost.</p>
-        <div className="mt-4 flex justify-end gap-2">
-          <button type="button" onClick={onCancel} className={`${BUTTON_SECONDARY} px-3 py-1.5 text-sm`}>Cancel</button>
-          <button type="button" onClick={onDiscard} className={`${BUTTON_DANGER} px-3 py-1.5 text-sm`}>Discard</button>
+    <div className="absolute inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center p-4" role="alertdialog" aria-modal="true" aria-labelledby="discard-dialog-title">
+      <div className="bg-card rounded-2xl border border-border shadow-lg w-full max-w-sm mx-auto relative">
+        <div className="p-6">
+          <h3 id="discard-dialog-title" className="font-display text-base font-semibold text-foreground">Discard unsaved notes?</h3>
+          <p className="mt-1 text-sm text-muted-foreground">Your changes will be lost.</p>
+          <div className="mt-4 flex justify-end gap-2">
+            <Button type="button" variant="outline" size="sm" onClick={onCancel}>Cancel</Button>
+            <Button type="button" variant="destructive" size="sm" onClick={onDiscard}>Discard</Button>
+          </div>
         </div>
       </div>
     </div>
@@ -31,7 +33,7 @@ function PanelContent({ displayApp, panelDragHandlers, actions, undoPendingId, s
       {displayApp && (
         <div key={displayApp.id} className="flex h-full flex-col overflow-y-auto animate-slideInRight">
           <div className="flex w-full shrink-0 touch-none items-center justify-center py-3 md:hidden" aria-hidden="true" {...panelDragHandlers}>
-            <div className="h-1 w-10 rounded-full bg-gray-300" />
+            <div className="h-1 w-10 rounded-full bg-muted-foreground/30" />
           </div>
           <DetailPanelHeader application={displayApp} onClose={actions.onClose} onDelete={actions.onDelete} />
           <PanelBody
@@ -80,7 +82,7 @@ function DetailPanel({ application, onClose, onAddEvent }) {
       <div className="absolute inset-0 bg-black/30 pointer-events-none" aria-hidden="true" />
       <div
         ref={panelRef}
-        className={`fixed inset-x-0 bottom-0 h-[90vh] rounded-t-xl bg-white shadow-sm border-l border-gray-200 dark:border-gray-700 transition-transform duration-[250ms] md:inset-x-auto md:bottom-auto md:right-0 md:top-0 md:h-full md:w-[480px] md:rounded-none dark:bg-gray-800 ${isOpen ? "translate-y-0 md:translate-x-0" : "translate-y-full md:translate-y-0 md:translate-x-full"}`}
+        className={`fixed inset-x-0 bottom-0 h-[90vh] rounded-t-xl bg-card shadow-sm border-l border-border transition-transform duration-[250ms] md:inset-x-auto md:bottom-auto md:right-0 md:top-0 md:h-full md:w-[480px] md:rounded-none ${isOpen ? "translate-y-0 md:translate-x-0" : "translate-y-full md:translate-y-0 md:translate-x-full"}`}
         style={{ transform: dragOffset ? `translateY(${dragOffset}px)` : undefined, transition: dragOffset ? "none" : undefined }}
         role="dialog" aria-modal="true" aria-labelledby="detail-panel-heading" onKeyDown={handlePanelKeyDown}
       >

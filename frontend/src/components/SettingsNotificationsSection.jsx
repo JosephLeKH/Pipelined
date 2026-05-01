@@ -4,20 +4,14 @@ import { useState, useCallback } from "react";
 
 import { useAuth } from "../context/AuthContext";
 import { useUpdateUser } from "../hooks/useAuth";
-import { CARD_BASE } from "../lib/designTokens";
 
 function ToggleSwitch({ checked, onChange, disabled, label, description, id }) {
   return (
     <div className="flex items-start justify-between gap-4 py-3.5">
       <div>
-        <p
-          id={id}
-          className="text-sm font-medium text-gray-800 dark:text-gray-200"
-        >
-          {label}
-        </p>
+        <p id={id} className="text-sm font-medium text-foreground">{label}</p>
         {description && (
-          <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">{description}</p>
+          <p className="mt-0.5 text-sm text-muted-foreground">{description}</p>
         )}
       </div>
       <button
@@ -27,8 +21,8 @@ function ToggleSwitch({ checked, onChange, disabled, label, description, id }) {
         aria-labelledby={id}
         disabled={disabled}
         onClick={() => onChange(!checked)}
-        className={`relative mt-0.5 inline-flex h-6 w-10 shrink-0 cursor-pointer items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 ${
-          checked ? "bg-brand-500" : "bg-gray-300 dark:bg-gray-600"
+        className={`relative mt-0.5 inline-flex h-6 w-10 shrink-0 cursor-pointer items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 ${
+          checked ? "bg-primary" : "bg-muted"
         }`}
       >
         <span
@@ -92,17 +86,17 @@ function SettingsNotificationsSection() {
   );
 
   return (
-    <div className={`${CARD_BASE} p-6`}>
-      <h2 className="mb-1 font-display text-lg font-semibold text-gray-900 dark:text-gray-100">
+    <div className="rounded-xl bg-card border border-border p-6">
+      <h2 className="mb-1 font-display text-lg font-semibold text-foreground">
         Notifications
       </h2>
-      <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+      <p className="mb-2 text-sm text-muted-foreground">
         Control which alerts and digests you receive.
       </p>
       {saveError && (
-        <p role="alert" className="mb-3 text-sm text-red-600 dark:text-red-400">{saveError}</p>
+        <p role="alert" className="mb-3 text-sm text-destructive">{saveError}</p>
       )}
-      <div className="divide-y divide-gray-100 dark:divide-gray-700">
+      <div className="divide-y divide-border">
         {TOGGLES.map((t) => (
           <ToggleSwitch
             key={t.field}

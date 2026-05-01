@@ -8,7 +8,6 @@ import PipelineStagesEditor from "./PipelineStagesEditor";
 import WeeklyGoalSection from "./WeeklyGoalSection";
 import { useAuth } from "../context/AuthContext";
 import { useUpdateUser } from "../hooks/useAuth";
-import { CARD_BASE, SUCCESS_BANNER } from "../lib/designTokens";
 
 const GENERIC_ERROR = "Failed to save stages. Please try again.";
 const DEFAULT_WEEKLY_GOAL = 5;
@@ -50,16 +49,16 @@ function SettingsPipelineSection() {
 
   return (
     <div className="flex flex-col gap-4">
-      <section className={`${CARD_BASE} p-6`}>
-        <h2 className="font-display mb-1 text-lg font-semibold text-gray-900 dark:text-gray-100">
+      <section className="rounded-xl bg-card border border-border p-6">
+        <h2 className="font-display mb-1 text-lg font-semibold text-foreground">
           Pipeline Stages
         </h2>
-        <p className="mb-5 text-sm text-gray-500 dark:text-gray-400">
+        <p className="mb-5 text-sm text-muted-foreground">
           Customize the stages for your job search pipeline. Drag to reorder.
         </p>
 
         {saveSuccess && !isPending && (
-          <p role="alert" className={`mb-4 ${SUCCESS_BANNER}`}>
+          <p role="alert" className="mb-4 rounded-lg bg-primary/10 border border-primary/20 px-3 py-3 text-sm text-primary">
             Stages saved successfully.
           </p>
         )}
@@ -82,12 +81,12 @@ function SettingsPipelineSection() {
       />
 
       {streak > 0 && (
-        <div className={`flex items-center gap-2 ${CARD_BASE} px-5 py-4`}>
+        <div className="flex items-center gap-2 rounded-xl bg-card border border-border px-5 py-4">
           <Flame className="h-5 w-5 text-amber-500" aria-hidden="true" />
-          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          <span className="text-sm font-medium text-foreground">
             {streak}-week streak
           </span>
-          <span className="text-xs text-gray-400 dark:text-gray-500">Keep it up!</span>
+          <span className="text-xs text-muted-foreground">Keep it up!</span>
         </div>
       )}
     </div>

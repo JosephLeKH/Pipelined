@@ -1,7 +1,10 @@
 import { useState, useCallback } from "react";
 
-import { INPUT_BASE } from "../lib/designTokens";
 import { formatUSD } from "../lib/currencyUtils";
+
+import { Button } from "./ui/button";
+
+const INPUT_CLS = "w-full border border-input rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:border-ring focus:ring-1 focus:ring-ring/20 focus:outline-none transition-colors text-sm px-3 py-2 font-sans";
 
 function fmtCell(fieldType, value) {
   if (value == null || value === "") return null;
@@ -16,7 +19,7 @@ function EditableCellInput({ value, fieldType, handleBlur }) {
       defaultValue={value ?? ""}
       autoFocus
       onBlur={handleBlur}
-      className={`w-full ${INPUT_BASE}`}
+      className={INPUT_CLS}
       aria-label={`Edit ${fieldType}`}
     />
   );
@@ -25,13 +28,14 @@ function EditableCellInput({ value, fieldType, handleBlur }) {
 function EditableCellDisplay({ value, fieldType, onEdit }) {
   const display = fmtCell(fieldType, value);
   return (
-    <button
+    <Button
       type="button"
+      variant="ghost"
       onClick={onEdit}
-      className="w-full text-left text-sm text-gray-700 hover:underline dark:text-gray-300"
+      className="h-auto w-full justify-start p-0 text-left text-sm text-foreground hover:bg-transparent hover:underline"
     >
-      {display ?? <span className="italic text-gray-400">—</span>}
-    </button>
+      {display ?? <span className="italic text-muted-foreground">—</span>}
+    </Button>
   );
 }
 
@@ -70,7 +74,7 @@ export function EditableCell({ appId, fieldKey, fieldType, value, offerDetails, 
         ? <EditableCellInput value={value} fieldType={fieldType} handleBlur={handleBlur} />
         : <EditableCellDisplay value={value} fieldType={fieldType} onEdit={() => setEditing(true)} />}
       {validationError && (
-        <p role="alert" className="mt-1 text-xs text-rose-600">{validationError}</p>
+        <p role="alert" className="mt-1 text-xs text-destructive">{validationError}</p>
       )}
     </div>
   );

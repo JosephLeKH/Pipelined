@@ -1,6 +1,7 @@
 /** All form fields for ManualAddForm — rendered inside the <form> element. */
 
-import { INPUT_BASE } from "../lib/designTokens";
+import { Input } from "./ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { DuplicateWarning } from "./DuplicateWarning";
 import FormField from "./FormField";
 import TagInput from "./TagInput";
@@ -25,24 +26,28 @@ export function ManualAddFormFields({ hook }) {
       />
       {isDuplicate && <DuplicateWarning existingId={existingId} />}
       <FormField label="Role Title *" htmlFor="role-title" error={fieldErrors.roleTitle}>
-        <input id="role-title" type="text" value={roleTitle} onChange={(e) => setRoleTitle(e.target.value)} className={INPUT_BASE} aria-required="true" />
+        <Input id="role-title" type="text" value={roleTitle} onChange={(e) => setRoleTitle(e.target.value)} aria-required="true" />
       </FormField>
       <FormField label="Company *" htmlFor="company" error={fieldErrors.company}>
-        <input id="company" type="text" value={company} onChange={(e) => setCompany(e.target.value)} className={INPUT_BASE} aria-required="true" />
+        <Input id="company" type="text" value={company} onChange={(e) => setCompany(e.target.value)} aria-required="true" />
       </FormField>
       <FormField label="Job URL" htmlFor="source-url">
-        <input id="source-url" type="url" value={sourceUrl} onChange={(e) => setSourceUrl(e.target.value)} className={INPUT_BASE} />
+        <Input id="source-url" type="url" value={sourceUrl} onChange={(e) => setSourceUrl(e.target.value)} />
       </FormField>
       <ManualAddFormDateRow dateApplied={dateApplied} setDateApplied={setDateApplied} compensation={compensation} setCompensation={setCompensation} />
       <FormField label="Location" htmlFor="location">
-        <input id="location" type="text" value={location} onChange={(e) => setLocation(e.target.value)} className={INPUT_BASE} />
+        <Input id="location" type="text" value={location} onChange={(e) => setLocation(e.target.value)} />
       </FormField>
       {stageOptions.length > 0 && (
         <FormField label="Initial Stage" htmlFor="initial-stage">
-          <select id="initial-stage" value={stage} onChange={(e) => setStage(e.target.value)} className={INPUT_BASE}>
-            <option value="">Default ({stageOptions[0]})</option>
-            {stageOptions.map((s) => <option key={s} value={s}>{s}</option>)}
-          </select>
+          <Select value={stage || undefined} onValueChange={setStage}>
+            <SelectTrigger id="initial-stage">
+              <SelectValue placeholder={`Default (${stageOptions[0]})`} />
+            </SelectTrigger>
+            <SelectContent>
+              {stageOptions.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+            </SelectContent>
+          </Select>
         </FormField>
       )}
       <ManualAddFormCategoryRow remoteStatus={remoteStatus} setRemoteStatus={setRemoteStatus} companyType={companyType} setCompanyType={setCompanyType} />
@@ -50,7 +55,7 @@ export function ManualAddFormFields({ hook }) {
         <TagInput id="tags" value={tags} onChange={setTags} />
       </FormField>
       {mutationError && !isDuplicate && (
-        <p role="alert" className="rounded border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
+        <p role="alert" className="rounded border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
           {mutationError.message ?? GENERIC_ERROR_MSG}
         </p>
       )}

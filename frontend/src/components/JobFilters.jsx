@@ -3,6 +3,8 @@
 import { useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 
+import { cn } from "../lib/utils";
+import { Button } from "./ui/button";
 import {
   ROLE_TYPE_OPTIONS,
   EXPERIENCE_LEVEL_OPTIONS,
@@ -19,17 +21,19 @@ const FILTER_GROUPS = [
 
 function FilterChip({ label, active, onClick }) {
   return (
-    <button
+    <Button
       type="button"
+      variant="ghost"
       onClick={onClick}
-      className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium capitalize transition-colors ${
+      className={cn(
+        "shrink-0 rounded-full px-3 py-1.5 text-xs font-medium capitalize h-auto",
         active
-          ? "bg-brand-500 text-white"
-          : "bg-surface-secondary text-gray-600 hover:bg-surface-tertiary transition-colors"
-      }`}
+          ? "bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground"
+          : "bg-muted text-muted-foreground hover:bg-muted/70"
+      )}
     >
       {label.replace(/_/g, " ")}
-    </button>
+    </Button>
   );
 }
 
@@ -57,7 +61,7 @@ export function JobFilters() {
     >
       {FILTER_GROUPS.map(({ label: groupLabel, paramKey, options }) => (
         <div key={paramKey} className="flex shrink-0 items-center gap-1.5">
-          <span className="shrink-0 text-xs font-medium text-gray-400">{groupLabel}:</span>
+          <span className="shrink-0 text-xs font-medium text-muted-foreground">{groupLabel}:</span>
           {options.map((opt) => (
             <FilterChip
               key={opt}

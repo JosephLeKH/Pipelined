@@ -8,12 +8,13 @@ import LayoutDashboard from "lucide-react/dist/esm/icons/layout-dashboard";
 import Pencil from "lucide-react/dist/esm/icons/pencil";
 
 import { STAGE_COLORS, DEFAULT_STAGE_COLOR } from "../lib/constants";
-import { BADGE_BASE, TOOLTIP } from "../lib/designTokens";
+import { Button } from "./ui/button";
 import { formatDate, isStale, isFollowUpOverdue } from "../lib/dateUtils";
 import { useSwipeAction } from "../hooks/useSwipeAction";
 import { RowMenu } from "./ApplicationRowActions";
 import CompanyLogo from "./CompanyLogo";
 import FitBadge from "./FitBadge";
+import { Tooltip, TooltipTrigger, TooltipContent } from "./ui/tooltip";
 
 const SOURCE_ICONS = {
   extension: Globe,
@@ -21,12 +22,13 @@ const SOURCE_ICONS = {
   manual: Pencil,
 };
 
+
 export function StagePill({ stage }) {
   const color = STAGE_COLORS[stage] ?? DEFAULT_STAGE_COLOR;
   return (
     <span
       aria-label={stage}
-      className={`${BADGE_BASE} gap-1.5 ${color.bg} ${color.text}`}
+      className={`rounded-full text-xs font-medium px-2.5 py-1 inline-flex items-center gap-1.5 ${color.bg} ${color.text}`}
     >
       <span className={`h-1.5 w-1.5 rounded-full ${color.dot}`} />
       {stage}
@@ -40,24 +42,26 @@ function SwipeActions({ onArchive, onFollowUp, revealed }) {
       className={`absolute inset-y-0 right-0 flex transition-opacity duration-150 ${revealed ? "opacity-100" : "opacity-0 pointer-events-none"}`}
       aria-hidden={!revealed}
     >
-      <button
+      <Button
         type="button"
+        variant="ghost"
         aria-label="Set follow-up"
-        className="flex w-20 flex-col items-center justify-center gap-1 bg-amber-500 text-white text-xs font-medium hover:bg-amber-600 active:bg-amber-700 transition-colors"
         onClick={onFollowUp}
+        className="h-full w-20 flex-col gap-1 rounded-none bg-amber-500 text-white text-xs font-medium hover:bg-amber-600 active:bg-amber-700"
       >
         <CalendarClock className="h-5 w-5" aria-hidden="true" />
         Follow-up
-      </button>
-      <button
+      </Button>
+      <Button
         type="button"
+        variant="ghost"
         aria-label="Archive application"
-        className="flex w-20 flex-col items-center justify-center gap-1 bg-rose-500 text-white text-xs font-medium hover:bg-rose-600 active:bg-rose-700 transition-colors"
         onClick={onArchive}
+        className="h-full w-20 flex-col gap-1 rounded-none bg-rose-500 text-white text-xs font-medium hover:bg-rose-600 active:bg-rose-700"
       >
         <Archive className="h-5 w-5" aria-hidden="true" />
         Archive
-      </button>
+      </Button>
     </div>
   );
 }
@@ -87,7 +91,7 @@ function ApplicationRow({
         onFollowUp={() => handleAction(() => onSetFollowUp?.(application.id))}
       />
       <div
-        className={`group flex cursor-pointer items-center gap-4 border-b border-gray-100 px-4 py-4 hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-inset focus:ring-brand-500 dark:border-gray-700 dark:hover:bg-gray-700 ${archived ? "opacity-60" : ""} ${isFocused ? "border-l-2 border-l-brand-500 bg-brand-50 dark:bg-brand-900/20" : ""}`}
+        className={`group flex cursor-pointer items-center gap-4 border-b border-border px-4 py-4 hover:bg-muted/50 transition-colors focus:outline-none focus:ring-2 focus:ring-inset focus:ring-ring ${archived ? "opacity-60" : ""} ${isFocused ? "border-l-2 border-l-primary bg-primary/5" : ""}`}
         style={{ transform: offset !== 0 ? `translateX(${offset}px)` : undefined, transition: offset !== 0 ? "none" : undefined }}
         onClick={() => onSelect(application)}
         onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") onSelect(application); }}
@@ -101,50 +105,45 @@ function ApplicationRow({
             aria-label={`Select ${application.company}`}
             checked={checked}
             onChange={() => onToggle(application.id)}
-            className="h-4 w-4 rounded border-gray-300 text-brand-600"
+            className="h-4 w-4 rounded border-border accent-primary"
           />
         </span>
-        <span className="relative w-2 shrink-0 group/stale">
+        <span className="relative w-2 shrink-0">
           {stale && !archived && (
-            <>
-              <span
-                className="block h-2 w-2 animate-pulse rounded-full bg-amber-400"
-                data-testid="stale-indicator"
-                aria-label="Stale application — no updates in 14+ days"
-              />
-              <span
-                role="tooltip"
-                className={`${TOOLTIP} left-4 top-1/2 -translate-y-1/2 group-hover/stale:opacity-100`}
-              >
-                No updates in 14 days — consider following up
-              </span>
-            </>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span
+                  tabIndex={0}
+                  className="block h-2 w-2 animate-pulse rounded-full bg-amber-400 cursor-default"
+                  data-testid="stale-indicator"
+                  aria-label="Stale application — no updates in 14+ days"
+                />
+              </TooltipTrigger>
+              <TooltipContent>No updates in 14 days — consider following up</TooltipContent>
+            </Tooltip>
           )}
         </span>
         <CompanyLogo company_domain={application.company_domain ?? null} company={application.company ?? ""} size={24} />
-        <span className={`w-36 truncate font-medium ${archived ? "text-gray-400 line-through" : "text-gray-900 dark:text-gray-100"}`}>
+        <span className={`w-36 truncate font-medium ${archived ? "text-muted-foreground line-through" : "text-foreground"}`}>
           {application.company}
         </span>
-        <span className={`flex-1 truncate text-sm ${archived ? "text-gray-400" : "text-gray-700 dark:text-gray-300"}`}>
+        <span className={`flex-1 truncate text-sm ${archived ? "text-muted-foreground" : "text-muted-foreground"}`}>
           {application.role_title}
         </span>
         <StagePill stage={application.current_stage} />
         <FitBadge score={application.ai_analysis?.fit_score ?? null} />
-        <span className="relative w-4 shrink-0 group/followup">
+        <span className="relative w-4 shrink-0">
           {followUpOverdue && !archived && (
-            <>
-              <Bell className="h-4 w-4 text-amber-500" data-testid="follow-up-bell" aria-label={`Follow-up due ${formatDate(application.follow_up_date)}`} />
-              <span
-                role="tooltip"
-                className={`${TOOLTIP} left-5 top-1/2 -translate-y-1/2 group-hover/followup:opacity-100`}
-              >
-                Follow-up due {formatDate(application.follow_up_date)}
-              </span>
-            </>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Bell className="h-4 w-4 text-amber-500 cursor-default" data-testid="follow-up-bell" aria-label={`Follow-up due ${formatDate(application.follow_up_date)}`} />
+              </TooltipTrigger>
+              <TooltipContent>Follow-up due {formatDate(application.follow_up_date)}</TooltipContent>
+            </Tooltip>
           )}
         </span>
-        <span className="w-28 text-sm text-gray-500 dark:text-gray-400">{dateApplied}</span>
-        <SourceIcon className="h-4 w-4 shrink-0 text-gray-500 dark:text-gray-400" aria-label={application.source} />
+        <span className="w-28 text-sm text-muted-foreground">{dateApplied}</span>
+        <SourceIcon className="h-4 w-4 shrink-0 text-muted-foreground" aria-label={application.source} />
         <RowMenu
           application={application}
           onArchive={onArchive}

@@ -2,6 +2,8 @@
 
 import AlertCircle from "lucide-react/dist/esm/icons/alert-circle";
 
+import { Button } from "./ui/button";
+
 const FALLBACK_ERROR_MESSAGE = "An unexpected error occurred. Please try again.";
 
 function extractMessage(error) {
@@ -21,13 +23,15 @@ function ApiErrorMessage({ error, onRetry }) {
       <AlertCircle className="h-6 w-6 text-red-500" aria-hidden="true" />
       <p className="text-sm font-medium text-red-800">{message}</p>
       {onRetry && (
-        <button
+        <Button
           type="button"
+          variant="outline"
+          size="sm"
           onClick={onRetry}
-          className="rounded border border-red-300 px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-100 transition-colors"
+          className="border-red-300 text-red-700 hover:bg-red-100 hover:text-red-700"
         >
           Retry
-        </button>
+        </Button>
       )}
     </div>
   );

@@ -10,7 +10,7 @@ import { OfferNegotiationPanel } from "../components/OfferNegotiationPanel";
 import { EditableCell } from "../components/OfferEditableCell";
 import { useApplications, useUpdateApplication } from "../hooks/useApplications";
 import { OFFER_FIELDS, OFFER_STAGE } from "../lib/constants";
-import { SPINNER_SM, BUTTON_SECONDARY } from "../lib/designTokens";
+import { Button } from "../components/ui/button";
 
 const CONFETTI_CONFIG = { particleCount: 150, spread: 80, origin: { y: 0.5 } };
 
@@ -19,7 +19,7 @@ function LoadingState() {
     <>
       <NavBar />
       <div className="flex min-h-[60vh] items-center justify-center">
-        <div className={SPINNER_SM} />
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-border border-t-primary" />
       </div>
     </>
   );
@@ -29,16 +29,11 @@ function ErrorState({ onRetry }) {
   return (
     <>
       <NavBar />
-      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 text-rose-600">
+      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 text-destructive">
         <p>Failed to load offers.</p>
-        <button
-          type="button"
-          onClick={onRetry}
-          aria-label="Retry loading offers"
-          className={BUTTON_SECONDARY}
-        >
+        <Button type="button" variant="outline" onClick={onRetry} aria-label="Retry loading offers">
           Try again
-        </button>
+        </Button>
       </div>
     </>
   );
@@ -48,10 +43,10 @@ function EmptyState() {
   return (
     <>
       <NavBar />
-      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-3 text-gray-500 dark:text-gray-400">
-        <Trophy className="mb-2 h-10 w-10 text-gray-300 dark:text-gray-600" />
-        <p className="text-sm font-medium font-display text-gray-900 dark:text-gray-100">No offers yet</p>
-        <p className="text-xs font-sans text-gray-500 dark:text-gray-400">
+      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-3 text-muted-foreground">
+        <Trophy className="mb-2 h-10 w-10 text-muted-foreground/40" />
+        <p className="text-sm font-medium font-display text-foreground">No offers yet</p>
+        <p className="text-xs font-sans text-muted-foreground">
           Move an application to the Offer stage to compare packages here.
         </p>
       </div>
@@ -61,7 +56,7 @@ function EmptyState() {
 
 function OfferComparisonHeader() {
   return (
-    <h1 className="font-display text-2xl font-bold text-gray-900 dark:text-gray-100">
+    <h1 className="font-display text-2xl font-bold text-foreground">
       Offer Comparison
     </h1>
   );
@@ -73,25 +68,26 @@ function OfferHeaderCell({ app, isWinner, onMarkWinner }) {
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-1.5">
           {isWinner && <Trophy className="h-4 w-4 text-amber-500" aria-label="Winner" />}
-          <span className="truncate text-sm font-semibold text-gray-900 dark:text-gray-100">
+          <span className="truncate text-sm font-semibold text-foreground">
             {app.company ?? "Unknown"}
           </span>
         </div>
-        <span className="truncate text-xs text-gray-500 dark:text-gray-400">
+        <span className="truncate text-xs text-muted-foreground">
           {app.role_title ?? ""}
         </span>
-        <button
+        <Button
           type="button"
+          variant="ghost"
           onClick={() => onMarkWinner(app.id)}
-          className={`mt-1 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium transition-colors ${
+          className={`mt-1 gap-1 rounded-full px-2.5 py-1 text-xs font-medium h-auto ${
             isWinner
-              ? "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300"
-              : "bg-gray-100 text-gray-600 hover:bg-brand-100 hover:text-brand-700 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-brand-900/40 dark:hover:text-brand-300"
+              ? "bg-amber-100 text-amber-800 hover:bg-amber-100 dark:bg-amber-900/40 dark:text-amber-300"
+              : "bg-muted text-muted-foreground hover:bg-primary/10 hover:text-primary"
           }`}
         >
           <Trophy className="h-3 w-3" />
           {isWinner ? "Winner!" : "Mark winner"}
-        </button>
+        </Button>
       </div>
     </th>
   );
@@ -99,11 +95,11 @@ function OfferHeaderCell({ app, isWinner, onMarkWinner }) {
 
 function OfferComparisonTable({ apps, winnerId, handleSave, handleMarkWinner }) {
   return (
-    <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700">
-      <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-        <thead className="bg-gray-50 dark:bg-gray-800">
+    <div className="overflow-x-auto rounded-xl border border-border">
+      <table className="min-w-full divide-y divide-border">
+        <thead className="bg-muted">
           <tr>
-            <th className="w-36 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+            <th className="w-36 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               Field
             </th>
             {apps.map((app) => (
@@ -111,10 +107,10 @@ function OfferComparisonTable({ apps, winnerId, handleSave, handleMarkWinner }) 
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-gray-100 bg-white dark:divide-gray-800 dark:bg-gray-900">
+        <tbody className="divide-y divide-border bg-card">
           {OFFER_FIELDS.map((field) => (
-            <tr key={field.key} className="hover:bg-gray-50 dark:hover:bg-gray-800/50">
-              <td className="px-4 py-3 text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">{field.label}</td>
+            <tr key={field.key} className="hover:bg-muted/50">
+              <td className="px-4 py-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">{field.label}</td>
               {apps.map((app) => {
                 const offerDetails = app.offer_details ?? {};
                 return (
@@ -145,7 +141,7 @@ const TABS = [
 
 function TabBar({ activeTab, onTabChange }) {
   return (
-    <div className="flex gap-1 rounded-lg bg-gray-100 p-1 dark:bg-gray-800" role="tablist">
+    <div className="flex gap-1 rounded-lg bg-muted p-1" role="tablist">
       {TABS.map(({ id, label, Icon }) => (
         <button
           key={id}
@@ -154,8 +150,8 @@ function TabBar({ activeTab, onTabChange }) {
           onClick={() => onTabChange(id)}
           className={`flex items-center gap-1.5 rounded-md px-4 py-1.5 text-sm font-medium transition-colors ${
             activeTab === id
-              ? "bg-white text-gray-900 shadow-sm dark:bg-gray-700 dark:text-gray-100"
-              : "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+              ? "bg-card text-foreground shadow-sm"
+              : "text-muted-foreground hover:text-foreground"
           }`}
         >
           <Icon className="h-4 w-4" aria-hidden="true" />
@@ -207,15 +203,16 @@ function OfferComparison() {
           <OfferComparisonHeader />
           <div className="flex items-center gap-3">
             <TabBar activeTab={activeTab} onTabChange={setActiveTab} />
-            <button
+            <Button
               type="button"
+              variant="outline"
               onClick={() => window.print()}
-              className={`flex items-center gap-1.5 ${BUTTON_SECONDARY}`}
+              className="flex items-center gap-1.5"
               aria-label="Export as PDF"
             >
               <Download className="h-4 w-4" aria-hidden="true" />
               Export PDF
-            </button>
+            </Button>
           </div>
         </div>
         {activeTab === "compare" && (

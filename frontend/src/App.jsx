@@ -13,8 +13,8 @@ import OfflineBanner from "./components/OfflineBanner";
 import FeedbackWidget from "./components/FeedbackWidget";
 import ShortcutHelp from "./components/ShortcutHelp";
 import UpgradePlanModal from "./components/UpgradePlanModal";
+import { Button } from "./components/ui/button";
 import { CHORD_TIMEOUT_MS } from "./lib/shortcuts";
-import { SPINNER_SM } from "./lib/designTokens";
 
 const CHORD_DESTINATIONS = { d: "/dashboard", c: "/calendar", a: "/analytics", j: "/jobs" };
 const IGNORED_CHORD_TAGS = new Set(["INPUT", "TEXTAREA", "SELECT"]);
@@ -83,7 +83,7 @@ function VerifyEmailRoute() {
 function LoadingSpinner() {
   return (
     <div className="flex min-h-screen items-center justify-center">
-      <div className={SPINNER_SM} />
+      <div className="h-6 w-6 animate-spin rounded-full border-2 border-border border-t-primary" />
     </div>
   );
 }
@@ -117,14 +117,11 @@ function PageTracker() {
 function RouteErrorFallback() {
   return (
     <div role="alert" className="flex flex-col items-center gap-4 py-16 text-center">
-      <p className="text-lg font-semibold text-gray-900">Something went wrong</p>
-      <p className="text-sm text-gray-500">An error occurred on this page.</p>
-      <Link
-        to="/dashboard"
-        className="bg-brand-500 hover:bg-brand-600 text-white font-medium rounded-md px-4 py-2 text-sm font-display transition-colors"
-      >
-        Go to Dashboard
-      </Link>
+      <p className="text-lg font-semibold text-foreground">Something went wrong</p>
+      <p className="text-sm text-muted-foreground">An error occurred on this page.</p>
+      <Button asChild>
+        <Link to="/dashboard">Go to Dashboard</Link>
+      </Button>
     </div>
   );
 }
@@ -149,7 +146,7 @@ function App() {
     <>
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[9999] focus:rounded focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-brand-600 focus:shadow-lg focus:ring-2 focus:ring-brand-500"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[9999] focus:rounded focus:bg-background focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-primary focus:shadow-lg focus:ring-2 focus:ring-ring"
       >
         Skip to main content
       </a>

@@ -7,8 +7,9 @@ import Pencil from "lucide-react/dist/esm/icons/pencil";
 import Trash2 from "lucide-react/dist/esm/icons/trash-2";
 import X from "lucide-react/dist/esm/icons/x";
 
-import { CARD_BASE, INPUT_BASE, BUTTON_SECONDARY } from "../lib/designTokens";
 import { useDeleteTemplate, useTemplates, useUpdateTemplate } from "../hooks/useTemplates";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
 
 function TemplateRow({ template }) {
   const [editing, setEditing] = useState(false);
@@ -45,26 +46,26 @@ function TemplateRow({ template }) {
     .join(" · ");
 
   return (
-    <div className="flex items-center gap-3 py-3 border-b border-gray-100 dark:border-gray-700 last:border-b-0">
+    <div className="flex items-center gap-3 py-3 border-b border-border last:border-b-0">
       <div className="min-w-0 flex-1">
         {editing ? (
-          <input
+          <Input
             autoFocus
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
             onKeyDown={handleKeyDown}
             onBlur={handleRename}
-            className={`${INPUT_BASE} text-sm`}
+            className="text-sm"
             aria-label="Rename template"
           />
         ) : (
           <>
-            <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+            <p className="text-sm font-medium text-foreground truncate">
               {template.name}
             </p>
             {fieldSummary && (
-              <p className="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5">
+              <p className="text-xs text-muted-foreground truncate mt-0.5">
                 {fieldSummary}
               </p>
             )}
@@ -74,43 +75,51 @@ function TemplateRow({ template }) {
       <div className="flex items-center gap-1 shrink-0">
         {editing ? (
           <>
-            <button
+            <Button
               type="button"
+              variant="ghost"
+              size="icon"
               onClick={handleRename}
               disabled={isUpdating}
               aria-label="Confirm rename"
-              className="rounded p-1 text-brand-600 hover:bg-brand-50 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500/30 disabled:opacity-50 disabled:cursor-not-allowed dark:hover:bg-brand-900/20"
+              className="h-7 w-7 text-primary hover:bg-primary/10 hover:text-primary"
             >
               <Check className="h-4 w-4" />
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
+              variant="ghost"
+              size="icon"
               onClick={() => { setName(template.name); setEditing(false); }}
               aria-label="Cancel rename"
-              className="rounded p-1 text-gray-400 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:hover:bg-gray-700"
+              className="h-7 w-7 text-muted-foreground hover:bg-muted"
             >
               <X className="h-4 w-4" />
-            </button>
+            </Button>
           </>
         ) : (
-          <button
+          <Button
             type="button"
+            variant="ghost"
+            size="icon"
             onClick={() => setEditing(true)}
             aria-label={`Rename ${template.name}`}
-            className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:hover:bg-gray-700 dark:hover:text-gray-200"
+            className="h-7 w-7 text-muted-foreground hover:bg-muted hover:text-foreground"
           >
             <Pencil className="h-4 w-4" />
-          </button>
+          </Button>
         )}
-        <button
+        <Button
           type="button"
+          variant="ghost"
+          size="icon"
           onClick={() => deleteMutate(template.id)}
           disabled={isDeleting}
           aria-label={`Delete ${template.name}`}
-          className="rounded p-1 text-gray-400 hover:bg-rose-50 hover:text-rose-600 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500/30 disabled:opacity-50 disabled:cursor-not-allowed dark:hover:bg-rose-900/20 dark:hover:text-rose-400"
+          className="h-7 w-7 text-muted-foreground/50 hover:bg-destructive/10 hover:text-destructive"
         >
           <Trash2 className="h-4 w-4" />
-        </button>
+        </Button>
       </div>
     </div>
   );
@@ -120,34 +129,36 @@ function SettingsTemplatesSection() {
   const { data: templates, isLoading, error, refetch } = useTemplates();
 
   return (
-    <div className={`${CARD_BASE} p-6`}>
-      <h2 className="mb-1 font-display text-lg font-semibold text-gray-900 dark:text-gray-100">Templates</h2>
-      <p className="mb-5 text-sm text-gray-500 dark:text-gray-400">
+    <div className="rounded-xl bg-card border border-border p-6">
+      <h2 className="mb-1 font-display text-lg font-semibold text-foreground">Templates</h2>
+      <p className="mb-5 text-sm text-muted-foreground">
         Saved templates prefill fields in the Add Application form. Up to 10 templates.
       </p>
 
       {isLoading && (
-        <p className="text-sm text-gray-500 dark:text-gray-400">Loading…</p>
+        <p className="text-sm text-muted-foreground">Loading…</p>
       )}
       {error && (
         <div className="flex flex-col gap-2">
-          <p role="alert" className="text-sm text-red-600 dark:text-red-400">
+          <p role="alert" className="text-sm text-destructive">
             Failed to load templates.
           </p>
-          <button
+          <Button
             type="button"
+            variant="outline"
+            size="sm"
             onClick={refetch}
             aria-label="Retry loading templates"
-            className={`self-start ${BUTTON_SECONDARY}`}
+            className="self-start"
           >
             Try again
-          </button>
+          </Button>
         </div>
       )}
       {!isLoading && !error && templates?.length === 0 && (
-        <p className="text-sm text-gray-500 dark:text-gray-400">
+        <p className="text-sm text-muted-foreground">
           No templates yet. Use the{" "}
-          <span className="font-medium text-gray-700 dark:text-gray-300">
+          <span className="font-medium text-foreground">
             "Save as template"
           </span>{" "}
           button when adding an application.

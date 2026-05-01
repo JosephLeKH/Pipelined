@@ -9,6 +9,7 @@ import { Toaster } from "sonner";
 
 import { AuthProvider } from "./context/AuthContext";
 import { ThemeProvider } from "./context/ThemeContext";
+import { TooltipProvider } from "./components/ui/tooltip";
 import ErrorBoundary from "./components/ErrorBoundary";
 import App from "./App";
 import { QUERY_STALE_TIME_MS } from "./lib/constants";
@@ -42,8 +43,10 @@ createRoot(document.getElementById("root")).render(
         <BrowserRouter>
           <QueryClientProvider client={queryClient}>
             <AuthProvider>
-              <App />
-              <Toaster position="bottom-right" richColors />
+              <TooltipProvider delayDuration={400}>
+                <App />
+                <Toaster position="bottom-right" richColors />
+              </TooltipProvider>
             </AuthProvider>
           </QueryClientProvider>
         </BrowserRouter>

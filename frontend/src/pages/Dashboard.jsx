@@ -67,7 +67,7 @@ function Dashboard() {
   const shortcutsEnabled = !isModalOpen && !isImportOpen;
   useHotkeys("a", () => setIsModalOpen(true), { enabled: shortcutsEnabled });
   return (
-    <div className="flex min-h-screen flex-col bg-surface-secondary">
+    <div className="flex min-h-screen flex-col bg-background">
       <NavBar />
       <DashboardContent
         viewMode={viewMode} onSetViewMode={handleSetViewMode} isExporting={isExporting} onExport={handleExport}

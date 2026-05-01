@@ -87,7 +87,7 @@ describe("NotesEditor — character counter", () => {
     await userEvent.click(screen.getByRole("button", { name: /edit notes/i }));
 
     const counter = screen.getByText(new RegExp(`0/${NOTES_MAX_LENGTH}`));
-    expect(counter).toHaveClass("text-gray-400");
+    expect(counter).toHaveClass("text-muted-foreground");
   });
 
   it("should show character count in amber at 80% of limit", async () => {

@@ -7,10 +7,12 @@ import Loader2 from "lucide-react/dist/esm/icons/loader-2";
 import TimezoneSelector from "./TimezoneSelector";
 import { useAuth } from "../context/AuthContext";
 import { useUpdateUser } from "../hooks/useAuth";
-import { CARD_BASE, INPUT_BASE, INPUT_LABEL, INPUT_READONLY, BUTTON_PRIMARY, SUCCESS_BANNER } from "../lib/designTokens";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
 
 const AVATAR_COLORS = [
-  "bg-brand-500",
+  "bg-primary",
   "bg-accent-blue",
   "bg-amber-500",
   "bg-emerald-500",
@@ -50,9 +52,9 @@ function SettingsProfileSection() {
   }, [displayName, timezone, mutateAsync]);
 
   return (
-    <div className={`${CARD_BASE} p-6`}>
-      <h2 className="mb-1 text-lg font-semibold font-display text-gray-900 dark:text-gray-100">Profile</h2>
-      <p className="mb-6 text-sm text-gray-500 dark:text-gray-400">
+    <div className="rounded-xl bg-card border border-border p-6">
+      <h2 className="mb-1 text-lg font-semibold font-display text-foreground">Profile</h2>
+      <p className="mb-6 text-sm text-muted-foreground">
         Manage your display name, email, and timezone.
       </p>
 
@@ -73,72 +75,54 @@ function SettingsProfileSection() {
             </div>
           )}
           <div>
-            <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Profile picture</p>
-            <p className="text-xs text-gray-400 dark:text-gray-500">
+            <p className="text-sm font-medium text-foreground">Profile picture</p>
+            <p className="text-xs text-muted-foreground">
               {user?.avatar_url ? "GitHub avatar" : "Initials avatar · GitHub avatar available with GitHub login"}
             </p>
           </div>
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <label
-            htmlFor="display-name"
-            className={INPUT_LABEL}
-          >
-            Display name
-          </label>
-          <input
+          <Label htmlFor="display-name">Display name</Label>
+          <Input
             id="display-name"
             type="text"
             value={displayName}
             onChange={(e) => setDisplayName(e.target.value)}
-            className={INPUT_BASE}
           />
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <label
-            htmlFor="email-display"
-            className={INPUT_LABEL}
-          >
-            Email
-          </label>
+          <Label htmlFor="email-display">Email</Label>
           <input
             id="email-display"
             type="email"
             value={user?.email ?? ""}
             readOnly
-            className={INPUT_READONLY}
+            className="border border-border rounded-md bg-muted text-muted-foreground text-sm px-3 py-2 font-sans w-full cursor-not-allowed"
           />
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <label className={INPUT_LABEL}>
-            Timezone
-          </label>
+          <Label>Timezone</Label>
           <TimezoneSelector value={timezone} onChange={setTimezone} />
         </div>
       </div>
 
       {saved && !isPending && (
-        <p role="alert" className={`mt-4 ${SUCCESS_BANNER}`}>
+        <p role="alert" className="mt-4 rounded-lg bg-primary/10 border border-primary/20 px-3 py-3 text-sm text-primary">
           Profile saved.
         </p>
       )}
       {error && (
-        <p role="alert" className="mt-4 text-sm text-red-600 dark:text-red-400">{error}</p>
+        <p role="alert" className="mt-4 text-sm text-destructive">{error}</p>
       )}
 
       <div className="mt-5 flex justify-end">
-        <button
-          type="button"
-          onClick={handleSave}
-          disabled={isPending}
-          className={`flex items-center gap-2 ${BUTTON_PRIMARY}`}
-        >
+        <Button type="button" onClick={handleSave} disabled={isPending} className="flex items-center gap-2">
           {isPending && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
           Save profile
-        </button>
+        </Button>
       </div>
     </div>
   );

@@ -118,7 +118,7 @@ describe("Analytics", () => {
 
     // Default is 90 days — wait for page to render then check active state
     const btn = await screen.findByText("Last 90 days");
-    expect(btn.className).toMatch(/bg-brand-500/);
+    expect(btn.className).toMatch(/bg-primary/);
   });
 
   it("should switch date range on button click", async () => {
@@ -127,7 +127,7 @@ describe("Analytics", () => {
     await screen.findByText("Last 90 days");
     await userEvent.click(screen.getByText("Last 30 days"));
 
-    expect(screen.getByText("Last 30 days").className).toMatch(/bg-brand-500/);
+    expect(screen.getByText("Last 30 days").className).toMatch(/bg-primary/);
   });
 
   it("should render the funnel chart section heading", async () => {

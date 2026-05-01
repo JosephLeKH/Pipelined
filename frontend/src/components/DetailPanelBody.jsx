@@ -5,7 +5,6 @@ import { useState, useCallback } from "react";
 import ExternalLink from "lucide-react/dist/esm/icons/external-link";
 import AlertTriangle from "lucide-react/dist/esm/icons/alert-triangle";
 
-import { INPUT_BASE } from "../lib/designTokens";
 import { STAGE_COLORS, DEFAULT_STAGE_COLOR, MS_PER_DAY, PREP_CHECKLIST_STARTER_SUGGESTIONS } from "../lib/constants";
 import { useAuth } from "../context/AuthContext";
 import { useUpdateApplication } from "../hooks/useApplications";
@@ -16,14 +15,16 @@ import OfferDetailsSection from "./OfferDetailsSection";
 import { ChecklistItem, AddChecklistItem } from "./PrepChecklist";
 import ResumeFitSection from "./ResumeFitSection";
 import TagInput from "./TagInput";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
 import { formatDate } from "../lib/dateUtils";
 
 function DetailField({ label, value }) {
   if (!value) return null;
   return (
     <div className="flex flex-col gap-0.5">
-      <span className="text-xs font-medium uppercase text-gray-400 dark:text-gray-500">{label}</span>
-      <span className="text-sm text-gray-800 dark:text-gray-200">{value}</span>
+      <span className="text-xs font-medium uppercase text-muted-foreground">{label}</span>
+      <span className="text-sm text-foreground">{value}</span>
     </div>
   );
 }
@@ -38,7 +39,7 @@ function FollowUpSection({ application, onUpdate }) {
 
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-xs font-medium uppercase text-gray-400 dark:text-gray-500" htmlFor="follow-up-date">
+      <label className="text-xs font-medium uppercase text-muted-foreground" htmlFor="follow-up-date">
         Follow up
       </label>
       {isOverdue && (
@@ -48,21 +49,19 @@ function FollowUpSection({ application, onUpdate }) {
         </div>
       )}
       <div className="flex items-center gap-2">
-        <input
+        <Input
           id="follow-up-date"
           type="date"
           value={dateValue}
           onChange={(e) => onUpdate({ follow_up_date: e.target.value || null })}
-          className={`flex-1 ${INPUT_BASE}`}
+          className="flex-1"
         />
         {dateValue && (
-          <button
-            type="button"
+          <Button type="button" variant="ghost" size="sm"
             onClick={() => onUpdate({ follow_up_date: null })}
-            className="text-xs text-gray-400 hover:text-gray-600 transition-colors dark:hover:text-gray-300"
-          >
+            className="text-xs text-muted-foreground hover:text-foreground">
             Clear
-          </button>
+          </Button>
         )}
       </div>
     </div>
@@ -75,7 +74,7 @@ function TagsSection({ application, onUpdate }) {
   }
   return (
     <div className="flex flex-col gap-1.5">
-      <span className="text-xs font-medium uppercase text-gray-400 dark:text-gray-500">Tags</span>
+      <span className="text-xs font-medium uppercase text-muted-foreground">Tags</span>
       <TagInput value={application.tags ?? []} onChange={handleTagsChange} />
     </div>
   );
@@ -86,9 +85,9 @@ function PrepChecklistView({ checklist, onToggle, onDelete, onAdd }) {
   return (
     <div className="flex flex-col gap-1.5">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-medium uppercase text-gray-400 dark:text-gray-500">Prep Checklist</span>
+        <span className="text-xs font-medium uppercase text-muted-foreground">Prep Checklist</span>
         {checklist.length > 0 && (
-          <span className={`text-xs font-medium tabular-nums ${checkedCount === checklist.length ? "text-green-600 dark:text-green-400" : "text-gray-500"}`}>
+          <span className={`text-xs font-medium tabular-nums ${checkedCount === checklist.length ? "text-green-600 dark:text-green-400" : "text-muted-foreground"}`}>
             {checkedCount} / {checklist.length}
           </span>
         )}
@@ -99,16 +98,12 @@ function PrepChecklistView({ checklist, onToggle, onDelete, onAdd }) {
         ))}
         {checklist.length === 0 && (
           <div className="flex flex-col gap-1 py-1">
-            <p className="text-xs text-gray-400 dark:text-gray-500 mb-1">Suggestions:</p>
+            <p className="text-xs text-muted-foreground mb-1">Suggestions:</p>
             {PREP_CHECKLIST_STARTER_SUGGESTIONS.map((s) => (
-              <button
-                key={s}
-                type="button"
-                onClick={() => onAdd(s)}
-                className="text-left text-xs text-brand-600 hover:text-brand-800 hover:underline transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 rounded dark:text-brand-400 dark:hover:text-brand-300"
-              >
+              <Button key={s} type="button" variant="link" onClick={() => onAdd(s)}
+                className="h-auto p-0 text-xs justify-start">
                 + {s}
-              </button>
+              </Button>
             ))}
           </div>
         )}
@@ -154,7 +149,7 @@ function ApplicationPrepSection({ applicationId, initialChecklist }) {
 function JobPostingLink({ url }) {
   if (!url) return null;
   return (
-    <a href={url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-sm text-brand-600 hover:underline" aria-label="Job posting">
+    <a href={url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-sm text-primary hover:underline" aria-label="Job posting">
       <ExternalLink className="h-3.5 w-3.5" />
       Job posting
     </a>
@@ -164,7 +159,7 @@ function JobPostingLink({ url }) {
 function StageSelector({ stageOptions, currentStage, onStageChange }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <span className="text-xs font-medium uppercase text-gray-400 dark:text-gray-500">Stage</span>
+      <span className="text-xs font-medium uppercase text-muted-foreground">Stage</span>
       <div role="group" aria-label="Stage" className="flex flex-wrap gap-1.5">
         {[...stageOptions, ...(stageOptions.includes(currentStage) ? [] : [currentStage])].map((s) => {
           const active = s === currentStage;
@@ -178,7 +173,7 @@ function StageSelector({ stageOptions, currentStage, onStageChange }) {
               className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
                 active
                   ? `${color.activeBg} border-transparent text-white`
-                  : `border-gray-300 bg-white text-gray-600 hover:bg-gray-50 transition-colors dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700`
+                  : `border-border bg-card text-muted-foreground hover:bg-muted`
               }`}
             >
               {s}

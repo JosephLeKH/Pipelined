@@ -6,7 +6,9 @@ import Check from "lucide-react/dist/esm/icons/check";
 import Copy from "lucide-react/dist/esm/icons/copy";
 
 import { NEGOTIATION_TEMPLATES, COPY_RESET_MS } from "../lib/constants";
-import { INPUT_BASE, BUTTON_SECONDARY, CARD_BASE } from "../lib/designTokens";
+import { Button } from "./ui/button";
+
+const SELECT_CLS = "border border-input rounded-md bg-background text-foreground focus:border-ring focus:ring-1 focus:ring-ring/20 focus:outline-none transition-colors text-sm px-3 py-2 font-sans w-full";
 
 function TotalCompBreakdown({ offer }) {
   const base = Number(offer.offer_details?.base_salary) || 0;
@@ -19,17 +21,17 @@ function TotalCompBreakdown({ offer }) {
   const fmt = (n) => n > 0 ? `$${n.toLocaleString()}` : "—";
 
   return (
-    <div className={`${CARD_BASE} p-4 flex flex-col gap-2`}>
-      <h3 className="font-display text-xs font-semibold uppercase tracking-wide text-gray-500">Annual Value Breakdown</h3>
+    <div className="rounded-xl bg-card border border-border p-4 flex flex-col gap-2">
+      <h3 className="font-display text-xs font-semibold uppercase tracking-wide text-muted-foreground">Annual Value Breakdown</h3>
       <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
-        <span className="text-gray-500">Base Salary</span>
-        <span className="font-medium text-gray-900 dark:text-gray-100 text-right">{fmt(base)}</span>
-        <span className="text-gray-500">Equity (annual)</span>
-        <span className="font-medium text-gray-900 dark:text-gray-100 text-right">{fmt(equity)}</span>
-        <span className="text-gray-500">Signing (amortized)</span>
-        <span className="font-medium text-gray-900 dark:text-gray-100 text-right">{fmt(annualSigning)}</span>
-        <span className="border-t border-gray-200 pt-1 font-semibold text-gray-700 dark:border-gray-700 dark:text-gray-200">Est. Annual Total</span>
-        <span className="border-t border-gray-200 pt-1 font-bold text-brand-600 dark:border-gray-700 text-right">{total > 0 ? fmt(total) : "—"}</span>
+        <span className="text-muted-foreground">Base Salary</span>
+        <span className="font-medium text-foreground text-right">{fmt(base)}</span>
+        <span className="text-muted-foreground">Equity (annual)</span>
+        <span className="font-medium text-foreground text-right">{fmt(equity)}</span>
+        <span className="text-muted-foreground">Signing (amortized)</span>
+        <span className="font-medium text-foreground text-right">{fmt(annualSigning)}</span>
+        <span className="border-t border-border pt-1 font-semibold text-foreground">Est. Annual Total</span>
+        <span className="border-t border-border pt-1 font-bold text-primary text-right">{total > 0 ? fmt(total) : "—"}</span>
       </div>
     </div>
   );
@@ -58,12 +60,12 @@ export function OfferNegotiationPanel({ apps }) {
       <div className="flex flex-wrap gap-4">
         {apps.length > 1 && (
           <div className="flex flex-col gap-1">
-            <label className="text-xs font-medium text-gray-500" htmlFor="neg-offer-select">Offer</label>
+            <label className="text-xs font-medium text-muted-foreground" htmlFor="neg-offer-select">Offer</label>
             <select
               id="neg-offer-select"
               value={selectedAppId ?? ""}
               onChange={(e) => setSelectedAppId(e.target.value)}
-              className={INPUT_BASE}
+              className={SELECT_CLS}
             >
               {apps.map((app) => (
                 <option key={app.id} value={app.id}>
@@ -74,12 +76,12 @@ export function OfferNegotiationPanel({ apps }) {
           </div>
         )}
         <div className="flex flex-col gap-1">
-          <label className="text-xs font-medium text-gray-500" htmlFor="neg-template-select">Template</label>
+          <label className="text-xs font-medium text-muted-foreground" htmlFor="neg-template-select">Template</label>
           <select
             id="neg-template-select"
             value={templateId}
             onChange={(e) => setTemplateId(e.target.value)}
-            className={INPUT_BASE}
+            className={SELECT_CLS}
           >
             {NEGOTIATION_TEMPLATES.map((t) => (
               <option key={t.id} value={t.id}>{t.label}</option>
@@ -92,22 +94,24 @@ export function OfferNegotiationPanel({ apps }) {
 
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between">
-          <span className="text-xs font-medium text-gray-500">Negotiation Script</span>
-          <button
+          <span className="text-xs font-medium text-muted-foreground">Negotiation Script</span>
+          <Button
             type="button"
+            variant="outline"
+            size="sm"
             onClick={handleCopy}
-            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs ${BUTTON_SECONDARY}`}
+            className="flex items-center gap-1.5 text-xs h-auto px-3 py-1.5"
             aria-label="Copy script to clipboard"
           >
             {copied ? <Check className="h-3.5 w-3.5 text-green-600" /> : <Copy className="h-3.5 w-3.5" />}
             {copied ? "Copied!" : "Copy"}
-          </button>
+          </Button>
         </div>
         <textarea
           readOnly
           value={script}
           rows={16}
-          className="w-full rounded-lg border border-gray-200 bg-gray-50 p-4 font-mono text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
+          className="w-full rounded-lg border border-border bg-muted p-4 font-mono text-sm text-foreground"
           aria-label="Negotiation script"
         />
       </div>

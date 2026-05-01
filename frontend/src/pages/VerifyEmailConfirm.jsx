@@ -8,16 +8,16 @@ import XCircle from "lucide-react/dist/esm/icons/x-circle";
 import Loader from "lucide-react/dist/esm/icons/loader";
 import { useVerifyEmail } from "../hooks/useAuth";
 import AuthLayout from "../components/AuthLayout";
-import { BUTTON_PRIMARY } from "../lib/designTokens";
+import { Button } from "../components/ui/button";
 
 const REDIRECT_DELAY_MS = 2000;
 
 function VerifyingState() {
   return (
     <>
-      <Loader className="mb-5 h-12 w-12 animate-spin text-brand-500" />
-      <h1 className="font-display text-2xl font-bold text-gray-900 dark:text-gray-100">Verifying your email…</h1>
-      <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">Just a moment.</p>
+      <Loader className="mb-5 h-12 w-12 animate-spin text-primary" />
+      <h1 className="font-display text-2xl font-bold text-foreground">Verifying your email…</h1>
+      <p className="mt-2 text-sm text-muted-foreground">Just a moment.</p>
     </>
   );
 }
@@ -25,9 +25,9 @@ function VerifyingState() {
 function SuccessState() {
   return (
     <>
-      <CheckCircle className="mb-5 h-12 w-12 text-brand-500" />
-      <h1 className="font-display text-2xl font-bold text-gray-900 dark:text-gray-100">Email verified!</h1>
-      <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+      <CheckCircle className="mb-5 h-12 w-12 text-primary" />
+      <h1 className="font-display text-2xl font-bold text-foreground">Email verified!</h1>
+      <p className="mt-2 text-sm text-muted-foreground">
         Your account is now active. Redirecting to your dashboard…
       </p>
     </>
@@ -37,18 +37,18 @@ function SuccessState() {
 function ErrorState({ errorCode }) {
   return (
     <>
-      <XCircle className="mb-5 h-12 w-12 text-rose-500" />
-      <h1 className="font-display text-2xl font-bold text-gray-900 dark:text-gray-100">
+      <XCircle className="mb-5 h-12 w-12 text-destructive" />
+      <h1 className="font-display text-2xl font-bold text-foreground">
         {errorCode === "TOKEN_EXPIRED" ? "Link expired" : "Invalid link"}
       </h1>
-      <p className="mt-2 mb-6 text-sm text-gray-500 dark:text-gray-400">
+      <p className="mt-2 mb-6 text-sm text-muted-foreground">
         {errorCode === "TOKEN_EXPIRED"
           ? "This verification link has expired. Request a new one below."
           : "This verification link is not valid. It may have already been used."}
       </p>
-      <Link to="/verify-email" className={`w-full ${BUTTON_PRIMARY}`}>
-        Request a new link
-      </Link>
+      <Button asChild className="w-full">
+        <Link to="/verify-email">Request a new link</Link>
+      </Button>
     </>
   );
 }
@@ -56,14 +56,14 @@ function ErrorState({ errorCode }) {
 function MissingTokenState() {
   return (
     <>
-      <XCircle className="mb-5 h-12 w-12 text-rose-500" />
-      <h1 className="font-display text-2xl font-bold text-gray-900 dark:text-gray-100">Missing token</h1>
-      <p className="mt-2 mb-6 text-sm text-gray-500 dark:text-gray-400">
+      <XCircle className="mb-5 h-12 w-12 text-destructive" />
+      <h1 className="font-display text-2xl font-bold text-foreground">Missing token</h1>
+      <p className="mt-2 mb-6 text-sm text-muted-foreground">
         No verification token was found in this link.
       </p>
-      <Link to="/verify-email" className={`w-full ${BUTTON_PRIMARY}`}>
-        Request a new link
-      </Link>
+      <Button asChild className="w-full">
+        <Link to="/verify-email">Request a new link</Link>
+      </Button>
     </>
   );
 }

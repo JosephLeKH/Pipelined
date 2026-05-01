@@ -5,19 +5,19 @@ import { Link } from "react-router-dom";
 
 import { useForgotPassword } from "../hooks/useAuth";
 import AuthLayout from "../components/AuthLayout";
-import { INPUT_BASE, INPUT_LABEL, BUTTON_PRIMARY, SUCCESS_BANNER } from "../lib/designTokens";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
 
 function EmailInput({ email, onChange }) {
   return (
     <div className="mb-5">
-      <label htmlFor="email" className={`block ${INPUT_LABEL}`}>Email</label>
-      <input
+      <label htmlFor="email" className="block text-sm font-medium text-foreground mb-1.5 font-display">Email</label>
+      <Input
         id="email"
         type="email"
         autoComplete="email"
         value={email}
         onChange={(e) => onChange(e.target.value)}
-        className={INPUT_BASE}
         placeholder="you@example.com"
       />
     </div>
@@ -27,7 +27,7 @@ function EmailInput({ email, onChange }) {
 function ErrorAlert({ error }) {
   if (!error) return null;
   return (
-    <p role="alert" className="mb-4 rounded-lg bg-rose-50 border border-rose-200 px-3 py-2 text-sm text-rose-800 dark:bg-rose-900/20 dark:border-rose-800 dark:text-rose-300">
+    <p role="alert" className="mb-4 rounded-lg bg-destructive/10 border border-destructive/20 px-3 py-2 text-sm text-destructive">
       {error}
     </p>
   );
@@ -35,7 +35,7 @@ function ErrorAlert({ error }) {
 
 function SuccessMessage() {
   return (
-    <p role="status" className={SUCCESS_BANNER}>
+    <p role="status" className="rounded-lg bg-primary/10 border border-primary/20 px-3 py-3 text-sm text-primary">
       If that email is registered, a reset link has been sent. Check your inbox.
     </p>
   );
@@ -46,9 +46,9 @@ function ForgotPasswordForm({ email, error, isPending, onEmailChange, onSubmit }
     <form onSubmit={onSubmit} noValidate>
       <EmailInput email={email} onChange={onEmailChange} />
       <ErrorAlert error={error} />
-      <button type="submit" disabled={isPending} className={`w-full ${BUTTON_PRIMARY}`}>
+      <Button type="submit" disabled={isPending} className="w-full">
         {isPending ? "Sending…" : "Send reset link"}
-      </button>
+      </Button>
     </form>
   );
 }
@@ -78,15 +78,15 @@ function ForgotPassword() {
 
   return (
     <AuthLayout>
-      <h1 className="font-display text-xl font-semibold text-gray-900">Forgot password?</h1>
-      <p className="mt-1 mb-6 text-sm text-gray-500">
+      <h1 className="font-display text-xl font-semibold text-foreground">Forgot password?</h1>
+      <p className="mt-1 mb-6 text-sm text-muted-foreground">
         Enter your email and we&apos;ll send you a reset link.
       </p>
 
       {submitted ? <SuccessMessage /> : <ForgotPasswordForm email={email} error={error} isPending={isPending} onEmailChange={setEmail} onSubmit={handleSubmit} />}
 
-      <p className="mt-6 text-center text-sm text-gray-500">
-        <Link to="/login" className="text-brand-500 hover:text-brand-600 text-sm">Back to sign in</Link>
+      <p className="mt-6 text-center text-sm text-muted-foreground">
+        <Link to="/login" className="text-primary hover:text-primary/80 text-sm">Back to sign in</Link>
       </p>
     </AuthLayout>
   );

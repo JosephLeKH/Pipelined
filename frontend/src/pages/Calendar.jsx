@@ -14,7 +14,7 @@ import { useCalendarEvents } from "../hooks/useCalendar";
 function CalendarContent({ month, year, events, eventsLoading, eventsError, eventsRefetch, selectedEvent, newEventForm, onMonthChange, onEventClick, onDayClick, onCloseEventDetail, onCloseForm }) {
   return (
     <main className="flex-1 px-4 sm:px-6 py-6">
-      <h1 className="mb-6 font-display text-2xl font-semibold text-gray-900 dark:text-gray-100">Calendar</h1>
+      <h1 className="mb-6 font-display text-2xl font-semibold text-foreground">Calendar</h1>
       {eventsError && <ApiErrorMessage error={eventsError} onRetry={eventsRefetch} />}
       <CalendarGrid
         month={month}
@@ -59,7 +59,7 @@ function Calendar() {
   const handleMonthChange = useCallback((m, y) => { setMonth(m); setYear(y); }, []);
   const handleDayClick = useCallback((date) => setNewEventForm({ date, applicationId: null }), []);
   return (
-    <div className="flex min-h-screen flex-col bg-surface-secondary dark:bg-dark-bg">
+    <div className="flex min-h-screen flex-col bg-background">
       <NavBar />
       <CalendarContent
         month={month}

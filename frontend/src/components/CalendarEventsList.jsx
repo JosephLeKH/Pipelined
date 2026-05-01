@@ -8,6 +8,7 @@ import {
   EVENT_TYPE_COLORS,
   DEFAULT_EVENT_COLOR,
 } from "../lib/constants";
+import { Button } from "./ui/button";
 
 function CalendarEventsList({ applicationId, onAddEvent }) {
   const { data, isLoading } = useApplicationEvents(applicationId);
@@ -18,44 +19,48 @@ function CalendarEventsList({ applicationId, onAddEvent }) {
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center justify-between">
-        <h3 className="text-xs font-medium font-display uppercase text-gray-400 dark:text-gray-500">Interviews & Events</h3>
-        <button
+        <h3 className="text-xs font-medium font-display uppercase text-muted-foreground">Interviews & Events</h3>
+        <Button
           type="button"
+          variant="ghost"
+          size="sm"
           onClick={() => onAddEvent(applicationId)}
-          className="flex items-center gap-1 rounded px-2 py-1 text-xs text-brand-600 hover:bg-brand-50 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:ring-offset-2 dark:hover:bg-brand-900/30"
+          className="text-xs text-primary hover:bg-primary/10 hover:text-primary gap-1"
           aria-label="Add event"
         >
           <Plus className="h-3.5 w-3.5" />
           Add Event
-        </button>
+        </Button>
       </div>
-      {isLoading && <p className="text-xs text-gray-400" role="status">Loading…</p>}
+      {isLoading && <p className="text-xs text-muted-foreground" role="status">Loading…</p>}
       {!isLoading && events.length === 0 && (
-        <p className="text-xs text-gray-400" role="status">No events yet.</p>
+        <p className="text-xs text-muted-foreground" role="status">No events yet.</p>
       )}
       <ul className="flex flex-col gap-1" aria-live="polite">
         {events.map((ev) => {
             const colors = EVENT_TYPE_COLORS[ev.event_type] ?? DEFAULT_EVENT_COLOR;
             return (
-              <li key={ev.id} className="flex items-center justify-between rounded border border-gray-100 px-3 py-2 dark:border-gray-700">
+              <li key={ev.id} className="flex items-center justify-between rounded border border-border px-3 py-2">
                 <div className="flex flex-col gap-0.5">
                   <span
                     className={`inline-block rounded px-1.5 py-0.5 text-xs font-medium ${colors.bg} ${colors.text}`}
                   >
                     {ev.event_type.replace("_", " ")}
                   </span>
-                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                  <span className="text-xs text-muted-foreground">
                     {ev.date}{ev.time ? ` · ${ev.time}` : ""}
                   </span>
                 </div>
-                <button
+                <Button
                   type="button"
+                  variant="ghost"
+                  size="icon"
                   onClick={() => deleteEvent(ev.id)}
-                  className="rounded p-1 text-gray-400 hover:bg-red-50 hover:text-red-500 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 dark:text-gray-400 dark:hover:bg-red-900/30"
+                  className="h-7 w-7 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
                   aria-label={`Delete event: ${ev.event_type.replace("_", " ")} on ${ev.date}`}
                 >
                   <Trash2 className="h-3.5 w-3.5" />
-                </button>
+                </Button>
               </li>
             );
           })}

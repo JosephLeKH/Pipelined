@@ -3,11 +3,11 @@
 function FormField({ label, htmlFor, children, error }) {
   return (
     <div className="flex flex-col gap-1">
-      <label className="text-sm font-medium text-gray-700 dark:text-gray-300" htmlFor={htmlFor}>
+      <label className="text-sm font-medium text-foreground" htmlFor={htmlFor}>
         {label}
       </label>
       {children}
-      {error && <p className="text-xs text-red-600">{error}</p>}
+      {error && <p className="text-xs text-destructive">{error}</p>}
     </div>
   );
 }

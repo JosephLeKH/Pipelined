@@ -11,7 +11,7 @@ import Loader2 from "lucide-react/dist/esm/icons/loader-2";
 import { useCreateTimelineShare, useMyTimelineShare, useRevokeTimelineShare } from "../hooks/useSharing";
 import { trackEvent } from "../lib/analytics";
 import { COPY_RESET_MS } from "../lib/constants";
-import { BUTTON_PRIMARY } from "../lib/designTokens";
+import { Button } from "./ui/button";
 
 const BASE_URL = window.location.origin;
 
@@ -36,15 +36,17 @@ function CopyButton({ url }) {
   };
 
   return (
-    <button
+    <Button
       type="button"
+      variant="ghost"
+      size="sm"
       onClick={handleCopy}
-      className="flex items-center gap-1.5 rounded px-2 py-1 text-xs text-brand-600 hover:bg-brand-50 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 dark:hover:bg-brand-900/30"
+      className="text-xs text-primary hover:bg-primary/10 gap-1.5"
       aria-label={copied ? "Link copied" : "Copy timeline link"}
     >
       {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
       {copied ? "Copied!" : "Copy link"}
-    </button>
+    </Button>
   );
 }
 
@@ -59,17 +61,19 @@ function ActiveShare({ share, onRevoke, isRevoking }) {
         </div>
         <CopyButton url={url} />
       </div>
-      <button
+      <Button
         type="button"
+        variant="ghost"
+        size="sm"
         onClick={onRevoke}
         disabled={isRevoking}
-        className="flex items-center gap-1.5 self-start rounded px-2 py-1 text-xs text-red-600 hover:bg-red-50 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:opacity-50 dark:hover:bg-red-900/30"
+        className="self-start text-xs text-destructive hover:bg-destructive/10 hover:text-destructive gap-1.5"
       >
         {isRevoking
           ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
           : <Link2Off className="h-3.5 w-3.5" />}
         Revoke link
-      </button>
+      </Button>
     </div>
   );
 }
@@ -77,20 +81,20 @@ function ActiveShare({ share, onRevoke, isRevoking }) {
 function NoShare({ onCreate, isCreating }) {
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-sm text-gray-500 dark:text-gray-400">
+      <p className="text-sm text-muted-foreground">
         Generate a read-only public link to your application timeline. Stages, dates, and outcomes — no sensitive details.
       </p>
-      <button
+      <Button
         type="button"
         onClick={onCreate}
         disabled={isCreating}
-        className={`flex items-center gap-1.5 self-start ${BUTTON_PRIMARY}`}
+        className="flex items-center gap-1.5 self-start"
       >
         {isCreating
           ? <Loader2 className="h-4 w-4 animate-spin" />
           : <Link2 className="h-4 w-4" />}
         Generate link
-      </button>
+      </Button>
     </div>
   );
 }
@@ -107,12 +111,12 @@ function ShareTimeline() {
   };
 
   return (
-    <section aria-labelledby="timeline-share-heading" className="flex flex-col gap-3 rounded-card border border-gray-200 p-4 dark:border-gray-700">
-      <h2 id="timeline-share-heading" className="font-display text-sm font-semibold text-gray-800 dark:text-gray-100">
+    <section aria-labelledby="timeline-share-heading" className="flex flex-col gap-3 rounded-xl border border-border p-4">
+      <h2 id="timeline-share-heading" className="font-display text-sm font-semibold text-foreground">
         Share Your Timeline
       </h2>
       {isLoading ? (
-        <Loader2 className="h-5 w-5 animate-spin text-gray-500" aria-label="Loading" />
+        <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" aria-label="Loading" />
       ) : share ? (
         <ActiveShare share={share} onRevoke={revokeShare} isRevoking={isRevoking} />
       ) : (

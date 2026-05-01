@@ -17,6 +17,7 @@ import {
   DEFAULT_STAGE_COLOR,
 } from "../lib/constants";
 import { formatDate } from "../lib/dateUtils";
+import { Button } from "./ui/button";
 
 const EVENT_ICONS = {
   phone_screen: Phone,
@@ -58,8 +59,8 @@ function StageTimelineNode({ node }) {
         role="img"
       />
       <div>
-        <p className="text-sm font-medium text-gray-800">{node.label}</p>
-        <p className="text-xs text-gray-400">{formatDate(node.date)}</p>
+        <p className="text-sm font-medium text-foreground">{node.label}</p>
+        <p className="text-xs text-muted-foreground">{formatDate(node.date)}</p>
       </div>
     </li>
   );
@@ -70,12 +71,12 @@ function EventTimelineNode({ node }) {
   return (
     <li className="flex items-start gap-3 pb-3" data-testid="timeline-event-node">
       <Icon
-        className="mt-0.5 h-5 w-5 shrink-0 text-gray-500"
+        className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground"
         aria-label={node.eventType.replace(/_/g, " ")}
       />
       <div>
-        <p className="text-sm font-medium capitalize text-gray-800">{node.title}</p>
-        <p className="text-xs text-gray-400">{formatDate(node.date)}</p>
+        <p className="text-sm font-medium capitalize text-foreground">{node.title}</p>
+        <p className="text-xs text-muted-foreground">{formatDate(node.date)}</p>
       </div>
     </li>
   );
@@ -89,10 +90,11 @@ function ApplicationTimeline({ stageHistory, applicationId }) {
 
   return (
     <div className="flex flex-col gap-1.5">
-      <button
+      <Button
         type="button"
+        variant="ghost"
         onClick={() => setIsExpanded((prev) => !prev)}
-        className="flex items-center gap-1 text-xs font-medium uppercase text-gray-400 hover:text-gray-600 transition-colors dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:ring-offset-2"
+        className="h-auto p-0 gap-1 text-xs font-medium uppercase text-muted-foreground hover:bg-transparent hover:text-foreground"
         aria-expanded={isExpanded}
         aria-label="Toggle timeline"
       >
@@ -100,10 +102,10 @@ function ApplicationTimeline({ stageHistory, applicationId }) {
           ? <ChevronDown className="h-3.5 w-3.5" />
           : <ChevronRight className="h-3.5 w-3.5" />}
         Timeline
-      </button>
+      </Button>
       {isExpanded && (
         nodes.length === 0 ? (
-          <p className="text-xs text-gray-400" data-testid="timeline-empty" role="status">
+          <p className="text-xs text-muted-foreground" data-testid="timeline-empty" role="status">
             No activity yet
           </p>
         ) : (

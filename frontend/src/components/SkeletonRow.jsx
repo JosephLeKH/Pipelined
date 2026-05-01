@@ -5,7 +5,7 @@ const SHIMMER = "shimmer-bg animate-shimmer";
 function SkeletonRow() {
   return (
     <div
-      className="flex h-16 items-center gap-4 border-b border-gray-100 px-4 dark:border-gray-700"
+      className="flex h-16 items-center gap-4 border-b border-border px-4"
       data-testid="skeleton-row"
       aria-hidden="true"
     >

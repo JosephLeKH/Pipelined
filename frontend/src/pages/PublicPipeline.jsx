@@ -7,7 +7,6 @@ import { STAGE_COLORS, DEFAULT_STAGE_COLOR } from "../lib/constants";
 import { formatDate } from "../lib/dateUtils";
 import { usePublicPipeline } from "../hooks/useSharing";
 import { trackEvent } from "../lib/analytics";
-import { SPINNER_LG } from "../lib/designTokens";
 
 function StagePill({ stage }) {
   const color = STAGE_COLORS[stage] ?? DEFAULT_STAGE_COLOR;
@@ -24,9 +23,9 @@ function StagePill({ stage }) {
 
 function StatCard({ label, value }) {
   return (
-    <div className="flex flex-col items-center rounded-lg border border-gray-200 px-4 py-3">
-      <span className="text-2xl font-bold text-gray-900">{value ?? "—"}</span>
-      <span className="text-xs text-gray-500">{label}</span>
+    <div className="flex flex-col items-center rounded-lg border border-border px-4 py-3">
+      <span className="text-2xl font-bold text-foreground">{value ?? "—"}</span>
+      <span className="text-xs text-muted-foreground">{label}</span>
     </div>
   );
 }
@@ -47,13 +46,13 @@ function PublicStatsBar({ stats }) {
 
 function PublicAppRow({ app }) {
   return (
-    <div className="flex items-center gap-4 rounded border border-gray-100 px-4 py-3">
+    <div className="flex items-center gap-4 rounded border border-border px-4 py-3">
       <div className="flex flex-1 flex-col gap-0.5 min-w-0">
-        <span className="truncate font-medium text-gray-900">{app.company}</span>
-        <span className="truncate text-sm text-gray-600">{app.role_title}</span>
+        <span className="truncate font-medium text-foreground">{app.company}</span>
+        <span className="truncate text-sm text-muted-foreground">{app.role_title}</span>
       </div>
       <StagePill stage={app.current_stage} />
-      <span className="hidden text-sm text-gray-500 sm:block">{formatDate(app.date_applied)}</span>
+      <span className="hidden text-sm text-muted-foreground sm:block">{formatDate(app.date_applied)}</span>
     </div>
   );
 }
@@ -61,7 +60,7 @@ function PublicAppRow({ app }) {
 function LoadingState() {
   return (
     <div className="flex min-h-screen items-center justify-center">
-      <div className={SPINNER_LG} />
+      <div className="h-10 w-10 animate-spin rounded-full border-4 border-border border-t-primary" />
     </div>
   );
 }
@@ -69,24 +68,24 @@ function LoadingState() {
 function NotFoundState() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-4">
-      <h1 className="font-display text-2xl font-bold text-gray-800">Link not found</h1>
-      <p className="text-gray-500">This pipeline link has expired or been revoked.</p>
-      <Link to="/" className="text-brand-600 hover:underline">Go to Pipelined →</Link>
+      <h1 className="font-display text-2xl font-bold text-foreground">Link not found</h1>
+      <p className="text-muted-foreground">This pipeline link has expired or been revoked.</p>
+      <Link to="/" className="text-primary hover:underline">Go to Pipelined →</Link>
     </div>
   );
 }
 
 function PipelineHeader({ pipeline }) {
   return (
-    <header className="border-b border-gray-200 bg-white px-6 py-4">
+    <header className="border-b border-border bg-card px-6 py-4">
       <div className="mx-auto flex max-w-3xl items-center justify-between">
         <div>
-          <h1 className="font-display text-xl font-bold text-gray-900">{pipeline.display_name}'s Pipeline</h1>
-          <p className="text-sm text-gray-500">Read-only view</p>
+          <h1 className="font-display text-xl font-bold text-foreground">{pipeline.display_name}'s Pipeline</h1>
+          <p className="text-sm text-muted-foreground">Read-only view</p>
         </div>
         <Link
           to="/register"
-          className="rounded bg-brand-500 px-3 py-1.5 text-sm text-white hover:bg-brand-600"
+          className="rounded-md bg-primary px-3 py-1.5 text-sm text-primary-foreground hover:bg-primary/90 transition-colors"
         >
           Join Pipelined →
         </Link>
@@ -103,11 +102,11 @@ function ApplicationsSection({ pipeline }) {
       </section>
 
       <section aria-label="Applications">
-        <h2 className="mb-3 font-display text-sm font-semibold uppercase tracking-wide text-gray-500">
+        <h2 className="mb-3 font-display text-sm font-semibold uppercase tracking-wide text-muted-foreground">
           Applications ({pipeline.applications.length})
         </h2>
         {pipeline.applications.length === 0 ? (
-          <p className="text-sm text-gray-400">No applications yet.</p>
+          <p className="text-sm text-muted-foreground">No applications yet.</p>
         ) : (
           <div className="flex flex-col gap-2">
             {pipeline.applications.map((app) => (
@@ -146,7 +145,7 @@ function PublicPipeline() {
   const pipeline = data?.data ?? data;
 
   return (
-    <div className="min-h-screen bg-surface-secondary">
+    <div className="min-h-screen bg-background">
       <PipelineHeader pipeline={pipeline} />
       <ApplicationsSection pipeline={pipeline} />
     </div>

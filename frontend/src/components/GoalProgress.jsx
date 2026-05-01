@@ -7,7 +7,6 @@ import Flame from "lucide-react/dist/esm/icons/flame";
 
 import { useApplicationStats } from "../hooks/useApplications";
 import { useAuth } from "../context/AuthContext";
-import { CARD_BASE } from "../lib/designTokens";
 
 const RING_RADIUS = 36;
 const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
@@ -15,8 +14,8 @@ const DEFAULT_WEEKLY_GOAL = 5;
 
 function ringColor(pct) {
   if (pct >= 1) return "stroke-green-500";
-  if (pct > 0) return "stroke-brand-500";
-  return "stroke-gray-300 dark:stroke-gray-600";
+  if (pct > 0) return "stroke-primary";
+  return "stroke-muted-foreground/30";
 }
 
 function GoalProgress() {
@@ -39,34 +38,32 @@ function GoalProgress() {
 
   if (isLoading) {
     return (
-      <div className={`flex items-center gap-4 p-4 ${CARD_BASE}`}>
-        <div className="h-20 w-20 animate-pulse rounded-full bg-gray-200 dark:bg-gray-700" />
+      <div className="flex items-center gap-4 p-4 rounded-xl bg-card border border-border">
+        <div className="h-20 w-20 animate-pulse rounded-full bg-muted" />
         <div className="flex flex-col gap-2">
-          <div className="h-4 w-32 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
-          <div className="h-3 w-20 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+          <div className="h-4 w-32 animate-pulse rounded bg-muted" />
+          <div className="h-3 w-20 animate-pulse rounded bg-muted" />
         </div>
       </div>
     );
   }
 
   return (
-    <div className={`flex items-center gap-4 p-4 ${CARD_BASE}`} aria-label="Weekly goal progress">
+    <div className="flex items-center gap-4 p-4 rounded-xl bg-card border border-border" aria-label="Weekly goal progress">
       <svg
         width={RING_RADIUS * 2 + 8}
         height={RING_RADIUS * 2 + 8}
         viewBox={`0 0 ${RING_RADIUS * 2 + 8} ${RING_RADIUS * 2 + 8}`}
         aria-hidden="true"
       >
-        {/* background track */}
         <circle
           cx={RING_RADIUS + 4}
           cy={RING_RADIUS + 4}
           r={RING_RADIUS}
           fill="none"
           strokeWidth={6}
-          className="stroke-gray-100 dark:stroke-gray-700"
+          className="stroke-muted"
         />
-        {/* progress arc */}
         <circle
           cx={RING_RADIUS + 4}
           cy={RING_RADIUS + 4}
@@ -85,7 +82,7 @@ function GoalProgress() {
           y={RING_RADIUS + 4}
           textAnchor="middle"
           dominantBaseline="central"
-          className="fill-gray-900 dark:fill-gray-100"
+          className="fill-foreground"
           fontSize={13}
           fontWeight={600}
         >
@@ -94,12 +91,12 @@ function GoalProgress() {
       </svg>
 
       <div className="flex flex-col">
-        <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+        <span className="text-sm font-medium text-foreground">
           {appliedThisWeek} / {weeklyGoal} this week
         </span>
-        <span className="text-xs text-gray-500 dark:text-gray-400">Weekly goal</span>
+        <span className="text-xs text-muted-foreground">Weekly goal</span>
         {currentStreak > 0 && (
-          <span className="mt-1 flex items-center gap-1 text-xs font-medium text-brand-500">
+          <span className="mt-1 flex items-center gap-1 text-xs font-medium text-primary">
             <Flame className="h-3.5 w-3.5" aria-hidden="true" />
             {currentStreak} week streak
           </span>

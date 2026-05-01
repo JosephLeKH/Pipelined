@@ -8,6 +8,7 @@ import CalendarClock from "lucide-react/dist/esm/icons/calendar-clock";
 import Clock from "lucide-react/dist/esm/icons/clock";
 
 import { useMarkAllRead, useMarkRead, useNotifications, useUnreadCount } from "../hooks/useNotifications";
+import { Button } from "./ui/button";
 
 const MAX_BADGE_COUNT = 99;
 const TYPE_ICONS = {
@@ -28,30 +29,29 @@ function NotificationItem({ notification }) {
 
   return (
     <li className={notification.read ? "opacity-60" : ""}>
-      <button
+      <Button
         type="button"
+        variant="ghost"
         onClick={handleClick}
-        className="flex w-full items-start gap-3 px-4 py-3 text-left hover:bg-gray-50 transition-colors dark:hover:bg-gray-700/50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-brand-500"
+        className="flex w-full items-start gap-3 px-4 py-3 text-left h-auto rounded-none justify-start focus:ring-inset"
       >
         <Icon
           className={`mt-0.5 h-4 w-4 shrink-0 ${
-            notification.read
-              ? "text-gray-400 dark:text-gray-500"
-              : "text-gray-600 dark:text-gray-400"
+            notification.read ? "text-muted-foreground" : "text-foreground"
           }`}
         />
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-medium text-gray-900 dark:text-gray-100">
+          <p className="truncate text-sm font-medium text-foreground">
             {notification.title}
           </p>
-          <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400 line-clamp-2">
+          <p className="mt-0.5 text-xs text-muted-foreground line-clamp-2">
             {notification.body}
           </p>
         </div>
         {!notification.read && (
-          <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-brand-500" aria-label="Unread" />
+          <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-primary" aria-label="Unread" />
         )}
-      </button>
+      </Button>
     </li>
   );
 }
@@ -86,13 +86,15 @@ function NotificationBell() {
 
   return (
     <div className="relative">
-      <button
+      <Button
         ref={buttonRef}
         type="button"
+        variant="ghost"
+        size="icon"
         aria-label={`Notifications${unreadCount > 0 ? `, ${unreadCount} unread` : ""}`}
         aria-expanded={open}
         onClick={() => setOpen((prev) => !prev)}
-        className="relative rounded-md p-1.5 text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-100"
+        className="relative text-muted-foreground hover:bg-muted hover:text-foreground"
       >
         <Bell className="h-4 w-4" />
         {unreadCount > 0 && (
@@ -103,35 +105,36 @@ function NotificationBell() {
             {badgeLabel}
           </span>
         )}
-      </button>
+      </Button>
 
       {open && (
         <div
           ref={panelRef}
           data-testid="notification-panel"
-          className="absolute right-0 top-full z-50 mt-2 w-80 overflow-hidden rounded-card border border-gray-200 bg-white shadow-card dark:border-gray-700 dark:bg-gray-800"
+          className="absolute right-0 top-full z-50 mt-2 w-80 overflow-hidden rounded-card border border-border bg-card shadow-card"
         >
-          <div className="flex items-center justify-between border-b border-gray-200 px-4 py-2.5 dark:border-gray-700">
-            <h3 className="font-display text-sm font-semibold text-gray-900 dark:text-gray-100">
+          <div className="flex items-center justify-between border-b border-border px-4 py-2.5">
+            <h3 className="font-display text-sm font-semibold text-foreground">
               Notifications
             </h3>
             {unreadCount > 0 && (
-              <button
+              <Button
                 type="button"
+                variant="link"
                 onClick={() => markAllRead()}
-                className="text-xs text-brand-600 hover:underline dark:text-brand-400"
+                className="h-auto p-0 text-xs"
               >
                 Mark all read
-              </button>
+              </Button>
             )}
           </div>
 
           {notifications.length === 0 ? (
-            <p className="px-4 py-6 text-center text-sm text-gray-500 dark:text-gray-400">
+            <p className="px-4 py-6 text-center text-sm text-muted-foreground">
               No notifications
             </p>
           ) : (
-            <ul className="max-h-80 overflow-y-auto divide-y divide-gray-100 dark:divide-gray-700">
+            <ul className="max-h-80 overflow-y-auto divide-y divide-border">
               {notifications.map((n) => (
                 <NotificationItem key={n.id} notification={n} />
               ))}

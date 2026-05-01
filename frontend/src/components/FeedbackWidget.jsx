@@ -11,7 +11,8 @@ import Send from "lucide-react/dist/esm/icons/send";
 import { trackEvent } from "../lib/analytics";
 import { useAuth } from "../context/AuthContext";
 import { useFeedback } from "../hooks/useFeedback";
-import { CARD_BASE, BUTTON_PRIMARY, BUTTON_GHOST, INPUT_BASE } from "../lib/designTokens";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
 
 const FEEDBACK_MESSAGE_MAX = 500;
 const FEEDBACK_CATEGORIES = ["Bug", "Feature Request", "General"];
@@ -19,36 +20,43 @@ const NPS_DISMISSED_KEY = "pipelined_nps_dismissed";
 const NPS_DAYS_THRESHOLD = 7;
 const NPS_SCORES = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
+const SELECT_CLS = "border border-input rounded-md bg-background text-foreground focus:border-ring focus:ring-1 focus:ring-ring/20 focus:outline-none transition-colors text-sm px-3 py-2 font-sans w-full";
+const TEXTAREA_CLS = "border border-input rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:border-ring focus:ring-1 focus:ring-ring/20 focus:outline-none transition-colors text-sm px-3 py-2 font-sans w-full";
+
 function NPSBannerView({ onScore, onDismiss }) {
   return (
     <div
       role="banner"
       aria-label="NPS survey"
-      className="fixed top-0 inset-x-0 z-40 flex items-center justify-between gap-4 bg-white px-4 py-3 shadow-md dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700"
+      className="fixed top-0 inset-x-0 z-40 flex items-center justify-between gap-4 bg-card px-4 py-3 shadow-md border-b border-border"
     >
-      <p className="text-sm font-medium text-gray-700 dark:text-gray-200 shrink-0">
+      <p className="text-sm font-medium text-foreground shrink-0">
         How likely are you to recommend Pipelined to a friend?
       </p>
       <div className="flex items-center gap-1">
         {NPS_SCORES.map((score) => (
-          <button
+          <Button
             key={score}
             type="button"
+            variant="outline"
+            size="icon"
             onClick={() => onScore(score)}
-            className="h-8 w-8 rounded text-xs font-semibold text-gray-600 hover:bg-brand-500 hover:text-white transition-colors dark:text-gray-300 dark:hover:text-white border border-gray-200 dark:border-gray-600"
+            className="h-8 w-8 text-xs font-semibold text-muted-foreground hover:bg-primary hover:text-primary-foreground"
           >
             {score}
-          </button>
+          </Button>
         ))}
       </div>
-      <button
+      <Button
         type="button"
+        variant="ghost"
+        size="icon"
         onClick={onDismiss}
         aria-label="Dismiss survey"
-        className="shrink-0 rounded p-1 text-gray-500 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+        className="shrink-0 h-7 w-7"
       >
         <X className="h-4 w-4" />
-      </button>
+      </Button>
     </div>
   );
 }
@@ -108,31 +116,28 @@ function FeedbackFormFields({ category, setCategory, message, setMessage, email,
   return (
     <>
       <div>
-        <label htmlFor="fb-category" className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Category</label>
+        <label htmlFor="fb-category" className="mb-1 block text-xs font-medium text-muted-foreground">Category</label>
         <select id="fb-category" value={category} onChange={(e) => setCategory(e.target.value)}
-          className={INPUT_BASE}>
+          className={SELECT_CLS}>
           {FEEDBACK_CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
         </select>
       </div>
       <div>
-        <label htmlFor="fb-message" className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Message</label>
+        <label htmlFor="fb-message" className="mb-1 block text-xs font-medium text-muted-foreground">Message</label>
         <textarea id="fb-message" ref={textareaRef} rows={4} maxLength={FEEDBACK_MESSAGE_MAX} value={message}
           onChange={(e) => setMessage(e.target.value)} placeholder="Describe your feedback…"
-          className={`${INPUT_BASE} resize-none`}
+          className={`${TEXTAREA_CLS} resize-none`}
         />
-        <p className="mt-0.5 text-right text-xs text-gray-400">{message.length}/{FEEDBACK_MESSAGE_MAX}</p>
+        <p className="mt-0.5 text-right text-xs text-muted-foreground">{message.length}/{FEEDBACK_MESSAGE_MAX}</p>
       </div>
       <div>
-        <label htmlFor="fb-email" className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Email (optional)</label>
-        <input id="fb-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com"
-          className={INPUT_BASE}
-        />
+        <label htmlFor="fb-email" className="mb-1 block text-xs font-medium text-muted-foreground">Email (optional)</label>
+        <Input id="fb-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
       </div>
-      <button type="submit" disabled={submitting || !message.trim()}
-        className={`flex items-center justify-center gap-2 ${BUTTON_PRIMARY} disabled:opacity-60`}>
+      <Button type="submit" disabled={submitting || !message.trim()} className="flex items-center justify-center gap-2 w-full">
         <Send className="h-3.5 w-3.5" aria-hidden="true" />
         {submitting ? "Sending…" : "Send"}
-      </button>
+      </Button>
     </>
   );
 }
@@ -151,13 +156,13 @@ function FeedbackPopover({ user, page, onClose, onSubmit }) {
       role="dialog"
       aria-modal="true"
       aria-label="Send feedback"
-      className={`${CARD_BASE} absolute bottom-14 right-0 w-80 p-4 animate-slideInUp shadow-modal`}
+      className="rounded-xl bg-card border border-border absolute bottom-14 right-0 w-80 p-4 animate-slideInUp shadow-lg"
     >
       <div className="mb-3 flex items-center justify-between">
-        <h2 className="font-display text-sm font-semibold text-gray-900 dark:text-gray-100">How can we improve?</h2>
-        <button type="button" onClick={onClose} aria-label="Close" className={`${BUTTON_GHOST} p-1`}>
-          <X className="h-4 w-4 text-gray-500" />
-        </button>
+        <h2 className="font-display text-sm font-semibold text-foreground">How can we improve?</h2>
+        <Button type="button" variant="ghost" onClick={onClose} aria-label="Close" className="p-1 h-auto">
+          <X className="h-4 w-4 text-muted-foreground" />
+        </Button>
       </div>
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         <FeedbackFormFields
@@ -189,15 +194,16 @@ function FeedbackWidget() {
         {open && (
           <FeedbackPopover user={user} page={pathname} onClose={handleClose} onSubmit={submit} />
         )}
-        <button
+        <Button
           type="button"
+          size="icon"
           onClick={() => setOpen((v) => !v)}
           aria-label="Send feedback"
           title="Send feedback"
-          className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-500 text-white shadow-sm hover:bg-brand-600 transition-all duration-150 active:scale-95"
+          className="h-10 w-10 rounded-full shadow-sm active:scale-95"
         >
           <MessageCircle className="h-5 w-5" aria-hidden="true" />
-        </button>
+        </Button>
       </div>
     </>
   );

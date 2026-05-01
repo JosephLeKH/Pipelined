@@ -74,7 +74,7 @@ describe("RegisterForm — password strength indicator", () => {
 
     const items = screen.getAllByRole("listitem");
     const lengthItem = items.find((el) => el.textContent.includes("characters"));
-    expect(lengthItem).toHaveClass("text-gray-500");
+    expect(lengthItem).toHaveClass("text-muted-foreground");
   });
 
   it("should show length requirement as met when password is 8+ chars", () => {
@@ -82,7 +82,7 @@ describe("RegisterForm — password strength indicator", () => {
 
     const items = screen.getAllByRole("listitem");
     const lengthItem = items.find((el) => el.textContent.includes("characters"));
-    expect(lengthItem).toHaveClass("text-brand-600");
+    expect(lengthItem).toHaveClass("text-primary");
   });
 
   it("should show uppercase requirement as met when password has uppercase", () => {
@@ -90,7 +90,7 @@ describe("RegisterForm — password strength indicator", () => {
 
     const items = screen.getAllByRole("listitem");
     const uppercaseItem = items.find((el) => el.textContent.includes("uppercase"));
-    expect(uppercaseItem).toHaveClass("text-brand-600");
+    expect(uppercaseItem).toHaveClass("text-primary");
   });
 
   it("should show number requirement as met when password has a digit", () => {
@@ -98,7 +98,7 @@ describe("RegisterForm — password strength indicator", () => {
 
     const items = screen.getAllByRole("listitem");
     const numberItem = items.find((el) => el.textContent.includes("number"));
-    expect(numberItem).toHaveClass("text-brand-600");
+    expect(numberItem).toHaveClass("text-primary");
   });
 });
 

@@ -2,13 +2,13 @@
 
 import ApiErrorMessage from "../components/ApiErrorMessage";
 import JobCard from "../components/JobCard";
-import { BUTTON_GHOST, BUTTON_SECONDARY } from "../lib/designTokens";
+import { Button } from "./ui/button";
 
 function LoadingSkeleton() {
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
       {Array.from({ length: 6 }, (_, i) => (
-        <div key={i} className="h-52 animate-pulse rounded-card bg-surface-tertiary" />
+        <div key={i} className="h-52 animate-pulse rounded-xl bg-muted" />
       ))}
     </div>
   );
@@ -37,11 +37,11 @@ function EmptyState({ hasFilters, onClear }) {
     <div className="flex flex-col items-center gap-4 py-20 text-center">
       <BriefcaseSvg />
       <div>
-        <p className="text-base font-semibold text-gray-700 dark:text-gray-300">No listings match your filters</p>
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Try adjusting your filters or search terms</p>
+        <p className="text-base font-semibold text-foreground">No listings match your filters</p>
+        <p className="mt-1 text-sm text-muted-foreground">Try adjusting your filters or search terms</p>
       </div>
       {hasFilters && (
-        <button type="button" onClick={onClear} className={BUTTON_GHOST}>Clear filters</button>
+        <Button type="button" variant="ghost" onClick={onClear}>Clear filters</Button>
       )}
     </div>
   );
@@ -54,7 +54,7 @@ export function JobBoardContent({ isLoading, error, jobs, total, hasFilters, has
   return (
     <>
       {total > 0 && (
-        <p className="text-sm text-gray-500 dark:text-gray-400">
+        <p className="text-sm text-muted-foreground">
           Showing {jobs.length} of {total} result{total !== 1 ? "s" : ""}
         </p>
       )}
@@ -65,9 +65,9 @@ export function JobBoardContent({ isLoading, error, jobs, total, hasFilters, has
       </div>
       {hasMore && (
         <div className="flex flex-col items-center gap-2 pt-2">
-          <button type="button" onClick={onLoadMore} className={BUTTON_SECONDARY}>
+          <Button type="button" variant="outline" onClick={onLoadMore}>
             Load more
-          </button>
+          </Button>
         </div>
       )}
     </>

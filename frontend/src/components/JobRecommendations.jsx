@@ -11,7 +11,7 @@ const SECTION_TITLE = "Recommended for You";
 
 function ReasonBadge({ reason }) {
   return (
-    <span className="mt-1 inline-block rounded-full bg-brand-50 px-2 py-0.5 text-xs font-medium text-brand-700">
+    <span className="mt-1 inline-block rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
       {reason}
     </span>
   );
@@ -35,15 +35,15 @@ export function JobRecommendations({ onSelectJob }) {
 
   return (
     <section aria-labelledby="recommendations-heading" className="flex flex-col gap-3">
-      <h2 id="recommendations-heading" className="flex items-center gap-1.5 font-display text-sm font-semibold text-gray-700">
-        <Sparkles className="h-4 w-4 text-brand-500" aria-hidden="true" />
+      <h2 id="recommendations-heading" className="flex items-center gap-1.5 font-display text-sm font-semibold text-foreground">
+        <Sparkles className="h-4 w-4 text-primary" aria-hidden="true" />
         {SECTION_TITLE}
       </h2>
 
       {isLoading ? (
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="h-48 animate-pulse rounded-xl bg-gray-100 dark:bg-gray-700" aria-hidden="true" />
+            <div key={i} className="h-48 animate-pulse rounded-xl bg-muted" aria-hidden="true" />
           ))}
         </div>
       ) : (

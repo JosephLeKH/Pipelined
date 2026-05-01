@@ -12,7 +12,7 @@ import { JobBoardContent } from "../components/JobBoardContent";
 import { JobFilters } from "../components/JobFilters";
 import { JobRecommendations } from "../components/JobRecommendations";
 import { useJobBoardState } from "../hooks/useJobBoardState";
-import { BUTTON_SECONDARY } from "../lib/designTokens";
+import { Button } from "../components/ui/button";
 
 const PAGE_TITLE = "Job Board — Pipelined";
 const DEFAULT_TITLE = "Pipelined — Job Application Tracker for Students & Engineers";
@@ -26,17 +26,17 @@ function JobBoard() {
   }, []);
 
   return (
-    <main className="flex min-h-screen flex-col gap-6 bg-surface-secondary px-4 py-8 sm:px-6">
+    <main className="flex min-h-screen flex-col gap-6 bg-background px-4 py-8 sm:px-6">
       <div className="flex flex-col gap-3">
-        <h1 className="font-display text-2xl font-semibold text-gray-900">Job Board</h1>
+        <h1 className="font-display text-2xl font-semibold text-foreground">Job Board</h1>
         <div className="flex items-center gap-3">
           <div className="flex-1"><JobSearchInput /></div>
           {hasActiveFilters && (
             <div className="relative shrink-0">
-              <button type="button" aria-label="Save this search" onClick={() => setSavePopoverOpen((v) => !v)} className={`flex items-center gap-1.5 ${BUTTON_SECONDARY}`}>
+              <Button type="button" variant="outline" aria-label="Save this search" onClick={() => setSavePopoverOpen((v) => !v)} className="flex items-center gap-1.5">
                 <Bookmark className="h-4 w-4" />
                 Save this search
-              </button>
+              </Button>
               {savePopoverOpen && <SaveSearchPopover currentFilters={filters} onClose={() => setSavePopoverOpen(false)} />}
             </div>
           )}

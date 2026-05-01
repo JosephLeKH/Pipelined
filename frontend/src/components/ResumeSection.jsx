@@ -4,7 +4,7 @@ import { useCallback, useState } from "react";
 
 import Loader2 from "lucide-react/dist/esm/icons/loader-2";
 import { RESUME_ACCEPT, RESUME_MAX_MB } from "../lib/constants";
-import { BUTTON_PRIMARY, CARD_BASE, SUCCESS_BANNER } from "../lib/designTokens";
+import { Button } from "./ui/button";
 
 function ResumeSection({ hasResume, isUploading, isDeleting, onResumeUpload, onResumeDelete }) {
   const [resumeError, setResumeError] = useState(null);
@@ -36,48 +36,50 @@ function ResumeSection({ hasResume, isUploading, isDeleting, onResumeUpload, onR
   }, [onResumeDelete]);
 
   return (
-    <section className={`${CARD_BASE} p-6`}>
-      <h2 className="mb-1 font-display text-base font-semibold text-gray-900 dark:text-gray-100">
+    <section className="rounded-xl bg-card border border-border p-6">
+      <h2 className="mb-1 font-display text-base font-semibold text-foreground">
         Resume
       </h2>
-      <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">
+      <p className="mb-4 text-sm text-muted-foreground">
         Upload your resume (PDF, max {RESUME_MAX_MB} MB) to enable AI fit scoring on new applications.
       </p>
       {resumeSuccess && (
-        <p role="alert" className={`mb-4 ${SUCCESS_BANNER}`}>
+        <p role="alert" className="mb-4 rounded-lg bg-primary/10 border border-primary/20 px-3 py-3 text-sm text-primary">
           Resume uploaded successfully.
         </p>
       )}
       {resumeError && (
-        <p role="alert" className="mb-4 text-sm text-red-600 dark:text-red-400">{resumeError}</p>
+        <p role="alert" className="mb-4 text-sm text-destructive">{resumeError}</p>
       )}
       <div className="flex flex-wrap items-center gap-3">
-        <label className={`flex cursor-pointer items-center gap-2 ${BUTTON_PRIMARY} focus-within:ring-offset-2`}>
-          {isUploading && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
-          {hasResume ? "Replace resume" : "Upload resume"}
-          <input
-            type="file"
-            accept={RESUME_ACCEPT}
-            className="sr-only"
-            onChange={handleResumeUpload}
-            disabled={isUploading || isDeleting}
-            aria-label="Upload resume PDF"
-          />
-        </label>
+        <Button asChild className="cursor-pointer focus-within:ring-offset-2">
+          <label>
+            {isUploading && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
+            {hasResume ? "Replace resume" : "Upload resume"}
+            <input
+              type="file"
+              accept={RESUME_ACCEPT}
+              className="sr-only"
+              onChange={handleResumeUpload}
+              disabled={isUploading || isDeleting}
+              aria-label="Upload resume PDF"
+            />
+          </label>
+        </Button>
         {hasResume && (
-          <button
+          <Button
             type="button"
+            variant="outline"
             onClick={handleResumeDelete}
             disabled={isUploading || isDeleting}
-            className="flex items-center gap-2 rounded-button border border-gray-300 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
           >
             {isDeleting && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
             Remove resume
-          </button>
+          </Button>
         )}
       </div>
       {hasResume && !resumeSuccess && (
-        <p className="mt-3 text-xs text-gray-400 dark:text-gray-500">
+        <p className="mt-3 text-xs text-muted-foreground">
           A resume is currently on file. New applications will be scored automatically.
         </p>
       )}

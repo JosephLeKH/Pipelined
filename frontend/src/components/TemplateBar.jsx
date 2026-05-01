@@ -3,8 +3,10 @@
 import { useState } from "react";
 
 import { useTemplates } from "../hooks/useTemplates";
-import { INPUT_BASE, BUTTON_SECONDARY } from "../lib/designTokens";
+import { Button } from "./ui/button";
 import TemplateSaveModal from "./TemplateSaveModal";
+
+const SELECT_CLS = "border border-input rounded-md bg-background text-foreground focus:border-ring focus:ring-1 focus:ring-ring/20 focus:outline-none transition-colors text-sm px-3 py-2 font-sans w-full";
 
 function TemplateBar({ onApply, fields }) {
   const { data: templates, isLoading, error } = useTemplates();
@@ -14,7 +16,7 @@ function TemplateBar({ onApply, fields }) {
     <>
       <div className="flex items-center gap-2">
         {error ? (
-          <p role="alert" className="flex-1 text-xs text-red-600 dark:text-red-400">
+          <p role="alert" className="flex-1 text-xs text-destructive">
             Failed to load templates.
           </p>
         ) : isLoading ? (
@@ -28,7 +30,7 @@ function TemplateBar({ onApply, fields }) {
               if (t) onApply(t);
               e.target.value = "";
             }}
-            className={`${INPUT_BASE} flex-1 text-sm`}
+            className={`${SELECT_CLS} flex-1 text-sm`}
           >
             <option value="" disabled>Use template…</option>
             {templates.map((t) => (
@@ -38,13 +40,14 @@ function TemplateBar({ onApply, fields }) {
         ) : (
           <div className="flex-1" />
         )}
-        <button
+        <Button
           type="button"
+          variant="outline"
           onClick={() => setShowSaveModal(true)}
-          className={`shrink-0 ${BUTTON_SECONDARY}`}
+          className="shrink-0"
         >
           Save as template
-        </button>
+        </Button>
       </div>
       <TemplateSaveModal
         isOpen={showSaveModal}

@@ -5,7 +5,7 @@ import { useState } from "react";
 import Plus from "lucide-react/dist/esm/icons/plus";
 
 import { useApplicationContacts } from "../hooks/useContacts";
-import { BUTTON_SECONDARY } from "../lib/designTokens";
+import { Button } from "./ui/button";
 import ContactCard from "./ContactCard";
 import ContactForm from "./ContactForm";
 import ContactLinkDropdown from "./ContactLinkDropdown";
@@ -23,44 +23,38 @@ function ContactsSection({ applicationId }) {
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-medium uppercase text-gray-400 dark:text-gray-500">Contacts</span>
+        <span className="text-xs font-medium uppercase text-muted-foreground">Contacts</span>
         {!addMode && (
           <div className="flex items-center gap-1">
-            <button
-              type="button"
-              onClick={() => setAddMode(CONTACTS_ADD_MODE_LINK)}
-              className="rounded px-2 py-1 text-xs text-brand-600 hover:bg-brand-50 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:ring-offset-2 dark:hover:bg-brand-900/30"
-            >
+            <Button type="button" variant="ghost" size="sm" onClick={() => setAddMode(CONTACTS_ADD_MODE_LINK)}
+              className="text-xs text-primary hover:bg-primary/10 hover:text-primary">
               Link
-            </button>
-            <button
-              type="button"
-              onClick={() => setAddMode(CONTACTS_ADD_MODE_NEW)}
-              className="flex items-center gap-1 rounded px-2 py-1 text-xs text-brand-600 hover:bg-brand-50 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:ring-offset-2 dark:hover:bg-brand-900/30"
-              aria-label="Add contact"
-            >
+            </Button>
+            <Button type="button" variant="ghost" size="sm" onClick={() => setAddMode(CONTACTS_ADD_MODE_NEW)}
+              aria-label="Add contact" className="text-xs text-primary hover:bg-primary/10 hover:text-primary gap-1">
               <Plus className="h-3.5 w-3.5" />
               New
-            </button>
+            </Button>
           </div>
         )}
       </div>
-      {isLoading && <p className="text-xs text-gray-400">Loading…</p>}
+      {isLoading && <p className="text-xs text-muted-foreground">Loading…</p>}
       {error && (
         <div role="alert" className="flex items-center justify-between gap-2">
-          <p className="text-xs text-red-600 dark:text-red-400">Failed to load contacts.</p>
-          <button
+          <p className="text-xs text-destructive">Failed to load contacts.</p>
+          <Button
             type="button"
+            variant="outline"
+            size="sm"
             onClick={() => refetch()}
             aria-label="Retry loading contacts"
-            className={`${BUTTON_SECONDARY} px-2 py-1 text-xs`}
           >
             Retry
-          </button>
+          </Button>
         </div>
       )}
       {!isLoading && !error && contacts.length === 0 && !addMode && (
-        <p className="text-xs text-gray-400">No contacts yet.</p>
+        <p className="text-xs text-muted-foreground">No contacts yet.</p>
       )}
       {contacts.map((contact) => (
         <ContactCard key={contact.id} contact={contact} applicationId={applicationId} />

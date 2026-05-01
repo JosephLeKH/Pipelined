@@ -16,13 +16,22 @@ import TagIcon from "lucide-react/dist/esm/icons/tag";
 import Trophy from "lucide-react/dist/esm/icons/trophy";
 import Monitor from "lucide-react/dist/esm/icons/monitor";
 import X from "lucide-react/dist/esm/icons/x";
+import User from "lucide-react/dist/esm/icons/user";
 
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import { resetUser, trackEvent } from "../lib/analytics";
 import { useApplications } from "../hooks/useApplications";
 import { OFFER_STAGE } from "../lib/constants";
-import { NAV_CONTAINER, NAV_BRAND, NAV_LINK, NAV_LINK_ACTIVE, ICON_BUTTON } from "../lib/designTokens";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
+import { Button } from "./ui/button";
 import NotificationBell from "./NotificationBell";
 
 const NAV_LINKS = [
@@ -37,6 +46,9 @@ const NAV_LINKS = [
 const THEME_ICONS = { system: Monitor, light: Sun, dark: Moon };
 const THEME_LABELS = { system: "System theme", light: "Light theme", dark: "Dark theme" };
 
+const NAV_LINK = "text-muted-foreground hover:text-foreground text-sm font-display font-medium transition-colors px-3 py-2 rounded-md";
+const NAV_LINK_ACTIVE = "text-primary text-sm font-display font-semibold px-3 py-2 rounded-md";
+
 function UserAvatar({ user }) {
   if (user?.avatar_url) {
     return <img src={user.avatar_url} alt={user.display_name ?? "Profile"} className="h-8 w-8 rounded-full object-cover" />;
@@ -44,7 +56,7 @@ function UserAvatar({ user }) {
   const seed = user?.display_name ?? user?.email ?? "U";
   const initial = (seed[0] ?? "U").toUpperCase();
   return (
-    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-500 text-xs font-semibold text-white">{initial}</span>
+    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">{initial}</span>
   );
 }
 
@@ -64,39 +76,78 @@ function DesktopNavLinks({ navLinks, pathname }) {
   );
 }
 
+function UserMenu({ user, handleLogout }) {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          type="button"
+          aria-label="User menu"
+          className="rounded-full focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+        >
+          <UserAvatar user={user} />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-56">
+        <DropdownMenuLabel className="font-normal">
+          <div className="flex flex-col gap-0.5">
+            <p className="text-sm font-medium leading-none">{user?.display_name ?? user?.email ?? "Account"}</p>
+            {user?.email && user?.display_name && (
+              <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
+            )}
+          </div>
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <Link to="/settings" className="flex cursor-pointer items-center gap-2">
+            <User className="h-4 w-4" />
+            Profile & Settings
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          onClick={handleLogout}
+          className="flex cursor-pointer items-center gap-2 text-destructive focus:text-destructive"
+        >
+          <LogOut className="h-4 w-4" />
+          Log out
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
 function DesktopActions({ user, ThemeIcon, theme, handleCycleTheme, handleLogout }) {
   return (
     <div className="ml-auto hidden items-center gap-2 md:flex">
       <NotificationBell />
-      <button type="button" onClick={handleCycleTheme} aria-label={THEME_LABELS[theme]} className={`${ICON_BUTTON}`}>
+      <Button type="button" variant="ghost" size="icon" onClick={handleCycleTheme} aria-label={THEME_LABELS[theme]}>
         <ThemeIcon className="h-4 w-4" />
-      </button>
-      <UserAvatar user={user} />
-      <button type="button" onClick={handleLogout} aria-label="Log out" className="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-100">
-        <LogOut className="h-4 w-4" />
-        Log out
-      </button>
+      </Button>
+      <UserMenu user={user} handleLogout={handleLogout} />
     </div>
   );
 }
 
 function HamburgerButton({ mobileMenuOpen, setMobileMenuOpen }) {
   return (
-    <button
+    <Button
       type="button"
+      variant="ghost"
+      size="icon"
       onClick={() => setMobileMenuOpen((prev) => !prev)}
       aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
       aria-expanded={mobileMenuOpen}
-      className={`ml-auto ${ICON_BUTTON} transition-colors rounded-md text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-gray-100 md:hidden`}
+      className="ml-auto md:hidden"
     >
       {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-    </button>
+    </Button>
   );
 }
 
 function MobileMenu({ navLinks, pathname, closeMobileMenu, ThemeIcon, theme, handleCycleTheme, handleLogout }) {
   return (
-    <div data-testid="mobile-nav-menu" className="flex flex-col gap-1 border-t border-border-default bg-white dark:bg-gray-900 px-4 py-3 md:hidden">
+    <div data-testid="mobile-nav-menu" className="flex flex-col gap-1 border-t border-border bg-card px-4 py-3 md:hidden">
       {navLinks.map(({ to, label, Icon }) => {
         const active = pathname === to;
         return (
@@ -107,14 +158,14 @@ function MobileMenu({ navLinks, pathname, closeMobileMenu, ThemeIcon, theme, han
           </Link>
         );
       })}
-      <div className="mt-2 flex items-center gap-2 border-t border-gray-100 pt-2 dark:border-gray-700">
-        <button type="button" onClick={handleCycleTheme} aria-label={THEME_LABELS[theme]} className="rounded-md p-1.5 text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-100">
+      <div className="mt-2 flex items-center gap-2 border-t border-border pt-2">
+        <Button type="button" variant="ghost" size="icon" onClick={handleCycleTheme} aria-label={THEME_LABELS[theme]}>
           <ThemeIcon className="h-4 w-4" />
-        </button>
-        <button type="button" onClick={handleLogout} aria-label="Log out" className="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-100">
+        </Button>
+        <Button type="button" variant="ghost" onClick={handleLogout} aria-label="Log out" className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground">
           <LogOut className="h-4 w-4" />
           Log out
-        </button>
+        </Button>
       </div>
     </div>
   );
@@ -135,9 +186,9 @@ function NavBar() {
   const ThemeIcon = THEME_ICONS[theme];
 
   return (
-    <nav aria-label="Main navigation" className={NAV_CONTAINER}>
+    <nav aria-label="Main navigation" className="bg-card border-b border-border">
       <div className="flex items-center gap-4 px-6 py-3">
-        <span className={`mr-2 ${NAV_BRAND}`}>Pipelined</span>
+        <span className="mr-2 text-foreground font-display font-semibold text-lg tracking-tight">Pipelined</span>
         <DesktopNavLinks navLinks={navLinks} pathname={pathname} />
         <DesktopActions user={user} ThemeIcon={ThemeIcon} theme={theme} handleCycleTheme={handleCycleTheme} handleLogout={handleLogout} />
         <HamburgerButton mobileMenuOpen={mobileMenuOpen} setMobileMenuOpen={setMobileMenuOpen} />

@@ -9,26 +9,26 @@ import { EVENT_TYPE_COLORS, DEFAULT_EVENT_COLOR, INTERVIEW_EVENT_TYPES } from ".
 import { formatDate, formatTime } from "../lib/dateUtils";
 import { useAuth } from "../context/AuthContext";
 import { PrepSection } from "./PrepSection";
-import { BUTTON_GHOST } from "../lib/designTokens";
+import { Button } from "./ui/button";
 
 const FOCUSABLE_SELECTORS = 'button:not([disabled]), [href], input:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 function EventHeader({ event, colors, eventTypeLabel, timeDisplay, onClose }) {
   return (
-    <div className="flex items-start justify-between border-b border-border-default px-6 py-4">
+    <div className="flex items-start justify-between border-b border-border px-6 py-4">
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-2">
-          <span className={`rounded-badge px-2 py-0.5 text-xs font-medium ${colors.bg} ${colors.text}`}>{eventTypeLabel}</span>
+          <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${colors.bg} ${colors.text}`}>{eventTypeLabel}</span>
         </div>
-        <h2 className="font-display text-lg font-semibold text-gray-900 dark:text-gray-100">{event.title || eventTypeLabel}</h2>
-        <p className="text-sm text-gray-500 dark:text-gray-400">
+        <h2 className="font-display text-lg font-semibold text-foreground">{event.title || eventTypeLabel}</h2>
+        <p className="text-sm text-muted-foreground">
           {formatDate(typeof event.date === "string" ? event.date.slice(0, 10) : event.date)}
           {timeDisplay && ` · ${timeDisplay}`}
         </p>
       </div>
-      <button type="button" onClick={onClose} className={`ml-4 ${BUTTON_GHOST} p-2`} aria-label="Close event details">
-        <X className="h-5 w-5 text-gray-500" />
-      </button>
+      <Button type="button" variant="ghost" size="icon" onClick={onClose} className="ml-4 shrink-0" aria-label="Close event details">
+        <X className="h-5 w-5" />
+      </Button>
     </div>
   );
 }
@@ -36,11 +36,11 @@ function EventHeader({ event, colors, eventTypeLabel, timeDisplay, onClose }) {
 function EventApplicationInfo({ company, roleTitle }) {
   if (!company && !roleTitle) return null;
   return (
-    <div className="border-b border-gray-100 dark:border-gray-700 px-6 py-3">
-      <span className="text-xs font-medium uppercase text-gray-400">Application</span>
-      <p className="mt-1 text-sm font-medium text-gray-800 dark:text-gray-200">
+    <div className="border-b border-border px-6 py-3">
+      <span className="text-xs font-medium uppercase text-muted-foreground">Application</span>
+      <p className="mt-1 text-sm font-medium text-foreground">
         {company && <span>{company}</span>}
-        {company && roleTitle && <span className="text-gray-400"> · </span>}
+        {company && roleTitle && <span className="text-muted-foreground"> · </span>}
         {roleTitle && <span>{roleTitle}</span>}
       </p>
     </div>
@@ -72,7 +72,7 @@ function CalendarEventDetail({ event, onClose }) {
   return (
     <>
       <div className="fixed inset-0 z-30 bg-black/30 backdrop-blur-sm" onClick={onClose} aria-hidden="true" />
-      <aside ref={panelRef} role="complementary" aria-label="Event details" className="fixed inset-y-0 right-0 z-40 flex w-full max-w-md flex-col overflow-y-auto bg-white shadow-modal dark:bg-gray-800 animate-slide-in-right">
+      <aside ref={panelRef} role="complementary" aria-label="Event details" className="fixed inset-y-0 right-0 z-40 flex w-full max-w-md flex-col overflow-y-auto bg-card shadow-lg animate-slide-in-right">
         <EventHeader event={event} colors={colors} eventTypeLabel={eventTypeLabel} timeDisplay={timeDisplay} onClose={onClose} />
         <EventApplicationInfo company={event.company} roleTitle={event.role_title} />
         {showPrep && <PrepSection key={event.id} initialPrepData={event.prep_data ?? { notes: "", checklist: [], questions: [] }} onPrepChange={handlePrepChange} />}

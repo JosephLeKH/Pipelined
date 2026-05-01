@@ -11,7 +11,7 @@ import Bell from "lucide-react/dist/esm/icons/bell";
 
 import { useApplicationStats } from "../hooks/useApplications";
 import ApiErrorMessage from "./ApiErrorMessage";
-import { CARD_BASE } from "../lib/designTokens";
+import { Card } from "./ui/card";
 
 const COUNT_UP_DURATION_MS = 400;
 
@@ -75,21 +75,21 @@ function MetricCard({ metricKey, label, stats, isLoading, Icon }) {
 
   if (isLoading) {
     return (
-      <div className={`flex flex-col gap-1 p-4 ${CARD_BASE}`} aria-label={`${label}: loading`}>
-        <div className="h-7 w-16 animate-pulse rounded bg-gray-200" />
-        <div className="h-4 w-24 animate-pulse rounded bg-gray-200" />
-      </div>
+      <Card className="flex flex-col gap-1 p-4" aria-label={`${label}: loading`}>
+        <div className="h-7 w-16 animate-pulse rounded bg-muted" />
+        <div className="h-4 w-24 animate-pulse rounded bg-muted" />
+      </Card>
     );
   }
 
   return (
-    <div className={`flex flex-col gap-1 p-4 ${CARD_BASE}`} aria-label={`${label}: ${displayValue}`}>
-      <span className="font-display text-2xl font-semibold text-gray-900 dark:text-gray-100">{displayValue}</span>
-      <span className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400">
+    <Card className="flex flex-col gap-1 p-4" aria-label={`${label}: ${displayValue}`}>
+      <span className="font-display text-2xl font-semibold text-foreground">{displayValue}</span>
+      <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
         <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
         {label}
       </span>
-    </div>
+    </Card>
   );
 }
 

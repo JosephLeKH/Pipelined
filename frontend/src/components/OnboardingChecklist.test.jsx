@@ -99,7 +99,7 @@ describe("OnboardingChecklist", () => {
     const step2Label = await screen.findByText("Add your first application");
 
     // Assert — step 2 label should be muted (done)
-    expect(step2Label).toHaveClass("text-gray-400");
+    expect(step2Label).toHaveClass("text-muted-foreground");
   });
 
   it("should show step 1 as checked when extension app exists", async () => {
@@ -118,7 +118,7 @@ describe("OnboardingChecklist", () => {
     const step1Label = await screen.findByText("Install the Chrome extension");
 
     // Assert — step 1 label should be muted (done)
-    expect(step1Label).toHaveClass("text-gray-400");
+    expect(step1Label).toHaveClass("text-muted-foreground");
   });
 
   it("should call onAdd when Add Application action is clicked", () => {

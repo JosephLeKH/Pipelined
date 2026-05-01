@@ -1,0 +1,11 @@
+# Ralph Progress Log
+Started: Fri May  1 09:50:34 PDT 2026
+---
+
+## US-501 — Create shadcn Textarea UI component
+- Created frontend/src/components/ui/textarea.jsx modeled after the existing Input component
+- Uses cn() from @/lib/utils for className merging
+- Exports named Textarea function with all standard textarea HTML props via ...props spread
+- Default className matches the acceptance criteria exactly
+- Build passes with no errors
+- Committed as: feat: US-501 - Create shadcn Textarea UI component

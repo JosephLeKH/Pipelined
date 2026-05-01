@@ -2,15 +2,13 @@
 
 import Loader2 from "lucide-react/dist/esm/icons/loader-2";
 
-import { BUTTON_PRIMARY, BUTTON_SECONDARY } from "../lib/designTokens";
+import { Button } from "./ui/button";
 
 export function FormActions({ isPending, onCancel }) {
   return (
-    <div className="flex justify-end gap-3 border-t border-gray-100 pt-4 dark:border-gray-700">
-      <button type="button" onClick={onCancel} className={`${BUTTON_SECONDARY} text-sm`}>
-        Cancel
-      </button>
-      <button type="submit" disabled={isPending} className={`${BUTTON_PRIMARY} text-sm flex items-center gap-2`}>
+    <div className="flex justify-end gap-3 border-t border-border pt-4">
+      <Button type="button" variant="outline" size="sm" onClick={onCancel}>Cancel</Button>
+      <Button type="submit" size="sm" disabled={isPending} className="flex items-center gap-2">
         {isPending ? (
           <>
             <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
@@ -19,7 +17,7 @@ export function FormActions({ isPending, onCancel }) {
         ) : (
           "Add Application"
         )}
-      </button>
+      </Button>
     </div>
   );
 }
