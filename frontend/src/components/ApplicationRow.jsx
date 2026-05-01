@@ -57,7 +57,7 @@ function SwipeActions({ onArchive, onFollowUp, revealed }) {
         variant="ghost"
         aria-label="Archive application"
         onClick={onArchive}
-        className="h-full w-20 flex-col gap-1 rounded-none bg-rose-500 text-white text-xs font-medium hover:bg-rose-600 active:bg-rose-700"
+        className="h-full w-20 flex-col gap-1 rounded-none bg-destructive text-destructive-foreground text-xs font-medium hover:bg-destructive/90 active:bg-destructive/80"
       >
         <Archive className="h-5 w-5" aria-hidden="true" />
         Archive
