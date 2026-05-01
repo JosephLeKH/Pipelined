@@ -5,7 +5,7 @@ const SHIMMER = "shimmer-bg animate-shimmer";
 function SkeletonCalendarCell() {
   return (
     <div
-      className="min-h-[80px] border border-gray-100 p-1.5 dark:border-gray-700"
+      className="min-h-[80px] border border-border p-1.5"
       data-testid="skeleton-calendar-cell"
       aria-hidden="true"
     >
