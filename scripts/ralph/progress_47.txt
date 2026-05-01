@@ -64,3 +64,23 @@ Completed: Fri May  1 2026
 - The Button component's cva base class applies `focus-visible:ring-ring` to all variants by default, so any component using `<Button>` gets correct focus ring semantics without per-instance overrides.
 - A thorough audit before writing code can confirm no changes are needed, avoiding unnecessary diffs.
 - Build passed in 2.76s with no errors.
+
+---
+## US-514: Fix OfflineBanner and DuplicateWarning hardcoded amber colors
+
+**Completed:** 2026-05-01
+
+**Changes made:**
+
+`frontend/src/components/OfflineBanner.jsx`:
+- `bg-amber-500` → `bg-destructive` (offline = error state, not just a warning)
+- `text-white` → `text-destructive-foreground` (semantic pair for destructive background)
+
+`frontend/src/components/DuplicateWarning.jsx`:
+- `border-amber-300 bg-amber-50 text-amber-800` → `border-border bg-muted text-foreground`
+- `hover:text-amber-900` → `hover:text-foreground` on the "View existing application" link
+
+**Learnings:**
+- Error/alert states (offline, critical failures) should use `bg-destructive` / `text-destructive-foreground` rather than amber warning tones — this aligns with the semantic intent and ensures consistent visual language for errors.
+- Inline warning widgets (DuplicateWarning) are well-served by `bg-muted border-border text-foreground` — neutral, theme-safe, not visually alarming but still visually distinct from the form body.
+- Build passed in 2.73s with no errors.

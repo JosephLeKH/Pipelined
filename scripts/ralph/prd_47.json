@@ -83,7 +83,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 5,
-      "passes": false,
+      "passes": true,
       "notes": "Read both files before editing. OfflineBanner is a full-width fixed bar — bg-destructive fits its critical error nature. DuplicateWarning is inline — bg-muted with text-foreground is clean and theme-safe."
     },
     {
