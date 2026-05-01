@@ -62,3 +62,9 @@ Started: Fri May  1 09:50:34 PDT 2026
 - No other hardcoded gray/color classes remain in the file
 - Build passes with no errors
 - Committed as: feat: US-507 - Fix SkeletonCalendarCell hardcoded border colors to use design token
+
+## US-508: Fix NotificationBell badge to use semantic destructive token
+
+**Completed**: Single-line change on line 103 of `src/components/NotificationBell.jsx`. Replaced `bg-red-500 text-white` with `bg-destructive text-destructive-foreground` on the unread count badge span. Build passes with no errors. Committed as "feat: US-508 - Fix NotificationBell badge to use semantic destructive token".
+
+**Learned**: The badge was the only hardcoded color in the file — all other colors already used semantic tokens. The `text-destructive-foreground` token correctly pairs with `bg-destructive` to ensure contrast in both light and dark themes.

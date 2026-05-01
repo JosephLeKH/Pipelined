@@ -121,7 +121,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 8,
-      "passes": false,
+      "passes": true,
       "notes": "Single targeted change on the badge span around line 103. text-destructive-foreground ensures contrast in both themes."
     },
     {
