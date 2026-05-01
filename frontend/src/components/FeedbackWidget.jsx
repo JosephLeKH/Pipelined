@@ -14,6 +14,7 @@ import { useFeedback } from "../hooks/useFeedback";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import { Textarea } from "./ui/textarea";
 
 const FEEDBACK_MESSAGE_MAX = 500;
 const FEEDBACK_CATEGORIES = ["Bug", "Feature Request", "General"];
@@ -21,7 +22,6 @@ const NPS_DISMISSED_KEY = "pipelined_nps_dismissed";
 const NPS_DAYS_THRESHOLD = 7;
 const NPS_SCORES = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-const TEXTAREA_CLS = "border border-input rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:border-ring focus:ring-1 focus:ring-ring/20 focus:outline-none transition-colors text-sm px-3 py-2 font-sans w-full";
 
 function NPSBannerView({ onScore, onDismiss }) {
   return (
@@ -128,9 +128,9 @@ function FeedbackFormFields({ category, setCategory, message, setMessage, email,
       </div>
       <div>
         <label htmlFor="fb-message" className="mb-1 block text-xs font-medium text-muted-foreground">Message</label>
-        <textarea id="fb-message" ref={textareaRef} rows={4} maxLength={FEEDBACK_MESSAGE_MAX} value={message}
+        <Textarea id="fb-message" ref={textareaRef} rows={4} maxLength={FEEDBACK_MESSAGE_MAX} value={message}
           onChange={(e) => setMessage(e.target.value)} placeholder="Describe your feedback…"
-          className={`${TEXTAREA_CLS} resize-none`}
+          className="resize-none"
         />
         <p className="mt-0.5 text-right text-xs text-muted-foreground">{message.length}/{FEEDBACK_MESSAGE_MAX}</p>
       </div>
