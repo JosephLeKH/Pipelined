@@ -7,8 +7,8 @@ import Copy from "lucide-react/dist/esm/icons/copy";
 
 import { NEGOTIATION_TEMPLATES, COPY_RESET_MS } from "../lib/constants";
 import { Button } from "./ui/button";
-
-const SELECT_CLS = "border border-input rounded-md bg-background text-foreground focus:border-ring focus:ring-1 focus:ring-ring/20 focus:outline-none transition-colors text-sm px-3 py-2 font-sans w-full";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import { Textarea } from "./ui/textarea";
 
 function TotalCompBreakdown({ offer }) {
   const base = Number(offer.offer_details?.base_salary) || 0;
@@ -61,32 +61,32 @@ export function OfferNegotiationPanel({ apps }) {
         {apps.length > 1 && (
           <div className="flex flex-col gap-1">
             <label className="text-xs font-medium text-muted-foreground" htmlFor="neg-offer-select">Offer</label>
-            <select
-              id="neg-offer-select"
-              value={selectedAppId ?? ""}
-              onChange={(e) => setSelectedAppId(e.target.value)}
-              className={SELECT_CLS}
-            >
-              {apps.map((app) => (
-                <option key={app.id} value={app.id}>
-                  {app.company ?? "Unknown"} — {app.role_title ?? ""}
-                </option>
-              ))}
-            </select>
+            <Select value={selectedAppId ?? ""} onValueChange={(value) => setSelectedAppId(value)}>
+              <SelectTrigger id="neg-offer-select">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {apps.map((app) => (
+                  <SelectItem key={app.id} value={app.id}>
+                    {app.company ?? "Unknown"} — {app.role_title ?? ""}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         )}
         <div className="flex flex-col gap-1">
           <label className="text-xs font-medium text-muted-foreground" htmlFor="neg-template-select">Template</label>
-          <select
-            id="neg-template-select"
-            value={templateId}
-            onChange={(e) => setTemplateId(e.target.value)}
-            className={SELECT_CLS}
-          >
-            {NEGOTIATION_TEMPLATES.map((t) => (
-              <option key={t.id} value={t.id}>{t.label}</option>
-            ))}
-          </select>
+          <Select value={templateId} onValueChange={(value) => setTemplateId(value)}>
+            <SelectTrigger id="neg-template-select">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {NEGOTIATION_TEMPLATES.map((t) => (
+                <SelectItem key={t.id} value={t.id}>{t.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
@@ -107,11 +107,11 @@ export function OfferNegotiationPanel({ apps }) {
             {copied ? "Copied!" : "Copy"}
           </Button>
         </div>
-        <textarea
+        <Textarea
           readOnly
           value={script}
           rows={16}
-          className="w-full rounded-lg border border-border bg-muted p-4 font-mono text-sm text-foreground"
+          className="rounded-lg border-border bg-muted p-4 font-mono text-foreground resize-none"
           aria-label="Negotiation script"
         />
       </div>
