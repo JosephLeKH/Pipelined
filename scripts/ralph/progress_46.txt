@@ -37,3 +37,11 @@ Started: Fri May  1 09:50:34 PDT 2026
 - Updated textarea.jsx to use React.forwardRef so textareaRef (used for auto-focus) works correctly
 - Build passes with no errors
 - Committed as: feat: US-504 - Replace raw <textarea> in FeedbackWidget with shadcn Textarea
+
+## US-505 — Replace raw <textarea> in NewEventFormFields with shadcn Textarea
+- Added `import { Textarea } from "./ui/textarea"` to NewEventFormFields.jsx
+- Removed TEXTAREA_CLASSES constant — it duplicated the Textarea component's default styles exactly
+- Replaced raw <textarea> with <Textarea>, preserving id='event-notes', value={notes}, onChange={(e) => setNotes(e.target.value)}
+- No className needed — Textarea default styles cover the use case
+- Build passes with no errors
+- Committed as: feat: US-505 - Replace raw <textarea> in NewEventFormFields with shadcn Textarea

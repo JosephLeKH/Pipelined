@@ -79,7 +79,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 5,
-      "passes": false,
+      "passes": true,
       "notes": "Textarea component must exist (US-501 creates it). The TEXTAREA_CLASSES string duplicates the Textarea component's default styles — just delete it."
     },
     {
