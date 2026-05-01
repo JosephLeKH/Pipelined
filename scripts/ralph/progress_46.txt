@@ -9,3 +9,12 @@ Started: Fri May  1 09:50:34 PDT 2026
 - Default className matches the acceptance criteria exactly
 - Build passes with no errors
 - Committed as: feat: US-501 - Create shadcn Textarea UI component
+
+## US-502 — Replace raw <select> in ContactForm with shadcn Select
+- Replaced raw <select> at line ~62 in ContactForm.jsx with Select/SelectTrigger/SelectContent/SelectItem/SelectValue
+- Removed SELECT_CLS constant — no longer needed
+- All RELATIONSHIP_OPTIONS render as SelectItem elements
+- Used onValueChange with synthetic event adapter: `(value) => handleChange({ target: { name: "relationship", value } })` to reuse existing handleChange without refactoring
+- disabled prop passed directly to SelectTrigger
+- Build passes with no errors
+- Committed as: feat: US-502 - Replace raw <select> in ContactForm with shadcn Select

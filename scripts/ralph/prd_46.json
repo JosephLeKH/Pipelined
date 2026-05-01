@@ -32,7 +32,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "shadcn Select uses onValueChange (not onChange). The value prop goes on Select root. Pass disabled to SelectTrigger. Import from src/components/ui/select.jsx using individual named exports, not a barrel."
     },
     {
