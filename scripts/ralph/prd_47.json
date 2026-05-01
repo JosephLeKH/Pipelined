@@ -54,7 +54,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/FollowUpBanner.jsx before editing. The goal is to use semantic tokens that work in both light and dark mode. If amber feels intentional for the warning urgency, keep bg-amber-50/border-amber-200 but fix the interactive element colors (hover, focus rings) to use semantic tokens."
     },
     {

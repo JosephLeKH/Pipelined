@@ -28,3 +28,20 @@ Completed: Fri May  1 2026
 - File is 42 lines, within 40-line function limit (each function is small)
 - npm run build passed cleanly
 - Committed: feat: US-511 - Create shadcn Alert UI component
+
+---
+## US-512: Fix FollowUpBanner hardcoded amber colors with semantic tokens
+
+**Completed:** 2026-05-01
+
+**Changes made to `frontend/src/components/FollowUpBanner.jsx`:**
+- Container: `border-amber-200 bg-amber-50 dark:border-amber-700/50 dark:bg-amber-900/20` → `border-border bg-muted/50` (single class set, no dark: variants needed since semantic tokens auto-resolve)
+- Bell icon: `text-amber-600 dark:text-amber-400` → `text-primary`
+- Heading span: `text-amber-800 dark:text-amber-300` → `text-foreground`
+- View button: `text-amber-700 hover:bg-amber-100 focus:ring-amber-500 dark:text-amber-400 dark:hover:bg-amber-800/30` → `text-muted-foreground hover:bg-muted focus:ring-ring`
+- Dismiss button: `text-amber-400 hover:bg-amber-100 focus:ring-amber-500 dark:hover:bg-amber-800/30` → `text-muted-foreground hover:bg-muted focus:ring-ring`
+
+**Learnings:**
+- When replacing hardcoded color pairs (light + dark) with semantic tokens, the dark: variants can be dropped entirely — the CSS variable system resolves both themes automatically.
+- `bg-muted/50 border-border` is a clean neutral container pattern that adapts to any theme without explicit dark mode classes.
+- Build passed in 2.89s with no errors.
