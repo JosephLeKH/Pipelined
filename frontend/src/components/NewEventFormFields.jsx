@@ -3,8 +3,7 @@
 import { EVENT_TYPE_OPTIONS } from "../lib/constants";
 import { Input } from "./ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-
-const TEXTAREA_CLASSES = "flex min-h-[80px] resize-y w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50";
+import { Textarea } from "./ui/textarea";
 
 export function NewEventFormFields({ eventType, setEventType, date, setDate, time, setTime, notes, setNotes, formError }) {
   return (
@@ -38,7 +37,7 @@ export function NewEventFormFields({ eventType, setEventType, date, setDate, tim
         <label className="text-xs font-medium uppercase text-muted-foreground" htmlFor="event-notes">
           Notes{" "}<span className="font-normal normal-case text-muted-foreground">(optional)</span>
         </label>
-        <textarea id="event-notes" value={notes} onChange={(e) => setNotes(e.target.value)} className={TEXTAREA_CLASSES} />
+        <Textarea id="event-notes" value={notes} onChange={(e) => setNotes(e.target.value)} />
       </div>
       {formError && <p className="text-sm text-destructive">{formError}</p>}
     </>
