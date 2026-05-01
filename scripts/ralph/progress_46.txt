@@ -18,3 +18,13 @@ Started: Fri May  1 09:50:34 PDT 2026
 - disabled prop passed directly to SelectTrigger
 - Build passes with no errors
 - Committed as: feat: US-502 - Replace raw <select> in ContactForm with shadcn Select
+
+## US-503 — Replace raw <select> in FeedbackWidget with shadcn Select
+- Replaced raw <select> at line ~120 in FeedbackWidget.jsx with Select/SelectTrigger/SelectContent/SelectItem/SelectValue
+- Removed SELECT_CLS constant — no longer needed
+- TEXTAREA_CLS retained (to be removed by US-504)
+- Used onValueChange={setCategory} directly — no adapter needed since setCategory is a simple state setter
+- All FEEDBACK_CATEGORIES render as SelectItem elements with correct values
+- category state still controlled via form.category state in useFeedbackForm hook
+- Build passes with no errors
+- Committed as: feat: US-503 - Replace raw <select> in FeedbackWidget with shadcn Select

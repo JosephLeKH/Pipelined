@@ -48,7 +48,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "notes": "Use onValueChange on the Select root to update state. Keep consistent with US-502 pattern."
     },
     {
