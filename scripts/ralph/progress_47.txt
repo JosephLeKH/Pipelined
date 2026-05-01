@@ -114,3 +114,20 @@ Completed: Fri May  1 2026
 - Destructive opacity modifiers (`/90`, `/80`) provide hover/active state feedback for destructive action buttons while staying within the semantic token system.
 - `text-destructive-foreground` pairs correctly with `bg-destructive`, replacing bare `text-white` for theme safety.
 - Build passed in 2.73s with no errors.
+
+---
+## US-517: Fix AnalyticsCharts hardcoded hex and amber/rose metric colors
+
+**Completed:** 2026-05-01
+
+**Changes made to `frontend/src/components/AnalyticsCharts.jsx`:**
+- `CHART_GRID_COLOR = "#e8e6dc"` → `"hsl(var(--border))"` (uses semantic border token, auto-adapts in dark mode)
+- `CHART_TICK_COLOR = "#9ca3af"` → `"hsl(var(--muted-foreground))"` (semantic muted text token)
+- `rateColorClass` low-rate branch: `"text-rose-600 dark:text-rose-400 font-medium"` → `"text-destructive font-medium"`
+- `avgDaysColorClass` high-days branch: `"text-rose-600 dark:text-rose-400"` → `"text-destructive"`
+- `text-amber-600 dark:text-amber-400` on medium-rate metric — kept as intentional warning semantic color
+
+**Learnings:**
+- CSS variables used in JS Recharts props require the full `hsl(var(--token))` syntax since Tailwind CSS variables store HSL components without the `hsl()` wrapper.
+- Rose/red metric states map cleanly to `text-destructive`; amber warning states can stay as-is when they carry intentional semantic meaning (medium-urgency, not error).
+- Build passed in 2.70s with no errors.

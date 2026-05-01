@@ -126,7 +126,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 8,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/AnalyticsCharts.jsx first. The CHART_COLORS hex array (#d97757 etc) are intentional brand palette colors — do NOT change those. Only change CHART_GRID_COLOR, CHART_TICK_COLOR, and the rose/amber metric text classes. For CSS var in JS: use 'var(--color-muted-foreground)' or check what CSS variable name tailwind uses."
     }
   ]
