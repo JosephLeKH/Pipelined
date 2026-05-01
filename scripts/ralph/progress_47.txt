@@ -1,3 +1,22 @@
 # Ralph Progress Log
 Started: Fri May  1 13:05:36 PDT 2026
 ---
+
+## US-510 — Fix designTokens.js: replace hardcoded gray/red/blue with semantic tokens
+Completed: Fri May  1 2026
+
+### Changes
+- BUTTON_SECONDARY: bg-white → bg-secondary, text-gray-700 → text-secondary-foreground, hover:text-gray-900 → hover:text-foreground; removed explicit dark: variants (covered by semantic tokens)
+- BUTTON_GHOST: text-gray-500 → text-muted-foreground, hover:text-gray-700 → hover:text-foreground; removed dark: variants
+- BUTTON_DANGER: bg-red-600 → bg-destructive, hover:bg-red-700 → hover:bg-destructive/90, text-white → text-destructive-foreground, focus:ring-red-500/30 → focus:ring-destructive/30
+- INPUT_BASE: border-gray-300 → border-input, bg-white → bg-background, text-gray-900 → text-foreground, placeholder:text-gray-400 → placeholder:text-muted-foreground; removed all dark: variants
+- INPUT_LABEL: text-gray-700 → text-foreground
+- INPUT_HELPER: text-gray-400 → text-muted-foreground
+- INPUT_ERROR: text-red-600 → text-destructive
+- NAV_BRAND: text-gray-900 → text-foreground; removed dark:text-gray-100
+- BADGE_DEFAULT: text-gray-600 → text-muted-foreground
+- BADGE_INFO left unchanged (intentional brand coloring)
+
+### Learnings
+- Semantic CSS variable tokens (bg-secondary, text-foreground, bg-destructive, border-input, text-muted-foreground) handle both light and dark modes automatically — explicit dark: variants can be removed when switching
+- The shadcn/Tailwind CSS variable convention means `bg-secondary` resolves to the correct value in both themes without any dark: override needed

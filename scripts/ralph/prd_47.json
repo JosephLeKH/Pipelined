@@ -20,7 +20,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/lib/designTokens.js first to see the full file before editing. Be careful — these tokens are imported in many components. Only change the color class strings inside the token constants, not the token names or structure. Do NOT change BADGE_INFO (bg-blue-50/border-blue-200 is intentional brand coloring)."
     },
     {
