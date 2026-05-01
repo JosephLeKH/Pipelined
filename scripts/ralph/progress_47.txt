@@ -100,3 +100,17 @@ Completed: Fri May  1 2026
 - The destructive token with opacity modifiers (`/10`, `/20`) is the right pattern for badge-style backgrounds — it gives a tinted appearance without the full destructive background used in buttons/banners.
 - Extracting inline string literals to named constants satisfies both the "no magic values" rule and the acceptance criteria simultaneously.
 - Build passed in 2.68s with no errors.
+
+---
+## US-516: Fix ApplicationRow swipe action hardcoded amber/rose colors
+
+**Completed:** 2026-05-01
+
+**Changes made to `frontend/src/components/ApplicationRow.jsx`:**
+- Archive swipe button: `bg-rose-500 text-white hover:bg-rose-600 active:bg-rose-700` → `bg-destructive text-destructive-foreground hover:bg-destructive/90 active:bg-destructive/80`
+- Follow-up swipe button: `bg-amber-500` left intentionally unchanged — amber is the correct semantic signal for follow-up urgency
+
+**Learnings:**
+- Destructive opacity modifiers (`/90`, `/80`) provide hover/active state feedback for destructive action buttons while staying within the semantic token system.
+- `text-destructive-foreground` pairs correctly with `bg-destructive`, replacing bare `text-white` for theme safety.
+- Build passed in 2.73s with no errors.

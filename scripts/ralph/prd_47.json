@@ -111,7 +111,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 7,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/ApplicationRow.jsx first. Only change the rose archive button to destructive. The amber follow-up button is a judgment call — if you change it, use bg-primary (brand color). Do not change anything else in this file."
     },
     {
