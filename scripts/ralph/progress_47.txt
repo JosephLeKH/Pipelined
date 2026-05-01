@@ -84,3 +84,19 @@ Completed: Fri May  1 2026
 - Error/alert states (offline, critical failures) should use `bg-destructive` / `text-destructive-foreground` rather than amber warning tones — this aligns with the semantic intent and ensures consistent visual language for errors.
 - Inline warning widgets (DuplicateWarning) are well-served by `bg-muted border-border text-foreground` — neutral, theme-safe, not visually alarming but still visually distinct from the form body.
 - Build passed in 2.73s with no errors.
+
+---
+## US-515: Fix FitBadge hardcoded green/amber/orange/red badge colors
+
+**Completed:** 2026-05-01
+
+**Changes made to `frontend/src/components/FitBadge.jsx`:**
+- Extracted all tier color strings to named module-scope constants: `STATUS_HIGH`, `STATUS_MEDIUM`, `STATUS_LOW`, `STATUS_CRITICAL`
+- Green/amber/orange tiers kept as intentional semantic scoring colors (positive → cautious → weak signal)
+- Critical tier changed from `bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400` → `bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive`
+- `fitColor()` function simplified to single-return-per-branch using the named constants
+
+**Learnings:**
+- The destructive token with opacity modifiers (`/10`, `/20`) is the right pattern for badge-style backgrounds — it gives a tinted appearance without the full destructive background used in buttons/banners.
+- Extracting inline string literals to named constants satisfies both the "no magic values" rule and the acceptance criteria simultaneously.
+- Build passed in 2.68s with no errors.

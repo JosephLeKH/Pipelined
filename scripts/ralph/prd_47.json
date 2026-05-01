@@ -98,7 +98,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 6,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/FitBadge.jsx first. The green/amber/orange tiers are intentional semantic colors for a scoring scale — don't strip them. The red tier should map to destructive. The goal is consistency on the 'error/critical' end, not neutralizing all color signals."
     },
     {
