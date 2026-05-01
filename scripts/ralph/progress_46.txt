@@ -68,3 +68,13 @@ Started: Fri May  1 09:50:34 PDT 2026
 **Completed**: Single-line change on line 103 of `src/components/NotificationBell.jsx`. Replaced `bg-red-500 text-white` with `bg-destructive text-destructive-foreground` on the unread count badge span. Build passes with no errors. Committed as "feat: US-508 - Fix NotificationBell badge to use semantic destructive token".
 
 **Learned**: The badge was the only hardcoded color in the file — all other colors already used semantic tokens. The `text-destructive-foreground` token correctly pairs with `bg-destructive` to ensure contrast in both light and dark themes.
+
+## US-509 — Fix ApiErrorMessage hardcoded red colors to use semantic destructive tokens
+- Replaced `border-red-200` with `border-destructive/30` on the container div
+- Replaced `bg-red-50` with `bg-destructive/5` on the container div
+- Replaced `text-red-500` with `text-destructive` on the AlertCircle icon
+- Replaced `text-red-800` with `text-destructive` on the error message paragraph
+- Replaced `border-red-300 text-red-700 hover:bg-red-100 hover:text-red-700` with `border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive` on the Retry button
+- All red- classes were purely for error state — all map cleanly to destructive tokens with /opacity suffixes for backgrounds
+- Build passes with no errors
+- Committed as: feat: US-509 - Fix ApiErrorMessage hardcoded red colors to use semantic destructive tokens

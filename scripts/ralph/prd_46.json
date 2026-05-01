@@ -140,7 +140,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 9,
-      "passes": false,
+      "passes": true,
       "notes": "All red- classes in this file are purely for error state styling — they should all map to destructive tokens. Use /opacity suffixes for backgrounds to avoid covering the card background."
     }
   ]
