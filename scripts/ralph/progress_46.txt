@@ -28,3 +28,12 @@ Started: Fri May  1 09:50:34 PDT 2026
 - category state still controlled via form.category state in useFeedbackForm hook
 - Build passes with no errors
 - Committed as: feat: US-503 - Replace raw <select> in FeedbackWidget with shadcn Select
+
+## US-504 — Replace raw <textarea> in FeedbackWidget with shadcn Textarea
+- Added `import { Textarea } from "./ui/textarea"` to FeedbackWidget.jsx
+- Removed TEXTAREA_CLS constant (was unused after US-503 removed SELECT_CLS; this story targets TEXTAREA_CLS)
+- Replaced raw <textarea> with <Textarea>, passing rows={4}, maxLength, value, onChange, placeholder, ref, id unchanged
+- Passed className="resize-none" to override default (Textarea component provides all base styles)
+- Updated textarea.jsx to use React.forwardRef so textareaRef (used for auto-focus) works correctly
+- Build passes with no errors
+- Committed as: feat: US-504 - Replace raw <textarea> in FeedbackWidget with shadcn Textarea
