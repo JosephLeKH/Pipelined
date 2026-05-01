@@ -45,3 +45,13 @@ Started: Fri May  1 09:50:34 PDT 2026
 - No className needed — Textarea default styles cover the use case
 - Build passes with no errors
 - Committed as: feat: US-505 - Replace raw <textarea> in NewEventFormFields with shadcn Textarea
+
+## US-506 — Replace raw <select> and <textarea> in OfferNegotiationPanel with shadcn components
+- Replaced raw <select> at line ~64 (offer selector, conditional on apps.length > 1) with Select/SelectTrigger/SelectContent/SelectItem/SelectValue
+- Replaced raw <select> at line ~80 (template selector) with Select/SelectTrigger/SelectContent/SelectItem/SelectValue
+- Replaced raw <textarea> at line ~110 (read-only negotiation script) with Textarea, preserving custom className (rounded-lg, bg-muted, font-mono) plus resize-none
+- Removed SELECT_CLS constant — no longer needed
+- Used onValueChange for both selects; setSelectedAppId and setTemplateId called directly (no adapter needed — both are simple state setters)
+- File stayed at 121 lines — well under the 300-line limit, no split needed
+- Build passes with no errors
+- Committed as: feat: US-506 - Replace raw <select> and <textarea> in OfferNegotiationPanel with shadcn components

@@ -95,7 +95,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 6,
-      "passes": false,
+      "passes": true,
       "notes": "Two selects and one textarea. Use onValueChange for selects. This file may be close to 300-line limit — check and split if needed."
     },
     {
