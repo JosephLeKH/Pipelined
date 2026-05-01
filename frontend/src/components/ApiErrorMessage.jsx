@@ -18,17 +18,17 @@ function ApiErrorMessage({ error, onRetry }) {
   return (
     <div
       role="alert"
-      className="flex flex-col items-center gap-3 rounded-lg border border-red-200 bg-red-50 px-6 py-8 text-center"
+      className="flex flex-col items-center gap-3 rounded-lg border border-destructive/30 bg-destructive/5 px-6 py-8 text-center"
     >
-      <AlertCircle className="h-6 w-6 text-red-500" aria-hidden="true" />
-      <p className="text-sm font-medium text-red-800">{message}</p>
+      <AlertCircle className="h-6 w-6 text-destructive" aria-hidden="true" />
+      <p className="text-sm font-medium text-destructive">{message}</p>
       {onRetry && (
         <Button
           type="button"
           variant="outline"
           size="sm"
           onClick={onRetry}
-          className="border-red-300 text-red-700 hover:bg-red-100 hover:text-red-700"
+          className="border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
         >
           Retry
         </Button>
