@@ -45,3 +45,22 @@ Completed: Fri May  1 2026
 - When replacing hardcoded color pairs (light + dark) with semantic tokens, the dark: variants can be dropped entirely — the CSS variable system resolves both themes automatically.
 - `bg-muted/50 border-border` is a clean neutral container pattern that adapts to any theme without explicit dark mode classes.
 - Build passed in 2.89s with no errors.
+
+---
+## US-513: Fix EmailVerificationBanner hardcoded amber colors with semantic tokens
+
+**Completed:** 2026-05-01
+
+**Outcome:** No code changes required — component already compliant.
+
+**Audit findings:**
+- Container amber (`border-amber-200 bg-amber-50 dark:border-amber-700/50 dark:bg-amber-900/20`) — intentional warning color, acceptable per AC
+- AlertTriangle icon: `text-amber-600 dark:text-amber-400` — already has dark mode variant ✓
+- Resend link button: `text-amber-700 hover:text-amber-900 dark:text-amber-400 dark:hover:text-amber-200` — all hover states have dark: variants ✓
+- Dismiss ghost button: `hover:bg-amber-100 hover:text-amber-600 dark:hover:bg-amber-800/30 dark:hover:text-amber-200` — dark mode variants present ✓
+- No `focus:ring-amber-500` classes existed anywhere in the file; Button component already uses `focus-visible:ring-ring` globally ✓
+
+**Learnings:**
+- The Button component's cva base class applies `focus-visible:ring-ring` to all variants by default, so any component using `<Button>` gets correct focus ring semantics without per-instance overrides.
+- A thorough audit before writing code can confirm no changes are needed, avoiding unnecessary diffs.
+- Build passed in 2.76s with no errors.

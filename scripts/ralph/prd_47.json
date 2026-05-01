@@ -69,7 +69,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 4,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/EmailVerificationBanner.jsx before editing. This is a warning-style banner so amber container colors (bg-amber-50, border-amber-200) are acceptable and intentional. Focus ONLY on: focus ring colors → focus:ring-ring, and any hover backgrounds that don't have dark mode variants."
     },
     {
