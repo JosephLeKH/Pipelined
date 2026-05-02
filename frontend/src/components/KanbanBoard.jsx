@@ -43,14 +43,14 @@ function KanbanMobileView({ stages, mobileStage, setMobileStage, byStage, onSele
     <>
       <div className="flex overflow-x-auto border-b border-border md:hidden" role="tablist" aria-label="Stage tabs">
         {stages.map((stage) => (
-          <button key={stage} type="button" role="tab" aria-selected={mobileStage === stage} onClick={() => setMobileStage(stage)}
-            className={`shrink-0 px-4 py-2 text-sm font-medium transition-colors ${mobileStage === stage ? "border-b-2 border-primary text-primary" : "text-muted-foreground hover:text-foreground"}`}>
+          <button key={stage} type="button" role="tab" aria-selected={mobileStage === stage} aria-controls="mobile-kanban-panel" onClick={() => setMobileStage(stage)}
+            className={`shrink-0 px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${mobileStage === stage ? "border-b-2 border-primary text-primary" : "text-muted-foreground hover:text-foreground"}`}>
             {stage}
             <span className="ml-1 text-xs text-muted-foreground">({(byStage[stage] ?? []).length})</span>
           </button>
         ))}
       </div>
-      <div className="mt-4 md:hidden" data-testid="mobile-kanban-swipe" onTouchStart={handleMobileTouchStart} onTouchEnd={handleMobileTouchEnd}>
+      <div className="mt-4 md:hidden" id="mobile-kanban-panel" data-testid="mobile-kanban-swipe" onTouchStart={handleMobileTouchStart} onTouchEnd={handleMobileTouchEnd}>
         <KanbanColumn stage={mobileStage} applications={byStage[mobileStage] ?? []} onSelect={onSelect} />
       </div>
       <div className="mt-3 flex justify-center gap-2 md:hidden" aria-label="Stage navigation dots">
