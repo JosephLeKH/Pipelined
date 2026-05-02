@@ -94,12 +94,12 @@ function SettingsProfileSection() {
 
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="email-display">Email</Label>
-          <input
+          <Input
             id="email-display"
             type="email"
             value={user?.email ?? ""}
             readOnly
-            className="border border-border rounded-md bg-muted text-muted-foreground text-sm px-3 py-2 font-sans w-full cursor-not-allowed"
+            disabled
           />
         </div>
 
