@@ -65,7 +65,8 @@
         "npm run build passes with no errors"
       ],
       "priority": 4,
-      "passes": false,
+      "passes": true,
+      "completionNote": "Replaced raw <input type='checkbox'> in ChecklistItem with <Checkbox> from ui/checkbox. Changed onChange to onCheckedChange, kept id/checked/aria-label, passed positioning classes (mt-0.5 flex-shrink-0) via className. Build passes.",
       "notes": "Read the file before editing. If there are multiple checkboxes (one per checklist item), replace all of them. Use onCheckedChange which receives the boolean value directly."
     },
     {

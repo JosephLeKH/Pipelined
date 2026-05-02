@@ -16,3 +16,9 @@ Action: No files created, no npm install run.
 **Status:** DONE
 **Summary:** ApplicationListHeader had a raw `<input type="checkbox">` for bulk-select. Created `src/components/ui/checkbox.jsx` — a shadcn-style Checkbox component using native input (since `@radix-ui/react-checkbox` is not installed). Component handles `onCheckedChange`, `checked` (boolean or 'indeterminate'), and uses `cn()` from `@/lib/utils`. Replaced the raw input in ApplicationListHeader with `<Checkbox aria-label="..." checked={allSelected} onCheckedChange={onSelectAll} />`. Build passes.
 **Learnings:** `@radix-ui/react-checkbox` is not in package.json — implemented a native wrapper with the same API. The Checkbox component can now be reused by US-537 and US-538.
+
+---
+US-537: Replace raw checkboxes in PrepChecklist with shadcn Checkbox
+Status: COMPLETE
+Summary: PrepChecklist.jsx had one raw <input type="checkbox"> in the ChecklistItem component. Replaced with <Checkbox> from ui/checkbox. Added import for Checkbox, changed onChange to onCheckedChange (which ignores the boolean arg and just calls onToggle(item.id)), preserved id/checked/aria-label, passed positioning classes (mt-0.5 flex-shrink-0) via className. The htmlFor/id label association still works since Checkbox renders an <input> underneath. Build passes.
+Learnings: The shadcn Checkbox wrapper (native input, not Radix) handles h-4 w-4 and border styling internally, so only positioning overrides need to be passed via className. onCheckedChange receives the boolean checked value but since PrepChecklist toggle just flips by ID, the value isn't needed.
