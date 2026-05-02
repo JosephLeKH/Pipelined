@@ -37,7 +37,7 @@ function UndoToast({ message, onUndo, onDismiss, duration = TOAST_DURATION_MS })
       <div className="flex items-center justify-between gap-3 px-4 py-3">
         <span className="text-sm text-background">{message}</span>
         <Button type="button" variant="ghost" size="sm" onClick={() => onUndoRef.current()}
-          className="shrink-0 text-primary hover:bg-background/10 focus:ring-primary">
+          className="shrink-0 text-primary hover:bg-background/10 focus-visible:ring-ring">
           Undo
         </Button>
       </div>

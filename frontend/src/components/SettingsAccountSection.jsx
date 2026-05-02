@@ -133,7 +133,7 @@ function DangerZone() {
               contacts, and resume. This cannot be undone.
             </p>
             <Button type="button" variant="outline" onClick={() => setShowModal(true)}
-              className="mt-4 border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive focus:ring-destructive/50">
+              className="mt-4 border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive focus-visible:ring-destructive/50">
               Delete account
             </Button>
           </div>

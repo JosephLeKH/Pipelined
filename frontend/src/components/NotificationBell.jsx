@@ -33,7 +33,7 @@ function NotificationItem({ notification }) {
         type="button"
         variant="ghost"
         onClick={handleClick}
-        className="flex w-full items-start gap-3 px-4 py-3 text-left h-auto rounded-none justify-start focus:ring-inset"
+        className="flex w-full items-start gap-3 px-4 py-3 text-left h-auto rounded-none justify-start focus-visible:ring-inset"
       >
         <Icon
           className={`mt-0.5 h-4 w-4 shrink-0 ${
