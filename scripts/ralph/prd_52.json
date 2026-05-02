@@ -1,0 +1,134 @@
+{
+  "id": "PRD-52",
+  "title": "Raw select/textarea/input migrations, tooltip consistency, and CommandPalette accessibility",
+  "description": "Continuation of the systematic UI improvement loop. This batch replaces remaining raw <select> elements in TemplateBar, NewEventForm, and TimezoneSelector with shadcn Select, replaces raw <textarea> elements in MarkdownEditor and PrepSection with shadcn Textarea, replaces raw <input> in OfferEditableCell with shadcn Input, migrates native title= tooltip attributes in DashboardToolbar/ContactCard/FeedbackWidget to shadcn Tooltip, and adds aria-label to CommandPalette search input.",
+  "userStories": [
+    {
+      "id": "US-550",
+      "title": "Replace TemplateBar raw <select> with shadcn Select",
+      "description": "As a developer, TemplateBar uses a raw <select> with a SELECT_CLS constant for styling. Replace with the shadcn Select component.",
+      "acceptanceCriteria": [
+        "Read src/components/TemplateBar.jsx first",
+        "If raw <select> exists with SELECT_CLS or similar manual styling, replace with <Select value={...} onValueChange={...}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{options.map(o => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent></Select>",
+        "Import Select, SelectTrigger, SelectValue, SelectContent, SelectItem from src/components/ui/select",
+        "Remove SELECT_CLS usage from this file if no longer needed",
+        "If the file already uses shadcn Select, mark passes: true with note 'already using shadcn Select'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 1,
+      "passes": true,
+      "notes": "Read the file before editing. TemplateBar likely renders a template picker dropdown. shadcn Select uses onValueChange (not onChange). The SelectTrigger width should match the existing select width — pass className to SelectTrigger if needed."
+    },
+    {
+      "id": "US-551",
+      "title": "Replace NewEventForm raw <select> (AppSelector) with shadcn Select",
+      "description": "As a developer, NewEventForm contains an application selector using a raw <select> element. Replace with shadcn Select.",
+      "acceptanceCriteria": [
+        "Read src/components/NewEventForm.jsx first",
+        "If raw <select> exists for application selection, replace with shadcn Select using the same options array",
+        "Import Select, SelectTrigger, SelectValue, SelectContent, SelectItem from src/components/ui/select",
+        "Controlled value and onChange behavior preserved (use onValueChange)",
+        "If the file already uses shadcn Select, mark passes: true with note 'already using shadcn Select'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Read the file before editing. The application selector maps application objects to options. shadcn Select value must be a string — if the value is an object id, use the id string as the value. Preserve any empty/placeholder option as a SelectItem with value=''."
+    },
+    {
+      "id": "US-552",
+      "title": "Replace MarkdownEditor raw <textarea> with shadcn Textarea",
+      "description": "As a developer, MarkdownEditor uses a raw <textarea> with inline Tailwind classes instead of the shadcn Textarea component.",
+      "acceptanceCriteria": [
+        "Read src/components/MarkdownEditor.jsx first",
+        "If raw <textarea> exists with manual className, replace with <Textarea> from src/components/ui/textarea",
+        "Preserve all existing props: value, onChange, onKeyDown, placeholder, rows, ref, className (pass through)",
+        "If the file already uses shadcn Textarea, mark passes: true with note 'already using shadcn Textarea'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "Read the file before editing. The Textarea component at src/components/ui/textarea.jsx already exists and uses React.forwardRef. Pass any custom className — the component merges it via cn(). Preserve resize-none or other layout classes."
+    },
+    {
+      "id": "US-553",
+      "title": "Replace PrepSection raw <textarea> with shadcn Textarea",
+      "description": "As a developer, PrepSection uses a raw <textarea> with a TEXTAREA_CLS constant for styling. Replace with shadcn Textarea.",
+      "acceptanceCriteria": [
+        "Read src/components/PrepSection.jsx first",
+        "If raw <textarea> with TEXTAREA_CLS or manual className exists, replace with <Textarea> from src/components/ui/textarea",
+        "Remove TEXTAREA_CLS usage from this file if no longer needed",
+        "If the file already uses shadcn Textarea, mark passes: true with note 'already using shadcn Textarea'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": "Read the file before editing. Preserve all props: value, onChange, placeholder, rows. If TEXTAREA_CLS is only used in PrepSection, remove both the import and the constant after replacing."
+    },
+    {
+      "id": "US-554",
+      "title": "Replace OfferEditableCell raw <input type='text'> with shadcn Input",
+      "description": "As a developer, OfferEditableCell uses a raw <input type='text'> with INPUT_CLS styling. Replace with shadcn Input.",
+      "acceptanceCriteria": [
+        "Read src/components/OfferEditableCell.jsx (or wherever the editable cell input lives — may be in OfferComparison.jsx)",
+        "If raw <input type='text'> exists with INPUT_CLS or manual className, replace with <Input> from src/components/ui/input",
+        "Preserve all existing props: value, onChange, onBlur, onKeyDown, type, className (merge with cn())",
+        "If the file already uses shadcn Input, mark passes: true with note 'already using shadcn Input'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": "Read the file before editing. The Input component at src/components/ui/input.jsx already exists. Merge any layout-specific className via cn(). OfferEditableCell is likely a small component — check src/components/OfferEditableCell.jsx first, then OfferComparison.jsx if not found there."
+    },
+    {
+      "id": "US-555",
+      "title": "Add aria-label to CommandPalette search input and replace with shadcn Input",
+      "description": "As a developer, CommandPalette has a raw <input type='text'> search field with no aria-label. Replace with shadcn Input and add the label.",
+      "acceptanceCriteria": [
+        "Read src/components/CommandPalette.jsx first",
+        "If raw <input type='text'> exists for search, replace with <Input> from src/components/ui/input",
+        "Add aria-label='Search commands' (or appropriate label) to the Input",
+        "Preserve all existing behavior: value, onChange, onKeyDown, autoFocus, placeholder",
+        "If the file already uses shadcn Input, just add aria-label if missing",
+        "npm run build passes with no errors"
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": "Read the file before editing. The command palette search is the main input at the top of the modal. Adding aria-label is the key accessibility fix. The Input component spreads all HTML input props so aria-label will be forwarded correctly."
+    },
+    {
+      "id": "US-556",
+      "title": "Migrate native title= tooltip attributes to shadcn Tooltip in DashboardToolbar, ContactCard, FeedbackWidget",
+      "description": "As a developer, DashboardToolbar, ContactCard, and FeedbackWidget use native title= attributes for tooltips. Replace with the shadcn Tooltip component for consistent UX.",
+      "acceptanceCriteria": [
+        "Read src/components/DashboardToolbar.jsx — replace any title='...' on buttons with <Tooltip><TooltipTrigger asChild>{button}</TooltipTrigger><TooltipContent>{label}</TooltipContent></Tooltip>",
+        "Read src/components/ContactCard.jsx — same pattern for all title= attributes",
+        "Read src/components/FeedbackWidget.jsx — same pattern",
+        "Import Tooltip, TooltipTrigger, TooltipContent from src/components/ui/tooltip",
+        "Remove the title= attribute after wrapping with Tooltip",
+        "If any file already uses shadcn Tooltip for all tooltips, mark that file as no-change-needed",
+        "npm run build passes with no errors"
+      ],
+      "priority": 7,
+      "passes": false,
+      "notes": "Read each file before editing. The project already has a TooltipProvider wrapping the app (added in a prior PRD). Import Tooltip, TooltipTrigger, TooltipContent from src/components/ui/tooltip. Use asChild on TooltipTrigger to avoid wrapping in an extra span. Only replace title= attributes — don't restructure the components otherwise."
+    },
+    {
+      "id": "US-557",
+      "title": "Replace TimezoneSelector raw <select> with shadcn Select (with SelectGroup)",
+      "description": "As a developer, TimezoneSelector uses a raw <select> with <optgroup> elements for timezone groups. Replace with shadcn Select using SelectGroup and SelectLabel.",
+      "acceptanceCriteria": [
+        "Read src/components/TimezoneSelector.jsx first",
+        "If raw <select> with <optgroup> elements exists, replace with shadcn Select using <SelectGroup> and <SelectLabel> for each group",
+        "Import Select, SelectTrigger, SelectValue, SelectContent, SelectGroup, SelectLabel, SelectItem from src/components/ui/select",
+        "Value and onValueChange behavior preserved",
+        "If the file already uses shadcn Select, mark passes: true with note 'already using shadcn Select'",
+        "If TimezoneSelector.jsx does not exist, mark passes: true with note 'file not found'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 8,
+      "passes": false,
+      "notes": "Read the file before editing. This is the most complex Select migration because of the grouped timezone structure. Map each <optgroup label='...'> to <SelectGroup><SelectLabel>{label}</SelectLabel>{options}</SelectGroup>. The SelectContent may need a max-height for the long timezone list — add className='max-h-60 overflow-auto' to SelectContent if not default."
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+# Ralph Progress Log
+Started: Sat May  2 15:46:35 PDT 2026
+---
+
+## US-550: Replace TemplateBar raw <select> with shadcn Select
+- Replaced raw `<select>` + `SELECT_CLS` constant with shadcn `Select`, `SelectTrigger`, `SelectValue`, `SelectContent`, `SelectItem`
+- Added `useState("")` for controlled value; `handleTemplateChange` applies template then resets state to `""` (shows placeholder)
+- Removed `SELECT_CLS` constant entirely; `flex-1 text-sm` passed as `className` to `SelectTrigger`
+- Build: clean (✓ built in 2.67s)
+- Commit: 051668c
