@@ -15,3 +15,13 @@ Learnings: Shadcn-generated ui/ components ship with focus: ring classes by defa
 Status: PASS
 Summary: Replaced focus:ring-2 focus:ring-ring focus:ring-offset-2 with focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 in the SelectPrimitive.Trigger cn() className string (line 17) in frontend/src/components/ui/select.jsx. focus:outline-none and all other classes left unchanged. Build passed (✓ built in 2.70s).
 Learnings: The SelectPrimitive.Trigger is a shadcn-generated wrapper; only the three focus:ring-* classes needed updating. The long className string in cn() stays on one line — surgical replacement of the three tokens is safe without reformatting the rest.
+
+## US-593 — Fix ui/badge.jsx badgeVariants base: focus:ring-* → focus-visible:ring-*
+Status: PASSED
+Date: 2026-05-02
+
+Changed: In frontend/src/components/ui/badge.jsx line 6, replaced focus:ring-2, focus:ring-ring, focus:ring-offset-2 with their focus-visible: equivalents inside the cva() base class string. focus:outline-none left unchanged.
+
+Build: passed (2.72s)
+Commit: bd3dfe9 feat: US-593 - Fix ui/badge.jsx badgeVariants base: focus:ring-* → focus-visible:ring-*
+

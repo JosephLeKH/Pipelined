@@ -64,7 +64,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 4,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/ui/badge.jsx. The cva() base class string at line 6 is 'inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2'. Only change the three focus:ring-* classes to focus-visible: — leave all other classes and all variant definitions unchanged."
     },
     {
