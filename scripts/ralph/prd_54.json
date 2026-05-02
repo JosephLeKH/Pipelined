@@ -48,7 +48,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/DigestSection.jsx. The toggle button is at line 20. It has role='switch' aria-checked — correct ARIA semantics. Only change focus: → focus-visible: on the ring classes. Keep focus:outline-none."
     },
     {
