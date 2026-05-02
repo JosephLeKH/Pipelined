@@ -1,0 +1,14 @@
+# Ralph Progress Log
+Started: Sat May  2 16:03:57 PDT 2026
+---
+
+## US-558 - Create native RadioGroup UI component and replace MergeDialog raw radio inputs
+Status: PASS
+Commit: 97cd664
+
+Summary: Created src/components/ui/radio-group.jsx (13 lines) exporting RadioGroup (div with role='radiogroup') and RadioGroupItem (styled native <input type='radio'> with accent-primary). Replaced both raw radio inputs in MergeDialog.jsx with RadioGroupItem. Removed accent-primary from className since it's now baked into RadioGroupItem's default styling via cn(). Build passed in 2.70s.
+
+Learnings:
+- Native fallback components (no Radix dep) follow the same pattern as shadcn: cn() for className merging, spread remaining props
+- RadioGroupItem keeps accent-primary as default in the component so callers don't need to repeat it
+- MergeDialog changes were purely mechanical: swap input for RadioGroupItem, drop accent-primary from className

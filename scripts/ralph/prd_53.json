@@ -1,0 +1,134 @@
+{
+  "id": "PRD-53",
+  "title": "Native RadioGroup component, remaining raw input migrations, inline style cleanup, and focus-ring standardization",
+  "description": "Continuation of the systematic UI improvement loop. This batch creates a native RadioGroup UI component (no Radix dep) and uses it in MergeDialog, replaces the OfferDetailsSection INPUT_CLS raw input with shadcn Input, migrates the missed ApplicationRow raw checkbox to shadcn Checkbox, moves KanbanColumn and GoalProgress inline styles to Tailwind classes, migrates SettingsUsageSection title= tooltip to shadcn Tooltip, standardizes focus:ring-* to focus-visible:ring-* across four components, and replaces font-bold with font-semibold in badge/value contexts.",
+  "userStories": [
+    {
+      "id": "US-558",
+      "title": "Create native RadioGroup UI component and replace MergeDialog raw radio inputs",
+      "description": "As a developer, @radix-ui/react-radio-group is not in package.json (confirmed in US-532 skip). Create a native RadioGroup and RadioGroupItem at src/components/ui/radio-group.jsx, then replace the two raw <input type='radio'> elements in MergeDialog with it.",
+      "acceptanceCriteria": [
+        "Check src/components/ui/radio-group.jsx — if it already exists with RadioGroup and RadioGroupItem exports, skip creation",
+        "Create src/components/ui/radio-group.jsx exporting named RadioGroup and RadioGroupItem functions",
+        "RadioGroup: a div wrapper with role='radiogroup', className uses cn('flex flex-col gap-2', className), spreads remaining props",
+        "RadioGroupItem: a native <input type='radio'> styled with className using cn('h-4 w-4 accent-primary cursor-pointer', className), spreads remaining props",
+        "Uses cn() from @/lib/utils",
+        "In src/components/MergeDialog.jsx, replace each raw <input type='radio' name={key} value='a'/'b' checked={...} onChange={() => handleChange(key, 'a'/'b')} className='mt-0.5 shrink-0 accent-primary'> with <RadioGroupItem value='a'/'b' name={key} checked={...} onChange={() => handleChange(key, 'a'/'b')} className='mt-0.5 shrink-0' />",
+        "Import RadioGroupItem from src/components/ui/radio-group",
+        "Controlled state (selections) still works correctly",
+        "npm run build passes with no errors"
+      ],
+      "priority": 1,
+      "passes": true,
+      "notes": "Read src/components/MergeDialog.jsx first (lines 90-125). The native RadioGroupItem is just a styled <input type='radio'> — accent-primary is acceptable here since this is the native fallback. The RadioGroup wrapper div gets role='radiogroup'. Keep MergeDialog.jsx changes minimal — only swap the raw inputs, don't restructure surrounding divs. Keep radio-group.jsx under 30 lines."
+    },
+    {
+      "id": "US-559",
+      "title": "Replace OfferDetailsSection INPUT_CLS raw <input> with shadcn Input",
+      "description": "As a developer, OfferDetailsSection defines an INPUT_CLS constant and uses a raw <input> element for editing offer fields. Replace with shadcn Input.",
+      "acceptanceCriteria": [
+        "Read src/components/OfferDetailsSection.jsx first",
+        "Remove the INPUT_CLS constant (line 11)",
+        "Replace raw <input type={...} defaultValue={...} autoFocus onBlur={handleBlur} className={INPUT_CLS} aria-label={...}> with <Input type={...} defaultValue={...} autoFocus onBlur={handleBlur} aria-label={...} />",
+        "Import Input from src/components/ui/input",
+        "All existing props preserved: type, defaultValue, autoFocus, onBlur, aria-label",
+        "npm run build passes with no errors"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Read src/components/OfferDetailsSection.jsx first. INPUT_CLS is at line 11 and used at line ~45. The Input component already exists at src/components/ui/input.jsx and applies all the same styling internally. No className prop needed since the Input default styling matches INPUT_CLS. Preserve aria-label — it's already there."
+    },
+    {
+      "id": "US-560",
+      "title": "Replace ApplicationRow raw <input type='checkbox'> with shadcn Checkbox",
+      "description": "As a developer, ApplicationRow (lines 104-109) still has a raw <input type='checkbox'> with accent-primary styling — this was missed in the checkbox migration sweep of PRD-50.",
+      "acceptanceCriteria": [
+        "Read src/components/ApplicationRow.jsx first",
+        "If raw <input type='checkbox' aria-label={...} checked={...} onChange={...} className='h-4 w-4 rounded border-border accent-primary'> exists, replace with <Checkbox checked={checked} onCheckedChange={() => onToggle(application.id)} aria-label={`Select ${application.company}`} />",
+        "Import Checkbox from src/components/ui/checkbox",
+        "If the file already uses shadcn Checkbox for this element, mark passes: true with note 'already using shadcn Checkbox'",
+        "Checked state still controlled correctly",
+        "npm run build passes with no errors"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "Read src/components/ApplicationRow.jsx. The checkbox is around lines 104-109. shadcn Checkbox uses onCheckedChange (not onChange) — onCheckedChange receives the boolean value directly, so use () => onToggle(application.id) as the handler. The existing aria-label should be preserved."
+    },
+    {
+      "id": "US-561",
+      "title": "Move KanbanColumn inline style maxHeight to Tailwind class",
+      "description": "As a developer, KanbanColumn applies style={{ maxHeight: COLUMN_MAX_HEIGHT_PX }} (600px) inline. Replace with a Tailwind arbitrary class.",
+      "acceptanceCriteria": [
+        "Read src/components/KanbanColumn.jsx first",
+        "Remove style={{ maxHeight: COLUMN_MAX_HEIGHT_PX }} from the column container div",
+        "Add className='max-h-[600px]' (or merge via cn() if className already exists on that element)",
+        "Remove COLUMN_MAX_HEIGHT_PX constant if no longer used elsewhere in the file",
+        "If max-h-[600px] is already present, mark passes: true with note 'already using Tailwind class'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": "Read src/components/KanbanColumn.jsx first. COLUMN_MAX_HEIGHT_PX = 600 at line 9, used via inline style at line 29. The column container already has a className — use cn() to merge max-h-[600px] into it, or just append to the existing className string. Remove the const if it becomes unused."
+    },
+    {
+      "id": "US-562",
+      "title": "Move GoalProgress SVG inline transition style to Tailwind arbitrary class",
+      "description": "As a developer, GoalProgress applies style={{ transition: 'stroke-dashoffset 0.4s ease' }} inline on an SVG circle element. Replace with a Tailwind arbitrary value class.",
+      "acceptanceCriteria": [
+        "Read src/components/GoalProgress.jsx first",
+        "Remove style={{ transition: 'stroke-dashoffset 0.4s ease' }} from the SVG circle element",
+        "Add className='[transition:stroke-dashoffset_0.4s_ease]' to that same element (use cn() if className already present)",
+        "If the class is already a Tailwind class, mark passes: true with note 'already using Tailwind'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": "Read src/components/GoalProgress.jsx first. The inline transition is at line 78 on the animated SVG circle. Tailwind JIT supports arbitrary CSS via [property:value] syntax — underscores become spaces in the value. The resulting class is [transition:stroke-dashoffset_0.4s_ease]. If there is already a className on that element, merge using cn()."
+    },
+    {
+      "id": "US-563",
+      "title": "Migrate SettingsUsageSection title='Coming soon' Button to shadcn Tooltip",
+      "description": "As a developer, SettingsUsageSection has a disabled Button with title='Coming soon' (line 66) for native tooltip. Replace with shadcn Tooltip for consistency.",
+      "acceptanceCriteria": [
+        "Read src/components/SettingsUsageSection.jsx first",
+        "Wrap the disabled Button in <Tooltip><TooltipTrigger asChild>{button}</TooltipTrigger><TooltipContent>Coming soon</TooltipContent></Tooltip>",
+        "Remove title='Coming soon' from the Button",
+        "Import Tooltip, TooltipTrigger, TooltipContent from src/components/ui/tooltip",
+        "If the Button is already wrapped in shadcn Tooltip, mark passes: true with note 'already using shadcn Tooltip'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": "Read src/components/SettingsUsageSection.jsx first. The disabled Button is at line ~66 with title='Coming soon'. Use asChild on TooltipTrigger so the Button renders directly without an extra wrapper span. The TooltipProvider is already in the app root from a prior PRD — no need to add it here."
+    },
+    {
+      "id": "US-564",
+      "title": "Standardize focus:ring-* to focus-visible:ring-* across UndoToast, SettingsAccountSection, PrepSection, NotificationBell",
+      "description": "As a developer, four components use focus:ring-* without the focus-visible: prefix, causing focus rings to appear on mouse click. Replace with focus-visible: for keyboard-only focus visibility.",
+      "acceptanceCriteria": [
+        "Read src/components/UndoToast.jsx — change focus:ring-primary to focus-visible:ring-ring on the Undo Button",
+        "Read src/components/SettingsAccountSection.jsx — change focus:ring-destructive/50 to focus-visible:ring-destructive/50",
+        "Read src/components/PrepSection.jsx — change focus:ring-inset to focus-visible:ring-inset (keep any existing focus-visible: ring classes)",
+        "Read src/components/NotificationBell.jsx — change focus:ring-inset to focus-visible:ring-inset",
+        "npm run build passes with no errors"
+      ],
+      "priority": 7,
+      "passes": false,
+      "notes": "Read each file before editing. focus: triggers on both mouse click and keyboard Tab; focus-visible: triggers only on keyboard navigation (the accessible default). UndoToast line 40, SettingsAccountSection line 136, PrepSection line 171, NotificationBell line 36. In each case, replace focus: with focus-visible: on the ring class only — leave other focus: classes (like focus:outline-none) unchanged as they suppress the browser default ring."
+    },
+    {
+      "id": "US-565",
+      "title": "Replace font-bold with font-semibold in badge and value span contexts",
+      "description": "As a developer, font-bold is used in two component-level badge/value contexts where font-semibold is the project standard for emphasis. Display headings using font-display font-bold are intentional and should not be changed.",
+      "acceptanceCriteria": [
+        "Read src/components/NotificationBell.jsx — change font-bold to font-semibold on the notification count badge span (line ~103)",
+        "Read src/components/OfferNegotiationPanel.jsx — change font-bold to font-semibold on the total value span (line ~34)",
+        "Do NOT change font-bold on heading elements (h1, h2) or elements with font-display class — those are intentional display typography",
+        "npm run build passes with no errors"
+      ],
+      "priority": 8,
+      "passes": false,
+      "notes": "Read both files before editing. NotificationBell line 103: the notification dot/badge uses font-bold text-[9px]. OfferNegotiationPanel line 34: the total compensation span uses font-bold text-primary. Both are inline emphasis spans — font-semibold is the standard for these. Pages like PublicPipeline and Pricing use font-bold on display headings — those are intentional and out of scope."
+    }
+  ]
+}
