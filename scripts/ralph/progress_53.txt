@@ -33,3 +33,11 @@ Commit: 6a0e07b
 Summary: Removed COLUMN_MAX_HEIGHT_PX constant (line 9) and replaced style={{ maxHeight: COLUMN_MAX_HEIGHT_PX }} inline style on the droppable div with max-h-[600px] merged into the existing cn() className. The div already used cn() for conditional ring styling, so merging was clean. Build passed in 2.68s.
 
 Learnings: When a component already uses cn() for conditional class merging, adding a static Tailwind arbitrary class like max-h-[600px] is a simple string append into the base class string. The JIT compiler handles arbitrary values like [600px] natively — no config needed.
+
+## US-562 - Move GoalProgress SVG inline transition style to Tailwind arbitrary class
+Status: PASS
+Commit: b972d04
+
+Summary: Added `cn` import from `../lib/utils` (it wasn't previously imported). Replaced `style={{ transition: "stroke-dashoffset 0.4s ease" }}` on the animated SVG circle with `className={cn(ringColor(pct), "[transition:stroke-dashoffset_0.4s_ease]")}` — merging the dynamic color class with the static Tailwind arbitrary transition class. Build passed in 2.88s.
+
+Learnings: Tailwind arbitrary CSS via [property:value] syntax uses underscores for spaces in values, so `transition: stroke-dashoffset 0.4s ease` becomes `[transition:stroke-dashoffset_0.4s_ease]`. When the element already has a dynamic className (ringColor function), cn() is the right merge tool.

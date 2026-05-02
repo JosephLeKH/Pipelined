@@ -82,7 +82,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 5,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/GoalProgress.jsx first. The inline transition is at line 78 on the animated SVG circle. Tailwind JIT supports arbitrary CSS via [property:value] syntax — underscores become spaces in the value. The resulting class is [transition:stroke-dashoffset_0.4s_ease]. If there is already a className on that element, merge using cn()."
     },
     {
