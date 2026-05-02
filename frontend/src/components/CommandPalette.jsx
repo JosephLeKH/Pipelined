@@ -13,6 +13,7 @@ import { useCommandPaletteActions } from "../hooks/useCommandPaletteActions";
 import { useCommandPaletteKeyboard } from "../hooks/useCommandPaletteKeyboard";
 import { STAGE_COLORS, DEFAULT_STAGE_COLOR } from "../lib/constants";
 import { Button } from "./ui/button";
+import { Input } from "./ui/input";
 import ManualAddForm from "./ManualAddForm";
 
 const PALETTE_DEBOUNCE_MS = 200;
@@ -103,13 +104,14 @@ function CommandPaletteDialog({ query, setQuery, filteredApps, actions, idx, act
       >
         <div className="flex items-center gap-2 border-b border-border px-3">
           <SearchIcon className="h-4 w-4 shrink-0 text-muted-foreground" />
-          <input
+          <Input
             autoFocus
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search applications or type a command…"
-            className="w-full bg-transparent py-3 text-sm text-foreground placeholder:text-muted-foreground outline-none"
+            aria-label="Search commands"
+            className="w-full bg-transparent py-3 text-foreground border-0 shadow-none rounded-none h-auto px-0 focus-visible:ring-0"
           />
         </div>
         <div className="max-h-80 overflow-y-auto py-1">
