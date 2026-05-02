@@ -74,7 +74,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 5,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/SettingsPipelineSection.jsx. The Flame icon at line 85 has className='h-5 w-5 text-amber-500'. Add dark:text-amber-400 to match the project's established pattern for amber icon text (same as ApplicationRow Bell icon at line 138). Single targeted change — only the Flame className."
     },
     {

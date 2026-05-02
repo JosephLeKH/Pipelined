@@ -26,3 +26,9 @@ Started: Sat May  2 16:32:52 PDT 2026
 - `applied: 'bg-primary'` and `stage_change: 'bg-accent-blue'` are semantic tokens — left unchanged
 - Build passed in 2.76s with no errors
 - Committed as: feat: US-577 - Add dark variant to Activity.jsx TYPE_STYLES event_created dot color
+
+## US-578: Add dark variant to SettingsPipelineSection Flame icon (text-amber-500)
+- Changed `className='h-5 w-5 text-amber-500'` to `className='h-5 w-5 text-amber-500 dark:text-amber-400'` on the Flame icon at line 85 of SettingsPipelineSection.jsx
+- Pattern: matches ApplicationRow Bell icon (text-amber-500 dark:text-amber-400) for consistent amber icon text in dark mode
+- Build passed (2.98s), committed as ac21113
+- passes: true
