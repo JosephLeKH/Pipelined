@@ -3,6 +3,8 @@
 import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 
+import { cn } from "../lib/utils";
+
 import Flame from "lucide-react/dist/esm/icons/flame";
 
 import { useApplicationStats } from "../hooks/useApplications";
@@ -74,8 +76,7 @@ function GoalProgress() {
           strokeDasharray={RING_CIRCUMFERENCE}
           strokeDashoffset={dashOffset}
           transform={`rotate(-90 ${RING_RADIUS + 4} ${RING_RADIUS + 4})`}
-          className={ringColor(pct)}
-          style={{ transition: "stroke-dashoffset 0.4s ease" }}
+          className={cn(ringColor(pct), "[transition:stroke-dashoffset_0.4s_ease]")}
         />
         <text
           x={RING_RADIUS + 4}
