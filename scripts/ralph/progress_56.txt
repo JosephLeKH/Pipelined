@@ -12,3 +12,8 @@ Started: Sat May  2 16:43:48 PDT 2026
 - Read src/components/JobRow.jsx; Apply <a> at line 75 had focus:ring-2, focus:ring-ring, focus:ring-offset-2.
 - Replaced all three ring classes with focus-visible: prefix; kept focus:outline-none unchanged.
 - Build passed (2.72s). Committed as dae1e0a.
+## US-585 - Fix SettingsResumeSection dropzone div: focus:ring-* → focus-visible:ring-*
+Status: PASSED
+Date: Sat May  2 16:46:12 PDT 2026
+Change: SettingsResumeSection.jsx line 95 - replaced focus:ring-2 and focus:ring-ring with focus-visible:ring-2 and focus-visible:ring-ring. Kept focus:outline-none unchanged.
+Build: npm run build passed with no errors.
