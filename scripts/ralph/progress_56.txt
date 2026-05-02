@@ -33,3 +33,15 @@ Build: npm run build passed with no errors.
 - INPUT_BASE focus:border-brand-500 and focus:ring-1 left untouched (intentional for input active state)
 - Build passed in 2.71s
 - Committed: 237f401 "feat: US-587 - Fix designTokens.js BUTTON_* tokens: focus:ring-* → focus-visible:ring-*"
+
+---
+US-588 (2026-05-02): Added dark variant to SettingsProfileSection AVATAR_COLORS.
+Changed 'bg-amber-400' → 'bg-amber-400 dark:bg-amber-500' at line 17, matching the shade-bump pattern used by bg-emerald-500 dark:bg-emerald-600 and bg-sky-500 dark:bg-sky-600. Build passed. Committed 3d0d0f2.
+
+US-589 (2026-05-02): Added dark: variants to STAGE_COLORS Onsite and Rejected in lib/constants.js.
+Onsite: bg-amber-100 dark:bg-amber-900/30, text-amber-800 dark:text-amber-300, dot/border/activeBg bg-amber-500 dark:bg-amber-400.
+Rejected: bg-rose-100 dark:bg-rose-900/30, text-rose-800 dark:text-rose-300, dot/border/activeBg bg-rose-500 dark:bg-rose-400.
+Applied, Phone Screen, Offer, and DEFAULT_STAGE_COLOR left unchanged. Build passed. Committed 46f083d.
+
+US-583 (2026-05-02): Fixed NavBar user menu button focus rings.
+Changed focus:ring-2 focus:ring-ring focus:ring-offset-2 → focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 at line 86 in NavBar.jsx. focus:outline-none left unchanged. Build passed. Committed 59d824f.

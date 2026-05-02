@@ -32,6 +32,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 2,
+      "passes": true,
       "notes": "Read src/components/NavBar.jsx. The button at line ~87 has className='rounded-full focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2'. Only change the ring classes prefix. The button wraps a UserAvatar — keep it as-is."
     },
     {
@@ -113,7 +114,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 7,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/SettingsProfileSection.jsx. AVATAR_COLORS is at line ~17. The array has 'bg-amber-400' as the third entry — no dark variant. Use 'bg-amber-400 dark:bg-amber-500' to match the pattern of other entries (bg-emerald-500 dark:bg-emerald-600, bg-sky-500 dark:bg-sky-600 — each bumps one shade darker). Single string change, one line."
     },
     {
@@ -139,7 +140,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 8,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/lib/constants.js. STAGE_COLORS is at line 3. Onsite is at line ~8 with bg-amber-100, text-amber-800, bg-amber-500, border-amber-500. Rejected is at line ~9 with bg-rose-100, text-rose-800, bg-rose-500, border-rose-500. Add dark: variants inline — each property value becomes a space-separated string with the dark: class appended. These strings are used as-is in className props via color.bg, color.text, color.dot, color.border pattern — Tailwind will parse dark: from them correctly. Only touch Onsite and Rejected rows."
     }
   ]
