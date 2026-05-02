@@ -76,8 +76,8 @@ function SortableStageItem({ id, value, onRename, onRemove, canRemove }) {
   return (
     <div
       ref={setNodeRef}
-      style={{ transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1 }}
-      className="flex items-center gap-2 rounded-xl bg-card border border-border px-3 py-2"
+      style={{ transform: CSS.Transform.toString(transform), transition }}
+      className={`flex items-center gap-2 rounded-xl bg-card border border-border px-3 py-2 ${isDragging ? "opacity-50" : "opacity-100"}`}
     >
       <button type="button" {...attributes} {...listeners} aria-label="Drag to reorder" className="cursor-grab text-muted-foreground hover:text-foreground transition-colors focus:outline-none">
         <GripVertical className="h-4 w-4" />
