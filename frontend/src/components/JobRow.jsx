@@ -6,9 +6,9 @@ import ExternalLink from "lucide-react/dist/esm/icons/external-link";
 import { formatDate } from "../lib/dateUtils";
 
 const REMOTE_COLORS = {
-  remote: "text-green-700",
+  remote: "text-primary",
   hybrid: "text-primary",
-  onsite: "text-amber-700",
+  onsite: "text-amber-600 dark:text-amber-400",
   unknown: "text-muted-foreground",
 };
 

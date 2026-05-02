@@ -103,7 +103,7 @@ export function OfferNegotiationPanel({ apps }) {
             className="flex items-center gap-1.5 text-xs h-auto px-3 py-1.5"
             aria-label="Copy script to clipboard"
           >
-            {copied ? <Check className="h-3.5 w-3.5 text-green-600" /> : <Copy className="h-3.5 w-3.5" />}
+            {copied ? <Check className="h-3.5 w-3.5 text-primary" /> : <Copy className="h-3.5 w-3.5" />}
             {copied ? "Copied!" : "Copy"}
           </Button>
         </div>
