@@ -114,7 +114,7 @@ function ApplicationRow({
               <TooltipTrigger asChild>
                 <span
                   tabIndex={0}
-                  className="block h-2 w-2 animate-pulse rounded-full bg-amber-400 cursor-default"
+                  className="block h-2 w-2 animate-pulse rounded-full bg-amber-400 dark:bg-amber-900/40 cursor-default"
                   data-testid="stale-indicator"
                   aria-label="Stale application — no updates in 14+ days"
                 />
@@ -136,7 +136,7 @@ function ApplicationRow({
           {followUpOverdue && !archived && (
             <Tooltip>
               <TooltipTrigger asChild>
-                <Bell className="h-4 w-4 text-amber-500 cursor-default" data-testid="follow-up-bell" aria-label={`Follow-up due ${formatDate(application.follow_up_date)}`} />
+                <Bell className="h-4 w-4 text-amber-500 dark:text-amber-400 cursor-default" data-testid="follow-up-bell" aria-label={`Follow-up due ${formatDate(application.follow_up_date)}`} />
               </TooltipTrigger>
               <TooltipContent>Follow-up due {formatDate(application.follow_up_date)}</TooltipContent>
             </Tooltip>
