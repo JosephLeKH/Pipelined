@@ -82,7 +82,7 @@ function SettingsPipelineSection() {
 
       {streak > 0 && (
         <div className="flex items-center gap-2 rounded-xl bg-card border border-border px-5 py-4">
-          <Flame className="h-5 w-5 text-amber-500" aria-hidden="true" />
+          <Flame className="h-5 w-5 text-amber-500 dark:text-amber-400" aria-hidden="true" />
           <span className="text-sm font-medium text-foreground">
             {streak}-week streak
           </span>
