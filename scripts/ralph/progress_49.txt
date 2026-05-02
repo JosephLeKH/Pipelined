@@ -64,3 +64,16 @@ Started: Sat May  2 00:09:49 PDT 2026
 - JobRow.jsx REMOTE_COLORS: `remote: "text-green-700"` → `"text-primary"`; `onsite: "text-amber-700"` → `"text-amber-600 dark:text-amber-400"`
 - PipelineStagesEditor.jsx: `focus:ring-ring/30` → `focus:ring-ring` on stage name input
 - Build passed; committed as a3e7cbd
+
+## US-531 - Fix Activity timeline and JobRow/JobDetailPanel hardcoded amber stale badge colors
+Completed: Sat May  2 00:15 PDT 2026
+Commit: 363aa44
+
+### Changes
+- Activity.jsx: TYPE_STYLES event_created changed from bg-amber-500 to bg-amber-400 (softer, still intentional amber)
+- JobRow.jsx: stale badge span got dark:bg-amber-900/40 dark:text-amber-300 variants added
+- JobDetailPanel.jsx: stale label span got dark:bg-amber-900/40 dark:text-amber-300 variants added
+
+### Learnings
+- Dark mode variant additions are strictly additive — existing light mode classes (bg-amber-100 text-amber-800) stay intact, dark: prefixed classes augment them for dark theme support
+- Build passed in 2.73s with no errors

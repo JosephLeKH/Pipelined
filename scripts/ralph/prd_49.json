@@ -87,7 +87,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 6,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/pages/Activity.jsx, src/components/JobRow.jsx, and src/components/JobDetailPanel.jsx first. The primary fix is adding missing dark mode variants to the stale badges — the amber color itself is intentional for 'stale/aging' signal. Activity.jsx timeline dots already have consistent classes; just ensure dark variants are present if missing."
     },
     {
