@@ -129,7 +129,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 8,
-      "passes": false,
+      "passes": true,
       "notes": "Read both files before editing. ContactLinkDropdown borderless input at line ~46 is a combobox-style search — leave styling as-is, only add aria-label if missing. TagInput is a tag input field — same approach. The goal is screen-reader accessibility only, not visual changes."
     }
   ]

@@ -50,3 +50,12 @@ Changed line 46 of MarkdownEditor.jsx in MarkdownTabBar: replaced `focus:ring-2 
 **Status:** PASS
 **Summary:** Added role='button', tabIndex={0}, onKeyDown (Enter/Space calls onApply), and focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring to the <li> at line 29 in SavedSearchesSidebar.jsx. Build passed in 2.70s. Committed as feat: US-572.
 **Learnings:** Plain <li onClick> elements with no role/tabIndex are completely invisible to keyboard navigation. Adding role='button' + tabIndex={0} + onKeyDown Enter/Space brings them into the tab order and makes them operable by keyboard. focus-visible: prefix ensures the ring only appears for keyboard focus, not mouse clicks.
+
+## US-573 — Audit ContactLinkDropdown and TagInput for missing aria-label on search inputs
+- **Status:** PASSED
+- **Changes:**
+  - `ContactLinkDropdown.jsx`: already had `aria-label="Search contacts to link"` on the input at line 47 — no change needed.
+  - `TagInput.jsx`: input had `role="combobox"`, `aria-autocomplete`, `aria-expanded`, `aria-haspopup` but no `aria-label`. Added `aria-label="Add tag"` before the other aria-* attributes.
+- **Build:** `npm run build` passed (✓ built in 2.77s)
+- **Commit:** `feat: US-573 - Audit ContactLinkDropdown and TagInput for missing aria-label on search inputs`
+- **Learning:** A combobox input with `role="combobox"` and ARIA state attributes still needs an accessible name (`aria-label` or `aria-labelledby`) for screen readers to announce what the field is for. The `id` prop on TagInput allows external label association via `htmlFor`, but `aria-label` ensures an accessible name even when no paired `<label>` is present in the parent.
