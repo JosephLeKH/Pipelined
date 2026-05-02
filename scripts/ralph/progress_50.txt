@@ -51,3 +51,9 @@ Learnings:
 - Changed dark:bg-amber-900/30 to dark:bg-amber-900/40 on the Super Referrer badge span in SettingsReferralSection.jsx (line 46).
 - dark:text-amber-300 was already present — no additional changes needed.
 - Build passed. Committed as a13fad8.
+
+## US-541 — Create shadcn Progress UI component
+Status: SKIPPED (passes: true)
+Reason: @radix-ui/react-progress is not in frontend/package.json dependencies.
+Action: No files created, no npm install run.
+Commit: 22190f1
