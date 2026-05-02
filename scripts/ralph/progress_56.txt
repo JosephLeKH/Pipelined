@@ -17,3 +17,11 @@ Status: PASSED
 Date: Sat May  2 16:46:12 PDT 2026
 Change: SettingsResumeSection.jsx line 95 - replaced focus:ring-2 and focus:ring-ring with focus-visible:ring-2 and focus-visible:ring-ring. Kept focus:outline-none unchanged.
 Build: npm run build passed with no errors.
+
+## US-586 — Fix PipelineStagesEditor stage Input: focus:ring-* → focus-visible:ring-*
+- File: src/components/PipelineStagesEditor.jsx, line 85
+- Changed `focus:ring-1 focus:ring-ring` to `focus-visible:ring-1 focus-visible:ring-ring`
+- `focus:outline-none` preserved unchanged
+- Build passed in 2.73s
+- Committed: 9f01bbe "feat: US-586 - Fix PipelineStagesEditor stage Input: focus:ring-* → focus-visible:ring-*"
+- Note: ring-1 width preserved (not ring-2); only the focus: prefix changed to focus-visible:

@@ -79,7 +79,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 5,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/PipelineStagesEditor.jsx. The Input at line 85 has className='flex-1 rounded border-0 bg-transparent text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-ring'. It already has aria-label. Note: this is ring-1 (not ring-2) — preserve the ring width, only change the prefix."
     },
     {
