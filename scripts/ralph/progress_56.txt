@@ -1,0 +1,9 @@
+# Ralph Progress Log
+Started: Sat May  2 16:43:48 PDT 2026
+---
+
+[US-582] Fix ApplicationRow row div: focus:ring-* → focus-visible:ring-*
+- Modified: frontend/src/components/ApplicationRow.jsx line 95
+- Changed focus:ring-2 focus:ring-inset focus:ring-ring → focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring
+- Kept focus:outline-none unchanged
+- Build passed (2.68s), committed as a5e7d41

@@ -1,0 +1,146 @@
+{
+  "id": "PRD-56",
+  "title": "focus:ring → focus-visible:ring across ApplicationRow/NavBar/JobRow/SettingsResumeSection/PipelineStagesEditor, designTokens.js BUTTON_* token cleanup, SettingsProfileSection avatar dark variant, and STAGE_COLORS Onsite/Rejected dark variants",
+  "description": "Continuation of the systematic UI improvement loop. This batch standardizes focus:ring-* → focus-visible:ring-* on five interactive elements (ApplicationRow row div, NavBar user menu button, JobRow apply link, SettingsResumeSection dropzone, PipelineStagesEditor stage input), upgrades four BUTTON_* design tokens in designTokens.js from focus:ring-* to focus-visible:ring-*, adds a dark variant to the bg-amber-400 entry in SettingsProfileSection AVATAR_COLORS, and adds dark: variants to the Onsite and Rejected entries in STAGE_COLORS in lib/constants.js.",
+  "userStories": [
+    {
+      "id": "US-582",
+      "title": "Fix ApplicationRow row div: focus:ring-* → focus-visible:ring-*",
+      "description": "As a developer, ApplicationRow's clickable row div (line 95) uses focus:outline-none focus:ring-2 focus:ring-inset focus:ring-ring — causing a focus ring on mouse click. Replace ring classes with focus-visible: prefix.",
+      "acceptanceCriteria": [
+        "Read src/components/ApplicationRow.jsx first",
+        "On the row div (line ~95) with role='row' tabIndex={0}, replace focus:ring-2 with focus-visible:ring-2, focus:ring-inset with focus-visible:ring-inset, focus:ring-ring with focus-visible:ring-ring",
+        "Keep focus:outline-none unchanged (suppresses browser default ring)",
+        "Final focus classes on the div: focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring",
+        "If already using focus-visible, mark passes: true with note 'already using focus-visible'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 1,
+      "passes": true,
+      "notes": "Read src/components/ApplicationRow.jsx. The row div at line 95 has className starting with 'group flex cursor-pointer...' and includes focus:outline-none focus:ring-2 focus:ring-inset focus:ring-ring. Only change the ring classes prefix — leave focus:outline-none as-is. The div has role='row' tabIndex={0} and onKeyDown — correct keyboard semantics."
+    },
+    {
+      "id": "US-583",
+      "title": "Fix NavBar user menu button: focus:ring-* → focus-visible:ring-*",
+      "description": "As a developer, the NavBar user menu trigger button (line ~87) uses focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 — causing a focus ring on mouse click. Replace ring classes with focus-visible: prefix.",
+      "acceptanceCriteria": [
+        "Read src/components/NavBar.jsx first",
+        "On the user menu button (line ~87) with aria-label='User menu', replace focus:ring-2 with focus-visible:ring-2, focus:ring-ring with focus-visible:ring-ring, focus:ring-offset-2 with focus-visible:ring-offset-2",
+        "Keep focus:outline-none unchanged",
+        "Final focus classes: focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+        "If already using focus-visible, mark passes: true with note 'already using focus-visible'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 2,
+      "notes": "Read src/components/NavBar.jsx. The button at line ~87 has className='rounded-full focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2'. Only change the ring classes prefix. The button wraps a UserAvatar — keep it as-is."
+    },
+    {
+      "id": "US-584",
+      "title": "Fix JobRow Apply link: focus:ring-* → focus-visible:ring-*",
+      "description": "As a developer, JobRow's Apply <a> link (line 75) uses focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2. Replace ring classes with focus-visible: prefix.",
+      "acceptanceCriteria": [
+        "Read src/components/JobRow.jsx first",
+        "On the Apply link at line ~75, replace focus:ring-2 with focus-visible:ring-2, focus:ring-ring with focus-visible:ring-ring, focus:ring-offset-2 with focus-visible:ring-offset-2",
+        "Keep focus:outline-none unchanged",
+        "Final focus classes: focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+        "If already using focus-visible, mark passes: true with note 'already using focus-visible'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "Read src/components/JobRow.jsx. The Apply <a> element at line 75 has className='flex items-center gap-1 rounded-md bg-primary ... focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2'. It already has aria-label. Only change the ring classes prefix — leave focus:outline-none and all other classes unchanged."
+    },
+    {
+      "id": "US-585",
+      "title": "Fix SettingsResumeSection dropzone div: focus:ring-* → focus-visible:ring-*",
+      "description": "As a developer, the resume upload dropzone div in SettingsResumeSection (line ~95) uses focus:outline-none focus:ring-2 focus:ring-ring. Replace ring classes with focus-visible: prefix.",
+      "acceptanceCriteria": [
+        "Read src/components/SettingsResumeSection.jsx first",
+        "On the dropzone div (line ~95) with onClick and onKeyDown handlers, replace focus:ring-2 with focus-visible:ring-2 and focus:ring-ring with focus-visible:ring-ring",
+        "Keep focus:outline-none unchanged",
+        "Final focus classes in className template literal: focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        "If already using focus-visible, mark passes: true with note 'already using focus-visible'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": "Read src/components/SettingsResumeSection.jsx. The dropzone div at line ~95 has a template literal className containing 'focus:outline-none focus:ring-2 focus:ring-ring'. The div has tabIndex=0 implied via onClick/onKeyDown — it's a keyboard-accessible custom dropzone. Only change the ring prefix; do not touch isDragOver conditional or border classes."
+    },
+    {
+      "id": "US-586",
+      "title": "Fix PipelineStagesEditor stage Input: focus:ring-* → focus-visible:ring-*",
+      "description": "As a developer, PipelineStagesEditor's stage name Input (line ~85) uses className='... focus:outline-none focus:ring-1 focus:ring-ring'. Replace ring classes with focus-visible: prefix.",
+      "acceptanceCriteria": [
+        "Read src/components/PipelineStagesEditor.jsx first",
+        "On the Input at line ~85, replace focus:ring-1 with focus-visible:ring-1 and focus:ring-ring with focus-visible:ring-ring",
+        "Keep focus:outline-none unchanged",
+        "Final focus classes: focus:outline-none focus-visible:ring-1 focus-visible:ring-ring",
+        "If already using focus-visible, mark passes: true with note 'already using focus-visible'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": "Read src/components/PipelineStagesEditor.jsx. The Input at line 85 has className='flex-1 rounded border-0 bg-transparent text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-ring'. It already has aria-label. Note: this is ring-1 (not ring-2) — preserve the ring width, only change the prefix."
+    },
+    {
+      "id": "US-587",
+      "title": "Fix designTokens.js BUTTON_* tokens: focus:ring-* → focus-visible:ring-*",
+      "description": "As a developer, four BUTTON_* export constants in lib/designTokens.js use focus:ring-2 / focus:ring-brand-500/30 (and focus:ring-destructive/30 for BUTTON_DANGER). Replace all focus: prefixes on ring classes with focus-visible:.",
+      "acceptanceCriteria": [
+        "Read src/lib/designTokens.js first",
+        "In BUTTON_PRIMARY (line ~17): replace focus:ring-2 with focus-visible:ring-2, focus:ring-brand-500/30 with focus-visible:ring-brand-500/30",
+        "In BUTTON_SECONDARY (line ~24): replace focus:ring-2 with focus-visible:ring-2, focus:ring-brand-500/30 with focus-visible:ring-brand-500/30",
+        "In BUTTON_GHOST (line ~31): replace focus:ring-2 with focus-visible:ring-2, focus:ring-brand-500/30 with focus-visible:ring-brand-500/30",
+        "In BUTTON_DANGER (line ~37): replace focus:ring-2 with focus-visible:ring-2, focus:ring-destructive/30 with focus-visible:ring-destructive/30",
+        "Keep all focus:outline-none unchanged in each token",
+        "INPUT_BASE focus:border-brand-500 and focus:ring-1 are out of scope — leave unchanged",
+        "If all four tokens already use focus-visible:, mark passes: true with note 'already using focus-visible'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": "Read src/lib/designTokens.js. BUTTON_PRIMARY is at line ~17, BUTTON_SECONDARY at ~24, BUTTON_GHOST at ~31, BUTTON_DANGER at ~37. Each has 'focus:ring-2' and 'focus:ring-brand-500/30' (or 'focus:ring-destructive/30' for DANGER) — replace prefix to focus-visible: on both ring classes. These tokens are used in legacy non-shadcn button contexts (not the shadcn Button component). Leave INPUT_BASE unchanged — input focus: on border/ring is intentional for showing active state."
+    },
+    {
+      "id": "US-588",
+      "title": "Add dark variant to SettingsProfileSection AVATAR_COLORS bg-amber-400",
+      "description": "As a developer, SettingsProfileSection defines AVATAR_COLORS array (line ~17) containing 'bg-amber-400' without a dark variant. Other entries in the same array already have dark variants (bg-emerald-500 dark:bg-emerald-600, bg-sky-500 dark:bg-sky-600). Add the matching dark variant.",
+      "acceptanceCriteria": [
+        "Read src/components/SettingsProfileSection.jsx first",
+        "In the AVATAR_COLORS array (line ~17), change 'bg-amber-400' to 'bg-amber-400 dark:bg-amber-500'",
+        "Leave all other entries in the array unchanged",
+        "If dark: variant is already present on bg-amber-400, mark passes: true with note 'already has dark variant'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 7,
+      "passes": false,
+      "notes": "Read src/components/SettingsProfileSection.jsx. AVATAR_COLORS is at line ~17. The array has 'bg-amber-400' as the third entry — no dark variant. Use 'bg-amber-400 dark:bg-amber-500' to match the pattern of other entries (bg-emerald-500 dark:bg-emerald-600, bg-sky-500 dark:bg-sky-600 — each bumps one shade darker). Single string change, one line."
+    },
+    {
+      "id": "US-589",
+      "title": "Add dark: variants to STAGE_COLORS Onsite and Rejected entries in lib/constants.js",
+      "description": "As a developer, lib/constants.js STAGE_COLORS defines Onsite and Rejected with hardcoded amber and rose color classes that have no dark: variants. These strings are applied directly as className values across ApplicationRow, KanbanCard, KanbanColumn, CalendarGrid, and more — causing amber/rose light-pastel pills to look washed out in dark mode.",
+      "acceptanceCriteria": [
+        "Read src/lib/constants.js first",
+        "In STAGE_COLORS.Onsite (line ~8), update each property to add dark: variants:",
+        "  bg: 'bg-amber-100 dark:bg-amber-900/30'",
+        "  text: 'text-amber-800 dark:text-amber-300'",
+        "  dot: 'bg-amber-500 dark:bg-amber-400'",
+        "  border: 'border-amber-500 dark:border-amber-400'",
+        "  activeBg: 'bg-amber-500 dark:bg-amber-400'",
+        "In STAGE_COLORS.Rejected (line ~9), update each property to add dark: variants:",
+        "  bg: 'bg-rose-100 dark:bg-rose-900/30'",
+        "  text: 'text-rose-800 dark:text-rose-300'",
+        "  dot: 'bg-rose-500 dark:bg-rose-400'",
+        "  border: 'border-rose-500 dark:border-rose-400'",
+        "  activeBg: 'bg-rose-500 dark:bg-rose-400'",
+        "Leave Applied (bg-brand-*), Phone Screen (bg-blue-*, bg-accent-blue), Offer (bg-emerald-*), and DEFAULT_STAGE_COLOR unchanged — those are out of scope",
+        "If dark: variants already present on Onsite and Rejected, mark passes: true with note 'already has dark variants'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 8,
+      "passes": false,
+      "notes": "Read src/lib/constants.js. STAGE_COLORS is at line 3. Onsite is at line ~8 with bg-amber-100, text-amber-800, bg-amber-500, border-amber-500. Rejected is at line ~9 with bg-rose-100, text-rose-800, bg-rose-500, border-rose-500. Add dark: variants inline — each property value becomes a space-separated string with the dark: class appended. These strings are used as-is in className props via color.bg, color.text, color.dot, color.border pattern — Tailwind will parse dark: from them correctly. Only touch Onsite and Rejected rows."
+    }
+  ]
+}
