@@ -1,0 +1,125 @@
+{
+  "id": "PRD-55",
+  "title": "Amber dark variant coverage, focus:ring cleanup in FollowUpBanner, and font-bold → font-semibold in display stat spans",
+  "description": "Continuation of the systematic UI improvement loop. This batch adds missing dark: variants to amber indicator dots in KanbanCard, ContactCard, Activity feed, and SettingsPipelineSection Flame icon; adds dark: variant to OfferComparison Trophy icon; removes redundant incomplete focus:ring-ring from FollowUpBanner Button classNames (shadcn Button already handles focus-visible ring); and replaces font-bold with font-semibold on numeric display stat spans in ResumeFitSection and PublicPipeline.",
+  "userStories": [
+    {
+      "id": "US-574",
+      "title": "Remove redundant focus:ring-ring from FollowUpBanner Button classNames",
+      "description": "As a developer, FollowUpBanner's two Button elements have focus:ring-ring in their className. This is (1) incomplete — no ring-2 width set, (2) uses focus: not focus-visible:, and (3) redundant — the shadcn Button variant already applies focus-visible:ring-2 focus-visible:ring-ring internally. Remove it.",
+      "acceptanceCriteria": [
+        "Read src/components/FollowUpBanner.jsx first",
+        "On the 'View' Button (line ~29), remove focus:ring-ring from the className string",
+        "On the dismiss 'X' Button (line ~33), remove focus:ring-ring from the className string",
+        "Do not add any replacement focus classes — the Button component's built-in focus-visible ring is sufficient",
+        "If focus:ring-ring is not present (already cleaned up), mark passes: true with note 'already clean'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Read src/components/FollowUpBanner.jsx. Both Button elements at lines 29 and 33 have focus:ring-ring appended to their className. The shadcn Button component (src/components/ui/button.jsx) already includes focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 in its base variants. The partial override is incomplete and misleading — just remove it."
+    },
+    {
+      "id": "US-575",
+      "title": "Add dark variant to KanbanCard stale pulse dot (bg-amber-400)",
+      "description": "As a developer, KanbanCard's stale indicator dot (line 50) uses bg-amber-400 with no dark variant. The follow-up indicator at line 57 already has dark:bg-amber-900/60. Add the matching dark variant to the stale dot for consistency.",
+      "acceptanceCriteria": [
+        "Read src/components/KanbanCard.jsx first",
+        "On the stale span (line ~50) with bg-amber-400 and animate-pulse-dot, add dark:bg-amber-900/40 to match ApplicationRow's stale dot pattern",
+        "The follow-up indicator at line ~57 already has dark:bg-amber-900/60 — leave it unchanged",
+        "If dark:bg-amber-900/40 (or any dark: variant) is already present, mark passes: true with note 'already has dark variant'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Read src/components/KanbanCard.jsx. The stale span at line 50 has className='absolute right-2 top-2 h-2 w-2 animate-pulse-dot rounded-full bg-amber-400' — no dark variant. ApplicationRow uses dark:bg-amber-900/40 on its stale dot (line 116) — use the same value here. The follow-up indicator at line 57 already has dark:bg-amber-900/60 (intentionally different shade — don't change it)."
+    },
+    {
+      "id": "US-576",
+      "title": "Add dark variant to ContactCard stale contact dot (bg-amber-400)",
+      "description": "As a developer, ContactCard's stale indicator span (line 42) uses bg-amber-400 with no dark: variant, causing it to be too bright in dark mode.",
+      "acceptanceCriteria": [
+        "Read src/components/ContactCard.jsx first",
+        "On the stale span (line ~42) with bg-amber-400, add dark:bg-amber-900/40",
+        "If dark: variant is already present, mark passes: true with note 'already has dark variant'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "Read src/components/ContactCard.jsx. The stale span at line 42 has className='inline-block h-2 w-2 shrink-0 rounded-full bg-amber-400'. Add dark:bg-amber-900/40. The span is wrapped in a Tooltip (already in place) — only the className needs updating."
+    },
+    {
+      "id": "US-577",
+      "title": "Add dark variant to Activity.jsx TYPE_STYLES event_created dot color",
+      "description": "As a developer, Activity.jsx defines TYPE_STYLES with event_created: 'bg-amber-400' — no dark variant. This dot appears in the activity feed timeline. Add the dark variant to the class string.",
+      "acceptanceCriteria": [
+        "Read src/pages/Activity.jsx first",
+        "In the TYPE_STYLES object (line ~22), change event_created value from 'bg-amber-400' to 'bg-amber-400 dark:bg-amber-900/40'",
+        "Leave applied: 'bg-primary' and stage_change: 'bg-accent-blue' unchanged (semantic tokens, no change needed)",
+        "If dark: variant is already present, mark passes: true with note 'already has dark variant'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": "Read src/pages/Activity.jsx. TYPE_STYLES at line 22 maps activity type to a dot CSS class string. The dotClass is applied to a small indicator span in the timeline. Only event_created needs the dark variant added — applied uses bg-primary (semantic) and stage_change uses bg-accent-blue (custom token). Use 'bg-amber-400 dark:bg-amber-900/40' as the new value."
+    },
+    {
+      "id": "US-578",
+      "title": "Add dark variant to SettingsPipelineSection Flame icon (text-amber-500)",
+      "description": "As a developer, the streak section in SettingsPipelineSection uses a Flame icon with text-amber-500 and no dark: variant. ApplicationRow's Bell icon already uses text-amber-500 dark:text-amber-400 — apply the same pattern.",
+      "acceptanceCriteria": [
+        "Read src/components/SettingsPipelineSection.jsx first",
+        "On the Flame icon (line ~85), change text-amber-500 to text-amber-500 dark:text-amber-400",
+        "If dark: variant is already present, mark passes: true with note 'already has dark variant'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": "Read src/components/SettingsPipelineSection.jsx. The Flame icon at line 85 has className='h-5 w-5 text-amber-500'. Add dark:text-amber-400 to match the project's established pattern for amber icon text (same as ApplicationRow Bell icon at line 138). Single targeted change — only the Flame className."
+    },
+    {
+      "id": "US-579",
+      "title": "Add dark variant to OfferComparison Trophy icon (text-amber-500)",
+      "description": "As a developer, OfferComparison renders a Trophy icon with text-amber-500 and no dark: variant on the winner column indicator.",
+      "acceptanceCriteria": [
+        "Read src/pages/OfferComparison.jsx first",
+        "On the Trophy icon (line ~70), change text-amber-500 to text-amber-500 dark:text-amber-400",
+        "If dark: variant is already present, mark passes: true with note 'already has dark variant'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": "Read src/pages/OfferComparison.jsx. The Trophy icon at line 70 has className='h-4 w-4 text-amber-500'. Add dark:text-amber-400. This is the same amber icon pattern used across the codebase — single targeted addition."
+    },
+    {
+      "id": "US-580",
+      "title": "Replace font-bold with font-semibold on ResumeFitSection score span",
+      "description": "As a developer, ResumeFitSection displays the fit score with font-bold (line 36). This is a numeric value span, not a heading — font-semibold is the project standard for inline emphasis values.",
+      "acceptanceCriteria": [
+        "Read src/components/ResumeFitSection.jsx first",
+        "On the score span at line ~36 (<span className='text-3xl font-bold text-foreground'>), change font-bold to font-semibold",
+        "Do NOT change any font-bold on h1/h2/h3 elements or elements with font-display class — those are intentional display typography",
+        "If font-semibold is already used, mark passes: true with note 'already using font-semibold'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 7,
+      "passes": false,
+      "notes": "Read src/components/ResumeFitSection.jsx. The score span at line 36 wraps a numeric score like '87'. It's inline emphasis data — font-semibold matches the project convention for value spans (same fix applied in PRD-53 US-565 for NotificationBell and OfferNegotiationPanel)."
+    },
+    {
+      "id": "US-581",
+      "title": "Replace font-bold with font-semibold on PublicPipeline StatCard value span",
+      "description": "As a developer, PublicPipeline's StatCard component uses font-bold on the stat value span (line 27). Like ResumeFitSection, these are numeric stat displays — font-semibold is standard.",
+      "acceptanceCriteria": [
+        "Read src/pages/PublicPipeline.jsx first",
+        "In the StatCard function (line ~27), on the span with text-2xl font-bold text-foreground, change font-bold to font-semibold",
+        "Do NOT change font-bold on any heading elements or elements with font-display — those are intentional display typography",
+        "If font-semibold is already used, mark passes: true with note 'already using font-semibold'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 8,
+      "passes": false,
+      "notes": "Read src/pages/PublicPipeline.jsx. StatCard at line 24-31 renders a stat label/value pair. The value span at line 27 uses text-2xl font-bold. Change font-bold to font-semibold. Leave the Pricing.jsx badge (font-bold uppercase tracking-wide) out of scope — that is intentional marketing typography."
+    }
+  ]
+}

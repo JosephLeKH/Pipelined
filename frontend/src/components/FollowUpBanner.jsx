@@ -26,11 +26,11 @@ function FollowUpBanner({ followUpsDue, onView }) {
       </div>
       <div className="flex items-center gap-2">
         <Button type="button" variant="ghost" size="sm" onClick={onView}
-          className="text-xs font-medium text-muted-foreground hover:bg-muted focus:ring-ring">
+          className="text-xs font-medium text-muted-foreground hover:bg-muted">
           View
         </Button>
         <Button type="button" variant="ghost" size="icon" onClick={() => setDismissed(true)} aria-label="Dismiss"
-          className="h-7 w-7 text-muted-foreground hover:bg-muted focus:ring-ring">
+          className="h-7 w-7 text-muted-foreground hover:bg-muted">
           <X className="h-3.5 w-3.5" />
         </Button>
       </div>
