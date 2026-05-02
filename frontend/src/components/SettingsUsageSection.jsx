@@ -1,6 +1,7 @@
 /** Settings usage section — tier badge, usage meters, and upgrade teaser. */
 
 import { Button } from "./ui/button";
+import { Progress } from "./ui/progress";
 
 const APP_LIMIT = 100;
 const CONTACT_LIMIT = 50;
@@ -16,17 +17,14 @@ function UsageMeter({ label, used, max }) {
           {used} / {max}
         </span>
       </div>
-      <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
-        <div
-          className="h-full rounded-full bg-primary transition-all duration-300"
-          style={{ width: `${pct}%` }}
-          role="progressbar"
-          aria-valuenow={used}
-          aria-valuemin={0}
-          aria-valuemax={max}
-          aria-label={label}
-        />
-      </div>
+      <Progress
+        value={pct}
+        role="progressbar"
+        aria-valuenow={used}
+        aria-valuemin={0}
+        aria-valuemax={max}
+        aria-label={label}
+      />
     </div>
   );
 }
