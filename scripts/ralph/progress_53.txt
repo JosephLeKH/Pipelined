@@ -57,3 +57,8 @@ Summary:
 Learnings:
 - asChild pattern on TooltipTrigger is critical for disabled buttons — without it Radix adds an extra span wrapper which can interfere with pointer-events on the disabled button
 - TooltipProvider is already at app root from earlier PRD, so no need to add it in individual components
+
+## US-564 — Standardize focus:ring-* to focus-visible:ring-* (COMPLETE)
+Changed 4 components: UndoToast (focus:ring-primary → focus-visible:ring-ring), SettingsAccountSection (focus:ring-destructive/50 → focus-visible:ring-destructive/50), PrepSection (focus:ring-inset → focus-visible:ring-inset), NotificationBell (focus:ring-inset → focus-visible:ring-inset). Build passed. Committed.
+
+**Learned**: focus: triggers on all pointer interactions; focus-visible: triggers only on keyboard navigation. Other focus: classes like focus:outline-none must be left untouched — they suppress the browser default ring and should remain always-active.

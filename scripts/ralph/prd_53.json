@@ -113,7 +113,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 7,
-      "passes": false,
+      "passes": true,
       "notes": "Read each file before editing. focus: triggers on both mouse click and keyboard Tab; focus-visible: triggers only on keyboard navigation (the accessible default). UndoToast line 40, SettingsAccountSection line 136, PrepSection line 171, NotificationBell line 36. In each case, replace focus: with focus-visible: on the ring class only — leave other focus: classes (like focus:outline-none) unchanged as they suppress the browser default ring."
     },
     {
