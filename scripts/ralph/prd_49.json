@@ -103,7 +103,8 @@
         "npm run build passes with no errors"
       ],
       "priority": 7,
-      "passes": false,
+      "passes": true,
+      "completionNote": "skipped — dependency not in package.json",
       "notes": "Read package.json first to verify @radix-ui/react-radio-group is available. If it is, implement exactly as described. If not, skip with passes: true and note. Keep under 40 lines."
     },
     {
