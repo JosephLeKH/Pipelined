@@ -13,7 +13,7 @@ const AMBER_PCT = 0.8;
 
 function NotesEditView({ value, onChange, maxLength, onSave, onCancel }) {
   const charPct = value.length / maxLength;
-  const charCls = charPct >= 1 ? "text-rose-600" : charPct >= AMBER_PCT ? "text-amber-600" : "text-muted-foreground";
+  const charCls = charPct >= 1 ? "text-destructive" : charPct >= AMBER_PCT ? "text-amber-600 dark:text-amber-400" : "text-muted-foreground";
   return (
     <>
       <MarkdownEditor id="notes-textarea" value={value} onChange={onChange} maxLength={maxLength} />
