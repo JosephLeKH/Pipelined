@@ -13,7 +13,7 @@ const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
 const DEFAULT_WEEKLY_GOAL = 5;
 
 function ringColor(pct) {
-  if (pct >= 1) return "stroke-green-500";
+  if (pct >= 1) return "stroke-primary";
   if (pct > 0) return "stroke-primary";
   return "stroke-muted-foreground/30";
 }
