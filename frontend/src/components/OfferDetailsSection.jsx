@@ -7,8 +7,7 @@ import ChevronRight from "lucide-react/dist/esm/icons/chevron-right";
 import { OFFER_FIELDS } from "../lib/constants";
 import { formatUSD } from "../lib/currencyUtils";
 import { Button } from "./ui/button";
-
-const INPUT_CLS = "border border-input rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:border-ring focus:ring-1 focus:ring-ring/20 focus:outline-none transition-colors text-sm px-3 py-2 font-sans w-full";
+import { Input } from "./ui/input";
 
 function formatFieldDisplay(fieldMeta, value) {
   if (value == null) return null;
@@ -37,12 +36,11 @@ function OfferField({ fieldMeta, value, onChange }) {
         {fieldMeta.label}
       </span>
       {editing ? (
-        <input
+        <Input
           type={fieldMeta.type === "currency" ? "number" : "text"}
           defaultValue={value ?? ""}
           autoFocus
           onBlur={handleBlur}
-          className={INPUT_CLS}
           aria-label={fieldMeta.label}
         />
       ) : (
