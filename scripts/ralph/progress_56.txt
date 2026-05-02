@@ -7,3 +7,8 @@ Started: Sat May  2 16:43:48 PDT 2026
 - Changed focus:ring-2 focus:ring-inset focus:ring-ring → focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring
 - Kept focus:outline-none unchanged
 - Build passed (2.68s), committed as a5e7d41
+
+## US-584 - Fix JobRow Apply link: focus:ring-* → focus-visible:ring-*
+- Read src/components/JobRow.jsx; Apply <a> at line 75 had focus:ring-2, focus:ring-ring, focus:ring-offset-2.
+- Replaced all three ring classes with focus-visible: prefix; kept focus:outline-none unchanged.
+- Build passed (2.72s). Committed as dae1e0a.
