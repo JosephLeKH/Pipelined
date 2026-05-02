@@ -1,0 +1,130 @@
+{
+  "id": "PRD-50",
+  "title": "shadcn Switch component, remaining raw checkbox migrations, and inline style cleanup",
+  "description": "Continuation of the systematic UI improvement loop. This batch creates a shadcn Switch component and replaces the custom ToggleSwitch in SettingsNotificationsSection, migrates remaining raw <input type='checkbox'> elements in ApplicationListHeader and PrepChecklist to shadcn Checkbox, audits FilterBar for any remaining raw checkbox, moves PipelineStagesEditor drag opacity from inline style to Tailwind, and fixes SettingsReferralSection amber dark variant inconsistency.",
+  "userStories": [
+    {
+      "id": "US-534",
+      "title": "Create shadcn Switch UI component",
+      "description": "As a developer, I need a reusable shadcn-style Switch component at src/components/ui/switch.jsx backed by @radix-ui/react-switch, so custom toggle implementations can be replaced.",
+      "acceptanceCriteria": [
+        "Check package.json first — if @radix-ui/react-switch is NOT in dependencies, set passes: true with note 'skipped — dependency not in package.json' and do NOT run npm install",
+        "If dependency exists: File src/components/ui/switch.jsx exists and exports a named Switch function",
+        "Switch wraps SwitchPrimitives.Root with default className: peer inline-flex h-6 w-10 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=unchecked]:bg-muted",
+        "Switch renders SwitchPrimitives.Thumb with className: pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-4 data-[state=unchecked]:translate-x-0",
+        "Uses cn() from @/lib/utils for className merging",
+        "npm run build passes with no errors"
+      ],
+      "priority": 1,
+      "passes": true,
+      "completionNote": "skipped — dependency not in package.json",
+      "notes": "Read package.json at the repo root (not frontend/package.json) first — actually check frontend/package.json for @radix-ui/react-switch. If present, implement. Keep under 40 lines. Import SwitchPrimitives as: import * as SwitchPrimitives from '@radix-ui/react-switch'."
+    },
+    {
+      "id": "US-535",
+      "title": "Replace SettingsNotificationsSection custom ToggleSwitch with shadcn Switch",
+      "description": "As a developer, SettingsNotificationsSection contains an inline ToggleSwitch function component. Replace it with the shadcn Switch component from US-534.",
+      "acceptanceCriteria": [
+        "If US-534 was skipped (dependency missing), set this story passes: true with note 'skipped — Switch component not available'",
+        "In src/components/SettingsNotificationsSection.jsx, the ToggleSwitch function definition removed",
+        "Each <ToggleSwitch checked={...} onChange={...} disabled={...} label={...} description={...} id={...} /> call replaced with a wrapper div containing <Switch id={...} checked={...} onCheckedChange={...} disabled={...} /> and the label/description rendered as siblings",
+        "Import Switch from src/components/ui/switch",
+        "Visual layout preserved — label and description still adjacent to the switch",
+        "npm run build passes with no errors"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Read src/components/SettingsNotificationsSection.jsx first. The ToggleSwitch renders a flex row with label/description on the left and a button-based toggle on the right. Replace the button toggle with <Switch>, keep the label structure. shadcn Switch uses onCheckedChange (not onChange). The file is likely close to 300 lines — check after editing."
+    },
+    {
+      "id": "US-536",
+      "title": "Replace raw checkboxes in ApplicationListHeader with shadcn Checkbox",
+      "description": "As a developer, ApplicationListHeader uses a raw <input type='checkbox'> for bulk-select. Replace with the shadcn Checkbox component.",
+      "acceptanceCriteria": [
+        "Read src/components/ApplicationListHeader.jsx first",
+        "If raw <input type='checkbox'> exists, replace with <Checkbox checked={...} onCheckedChange={...} /> from src/components/ui/checkbox",
+        "If the file already uses shadcn Checkbox, mark passes: true with note 'already using shadcn Checkbox'",
+        "Checked/indeterminate state preserved correctly",
+        "npm run build passes with no errors"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "Read the file before editing. shadcn Checkbox uses onCheckedChange (not onChange). For indeterminate state, shadcn Checkbox accepts checked='indeterminate' as a value. Make minimal changes — only replace the raw input."
+    },
+    {
+      "id": "US-537",
+      "title": "Replace raw checkboxes in PrepChecklist with shadcn Checkbox",
+      "description": "As a developer, PrepChecklist uses raw <input type='checkbox'> elements for checklist items. Replace with shadcn Checkbox.",
+      "acceptanceCriteria": [
+        "Read src/components/PrepChecklist.jsx first",
+        "If raw <input type='checkbox'> exists, replace with <Checkbox checked={...} onCheckedChange={...} /> from src/components/ui/checkbox",
+        "If the file already uses shadcn Checkbox, mark passes: true with note 'already using shadcn Checkbox'",
+        "Checked state for each item still controlled correctly",
+        "npm run build passes with no errors"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": "Read the file before editing. If there are multiple checkboxes (one per checklist item), replace all of them. Use onCheckedChange which receives the boolean value directly."
+    },
+    {
+      "id": "US-538",
+      "title": "Audit FilterBar for remaining raw checkbox after US-524",
+      "description": "As a developer, US-524 replaced FilterBar filter checkboxes with shadcn Checkbox. Audit to confirm the archive toggle at line ~87 was also migrated, and fix if not.",
+      "acceptanceCriteria": [
+        "Read src/components/FilterBar.jsx",
+        "If any raw <input type='checkbox'> remains, replace with <Checkbox checked={...} onCheckedChange={...} />",
+        "If all checkboxes already use shadcn Checkbox, mark passes: true with note 'all checkboxes already migrated'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": "Read FilterBar.jsx before editing. The archive toggle is a separate checkbox from the filter option checkboxes. Both should use shadcn Checkbox after US-524."
+    },
+    {
+      "id": "US-539",
+      "title": "Move PipelineStagesEditor isDragging opacity from inline style to Tailwind className",
+      "description": "As a developer, PipelineStagesEditor passes opacity via an inline style object alongside the dnd-kit transform. The opacity should be a Tailwind class instead.",
+      "acceptanceCriteria": [
+        "Read src/components/PipelineStagesEditor.jsx",
+        "The style prop on the draggable item no longer includes opacity",
+        "opacity: isDragging ? 0.5 : 1 replaced with className conditional: isDragging ? 'opacity-50' : 'opacity-100' (or via cn())",
+        "The transform and transition values still passed via style prop (required by dnd-kit)",
+        "npm run build passes with no errors"
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": "Read the file before editing. The dnd-kit CSS.Transform.toString(transform) and transition values MUST stay in the style prop — only extract the opacity into className. Use cn() if the component already imports it."
+    },
+    {
+      "id": "US-540",
+      "title": "Fix SettingsReferralSection amber badge dark variant inconsistency",
+      "description": "As a developer, SettingsReferralSection has an amber badge using dark:bg-amber-900/30 while the project standard is dark:bg-amber-900/40. Standardize the dark variant.",
+      "acceptanceCriteria": [
+        "Read src/components/SettingsReferralSection.jsx",
+        "If bg-amber-100 text-amber-700 dark:bg-amber-900/30 (or similar) exists, change dark:bg-amber-900/30 to dark:bg-amber-900/40 and ensure dark:text-amber-300 is present",
+        "If the pattern already uses /40 or has been migrated, mark passes: true with note 'already correct'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 7,
+      "passes": false,
+      "notes": "Read the file first. This is a minor consistency fix — the amber /40 opacity is the project standard established in prd_47 and prd_48. Make no other changes."
+    },
+    {
+      "id": "US-541",
+      "title": "Create shadcn Progress UI component",
+      "description": "As a developer, I need a reusable shadcn-style Progress component at src/components/ui/progress.jsx backed by @radix-ui/react-progress, for consistent progress bar rendering.",
+      "acceptanceCriteria": [
+        "Check frontend/package.json first — if @radix-ui/react-progress is NOT in dependencies, set passes: true with note 'skipped — dependency not in package.json' and do NOT run npm install",
+        "If dependency exists: File src/components/ui/progress.jsx exists and exports a named Progress function",
+        "Progress wraps ProgressPrimitive.Root with className: relative h-2 w-full overflow-hidden rounded-full bg-muted",
+        "Renders ProgressPrimitive.Indicator with className: h-full w-full flex-1 bg-primary transition-all, style={{ transform: `translateX(-${100 - (value || 0)}%)` }}",
+        "Accepts value prop (0-100) and className prop",
+        "Uses cn() from @/lib/utils",
+        "npm run build passes with no errors"
+      ],
+      "priority": 8,
+      "passes": false,
+      "notes": "Read frontend/package.json first to check for @radix-ui/react-progress. If present, implement exactly as described. Keep under 30 lines. Import as: import * as ProgressPrimitive from '@radix-ui/react-progress'."
+    }
+  ]
+}
