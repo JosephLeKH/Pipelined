@@ -6,3 +6,8 @@ Started: Sat May  2 15:20:06 PDT 2026
 Status: SKIPPED (passes: true)
 Reason: @radix-ui/react-switch is not in frontend/package.json dependencies.
 Action: No files created, no npm install run.
+
+## US-535 — Replace SettingsNotificationsSection custom ToggleSwitch with shadcn Switch
+**Status:** Skipped
+**Reason:** US-534 was skipped because @radix-ui/react-switch is not in frontend/package.json. Without the dependency, the Switch component (src/components/ui/switch.jsx) cannot be created, so this migration is not possible.
+**No files changed.**
