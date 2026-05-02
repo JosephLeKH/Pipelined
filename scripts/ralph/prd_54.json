@@ -96,7 +96,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 6,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/KanbanBoard.jsx. The mobile tab buttons in KanbanMobileView (line 46) already have role='tab' aria-selected but are missing focus rings entirely and aria-controls. The panel div at line 53 already has data-testid='mobile-kanban-swipe' — add id='mobile-kanban-panel' to it. Add aria-controls='mobile-kanban-panel' to each tab button. Also add focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring to the className. Use cn() if needed."
     },
     {

@@ -29,6 +29,16 @@ Changed line 46 of MarkdownEditor.jsx in MarkdownTabBar: replaced `focus:ring-2 
 - **Commit:** `feat: US-569 - Fix CalendarGrid EventChip button: focus:ring-* → focus-visible:ring-*`
 - **Learning:** EventChip already had correct ARIA via aria-label and title. No ring-offset class was present (unlike toggle buttons), so only two ring classes needed the prefix change. Pattern is consistent across this PRD batch.
 
+## US-571 — Add focus-visible ring and aria-controls to KanbanBoard mobile stage tab buttons
+- **Status:** PASSED
+- **Changes:** In `frontend/src/components/KanbanBoard.jsx`:
+  - Line 46: Added `aria-controls="mobile-kanban-panel"` to each mobile stage tab button
+  - Line 46: Added `focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring` to the className template literal
+  - Line 53: Added `id="mobile-kanban-panel"` to the mobile panel container div (already had `data-testid="mobile-kanban-swipe"`)
+- **Build:** `npm run build` passed (✓ built in 2.71s)
+- **Commit:** `feat: US-571 - Add focus-visible ring and aria-controls to KanbanBoard mobile stage tab buttons`
+- **Learning:** Mobile tab buttons already had `role="tab"` and `aria-selected` but were missing the `aria-controls` linkage to the panel and any focus-visible ring. The panel div already had `data-testid` for testing — adding `id` alongside it completes the ARIA tab pattern. No `cn()` was needed since the focus classes are static and could be appended directly to the template literal's static portion.
+
 ## US-570 — Fix CalendarGrid DayCell: focus:ring-* → focus-visible:ring-*
 - **Status:** PASSED
 - **Change:** In `frontend/src/components/CalendarGrid.jsx` line 79 (DayCell div), replaced `focus:ring-2 focus:ring-inset focus:ring-ring` with `focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring`. Kept `focus:outline-none` unchanged.
