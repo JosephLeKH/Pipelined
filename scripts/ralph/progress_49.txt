@@ -29,3 +29,17 @@ Started: Sat May  2 00:09:49 PDT 2026
 **Learnings:** All 5 rose-* usages mapped cleanly to destructive token variants with /opacity suffixes for backgrounds and borders. The `text-destructive` token handles both light and dark mode without separate dark: overrides. Opacity variants (bg-destructive/5, border-destructive/30) produce subtle tinted backgrounds appropriate for danger zone containers.
 
 **Build:** ✓ passed in 2.74s
+
+## US-528 - Migrate MergeDialog amber warning box to shadcn Alert
+**Status:** COMPLETE
+**Commit:** bc5d774
+
+**Changes:**
+- `frontend/src/components/MergeDialog.jsx`: Added import for `Alert` and `AlertDescription` from `./ui/alert`
+- Replaced raw `div` with `border-amber-200 bg-amber-50 px-4 py-3 dark:border-amber-700 dark:bg-amber-900/30` with `<Alert>` using className overrides to preserve amber intent
+- Replaced `<p>` text with `<AlertDescription className="text-amber-800 dark:text-amber-300">`
+- AlertTriangle icon retained with `text-amber-600 dark:text-amber-400` (intentional warning amber)
+
+**Learnings:** The shadcn Alert component's `cn()` call places the passed `className` last, so tailwind-merge correctly lets our amber overrides (`border-amber-200`, `bg-amber-50`, `py-3`) win over the default variant classes (`border-border`, `bg-card`, `p-4`). Using `role="alert"` from the Alert component also improves screen-reader accessibility over the plain div. The `flex items-start gap-2.5` layout can be passed directly as className since Alert renders a plain div.
+
+**Build:** ✓ passed in 2.64s

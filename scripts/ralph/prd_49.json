@@ -44,7 +44,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/MergeDialog.jsx and src/components/ui/alert.jsx first. The Alert component uses role='alert' and bg-card border-border by default. This replaces the amber box with a clean semantic component. If the amber intent must be preserved, wrap Alert with a className override using amber tokens."
     },
     {
