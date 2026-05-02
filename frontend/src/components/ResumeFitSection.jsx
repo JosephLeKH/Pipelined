@@ -18,7 +18,7 @@ function ResumeFitSection({ analysis, aiScoresRemainingToday }) {
     return (
       <div className="flex flex-col gap-3">
         <span className="text-xs font-medium uppercase text-muted-foreground">Resume Fit</span>
-        <p className="text-sm text-amber-600 dark:text-amber-500">
+        <p className="text-sm text-amber-600 dark:text-amber-400">
           Daily limit reached. Resets tomorrow.
         </p>
       </div>
@@ -58,7 +58,7 @@ function ResumeFitSection({ analysis, aiScoresRemainingToday }) {
           <span className="text-xs font-medium text-muted-foreground">Missing skills</span>
           <div className="flex flex-wrap gap-1">
             {analysis.missing_skills.map((skill) => (
-              <span key={skill} className="rounded-full bg-red-100 px-2 py-0.5 text-xs text-red-700 dark:bg-red-900/40 dark:text-red-400">
+              <span key={skill} className="rounded-full bg-destructive/10 px-2 py-0.5 text-xs text-destructive">
                 {skill}
               </span>
             ))}
