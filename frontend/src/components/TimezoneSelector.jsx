@@ -1,10 +1,17 @@
-/** Grouped IANA timezone <select> with optgroup regions. */
+/** Grouped IANA timezone selector with optgroup regions. */
 
 import { useMemo } from "react";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectGroup,
+  SelectLabel,
+  SelectItem,
+} from "@/components/ui/select";
 
 const BROWSER_TZ = Intl.DateTimeFormat().resolvedOptions().timeZone || "America/New_York";
-
-const SELECT_CLS = "border border-input rounded-md bg-background text-foreground focus:border-ring focus:ring-1 focus:ring-ring/20 focus:outline-none transition-colors text-sm px-3 py-2 font-sans w-full";
 
 function getGroupedTimezones() {
   const zones =
@@ -22,7 +29,7 @@ function getGroupedTimezones() {
 }
 
 /**
- * TimezoneSelector — IANA timezone <select> grouped by continent/region.
+ * TimezoneSelector — IANA timezone selector grouped by continent/region.
  *
  * Props:
  *   value    {string}    Currently selected IANA timezone
@@ -32,24 +39,25 @@ function TimezoneSelector({ value, onChange }) {
   const groups = useMemo(getGroupedTimezones, []);
 
   return (
-    <select
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      aria-label="Timezone"
-      className={SELECT_CLS}
-    >
-      {Object.entries(groups)
-        .sort(([a], [b]) => a.localeCompare(b))
-        .map(([region, zones]) => (
-          <optgroup key={region} label={region}>
-            {zones.map((tz) => (
-              <option key={tz} value={tz}>
-                {tz.replace(/_/g, " ")}
-              </option>
-            ))}
-          </optgroup>
-        ))}
-    </select>
+    <Select value={value} onValueChange={onChange}>
+      <SelectTrigger aria-label="Timezone" className="w-full">
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent className="max-h-60 overflow-auto">
+        {Object.entries(groups)
+          .sort(([a], [b]) => a.localeCompare(b))
+          .map(([region, zones]) => (
+            <SelectGroup key={region}>
+              <SelectLabel>{region}</SelectLabel>
+              {zones.map((tz) => (
+                <SelectItem key={tz} value={tz}>
+                  {tz.replace(/_/g, " ")}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          ))}
+      </SelectContent>
+    </Select>
   );
 }
 
