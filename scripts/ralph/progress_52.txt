@@ -26,3 +26,11 @@ Started: Sat May  2 15:46:35 PDT 2026
 - shadcn Textarea handles w-full, px-3 py-2, text-sm, border, shadow-sm, transition-colors, placeholder:text-muted-foreground, focus-visible styles
 - Build: clean (✓ built in 2.79s)
 - Commit: cef5650
+
+## US-553 — Replace PrepSection raw <textarea> with shadcn Textarea
+- Replaced raw <textarea> in PrepNotesField with <Textarea> from ./ui/textarea
+- Removed TEXTAREA_CLS constant (was only used in this file)
+- Removed TEXTAREA_CLS import line; added Textarea import
+- All props preserved: value (notes), onChange (onNotesChange), maxLength, placeholder, rows, className (mt-1 resize-none)
+- Build: ✓ passed in 2.68s
+- Committed: feat: US-553 - Replace PrepSection raw <textarea> with shadcn Textarea

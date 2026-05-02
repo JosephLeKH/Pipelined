@@ -62,7 +62,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 4,
-      "passes": false,
+      "passes": true,
       "notes": "Read the file before editing. Preserve all props: value, onChange, placeholder, rows. If TEXTAREA_CLS is only used in PrepSection, remove both the import and the constant after replacing."
     },
     {
