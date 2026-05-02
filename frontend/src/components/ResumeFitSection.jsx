@@ -33,7 +33,7 @@ function ResumeFitSection({ analysis, aiScoresRemainingToday }) {
     <div className="flex flex-col gap-3">
       <span className="text-xs font-medium uppercase text-muted-foreground">Resume Fit</span>
       <div className="flex items-center gap-2">
-        <span className="text-3xl font-bold text-foreground">
+        <span className="text-3xl font-semibold text-foreground">
           {analysis.fit_score ?? "—"}
         </span>
         <FitBadge score={analysis.fit_score} />
