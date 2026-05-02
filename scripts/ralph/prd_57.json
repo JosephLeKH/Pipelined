@@ -16,7 +16,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/lib/designTokens.js. ICON_BUTTON at line 129 is a non-shadcn custom token used in icon-only buttons across the app. The full string is 'rounded-full p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200'. Replace only the three focus:ring-* classes with focus-visible: — leave focus:outline-none and all other classes unchanged."
     },
     {

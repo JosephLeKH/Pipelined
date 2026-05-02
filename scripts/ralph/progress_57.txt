@@ -1,3 +1,7 @@
 # Ralph Progress Log
 Started: Sat May  2 16:55:18 PDT 2026
 ---
+## US-590 — Fix designTokens.js ICON_BUTTON: focus:ring-* → focus-visible:ring-*
+Status: PASS
+Summary: Replaced focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 with focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 in the ICON_BUTTON constant at line 129 of frontend/src/lib/designTokens.js. focus:outline-none was left unchanged. Build passed (✓ built in 3.07s).
+Learnings: The ICON_BUTTON token is used across icon-only buttons app-wide; a single token fix here propagates the keyboard-only focus ring behavior everywhere those buttons appear.
