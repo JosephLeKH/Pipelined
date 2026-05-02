@@ -127,7 +127,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 8,
-      "passes": false,
+      "passes": true,
       "notes": "Read both files before editing. NotificationBell line 103: the notification dot/badge uses font-bold text-[9px]. OfferNegotiationPanel line 34: the total compensation span uses font-bold text-primary. Both are inline emphasis spans — font-semibold is the standard for these. Pages like PublicPipeline and Pricing use font-bold on display headings — those are intentional and out of scope."
     }
   ]

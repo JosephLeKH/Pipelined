@@ -62,3 +62,9 @@ Learnings:
 Changed 4 components: UndoToast (focus:ring-primary → focus-visible:ring-ring), SettingsAccountSection (focus:ring-destructive/50 → focus-visible:ring-destructive/50), PrepSection (focus:ring-inset → focus-visible:ring-inset), NotificationBell (focus:ring-inset → focus-visible:ring-inset). Build passed. Committed.
 
 **Learned**: focus: triggers on all pointer interactions; focus-visible: triggers only on keyboard navigation. Other focus: classes like focus:outline-none must be left untouched — they suppress the browser default ring and should remain always-active.
+
+---
+US-565 | Replace font-bold with font-semibold in badge and value span contexts
+Completed: 2026-05-02
+Summary: Changed font-bold to font-semibold on two inline emphasis spans — the notification count badge in NotificationBell.jsx (line 103) and the total compensation value span in OfferNegotiationPanel.jsx (line 34). Display heading font-bold instances (h1/h2 with font-display) were intentionally left unchanged.
+Learnings: font-semibold is the project standard for inline emphasis spans and badges; font-bold is reserved for display headings. Quick two-file surgical change with no side effects. Build passed in 2.73s.
