@@ -17,3 +17,11 @@ Learnings:
 **Status:** PASS
 **Summary:** Removed INPUT_CLS constant (long Tailwind string at line 11), imported Input from ./ui/input, replaced raw <input> with <Input> preserving all props (type, defaultValue, autoFocus, onBlur, aria-label). No className needed since shadcn Input default styling covers the same tokens. Build passes.
 **Commit:** feat: US-559 - Replace OfferDetailsSection INPUT_CLS raw <input> with shadcn Input
+
+## US-560 — Replace ApplicationRow raw <input type='checkbox'> with shadcn Checkbox
+**Status:** Complete
+**Commit:** 9345659
+
+**Summary:** Found the raw `<input type="checkbox">` at lines 103-109 in ApplicationRow.jsx with `accent-primary` styling. Added `import { Checkbox } from "./ui/checkbox"` alongside the existing tooltip import. Replaced the raw input with `<Checkbox checked={checked} onCheckedChange={() => onToggle(application.id)} aria-label={...} />` — switched `onChange` to `onCheckedChange` per shadcn Checkbox API. Build passed in 2.71s.
+
+**Learnings:** shadcn Checkbox uses `onCheckedChange` (receives the boolean directly) rather than `onChange` with a DOM event — when adapting an `onChange={() => fn(id)}` handler, simply swap the event name with no other changes needed. The Checkbox component internally handles the `h-4 w-4 rounded border-border accent-primary` styling so no className needed.

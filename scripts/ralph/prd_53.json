@@ -51,7 +51,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/ApplicationRow.jsx. The checkbox is around lines 104-109. shadcn Checkbox uses onCheckedChange (not onChange) — onCheckedChange receives the boolean value directly, so use () => onToggle(application.id) as the handler. The existing aria-label should be preserved."
     },
     {
