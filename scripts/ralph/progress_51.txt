@@ -16,3 +16,17 @@ Started: Sat May  2 15:32:52 PDT 2026
 - `bg-accent-blue` was already in the array at position 2, so using it again for sky would create duplicate colors reducing avatar variety — kept sky palette color intentional
 - Multi-class strings like `"bg-emerald-500 dark:bg-emerald-600"` work correctly in className concatenation and Tailwind picks them up via static analysis
 - Build passed cleanly in 2.77s with no errors
+
+## US-543 — Fix ApplicationRow amber follow-up and stale indicators missing dark variants
+Status: COMPLETE
+Commit: feat: US-543 - Fix ApplicationRow amber follow-up and stale indicators missing dark variants
+
+Changes:
+- Stale dot indicator (line 117): added `dark:bg-amber-900/40` to bg-amber-400
+- Follow-up bell icon (line 139): added `dark:text-amber-400` to text-amber-500
+- Swipe action button: left as-is per acceptance criteria (full-width amber buttons visible on both themes)
+
+Learnings:
+- The stale indicator is a 2x2 dot, not a badge with text — only bg class needed a dark variant, no text color to fix
+- Bell icon (follow-up overdue indicator) also used amber without dark variant, fixed with dark:text-amber-400
+- Swipe buttons intentionally left without dark variants per acceptance criteria guidance

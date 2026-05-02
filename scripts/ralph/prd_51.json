@@ -32,7 +32,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Read the file before editing. Focus on the stale badge span (inline status indicator) — that's the one most likely missing dark variants. The swipe action buttons (full colored bg) are less critical. Make only targeted additions of dark: variants."
     },
     {
