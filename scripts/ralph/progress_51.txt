@@ -59,3 +59,19 @@ Learnings:
 - No need to import cn in PipelineStagesEditor itself — the Input component handles cn() merging internally
 - Existing className "flex-1 rounded border-0 bg-transparent..." overrides the Input default border/sizing via Tailwind merge
 - Build passed cleanly in 2.60s with no errors
+
+## US-546 — Extract FitBadge status palette to designTokens.js constants
+Status: COMPLETE
+Commit: 07a0a5e
+
+Changes:
+- Added BADGE_FIT_HIGH, BADGE_FIT_MEDIUM, BADGE_FIT_LOW, BADGE_FIT_CRITICAL to designTokens.js
+- Removed inline STATUS_HIGH/MEDIUM/LOW/CRITICAL string constants from FitBadge.jsx
+- Added import of the four new constants at the top of FitBadge.jsx
+- fitColor() function now returns imported constants instead of module-local strings
+
+Learnings:
+- FitBadge already had the STATUS_CRITICAL value correctly set to bg-destructive/10 text-destructive from a prior PRD-47 fix — no change needed to the value itself, just moved it to designTokens
+- Removed the inline STATUS_* variables entirely rather than keeping them as aliases — cleaner refactor with no behavior change
+- Build passed cleanly in 2.74s with no errors
+

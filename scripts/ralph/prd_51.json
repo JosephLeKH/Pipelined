@@ -77,7 +77,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 5,
-      "passes": false,
+      "passes": true,
       "notes": "Read both files first. FitBadge STATUS object maps tier strings to Tailwind class strings. Extract those strings to designTokens.js as named constants. Keep the STATUS object in FitBadge but reference the imported constants. This is a refactor — behavior must not change."
     },
     {
