@@ -28,3 +28,10 @@ Changed line 46 of MarkdownEditor.jsx in MarkdownTabBar: replaced `focus:ring-2 
 - **Build:** `npm run build` passed (✓ built in 2.70s)
 - **Commit:** `feat: US-569 - Fix CalendarGrid EventChip button: focus:ring-* → focus-visible:ring-*`
 - **Learning:** EventChip already had correct ARIA via aria-label and title. No ring-offset class was present (unlike toggle buttons), so only two ring classes needed the prefix change. Pattern is consistent across this PRD batch.
+
+## US-570 — Fix CalendarGrid DayCell: focus:ring-* → focus-visible:ring-*
+- **Status:** PASSED
+- **Change:** In `frontend/src/components/CalendarGrid.jsx` line 79 (DayCell div), replaced `focus:ring-2 focus:ring-inset focus:ring-ring` with `focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring`. Kept `focus:outline-none` unchanged.
+- **Build:** `npm run build` passed (✓ built in 2.68s)
+- **Commit:** `feat: US-570 - Fix CalendarGrid DayCell: focus:ring-* → focus-visible:ring-*`
+- **Learning:** DayCell had an extra `focus:ring-inset` class (unlike the EventChip) due to its div/button-role nature requiring an inset ring. The same three-step prefix swap applied. DayCell already had correct keyboard semantics (role="button" tabIndex={0} with Enter/Space onKeyDown).
