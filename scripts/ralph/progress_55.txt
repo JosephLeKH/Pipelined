@@ -13,3 +13,10 @@ Started: Sat May  2 16:32:52 PDT 2026
 - The follow-up indicator at line 57 (dark:bg-amber-900/60) was left unchanged as specified
 - Build passed with no errors
 - Committed as: feat: US-575 - Add dark variant to KanbanCard stale pulse dot (bg-amber-400)
+
+## US-576 — Add dark variant to ContactCard stale contact dot (bg-amber-400)
+- Added `dark:bg-amber-900/40` to the stale indicator span className at line 42 of ContactCard.jsx
+- Pattern matches ApplicationRow and KanbanCard stale dot treatment for consistency
+- The span is wrapped in a Tooltip — only the className needed updating
+- Build passed in 2.71s with no errors
+- Committed as: feat: US-576 - Add dark variant to ContactCard stale contact dot (bg-amber-400)

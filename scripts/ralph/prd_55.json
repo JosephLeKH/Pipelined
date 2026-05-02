@@ -45,7 +45,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/ContactCard.jsx. The stale span at line 42 has className='inline-block h-2 w-2 shrink-0 rounded-full bg-amber-400'. Add dark:bg-amber-900/40. The span is wrapped in a Tooltip (already in place) — only the className needs updating."
     },
     {
