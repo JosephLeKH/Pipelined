@@ -83,7 +83,7 @@ function UserMenu({ user, handleLogout }) {
         <button
           type="button"
           aria-label="User menu"
-          className="rounded-full focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+          className="rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         >
           <UserAvatar user={user} />
         </button>
