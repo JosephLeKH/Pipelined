@@ -31,7 +31,7 @@ function TotalCompBreakdown({ offer }) {
         <span className="text-muted-foreground">Signing (amortized)</span>
         <span className="font-medium text-foreground text-right">{fmt(annualSigning)}</span>
         <span className="border-t border-border pt-1 font-semibold text-foreground">Est. Annual Total</span>
-        <span className="border-t border-border pt-1 font-bold text-primary text-right">{total > 0 ? fmt(total) : "—"}</span>
+        <span className="border-t border-border pt-1 font-semibold text-primary text-right">{total > 0 ? fmt(total) : "—"}</span>
       </div>
     </div>
   );
