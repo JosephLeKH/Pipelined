@@ -92,7 +92,7 @@ function ResumeDropZone({ isDragOver, setIsDragOver, isUploading, fileInputRef, 
         onDrop={onDrop}
         onClick={() => fileInputRef.current?.click()}
         onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") fileInputRef.current?.click(); }}
-        className={`flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed p-8 text-center transition-colors focus:outline-none focus:ring-2 focus:ring-ring ${
+        className={`flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed p-8 text-center transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
           isDragOver
             ? "border-primary bg-primary/10"
             : "border-border hover:border-primary"
