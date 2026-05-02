@@ -98,7 +98,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 6,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/SettingsUsageSection.jsx first. The disabled Button is at line ~66 with title='Coming soon'. Use asChild on TooltipTrigger so the Button renders directly without an extra wrapper span. The TooltipProvider is already in the app root from a prior PRD — no need to add it here."
     },
     {

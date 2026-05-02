@@ -41,3 +41,19 @@ Commit: b972d04
 Summary: Added `cn` import from `../lib/utils` (it wasn't previously imported). Replaced `style={{ transition: "stroke-dashoffset 0.4s ease" }}` on the animated SVG circle with `className={cn(ringColor(pct), "[transition:stroke-dashoffset_0.4s_ease]")}` — merging the dynamic color class with the static Tailwind arbitrary transition class. Build passed in 2.88s.
 
 Learnings: Tailwind arbitrary CSS via [property:value] syntax uses underscores for spaces in values, so `transition: stroke-dashoffset 0.4s ease` becomes `[transition:stroke-dashoffset_0.4s_ease]`. When the element already has a dynamic className (ringColor function), cn() is the right merge tool.
+
+---
+Story: US-563 - Migrate SettingsUsageSection title='Coming soon' Button to shadcn Tooltip
+Status: COMPLETE
+Commit: feat: US-563 - Migrate SettingsUsageSection title='Coming soon' Button to shadcn Tooltip
+
+Summary:
+- Removed title='Coming soon' from the disabled Button in SettingsUsageSection
+- Wrapped Button in <Tooltip><TooltipTrigger asChild>...</TooltipTrigger><TooltipContent>Coming soon</TooltipContent></Tooltip>
+- Imported Tooltip, TooltipTrigger, TooltipContent from ./ui/tooltip
+- Used asChild on TooltipTrigger so Button renders directly without extra wrapper span
+- Build passed cleanly
+
+Learnings:
+- asChild pattern on TooltipTrigger is critical for disabled buttons — without it Radix adds an extra span wrapper which can interfere with pointer-events on the disabled button
+- TooltipProvider is already at app root from earlier PRD, so no need to add it in individual components
