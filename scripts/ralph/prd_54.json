@@ -1,0 +1,136 @@
+{
+  "id": "PRD-54",
+  "title": "Focus-visible standardization across toggle switches, calendar, kanban tabs, and keyboard accessibility for interactive list items",
+  "description": "Continuation of the systematic UI improvement loop. This batch fixes focus:ring-* → focus-visible:ring-* on five components (MarkdownEditor tab buttons, SettingsNotificationsSection ToggleSwitch, DigestSection toggle, CalendarGrid EventChip, CalendarGrid DayCell), adds missing focus-visible ring and aria-controls to KanbanBoard mobile stage tabs, upgrades SavedSearchesSidebar list items to be fully keyboard-accessible, and audits ContactLinkDropdown and TagInput for missing aria-label on their search inputs.",
+  "userStories": [
+    {
+      "id": "US-566",
+      "title": "Fix MarkdownEditor tab buttons: focus:ring-ring/30 → focus-visible:ring-ring",
+      "description": "As a developer, MarkdownEditor tab buttons (Write/Preview) use focus:ring-ring/30 — both the wrong prefix (focus: vs focus-visible:) and an inconsistent opacity modifier (/30). Standardize to focus-visible:ring-ring.",
+      "acceptanceCriteria": [
+        "Read src/components/MarkdownEditor.jsx first",
+        "On the tab button at line ~46, replace focus:ring-ring/30 with focus-visible:ring-ring",
+        "Keep focus:outline-none (correct — suppresses default browser ring)",
+        "Keep focus:ring-2 but change it to focus-visible:ring-2",
+        "Final ring classes on the tab button: focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        "If focus:ring-ring/30 is not present and focus-visible: is already used, mark passes: true with note 'already using focus-visible'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Read src/components/MarkdownEditor.jsx. The tab button is at line 46 inside MarkdownTabBar. The /30 opacity modifier was inconsistent with the rest of the project. Replace the focus: prefix with focus-visible: and drop the /30 opacity modifier from the ring color. The button also has role='tab' — proper ARIA tab semantics are already in place."
+    },
+    {
+      "id": "US-567",
+      "title": "Fix SettingsNotificationsSection ToggleSwitch: focus:ring-* → focus-visible:ring-*",
+      "description": "As a developer, the ToggleSwitch component in SettingsNotificationsSection uses focus:ring-2 focus:ring-ring focus:ring-offset-2, causing focus rings to appear on mouse click. Replace with focus-visible: prefix.",
+      "acceptanceCriteria": [
+        "Read src/components/SettingsNotificationsSection.jsx first",
+        "On the ToggleSwitch button (line ~24), replace focus:ring-2 with focus-visible:ring-2, focus:ring-ring with focus-visible:ring-ring, focus:ring-offset-2 with focus-visible:ring-offset-2",
+        "Keep focus:outline-none unchanged (correct — suppresses default browser ring)",
+        "Final focus classes on the button: focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+        "If already using focus-visible, mark passes: true with note 'already using focus-visible'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Read src/components/SettingsNotificationsSection.jsx. ToggleSwitch button is at line 24 — it has role='switch' aria-checked, which is correct ARIA. Only change the focus: prefix to focus-visible: on the ring classes. Leave focus:outline-none as-is."
+    },
+    {
+      "id": "US-568",
+      "title": "Fix DigestSection toggle button: focus:ring-* → focus-visible:ring-*",
+      "description": "As a developer, DigestSection's toggle button (line 20) uses focus:ring-2 focus:ring-ring focus:ring-offset-2. Replace with focus-visible: prefix for keyboard-only focus rings.",
+      "acceptanceCriteria": [
+        "Read src/components/DigestSection.jsx first",
+        "On the toggle button (line ~20), replace focus:ring-2 with focus-visible:ring-2, focus:ring-ring with focus-visible:ring-ring, focus:ring-offset-2 with focus-visible:ring-offset-2",
+        "Keep focus:outline-none unchanged",
+        "If already using focus-visible, mark passes: true with note 'already using focus-visible'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "Read src/components/DigestSection.jsx. The toggle button is at line 20. It has role='switch' aria-checked — correct ARIA semantics. Only change focus: → focus-visible: on the ring classes. Keep focus:outline-none."
+    },
+    {
+      "id": "US-569",
+      "title": "Fix CalendarGrid EventChip button: focus:ring-* → focus-visible:ring-*",
+      "description": "As a developer, the EventChip button in CalendarGrid (line 54) uses focus:outline-none focus:ring-2 focus:ring-ring. Replace ring classes with focus-visible: prefix.",
+      "acceptanceCriteria": [
+        "Read src/components/CalendarGrid.jsx first",
+        "On the EventChip button (line ~54), replace focus:ring-2 with focus-visible:ring-2 and focus:ring-ring with focus-visible:ring-ring",
+        "Keep focus:outline-none unchanged (suppresses browser default)",
+        "Final focus classes: focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        "If already using focus-visible, mark passes: true with note 'already using focus-visible'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": "Read src/components/CalendarGrid.jsx. EventChip is at lines 41-65. The button's className at line 54 has focus:outline-none focus:ring-2 focus:ring-ring. Only the ring classes need the prefix change — keep focus:outline-none as-is."
+    },
+    {
+      "id": "US-570",
+      "title": "Fix CalendarGrid DayCell: focus:ring-* → focus-visible:ring-*",
+      "description": "As a developer, the DayCell div in CalendarGrid (line 79) uses focus:outline-none focus:ring-2 focus:ring-inset focus:ring-ring. Replace ring classes with focus-visible: prefix.",
+      "acceptanceCriteria": [
+        "Read src/components/CalendarGrid.jsx first",
+        "On the DayCell div (line ~79), replace focus:ring-2 with focus-visible:ring-2, focus:ring-inset with focus-visible:ring-inset, focus:ring-ring with focus-visible:ring-ring",
+        "Keep focus:outline-none unchanged",
+        "Final focus classes: focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring",
+        "If already using focus-visible, mark passes: true with note 'already using focus-visible'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": "Read src/components/CalendarGrid.jsx. DayCell has role='button' tabIndex={0} with onKeyDown Enter/Space — correct keyboard semantics. The div className at line 79 has focus:ring-2 focus:ring-inset focus:ring-ring. Change all three focus: prefixes to focus-visible: on ring classes only."
+    },
+    {
+      "id": "US-571",
+      "title": "Add focus-visible ring and aria-controls to KanbanBoard mobile stage tab buttons",
+      "description": "As a developer, KanbanBoard mobile stage tab buttons (line 46-47) have role='tab' but no focus-visible ring and no aria-controls attribute. Add both for full ARIA tab pattern compliance.",
+      "acceptanceCriteria": [
+        "Read src/components/KanbanBoard.jsx first",
+        "On mobile stage tab buttons (line ~46), add focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring to the className string",
+        "Add aria-controls={'mobile-kanban-panel'} to each tab button",
+        "Add id='mobile-kanban-panel' to the mobile panel container div (line ~53, the div with data-testid='mobile-kanban-swipe')",
+        "If tab buttons already have focus-visible and aria-controls, mark passes: true with note 'already compliant'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": "Read src/components/KanbanBoard.jsx. The mobile tab buttons in KanbanMobileView (line 46) already have role='tab' aria-selected but are missing focus rings entirely and aria-controls. The panel div at line 53 already has data-testid='mobile-kanban-swipe' — add id='mobile-kanban-panel' to it. Add aria-controls='mobile-kanban-panel' to each tab button. Also add focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring to the className. Use cn() if needed."
+    },
+    {
+      "id": "US-572",
+      "title": "Make SavedSearchesSidebar list items fully keyboard-accessible",
+      "description": "As a developer, SavedSearchesSidebar renders <li onClick> elements with cursor-pointer but no role, tabIndex, or keyboard handler — they are invisible to keyboard navigation and screen readers.",
+      "acceptanceCriteria": [
+        "Read src/components/SavedSearchesSidebar.jsx first",
+        "On the <li> at line ~29 that has onClick={() => onApply(s)}, add role='button' tabIndex={0}",
+        "Add onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onApply(s); } }} to the li",
+        "Add focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none to the li className",
+        "If already keyboard-accessible, mark passes: true with note 'already keyboard-accessible'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 7,
+      "passes": false,
+      "notes": "Read src/components/SavedSearchesSidebar.jsx. The li at line 29 has cursor-pointer hover:bg-muted but is not keyboard-reachable. Add role='button', tabIndex={0}, onKeyDown with Enter/Space, and focus-visible ring classes to the className. The className already has transition-colors — merge the focus-visible ring classes into the existing className string."
+    },
+    {
+      "id": "US-573",
+      "title": "Audit ContactLinkDropdown and TagInput for missing aria-label on search inputs",
+      "description": "As a developer, ContactLinkDropdown and TagInput both have raw <input> elements styled as borderless combobox inputs with only focus:outline-none. Check if aria-label is present; add if missing.",
+      "acceptanceCriteria": [
+        "Read src/components/ContactLinkDropdown.jsx first",
+        "If the raw <input> at line ~46 has no aria-label or aria-labelledby, add aria-label='Search contacts' (or appropriate label based on context)",
+        "Read src/components/TagInput.jsx",
+        "If the raw <input> in TagInput has no aria-label, add aria-label='Add tag' (or appropriate label based on context)",
+        "Do NOT add a visible border or change styling — these are intentional borderless combobox inputs",
+        "If aria-label already present on both, mark passes: true with note 'aria-label already present'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 8,
+      "passes": false,
+      "notes": "Read both files before editing. ContactLinkDropdown borderless input at line ~46 is a combobox-style search — leave styling as-is, only add aria-label if missing. TagInput is a tag input field — same approach. The goal is screen-reader accessibility only, not visual changes."
+    }
+  ]
+}

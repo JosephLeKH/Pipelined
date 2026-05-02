@@ -43,7 +43,7 @@ function MarkdownTabBar({ activeTab, onTabChange }) {
       <div className="flex gap-1" role="tablist">
         {[TAB_WRITE, TAB_PREVIEW].map((tab) => (
           <button key={tab} type="button" role="tab" aria-selected={activeTab === tab} onClick={() => onTabChange(tab)}
-            className={`px-3 py-1 text-xs font-medium capitalize transition-colors focus:outline-none focus:ring-2 focus:ring-ring/30 ${activeTab === tab ? "border-b-2 border-primary text-primary" : "text-muted-foreground hover:text-foreground"}`}
+            className={`px-3 py-1 text-xs font-medium capitalize transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring ${activeTab === tab ? "border-b-2 border-primary text-primary" : "text-muted-foreground hover:text-foreground"}`}
           >{tab}</button>
         ))}
       </div>
