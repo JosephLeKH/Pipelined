@@ -2,6 +2,7 @@
 
 import { Button } from "./ui/button";
 import { Progress } from "./ui/progress";
+import { Tooltip, TooltipTrigger, TooltipContent } from "./ui/tooltip";
 
 const APP_LIMIT = 100;
 const CONTACT_LIMIT = 50;
@@ -60,14 +61,18 @@ function SettingsUsageSection({ user }) {
         <p className="mb-3 text-sm text-muted-foreground">
           Upgrade to Pro for unlimited applications, contacts, and AI scoring.
         </p>
-        <Button
-          type="button"
-          disabled
-          title="Coming soon"
-          className="cursor-not-allowed gap-2 opacity-60"
-        >
-          Upgrade to Pro — Coming soon
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              type="button"
+              disabled
+              className="cursor-not-allowed gap-2 opacity-60"
+            >
+              Upgrade to Pro — Coming soon
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Coming soon</TooltipContent>
+        </Tooltip>
       </div>
     </div>
   );
