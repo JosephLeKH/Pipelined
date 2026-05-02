@@ -47,7 +47,7 @@ function KanbanCard({ application, onSelect }) {
     >
       {stale && (
         <span
-          className="absolute right-2 top-2 h-2 w-2 animate-pulse-dot rounded-full bg-amber-400"
+          className="absolute right-2 top-2 h-2 w-2 animate-pulse-dot rounded-full bg-amber-400 dark:bg-amber-900/40"
           aria-label="Stale application — no updates in 14+ days"
           data-testid="stale-indicator"
         />
