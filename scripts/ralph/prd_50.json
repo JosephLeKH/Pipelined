@@ -49,7 +49,8 @@
         "npm run build passes with no errors"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
+      "completionNote": "Created src/components/ui/checkbox.jsx (native wrapper with shadcn API, no Radix dep needed). Replaced raw <input type='checkbox'> in ApplicationListHeader with <Checkbox onCheckedChange={...}>. Build passes.",
       "notes": "Read the file before editing. shadcn Checkbox uses onCheckedChange (not onChange). For indeterminate state, shadcn Checkbox accepts checked='indeterminate' as a value. Make minimal changes — only replace the raw input."
     },
     {

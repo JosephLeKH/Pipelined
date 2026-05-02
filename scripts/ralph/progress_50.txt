@@ -11,3 +11,8 @@ Action: No files created, no npm install run.
 **Status:** Skipped
 **Reason:** US-534 was skipped because @radix-ui/react-switch is not in frontend/package.json. Without the dependency, the Switch component (src/components/ui/switch.jsx) cannot be created, so this migration is not possible.
 **No files changed.**
+
+## US-536 - Replace raw checkboxes in ApplicationListHeader with shadcn Checkbox
+**Status:** DONE
+**Summary:** ApplicationListHeader had a raw `<input type="checkbox">` for bulk-select. Created `src/components/ui/checkbox.jsx` — a shadcn-style Checkbox component using native input (since `@radix-ui/react-checkbox` is not installed). Component handles `onCheckedChange`, `checked` (boolean or 'indeterminate'), and uses `cn()` from `@/lib/utils`. Replaced the raw input in ApplicationListHeader with `<Checkbox aria-label="..." checked={allSelected} onCheckedChange={onSelectAll} />`. Build passes.
+**Learnings:** `@radix-ui/react-checkbox` is not in package.json — implemented a native wrapper with the same API. The Checkbox component can now be reused by US-537 and US-538.
