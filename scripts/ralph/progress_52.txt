@@ -8,3 +8,12 @@ Started: Sat May  2 15:46:35 PDT 2026
 - Removed `SELECT_CLS` constant entirely; `flex-1 text-sm` passed as `className` to `SelectTrigger`
 - Build: clean (✓ built in 2.67s)
 - Commit: 051668c
+
+## US-551: Replace NewEventForm raw <select> (AppSelector) with shadcn Select
+- Replaced raw `<select size={N}>` + `LISTBOX_CLASSES` constant with shadcn `Select`, `SelectTrigger`, `SelectValue`, `SelectContent`, `SelectItem`
+- Added `handleSelectValueChange` to `useAppSelector.js` hook — takes a string value directly (for `onValueChange`), mirrors `handleSelectChange` logic without the event object
+- `value={applicationId || undefined}` ensures placeholder shows when no app selected
+- No-results case: `<SelectItem value="" disabled>No matching applications</SelectItem>` per acceptance criteria
+- Removed `LISTBOX_CLASSES` constant and `size` attribute (shadcn Select is a dropdown, not a multi-row listbox)
+- Build: clean (✓ built in 2.69s)
+- Commit: 91fe0d7

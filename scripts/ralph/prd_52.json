@@ -32,7 +32,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Read the file before editing. The application selector maps application objects to options. shadcn Select value must be a string — if the value is an object id, use the id string as the value. Preserve any empty/placeholder option as a SelectItem with value=''."
     },
     {
