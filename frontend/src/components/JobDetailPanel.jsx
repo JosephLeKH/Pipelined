@@ -146,7 +146,7 @@ function JobDetailPanel({ job, onClose }) {
 
         <div className="flex flex-1 flex-col gap-5 px-6 py-5">
           {job.is_stale && (
-            <span className="self-start rounded-full text-xs font-medium px-2.5 py-1 inline-flex items-center gap-1 bg-amber-100 text-amber-800">
+            <span className="self-start rounded-full text-xs font-medium px-2.5 py-1 inline-flex items-center gap-1 bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300">
               {STALE_LABEL}
             </span>
           )}

@@ -61,7 +61,7 @@ function JobRow({ job, style }) {
         <span className="hidden text-xs text-muted-foreground sm:block">{datePosted}</span>
         {job.is_stale && (
           <span
-            className="rounded-full bg-amber-100 px-1.5 py-0.5 text-xs font-medium text-amber-800"
+            className="rounded-full bg-amber-100 px-1.5 py-0.5 text-xs font-medium text-amber-800 dark:bg-amber-900/40 dark:text-amber-300"
             data-testid="stale-badge"
           >
             Stale
