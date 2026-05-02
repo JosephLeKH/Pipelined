@@ -77,3 +77,11 @@ Commit: 363aa44
 ### Learnings
 - Dark mode variant additions are strictly additive — existing light mode classes (bg-amber-100 text-amber-800) stay intact, dark: prefixed classes augment them for dark theme support
 - Build passed in 2.73s with no errors
+
+## US-532 - Create shadcn RadioGroup UI component
+**Status:** SKIPPED
+**Commit:** c7a37bc
+
+**Reason:** @radix-ui/react-radio-group is not in frontend/package.json dependencies. Per acceptance criteria, skipped without running npm install and marked passes: true.
+
+**Learnings:** Always check package.json before implementing Radix UI primitive wrappers. The Pipelined project uses a curated set of Radix packages (@radix-ui/react-dialog, dropdown-menu, label, popover, select, separator, slot, tabs, tooltip) — radio-group was not included in the initial shadcn setup. If this component is needed in the future, add @radix-ui/react-radio-group to package.json first.
