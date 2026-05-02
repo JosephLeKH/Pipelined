@@ -11,12 +11,17 @@ import {
   DialogTitle,
 } from "./ui/dialog";
 import { Input } from "./ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 import { NewEventFormFields } from "./NewEventFormFields";
 
-const LISTBOX_CLASSES = "w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
-
 function AppSelector({ apps, applicationId, onApplicationChange }) {
-  const { appSearch, filteredApps, handleSearchChange, handleSelectChange } =
+  const { appSearch, filteredApps, handleSearchChange, handleSelectValueChange } =
     useAppSelector({ applicationId, apps, onApplicationChange });
   return (
     <div className="flex flex-col gap-1.5">
@@ -25,13 +30,20 @@ function AppSelector({ apps, applicationId, onApplicationChange }) {
       </label>
       <Input id="app-search" type="text" placeholder="Search by company or role…"
         value={appSearch} onChange={handleSearchChange} autoComplete="off" />
-      <select value={applicationId} onChange={handleSelectChange} className={LISTBOX_CLASSES}
-        aria-label="Select application" size={Math.min(filteredApps.length || 1, 5)}>
-        {filteredApps.length === 0 && <option value="" disabled>No matching applications</option>}
-        {filteredApps.map((a) => (
-          <option key={a.id} value={a.id}>{a.company} — {a.role_title}</option>
-        ))}
-      </select>
+      <Select value={applicationId || undefined} onValueChange={handleSelectValueChange}>
+        <SelectTrigger aria-label="Select application">
+          <SelectValue placeholder="Select an application" />
+        </SelectTrigger>
+        <SelectContent>
+          {filteredApps.length === 0 ? (
+            <SelectItem value="" disabled>No matching applications</SelectItem>
+          ) : (
+            filteredApps.map((a) => (
+              <SelectItem key={a.id} value={a.id}>{a.company} — {a.role_title}</SelectItem>
+            ))
+          )}
+        </SelectContent>
+      </Select>
     </div>
   );
 }

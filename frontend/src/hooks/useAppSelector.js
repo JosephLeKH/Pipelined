@@ -39,5 +39,14 @@ export function useAppSelector({ applicationId, apps, onApplicationChange }) {
     [apps, onApplicationChange]
   );
 
-  return { appSearch, filteredApps, handleSearchChange, handleSelectChange };
+  const handleSelectValueChange = useCallback(
+    (value) => {
+      const selected = apps.find((a) => a.id === value);
+      onApplicationChange(value);
+      if (selected) setAppSearch(`${selected.company} — ${selected.role_title}`);
+    },
+    [apps, onApplicationChange]
+  );
+
+  return { appSearch, filteredApps, handleSearchChange, handleSelectChange, handleSelectValueChange };
 }
