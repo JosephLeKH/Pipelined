@@ -1,3 +1,8 @@
 # Ralph Progress Log
 Started: Sat May  2 15:20:06 PDT 2026
 ---
+
+## US-534 — Create shadcn Switch UI component
+Status: SKIPPED (passes: true)
+Reason: @radix-ui/react-switch is not in frontend/package.json dependencies.
+Action: No files created, no npm install run.
