@@ -14,10 +14,10 @@ import { Label } from "./ui/label";
 const AVATAR_COLORS = [
   "bg-primary",
   "bg-accent-blue",
-  "bg-amber-500",
-  "bg-emerald-500",
-  "bg-rose-500",
-  "bg-sky-500",
+  "bg-amber-400",
+  "bg-emerald-500 dark:bg-emerald-600",
+  "bg-destructive",
+  "bg-sky-500 dark:bg-sky-600", // intentional palette color; bg-accent-blue already used above
 ];
 
 function avatarColor(name) {
