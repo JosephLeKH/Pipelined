@@ -21,3 +21,9 @@ US-519 | Fix FilterBar ArchivedBanner and DetailPanelBody overdue warning amber 
 - Line 16: `text-rose-600` → `text-destructive` (over-limit error state)
 - Line 16: `text-amber-600` → `text-amber-600 dark:text-amber-400` (near-limit warning state)
 **Learnings:** Single-line ternary expression contained both hardcoded color classes. No semantic warning token exists in this design system, so amber-600 with dark variant added per acceptance criteria. Build passed in 2.73s.
+
+## US-521 — Fix GoalProgress hardcoded stroke-green-500 to semantic token
+**Commit:** ddc8a01
+**Changes:** frontend/src/components/GoalProgress.jsx (1 line)
+- Line 16 in ringColor(): `stroke-green-500` → `stroke-primary` (completion ring color)
+**Learnings:** SVG stroke classes work with Tailwind semantic tokens the same as fill/text classes. The ringColor function returns Tailwind class strings — single targeted replacement. Build passed in 2.79s.

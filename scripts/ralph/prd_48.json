@@ -53,7 +53,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 4,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/GoalProgress.jsx first. Single targeted change — the ring going green on completion maps to brand primary color."
     },
     {
