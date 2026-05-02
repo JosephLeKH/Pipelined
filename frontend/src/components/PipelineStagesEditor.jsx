@@ -82,7 +82,7 @@ function SortableStageItem({ id, value, onRename, onRemove, canRemove }) {
       <button type="button" {...attributes} {...listeners} aria-label="Drag to reorder" className="cursor-grab text-muted-foreground hover:text-foreground transition-colors focus:outline-none">
         <GripVertical className="h-4 w-4" />
       </button>
-      <Input type="text" value={value} maxLength={STAGE_NAME_MAX_LENGTH} onChange={(e) => onRename(id, e.target.value)} className="flex-1 rounded border-0 bg-transparent text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-ring" aria-label={`Stage name: ${value}`} />
+      <Input type="text" value={value} maxLength={STAGE_NAME_MAX_LENGTH} onChange={(e) => onRename(id, e.target.value)} className="flex-1 rounded border-0 bg-transparent text-sm text-foreground focus:outline-none focus-visible:ring-1 focus-visible:ring-ring" aria-label={`Stage name: ${value}`} />
       {canRemove && (
         <Button type="button" variant="ghost" size="icon" onClick={() => onRemove(id)} aria-label={`Remove stage ${value}`} className="h-7 w-7 text-muted-foreground/50 hover:text-destructive hover:bg-destructive/10">
           <Trash2 className="h-4 w-4" />
