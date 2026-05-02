@@ -88,7 +88,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 6,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/pages/OfferComparison.jsx. The Trophy icon at line 70 has className='h-4 w-4 text-amber-500'. Add dark:text-amber-400. This is the same amber icon pattern used across the codebase — single targeted addition."
     },
     {
@@ -103,7 +103,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 7,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/ResumeFitSection.jsx. The score span at line 36 wraps a numeric score like '87'. It's inline emphasis data — font-semibold matches the project convention for value spans (same fix applied in PRD-53 US-565 for NotificationBell and OfferNegotiationPanel)."
     },
     {
@@ -118,7 +118,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 8,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/pages/PublicPipeline.jsx. StatCard at line 24-31 renders a stat label/value pair. The value span at line 27 uses text-2xl font-bold. Change font-bold to font-semibold. Leave the Pricing.jsx badge (font-bold uppercase tracking-wide) out of scope — that is intentional marketing typography."
     }
   ]

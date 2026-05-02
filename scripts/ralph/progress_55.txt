@@ -32,3 +32,22 @@ Started: Sat May  2 16:32:52 PDT 2026
 - Pattern: matches ApplicationRow Bell icon (text-amber-500 dark:text-amber-400) for consistent amber icon text in dark mode
 - Build passed (2.98s), committed as ac21113
 - passes: true
+
+## US-580: Replace font-bold with font-semibold on ResumeFitSection score span
+- Changed `className="text-3xl font-bold text-foreground"` to `className="text-3xl font-semibold text-foreground"` on the score span at line 36 of ResumeFitSection.jsx
+- Numeric value spans use font-semibold per project convention (not headings, so font-bold is incorrect)
+- passes: true
+
+## US-581: Replace font-bold with font-semibold on PublicPipeline StatCard value span
+- Changed `className="text-2xl font-bold text-foreground"` to `className="text-2xl font-semibold text-foreground"` on the value span at line 27 of PublicPipeline.jsx
+- Same convention as US-580 — numeric stat display, not a heading
+- Both US-580 and US-581 committed together as a3a067e
+- Build passed in 2.66s with no errors
+- passes: true
+
+## US-579: Add dark variant to OfferComparison Trophy icon (text-amber-500)
+- Changed `className="h-4 w-4 text-amber-500"` to `className="h-4 w-4 text-amber-500 dark:text-amber-400"` on the Trophy icon at line 70 of OfferComparison.jsx
+- Same amber icon text pattern as ApplicationRow Bell icon and SettingsPipelineSection Flame icon
+- Build passed in 2.62s with no errors
+- Committed as: feat: US-579 - Add dark variant to OfferComparison Trophy icon (text-amber-500)
+- passes: true
