@@ -85,3 +85,11 @@ Commit: 363aa44
 **Reason:** @radix-ui/react-radio-group is not in frontend/package.json dependencies. Per acceptance criteria, skipped without running npm install and marked passes: true.
 
 **Learnings:** Always check package.json before implementing Radix UI primitive wrappers. The Pipelined project uses a curated set of Radix packages (@radix-ui/react-dialog, dropdown-menu, label, popover, select, separator, slot, tabs, tooltip) — radio-group was not included in the initial shadcn setup. If this component is needed in the future, add @radix-ui/react-radio-group to package.json first.
+
+## US-533 - Replace MergeDialog raw radio inputs with shadcn RadioGroup
+**Status:** SKIPPED
+**Commit:** 3e2f44a
+
+**Reason:** US-532 was skipped because @radix-ui/react-radio-group is not in frontend/package.json. Per acceptance criteria: "If US-532 was skipped (dependency missing), set this story passes: true with note 'skipped — RadioGroup component not available'". No changes made to MergeDialog.jsx.
+
+**Learnings:** Dependency chain in PRDs: when a component-creation story is skipped due to missing package, downstream migration stories should follow the same skip path. The raw <input type="radio"> elements with accent-primary styling remain in MergeDialog.jsx as a future migration target once @radix-ui/react-radio-group is added.
