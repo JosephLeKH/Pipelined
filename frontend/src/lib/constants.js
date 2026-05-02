@@ -3,9 +3,9 @@
 export const STAGE_COLORS = {
   Applied: { bg: "bg-brand-100", text: "text-brand-800", dot: "bg-brand-500", border: "border-brand-500", activeBg: "bg-brand-500" },
   "Phone Screen": { bg: "bg-blue-100", text: "text-blue-800", dot: "bg-accent-blue", border: "border-accent-blue", activeBg: "bg-accent-blue" },
-  Onsite: { bg: "bg-amber-100", text: "text-amber-800", dot: "bg-amber-500", border: "border-amber-500", activeBg: "bg-amber-500" },
+  Onsite: { bg: "bg-amber-100 dark:bg-amber-900/30", text: "text-amber-800 dark:text-amber-300", dot: "bg-amber-500 dark:bg-amber-400", border: "border-amber-500 dark:border-amber-400", activeBg: "bg-amber-500 dark:bg-amber-400" },
   Offer: { bg: "bg-emerald-100", text: "text-emerald-800", dot: "bg-emerald-500", border: "border-emerald-500", activeBg: "bg-emerald-500" },
-  Rejected: { bg: "bg-rose-100", text: "text-rose-800", dot: "bg-rose-500", border: "border-rose-500", activeBg: "bg-rose-500" },
+  Rejected: { bg: "bg-rose-100 dark:bg-rose-900/30", text: "text-rose-800 dark:text-rose-300", dot: "bg-rose-500 dark:bg-rose-400", border: "border-rose-500 dark:border-rose-400", activeBg: "bg-rose-500 dark:bg-rose-400" },
 };
 
 export const DEFAULT_STAGE_COLOR = {
