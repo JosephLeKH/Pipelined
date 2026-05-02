@@ -83,8 +83,8 @@
         "npm run build passes with no errors"
       ],
       "priority": 6,
-      "passes": false,
-      "notes": "Read package.json first to verify @radix-ui/react-checkbox is available. If it is, implement. If not, set passes: true in the PRD with a note 'skipped — dependency not in package.json' and do NOT run npm install."
+      "passes": true,
+      "notes": "skipped — dependency not in package.json"
     },
     {
       "id": "US-524",
