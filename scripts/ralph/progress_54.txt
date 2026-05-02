@@ -7,3 +7,10 @@ Status: PASS
 Commit: e0c82e2
 
 Changed line 46 of MarkdownEditor.jsx in MarkdownTabBar: replaced `focus:ring-2 focus:ring-ring/30` with `focus-visible:ring-2 focus-visible:ring-ring`. Kept `focus:outline-none` unchanged. The /30 opacity modifier was dropped (inconsistent with project standards). Build passed in 2.80s.
+
+## US-567 — Fix SettingsNotificationsSection ToggleSwitch: focus:ring-* → focus-visible:ring-*
+- **Status:** PASSED
+- **Change:** In `frontend/src/components/SettingsNotificationsSection.jsx` line 24, replaced `focus:ring-2 focus:ring-ring focus:ring-offset-2` with `focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2`. Kept `focus:outline-none` unchanged.
+- **Build:** `npm run build` passed (✓ built in 2.75s)
+- **Commit:** `feat: US-567 - Fix SettingsNotificationsSection ToggleSwitch: focus:ring-* → focus-visible:ring-*`
+- **Learning:** The ToggleSwitch component already had correct role="switch" aria-checked ARIA semantics; only the focus visibility prefix needed fixing. The pattern (keep outline-none, swap ring classes to focus-visible) is identical to the MarkdownEditor fix in US-566.

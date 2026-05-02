@@ -33,7 +33,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/SettingsNotificationsSection.jsx. ToggleSwitch button is at line 24 — it has role='switch' aria-checked, which is correct ARIA. Only change the focus: prefix to focus-visible: on the ring classes. Leave focus:outline-none as-is."
     },
     {
