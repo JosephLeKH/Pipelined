@@ -105,3 +105,11 @@ Learnings:
 - The translateX-based fill animation in Progress produces the same visual result as the prior inline width approach
 - Build passed cleanly in 2.74s with no errors
 
+
+## US-549: Audit and fix remaining hardcoded blue/sky/indigo Tailwind colors
+**Status:** passes: true
+**Commit:** no code changes required
+**Summary:** Grepped frontend/src/components/ and frontend/src/pages/ for text-blue-, bg-blue-, text-sky-, bg-sky-, text-indigo-, bg-indigo-, text-teal-, text-cyan-. Found two matches, both intentional:
+1. `ui/badge.jsx` line 22 — `info` variant uses bg-blue-100 text-blue-800 with proper dark variants. This is a semantic badge component variant (blue = info is a universal design convention), same category as BADGE_INFO token.
+2. `SettingsProfileSection.jsx` line 20 — `bg-sky-500 dark:bg-sky-600` for AVATAR_COLORS, already marked with an intentional comment from US-542. Decorative avatar palette color, intentional variety expected.
+**Learnings:** The info variant in badge.jsx parallels how success/warning variants use emerald/amber — all are semantic color roles for status communication, not arbitrary hardcoded colors. Sky-500 in avatar colors is intentional decorative variety with a comment explaining it.

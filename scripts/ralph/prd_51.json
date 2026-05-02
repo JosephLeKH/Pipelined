@@ -125,8 +125,8 @@
         "npm run build passes with no errors"
       ],
       "priority": 8,
-      "passes": false,
-      "notes": "Use grep to find all instances first: grep -r 'text-blue-\\|bg-blue-\\|text-sky-\\|bg-sky-\\|text-indigo-\\|bg-indigo-\\|text-teal-\\|text-cyan-' frontend/src/components/ frontend/src/pages/ --include='*.jsx' -l. Then read each file and make targeted replacements. BADGE_INFO in designTokens.js (bg-blue-50 border-blue-200) is intentional — do not change it."
+      "passes": true,
+      "notes": "No non-intentional blue/sky/indigo colors found. Two matches located: (1) badge.jsx info variant (bg-blue-100 text-blue-800 with dark variants) — intentional info badge color, same category as BADGE_INFO token; (2) SettingsProfileSection.jsx bg-sky-500 dark:bg-sky-600 — intentional avatar palette color already documented with a comment in US-542. No code changes needed. Build passes clean."
     }
   ]
 }
