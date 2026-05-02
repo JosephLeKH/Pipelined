@@ -28,7 +28,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Read both files before editing. The ArchivedBanner in FilterBar is a status indicator — bg-muted text-foreground is appropriate. For DetailPanelBody overdue warning, if it's a deadline warning use bg-destructive/5 text-destructive, if it's informational use bg-muted."
     },
     {

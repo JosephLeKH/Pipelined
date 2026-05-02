@@ -8,3 +8,9 @@ Started: Sat May  2 00:00:21 PDT 2026
 - SettingsReferralSection.jsx line 72: text-green-500 → text-primary (CheckCircle copy-confirmation icon)
 - Tags.jsx line 71: text-green-600 → text-primary (save/check icon in TagNameEditor)
 - All 4 changes minimal and targeted; build passes cleanly.
+
+US-519 | Fix FilterBar ArchivedBanner and DetailPanelBody overdue warning amber colors
+- FilterBar.jsx ArchivedBanner: replaced bg-amber-50 border-amber-200 text-amber-800 dark:* with bg-muted border-border text-foreground (2 dark variants removed, cleaner)
+- DetailPanelBody.jsx overdue warning: replaced bg-amber-50 text-amber-700 dark:* with bg-destructive/5 border border-destructive/30 text-destructive (deadline-missed = error state)
+- Build passes. 2 files changed, 2 lines changed total.
+- Learning: overdue deadline warnings are error states, not informational — destructive tokens are correct here.
