@@ -28,8 +28,11 @@ export default function SavedSearchesSidebar({ onApply }) {
         {searches.map((s) => (
           <li
             key={s.id}
-            className="flex cursor-pointer items-center justify-between rounded px-2 py-1.5 text-sm hover:bg-muted transition-colors"
+            role="button"
+            tabIndex={0}
+            className="flex cursor-pointer items-center justify-between rounded px-2 py-1.5 text-sm hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             onClick={() => onApply(s)}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onApply(s); } }}
           >
             <div className="flex flex-col">
               <span className="font-medium text-foreground">{s.name}</span>
