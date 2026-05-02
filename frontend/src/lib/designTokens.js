@@ -137,3 +137,9 @@ export const SPINNER_SM = "h-6 w-6 animate-spin rounded-full border-2 border-bra
 
 /** Large loading spinner — 32px, brand-500 color, used in full-page loading states. */
 export const SPINNER_LG = "h-8 w-8 animate-spin rounded-full border-2 border-brand-500 border-t-transparent";
+
+/** FitBadge tier colors — AI resume-job fit score pill palette. */
+export const BADGE_FIT_HIGH = "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400";
+export const BADGE_FIT_MEDIUM = "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400";
+export const BADGE_FIT_LOW = "bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-400";
+export const BADGE_FIT_CRITICAL = "bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive";
