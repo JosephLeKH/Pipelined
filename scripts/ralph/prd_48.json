@@ -67,7 +67,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 5,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/SettingsProfileSection.jsx first to confirm the exact line and import path. Check src/components/ui/ for the Input component filename before importing."
     },
     {
