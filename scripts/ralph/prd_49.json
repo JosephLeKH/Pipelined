@@ -1,0 +1,127 @@
+{
+  "id": "PRD-49",
+  "title": "Destructive token cleanup, green active states, RadioGroup component, and stale badge consolidation",
+  "description": "Continuation of the systematic UI improvement loop. This batch replaces remaining hardcoded rose/red colors in DangerZone with destructive tokens, fixes green active-share box colors to use primary tokens, migrates MergeDialog amber warning to shadcn Alert, cleans up green/amber color constants in Activity and JobRow, creates a shadcn RadioGroup component, and migrates MergeDialog radios to it.",
+  "userStories": [
+    {
+      "id": "US-526",
+      "title": "Fix ResumeFitSection missing-skills badge hardcoded red colors",
+      "description": "As a developer, the missing-skills span in ResumeFitSection uses hardcoded bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400. Replace with destructive tokens for consistency.",
+      "acceptanceCriteria": [
+        "In src/components/ResumeFitSection.jsx, the missing-skills badge span with bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400 replaced with bg-destructive/10 text-destructive",
+        "If there is also a text-amber-600 dark:text-amber-500 limit-reached message, change dark:text-amber-500 to dark:text-amber-400 for consistency with the prd_48 convention",
+        "npm run build passes with no errors"
+      ],
+      "priority": 1,
+      "passes": true,
+      "notes": "Read src/components/ResumeFitSection.jsx first. Two targeted changes: missing-skills badge (red → destructive) and the dark variant of any amber limit text if present (amber-500 → amber-400 in dark mode). Make no other changes."
+    },
+    {
+      "id": "US-527",
+      "title": "Fix SettingsAccountSection DangerZone hardcoded rose colors",
+      "description": "As a developer, the danger zone section in SettingsAccountSection uses hardcoded rose-* classes throughout. Replace with semantic destructive tokens.",
+      "acceptanceCriteria": [
+        "In src/components/SettingsAccountSection.jsx, border-rose-200 bg-rose-50 dark:border-rose-800 dark:bg-rose-900/20 on the danger zone container replaced with border-destructive/30 bg-destructive/5",
+        "text-rose-600 dark:text-rose-400 on TriangleAlert icon replaced with text-destructive",
+        "text-rose-900 dark:text-rose-200 on the heading replaced with text-destructive",
+        "text-rose-700 dark:text-rose-300 on body text replaced with text-destructive",
+        "Button className rose colors (border-rose-300 text-rose-700 hover:bg-rose-100 hover:text-rose-700 focus:ring-rose-400 dark:border-rose-700 dark:text-rose-300 dark:hover:bg-rose-900/40) replaced with border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive focus:ring-destructive/50",
+        "npm run build passes with no errors"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Read src/components/SettingsAccountSection.jsx first. All rose-* colors in this file are in the danger zone — they all map cleanly to destructive token variants. Use /opacity suffixes for backgrounds and borders. Make targeted changes only."
+    },
+    {
+      "id": "US-528",
+      "title": "Migrate MergeDialog amber warning box to shadcn Alert",
+      "description": "As a developer, the inline amber warning box in MergeDialog uses hardcoded amber-* classes. Replace with the shadcn Alert component that already exists at src/components/ui/alert.jsx.",
+      "acceptanceCriteria": [
+        "In src/components/MergeDialog.jsx, the div with border-amber-200 bg-amber-50 px-4 py-3 dark:border-amber-700 dark:bg-amber-900/30 replaced with <Alert> from src/components/ui/alert",
+        "AlertTriangle icon color text-amber-600 dark:text-amber-400 replaced with text-amber-600 dark:text-amber-400 (keep — intentional warning amber) OR use Alert's default foreground",
+        "Warning text p tag replaced with <AlertDescription> from the Alert component",
+        "Import Alert and AlertDescription from src/components/ui/alert",
+        "npm run build passes with no errors"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "Read src/components/MergeDialog.jsx and src/components/ui/alert.jsx first. The Alert component uses role='alert' and bg-card border-border by default. This replaces the amber box with a clean semantic component. If the amber intent must be preserved, wrap Alert with a className override using amber tokens."
+    },
+    {
+      "id": "US-529",
+      "title": "Fix SharePipeline and ShareTimeline hardcoded green active-share box colors",
+      "description": "As a developer, both SharePipeline and ShareTimeline render an active share URL box using hardcoded green-* classes. Replace with semantic primary tokens.",
+      "acceptanceCriteria": [
+        "In src/components/SharePipeline.jsx, the active share box div with border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-900/20 replaced with border-primary/20 bg-primary/5",
+        "text-green-800 dark:text-green-300 on the URL span replaced with text-primary",
+        "text-green-600 dark:text-green-400 on the expiry span replaced with text-muted-foreground",
+        "In src/components/ShareTimeline.jsx, apply the same replacements if it has the same pattern",
+        "npm run build passes with no errors"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": "Read src/components/SharePipeline.jsx and src/components/ShareTimeline.jsx first. The active share state (link is live and copyable) maps to primary/brand color since it's a positive/active state. Make identical changes in both files. If ShareTimeline.jsx does not have the green box pattern, mark the file as no-change-needed and continue."
+    },
+    {
+      "id": "US-530",
+      "title": "Fix OfferNegotiationPanel copy-success icon, JobRow remote status green, and PipelineStagesEditor focus ring",
+      "description": "As a developer, three small hardcoded color issues remain: a green copy-success icon, a green 'remote' status label, and a non-standard focus ring opacity.",
+      "acceptanceCriteria": [
+        "In src/components/OfferNegotiationPanel.jsx, text-green-600 on the Check icon (copy success state) replaced with text-primary",
+        "In src/components/JobRow.jsx, REMOTE_COLORS constant: text-green-700 for 'remote' key replaced with text-primary; text-amber-700 for 'onsite' key replaced with text-amber-600 dark:text-amber-400",
+        "In src/components/PipelineStagesEditor.jsx, focus:ring-ring/30 on the stage name input replaced with focus:ring-ring (remove the /30 opacity)",
+        "npm run build passes with no errors"
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": "Read all three files before editing. Three independent targeted changes — each is 1-2 lines. For JobRow, REMOTE_COLORS is a constant object at the top of the file. For PipelineStagesEditor, the inline input className contains 'focus:ring-ring/30' — just remove the '/30' suffix."
+    },
+    {
+      "id": "US-531",
+      "title": "Fix Activity timeline and JobRow/JobDetailPanel hardcoded amber stale badge colors",
+      "description": "As a developer, Activity.jsx TYPE_STYLES uses bg-amber-500 for event_created, and JobRow/JobDetailPanel both render stale badges with hardcoded amber-100/amber-800 classes.",
+      "acceptanceCriteria": [
+        "In src/pages/Activity.jsx, TYPE_STYLES constant: event_created value of 'bg-amber-500' replaced with 'bg-amber-400' (slightly softer, still intentional amber for timeline dots) OR kept as bg-amber-500 if that looks better — amber is acceptable here as intentional color signal",
+        "In src/components/JobRow.jsx, the stale badge span with bg-amber-100 text-amber-800 replaced with bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300 (add missing dark variants)",
+        "In src/components/JobDetailPanel.jsx, the stale label span with bg-amber-100 text-amber-800 replaced with bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300 (add missing dark variants)",
+        "npm run build passes with no errors"
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": "Read src/pages/Activity.jsx, src/components/JobRow.jsx, and src/components/JobDetailPanel.jsx first. The primary fix is adding missing dark mode variants to the stale badges — the amber color itself is intentional for 'stale/aging' signal. Activity.jsx timeline dots already have consistent classes; just ensure dark variants are present if missing."
+    },
+    {
+      "id": "US-532",
+      "title": "Create shadcn RadioGroup UI component",
+      "description": "As a developer, I need a reusable shadcn-style RadioGroup component at src/components/ui/radio-group.jsx backed by @radix-ui/react-radio-group, so raw <input type='radio'> elements can be replaced.",
+      "acceptanceCriteria": [
+        "Check package.json first — if @radix-ui/react-radio-group is NOT in dependencies, set passes: true with note 'skipped — dependency not in package.json' and do NOT run npm install",
+        "If dependency exists: File src/components/ui/radio-group.jsx exists and exports named RadioGroup and RadioGroupItem functions",
+        "RadioGroup wraps RadioGroupPrimitive.Root with className gap-2",
+        "RadioGroupItem wraps RadioGroupPrimitive.Item, default className: h-4 w-4 rounded-full border border-primary text-primary shadow focus:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
+        "RadioGroupItem renders RadioGroupPrimitive.Indicator with a filled circle inside (Circle icon from lucide-react/dist/esm/icons/circle, h-2 w-2 fill-primary)",
+        "npm run build passes with no errors"
+      ],
+      "priority": 7,
+      "passes": false,
+      "notes": "Read package.json first to verify @radix-ui/react-radio-group is available. If it is, implement exactly as described. If not, skip with passes: true and note. Keep under 40 lines."
+    },
+    {
+      "id": "US-533",
+      "title": "Replace MergeDialog raw radio inputs with shadcn RadioGroup",
+      "description": "As a developer, MergeDialog uses raw <input type='radio'> elements with accent-primary styling. Replace with the shadcn RadioGroup component created in US-532.",
+      "acceptanceCriteria": [
+        "US-532 must have passes: true before attempting this story",
+        "If US-532 was skipped (dependency missing), set this story passes: true with note 'skipped — RadioGroup component not available'",
+        "In src/components/MergeDialog.jsx, raw <input type='radio' name={key} value='a'/'b' checked={...} onChange={...} className='accent-primary'> elements replaced with <RadioGroupItem value='a'/'b' />",
+        "Wrap each radio group in <RadioGroup value={selections[key]} onValueChange={(val) => handleChange(key, val)}>",
+        "Import RadioGroup and RadioGroupItem from src/components/ui/radio-group",
+        "Controlled state (selections) still works correctly — selecting a radio updates selections[key]",
+        "npm run build passes with no errors"
+      ],
+      "priority": 8,
+      "passes": false,
+      "notes": "Read src/components/MergeDialog.jsx first to understand the radio structure. Each conflict field (key) has two radio options ('a' and 'b'). The shadcn RadioGroup uses onValueChange (not onChange). The value prop on RadioGroup controls which item is selected. Replace the raw inputs inside the existing layout structure — don't restructure the surrounding divs."
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+# Ralph Progress Log
+Started: Sat May  2 00:09:49 PDT 2026
+---
+
+## US-526 - Fix ResumeFitSection missing-skills badge hardcoded red colors
+**Status:** COMPLETE
+**Commit:** 7516c6e
+
+**Changes:**
+- `frontend/src/components/ResumeFitSection.jsx` line 61: replaced `bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400` with `bg-destructive/10 text-destructive` on the missing-skills badge span (dark variants removed — destructive token adapts automatically)
+- Same file line 21: changed `dark:text-amber-500` → `dark:text-amber-400` on the daily limit message, matching prd_48 amber convention
+
+**Learnings:** The `bg-destructive/10 text-destructive` pattern (without explicit dark variants) works cleanly because CSS variables for `destructive` and `destructive-foreground` already handle dark mode at the theme level. Removing the separate dark: classes is correct here.
+
+**Build:** ✓ passed in 2.92s
