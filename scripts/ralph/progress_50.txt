@@ -22,3 +22,21 @@ US-537: Replace raw checkboxes in PrepChecklist with shadcn Checkbox
 Status: COMPLETE
 Summary: PrepChecklist.jsx had one raw <input type="checkbox"> in the ChecklistItem component. Replaced with <Checkbox> from ui/checkbox. Added import for Checkbox, changed onChange to onCheckedChange (which ignores the boolean arg and just calls onToggle(item.id)), preserved id/checked/aria-label, passed positioning classes (mt-0.5 flex-shrink-0) via className. The htmlFor/id label association still works since Checkbox renders an <input> underneath. Build passes.
 Learnings: The shadcn Checkbox wrapper (native input, not Radix) handles h-4 w-4 and border styling internally, so only positioning overrides need to be passed via className. onCheckedChange receives the boolean checked value but since PrepChecklist toggle just flips by ID, the value isn't needed.
+## US-538 — Audit FilterBar for remaining raw checkbox after US-524
+Status: PASSED
+Date: 2026-05-02
+
+Found two raw <input type='checkbox'> elements in FilterBar.jsx that had NOT been migrated by US-524:
+1. CheckboxGroup component (line ~22): filter option checkboxes for Stage, Company Type, Remote Status, Tags
+2. ArchiveFieldset component (line ~87): the archive toggle
+
+Both replaced with <Checkbox> from ui/checkbox. Added import at top of file.
+For CheckboxGroup: onChange (e.target.checked) → onCheckedChange (receives boolean directly).
+For ArchiveFieldset: onChange={onToggle} → onCheckedChange={onToggle} (onToggle ignores its argument, just toggles based on current state).
+
+Build: ✓ passed in 2.70s
+Commit: b6a30fa
+
+Learnings:
+- US-524 description claimed FilterBar checkboxes were migrated, but none actually were — both CheckboxGroup and ArchiveFieldset still had raw inputs. The audit in this story found and fixed all of them.
+- The shadcn Checkbox onCheckedChange API receives a boolean directly, while native onChange uses e.target.checked — the conversion pattern is consistent across all checkbox migrations.

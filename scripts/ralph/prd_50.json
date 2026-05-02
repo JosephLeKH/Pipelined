@@ -80,7 +80,8 @@
         "npm run build passes with no errors"
       ],
       "priority": 5,
-      "passes": false,
+      "passes": true,
+      "completionNote": "Replaced raw <input type='checkbox'> in CheckboxGroup and ArchiveFieldset with <Checkbox> from ui/checkbox. Both filter option checkboxes and the archive toggle now use shadcn Checkbox. Build passes.",
       "notes": "Read FilterBar.jsx before editing. The archive toggle is a separate checkbox from the filter option checkboxes. Both should use shadcn Checkbox after US-524."
     },
     {
