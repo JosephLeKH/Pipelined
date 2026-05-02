@@ -37,7 +37,7 @@ function CheckboxGroup({ label, groupKey, options, selected, onChange }) {
 
 function ArchivedBanner() {
   return (
-    <div role="status" className="flex items-center gap-2 rounded-md bg-amber-50 px-4 py-2 text-sm text-amber-800 border border-amber-200 dark:bg-amber-900/20 dark:border-amber-700 dark:text-amber-300">
+    <div role="status" className="flex items-center gap-2 rounded-md bg-muted px-4 py-2 text-sm text-foreground border border-border">
       <span className="font-medium">Viewing archived applications.</span>
       <span>Uncheck &ldquo;Show archived&rdquo; to return to active view.</span>
     </div>
