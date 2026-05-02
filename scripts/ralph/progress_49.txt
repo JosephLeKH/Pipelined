@@ -43,3 +43,18 @@ Started: Sat May  2 00:09:49 PDT 2026
 **Learnings:** The shadcn Alert component's `cn()` call places the passed `className` last, so tailwind-merge correctly lets our amber overrides (`border-amber-200`, `bg-amber-50`, `py-3`) win over the default variant classes (`border-border`, `bg-card`, `p-4`). Using `role="alert"` from the Alert component also improves screen-reader accessibility over the plain div. The `flex items-start gap-2.5` layout can be passed directly as className since Alert renders a plain div.
 
 **Build:** ✓ passed in 2.64s
+
+## US-529 - Fix SharePipeline and ShareTimeline hardcoded green active-share box colors
+**Status:** COMPLETE
+**Commit:** 1fb3b63
+
+**Changes:**
+- `frontend/src/components/SharePipeline.jsx` ActiveShare component:
+  - Container div: `border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-900/20` → `border-primary/20 bg-primary/5`
+  - URL span: `text-green-800 dark:text-green-300` → `text-primary`
+  - Expiry span: `text-green-600 dark:text-green-400` → `text-muted-foreground`
+- `frontend/src/components/ShareTimeline.jsx` ActiveShare component: identical changes applied
+
+**Learnings:** Both Share components had a perfectly identical green active-share box pattern. The primary token with opacity variants (`border-primary/20 bg-primary/5`) provides a subtle brand-tinted active state that adapts to dark mode automatically via CSS variables — no dark: overrides needed. The expiry text maps to `text-muted-foreground` since it's secondary metadata rather than a primary action indicator.
+
+**Build:** ✓ passed in 2.64s

@@ -59,7 +59,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 4,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/SharePipeline.jsx and src/components/ShareTimeline.jsx first. The active share state (link is live and copyable) maps to primary/brand color since it's a positive/active state. Make identical changes in both files. If ShareTimeline.jsx does not have the green box pattern, mark the file as no-change-needed and continue."
     },
     {
