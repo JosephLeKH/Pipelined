@@ -41,7 +41,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/NotesEditor.jsx first. The rose over-limit state maps cleanly to text-destructive. For the amber near-limit state, adding a dark:text-amber-400 variant is acceptable if no semantic warning token exists."
     },
     {

@@ -14,3 +14,10 @@ US-519 | Fix FilterBar ArchivedBanner and DetailPanelBody overdue warning amber 
 - DetailPanelBody.jsx overdue warning: replaced bg-amber-50 text-amber-700 dark:* with bg-destructive/5 border border-destructive/30 text-destructive (deadline-missed = error state)
 - Build passes. 2 files changed, 2 lines changed total.
 - Learning: overdue deadline warnings are error states, not informational — destructive tokens are correct here.
+
+## US-520 — Fix NotesEditor hardcoded rose/amber character counter colors
+**Commit:** 091825d
+**Changes:** frontend/src/components/NotesEditor.jsx (1 line)
+- Line 16: `text-rose-600` → `text-destructive` (over-limit error state)
+- Line 16: `text-amber-600` → `text-amber-600 dark:text-amber-400` (near-limit warning state)
+**Learnings:** Single-line ternary expression contained both hardcoded color classes. No semantic warning token exists in this design system, so amber-600 with dark variant added per acceptance criteria. Build passed in 2.73s.
