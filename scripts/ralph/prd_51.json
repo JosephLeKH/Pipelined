@@ -47,7 +47,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/KanbanCard.jsx first. The follow-up indicator is likely a small dot or badge. Single targeted change — add the missing dark: variant."
     },
     {

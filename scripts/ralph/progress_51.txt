@@ -30,3 +30,16 @@ Learnings:
 - The stale indicator is a 2x2 dot, not a badge with text — only bg class needed a dark variant, no text color to fix
 - Bell icon (follow-up overdue indicator) also used amber without dark variant, fixed with dark:text-amber-400
 - Swipe buttons intentionally left without dark variants per acceptance criteria guidance
+
+## US-544 — Fix KanbanCard follow-up badge missing dark variant
+Status: COMPLETE
+Commit: 313038b
+
+Changes:
+- Follow-up dot indicator (line 57): added `dark:bg-amber-900/60` to bg-amber-500
+
+Learnings:
+- KanbanCard renders two dot indicators: stale (bg-amber-400 at right-2) and follow-up overdue (bg-amber-500 at right-6)
+- The follow-up dot is pure background color with no text, so only bg dark variant needed
+- Used dark:bg-amber-900/60 (semi-transparent dark amber) for better contrast in dark mode
+- Build passed cleanly in 2.79s with no errors
