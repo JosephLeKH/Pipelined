@@ -43,7 +43,7 @@ function SettingsReferralSection({ user }) {
         <Gift className="h-5 w-5 text-primary" aria-hidden="true" />
         <h2 className="font-display text-lg font-semibold text-foreground">Invite Friends</h2>
         {isSuperReferrer && (
-          <span className="ml-auto flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">
+          <span className="ml-auto flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
             <Star className="h-3 w-3" aria-hidden="true" />
             Super Referrer
           </span>
