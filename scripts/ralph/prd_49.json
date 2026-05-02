@@ -73,7 +73,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 5,
-      "passes": false,
+      "passes": true,
       "notes": "Read all three files before editing. Three independent targeted changes — each is 1-2 lines. For JobRow, REMOTE_COLORS is a constant object at the top of the file. For PipelineStagesEditor, the inline input className contains 'focus:ring-ring/30' — just remove the '/30' suffix."
     },
     {

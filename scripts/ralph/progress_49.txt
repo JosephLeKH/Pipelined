@@ -58,3 +58,9 @@ Started: Sat May  2 00:09:49 PDT 2026
 **Learnings:** Both Share components had a perfectly identical green active-share box pattern. The primary token with opacity variants (`border-primary/20 bg-primary/5`) provides a subtle brand-tinted active state that adapts to dark mode automatically via CSS variables — no dark: overrides needed. The expiry text maps to `text-muted-foreground` since it's secondary metadata rather than a primary action indicator.
 
 **Build:** ✓ passed in 2.64s
+
+## US-530 — Fix OfferNegotiationPanel copy-success icon, JobRow remote status green, and PipelineStagesEditor focus ring
+- OfferNegotiationPanel.jsx: `text-green-600` → `text-primary` on Check icon (copy success state)
+- JobRow.jsx REMOTE_COLORS: `remote: "text-green-700"` → `"text-primary"`; `onsite: "text-amber-700"` → `"text-amber-600 dark:text-amber-400"`
+- PipelineStagesEditor.jsx: `focus:ring-ring/30` → `focus:ring-ring` on stage name input
+- Build passed; committed as a3e7cbd
