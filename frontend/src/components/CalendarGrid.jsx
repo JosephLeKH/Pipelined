@@ -51,7 +51,7 @@ function EventChip({ event, onEventClick }) {
     <button
       type="button"
       onClick={(e) => { e.stopPropagation(); onEventClick(event); }}
-      className={`flex w-full items-center gap-1 truncate rounded-full border px-2 py-0.5 text-left text-xs font-medium ${colors.bg} ${colors.text} ${colors.border} hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-ring`}
+      className={`flex w-full items-center gap-1 truncate rounded-full border px-2 py-0.5 text-left text-xs font-medium ${colors.bg} ${colors.text} ${colors.border} hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring`}
       title={label}
       aria-label={label}
     >
