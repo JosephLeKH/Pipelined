@@ -45,3 +45,8 @@ Changed line 46 of MarkdownEditor.jsx in MarkdownTabBar: replaced `focus:ring-2 
 - **Build:** `npm run build` passed (✓ built in 2.68s)
 - **Commit:** `feat: US-570 - Fix CalendarGrid DayCell: focus:ring-* → focus-visible:ring-*`
 - **Learning:** DayCell had an extra `focus:ring-inset` class (unlike the EventChip) due to its div/button-role nature requiring an inset ring. The same three-step prefix swap applied. DayCell already had correct keyboard semantics (role="button" tabIndex={0} with Enter/Space onKeyDown).
+
+## US-572 - Make SavedSearchesSidebar list items fully keyboard-accessible
+**Status:** PASS
+**Summary:** Added role='button', tabIndex={0}, onKeyDown (Enter/Space calls onApply), and focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring to the <li> at line 29 in SavedSearchesSidebar.jsx. Build passed in 2.70s. Committed as feat: US-572.
+**Learnings:** Plain <li onClick> elements with no role/tabIndex are completely invisible to keyboard navigation. Adding role='button' + tabIndex={0} + onKeyDown Enter/Space brings them into the tab order and makes them operable by keyboard. focus-visible: prefix ensures the ring only appears for keyboard focus, not mouse clicks.
