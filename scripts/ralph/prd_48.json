@@ -1,0 +1,120 @@
+{
+  "id": "PRD-48",
+  "title": "Green success tokens, amber warning banners, raw input replacements, and NotesEditor semantic colors",
+  "description": "Continuation of the systematic UI improvement loop. This batch fixes remaining hardcoded green/amber colors scattered across components, replaces a raw readonly input with shadcn Input, creates a shadcn Checkbox component, creates a shadcn Progress component, and fixes semantic color tokens in NotesEditor and GoalProgress.",
+  "userStories": [
+    {
+      "id": "US-518",
+      "title": "Fix hardcoded green success colors across ResumeFitSection, DetailPanelBody, SettingsReferralSection, Tags",
+      "description": "As a developer, green-* classes used for success/matched states across four components should use consistent semantic tokens instead of hardcoded Tailwind greens.",
+      "acceptanceCriteria": [
+        "In src/components/ResumeFitSection.jsx, bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400 on matched skill badges replaced with bg-primary/10 text-primary dark:bg-primary/20",
+        "In src/components/DetailPanelBody.jsx, text-green-600 dark:text-green-400 on checklist completion icon replaced with text-primary",
+        "In src/components/SettingsReferralSection.jsx, text-green-500 on CheckCircle icon replaced with text-primary",
+        "In src/pages/Tags.jsx, text-green-600 on save button icon replaced with text-primary",
+        "npm run build passes with no errors"
+      ],
+      "priority": 1,
+      "passes": true,
+      "notes": "Read each file before editing. These are all success/positive signal uses of green — map them to text-primary (brand color) rather than a hypothetical 'success' token that doesn't exist yet. Make minimal targeted changes only."
+    },
+    {
+      "id": "US-519",
+      "title": "Fix FilterBar ArchivedBanner and DetailPanelBody overdue warning amber colors",
+      "description": "As a developer, inline amber warning banners in FilterBar and DetailPanelBody use hardcoded amber-* classes. Replace with semantic tokens consistent with the banner fixes in prd_47.",
+      "acceptanceCriteria": [
+        "In src/components/FilterBar.jsx ArchivedBanner, bg-amber-50 border-amber-200 text-amber-800 dark:bg-amber-900/20 dark:border-amber-700 dark:text-amber-300 replaced with bg-muted border-border text-foreground",
+        "In src/components/DetailPanelBody.jsx overdue warning section, amber-50/amber-700 hardcoded classes replaced with bg-muted/border-border pattern or bg-destructive/5 border-destructive/30 text-destructive if it represents an error state",
+        "npm run build passes with no errors"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Read both files before editing. The ArchivedBanner in FilterBar is a status indicator — bg-muted text-foreground is appropriate. For DetailPanelBody overdue warning, if it's a deadline warning use bg-destructive/5 text-destructive, if it's informational use bg-muted."
+    },
+    {
+      "id": "US-520",
+      "title": "Fix NotesEditor hardcoded rose/amber character counter colors",
+      "description": "As a developer, the NotesEditor character counter uses hardcoded text-rose-600 and text-amber-600 for warning/error states. These should use semantic tokens.",
+      "acceptanceCriteria": [
+        "In src/components/NotesEditor.jsx, text-rose-600 (at/over limit) replaced with text-destructive",
+        "text-amber-600 (approaching limit) replaced with text-amber-600 dark:text-amber-400 OR replaced with a warning semantic — acceptable to keep amber-600 with a dark variant added if no warning token exists",
+        "npm run build passes with no errors"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "Read src/components/NotesEditor.jsx first. The rose over-limit state maps cleanly to text-destructive. For the amber near-limit state, adding a dark:text-amber-400 variant is acceptable if no semantic warning token exists."
+    },
+    {
+      "id": "US-521",
+      "title": "Fix GoalProgress hardcoded stroke-green-500 to semantic token",
+      "description": "As a developer, GoalProgress SVG ring uses a hardcoded stroke-green-500 for completion state. Replace with semantic primary token.",
+      "acceptanceCriteria": [
+        "In src/components/GoalProgress.jsx, stroke-green-500 replaced with stroke-primary",
+        "npm run build passes with no errors"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": "Read src/components/GoalProgress.jsx first. Single targeted change — the ring going green on completion maps to brand primary color."
+    },
+    {
+      "id": "US-522",
+      "title": "Replace raw readonly <input> in SettingsProfileSection with shadcn Input",
+      "description": "As a developer, the email display input in SettingsProfileSection uses a raw <input> with hardcoded className. Replace with shadcn Input component for consistency.",
+      "acceptanceCriteria": [
+        "In src/components/SettingsProfileSection.jsx, raw <input id='email-display' type='email' readOnly className='border border-border...'> replaced with <Input type='email' value={...} readOnly disabled />",
+        "Import Input from src/components/ui/input (check the actual path — may be input.jsx or similar)",
+        "The hardcoded className on the old input removed",
+        "npm run build passes with no errors"
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": "Read src/components/SettingsProfileSection.jsx first to confirm the exact line and import path. Check src/components/ui/ for the Input component filename before importing."
+    },
+    {
+      "id": "US-523",
+      "title": "Create shadcn Checkbox UI component",
+      "description": "As a developer, I need a reusable shadcn-style Checkbox component at src/components/ui/checkbox.jsx backed by @radix-ui/react-checkbox, so raw <input type='checkbox'> elements can be replaced.",
+      "acceptanceCriteria": [
+        "File src/components/ui/checkbox.jsx exists and exports a named Checkbox function",
+        "Uses @radix-ui/react-checkbox as the primitive (CheckboxPrimitive.Root, CheckboxPrimitive.Indicator)",
+        "Default className: h-4 w-4 shrink-0 rounded-sm border border-primary shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground",
+        "Renders a Check icon from lucide-react/dist/esm/icons/check inside the indicator",
+        "Check @radix-ui/react-checkbox is already in package.json before importing — if not present, skip this story and mark passes: true with a note that the dependency is missing",
+        "npm run build passes with no errors"
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": "Read package.json first to verify @radix-ui/react-checkbox is available. If it is, implement. If not, set passes: true in the PRD with a note 'skipped — dependency not in package.json' and do NOT run npm install."
+    },
+    {
+      "id": "US-524",
+      "title": "Replace raw <input type='checkbox'> in FilterBar with shadcn Checkbox",
+      "description": "As a developer, the filter bar checkboxes use raw <input type='checkbox'> elements without custom styling. Replace with shadcn Checkbox for visual consistency.",
+      "acceptanceCriteria": [
+        "In src/components/FilterBar.jsx, raw <input type='checkbox' checked={...} onChange={...}> replaced with <Checkbox checked={...} onCheckedChange={...} />",
+        "Import Checkbox from src/components/ui/checkbox",
+        "Checkbox component must exist (US-523 creates it)",
+        "Checked state still controlled correctly",
+        "npm run build passes with no errors"
+      ],
+      "priority": 7,
+      "passes": false,
+      "notes": "shadcn Checkbox uses onCheckedChange (not onChange). The checked prop works the same. Read FilterBar.jsx first to understand the filter state pattern."
+    },
+    {
+      "id": "US-525",
+      "title": "Fix OfferComparison winner badge hardcoded amber colors",
+      "description": "As a developer, the winner badge in OfferHeaderCell uses hardcoded bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300 classes. These are intentional amber-for-winner styling but should have proper dark mode variants.",
+      "acceptanceCriteria": [
+        "In src/pages/OfferComparison.jsx OfferHeaderCell, verify bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300 already has correct dark mode variants",
+        "If dark mode variants are missing, add them",
+        "If they are already present and correct, mark this story complete with no changes needed",
+        "hover:bg-amber-100 on the non-winner state replaced with hover:bg-primary/10 hover:text-primary",
+        "npm run build passes with no errors"
+      ],
+      "priority": 8,
+      "passes": false,
+      "notes": "Read src/pages/OfferComparison.jsx OfferHeaderCell component first. The amber winner badge is intentional and acceptable. Focus on the non-winner hover state and any missing dark mode variants."
+    }
+  ]
+}

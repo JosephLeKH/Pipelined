@@ -1,0 +1,10 @@
+# Ralph Progress Log
+Started: Sat May  2 00:00:21 PDT 2026
+---
+
+## US-518 — Fix hardcoded green success colors
+- ResumeFitSection.jsx line 49: bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400 → bg-primary/10 text-primary dark:bg-primary/20
+- DetailPanelBody.jsx line 90: text-green-600 dark:text-green-400 → text-primary (checklist completion count)
+- SettingsReferralSection.jsx line 72: text-green-500 → text-primary (CheckCircle copy-confirmation icon)
+- Tags.jsx line 71: text-green-600 → text-primary (save/check icon in TagNameEditor)
+- All 4 changes minimal and targeted; build passes cleanly.
