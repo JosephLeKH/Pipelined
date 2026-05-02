@@ -5,6 +5,7 @@ import List from "lucide-react/dist/esm/icons/list";
 import Loader2 from "lucide-react/dist/esm/icons/loader-2";
 
 import { Button } from "./ui/button";
+import { Tooltip, TooltipTrigger, TooltipContent } from "./ui/tooltip";
 import { cn } from "../lib/utils";
 
 export function DashboardToolbar({ viewMode, onSetViewMode, isExporting, onImport, onExport, onAdd }) {
@@ -39,9 +40,14 @@ export function DashboardToolbar({ viewMode, onSetViewMode, isExporting, onImpor
           {isExporting && <Loader2 className="h-4 w-4 animate-spin" />}
           Export CSV
         </Button>
-        <Button type="button" onClick={onAdd} title="Add Application (A)">
-          Add Application
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button type="button" onClick={onAdd}>
+              Add Application
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Add Application (A)</TooltipContent>
+        </Tooltip>
       </div>
     </div>
   );

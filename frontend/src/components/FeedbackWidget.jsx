@@ -13,6 +13,7 @@ import { useAuth } from "../context/AuthContext";
 import { useFeedback } from "../hooks/useFeedback";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+import { Tooltip, TooltipTrigger, TooltipContent } from "./ui/tooltip";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { Textarea } from "./ui/textarea";
 
@@ -198,16 +199,20 @@ function FeedbackWidget() {
         {open && (
           <FeedbackPopover user={user} page={pathname} onClose={handleClose} onSubmit={submit} />
         )}
-        <Button
-          type="button"
-          size="icon"
-          onClick={() => setOpen((v) => !v)}
-          aria-label="Send feedback"
-          title="Send feedback"
-          className="h-10 w-10 rounded-full shadow-sm active:scale-95"
-        >
-          <MessageCircle className="h-5 w-5" aria-hidden="true" />
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              type="button"
+              size="icon"
+              onClick={() => setOpen((v) => !v)}
+              aria-label="Send feedback"
+              className="h-10 w-10 rounded-full shadow-sm active:scale-95"
+            >
+              <MessageCircle className="h-5 w-5" aria-hidden="true" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Send feedback</TooltipContent>
+        </Tooltip>
       </div>
     </>
   );

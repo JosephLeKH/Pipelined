@@ -9,6 +9,7 @@ import { usePingContact, useUnlinkContact } from "../hooks/useContacts";
 import { RELATIONSHIP_COLORS } from "../lib/constants";
 import { isStaleContact } from "../lib/dateUtils";
 import { Button } from "./ui/button";
+import { Tooltip, TooltipTrigger, TooltipContent } from "./ui/tooltip";
 
 function RelationshipBadge({ relationship }) {
   const colors = RELATIONSHIP_COLORS[relationship] ?? { bg: "bg-muted", text: "text-muted-foreground" };
@@ -35,12 +36,16 @@ function ContactCard({ contact, applicationId }) {
         <div className="flex flex-col gap-0.5 min-w-0">
           <div className="flex items-center gap-1.5">
             {stale && (
-              <span
-                className="inline-block h-2 w-2 shrink-0 rounded-full bg-amber-400"
-                title="Stale — no contact in 14+ days"
-                aria-label="Stale contact — no activity in 14+ days"
-                role="img"
-              />
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span
+                    className="inline-block h-2 w-2 shrink-0 rounded-full bg-amber-400"
+                    aria-label="Stale contact — no activity in 14+ days"
+                    role="img"
+                  />
+                </TooltipTrigger>
+                <TooltipContent>Stale — no contact in 14+ days</TooltipContent>
+              </Tooltip>
             )}
             <span className="truncate text-sm font-medium text-foreground">
               {contact.name}
@@ -57,31 +62,39 @@ function ContactCard({ contact, applicationId }) {
           </div>
         </div>
         <div className="flex items-center gap-1 shrink-0">
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            disabled={pinging}
-            onClick={() => ping({ contactId: contact.id })}
-            className="h-7 w-7 text-muted-foreground hover:bg-primary/10 hover:text-primary"
-            aria-label="Mark as pinged"
-            title="Mark as pinged"
-          >
-            <PhoneCall className="h-3.5 w-3.5" />
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                disabled={pinging}
+                onClick={() => ping({ contactId: contact.id })}
+                className="h-7 w-7 text-muted-foreground hover:bg-primary/10 hover:text-primary"
+                aria-label="Mark as pinged"
+              >
+                <PhoneCall className="h-3.5 w-3.5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Mark as pinged</TooltipContent>
+          </Tooltip>
           {applicationId && (
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              disabled={unlinking}
-              onClick={() => unlink({ contactId: contact.id, applicationId })}
-              className="h-7 w-7 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
-              aria-label="Unlink contact"
-              title="Unlink from application"
-            >
-              <Unlink className="h-3.5 w-3.5" />
-            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  disabled={unlinking}
+                  onClick={() => unlink({ contactId: contact.id, applicationId })}
+                  className="h-7 w-7 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                  aria-label="Unlink contact"
+                >
+                  <Unlink className="h-3.5 w-3.5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Unlink from application</TooltipContent>
+            </Tooltip>
           )}
         </div>
       </div>
