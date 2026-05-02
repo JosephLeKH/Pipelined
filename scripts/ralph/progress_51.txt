@@ -43,3 +43,19 @@ Learnings:
 - The follow-up dot is pure background color with no text, so only bg dark variant needed
 - Used dark:bg-amber-900/60 (semi-transparent dark amber) for better contrast in dark mode
 - Build passed cleanly in 2.79s with no errors
+
+## US-545 — Replace PipelineStagesEditor raw text input with shadcn Input
+Status: COMPLETE
+Commit: 96a90a6
+
+Changes:
+- SortableStageItem (line 85): changed `<input type="text" ...>` to `<Input type="text" ...>`
+- `Input` was already imported from `./ui/input` at line 29 — no new imports needed
+- All existing props preserved: value, maxLength, onChange, className, aria-label
+- The shadcn Input internally calls cn(defaultClasses, className), so the existing className classes merge correctly
+
+Learnings:
+- File already imported Input but only used it in AddStageInput; SortableStageItem used the raw element
+- No need to import cn in PipelineStagesEditor itself — the Input component handles cn() merging internally
+- Existing className "flex-1 rounded border-0 bg-transparent..." overrides the Input default border/sizing via Tailwind merge
+- Build passed cleanly in 2.60s with no errors

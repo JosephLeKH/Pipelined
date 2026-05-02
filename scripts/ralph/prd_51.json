@@ -62,7 +62,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 4,
-      "passes": false,
+      "passes": true,
       "notes": "Read the file before editing. The Input component at src/components/ui/input.jsx already exists. Use cn() to merge any existing className. The stage name input likely has specific sizing classes — preserve them via className prop."
     },
     {
