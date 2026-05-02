@@ -19,7 +19,7 @@ const TIME_RANGES = [
 const TYPE_STYLES = {
   applied: "bg-primary",
   stage_change: "bg-accent-blue",
-  event_created: "bg-amber-400",
+  event_created: "bg-amber-400 dark:bg-amber-900/40",
 };
 
 function entryLabel(entry) {
