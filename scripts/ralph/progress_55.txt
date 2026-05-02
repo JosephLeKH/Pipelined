@@ -6,3 +6,10 @@ Started: Sat May  2 16:32:52 PDT 2026
 **Status:** PASS
 **Summary:** Removed `focus:ring-ring` from both Button elements in FollowUpBanner.jsx (lines 29 and 33). The shadcn Button component already includes `focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2` internally, making the manual addition redundant, incomplete (no ring-2 width), and incorrect (used `focus:` instead of `focus-visible:`).
 **Learnings:** When using shadcn Button components, never manually add focus ring classes — the variant system already handles this correctly. The `focus:ring-ring` pattern without `ring-2` has no visual effect anyway, so this was purely dead CSS.
+
+## US-575 — Add dark variant to KanbanCard stale pulse dot (bg-amber-400)
+- Added `dark:bg-amber-900/40` to the stale indicator span className at line 50 of KanbanCard.jsx
+- Matches the pattern used in ApplicationRow (line 116) for consistency
+- The follow-up indicator at line 57 (dark:bg-amber-900/60) was left unchanged as specified
+- Build passed with no errors
+- Committed as: feat: US-575 - Add dark variant to KanbanCard stale pulse dot (bg-amber-400)

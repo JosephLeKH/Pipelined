@@ -31,7 +31,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/KanbanCard.jsx. The stale span at line 50 has className='absolute right-2 top-2 h-2 w-2 animate-pulse-dot rounded-full bg-amber-400' — no dark variant. ApplicationRow uses dark:bg-amber-900/40 on its stale dot (line 116) — use the same value here. The follow-up indicator at line 57 already has dark:bg-amber-900/60 (intentionally different shade — don't change it)."
     },
     {
