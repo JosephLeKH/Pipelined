@@ -17,7 +17,7 @@ function DigestSection({ digestEnabled, isDigestPending, onDigestToggle }) {
           aria-label="Weekly digest email"
           disabled={isDigestPending}
           onClick={() => onDigestToggle(!digestEnabled)}
-          className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-60 ${digestEnabled ? "bg-primary" : "bg-muted-foreground/30"}`}
+          className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 ${digestEnabled ? "bg-primary" : "bg-muted-foreground/30"}`}
         >
           <span
             className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${digestEnabled ? "translate-x-6" : "translate-x-1"}`}
