@@ -7,6 +7,7 @@ import AlertTriangle from "lucide-react/dist/esm/icons/triangle-alert";
 
 import { Alert, AlertDescription } from "./ui/alert";
 import { Button } from "./ui/button";
+import { RadioGroupItem } from "./ui/radio-group";
 import {
   Dialog,
   DialogContent,
@@ -96,24 +97,22 @@ export default function MergeDialog({ apps, onConfirm, onCancel, isPending = fal
             <div key={key} className="grid grid-cols-[120px_1fr_1fr] gap-2 border-b border-border px-6 py-2 text-sm">
               <span className="font-medium text-muted-foreground">{label}</span>
               <label className="flex cursor-pointer items-start gap-2">
-                <input
-                  type="radio"
-                  name={key}
+                <RadioGroupItem
                   value="a"
+                  name={key}
                   checked={selections[key] === "a"}
                   onChange={() => handleChange(key, "a")}
-                  className="mt-0.5 shrink-0 accent-primary"
+                  className="mt-0.5 shrink-0"
                 />
                 <span className="text-foreground">{displayValue(appA[key])}</span>
               </label>
               <label className="flex cursor-pointer items-start gap-2">
-                <input
-                  type="radio"
-                  name={key}
+                <RadioGroupItem
                   value="b"
+                  name={key}
                   checked={selections[key] === "b"}
                   onChange={() => handleChange(key, "b")}
-                  className="mt-0.5 shrink-0 accent-primary"
+                  className="mt-0.5 shrink-0"
                 />
                 <span className="text-foreground">{displayValue(appB[key])}</span>
               </label>
