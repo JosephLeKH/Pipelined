@@ -25,3 +25,11 @@ Learnings:
 **Summary:** Found the raw `<input type="checkbox">` at lines 103-109 in ApplicationRow.jsx with `accent-primary` styling. Added `import { Checkbox } from "./ui/checkbox"` alongside the existing tooltip import. Replaced the raw input with `<Checkbox checked={checked} onCheckedChange={() => onToggle(application.id)} aria-label={...} />` — switched `onChange` to `onCheckedChange` per shadcn Checkbox API. Build passed in 2.71s.
 
 **Learnings:** shadcn Checkbox uses `onCheckedChange` (receives the boolean directly) rather than `onChange` with a DOM event — when adapting an `onChange={() => fn(id)}` handler, simply swap the event name with no other changes needed. The Checkbox component internally handles the `h-4 w-4 rounded border-border accent-primary` styling so no className needed.
+
+## US-561 - Move KanbanColumn inline style maxHeight to Tailwind class
+Status: PASS
+Commit: 6a0e07b
+
+Summary: Removed COLUMN_MAX_HEIGHT_PX constant (line 9) and replaced style={{ maxHeight: COLUMN_MAX_HEIGHT_PX }} inline style on the droppable div with max-h-[600px] merged into the existing cn() className. The div already used cn() for conditional ring styling, so merging was clean. Build passed in 2.68s.
+
+Learnings: When a component already uses cn() for conditional class merging, adding a static Tailwind arbitrary class like max-h-[600px] is a simple string append into the base class string. The JIT compiler handles arbitrary values like [600px] natively — no config needed.

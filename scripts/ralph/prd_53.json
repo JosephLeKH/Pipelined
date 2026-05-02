@@ -67,7 +67,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 4,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/KanbanColumn.jsx first. COLUMN_MAX_HEIGHT_PX = 600 at line 9, used via inline style at line 29. The column container already has a className — use cn() to merge max-h-[600px] into it, or just append to the existing className string. Remove the const if it becomes unused."
     },
     {
