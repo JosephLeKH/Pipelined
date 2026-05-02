@@ -6,17 +6,17 @@ import Plus from "lucide-react/dist/esm/icons/plus";
 import Trash2 from "lucide-react/dist/esm/icons/trash-2";
 
 import { Button } from "./ui/button";
+import { Checkbox } from "./ui/checkbox";
 import { Input } from "./ui/input";
 
 export function ChecklistItem({ item, onToggle, onDelete }) {
   return (
     <div className="flex items-start gap-2 py-1">
-      <input
-        type="checkbox"
+      <Checkbox
         id={`checklist-item-${item.id}`}
         checked={item.checked}
-        onChange={() => onToggle(item.id)}
-        className="mt-0.5 h-4 w-4 flex-shrink-0 cursor-pointer rounded border-border accent-primary focus:ring-ring"
+        onCheckedChange={() => onToggle(item.id)}
+        className="mt-0.5 flex-shrink-0"
         aria-label={item.text}
       />
       <label
