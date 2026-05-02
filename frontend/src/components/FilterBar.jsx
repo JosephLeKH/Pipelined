@@ -6,6 +6,7 @@ import SearchIcon from "lucide-react/dist/esm/icons/search";
 import { trackEvent } from "../lib/analytics";
 import { useTags } from "../hooks/useApplications";
 import { Input } from "./ui/input";
+import { Checkbox } from "./ui/checkbox";
 
 import { STAGE_COLORS, SEARCH_DEBOUNCE_MS, COMPANY_TYPE_OPTIONS, REMOTE_STATUS_OPTIONS } from "../lib/constants";
 
@@ -19,12 +20,11 @@ function CheckboxGroup({ label, groupKey, options, selected, onChange }) {
         const inputId = `filter-${groupKey}-${opt}`;
         return (
           <label key={opt} htmlFor={inputId} className="flex items-center gap-2 text-sm text-foreground">
-            <input
+            <Checkbox
               id={inputId}
-              type="checkbox"
               checked={selected.includes(opt)}
-              onChange={(e) => {
-                if (e.target.checked) { onChange([...selected, opt]); } else { onChange(selected.filter((s) => s !== opt)); }
+              onCheckedChange={(checked) => {
+                if (checked) { onChange([...selected, opt]); } else { onChange(selected.filter((s) => s !== opt)); }
               }}
             />
             {opt}
@@ -84,7 +84,7 @@ function ArchiveFieldset({ includeArchived, onToggle }) {
     <fieldset className="flex shrink-0 flex-col gap-1">
       <legend className="mb-1 text-xs font-medium uppercase text-muted-foreground">Archive</legend>
       <label className="flex items-center gap-2 text-sm text-foreground">
-        <input type="checkbox" aria-label="Show archived" checked={includeArchived} onChange={onToggle} />
+        <Checkbox aria-label="Show archived" checked={includeArchived} onCheckedChange={onToggle} />
         Show archived
       </label>
     </fieldset>
