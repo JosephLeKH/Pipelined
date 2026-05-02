@@ -53,3 +53,18 @@ Started: Sat May  2 15:46:35 PDT 2026
 - onKeyDown is handled at document level by useCommandPaletteKeyboard hook — not on the input element directly
 - Build: ✓ passed in 2.76s
 - Commit: 495cbc3
+
+## US-556 — Migrate native title= tooltip attributes to shadcn Tooltip in DashboardToolbar, ContactCard, FeedbackWidget
+**Status:** COMPLETE
+**Commit:** 99c5805
+
+### Changes
+- **DashboardToolbar.jsx**: Wrapped "Add Application" button (had `title="Add Application (A)"`) in `<Tooltip><TooltipTrigger asChild>...<TooltipContent>`.
+- **ContactCard.jsx**: Replaced 3 `title=` attributes — stale dot span (`title="Stale — no contact in 14+ days"`), ping button (`title="Mark as pinged"`), and unlink button (`title="Unlink from application"`).
+- **FeedbackWidget.jsx**: Wrapped floating feedback button (had `title="Send feedback"`) in shadcn Tooltip.
+- All files: Added `import { Tooltip, TooltipTrigger, TooltipContent } from "./ui/tooltip"`.
+
+### Learnings
+- `asChild` on `TooltipTrigger` works for both `<Button>` and plain `<span>` elements — no extra wrapper node injected.
+- `aria-label` attributes were preserved alongside Tooltip replacement; they serve different purposes (screen readers vs. visual hover tooltips).
+- Build passed clean with 0 errors.

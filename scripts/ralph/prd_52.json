@@ -110,7 +110,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 7,
-      "passes": false,
+      "passes": true,
       "notes": "Read each file before editing. The project already has a TooltipProvider wrapping the app (added in a prior PRD). Import Tooltip, TooltipTrigger, TooltipContent from src/components/ui/tooltip. Use asChild on TooltipTrigger to avoid wrapping in an extra span. Only replace title= attributes — don't restructure the components otherwise."
     },
     {
