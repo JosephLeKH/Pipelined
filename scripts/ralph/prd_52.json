@@ -77,7 +77,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 5,
-      "passes": false,
+      "passes": true,
       "notes": "Read the file before editing. The Input component at src/components/ui/input.jsx already exists. Merge any layout-specific className via cn(). OfferEditableCell is likely a small component — check src/components/OfferEditableCell.jsx first, then OfferComparison.jsx if not found there."
     },
     {

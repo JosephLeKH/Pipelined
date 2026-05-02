@@ -34,3 +34,12 @@ Started: Sat May  2 15:46:35 PDT 2026
 - All props preserved: value (notes), onChange (onNotesChange), maxLength, placeholder, rows, className (mt-1 resize-none)
 - Build: ✓ passed in 2.68s
 - Committed: feat: US-553 - Replace PrepSection raw <textarea> with shadcn Textarea
+
+## US-554 — Replace OfferEditableCell raw <input type='text'> with shadcn Input
+- Replaced raw `<input type="text">` in `EditableCellInput` with shadcn `<Input>` from `./ui/input`
+- Removed `INPUT_CLS` constant entirely (shadcn Input handles all styling via design tokens)
+- Added `import { Input } from "./ui/input"` alongside existing `Button` import
+- All props preserved: type, inputMode, defaultValue, autoFocus, onBlur, aria-label
+- No layout className override needed — shadcn Input defaults (w-full, border, px-3, text-sm) match the context
+- Build: ✓ passed in 2.74s
+- Commit: 56d92a5
