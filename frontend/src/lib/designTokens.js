@@ -14,27 +14,27 @@ export const CARD_HOVER = "border-border-strong hover:shadow-card-hover transiti
 /** Primary action button — solid clay, white text. */
 export const BUTTON_PRIMARY =
   "bg-brand-500 hover:bg-brand-600 text-white font-medium rounded-md px-4 py-2 text-sm " +
-  "font-display transition-colors duration-150 focus:outline-none focus:ring-2 " +
-  "focus:ring-brand-500/30 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none";
+  "font-display transition-colors duration-150 focus:outline-none focus-visible:ring-2 " +
+  "focus-visible:ring-brand-500/30 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none";
 
 /** Secondary button — secondary bg, warm border, secondary text. */
 export const BUTTON_SECONDARY =
   "bg-secondary border border-border-default hover:border-border-strong text-secondary-foreground " +
   "hover:text-foreground font-medium rounded-md px-4 py-2 text-sm font-display " +
-  "transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500/30 " +
+  "transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30 " +
   "active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none";
 
 /** Ghost button — transparent bg, muted text, surface hover. */
 export const BUTTON_GHOST =
   "bg-transparent text-muted-foreground hover:text-foreground hover:bg-surface-secondary " +
   "rounded-md px-3 py-2 text-sm transition-colors focus:outline-none " +
-  "focus:ring-2 focus:ring-brand-500/30 disabled:opacity-50 disabled:cursor-not-allowed " +
+  "focus-visible:ring-2 focus-visible:ring-brand-500/30 disabled:opacity-50 disabled:cursor-not-allowed " +
   "disabled:pointer-events-none";
 
 /** Danger button — destructive bg, destructive-foreground text. */
 export const BUTTON_DANGER =
   "bg-destructive hover:bg-destructive/90 text-destructive-foreground font-medium rounded-md px-4 py-2 text-sm " +
-  "font-display transition-colors focus:outline-none focus:ring-2 focus:ring-destructive/30 " +
+  "font-display transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-destructive/30 " +
   "active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none";
 
 /** Text input, select, textarea base styles — semantic palette, Inter body text. */
