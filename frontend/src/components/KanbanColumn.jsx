@@ -6,8 +6,6 @@ import { STAGE_COLORS, DEFAULT_STAGE_COLOR } from "../lib/constants";
 import { cn } from "../lib/utils";
 import KanbanCard from "./KanbanCard";
 
-const COLUMN_MAX_HEIGHT_PX = 600;
-
 export function KanbanColumn({ stage, applications, onSelect }) {
   const { setNodeRef, isOver } = useDroppable({ id: stage });
   const color = STAGE_COLORS[stage] ?? DEFAULT_STAGE_COLOR;
@@ -26,9 +24,8 @@ export function KanbanColumn({ stage, applications, onSelect }) {
       </div>
       <div
         ref={setNodeRef}
-        style={{ maxHeight: COLUMN_MAX_HEIGHT_PX }}
         className={cn(
-          "flex flex-col gap-2 overflow-y-auto p-2 transition-colors bg-muted/30",
+          "flex flex-col gap-2 overflow-y-auto p-2 transition-colors bg-muted/30 max-h-[600px]",
           isOver && "ring-2 ring-inset ring-primary/30"
         )}
       >
