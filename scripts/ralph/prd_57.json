@@ -48,7 +48,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/ui/select.jsx. SelectPrimitive.Trigger uses cn() to compose its className — the string at line 17 contains focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 among many other classes. Only replace the three focus:ring-* classes. Leave all other classes in the cn() call unchanged."
     },
     {

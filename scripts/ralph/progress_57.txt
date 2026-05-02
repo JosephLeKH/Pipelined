@@ -10,3 +10,8 @@ Learnings: The ICON_BUTTON token is used across icon-only buttons app-wide; a si
 Status: PASS
 Summary: Replaced focus:ring-2 focus:ring-ring focus:ring-offset-2 with focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 on the DialogPrimitive.Close element (line 37) in frontend/src/components/ui/dialog.jsx. focus:outline-none and all data-[state=open]:* / disabled:* classes left unchanged. Build passed (✓ built in 2.76s).
 Learnings: Shadcn-generated ui/ components ship with focus: ring classes by default; each file needs a targeted fix to adopt focus-visible: for keyboard-only focus rings without breaking other conditional classes.
+
+## US-592 — Fix ui/select.jsx SelectPrimitive.Trigger: focus:ring-* → focus-visible:ring-*
+Status: PASS
+Summary: Replaced focus:ring-2 focus:ring-ring focus:ring-offset-2 with focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 in the SelectPrimitive.Trigger cn() className string (line 17) in frontend/src/components/ui/select.jsx. focus:outline-none and all other classes left unchanged. Build passed (✓ built in 2.70s).
+Learnings: The SelectPrimitive.Trigger is a shadcn-generated wrapper; only the three focus:ring-* classes needed updating. The long className string in cn() stays on one line — surgical replacement of the three tokens is safe without reformatting the rest.
