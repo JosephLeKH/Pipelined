@@ -5,6 +5,7 @@ import { useState } from "react";
 import Loader2 from "lucide-react/dist/esm/icons/loader-2";
 import AlertTriangle from "lucide-react/dist/esm/icons/triangle-alert";
 
+import { Alert, AlertDescription } from "./ui/alert";
 import { Button } from "./ui/button";
 import {
   Dialog,
@@ -77,12 +78,12 @@ export default function MergeDialog({ apps, onConfirm, onCancel, isPending = fal
           <DialogTitle>Merge duplicate applications</DialogTitle>
         </DialogHeader>
 
-        <div className="mx-6 mt-4 flex items-start gap-2.5 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 dark:border-amber-700 dark:bg-amber-900/30">
+        <Alert className="mx-6 mt-4 flex items-start gap-2.5 border-amber-200 bg-amber-50 py-3 dark:border-amber-700 dark:bg-amber-900/30">
           <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" aria-hidden="true" />
-          <p className="text-sm text-amber-800 dark:text-amber-300">
+          <AlertDescription className="text-amber-800 dark:text-amber-300">
             Merging will combine these applications into one. The duplicate will be permanently deleted. This cannot be undone.
-          </p>
-        </div>
+          </AlertDescription>
+        </Alert>
 
         <div className="grid grid-cols-[120px_1fr_1fr] gap-2 border-b border-border bg-muted px-6 py-2 text-xs font-medium text-muted-foreground">
           <div>Field</div>
