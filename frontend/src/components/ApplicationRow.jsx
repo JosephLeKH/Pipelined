@@ -92,7 +92,7 @@ function ApplicationRow({
         onFollowUp={() => handleAction(() => onSetFollowUp?.(application.id))}
       />
       <div
-        className={`group flex cursor-pointer items-center gap-4 border-b border-border px-4 py-4 hover:bg-muted/50 transition-colors focus:outline-none focus:ring-2 focus:ring-inset focus:ring-ring ${archived ? "opacity-60" : ""} ${isFocused ? "border-l-2 border-l-primary bg-primary/5" : ""}`}
+        className={`group flex cursor-pointer items-center gap-4 border-b border-border px-4 py-4 hover:bg-muted/50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring ${archived ? "opacity-60" : ""} ${isFocused ? "border-l-2 border-l-primary bg-primary/5" : ""}`}
         style={{ transform: offset !== 0 ? `translateX(${offset}px)` : undefined, transition: offset !== 0 ? "none" : undefined }}
         onClick={() => onSelect(application)}
         onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") onSelect(application); }}
