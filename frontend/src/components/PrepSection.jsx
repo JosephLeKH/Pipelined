@@ -15,9 +15,8 @@ import {
 } from "../lib/constants";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+import { Textarea } from "./ui/textarea";
 import { ChecklistItem, AddChecklistItem } from "./PrepChecklist";
-
-const TEXTAREA_CLS = "border border-input rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:border-ring focus:ring-1 focus:ring-ring/20 focus:outline-none transition-colors text-sm px-3 py-2 font-sans w-full";
 
 function QuestionItem({ question, onDelete }) {
   return (
@@ -103,14 +102,14 @@ function PrepNotesField({ notes, onNotesChange }) {
   return (
     <div>
       <label htmlFor="prep-notes" className="text-xs font-medium text-muted-foreground">Prep Notes</label>
-      <textarea
+      <Textarea
         id="prep-notes"
         value={notes}
         onChange={onNotesChange}
         maxLength={PREP_NOTES_MAX_LENGTH}
         placeholder="Add your prep notes here…"
         rows={4}
-        className={`${TEXTAREA_CLS} mt-1 resize-none`}
+        className="mt-1 resize-none"
       />
       <p className="mt-1 text-right text-xs text-muted-foreground">{notes.length} / {PREP_NOTES_MAX_LENGTH}</p>
     </div>
