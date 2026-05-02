@@ -54,7 +54,7 @@ function KanbanCard({ application, onSelect }) {
       )}
       {followUpOverdue && (
         <span
-          className="absolute right-6 top-2 h-2 w-2 rounded-full bg-amber-500"
+          className="absolute right-6 top-2 h-2 w-2 rounded-full bg-amber-500 dark:bg-amber-900/60"
           aria-label="Follow-up overdue"
           data-testid="follow-up-indicator"
         />
