@@ -15,6 +15,7 @@ import { RowMenu } from "./ApplicationRowActions";
 import CompanyLogo from "./CompanyLogo";
 import FitBadge from "./FitBadge";
 import { Tooltip, TooltipTrigger, TooltipContent } from "./ui/tooltip";
+import { Checkbox } from "./ui/checkbox";
 
 const SOURCE_ICONS = {
   extension: Globe,
@@ -100,12 +101,10 @@ function ApplicationRow({
         {...handlers}
       >
         <span className={`shrink-0 transition-opacity ${checkboxVisible}`} onClick={(e) => e.stopPropagation()}>
-          <input
-            type="checkbox"
-            aria-label={`Select ${application.company}`}
+          <Checkbox
             checked={checked}
-            onChange={() => onToggle(application.id)}
-            className="h-4 w-4 rounded border-border accent-primary"
+            onCheckedChange={() => onToggle(application.id)}
+            aria-label={`Select ${application.company}`}
           />
         </span>
         <span className="relative w-2 shrink-0">
