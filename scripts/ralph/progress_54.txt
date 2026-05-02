@@ -21,3 +21,10 @@ Changed line 46 of MarkdownEditor.jsx in MarkdownTabBar: replaced `focus:ring-2 
 - **Build:** `npm run build` passed (✓ built in 2.73s)
 - **Commit:** `feat: US-568 - Fix DigestSection toggle button: focus:ring-* → focus-visible:ring-*`
 - **Learning:** DigestSection's toggle is structurally identical to SettingsNotificationsSection's ToggleSwitch — role="switch" aria-checked, same focus pattern. The ring-offset-2 class was also present and required the same prefix change.
+
+## US-569 — Fix CalendarGrid EventChip button: focus:ring-* → focus-visible:ring-*
+- **Status:** PASSED
+- **Change:** In `frontend/src/components/CalendarGrid.jsx` line 54 (EventChip button), replaced `focus:ring-2 focus:ring-ring` with `focus-visible:ring-2 focus-visible:ring-ring`. Kept `focus:outline-none` unchanged.
+- **Build:** `npm run build` passed (✓ built in 2.70s)
+- **Commit:** `feat: US-569 - Fix CalendarGrid EventChip button: focus:ring-* → focus-visible:ring-*`
+- **Learning:** EventChip already had correct ARIA via aria-label and title. No ring-offset class was present (unlike toggle buttons), so only two ring classes needed the prefix change. Pattern is consistent across this PRD batch.
