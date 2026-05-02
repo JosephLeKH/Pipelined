@@ -6,6 +6,7 @@ import DOMPurify from "dompurify";
 import HelpCircle from "lucide-react/dist/esm/icons/help-circle";
 
 import { Button } from "./ui/button";
+import { Textarea } from "./ui/textarea";
 
 const TAB_WRITE = "write";
 const TAB_PREVIEW = "preview";
@@ -78,8 +79,8 @@ function MarkdownEditor({ id, value, onChange, maxLength, className }) {
     <div className={className}>
       <MarkdownTabBar activeTab={activeTab} onTabChange={setActiveTab} />
       {activeTab === TAB_WRITE && (
-        <textarea ref={textareaRef} id={id}
-          className="w-full min-h-[120px] resize-y border border-border bg-background rounded-input px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/20 focus:outline-none transition-colors"
+        <Textarea ref={textareaRef} id={id}
+          className="min-h-[120px] resize-y rounded-input bg-background text-foreground"
           value={value ?? ""} onChange={(e) => onChange(e.target.value)} onKeyDown={handleKeyDown} maxLength={maxLength} data-testid="markdown-write-textarea"
         />
       )}
