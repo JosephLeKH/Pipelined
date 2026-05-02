@@ -25,3 +25,11 @@ Build: npm run build passed with no errors.
 - Build passed in 2.73s
 - Committed: 9f01bbe "feat: US-586 - Fix PipelineStagesEditor stage Input: focus:ring-* → focus-visible:ring-*"
 - Note: ring-1 width preserved (not ring-2); only the focus: prefix changed to focus-visible:
+
+## US-587 — Fix designTokens.js BUTTON_* tokens: focus:ring-* → focus-visible:ring-*
+- File: src/lib/designTokens.js
+- Changed BUTTON_PRIMARY, BUTTON_SECONDARY, BUTTON_GHOST, BUTTON_DANGER: replaced focus:ring-2 with focus-visible:ring-2 and focus:ring-brand-500/30 (or focus:ring-destructive/30 for DANGER) with focus-visible: equivalents
+- focus:outline-none preserved unchanged in all four tokens
+- INPUT_BASE focus:border-brand-500 and focus:ring-1 left untouched (intentional for input active state)
+- Build passed in 2.71s
+- Committed: 237f401 "feat: US-587 - Fix designTokens.js BUTTON_* tokens: focus:ring-* → focus-visible:ring-*"

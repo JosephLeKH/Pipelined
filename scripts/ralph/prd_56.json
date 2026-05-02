@@ -98,7 +98,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 6,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/lib/designTokens.js. BUTTON_PRIMARY is at line ~17, BUTTON_SECONDARY at ~24, BUTTON_GHOST at ~31, BUTTON_DANGER at ~37. Each has 'focus:ring-2' and 'focus:ring-brand-500/30' (or 'focus:ring-destructive/30' for DANGER) — replace prefix to focus-visible: on both ring classes. These tokens are used in legacy non-shadcn button contexts (not the shadcn Button component). Leave INPUT_BASE unchanged — input focus: on border/ring is intentional for showing active state."
     },
     {
