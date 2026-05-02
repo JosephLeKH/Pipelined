@@ -16,7 +16,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/FollowUpBanner.jsx. Both Button elements at lines 29 and 33 have focus:ring-ring appended to their className. The shadcn Button component (src/components/ui/button.jsx) already includes focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 in its base variants. The partial override is incomplete and misleading — just remove it."
     },
     {

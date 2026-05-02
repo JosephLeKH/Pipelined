@@ -1,3 +1,8 @@
 # Ralph Progress Log
 Started: Sat May  2 16:32:52 PDT 2026
 ---
+
+## US-574 — Remove redundant focus:ring-ring from FollowUpBanner Button classNames
+**Status:** PASS
+**Summary:** Removed `focus:ring-ring` from both Button elements in FollowUpBanner.jsx (lines 29 and 33). The shadcn Button component already includes `focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2` internally, making the manual addition redundant, incomplete (no ring-2 width), and incorrect (used `focus:` instead of `focus-visible:`).
+**Learnings:** When using shadcn Button components, never manually add focus ring classes — the variant system already handles this correctly. The `focus:ring-ring` pattern without `ring-2` has no visual effect anyway, so this was purely dead CSS.
