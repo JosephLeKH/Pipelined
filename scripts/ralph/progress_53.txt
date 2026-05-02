@@ -12,3 +12,8 @@ Learnings:
 - Native fallback components (no Radix dep) follow the same pattern as shadcn: cn() for className merging, spread remaining props
 - RadioGroupItem keeps accent-primary as default in the component so callers don't need to repeat it
 - MergeDialog changes were purely mechanical: swap input for RadioGroupItem, drop accent-primary from className
+
+## US-559 - Replace OfferDetailsSection INPUT_CLS raw <input> with shadcn Input
+**Status:** PASS
+**Summary:** Removed INPUT_CLS constant (long Tailwind string at line 11), imported Input from ./ui/input, replaced raw <input> with <Input> preserving all props (type, defaultValue, autoFocus, onBlur, aria-label). No className needed since shadcn Input default styling covers the same tokens. Build passes.
+**Commit:** feat: US-559 - Replace OfferDetailsSection INPUT_CLS raw <input> with shadcn Input

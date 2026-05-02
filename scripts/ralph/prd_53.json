@@ -35,7 +35,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/OfferDetailsSection.jsx first. INPUT_CLS is at line 11 and used at line ~45. The Input component already exists at src/components/ui/input.jsx and applies all the same styling internally. No className prop needed since the Input default styling matches INPUT_CLS. Preserve aria-label — it's already there."
     },
     {
