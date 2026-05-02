@@ -91,3 +91,17 @@ Learnings:
 - Native pattern (no Radix) keeps the bundle smaller and avoids peer-dependency issues
 - Build passed cleanly in 2.70s with no errors
 
+## US-548 — Migrate SettingsUsageSection progress bars to shadcn Progress component
+Status: COMPLETE
+Commit: 42011ad
+
+Changes:
+- Added `import { Progress } from "./ui/progress"` at top of SettingsUsageSection.jsx
+- Replaced raw two-div progress bar in UsageMeter with `<Progress value={pct} />`
+- Preserved all ARIA attributes (role, aria-valuenow, aria-valuemin, aria-valuemax, aria-label) by passing them as props — Progress spreads `...props` onto its root div
+
+Learnings:
+- The Progress component's `...props` spread makes it a drop-in for the outer container div; accessibility attributes transfer cleanly without any wrapper
+- The translateX-based fill animation in Progress produces the same visual result as the prior inline width approach
+- Build passed cleanly in 2.74s with no errors
+

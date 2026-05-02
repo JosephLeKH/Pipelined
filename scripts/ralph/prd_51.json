@@ -111,7 +111,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 7,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/SettingsUsageSection.jsx first. The progress bar likely shows usage percentage (e.g. applications used / limit). The Progress component accepts a 0-100 value and renders the fill. Replace only the raw div bars — don't restructure the surrounding layout."
     },
     {
