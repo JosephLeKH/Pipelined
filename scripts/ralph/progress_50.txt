@@ -40,3 +40,8 @@ Commit: b6a30fa
 Learnings:
 - US-524 description claimed FilterBar checkboxes were migrated, but none actually were — both CheckboxGroup and ArchiveFieldset still had raw inputs. The audit in this story found and fixed all of them.
 - The shadcn Checkbox onCheckedChange API receives a boolean directly, while native onChange uses e.target.checked — the conversion pattern is consistent across all checkbox migrations.
+
+## US-539 — Move PipelineStagesEditor isDragging opacity from inline style to Tailwind className
+**Status:** PASSED
+**Change:** In SortableStageItem (PipelineStagesEditor.jsx line 79), removed `opacity: isDragging ? 0.5 : 1` from the style prop. Added the conditional as a template literal in className: `${isDragging ? "opacity-50" : "opacity-100"}`. The `transform` and `transition` values remain in the style prop as required by dnd-kit.
+**Learning:** When cn() is not already imported, a simple template literal conditional is the minimal-change approach for className toggling. No new imports needed. dnd-kit requires CSS.Transform.toString(transform) and transition in style — never move those to className.

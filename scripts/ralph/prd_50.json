@@ -96,7 +96,8 @@
         "npm run build passes with no errors"
       ],
       "priority": 6,
-      "passes": false,
+      "passes": true,
+      "completionNote": "Extracted opacity from inline style prop into className conditional using template literal (no cn import needed). style prop retains only transform and transition for dnd-kit. Build passes.",
       "notes": "Read the file before editing. The dnd-kit CSS.Transform.toString(transform) and transition values MUST stay in the style prop — only extract the opacity into className. Use cn() if the component already imports it."
     },
     {
