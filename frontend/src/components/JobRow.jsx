@@ -72,7 +72,7 @@ function JobRow({ job, style }) {
             href={job.apply_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1 rounded-md bg-primary text-primary-foreground text-xs px-2.5 py-1 font-medium transition-colors hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+            className="flex items-center gap-1 rounded-md bg-primary text-primary-foreground text-xs px-2.5 py-1 font-medium transition-colors hover:bg-primary/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             aria-label={`Apply to ${job.role ?? "this role"} at ${job.company ?? "this company"}`}
           >
             Apply
