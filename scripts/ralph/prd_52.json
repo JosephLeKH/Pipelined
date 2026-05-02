@@ -127,7 +127,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 8,
-      "passes": false,
+      "passes": true,
       "notes": "Read the file before editing. This is the most complex Select migration because of the grouped timezone structure. Map each <optgroup label='...'> to <SelectGroup><SelectLabel>{label}</SelectLabel>{options}</SelectGroup>. The SelectContent may need a max-height for the long timezone list — add className='max-h-60 overflow-auto' to SelectContent if not default."
     }
   ]

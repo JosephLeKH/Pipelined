@@ -68,3 +68,21 @@ Started: Sat May  2 15:46:35 PDT 2026
 - `asChild` on `TooltipTrigger` works for both `<Button>` and plain `<span>` elements — no extra wrapper node injected.
 - `aria-label` attributes were preserved alongside Tooltip replacement; they serve different purposes (screen readers vs. visual hover tooltips).
 - Build passed clean with 0 errors.
+
+## US-557 — Replace TimezoneSelector raw <select> with shadcn Select (with SelectGroup)
+**Status:** COMPLETE
+**Commit:** 8e1e245
+
+### Changes
+- Replaced raw `<select>` + `<optgroup>` elements with shadcn `Select`, `SelectTrigger`, `SelectValue`, `SelectContent`, `SelectGroup`, `SelectLabel`, `SelectItem`
+- Removed `SELECT_CLS` constant entirely; shadcn Select handles all styling via design tokens
+- Changed `onChange={(e) => onChange(e.target.value)}` to `onValueChange={onChange}` (shadcn Select API)
+- Each `<optgroup label={region}>` maps to `<SelectGroup><SelectLabel>{region}</SelectLabel>{...options}</SelectGroup>`
+- Added `className="max-h-60 overflow-auto"` to `SelectContent` for the long timezone list (note: `SelectContent` default is already `max-h-96` so this is a tighter constraint appropriate for timezone lists)
+- `aria-label="Timezone"` moved from the raw select to `SelectTrigger`
+- Build: ✓ passed in 2.79s
+
+### Learnings
+- Grouped selects (optgroup) map cleanly to `SelectGroup` + `SelectLabel` — the structure is 1:1
+- `onValueChange` receives the value string directly (no event object), so `onChange(e.target.value)` simplifies to `onValueChange={onChange}`
+- The `BROWSER_TZ` constant and `getGroupedTimezones` logic are unchanged — only the rendering layer changed
