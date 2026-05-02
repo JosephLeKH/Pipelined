@@ -126,7 +126,7 @@ export const TOOLTIP =
 
 /** Icon-only button base — rounded-full, padding, hover states, focus ring, transition. */
 export const ICON_BUTTON =
-  "rounded-full p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200";
+  "rounded-full p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200";
 
 
 /** Menu item — full-width, padding, text alignment, transition. */

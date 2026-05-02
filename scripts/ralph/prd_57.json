@@ -1,0 +1,151 @@
+{
+  "id": "PRD-57",
+  "title": "focus-visible standardization in ICON_BUTTON and three shadcn ui/ files, STAGE_COLORS dark variants for Applied/Phone Screen/Offer/DEFAULT",
+  "description": "Continuation of the systematic UI improvement loop. This batch upgrades the ICON_BUTTON design token in designTokens.js from focus:ring-* to focus-visible:ring-*, applies the same fix to three shadcn-generated ui/ files (dialog.jsx DialogPrimitive.Close, select.jsx SelectPrimitive.Trigger, badge.jsx badgeVariants base), and adds dark: variants to the remaining four STAGE_COLORS entries in lib/constants.js (Applied, Phone Screen, Offer, and DEFAULT_STAGE_COLOR).",
+  "userStories": [
+    {
+      "id": "US-590",
+      "title": "Fix designTokens.js ICON_BUTTON: focus:ring-* → focus-visible:ring-*",
+      "description": "As a developer, the ICON_BUTTON token in lib/designTokens.js (line 129) uses focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 — causing focus rings on mouse click. Replace all three ring classes with focus-visible: prefix.",
+      "acceptanceCriteria": [
+        "Read src/lib/designTokens.js first",
+        "In ICON_BUTTON (line 129), replace focus:ring-2 with focus-visible:ring-2, focus:ring-brand-500 with focus-visible:ring-brand-500, focus:ring-offset-2 with focus-visible:ring-offset-2",
+        "Keep focus:outline-none unchanged",
+        "Final ring classes in ICON_BUTTON: focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2",
+        "If already using focus-visible, mark passes: true with note 'already using focus-visible'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Read src/lib/designTokens.js. ICON_BUTTON at line 129 is a non-shadcn custom token used in icon-only buttons across the app. The full string is 'rounded-full p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200'. Replace only the three focus:ring-* classes with focus-visible: — leave focus:outline-none and all other classes unchanged."
+    },
+    {
+      "id": "US-591",
+      "title": "Fix ui/dialog.jsx DialogPrimitive.Close: focus:ring-* → focus-visible:ring-*",
+      "description": "As a developer, the DialogPrimitive.Close button in src/components/ui/dialog.jsx (line 37) uses focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 — causing focus rings on mouse click. Replace ring classes with focus-visible: prefix.",
+      "acceptanceCriteria": [
+        "Read src/components/ui/dialog.jsx first",
+        "On the DialogPrimitive.Close element (line ~37), replace focus:ring-2 with focus-visible:ring-2, focus:ring-ring with focus-visible:ring-ring, focus:ring-offset-2 with focus-visible:ring-offset-2",
+        "Keep focus:outline-none unchanged",
+        "Final focus classes: focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+        "If already using focus-visible, mark passes: true with note 'already using focus-visible'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Read src/components/ui/dialog.jsx. The DialogPrimitive.Close button at line 37 has className='absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground'. Only change the three focus:ring-* classes to focus-visible: — leave focus:outline-none, data-[state=open]:*, disabled:*, and all other classes unchanged."
+    },
+    {
+      "id": "US-592",
+      "title": "Fix ui/select.jsx SelectPrimitive.Trigger: focus:ring-* → focus-visible:ring-*",
+      "description": "As a developer, the SelectPrimitive.Trigger in src/components/ui/select.jsx (line 17) uses focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 — causing focus rings on mouse click. Replace ring classes with focus-visible: prefix.",
+      "acceptanceCriteria": [
+        "Read src/components/ui/select.jsx first",
+        "In the cn() className at line ~17, replace focus:ring-2 with focus-visible:ring-2, focus:ring-ring with focus-visible:ring-ring, focus:ring-offset-2 with focus-visible:ring-offset-2",
+        "Keep focus:outline-none unchanged",
+        "Final focus classes: focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+        "If already using focus-visible, mark passes: true with note 'already using focus-visible'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "Read src/components/ui/select.jsx. SelectPrimitive.Trigger uses cn() to compose its className — the string at line 17 contains focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 among many other classes. Only replace the three focus:ring-* classes. Leave all other classes in the cn() call unchanged."
+    },
+    {
+      "id": "US-593",
+      "title": "Fix ui/badge.jsx badgeVariants base: focus:ring-* → focus-visible:ring-*",
+      "description": "As a developer, the badgeVariants base string in src/components/ui/badge.jsx (line 6) uses focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2. Replace ring classes with focus-visible: prefix.",
+      "acceptanceCriteria": [
+        "Read src/components/ui/badge.jsx first",
+        "In the cva() base string (line ~6), replace focus:ring-2 with focus-visible:ring-2, focus:ring-ring with focus-visible:ring-ring, focus:ring-offset-2 with focus-visible:ring-offset-2",
+        "Keep focus:outline-none unchanged",
+        "Final focus classes in the base string: focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+        "If already using focus-visible, mark passes: true with note 'already using focus-visible'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": "Read src/components/ui/badge.jsx. The cva() base class string at line 6 is 'inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2'. Only change the three focus:ring-* classes to focus-visible: — leave all other classes and all variant definitions unchanged."
+    },
+    {
+      "id": "US-594",
+      "title": "Add dark: variants to STAGE_COLORS Applied in lib/constants.js",
+      "description": "As a developer, lib/constants.js STAGE_COLORS Applied uses hardcoded brand color classes with no dark: variants, causing the applied stage pill to look washed out in dark mode.",
+      "acceptanceCriteria": [
+        "Read src/lib/constants.js first",
+        "In STAGE_COLORS.Applied (line ~4), update each property to add dark: variants:",
+        "  bg: 'bg-brand-100 dark:bg-brand-900/30'",
+        "  text: 'text-brand-800 dark:text-brand-300'",
+        "  dot: 'bg-brand-500 dark:bg-brand-400'",
+        "  border: 'border-brand-500 dark:border-brand-400'",
+        "  activeBg: 'bg-brand-500 dark:bg-brand-400'",
+        "Leave Phone Screen, Onsite, Offer, Rejected, and DEFAULT_STAGE_COLOR unchanged",
+        "If dark: variants already present on Applied, mark passes: true with note 'already has dark variants'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": "Read src/lib/constants.js. STAGE_COLORS.Applied is at line 4 with bg-brand-100, text-brand-800, bg-brand-500, border-brand-500. brand-900 is defined in tailwind.config.js as #5c3020 (confirmed). Use dark:bg-brand-900/30 for bg, dark:text-brand-300 for text, dark:bg-brand-400 for dot/activeBg, dark:border-brand-400 for border. Only touch the Applied entry — Onsite and Rejected already have dark variants from prd_56."
+    },
+    {
+      "id": "US-595",
+      "title": "Add dark: variants to STAGE_COLORS Phone Screen in lib/constants.js",
+      "description": "As a developer, lib/constants.js STAGE_COLORS 'Phone Screen' uses bg-blue-100 and text-blue-800 with no dark: variants. The dot/border/activeBg use accent-blue (#6a9bcc, a static color not a CSS variable) which also needs dark mode coverage.",
+      "acceptanceCriteria": [
+        "Read src/lib/constants.js first",
+        "In STAGE_COLORS['Phone Screen'] (line ~5), update each property to add dark: variants:",
+        "  bg: 'bg-blue-100 dark:bg-blue-900/30'",
+        "  text: 'text-blue-800 dark:text-blue-300'",
+        "  dot: 'bg-accent-blue dark:bg-blue-400'",
+        "  border: 'border-accent-blue dark:border-blue-400'",
+        "  activeBg: 'bg-accent-blue dark:bg-blue-400'",
+        "Leave Applied, Onsite, Offer, Rejected, and DEFAULT_STAGE_COLOR unchanged",
+        "If dark: variants already present on Phone Screen, mark passes: true with note 'already has dark variants'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": "Read src/lib/constants.js. STAGE_COLORS 'Phone Screen' is at line 5 with bg-blue-100, text-blue-800, bg-accent-blue, border-accent-blue. accent-blue is defined in tailwind.config.js as the static hex #6a9bcc (NOT a CSS variable, so it has no automatic dark variant). Use dark:bg-blue-400 as the dark variant for dot/border/activeBg — blue-400 (#60a5fa) is close to accent-blue and appropriate for dark mode. Only touch the Phone Screen entry."
+    },
+    {
+      "id": "US-596",
+      "title": "Add dark: variants to STAGE_COLORS Offer in lib/constants.js",
+      "description": "As a developer, lib/constants.js STAGE_COLORS Offer uses hardcoded emerald color classes with no dark: variants, causing the offer stage pill to look washed out in dark mode.",
+      "acceptanceCriteria": [
+        "Read src/lib/constants.js first",
+        "In STAGE_COLORS.Offer (line ~7), update each property to add dark: variants:",
+        "  bg: 'bg-emerald-100 dark:bg-emerald-900/30'",
+        "  text: 'text-emerald-800 dark:text-emerald-300'",
+        "  dot: 'bg-emerald-500 dark:bg-emerald-400'",
+        "  border: 'border-emerald-500 dark:border-emerald-400'",
+        "  activeBg: 'bg-emerald-500 dark:bg-emerald-400'",
+        "Leave Applied, Phone Screen, Onsite, Rejected, and DEFAULT_STAGE_COLOR unchanged",
+        "If dark: variants already present on Offer, mark passes: true with note 'already has dark variants'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 7,
+      "passes": false,
+      "notes": "Read src/lib/constants.js. STAGE_COLORS.Offer is at line 7 with bg-emerald-100, text-emerald-800, bg-emerald-500, border-emerald-500. Pattern matches Onsite (bg-amber-100 dark:bg-amber-900/30) and Rejected (bg-rose-100 dark:bg-rose-900/30) from prd_56. Use dark:bg-emerald-900/30 for bg, dark:text-emerald-300 for text, dark:bg-emerald-400 for dot/activeBg, dark:border-emerald-400 for border. Only touch the Offer entry."
+    },
+    {
+      "id": "US-597",
+      "title": "Add dark: variants to DEFAULT_STAGE_COLOR in lib/constants.js",
+      "description": "As a developer, lib/constants.js DEFAULT_STAGE_COLOR uses hardcoded gray color classes with no dark: variants, causing fallback stage pills to look washed out in dark mode.",
+      "acceptanceCriteria": [
+        "Read src/lib/constants.js first",
+        "In DEFAULT_STAGE_COLOR (line ~11), update each property to add dark: variants:",
+        "  bg: 'bg-gray-100 dark:bg-gray-800'",
+        "  text: 'text-gray-800 dark:text-gray-200'",
+        "  dot: 'bg-gray-500 dark:bg-gray-400'",
+        "  border: 'border-gray-400 dark:border-gray-600'",
+        "  activeBg: 'bg-gray-500 dark:bg-gray-400'",
+        "Leave all STAGE_COLORS entries unchanged",
+        "If dark: variants already present on DEFAULT_STAGE_COLOR, mark passes: true with note 'already has dark variants'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 8,
+      "passes": false,
+      "notes": "Read src/lib/constants.js. DEFAULT_STAGE_COLOR is at line 11 with bg-gray-100, text-gray-800, bg-gray-500, border-gray-400. Note that gray-100 in this project's custom palette is #f5f5f4 (very light), and gray-800 is #1f1b17 (very dark) — both problematic in dark mode. Use dark:bg-gray-800 for bg (maps to #1f1b17 — deep dark), dark:text-gray-200 for text, dark:bg-gray-400 for dot/activeBg, dark:border-gray-600 for border. Only touch DEFAULT_STAGE_COLOR, not STAGE_COLORS entries."
+    }
+  ]
+}
