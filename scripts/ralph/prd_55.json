@@ -60,7 +60,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 4,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/pages/Activity.jsx. TYPE_STYLES at line 22 maps activity type to a dot CSS class string. The dotClass is applied to a small indicator span in the timeline. Only event_created needs the dark variant added — applied uses bg-primary (semantic) and stage_change uses bg-accent-blue (custom token). Use 'bg-amber-400 dark:bg-amber-900/40' as the new value."
     },
     {

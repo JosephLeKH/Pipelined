@@ -20,3 +20,9 @@ Started: Sat May  2 16:32:52 PDT 2026
 - The span is wrapped in a Tooltip — only the className needed updating
 - Build passed in 2.71s with no errors
 - Committed as: feat: US-576 - Add dark variant to ContactCard stale contact dot (bg-amber-400)
+
+## US-577 — Add dark variant to Activity.jsx TYPE_STYLES event_created dot color
+- Changed `event_created: "bg-amber-400"` to `"bg-amber-400 dark:bg-amber-900/40"` in TYPE_STYLES at line 22
+- `applied: 'bg-primary'` and `stage_change: 'bg-accent-blue'` are semantic tokens — left unchanged
+- Build passed in 2.76s with no errors
+- Committed as: feat: US-577 - Add dark variant to Activity.jsx TYPE_STYLES event_created dot color
