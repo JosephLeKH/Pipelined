@@ -47,7 +47,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "notes": "Read the file before editing. The Textarea component at src/components/ui/textarea.jsx already exists and uses React.forwardRef. Pass any custom className — the component merges it via cn(). Preserve resize-none or other layout classes."
     },
     {

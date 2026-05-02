@@ -17,3 +17,12 @@ Started: Sat May  2 15:46:35 PDT 2026
 - Removed `LISTBOX_CLASSES` constant and `size` attribute (shadcn Select is a dropdown, not a multi-row listbox)
 - Build: clean (✓ built in 2.69s)
 - Commit: 91fe0d7
+
+## US-552: Replace MarkdownEditor raw <textarea> with shadcn Textarea
+- Replaced raw `<textarea>` with shadcn `<Textarea>` from `src/components/ui/textarea`
+- Added import for `Textarea` alongside existing `Button` import
+- Passed custom `className="min-h-[120px] resize-y rounded-input bg-background text-foreground"` to override shadcn defaults (min-h-[80px], rounded-md, bg-transparent)
+- All existing props preserved: ref, id, value, onChange, onKeyDown, maxLength, data-testid
+- shadcn Textarea handles w-full, px-3 py-2, text-sm, border, shadow-sm, transition-colors, placeholder:text-muted-foreground, focus-visible styles
+- Build: clean (✓ built in 2.79s)
+- Commit: cef5650
