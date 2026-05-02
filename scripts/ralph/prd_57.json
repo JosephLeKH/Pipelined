@@ -32,7 +32,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/ui/dialog.jsx. The DialogPrimitive.Close button at line 37 has className='absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground'. Only change the three focus:ring-* classes to focus-visible: — leave focus:outline-none, data-[state=open]:*, disabled:*, and all other classes unchanged."
     },
     {

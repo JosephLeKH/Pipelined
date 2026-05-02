@@ -5,3 +5,8 @@ Started: Sat May  2 16:55:18 PDT 2026
 Status: PASS
 Summary: Replaced focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 with focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 in the ICON_BUTTON constant at line 129 of frontend/src/lib/designTokens.js. focus:outline-none was left unchanged. Build passed (✓ built in 3.07s).
 Learnings: The ICON_BUTTON token is used across icon-only buttons app-wide; a single token fix here propagates the keyboard-only focus ring behavior everywhere those buttons appear.
+
+## US-591 — Fix ui/dialog.jsx DialogPrimitive.Close: focus:ring-* → focus-visible:ring-*
+Status: PASS
+Summary: Replaced focus:ring-2 focus:ring-ring focus:ring-offset-2 with focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 on the DialogPrimitive.Close element (line 37) in frontend/src/components/ui/dialog.jsx. focus:outline-none and all data-[state=open]:* / disabled:* classes left unchanged. Build passed (✓ built in 2.76s).
+Learnings: Shadcn-generated ui/ components ship with focus: ring classes by default; each file needs a targeted fix to adopt focus-visible: for keyboard-only focus rings without breaking other conditional classes.
