@@ -29,7 +29,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/SettingsAccountSection.jsx first. All rose-* colors in this file are in the danger zone — they all map cleanly to destructive token variants. Use /opacity suffixes for backgrounds and borders. Make targeted changes only."
     },
     {

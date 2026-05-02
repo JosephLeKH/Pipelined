@@ -13,3 +13,19 @@ Started: Sat May  2 00:09:49 PDT 2026
 **Learnings:** The `bg-destructive/10 text-destructive` pattern (without explicit dark variants) works cleanly because CSS variables for `destructive` and `destructive-foreground` already handle dark mode at the theme level. Removing the separate dark: classes is correct here.
 
 **Build:** ✓ passed in 2.92s
+
+## US-527 - Fix SettingsAccountSection DangerZone hardcoded rose colors
+**Status:** COMPLETE
+**Commit:** e314799
+
+**Changes:**
+- `frontend/src/components/SettingsAccountSection.jsx` DangerZone component:
+  - Container: `border-rose-200 bg-rose-50 dark:border-rose-800 dark:bg-rose-900/20` → `border-destructive/30 bg-destructive/5`
+  - TriangleAlert icon: `text-rose-600 dark:text-rose-400` → `text-destructive`
+  - Heading: `text-rose-900 dark:text-rose-200` → `text-destructive`
+  - Body text: `text-rose-700 dark:text-rose-300` → `text-destructive`
+  - Button className: all rose-* classes → `border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive focus:ring-destructive/50`
+
+**Learnings:** All 5 rose-* usages mapped cleanly to destructive token variants with /opacity suffixes for backgrounds and borders. The `text-destructive` token handles both light and dark mode without separate dark: overrides. Opacity variants (bg-destructive/5, border-destructive/30) produce subtle tinted backgrounds appropriate for danger zone containers.
+
+**Build:** ✓ passed in 2.74s
