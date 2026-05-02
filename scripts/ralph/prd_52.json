@@ -93,7 +93,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 6,
-      "passes": false,
+      "passes": true,
       "notes": "Read the file before editing. The command palette search is the main input at the top of the modal. Adding aria-label is the key accessibility fix. The Input component spreads all HTML input props so aria-label will be forwarded correctly."
     },
     {

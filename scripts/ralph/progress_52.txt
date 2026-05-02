@@ -43,3 +43,13 @@ Started: Sat May  2 15:46:35 PDT 2026
 - No layout className override needed — shadcn Input defaults (w-full, border, px-3, text-sm) match the context
 - Build: ✓ passed in 2.74s
 - Commit: 56d92a5
+
+## US-555 — Add aria-label to CommandPalette search input and replace with shadcn Input
+- Replaced raw `<input type="text">` in `CommandPaletteDialog` with shadcn `<Input>` from `./ui/input`
+- Added `aria-label="Search commands"` for accessibility
+- Added `import { Input } from "./ui/input"` alongside existing `Button` import
+- Override default Input styles via className: `border-0 shadow-none rounded-none h-auto px-0 focus-visible:ring-0` (command palette embeds the input in its own styled header div with border-b)
+- All existing props preserved: autoFocus, type, value, onChange, placeholder
+- onKeyDown is handled at document level by useCommandPaletteKeyboard hook — not on the input element directly
+- Build: ✓ passed in 2.76s
+- Commit: 495cbc3
