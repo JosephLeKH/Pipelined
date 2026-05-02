@@ -75,3 +75,19 @@ Learnings:
 - Removed the inline STATUS_* variables entirely rather than keeping them as aliases — cleaner refactor with no behavior change
 - Build passed cleanly in 2.74s with no errors
 
+## US-547 — Create native Progress UI component (no Radix dep)
+Status: COMPLETE
+Commit: 873a35b
+
+Changes:
+- Created frontend/src/components/ui/progress.jsx (15 lines)
+- Exports named `Progress` function accepting `value` (0-100), `className`, and spread `...props`
+- Root div uses `cn('relative h-2 w-full overflow-hidden rounded-full bg-muted', className)`
+- Indicator div uses `translateX(-${100 - (value || 0)}%)` transform for CSS-only fill animation
+- Imports `cn` from `@/lib/utils`
+
+Learnings:
+- The translateX trick keeps the indicator div full-width but shifts it left; overflow-hidden clips the excess, creating the fill effect without needing to set an explicit width
+- Native pattern (no Radix) keeps the bundle smaller and avoids peer-dependency issues
+- Build passed cleanly in 2.70s with no errors
+
