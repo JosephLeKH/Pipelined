@@ -123,17 +123,17 @@ function DangerZone() {
 
   return (
     <>
-      <div className="rounded-xl border border-rose-200 bg-rose-50 p-6 dark:border-rose-800 dark:bg-rose-900/20">
+      <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-6">
         <div className="flex items-start gap-3">
-          <TriangleAlert className="mt-0.5 h-5 w-5 shrink-0 text-rose-600 dark:text-rose-400" aria-hidden="true" />
+          <TriangleAlert className="mt-0.5 h-5 w-5 shrink-0 text-destructive" aria-hidden="true" />
           <div className="flex-1">
-            <h2 className="text-lg font-semibold font-display text-rose-900 dark:text-rose-200">Danger zone</h2>
-            <p className="mt-1 text-sm text-rose-700 dark:text-rose-300">
+            <h2 className="text-lg font-semibold font-display text-destructive">Danger zone</h2>
+            <p className="mt-1 text-sm text-destructive">
               Permanently delete your account and all associated data — applications, calendar events,
               contacts, and resume. This cannot be undone.
             </p>
             <Button type="button" variant="outline" onClick={() => setShowModal(true)}
-              className="mt-4 border-rose-300 text-rose-700 hover:bg-rose-100 hover:text-rose-700 focus:ring-rose-400 dark:border-rose-700 dark:text-rose-300 dark:hover:bg-rose-900/40">
+              className="mt-4 border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive focus:ring-destructive/50">
               Delete account
             </Button>
           </div>
