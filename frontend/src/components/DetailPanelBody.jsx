@@ -87,7 +87,7 @@ function PrepChecklistView({ checklist, onToggle, onDelete, onAdd }) {
       <div className="flex items-center justify-between">
         <span className="text-xs font-medium uppercase text-muted-foreground">Prep Checklist</span>
         {checklist.length > 0 && (
-          <span className={`text-xs font-medium tabular-nums ${checkedCount === checklist.length ? "text-green-600 dark:text-green-400" : "text-muted-foreground"}`}>
+          <span className={`text-xs font-medium tabular-nums ${checkedCount === checklist.length ? "text-primary" : "text-muted-foreground"}`}>
             {checkedCount} / {checklist.length}
           </span>
         )}

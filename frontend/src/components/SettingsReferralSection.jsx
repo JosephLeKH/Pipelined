@@ -69,7 +69,7 @@ function SettingsReferralSection({ user }) {
             className="flex items-center gap-1.5 shrink-0"
           >
             {copied ? (
-              <CheckCircle className="h-4 w-4 text-green-500" aria-hidden="true" />
+              <CheckCircle className="h-4 w-4 text-primary" aria-hidden="true" />
             ) : (
               <Copy className="h-4 w-4" aria-hidden="true" />
             )}

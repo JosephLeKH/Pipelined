@@ -46,7 +46,7 @@ function ResumeFitSection({ analysis, aiScoresRemainingToday }) {
           <span className="text-xs font-medium text-muted-foreground">Matched skills</span>
           <div className="flex flex-wrap gap-1">
             {analysis.matched_skills.map((skill) => (
-              <span key={skill} className="rounded-full bg-green-100 px-2 py-0.5 text-xs text-green-700 dark:bg-green-900/40 dark:text-green-400">
+              <span key={skill} className="rounded-full bg-primary/10 px-2 py-0.5 text-xs text-primary dark:bg-primary/20">
                 {skill}
               </span>
             ))}
