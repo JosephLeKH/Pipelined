@@ -21,7 +21,7 @@ function ToggleSwitch({ checked, onChange, disabled, label, description, id }) {
         aria-labelledby={id}
         disabled={disabled}
         onClick={() => onChange(!checked)}
-        className={`relative mt-0.5 inline-flex h-6 w-10 shrink-0 cursor-pointer items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 ${
+        className={`relative mt-0.5 inline-flex h-6 w-10 shrink-0 cursor-pointer items-center rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 ${
           checked ? "bg-primary" : "bg-muted"
         }`}
       >
