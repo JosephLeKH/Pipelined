@@ -17,7 +17,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/MarkdownEditor.jsx. The tab button is at line 46 inside MarkdownTabBar. The /30 opacity modifier was inconsistent with the rest of the project. Replace the focus: prefix with focus-visible: and drop the /30 opacity modifier from the ring color. The button also has role='tab' — proper ARIA tab semantics are already in place."
     },
     {
