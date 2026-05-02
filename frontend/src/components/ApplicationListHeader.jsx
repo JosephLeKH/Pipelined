@@ -1,6 +1,7 @@
 /** Sortable column header row for the application list. */
 
 import { Button } from "./ui/button";
+import { Checkbox } from "./ui/checkbox";
 
 function ColumnHeader({ field, label, sortBy, sortOrder, onSort }) {
   const isActive = sortBy === field;
@@ -21,12 +22,10 @@ export function ApplicationListHeader({ sortBy, sortOrder, onSort, allSelected, 
   return (
     <div className="flex items-center gap-4 border-b border-border bg-muted px-4 py-2">
       <span className="shrink-0" onClick={(e) => e.stopPropagation()}>
-        <input
-          type="checkbox"
+        <Checkbox
           aria-label="Select all applications"
           checked={allSelected}
-          onChange={onSelectAll}
-          className="h-4 w-4 rounded border-border accent-primary"
+          onCheckedChange={onSelectAll}
         />
       </span>
       <div className="w-2 shrink-0" />
