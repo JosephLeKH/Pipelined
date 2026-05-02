@@ -111,7 +111,8 @@
         "npm run build passes with no errors"
       ],
       "priority": 7,
-      "passes": false,
+      "passes": true,
+      "completionNote": "Changed dark:bg-amber-900/30 to dark:bg-amber-900/40 on the Super Referrer badge span. dark:text-amber-300 was already present. Build passes.",
       "notes": "Read the file first. This is a minor consistency fix — the amber /40 opacity is the project standard established in prd_47 and prd_48. Make no other changes."
     },
     {

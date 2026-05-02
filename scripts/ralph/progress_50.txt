@@ -45,3 +45,9 @@ Learnings:
 **Status:** PASSED
 **Change:** In SortableStageItem (PipelineStagesEditor.jsx line 79), removed `opacity: isDragging ? 0.5 : 1` from the style prop. Added the conditional as a template literal in className: `${isDragging ? "opacity-50" : "opacity-100"}`. The `transform` and `transition` values remain in the style prop as required by dnd-kit.
 **Learning:** When cn() is not already imported, a simple template literal conditional is the minimal-change approach for className toggling. No new imports needed. dnd-kit requires CSS.Transform.toString(transform) and transition in style — never move those to className.
+
+
+## US-540 — Fix SettingsReferralSection amber badge dark variant inconsistency
+- Changed dark:bg-amber-900/30 to dark:bg-amber-900/40 on the Super Referrer badge span in SettingsReferralSection.jsx (line 46).
+- dark:text-amber-300 was already present — no additional changes needed.
+- Build passed. Committed as a13fad8.
