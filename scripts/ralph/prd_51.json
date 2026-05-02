@@ -1,0 +1,132 @@
+{
+  "id": "PRD-51",
+  "title": "Avatar token consolidation, amber dark variants, native Progress component, and remaining input/color cleanup",
+  "description": "Continuation of the systematic UI improvement loop. This batch consolidates AVATAR_COLORS to semantic tokens in SettingsProfileSection, adds missing dark mode variants to amber follow-up indicators in ApplicationRow and KanbanCard, replaces the PipelineStagesEditor raw text input with shadcn Input, creates a native Progress UI component (no Radix dep), migrates SettingsUsageSection to use it, extracts FitBadge status colors to designTokens.js constants, and audits remaining hardcoded blue/sky/indigo Tailwind colors.",
+  "userStories": [
+    {
+      "id": "US-542",
+      "title": "Fix SettingsProfileSection AVATAR_COLORS mixed semantic/raw tokens",
+      "description": "As a developer, AVATAR_COLORS in SettingsProfileSection mixes semantic tokens (bg-primary) with raw Tailwind colors (bg-amber-500, bg-emerald-500, bg-rose-500, bg-sky-500). Consolidate to semantic tokens.",
+      "acceptanceCriteria": [
+        "Read src/components/SettingsProfileSection.jsx first",
+        "In AVATAR_COLORS array, replace bg-amber-500 with bg-amber-400 (intentional warm amber, acceptable) or bg-primary/80",
+        "Replace bg-emerald-500 with bg-emerald-500 dark:bg-emerald-600 (intentional success green) — acceptable to keep if no semantic token exists",
+        "Replace bg-rose-500 with bg-destructive",
+        "Replace bg-sky-500 with bg-sky-500 dark:bg-sky-600 — acceptable to keep as intentional palette color",
+        "If bg-accent-blue is already a defined token in the project, use it for sky; otherwise leave sky-500 with a comment",
+        "npm run build passes with no errors"
+      ],
+      "priority": 1,
+      "passes": true,
+      "notes": "Read src/components/SettingsProfileSection.jsx first to see the exact AVATAR_COLORS array. The goal is to replace any rose-* with destructive and document any intentional palette colors. Keep changes minimal — avatar colors are decorative and intentional variety is expected."
+    },
+    {
+      "id": "US-543",
+      "title": "Fix ApplicationRow amber follow-up and stale indicators missing dark variants",
+      "description": "As a developer, ApplicationRow has amber-based follow-up and stale indicators without dark mode variants, causing poor contrast in dark theme.",
+      "acceptanceCriteria": [
+        "Read src/components/ApplicationRow.jsx first",
+        "If the stale badge span uses bg-amber-400 text-amber-800 without dark variants, add dark:bg-amber-900/40 dark:text-amber-300",
+        "If the follow-up swipe button uses bg-amber-500 hover:bg-amber-600 active:bg-amber-700 without dark variants, leave as-is (full-width swipe buttons don't need dark variants — amber-500 is visible on both themes) OR add dark:bg-amber-600",
+        "If all amber elements already have dark: variants, mark passes: true with note 'already has dark variants'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Read the file before editing. Focus on the stale badge span (inline status indicator) — that's the one most likely missing dark variants. The swipe action buttons (full colored bg) are less critical. Make only targeted additions of dark: variants."
+    },
+    {
+      "id": "US-544",
+      "title": "Fix KanbanCard follow-up badge missing dark variant",
+      "description": "As a developer, KanbanCard renders a follow-up status dot or badge using bg-amber-500 without a dark mode variant.",
+      "acceptanceCriteria": [
+        "Read src/components/KanbanCard.jsx first",
+        "If bg-amber-500 exists without dark: variant, add dark:bg-amber-400 or dark:bg-amber-900/60",
+        "If there is also a text color on the badge without dark variant, add dark:text-amber-300",
+        "If the badge already has dark variants, mark passes: true with note 'already has dark variants'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "Read src/components/KanbanCard.jsx first. The follow-up indicator is likely a small dot or badge. Single targeted change — add the missing dark: variant."
+    },
+    {
+      "id": "US-545",
+      "title": "Replace PipelineStagesEditor raw text input with shadcn Input",
+      "description": "As a developer, the stage name input in PipelineStagesEditor uses a raw <input type='text'> instead of the shadcn Input component. Replace for design system consistency.",
+      "acceptanceCriteria": [
+        "Read src/components/PipelineStagesEditor.jsx first",
+        "If raw <input type='text' ...> exists for the stage name, replace with <Input> from src/components/ui/input",
+        "Preserve all existing props: value, onChange, onBlur, onKeyDown, placeholder, className (merge with cn())",
+        "If the file already uses shadcn Input, mark passes: true with note 'already using shadcn Input'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": "Read the file before editing. The Input component at src/components/ui/input.jsx already exists. Use cn() to merge any existing className. The stage name input likely has specific sizing classes — preserve them via className prop."
+    },
+    {
+      "id": "US-546",
+      "title": "Extract FitBadge status palette to designTokens.js constants",
+      "description": "As a developer, FitBadge defines its status tier colors inline as string constants. Extract them to named constants in designTokens.js for reuse.",
+      "acceptanceCriteria": [
+        "Read src/components/FitBadge.jsx and src/lib/designTokens.js first",
+        "Add BADGE_FIT_HIGH, BADGE_FIT_MEDIUM, BADGE_FIT_LOW constants to designTokens.js with the current class strings from FitBadge",
+        "The 'critical' tier should use the already-fixed bg-destructive/10 text-destructive value (or whatever was set in prd_47)",
+        "In FitBadge.jsx, import the new constants and replace the inline strings",
+        "npm run build passes with no errors"
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": "Read both files first. FitBadge STATUS object maps tier strings to Tailwind class strings. Extract those strings to designTokens.js as named constants. Keep the STATUS object in FitBadge but reference the imported constants. This is a refactor — behavior must not change."
+    },
+    {
+      "id": "US-547",
+      "title": "Create native Progress UI component (no Radix dep)",
+      "description": "As a developer, US-541 was skipped because @radix-ui/react-progress is not in package.json. Create a native Progress component with the same shadcn API at src/components/ui/progress.jsx, similar to how Checkbox was implemented natively in US-536.",
+      "acceptanceCriteria": [
+        "Check src/components/ui/progress.jsx — if it already exists, mark passes: true with note 'already exists'",
+        "Create src/components/ui/progress.jsx that exports a named Progress function",
+        "Progress accepts value (0-100), className, and all standard div props",
+        "Root div: className uses cn('relative h-2 w-full overflow-hidden rounded-full bg-muted', className)",
+        "Indicator div: className='h-full w-full flex-1 bg-primary transition-all', style={{ transform: `translateX(-${100 - (value || 0)}%)` }}",
+        "Uses cn() from @/lib/utils",
+        "Keep under 25 lines",
+        "npm run build passes with no errors"
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": "This is a native implementation — no import from @radix-ui/react-progress. Pattern it after the native Checkbox wrapper created in US-536. The translateX trick for progress fill is standard shadcn pattern."
+    },
+    {
+      "id": "US-548",
+      "title": "Migrate SettingsUsageSection progress bars to shadcn Progress component",
+      "description": "As a developer, SettingsUsageSection renders progress bars using raw divs with inline style width. Replace with the Progress component from US-547.",
+      "acceptanceCriteria": [
+        "US-547 must have passes: true before attempting this story",
+        "Read src/components/SettingsUsageSection.jsx first",
+        "Any raw div used as a progress bar (with inline style={{ width: `${pct}%` }} or similar) replaced with <Progress value={pct} />",
+        "Import Progress from src/components/ui/progress",
+        "Visual appearance preserved — same height, same color, same rounded corners (Progress component handles these via className)",
+        "npm run build passes with no errors"
+      ],
+      "priority": 7,
+      "passes": false,
+      "notes": "Read src/components/SettingsUsageSection.jsx first. The progress bar likely shows usage percentage (e.g. applications used / limit). The Progress component accepts a 0-100 value and renders the fill. Replace only the raw div bars — don't restructure the surrounding layout."
+    },
+    {
+      "id": "US-549",
+      "title": "Audit and fix remaining hardcoded blue/sky/indigo Tailwind colors",
+      "description": "As a developer, a sweep of the frontend for remaining text-blue-*, bg-sky-*, text-indigo-*, text-teal-*, text-cyan-* classes that should use semantic tokens.",
+      "acceptanceCriteria": [
+        "Search src/components/ and src/pages/ for text-blue-, bg-blue-, text-sky-, bg-sky-, text-indigo-, bg-indigo-, text-teal-, text-cyan- (excluding designTokens.js BADGE_INFO which is intentional)",
+        "For any found: if it's a link color, replace with text-primary; if it's an info badge, keep as intentional; if it's an icon or label, replace with text-primary or text-foreground as appropriate",
+        "If no actionable instances found, mark passes: true with note 'no non-intentional blue/sky/indigo colors found'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 8,
+      "passes": false,
+      "notes": "Use grep to find all instances first: grep -r 'text-blue-\\|bg-blue-\\|text-sky-\\|bg-sky-\\|text-indigo-\\|bg-indigo-\\|text-teal-\\|text-cyan-' frontend/src/components/ frontend/src/pages/ --include='*.jsx' -l. Then read each file and make targeted replacements. BADGE_INFO in designTokens.js (bg-blue-50 border-blue-200) is intentional — do not change it."
+    }
+  ]
+}

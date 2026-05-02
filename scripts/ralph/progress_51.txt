@@ -1,0 +1,18 @@
+# Ralph Progress Log
+Started: Sat May  2 15:32:52 PDT 2026
+---
+
+## US-542 — Fix SettingsProfileSection AVATAR_COLORS mixed semantic/raw tokens
+**Status:** PASS
+**Commit:** 82270a4
+
+**Changes:**
+- `bg-amber-500` → `bg-amber-400` (intentional warm amber)
+- `bg-emerald-500` → `bg-emerald-500 dark:bg-emerald-600` (success green, no semantic token exists)
+- `bg-rose-500` → `bg-destructive` (semantic error token)
+- `bg-sky-500` → `bg-sky-500 dark:bg-sky-600` with comment noting bg-accent-blue already used in array (duplicating would reduce avatar color variety)
+
+**Learnings:**
+- `bg-accent-blue` was already in the array at position 2, so using it again for sky would create duplicate colors reducing avatar variety — kept sky palette color intentional
+- Multi-class strings like `"bg-emerald-500 dark:bg-emerald-600"` work correctly in className concatenation and Tailwind picks them up via static analysis
+- Build passed cleanly in 2.77s with no errors
