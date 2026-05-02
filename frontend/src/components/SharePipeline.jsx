@@ -54,10 +54,10 @@ function ActiveShare({ share, onRevoke, isRevoking }) {
   const url = buildShareUrl(share.slug);
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex items-center justify-between rounded border border-green-200 bg-green-50 px-3 py-2 dark:border-green-800 dark:bg-green-900/20">
+      <div className="flex items-center justify-between rounded border border-primary/20 bg-primary/5 px-3 py-2">
         <div className="flex flex-col gap-0.5 min-w-0">
-          <span className="truncate text-xs font-medium text-green-800 dark:text-green-300">{url}</span>
-          <span className="text-xs text-green-600 dark:text-green-400">{formatExpiry(share.expires_at)}</span>
+          <span className="truncate text-xs font-medium text-primary">{url}</span>
+          <span className="text-xs text-muted-foreground">{formatExpiry(share.expires_at)}</span>
         </div>
         <CopyButton url={url} />
       </div>
