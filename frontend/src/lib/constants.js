@@ -54,7 +54,7 @@ export const EVENT_TYPE_COLORS = {
   onsite: { bg: "bg-amber-50 dark:bg-amber-900/20", text: "text-amber-700 dark:text-amber-300", dot: "bg-amber-500 dark:bg-amber-400", border: "border-amber-200 dark:border-amber-700/50" },
   behavioral: { bg: "bg-sky-50 dark:bg-sky-900/20", text: "text-sky-700 dark:text-sky-300", dot: "bg-sky-500 dark:bg-sky-400", border: "border-sky-200 dark:border-sky-700/50" },
   offer: { bg: "bg-emerald-50 dark:bg-emerald-900/20", text: "text-emerald-700 dark:text-emerald-300", dot: "bg-emerald-500 dark:bg-emerald-400", border: "border-emerald-200 dark:border-emerald-700/50" },
-  other: { bg: "bg-surface-secondary", text: "text-gray-600", dot: "bg-gray-400", border: "border-border-default" },
+  other: { bg: "bg-surface-secondary", text: "text-gray-600 dark:text-gray-400", dot: "bg-gray-400 dark:bg-gray-300", border: "border-border-default" },
 };
 
 export const DEFAULT_EVENT_COLOR = { bg: "bg-surface-secondary", text: "text-gray-600", dot: "bg-gray-400", border: "border-border-default" };
