@@ -17,3 +17,10 @@ Started: Sat May  2 17:43:22 PDT 2026
 **Build:** Passed (2.67s)
 **Commit:** 1f7e4c4
 **Learning:** Decorative icons that convey state (check vs. empty circle) should be aria-hidden so screen readers skip them, then a sr-only text sibling provides the accessible label. Wrapping in a Fragment lets us add the span without introducing a layout div.
+
+## US-616 — Add aria-label and scope='col' to AnalyticsCharts tags table
+- Added aria-label='Tags offer rate' to <table> in AnalyticsTagsTable (line 140)
+- Added scope='col' to all 4 <th> elements (Tag, Applications, Offers, Offer Rate)
+- Left ConversionRatesTable unchanged
+- Build passed with no errors
+- Committed: feat: US-616 - Add aria-label and scope='col' to AnalyticsCharts tags table

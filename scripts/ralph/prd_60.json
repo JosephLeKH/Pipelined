@@ -52,7 +52,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/AnalyticsCharts.jsx. AnalyticsTagsTable is at line 136. The table is at line 140. There are 4 th elements: Tag, Applications, Offers, Offer Rate. Add aria-label='Tags offer rate' to the table element, and scope='col' to each of the 4 th elements. Do NOT change ConversionRatesTable — that is a separate story (US-617). Do not change td elements, class values, or any other attributes."
     },
     {
