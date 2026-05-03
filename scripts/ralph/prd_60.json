@@ -141,7 +141,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 8,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/pages/OfferComparison.jsx. OfferHeaderCell is at line 65. The th is at line 67: <th className='min-w-[180px] px-4 py-3 text-left'>. Add scope='col' to this th element — that is the only change in OfferHeaderCell. Do not change any of the content inside the th (Trophy icon, company name span, role_title span, Button), and do not change the className. The Trophy icon at line 70 has aria-label='Winner' which is correct for a meaningful icon — do not change that."
     }
   ]

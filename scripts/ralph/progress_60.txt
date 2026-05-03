@@ -51,3 +51,11 @@ US-619 PASS: Added aria-label='Offer comparison' to table and scope='col' to Fie
 - Build passed (✓ built in 2.71s)
 - Committed: feat: US-620 - Add role='img' aria-label wrappers to 5 chart ResponsiveContainers in AnalyticsCharts.jsx
 - Learning: Recharts ResponsiveContainer renders a plain div+SVG with no ARIA role. Wrapping in <div role='img' aria-label='...'> gives screen readers an accessible name and announces the element as an image, which is the correct semantic for a non-interactive chart.
+
+## US-621 — Add scope='col' to OfferHeaderCell th in OfferComparison.jsx
+- File: frontend/src/pages/OfferComparison.jsx, line 67
+- Change: Added scope="col" to <th> in OfferHeaderCell
+- Build: passed cleanly
+- Commit: feat: US-621 - Add scope='col' to OfferHeaderCell th in OfferComparison.jsx
+- All content inside th (Trophy icon, company name, role_title, Button) left unchanged
+- PRD-60: all 8 stories now pass
