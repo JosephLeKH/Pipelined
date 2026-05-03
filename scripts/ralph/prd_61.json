@@ -51,7 +51,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/CommandPalette.jsx. In CommandPaletteDialog, line 106: <SearchIcon className='h-4 w-4 shrink-0 text-muted-foreground' /> is rendered alongside an Input that has aria-label='Search commands'. The icon is purely decorative — it reinforces the visual affordance of the search input but conveys no unique information. Add aria-hidden='true': <SearchIcon className='h-4 w-4 shrink-0 text-muted-foreground' aria-hidden='true' />. Do not change the Input, the backdrop div, or any other element."
     },
     {

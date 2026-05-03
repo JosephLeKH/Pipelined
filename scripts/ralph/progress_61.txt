@@ -14,3 +14,11 @@ Started: Sat May  2 17:58:25 PDT 2026
 - Added `aria-hidden="true"` to Loader2 icon (line 40) — decorative spinner alongside 'Export CSV' visible text
 - Build passed with no errors
 - Committed: feat: US-623 - Add aria-hidden='true' to List, LayoutGrid, and Loader2 icons in DashboardToolbar.jsx
+
+## US-624 — Add aria-hidden='true' to SearchIcon in CommandPalette.jsx
+**Status:** COMPLETE
+**File:** src/components/CommandPalette.jsx, line 106
+**Change:** Added aria-hidden='true' to SearchIcon in CommandPaletteDialog. The SearchIcon sits in a flex row alongside an Input with aria-label='Search commands', making the icon purely decorative.
+**Build:** Passed (npm run build ✓)
+**Commit:** feat: US-624 - Add aria-hidden='true' to SearchIcon in CommandPalette.jsx
+**Learned:** Icon-only decorative icons alongside labeled inputs should always carry aria-hidden='true' to prevent screen readers from announcing redundant icon names.
