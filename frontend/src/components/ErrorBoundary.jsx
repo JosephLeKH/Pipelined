@@ -38,7 +38,7 @@ class ErrorBoundary extends Component {
             {this.state.error?.message || "An unexpected error occurred."}
           </p>
           <Button type="button" onClick={this.handleReset} className="flex items-center gap-2">
-            <RefreshCw className="h-4 w-4" />
+            <RefreshCw className="h-4 w-4" aria-hidden="true" />
             Try again
           </Button>
         </div>

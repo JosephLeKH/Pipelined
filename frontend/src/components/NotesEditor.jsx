@@ -55,7 +55,7 @@ function NotesEditor({ applicationId, initialValue, onDirtyChange }) {
         <label className="text-xs font-medium uppercase text-muted-foreground" htmlFor={isEditing ? "notes-textarea" : undefined}>Notes</label>
         {!isEditing && (
           <Button type="button" variant="ghost" size="icon" onClick={handleEdit} aria-label="Edit notes" className="h-7 w-7 text-muted-foreground hover:text-foreground">
-            <Pencil className="h-3.5 w-3.5" />
+            <Pencil className="h-3.5 w-3.5" aria-hidden="true" />
           </Button>
         )}
       </div>
