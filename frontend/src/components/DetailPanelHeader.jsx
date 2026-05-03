@@ -19,11 +19,11 @@ export function DetailPanelHeader({ application, onClose, onDelete }) {
       <div className="flex items-center gap-1">
         <Button type="button" variant="ghost" size="icon" onClick={onClose} aria-label="Close panel"
           className="bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground">
-          <X className="h-4 w-4" />
+          <X className="h-4 w-4" aria-hidden="true" />
         </Button>
         <Button type="button" variant="ghost" size="icon" onClick={onDelete} aria-label="Delete application"
           className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive">
-          <Trash2 className="h-4 w-4" />
+          <Trash2 className="h-4 w-4" aria-hidden="true" />
         </Button>
       </div>
     </div>
