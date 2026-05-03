@@ -92,7 +92,7 @@ export const BADGE_WARNING =
 
 /** Error badge — muted red pastel bg, border-defined, pill shape. Maps to Rejected pipeline status. */
 export const BADGE_ERROR =
-  "bg-red-50 text-red-700 border border-red-200 text-xs font-display font-medium px-2 py-0.5 rounded-full";
+  "bg-red-50 text-red-700 border border-red-200 text-xs font-display font-medium px-2 py-0.5 rounded-full dark:bg-red-900/30 dark:text-red-300 dark:border-red-700/50";
 
 /** Info badge — muted blue pastel bg, border-defined, accent-blue text, pill shape. Maps to Applied pipeline status. */
 export const BADGE_INFO =
