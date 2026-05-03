@@ -125,12 +125,12 @@ function TagRow({ tag, onRename, onDelete }) {
 function TagsTable({ tags, onRename, onDelete }) {
   return (
     <div className="rounded-xl bg-card border border-border overflow-hidden">
-      <table className="w-full">
+      <table className="w-full" aria-label="Tags">
         <thead>
           <tr className="border-b border-border bg-muted">
-            <th className="px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground">Tag</th>
-            <th className="px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground">Applications</th>
-            <th className="px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground">Actions</th>
+            <th scope="col" className="px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground">Tag</th>
+            <th scope="col" className="px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground">Applications</th>
+            <th scope="col" className="px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground">Actions</th>
           </tr>
         </thead>
         <tbody>
