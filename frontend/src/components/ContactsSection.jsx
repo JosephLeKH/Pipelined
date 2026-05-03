@@ -32,7 +32,7 @@ function ContactsSection({ applicationId }) {
             </Button>
             <Button type="button" variant="ghost" size="sm" onClick={() => setAddMode(CONTACTS_ADD_MODE_NEW)}
               aria-label="Add contact" className="text-xs text-primary hover:bg-primary/10 hover:text-primary gap-1">
-              <Plus className="h-3.5 w-3.5" />
+              <Plus className="h-3.5 w-3.5" aria-hidden="true" />
               New
             </Button>
           </div>
