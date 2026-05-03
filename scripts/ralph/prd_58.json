@@ -82,7 +82,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 5,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/lib/constants.js. RELATIONSHIP_COLORS is at line 115. The recruiter entry uses bg-brand-100 (brand-900 is defined as #5c3020 in tailwind.config.js). The mentor entry uses text-accent-blue which is a static color — use dark:text-blue-300 for dark mode. Only change recruiter, referral, and mentor entries — leave peer, hiring_manager, other unchanged."
     },
     {

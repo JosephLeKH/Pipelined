@@ -32,3 +32,12 @@ US-601: Add dark: variants to BADGE_INFO in lib/designTokens.js
 Status: COMPLETE
 Commit: d0165be
 Summary: Appended dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-700/50 to BADGE_INFO in frontend/src/lib/designTokens.js. accent-blue is a static Tailwind color with no automatic dark variant, so dark:text-blue-300 is used as the dark mode substitute. Build passed in 2.72s.
+
+## US-602 — Add dark: variants to RELATIONSHIP_COLORS recruiter, referral, mentor
+- Updated frontend/src/lib/constants.js lines 116-118
+- recruiter: added dark:bg-brand-900/30 dark:text-brand-300
+- referral: added dark:bg-emerald-900/30 dark:text-emerald-300
+- mentor: added dark:bg-blue-900/30 dark:text-blue-300 (kept text-accent-blue for light mode)
+- Left peer, hiring_manager, other unchanged
+- Build passed in 2.76s
+- Committed: af75a4e
