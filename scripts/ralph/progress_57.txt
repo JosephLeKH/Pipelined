@@ -25,3 +25,8 @@ Changed: In frontend/src/components/ui/badge.jsx line 6, replaced focus:ring-2, 
 Build: passed (2.72s)
 Commit: bd3dfe9 feat: US-593 - Fix ui/badge.jsx badgeVariants base: focus:ring-* → focus-visible:ring-*
 
+
+## US-594: Add dark: variants to STAGE_COLORS Applied in lib/constants.js
+**Status:** PASS
+**Summary:** Updated STAGE_COLORS.Applied in frontend/src/lib/constants.js line 4 to add dark: variants for all five properties (bg, text, dot, border, activeBg). Used dark:bg-brand-900/30, dark:text-brand-300, dark:bg-brand-400, dark:border-brand-400 per acceptance criteria. Build passed (2.73s). Committed as feat: US-594.
+**Learnings:** The brand-900 custom color (#5c3020 from tailwind.config.js) supports opacity modifiers like /30 for subtle dark mode backgrounds. The pattern of 900/30 for bg, 300 for text, 400 for dot/border/activeBg is consistent with Onsite (amber) and Rejected (rose) from prd_56.

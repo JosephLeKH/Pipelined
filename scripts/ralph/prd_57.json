@@ -84,7 +84,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 5,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/lib/constants.js. STAGE_COLORS.Applied is at line 4 with bg-brand-100, text-brand-800, bg-brand-500, border-brand-500. brand-900 is defined in tailwind.config.js as #5c3020 (confirmed). Use dark:bg-brand-900/30 for bg, dark:text-brand-300 for text, dark:bg-brand-400 for dot/activeBg, dark:border-brand-400 for border. Only touch the Applied entry — Onsite and Rejected already have dark variants from prd_56."
     },
     {
