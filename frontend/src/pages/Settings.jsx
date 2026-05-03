@@ -46,7 +46,7 @@ function TabNav({ activeSection, onSelect }) {
           onClick={() => onSelect(id)}
           className={
             activeSection === id
-              ? "text-primary text-sm font-display font-semibold px-3 py-2 rounded-md"
+              ? "bg-primary/10 text-primary text-sm font-display font-semibold px-3 py-2 rounded-md"
               : "text-muted-foreground hover:text-foreground text-sm font-display font-medium transition-colors px-3 py-2 rounded-md"
           }
         >
