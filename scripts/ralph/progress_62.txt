@@ -66,3 +66,23 @@ Both className values were left unchanged. Build verified clean (✓ built in 2.
 **Status:** PASSED
 **Summary:** Added aria-hidden="true" to ChevronLeft (line 120) inside Button[aria-label="Previous month"] and ChevronRight (line 129) inside Button[aria-label="Next month"] in src/components/CalendarGrid.jsx. Build passed in 2.70s.
 **Learning:** Navigation chevron icons inside aria-labeled icon-only buttons are purely decorative. The aria-label on the Button fully describes the navigation action (previous/next month), so the visual chevron carries no additional information for screen readers. This pattern is consistent with other icon-only button accessibility fixes in this PRD.
+
+## US-636: Add aria-hidden='true' to Check/Copy/Loader2/Link2Off/Link2 icons in ShareTimeline.jsx
+**Status:** COMPLETE
+**Commit:** feat: US-636 - Add aria-hidden='true' to Check/Copy/Loader2/Link2Off/Link2 icons in ShareTimeline.jsx
+
+### Summary
+Added aria-hidden='true' to 6 decorative icons in ShareTimeline.jsx:
+1. Check (line 47, CopyButton) — inside Button with aria-label + visible 'Copied!' text; decorative.
+2. Copy (line 47, CopyButton) — inside Button with aria-label + visible 'Copy link' text; decorative.
+3. Loader2 (line 73, ActiveShare revoke Button) — spinner alongside 'Revoke link' visible text; decorative.
+4. Link2Off (line 74, ActiveShare revoke Button) — alongside 'Revoke link' visible text; decorative.
+5. Loader2 (line 94, NoShare generate Button) — spinner alongside 'Generate link' visible text; decorative.
+6. Link2 (line 95, NoShare generate Button) — alongside 'Generate link' visible text; decorative.
+
+The standalone Loader2 at line 119 (aria-label='Loading', sole loading indicator) was left unchanged as required. All className values preserved. Build verified clean (✓ built in 2.65s).
+
+### Learnings
+- When a button has both visible text AND an icon, the icon is always decorative — the visible text is the accessible name.
+- The exception: a standalone spinner with aria-label is the *sole* loading indicator — it must keep its aria-label and must NOT get aria-hidden. Always check if an icon is the only accessible indicator of state before marking it decorative.
+- Three separate Edit calls (one per button context) keeps diffs minimal and reviewable.

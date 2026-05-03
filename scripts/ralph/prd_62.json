@@ -114,7 +114,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 7,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/ShareTimeline.jsx. CopyButton (~line 39) has a Button with aria-label and 'Copied!'/'Copy link' text — Check and Copy are decorative. The revoke Button (~line 64) has visible text 'Revoke link' — Loader2 and Link2Off are decorative. The generate Button (~line 87) has visible text 'Generate link' — Loader2 and Link2 are decorative. The Loader2 at line 119 is a standalone loading spinner — it is the sole indicator of loading state with aria-label='Loading', so leave it alone. Add aria-hidden='true' to the 6 decorative icons only."
     },
     {
