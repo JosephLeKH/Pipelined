@@ -13,3 +13,8 @@ Started: Sat May  2 17:06:40 PDT 2026
 **Learned:** Badge dark mode pattern: use color-900/30 for bg opacity (semi-transparent dark bg), color-300 for text (light enough on dark), and color-700/50 for border (semi-transparent border). This matches the STAGE_COLORS pattern established in PRD-56/57.
 
 **Build:** Passed in 2.78s with no errors.
+
+## US-599 — Add dark: variants to BADGE_WARNING in lib/designTokens.js
+- Appended `dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-700/50` after `rounded-full` in BADGE_WARNING (line 91)
+- Build passed in 2.78s
+- Committed as b3d5cd0

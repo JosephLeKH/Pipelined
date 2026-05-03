@@ -32,7 +32,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/lib/designTokens.js. BADGE_WARNING is at line 91. Append dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-700/50 after 'rounded-full'. Only change BADGE_WARNING."
     },
     {
