@@ -193,8 +193,16 @@ function Tags() {
         )}
 
         {isLoading ? (
-          <div className="flex items-center justify-center py-16">
-            <div className="h-10 w-10 animate-spin rounded-full border-4 border-border border-t-primary" />
+          <div aria-hidden="true" className="rounded-xl bg-card border border-border overflow-hidden divide-y divide-border">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="flex items-center justify-between px-4 py-3">
+                <div className="h-4 w-32 rounded-full shimmer-bg animate-shimmer" />
+                <div className="flex gap-1">
+                  <div className="h-7 w-7 rounded shimmer-bg animate-shimmer" />
+                  <div className="h-7 w-7 rounded shimmer-bg animate-shimmer" />
+                </div>
+              </div>
+            ))}
           </div>
         ) : tags.length === 0 ? (
           <EmptyState title="No tags yet" description="Add tags to your applications to organise and filter them." icon={Tag} />
