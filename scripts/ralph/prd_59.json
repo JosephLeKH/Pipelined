@@ -32,7 +32,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/lib/designTokens.js. INPUT_BASE spans two lines starting around line 41. It contains focus:border-brand-500 focus:ring-1 focus:ring-brand-500/20 focus:outline-none. Only replace focus:ring-1 and focus:ring-brand-500/20 with focus-visible: prefix. Leave focus:border-brand-500 and focus:outline-none exactly as-is — border highlight on focus is intentional for inputs."
     },
     {

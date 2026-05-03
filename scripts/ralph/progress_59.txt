@@ -8,3 +8,8 @@ Started: Sat May  2 17:22:13 PDT 2026
 - All other focus: classes (not-sr-only, fixed, left-4, top-4, z-[9999], rounded, bg-background, px-4, py-2, text-sm, font-medium, text-primary, shadow-lg) left unchanged
 - `npm run build` passed with no errors
 - Committed as cba01ee
+
+## US-607 — Fix designTokens.js INPUT_BASE: focus:ring-* → focus-visible:ring-*
+- Changed `focus:ring-1 focus:ring-brand-500/20` → `focus-visible:ring-1 focus-visible:ring-brand-500/20` on line 43 of src/lib/designTokens.js
+- Left `focus:border-brand-500` and `focus:outline-none` unchanged (intentional for inputs)
+- Build passed. Committed: c64dd27
