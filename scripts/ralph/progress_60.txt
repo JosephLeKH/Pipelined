@@ -38,3 +38,4 @@ Started: Sat May  2 17:43:22 PDT 2026
 - Added scope='col' to all 3 th elements (Tag, Applications, Actions) at lines 131-133
 - npm run build passed cleanly
 - Committed: feat: US-618 - Add aria-label and scope='col' to Tags page table
+US-619 PASS: Added aria-label='Offer comparison' to table and scope='col' to Field th in OfferComparison.jsx. Build passed. Committed as 'feat: US-619 - Add aria-label and scope\'s col to OfferComparison Field header column'.

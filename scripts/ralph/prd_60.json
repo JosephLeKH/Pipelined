@@ -105,7 +105,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 6,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/pages/OfferComparison.jsx. OfferComparisonTable is at line 96. The table is at line 99. The 'Field' th is at line 102. Add aria-label='Offer comparison' to the table element and scope='col' to the Field th only. Do NOT change OfferHeaderCell (the dynamic company column th) — that is a separate story (US-621). Do not change td, EditableCell, or any other part of the table."
     },
     {
