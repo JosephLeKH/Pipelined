@@ -32,7 +32,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/EmailVerificationBanner.jsx. The AlertTriangle at line 54 is alongside the text span 'Please verify your email to continue.' / 'Verification email sent — check your inbox.' — the text fully describes the state. The X at line 80 is the sole content of a Button with aria-label='Dismiss' — it is an icon-only button so the icon is decorative. Add aria-hidden='true' to each. Do not change className values, role='alert', or any other attribute."
     },
     {

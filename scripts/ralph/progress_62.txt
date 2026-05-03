@@ -9,3 +9,10 @@ Summary: Added aria-hidden='true' to two Activity icons in src/pages/Activity.js
   2. Line 127: empty-state icon alongside 'No activity yet' paragraph (purely decorative)
 Build: npm run build passed with no errors.
 Learnings: Both icons use the same component name (Activity) as the page — confirm the import alias matches the target icon before editing to avoid ambiguity.
+
+## US-631 — Add aria-hidden='true' to AlertTriangle and X icons in EmailVerificationBanner.jsx
+- Added aria-hidden='true' to AlertTriangle at line 54 (alongside verification status text)
+- Added aria-hidden='true' to X at line 80 (icon-only Dismiss button with aria-label)
+- Build: passed (no errors)
+- Commit: feat: US-631 - Add aria-hidden='true' to AlertTriangle and X icons in EmailVerificationBanner.jsx
+- Learnings: Role='alert' banner with icon+text pair — icon is always decorative; X inside aria-label button is standard icon-only pattern
