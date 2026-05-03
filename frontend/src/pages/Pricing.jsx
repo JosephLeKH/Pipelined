@@ -40,12 +40,12 @@ function FeatureRow({ label, included }) {
   return (
     <li className="flex items-center gap-3 py-2">
       {included ? (
-        <Check className="h-4 w-4 flex-shrink-0 text-primary" />
+        <Check aria-hidden="true" className="h-4 w-4 flex-shrink-0 text-primary" />
       ) : (
-        <X className="h-4 w-4 flex-shrink-0 text-muted-foreground/40" />
+        <X aria-hidden="true" className="h-4 w-4 flex-shrink-0 text-muted-foreground/40" />
       )}
       <span className={included ? "text-sm text-foreground" : "text-sm text-muted-foreground"}>
-        {label}
+        {included ? label : <><span className="sr-only">Not included: </span>{label}</>}
       </span>
     </li>
   );
@@ -103,7 +103,7 @@ function ProTierCard() {
     <div className="relative rounded-2xl border-2 border-primary bg-card p-8">
       <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
         <span className="flex items-center gap-1.5 rounded-full bg-primary px-4 py-1 text-xs font-bold uppercase tracking-wide text-primary-foreground">
-          <Zap className="h-3 w-3" />
+          <Zap aria-hidden="true" className="h-3 w-3" />
           Most popular
         </span>
       </div>
