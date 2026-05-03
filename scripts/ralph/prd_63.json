@@ -107,7 +107,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 7,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/DetailPanelBody.jsx. The AlertTriangle is at line ~47 inside a div that also renders text 'Follow-up overdue by {overdueDays} day{overdueDays !== 1 ? \"s\" : \"\"}'. The text fully communicates the warning — the icon is decorative. Add aria-hidden='true' to the AlertTriangle. Do not change className, the conditional rendering logic, or any surrounding elements."
     },
     {

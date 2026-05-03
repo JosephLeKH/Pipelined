@@ -32,3 +32,14 @@ Status: PASSED
 Changes: Added aria-hidden="true" to <ChevronDown className="h-4 w-4" /> (line 84) and <ChevronRight className="h-4 w-4" /> (line 86) inside the toggle button that already has aria-expanded and visible 'Offer Details' text.
 Learning: Both sides of a ternary inside the same button need individual aria-hidden attributes; aria-expanded communicates open/close state so chevron direction is purely decorative.
 Build: Passed (✓ built in 2.77s)
+
+---
+Story: US-644 - Add aria-hidden='true' to AlertTriangle in DetailPanelBody.jsx overdue indicator
+Status: PASSED
+Commit: 286d122
+
+Summary: Added aria-hidden='true' to the AlertTriangle icon at line 47 of DetailPanelBody.jsx. The icon sits inside a div alongside the text 'Follow-up overdue by {overdueDays} day(s)' — the text fully communicates the warning, making the icon purely decorative.
+
+Learnings:
+- Decorative icon pattern extends beyond icon-only buttons: any icon adjacent to visible text that conveys the same information should have aria-hidden='true', even in non-button contexts (e.g., warning indicator divs).
+- className and surrounding elements left completely unchanged; only aria-hidden='true' added.
