@@ -39,6 +39,7 @@ function NotificationItem({ notification }) {
           className={`mt-0.5 h-4 w-4 shrink-0 ${
             notification.read ? "text-muted-foreground" : "text-foreground"
           }`}
+          aria-hidden="true"
         />
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-medium text-foreground">
@@ -96,7 +97,7 @@ function NotificationBell() {
         onClick={() => setOpen((prev) => !prev)}
         className="relative text-muted-foreground hover:bg-muted hover:text-foreground"
       >
-        <Bell className="h-4 w-4" />
+        <Bell className="h-4 w-4" aria-hidden="true" />
         {unreadCount > 0 && (
           <span
             aria-hidden="true"
