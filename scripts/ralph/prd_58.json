@@ -48,7 +48,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/lib/designTokens.js. BADGE_ERROR is at line 95. Append dark:bg-red-900/30 dark:text-red-300 dark:border-red-700/50 after 'rounded-full'. Only change BADGE_ERROR."
     },
     {

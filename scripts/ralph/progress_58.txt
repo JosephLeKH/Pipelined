@@ -18,3 +18,11 @@ Started: Sat May  2 17:06:40 PDT 2026
 - Appended `dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-700/50` after `rounded-full` in BADGE_WARNING (line 91)
 - Build passed in 2.78s
 - Committed as b3d5cd0
+
+## US-600: Add dark: variants to BADGE_ERROR in lib/designTokens.js
+**Status:** COMPLETE
+**Commit:** bf0af30
+
+**Summary:** Appended `dark:bg-red-900/30 dark:text-red-300 dark:border-red-700/50` to BADGE_ERROR in `frontend/src/lib/designTokens.js` (line 95). Pattern matches BADGE_SUCCESS (emerald) and BADGE_WARNING (amber) — red-900/30 for background, red-300 for text, red-700/50 for border. Build passed in 2.75s.
+
+**Learnings:** The three badge tokens (SUCCESS, WARNING, ERROR) all follow the identical pattern: color-50 light bg → dark:bg-color-900/30, color-700 text → dark:text-color-300, border-color-200 → dark:border-color-700/50. BADGE_INFO uses accent-blue (static color, not CSS variable) so its dark text variant uses blue-300 instead.
