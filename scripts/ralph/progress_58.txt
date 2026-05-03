@@ -48,3 +48,13 @@ US-603 complete (Sat May  2 17:12:20 PDT 2026): Added dark: variants to RELATION
 - Used dark:bg-X-900/20 opacity (slightly less opaque than STAGE_COLORS /30) to differentiate calendar chips
 - Left behavioral, offer, other, DEFAULT_EVENT_COLOR unchanged
 - Build passed (2.70s), committed 1d8926f
+
+---
+US-605 | Add dark: variants to EVENT_TYPE_COLORS behavioral and offer in lib/constants.js
+Status: COMPLETE
+Commit: dfe86ea
+
+behavioral updated: bg-sky-50 dark:bg-sky-900/20, text-sky-700 dark:text-sky-300, bg-sky-500 dark:bg-sky-400, border-sky-200 dark:border-sky-700/50
+offer updated: bg-emerald-50 dark:bg-emerald-900/20, text-emerald-700 dark:text-emerald-300, bg-emerald-500 dark:bg-emerald-400, border-emerald-200 dark:border-emerald-700/50
+Left unchanged: phone_screen, technical, onsite (already had dark variants from US-604), other (semantic tokens), DEFAULT_EVENT_COLOR (semantic tokens)
+Build: npm run build passed in 2.69s

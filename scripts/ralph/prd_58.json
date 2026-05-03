@@ -135,7 +135,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 8,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/lib/constants.js. EVENT_TYPE_COLORS behavioral uses sky, offer uses emerald. The 'other' entry (bg-surface-secondary, border-border-default) uses semantic tokens that already adapt to dark mode — do NOT change it. DEFAULT_EVENT_COLOR (line 60) also uses semantic tokens — leave it unchanged. Only change behavioral and offer."
     }
   ]
