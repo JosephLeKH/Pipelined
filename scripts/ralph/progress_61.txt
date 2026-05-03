@@ -42,3 +42,9 @@ Summary: Added aria-hidden='true' to 6 icon instances across 3 locations in Shar
 Learnings: When a button has both visible text and an icon, the icon is always decorative regardless of whether it's a loading spinner or a static icon. The spinner (Loader2) in a disabled button state is decorative because the button text already communicates the pending state. The exception is a standalone spinner with no accompanying text, where aria-label on the element is required (as seen at line 119).
 Build: npm run build passed with no errors.
 Commit: feat: US-626 - Add aria-hidden='true' to icon props in SharePipeline.jsx (CopyButton, revoke button, generate button)
+
+## US-627: Add aria-hidden='true' to nav link Icon components in NavBar.jsx DesktopNavLinks and MobileMenu
+- Added aria-hidden="true" to Icon in DesktopNavLinks .map() render (line 70)
+- Added aria-hidden="true" to Icon in MobileMenu .map() render (line 156)
+- Both icons are dynamic (from NAV_LINKS array) and rendered alongside visible text labels
+- Build passed; committed as feat: US-627

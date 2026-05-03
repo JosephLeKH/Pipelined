@@ -104,7 +104,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 6,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/NavBar.jsx. DesktopNavLinks is around line 63. In the .map() at line 69-73, each nav Link contains <Icon className='h-4 w-4' /> alongside visible text ({label}). The Icon is decorative. Add aria-hidden='true': <Icon className='h-4 w-4' aria-hidden='true' />. MobileMenu is around line 148. In the .map() at line 154-158, same pattern: <Icon className='h-4 w-4' /> alongside {label}. Add aria-hidden='true'. These are the ONLY two changes in this story — the two Icon components inside nav link maps. Do not change HamburgerButton, DesktopActions, UserMenu, or any other part of NavBar."
     },
     {
