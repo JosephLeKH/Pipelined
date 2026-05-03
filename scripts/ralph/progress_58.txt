@@ -42,3 +42,9 @@ Summary: Appended dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-700/50
 - Build passed in 2.76s
 - Committed: af75a4e
 US-603 complete (Sat May  2 17:12:20 PDT 2026): Added dark: variants to RELATIONSHIP_COLORS peer (sky-900/30, sky-300), hiring_manager (amber-900/30, amber-300), and other (gray-800, gray-300) in frontend/src/lib/constants.js. Build passed. Committed cb0f3cf.
+
+## US-604 — Add dark: variants to EVENT_TYPE_COLORS phone_screen, technical, onsite
+- Updated phone_screen, technical, and onsite entries in EVENT_TYPE_COLORS (constants.js:52-54)
+- Used dark:bg-X-900/20 opacity (slightly less opaque than STAGE_COLORS /30) to differentiate calendar chips
+- Left behavioral, offer, other, DEFAULT_EVENT_COLOR unchanged
+- Build passed (2.70s), committed 1d8926f

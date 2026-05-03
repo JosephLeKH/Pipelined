@@ -118,7 +118,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 7,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/lib/constants.js. EVENT_TYPE_COLORS is at line 51. The -50 bg shades (very light pastels) are the primary issue. Using dark:bg-X-900/20 (slightly less opaque than the STAGE_COLORS pattern of /30) to differentiate calendar chips from stage pills. The 'other' entry uses semantic tokens (bg-surface-secondary, border-border-default) — leave it unchanged. Only change phone_screen, technical, and onsite."
     },
     {
