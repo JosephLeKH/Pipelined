@@ -21,7 +21,7 @@ export function DashboardToolbar({ viewMode, onSetViewMode, isExporting, onImpor
                 ? "bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground"
                 : "bg-card text-muted-foreground hover:bg-muted hover:text-foreground"
             )}>
-            <List className="h-4 w-4" />
+            <List className="h-4 w-4" aria-hidden="true" />
           </Button>
           <Button type="button" variant="ghost" aria-label="Kanban view" aria-pressed={viewMode === "kanban"}
             onClick={() => onSetViewMode("kanban")}
@@ -30,14 +30,14 @@ export function DashboardToolbar({ viewMode, onSetViewMode, isExporting, onImpor
                 ? "bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground"
                 : "bg-card text-muted-foreground hover:bg-muted hover:text-foreground"
             )}>
-            <LayoutGrid className="h-4 w-4" />
+            <LayoutGrid className="h-4 w-4" aria-hidden="true" />
           </Button>
         </div>
         <Button type="button" variant="outline" onClick={onImport}>
           Import CSV
         </Button>
         <Button type="button" variant="outline" onClick={onExport} disabled={isExporting} className="flex items-center gap-2">
-          {isExporting && <Loader2 className="h-4 w-4 animate-spin" />}
+          {isExporting && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
           Export CSV
         </Button>
         <Tooltip>
