@@ -16,7 +16,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/pages/Tags.jsx. TagRow is at line ~80. The Pencil is at line ~108 inside a Button with aria-label='Rename tag ${tag.name}' and className='p-1.5 h-auto'. The Trash2 is at line ~116 inside a Button with aria-label='Delete tag ${tag.name}' and className='p-1.5 h-auto text-destructive hover:text-destructive'. Both are icon-only buttons — icons are decorative. Add aria-hidden='true' to each. Do not change any className, aria-label, onClick, or other attribute."
     },
     {

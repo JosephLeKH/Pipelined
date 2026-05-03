@@ -1,0 +1,10 @@
+# Ralph Progress Log
+Started: Sun May  3 12:07:26 PDT 2026
+---
+
+[US-646] Add aria-hidden='true' to Pencil and Trash2 icons in Tags.jsx TagRow
+- Added aria-hidden="true" to <Pencil className="h-3.5 w-3.5" /> at line 108
+- Added aria-hidden="true" to <Trash2 className="h-3.5 w-3.5" /> at line 117
+- Both icons are inside icon-only buttons with descriptive aria-label attributes; icons are purely decorative
+- npm run build passed with no errors
+- Committed: feat: US-646 - Add aria-hidden='true' to Pencil and Trash2 icons in Tags.jsx TagRow
