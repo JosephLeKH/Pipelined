@@ -43,3 +43,12 @@ Summary: Added aria-hidden='true' to the AlertTriangle icon at line 47 of Detail
 Learnings:
 - Decorative icon pattern extends beyond icon-only buttons: any icon adjacent to visible text that conveys the same information should have aria-hidden='true', even in non-button contexts (e.g., warning indicator divs).
 - className and surrounding elements left completely unchanged; only aria-hidden='true' added.
+
+## US-645 - Add focus-visible ring to KanbanBoard mobile stage navigation dot buttons
+**Completed:** 2026-05-03
+
+**Summary:** Added `focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1` to the static portion of the className template literal on the mobile navigation dot buttons in `KanbanBoard.jsx` (line 59). The dot buttons already had correct `aria-label` and `aria-pressed` semantics; the only gap was invisible keyboard focus.
+
+**Learned:** Small `h-2 w-2` dot indicators need ring-offset to ensure the focus ring is visible against surrounding backgrounds. The `focus-visible:ring-offset-1` addition is important for tiny button targets where the ring would otherwise overlap the element itself.
+
+**Build:** Passed in 4.84s. Commit: 788ab1f.

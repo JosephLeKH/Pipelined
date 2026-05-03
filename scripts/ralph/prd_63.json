@@ -124,7 +124,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 8,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/KanbanBoard.jsx. The navigation dots are at line ~58 inside a map over stages. Each button has aria-label={s} and aria-pressed={s === mobileStage} — good keyboard semantics. The only issue is missing focus-visible ring. The className is a template literal with the conditional: `h-2 w-2 rounded-full transition-colors ${s === mobileStage ? 'bg-primary' : 'bg-muted-foreground/30'}`. Add focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 to the static part of the className. Do not change aria-label, aria-pressed, or the active/inactive color logic."
     }
   ]
