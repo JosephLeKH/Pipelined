@@ -68,7 +68,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 4,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/pages/OfferComparison.jsx. EmptyState Trophy is at line ~47 beside <p className='text-sm font-medium font-display text-foreground'>No offers yet</p>. OfferHeaderCell Trophy is at line ~70 inside a div that renders {isWinner && <Trophy...>} alongside the company name span — the winner annotation is redundant since the Winner! button at line ~82 already has aria-pressed visual and text. MarkWinner button Trophy is at line ~88 inside a Button with text 'Winner!' or 'Mark winner'. Add aria-hidden='true' to all three."
     },
     {

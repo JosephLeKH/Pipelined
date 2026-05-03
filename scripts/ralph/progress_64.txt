@@ -32,3 +32,11 @@ Learnings:
 - All three icon changes followed the same pattern: aria-hidden="true" added before className to keep className values intact
 
 Build: passed in 2.70s
+
+[US-649] Add aria-hidden='true' to three Trophy icons in OfferComparison.jsx
+- Added aria-hidden="true" to EmptyState Trophy (line 47) beside 'No offers yet' text
+- On OfferHeaderCell Trophy (line 70): removed aria-label='Winner' and added aria-hidden="true" — winner state is already communicated by 'Winner!' button text
+- Added aria-hidden="true" to MarkWinner button Trophy (line 88) inside Button with 'Mark winner'/'Winner!' text
+- All icons are decorative; surrounding text/buttons already convey the full meaning
+- npm run build passed in 2.91s
+- Committed: feat: US-649 - Add aria-hidden='true' to three Trophy icons in OfferComparison.jsx
