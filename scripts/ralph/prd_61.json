@@ -1,0 +1,149 @@
+{
+  "id": "PRD-61",
+  "title": "Accessibility: aria-hidden='true' on decorative icons across NotificationBell, DashboardToolbar, CommandPalette, PrepChecklist, SharePipeline, NavBar (2 stories), and JobBoard",
+  "description": "Continuation of the systematic UI improvement loop. This batch adds aria-hidden='true' to decorative icons that are alongside visible text labels or inside icon-only buttons with aria-label — preventing screen readers from announcing redundant or meaningless icon names. Covers 8 components: NotificationBell (NotificationItem type icons + Bell button icon), DashboardToolbar (List/LayoutGrid/Loader2), CommandPalette (SearchIcon), PrepChecklist (Trash2/Plus), SharePipeline (Check/Copy/Link2/Link2Off/Loader2), NavBar DesktopNavLinks+MobileMenu nav icons, NavBar HamburgerButton+theme buttons+UserMenu dropdown icons, and JobBoard Bookmark icon.",
+  "userStories": [
+    {
+      "id": "US-622",
+      "title": "Add aria-hidden='true' to icons in NotificationBell: NotificationItem type icon and Bell button icon",
+      "description": "As a screen reader user, the dynamic type icon (BriefcaseBusiness/CalendarClock/Clock/Bell) in NotificationItem (line ~38) and the Bell icon in the main trigger button (line ~99) lack aria-hidden='true'. The notification title/body already describe the content; the Button has aria-label. Both icons are decorative.",
+      "acceptanceCriteria": [
+        "Read src/components/NotificationBell.jsx first",
+        "In NotificationItem (line ~38-42), add aria-hidden='true' to the Icon component: <Icon className={...} aria-hidden='true' />",
+        "In NotificationBell button (line ~99), add aria-hidden='true' to the Bell icon: <Bell className='h-4 w-4' aria-hidden='true' />",
+        "Keep all existing className values unchanged on both icons",
+        "Leave all other attributes (aria-label on Button, aria-expanded, aria-hidden on badge span) unchanged",
+        "If aria-hidden='true' already present on both icons, mark passes: true with note 'already has aria-hidden'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 1,
+      "passes": true,
+      "notes": "Read src/components/NotificationBell.jsx. Two icons need aria-hidden='true': (1) The Icon component in NotificationItem at line 38 — it is a dynamic icon (BriefcaseBusiness/CalendarClock/Clock/Bell) rendered inside a Button that contains notification title and body text. The icon is decorative. Add aria-hidden='true' as a JSX prop: <Icon className={`mt-0.5 h-4 w-4 shrink-0 ${notification.read ? 'text-muted-foreground' : 'text-foreground'}`} aria-hidden='true' />. (2) The Bell icon at line 99 inside the NotificationBell trigger Button (which has aria-label). Icon-only buttons with aria-label must have their icon marked aria-hidden='true' so the label is the sole accessible name. Change to: <Bell className='h-4 w-4' aria-hidden='true' />. Do not change anything else in the file."
+    },
+    {
+      "id": "US-623",
+      "title": "Add aria-hidden='true' to List, LayoutGrid, and Loader2 icons in DashboardToolbar.jsx",
+      "description": "As a screen reader user, the List icon (line 24), LayoutGrid icon (line 33), and Loader2 icon (line 40) in DashboardToolbar lack aria-hidden='true'. List and LayoutGrid are inside icon-only Buttons with aria-label; Loader2 is alongside 'Export CSV' text.",
+      "acceptanceCriteria": [
+        "Read src/components/DashboardToolbar.jsx first",
+        "On the List icon (line 24), add aria-hidden='true': <List className='h-4 w-4' aria-hidden='true' />",
+        "On the LayoutGrid icon (line 33), add aria-hidden='true': <LayoutGrid className='h-4 w-4' aria-hidden='true' />",
+        "On the Loader2 icon (line 40), add aria-hidden='true': <Loader2 className='h-4 w-4 animate-spin' aria-hidden='true' />",
+        "Keep all existing className values unchanged on all three icons",
+        "Leave all other button props (aria-label, aria-pressed, onClick, className) unchanged",
+        "If aria-hidden='true' already present on all three icons, mark passes: true with note 'already has aria-hidden'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Read src/components/DashboardToolbar.jsx. Three icons need aria-hidden='true': (1) Line 24: <List className='h-4 w-4' /> inside Button with aria-label='List view' — icon-only button, add aria-hidden='true'. (2) Line 33: <LayoutGrid className='h-4 w-4' /> inside Button with aria-label='Kanban view' — icon-only button, add aria-hidden='true'. (3) Line 40: <Loader2 className='h-4 w-4 animate-spin' /> inside the Export CSV Button which already has visible text 'Export CSV' — decorative spinner, add aria-hidden='true'. Only add aria-hidden='true' to the three icons listed. Do not change any other part of the file."
+    },
+    {
+      "id": "US-624",
+      "title": "Add aria-hidden='true' to SearchIcon in CommandPalette.jsx",
+      "description": "As a screen reader user, the SearchIcon (line ~106) in CommandPaletteDialog is rendered in a flex row alongside an Input with aria-label='Search commands'. The icon is decorative and lacks aria-hidden='true'.",
+      "acceptanceCriteria": [
+        "Read src/components/CommandPalette.jsx first",
+        "On the SearchIcon (line ~106), add aria-hidden='true': <SearchIcon className='h-4 w-4 shrink-0 text-muted-foreground' aria-hidden='true' />",
+        "Keep the existing className value unchanged",
+        "Leave all other elements in CommandPaletteDialog unchanged",
+        "If aria-hidden='true' already present on SearchIcon, mark passes: true with note 'already has aria-hidden'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "Read src/components/CommandPalette.jsx. In CommandPaletteDialog, line 106: <SearchIcon className='h-4 w-4 shrink-0 text-muted-foreground' /> is rendered alongside an Input that has aria-label='Search commands'. The icon is purely decorative — it reinforces the visual affordance of the search input but conveys no unique information. Add aria-hidden='true': <SearchIcon className='h-4 w-4 shrink-0 text-muted-foreground' aria-hidden='true' />. Do not change the Input, the backdrop div, or any other element."
+    },
+    {
+      "id": "US-625",
+      "title": "Add aria-hidden='true' to Trash2 and Plus icons in PrepChecklist.jsx",
+      "description": "As a screen reader user, the Trash2 icon (line ~31) inside a delete Button with aria-label and the Plus icon (line ~53) alongside a labeled Input in PrepChecklist both lack aria-hidden='true'. Both are decorative.",
+      "acceptanceCriteria": [
+        "Read src/components/PrepChecklist.jsx first",
+        "In ChecklistItem (line ~31), on the Trash2 icon inside the delete Button, add aria-hidden='true': <Trash2 className='h-3.5 w-3.5' aria-hidden='true' />",
+        "In AddChecklistItem (line ~53), on the Plus icon alongside the Input, add aria-hidden='true': <Plus className='h-4 w-4 flex-shrink-0 text-muted-foreground' aria-hidden='true' />",
+        "Keep all existing className values unchanged on both icons",
+        "Leave all other props (Button aria-label, Input aria-label, onClick, etc.) unchanged",
+        "If aria-hidden='true' already present on both icons, mark passes: true with note 'already has aria-hidden'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": "Read src/components/PrepChecklist.jsx. Two icons need aria-hidden='true': (1) Line 31: <Trash2 className='h-3.5 w-3.5' /> inside a Button with aria-label={`Delete checklist item: ${item.text}`}. This is an icon-only button pattern — the Button already has a complete aria-label, so Trash2 is decorative. (2) Line 53: <Plus className='h-4 w-4 flex-shrink-0 text-muted-foreground' /> in AddChecklistItem alongside an Input with aria-label='New checklist item'. The Plus visually suggests 'add' but the Input already has its accessible name. Add aria-hidden='true' to both. Only change the icon props — do not change className, onClick, or any other attributes."
+    },
+    {
+      "id": "US-626",
+      "title": "Add aria-hidden='true' to icon props in SharePipeline.jsx (CopyButton, revoke button, generate button)",
+      "description": "As a screen reader user, icons in three places in SharePipeline.jsx lack aria-hidden='true': the Check/Copy icons in CopyButton (line ~47), Loader2/Link2Off in the revoke Button (line ~73), and Loader2/Link2 in the generate Button (lines ~94-95). All buttons have visible text labels making these icons decorative.",
+      "acceptanceCriteria": [
+        "Read src/components/SharePipeline.jsx first",
+        "In CopyButton (line ~47), add aria-hidden='true' to both the Check icon and the Copy icon in the ternary: {copied ? <Check className='h-3.5 w-3.5' aria-hidden='true' /> : <Copy className='h-3.5 w-3.5' aria-hidden='true' />}",
+        "In ActiveShare revoke Button (line ~73), add aria-hidden='true' to both Loader2 and Link2Off: {isRevoking ? <Loader2 className='h-3.5 w-3.5 animate-spin' aria-hidden='true' /> : <Link2Off className='h-3.5 w-3.5' aria-hidden='true' />}",
+        "In NoShare generate Button (lines ~94-95), add aria-hidden='true' to both Loader2 and Link2: {isCreating ? <Loader2 className='h-4 w-4 animate-spin' aria-hidden='true' /> : <Link2 className='h-4 w-4' aria-hidden='true' />}",
+        "Keep all existing className values unchanged on all icons",
+        "Leave the standalone Loader2 at line ~119 (aria-label='Loading') unchanged — it is not decorative",
+        "If aria-hidden='true' already present on all icons listed, mark passes: true with note 'already has aria-hidden'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": "Read src/components/SharePipeline.jsx. Three locations need aria-hidden='true': (1) CopyButton line ~47: ternary {copied ? <Check .../> : <Copy .../>} — both icons are alongside 'Copied!'/'Copy link' text, so both need aria-hidden='true'. (2) ActiveShare revoke Button line ~73: ternary {isRevoking ? <Loader2 .../> : <Link2Off .../>} — button has 'Revoke link' text, both icons decorative. (3) NoShare generate Button lines ~94-95: ternary {isCreating ? <Loader2 .../> : <Link2 .../>} — button has 'Generate link' text, both decorative. Do NOT touch the Loader2 at line ~119 which has aria-label='Loading' — that spinner is standalone with no surrounding text and intentionally accessible. Only change the 6 icon instances listed."
+    },
+    {
+      "id": "US-627",
+      "title": "Add aria-hidden='true' to nav link Icon components in NavBar.jsx DesktopNavLinks and MobileMenu",
+      "description": "As a screen reader user, the dynamic Icon component rendered inside each nav Link in DesktopNavLinks (line ~70) and MobileMenu (line ~156) lacks aria-hidden='true'. Each Link already has a visible text label (Dashboard, Calendar, etc.) making the icon purely decorative.",
+      "acceptanceCriteria": [
+        "Read src/components/NavBar.jsx first",
+        "In DesktopNavLinks (line ~70), in the .map() render, add aria-hidden='true' to the Icon component: <Icon className='h-4 w-4' aria-hidden='true' />",
+        "In MobileMenu (line ~156), in the .map() render, add aria-hidden='true' to the Icon component: <Icon className='h-4 w-4' aria-hidden='true' />",
+        "Keep all existing className values unchanged on both Icon instances",
+        "Leave all Link props (key, to, aria-current, className) unchanged",
+        "Leave all other parts of NavBar.jsx unchanged (DesktopActions, HamburgerButton, UserMenu, etc.)",
+        "If aria-hidden='true' already present on both Icon instances, mark passes: true with note 'already has aria-hidden'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": "Read src/components/NavBar.jsx. DesktopNavLinks is around line 63. In the .map() at line 69-73, each nav Link contains <Icon className='h-4 w-4' /> alongside visible text ({label}). The Icon is decorative. Add aria-hidden='true': <Icon className='h-4 w-4' aria-hidden='true' />. MobileMenu is around line 148. In the .map() at line 154-158, same pattern: <Icon className='h-4 w-4' /> alongside {label}. Add aria-hidden='true'. These are the ONLY two changes in this story — the two Icon components inside nav link maps. Do not change HamburgerButton, DesktopActions, UserMenu, or any other part of NavBar."
+    },
+    {
+      "id": "US-628",
+      "title": "Add aria-hidden='true' to icon-only button icons and UserMenu/MobileMenu text-button icons in NavBar.jsx",
+      "description": "As a screen reader user, multiple icons in NavBar.jsx lack aria-hidden='true': HamburgerButton X/Menu icons (line ~143), DesktopActions ThemeIcon (line ~125), MobileMenu ThemeIcon (line ~163), UserMenu User icon (line ~103) and LogOut icon (line ~112), and MobileMenu LogOut icon (line ~166). All are decorative alongside button text or aria-label.",
+      "acceptanceCriteria": [
+        "Read src/components/NavBar.jsx first",
+        "In HamburgerButton (line ~143), add aria-hidden='true' to both X and Menu: {mobileMenuOpen ? <X className='h-5 w-5' aria-hidden='true' /> : <Menu className='h-5 w-5' aria-hidden='true' />}",
+        "In DesktopActions (line ~125), add aria-hidden='true' to ThemeIcon: <ThemeIcon className='h-4 w-4' aria-hidden='true' />",
+        "In MobileMenu theme Button (line ~163), add aria-hidden='true' to ThemeIcon: <ThemeIcon className='h-4 w-4' aria-hidden='true' />",
+        "In UserMenu DropdownMenuItem Profile link (line ~103), add aria-hidden='true' to User icon: <User className='h-4 w-4' aria-hidden='true' />",
+        "In UserMenu DropdownMenuItem Log out (line ~112), add aria-hidden='true' to LogOut: <LogOut className='h-4 w-4' aria-hidden='true' />",
+        "In MobileMenu Log out Button (line ~166), add aria-hidden='true' to LogOut: <LogOut className='h-4 w-4' aria-hidden='true' />",
+        "Keep all existing className values unchanged on all icons",
+        "Leave all button aria-label, aria-expanded, onClick, and other props unchanged",
+        "If aria-hidden='true' already present on all icons listed, mark passes: true with note 'already has aria-hidden'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 7,
+      "passes": false,
+      "notes": "Read src/components/NavBar.jsx. Six icons need aria-hidden='true': (1) HamburgerButton ~line 143: ternary {mobileMenuOpen ? <X className='h-5 w-5' /> : <Menu className='h-5 w-5' />} — icon-only Button with aria-label, both icons decorative. (2) DesktopActions ~line 125: <ThemeIcon className='h-4 w-4' /> inside icon-only Button with aria-label={THEME_LABELS[theme]}. (3) UserMenu ~line 103: <User className='h-4 w-4' /> in DropdownMenuItem alongside 'Profile & Settings' text. (4) UserMenu ~line 112: <LogOut className='h-4 w-4' /> in DropdownMenuItem alongside 'Log out' text. (5) MobileMenu theme button ~line 163: <ThemeIcon className='h-4 w-4' /> inside icon-only Button with aria-label. (6) MobileMenu log out button ~line 166: <LogOut className='h-4 w-4' /> in Button with aria-label and 'Log out' text. Add aria-hidden='true' to all six. Do not change any className or other prop. Do NOT change DesktopNavLinks or MobileMenu nav link icons — those are covered by US-627."
+    },
+    {
+      "id": "US-629",
+      "title": "Add aria-hidden='true' to Bookmark icon in JobBoard.jsx",
+      "description": "As a screen reader user, the Bookmark icon (line ~38) in JobBoard.jsx is inside a Button with aria-label='Save this search' and visible text 'Save this search'. The icon is decorative and lacks aria-hidden='true'.",
+      "acceptanceCriteria": [
+        "Read src/pages/JobBoard.jsx first",
+        "On the Bookmark icon (line ~38), add aria-hidden='true': <Bookmark className='h-4 w-4' aria-hidden='true' />",
+        "Keep the existing className value unchanged",
+        "Leave all Button props (aria-label, onClick, variant, className) unchanged",
+        "Leave all other elements on the page unchanged",
+        "If aria-hidden='true' already present on Bookmark, mark passes: true with note 'already has aria-hidden'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 8,
+      "passes": false,
+      "notes": "Read src/pages/JobBoard.jsx. At line ~38, the Button has aria-label='Save this search' and contains visible text 'Save this search' alongside <Bookmark className='h-4 w-4' />. The Bookmark icon is decorative — the button label and text already fully describe the action. Add aria-hidden='true': <Bookmark className='h-4 w-4' aria-hidden='true' />. Only this one change. Do not modify the Button props, the SaveSearchPopover, or any other part of the file."
+    }
+  ]
+}
