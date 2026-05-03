@@ -35,3 +35,9 @@ Commit: bd3dfe9 feat: US-593 - Fix ui/badge.jsx badgeVariants base: focus:ring-*
 **Status:** PASS
 **Summary:** Updated STAGE_COLORS['Phone Screen'] in frontend/src/lib/constants.js line 5 to add dark: variants for all five properties. bg got dark:bg-blue-900/30, text got dark:text-blue-300, and dot/border/activeBg got dark:bg-blue-400 / dark:border-blue-400 — using blue-400 (#60a5fa) as the dark-mode substitute for accent-blue (#6a9bcc, a static hex with no automatic dark variant). Build passed (2.65s). Committed as feat: US-595.
 **Learnings:** When a stage color uses a custom static hex color (accent-blue) rather than a CSS variable, there is no automatic dark: variant. The closest Tailwind blue-400 provides a visually appropriate, accessible substitute for dark mode. The 900/30 + 300 + 400 pattern for bg/text/dot is consistent across all stage colors.
+
+## US-596 — Add dark: variants to STAGE_COLORS Offer in lib/constants.js
+**Status:** COMPLETE
+**Commit:** 423cac9
+**Summary:** Added dark: variants to STAGE_COLORS.Offer in frontend/src/lib/constants.js (line 7). Updated bg to 'bg-emerald-100 dark:bg-emerald-900/30', text to 'text-emerald-800 dark:text-emerald-300', dot/activeBg to 'bg-emerald-500 dark:bg-emerald-400', border to 'border-emerald-500 dark:border-emerald-400'. Build passed in 2.69s. Only Offer entry was modified.
+**Learnings:** Pattern is consistent with Onsite (amber) and Rejected (rose) from PRD-56 — use 900/30 for backgrounds, 300 for text, 400 for dot/border in dark mode. This is the 6th of 8 stories in PRD-57 (US-590 through US-596 done). Remaining: US-597 (DEFAULT_STAGE_COLOR dark variants).
