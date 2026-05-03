@@ -177,7 +177,9 @@ function useOfferHandlers(updateApp) {
 
   const handleMarkWinner = useCallback((appId) => {
     setWinnerId(appId);
-    confetti(CONFETTI_CONFIG);
+    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      confetti(CONFETTI_CONFIG);
+    }
   }, []);
 
   return { winnerId, handleSave, handleMarkWinner };
