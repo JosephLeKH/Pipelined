@@ -51,3 +51,7 @@ US-612: Add dark:bg-gray-100 to toggle knob in DigestSection.jsx
 - Build passed, committed as feat: US-612
 - Learnings: Simple one-class addition; template literal className with dynamic translate logic was left unchanged as required
 
+US-613 COMPLETE - Sat May  2 17:28:33 PDT 2026
+Added dark:bg-gray-100 to ToggleSwitch knob span in SettingsNotificationsSection.jsx (line 29).
+Same pattern as DigestSection. Build passed (2.71s). Committed as feat: US-613.
+All 8 PRD-59 stories now passing.

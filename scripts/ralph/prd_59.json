@@ -136,7 +136,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 8,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/SettingsNotificationsSection.jsx. The toggle knob span is around line 29. Same pattern as DigestSection — add dark:bg-gray-100 after bg-white. Only change the toggle knob span className."
     }
   ]
