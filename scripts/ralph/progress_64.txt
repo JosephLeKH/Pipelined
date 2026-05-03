@@ -53,3 +53,10 @@ US-651: Add bg-primary/10 background to active tab in Settings.jsx TabNav
 - Learning: WCAG 1.4.1 (Use of Color) requires active/selected state to have a non-color visual indicator. Adding a background fill (bg-primary/10) alongside the existing color change satisfies this — the tab now has both a shape/fill change and a color change.
 - Build: passed (2.70s)
 - Commit: 866c3dd
+
+## US-652: Add aria-pressed to TIME_RANGES pill buttons in Activity.jsx ActivityHeader
+**Status:** COMPLETE
+**Change:** Added `aria-pressed={days === range.days}` to each `<Button>` in the `TIME_RANGES.map()` inside `ActivityHeader` (Activity.jsx line ~85). The `days` prop is compared to `range.days` to communicate the currently selected time range to assistive technology.
+**Learning:** Toggle-group pill buttons acting as radio-button selectors should use `aria-pressed` (or `aria-checked` with `role="radio"`) to convey selection state to screen readers — visual-only selection via className is not sufficient for WCAG 4.1.2.
+**Build:** Passed (2.83s)
+**Commit:** feat: US-652 - Add aria-pressed to TIME_RANGES pill buttons in Activity.jsx ActivityHeader

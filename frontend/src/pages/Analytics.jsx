@@ -51,6 +51,7 @@ function AnalyticsDateRangePicker({ days, setDays }) {
           key={label}
           type="button"
           variant="ghost"
+          aria-pressed={days === value}
           onClick={() => setDays(value)}
           className={`rounded-full px-3 py-1 text-xs font-medium h-auto ${
             days === value
