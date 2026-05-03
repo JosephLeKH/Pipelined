@@ -96,10 +96,10 @@ function OfferHeaderCell({ app, isWinner, onMarkWinner }) {
 function OfferComparisonTable({ apps, winnerId, handleSave, handleMarkWinner }) {
   return (
     <div className="overflow-x-auto rounded-xl border border-border">
-      <table className="min-w-full divide-y divide-border">
+      <table className="min-w-full divide-y divide-border" aria-label="Offer comparison">
         <thead className="bg-muted">
           <tr>
-            <th className="w-36 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <th scope="col" className="w-36 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               Field
             </th>
             {apps.map((app) => (
