@@ -72,7 +72,7 @@ function EventTimelineNode({ node }) {
     <li className="flex items-start gap-3 pb-3" data-testid="timeline-event-node">
       <Icon
         className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground"
-        aria-label={node.eventType.replace(/_/g, " ")}
+        aria-hidden="true"
       />
       <div>
         <p className="text-sm font-medium capitalize text-foreground">{node.title}</p>
@@ -99,8 +99,8 @@ function ApplicationTimeline({ stageHistory, applicationId }) {
         aria-label="Toggle timeline"
       >
         {isExpanded
-          ? <ChevronDown className="h-3.5 w-3.5" />
-          : <ChevronRight className="h-3.5 w-3.5" />}
+          ? <ChevronDown className="h-3.5 w-3.5" aria-hidden="true" />
+          : <ChevronRight className="h-3.5 w-3.5" aria-hidden="true" />}
         Timeline
       </Button>
       {isExpanded && (
