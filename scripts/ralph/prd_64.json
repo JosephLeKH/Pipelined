@@ -1,0 +1,138 @@
+{
+  "id": "PRD-64",
+  "title": "Accessibility: aria-hidden for decorative icons in Tags and Pricing, Trophy icons in OfferComparison, prefers-reduced-motion gate for confetti, non-color active-tab indicator in Settings, and aria-pressed for pill switchers in Activity and Analytics",
+  "description": "Eight critical accessibility gaps identified in the per-page UI/UX audit. Covers: (1) aria-hidden on Pencil + Trash2 in TagRow; (2) aria-hidden on Check + XIcon in TagNameEditor; (3) aria-hidden on Check + X + Zap icons in Pricing FeatureRow / ProTierCard badge plus sr-only 'Not included:' for excluded rows; (4) aria-hidden on three Trophy icons in OfferComparison; (5) prefers-reduced-motion gate on confetti; (6) bg-primary/10 background indicator on active Settings tab so active state is not communicated by color alone; (7) aria-pressed on Activity TIME_RANGES pill buttons; (8) aria-pressed on Analytics date-range pill buttons.",
+  "userStories": [
+    {
+      "id": "US-646",
+      "title": "Add aria-hidden='true' to Pencil and Trash2 icons in Tags.jsx TagRow",
+      "description": "As a screen reader user, the Pencil icon (line ~108) inside the 'Rename tag' button and the Trash2 icon (line ~116) inside the 'Delete tag' button in src/pages/Tags.jsx are decorative — both buttons already have aria-label attributes that fully describe their purpose.",
+      "acceptanceCriteria": [
+        "Read src/pages/Tags.jsx first",
+        "On the <Pencil className='h-3.5 w-3.5' /> at line ~108 (inside Button with aria-label='Rename tag ${tag.name}'), add aria-hidden='true'",
+        "On the <Trash2 className='h-3.5 w-3.5' /> at line ~116 (inside Button with aria-label='Delete tag ${tag.name}'), add aria-hidden='true'",
+        "Keep all existing className values on both icons unchanged",
+        "If aria-hidden='true' already present on both icons, mark passes: true with note 'already has aria-hidden'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Read src/pages/Tags.jsx. TagRow is at line ~80. The Pencil is at line ~108 inside a Button with aria-label='Rename tag ${tag.name}' and className='p-1.5 h-auto'. The Trash2 is at line ~116 inside a Button with aria-label='Delete tag ${tag.name}' and className='p-1.5 h-auto text-destructive hover:text-destructive'. Both are icon-only buttons — icons are decorative. Add aria-hidden='true' to each. Do not change any className, aria-label, onClick, or other attribute."
+    },
+    {
+      "id": "US-647",
+      "title": "Add aria-hidden='true' to Check and XIcon in Tags.jsx TagNameEditor",
+      "description": "As a screen reader user, the Check icon (line ~71) inside the 'Save' button and the XIcon (line ~74) inside the 'Cancel' button in the TagNameEditor component in src/pages/Tags.jsx are decorative — both buttons already have aria-label attributes ('Save', 'Cancel') that fully describe their purpose.",
+      "acceptanceCriteria": [
+        "Read src/pages/Tags.jsx first",
+        "On the <Check className='h-4 w-4 text-primary' /> at line ~71 (inside Button with aria-label='Save'), add aria-hidden='true'",
+        "On the <XIcon className='h-4 w-4 text-muted-foreground' /> at line ~74 (inside Button with aria-label='Cancel'), add aria-hidden='true'",
+        "Keep all existing className values on both icons unchanged",
+        "If aria-hidden='true' already present on both icons, mark passes: true with note 'already has aria-hidden'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Read src/pages/Tags.jsx. TagNameEditor is at line ~46. The Check is at line ~71 inside a Button with aria-label='Save' and className='p-1.5 h-auto'. The XIcon is at line ~74 inside a Button with aria-label='Cancel' and className='p-1.5 h-auto'. Add aria-hidden='true' to each. Do not change className, aria-label, onClick, or any other attribute on either button."
+    },
+    {
+      "id": "US-648",
+      "title": "Add aria-hidden='true' to Check, X, and Zap icons in Pricing.jsx, and add sr-only 'Not included:' prefix for excluded feature rows",
+      "description": "As a screen reader user, the Check and X icons in FeatureRow (lines ~43, ~45) and the Zap icon in ProTierCard badge (line ~106) are decorative — the label text and badge text convey the full meaning. Additionally, excluded-feature rows use X color alone to indicate 'not included', failing WCAG 1.4.1.",
+      "acceptanceCriteria": [
+        "Read src/pages/Pricing.jsx first",
+        "On the <Check className='h-4 w-4 flex-shrink-0 text-primary' /> at line ~43 (FeatureRow included branch), add aria-hidden='true'",
+        "On the <X className='h-4 w-4 flex-shrink-0 text-muted-foreground/40' /> at line ~45 (FeatureRow excluded branch), add aria-hidden='true'",
+        "On the <Zap className='h-3 w-3' /> at line ~106 (inside ProTierCard badge span with text 'Most popular'), add aria-hidden='true'",
+        "In the FeatureRow excluded branch (included === false), wrap the label text with a sr-only 'Not included: ' prefix: render <><span className='sr-only'>Not included: </span>{label}</> inside the existing <span> instead of just {label}",
+        "Keep all existing className values on all three icons unchanged",
+        "If all three icons already have aria-hidden='true' and the sr-only prefix already exists, mark passes: true with note 'already correct'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "Read src/pages/Pricing.jsx. FeatureRow is at line ~39. The included branch at line ~43 renders <Check> and the excluded branch at line ~45 renders <X>. ProTierCard badge at line ~105-108 renders <Zap> with text 'Most popular'. For the excluded branch span at line ~47, change the text from {label} to <><span className='sr-only'>Not included: </span>{label}</> so screen readers announce 'Not included: Priority support' rather than just 'Priority support'. Keep all classNames unchanged."
+    },
+    {
+      "id": "US-649",
+      "title": "Add aria-hidden='true' to three Trophy icons in OfferComparison.jsx",
+      "description": "As a screen reader user, the three Trophy icons in src/pages/OfferComparison.jsx are all decorative: the EmptyState Trophy (line ~47) is adjacent to visible text; the OfferHeaderCell Trophy (line ~70) currently has aria-label='Winner' but the 'Winner!' button text below already announces this; the MarkWinner button Trophy (line ~88) is adjacent to 'Mark winner'/'Winner!' button text.",
+      "acceptanceCriteria": [
+        "Read src/pages/OfferComparison.jsx first",
+        "On the <Trophy className='mb-2 h-10 w-10 text-muted-foreground/40' /> at line ~47 (inside EmptyState div alongside 'No offers yet' text), add aria-hidden='true'",
+        "On the {isWinner && <Trophy className='h-4 w-4 text-amber-500 dark:text-amber-400' aria-label='Winner' />} at line ~70 (inside OfferHeaderCell div alongside company name), remove aria-label='Winner' and add aria-hidden='true' instead — the winner state is communicated by the 'Winner!' button text below",
+        "On the <Trophy className='h-3 w-3' /> at line ~88 (inside the Mark winner Button alongside 'Mark winner'/'Winner!' text), add aria-hidden='true'",
+        "Keep all existing className values on all three icons unchanged",
+        "Do not change any surrounding div structure, Button props, or conditional rendering logic",
+        "If all three icons already have aria-hidden='true', mark passes: true with note 'already has aria-hidden'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": "Read src/pages/OfferComparison.jsx. EmptyState Trophy is at line ~47 beside <p className='text-sm font-medium font-display text-foreground'>No offers yet</p>. OfferHeaderCell Trophy is at line ~70 inside a div that renders {isWinner && <Trophy...>} alongside the company name span — the winner annotation is redundant since the Winner! button at line ~82 already has aria-pressed visual and text. MarkWinner button Trophy is at line ~88 inside a Button with text 'Winner!' or 'Mark winner'. Add aria-hidden='true' to all three."
+    },
+    {
+      "id": "US-650",
+      "title": "Gate confetti in OfferComparison.jsx with prefers-reduced-motion check",
+      "description": "As a user with vestibular disorders, the confetti animation that fires when marking an offer winner (handleMarkWinner, line ~180) ignores the prefers-reduced-motion media query, violating WCAG 2.3.3. The confetti call must be skipped when the user has requested reduced motion.",
+      "acceptanceCriteria": [
+        "Read src/pages/OfferComparison.jsx first",
+        "In handleMarkWinner at line ~178-182, wrap the confetti(CONFETTI_CONFIG) call with a prefers-reduced-motion check: only call confetti if window.matchMedia('(prefers-reduced-motion: reduce)').matches === false",
+        "The setWinnerId(appId) call must run regardless of the motion preference",
+        "Keep CONFETTI_CONFIG constant and all other logic unchanged",
+        "If the prefers-reduced-motion check already exists, mark passes: true with note 'already gated'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": "Read src/pages/OfferComparison.jsx. useOfferHandlers is at line ~165. handleMarkWinner at line ~178 calls setWinnerId(appId) then confetti(CONFETTI_CONFIG) at line ~180. The fix is to change line ~180 to: if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) { confetti(CONFETTI_CONFIG); }. setWinnerId must still run unconditionally. Do not change CONFETTI_CONFIG or any other logic."
+    },
+    {
+      "id": "US-651",
+      "title": "Add bg-primary/10 background to active tab in Settings.jsx TabNav so active state is not color-alone",
+      "description": "As a user with color blindness, the active Settings tab (TabNav, line ~47) is distinguished only by text-primary color, violating WCAG 1.4.1. Adding a bg-primary/10 background fill provides a visible non-color indicator.",
+      "acceptanceCriteria": [
+        "Read src/pages/Settings.jsx first",
+        "In TabNav at line ~47, on the active branch className string (currently 'text-primary text-sm font-display font-semibold px-3 py-2 rounded-md'), add 'bg-primary/10' so the active tab has a visible background fill",
+        "Final active className: 'bg-primary/10 text-primary text-sm font-display font-semibold px-3 py-2 rounded-md'",
+        "Keep the inactive branch className unchanged",
+        "Keep all role, aria-selected, aria-controls, onClick, and key props unchanged",
+        "If bg-primary/10 (or equivalent background indicator) already present, mark passes: true with note 'already has non-color indicator'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": "Read src/pages/Settings.jsx. TabNav is at line ~36. The active tab button className at line ~47 is 'text-primary text-sm font-display font-semibold px-3 py-2 rounded-md'. Prepend 'bg-primary/10 ' to this string. The inactive className at line ~49 stays unchanged. This makes the active tab visually distinct via background shape, not color alone. Do not change any ARIA attributes or other props."
+    },
+    {
+      "id": "US-652",
+      "title": "Add aria-pressed to TIME_RANGES pill buttons in Activity.jsx ActivityHeader",
+      "description": "As a screen reader user, the time-range pill buttons in ActivityHeader (lines ~85-98 of src/pages/Activity.jsx) have no aria-pressed attribute, so assistive technology cannot determine which range is currently selected. Each pill button should communicate its pressed state.",
+      "acceptanceCriteria": [
+        "Read src/pages/Activity.jsx first",
+        "On each <Button> in the TIME_RANGES map at line ~85-98 (inside ActivityHeader), add aria-pressed={days === range.days}",
+        "Keep all existing className, onClick, key, type, and variant props unchanged",
+        "If aria-pressed already present on all TIME_RANGES pill buttons, mark passes: true with note 'already has aria-pressed'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 7,
+      "passes": false,
+      "notes": "Read src/pages/Activity.jsx. ActivityHeader is at line ~68. The TIME_RANGES map renders Button elements at lines ~85-98 inside a rounded-full container. Each Button needs aria-pressed={days === range.days} added — 'days' is the prop passed to ActivityHeader. Do not change className, onClick, key, type='button', or variant='ghost'."
+    },
+    {
+      "id": "US-653",
+      "title": "Add aria-pressed to date-range pill buttons in Analytics.jsx AnalyticsDateRangePicker",
+      "description": "As a screen reader user, the date-range pill buttons in AnalyticsDateRangePicker (lines ~49-63 of src/pages/Analytics.jsx) have no aria-pressed attribute, mirroring the same issue fixed in Activity.jsx. Each pill button should communicate its pressed state.",
+      "acceptanceCriteria": [
+        "Read src/pages/Analytics.jsx first",
+        "On each <Button> in the DATE_RANGES map at line ~49-63 (inside AnalyticsDateRangePicker), add aria-pressed={days === value}",
+        "Keep all existing className, onClick, key, type, and variant props unchanged",
+        "If aria-pressed already present on all date-range pill buttons, mark passes: true with note 'already has aria-pressed'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 8,
+      "passes": false,
+      "notes": "Read src/pages/Analytics.jsx. AnalyticsDateRangePicker is at line ~46. The DATE_RANGES map renders Button elements at lines ~49-63 inside a rounded-full container. Each Button needs aria-pressed={days === value} added — 'days' is the prop and 'value' is the current DATE_RANGES entry's value. Do not change className, onClick, key, type='button', or variant='ghost'."
+    }
+  ]
+}

@@ -1,0 +1,150 @@
+{
+  "id": "PRD-66",
+  "title": "UX improvements: prefers-reduced-motion for FeaturesSection stagger, Pricing FAQ + waitlist CTA, Activity type icons in timeline dots, Calendar Today button, Dashboard kbd hint, JobBoard mobile saved searches, Analytics skeleton loading",
+  "description": "Eight UX enhancements from the per-page audit. Covers: (1) LandingPage FeaturesSection IntersectionObserver stagger ignores prefers-reduced-motion; (2) Pricing disabled Pro CTA → 'Join waitlist' mailto + new FAQ accordion section; (3) Activity timeline dots upgraded with type-specific icons; (4) Calendar missing 'Today' jump button; (5) Dashboard add-application button missing keyboard shortcut hint and aria-keyshortcuts; (6) JobBoard saved searches sidebar not accessible on mobile; (7) Analytics full-page spinner → skeleton chart placeholders.",
+  "userStories": [
+    {
+      "id": "US-662",
+      "title": "Gate LandingPage.jsx FeaturesSection stagger animation with prefers-reduced-motion",
+      "description": "As a user with vestibular disorders, the FeaturesSection IntersectionObserver in src/pages/LandingPage.jsx stagger-animates feature cards using setTimeout with STAGGER_MS=80, ignoring the prefers-reduced-motion media query and violating WCAG 2.3.3.",
+      "acceptanceCriteria": [
+        "Read src/pages/LandingPage.jsx first",
+        "Locate the FeaturesSection useEffect (lines ~102-120) that uses IntersectionObserver and setTimeout with STAGGER_MS to stagger adding 'in-view' class",
+        "Inside the IntersectionObserver callback, add a prefers-reduced-motion check: const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;",
+        "When prefersReducedMotion is true, immediately add 'in-view' to each entry.target without any setTimeout delay",
+        "When prefersReducedMotion is false, use the existing STAGGER_MS setTimeout logic unchanged",
+        "Keep STAGGER_MS constant and all other useEffect logic unchanged",
+        "If prefers-reduced-motion check already exists, mark passes: true with note 'already gated'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Read src/pages/LandingPage.jsx. FeaturesSection is somewhere in the component tree with a useEffect that sets up an IntersectionObserver. When entries are intersecting, it uses setTimeout with index * STAGGER_MS delay before adding 'in-view' class. The fix is to check window.matchMedia('(prefers-reduced-motion: reduce)').matches inside the observer callback: if true, call entry.target.classList.add('in-view') directly; if false, use the existing setTimeout approach."
+    },
+    {
+      "id": "US-663",
+      "title": "Replace disabled Pricing.jsx Pro CTA button with 'Join the waitlist' mailto link",
+      "description": "As a user interested in upgrading, the Pro tier CTA button in src/pages/Pricing.jsx is disabled with text 'Upgrade to Pro — coming soon', which is a dead end with no action path. Replace it with a live 'Join the waitlist' link that opens a pre-filled mailto.",
+      "acceptanceCriteria": [
+        "Read src/pages/Pricing.jsx first",
+        "Locate the Pro CTA button (lines ~122-128) with aria-label='Upgrade to Pro plan — coming soon' and text 'Upgrade to Pro — coming soon'",
+        "Replace it with: <Button asChild className='mb-8 w-full'><a href='mailto:support@pipelined.app?subject=Pro%20waitlist%20request'>Join the waitlist</a></Button>",
+        "Remove the disabled prop and the old aria-label",
+        "Keep all surrounding className values and layout unchanged",
+        "npm run build passes with no errors"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Read src/pages/Pricing.jsx. The CTA button is in ProTierCard near lines ~122-128. It has disabled={true} and text 'Upgrade to Pro — coming soon'. Replace with Button asChild wrapping an <a> tag with href='mailto:support@pipelined.app?subject=Pro%20waitlist%20request' and text 'Join the waitlist'. Keep the mb-8 w-full className on the Button. The Button component supports asChild for rendering as a link."
+    },
+    {
+      "id": "US-664",
+      "title": "Add FAQ accordion section to Pricing.jsx below the pricing grid",
+      "description": "As a potential customer, the Pricing page (src/pages/Pricing.jsx) has no FAQ section, leaving common questions unanswered. Add a simple <details>/<summary> FAQ accordion with 3 questions below the pricing tier grid.",
+      "acceptanceCriteria": [
+        "Read src/pages/Pricing.jsx first",
+        "Locate the main pricing grid (a div with className containing 'grid' and 'md:grid-cols-2')",
+        "After the closing </div> of the pricing grid, add a FAQ section: <section className='mt-12 mx-auto max-w-2xl'><h2 className='mb-6 text-center font-display text-xl font-semibold text-foreground'>Frequently Asked Questions</h2><div className='flex flex-col gap-3'>",
+        "Add 3 <details className='rounded-xl border border-border bg-card px-5 py-4 open:pb-4'> elements with <summary className='cursor-pointer font-medium text-foreground'> for: 'When does Pro launch?', 'Can I switch plans?', 'Is there a student discount?'",
+        "Answer text for 'When does Pro launch?': 'We\\'re actively developing Pro features. Join the waitlist to get notified and receive early-bird pricing when we launch.'",
+        "Answer text for 'Can I switch plans?': 'Yes. You can upgrade or downgrade at any time. Changes take effect immediately.'",
+        "Answer text for 'Is there a student discount?': 'We offer a free tier that covers everything most students need. Pro discounts for verified students are planned — join the waitlist to stay updated.'",
+        "Answer text wrapped in: <p className='mt-3 text-sm text-muted-foreground'>...</p>",
+        "Close the div and section tags",
+        "Keep all existing Pricing.jsx content unchanged",
+        "npm run build passes with no errors"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "Read src/pages/Pricing.jsx. The pricing grid div is near the bottom of the JSX before the closing </main> or </div>. Add the FAQ section after it. Use native <details>/<summary> HTML (no library needed). Each <details> has a <summary> with the question and a <p> with the answer. The open: variant is a Tailwind variant for the open attribute on details elements — use 'open:pb-4' to add bottom padding only when expanded."
+    },
+    {
+      "id": "US-665",
+      "title": "Add type-specific icons inside Activity.jsx timeline dot indicators",
+      "description": "As a user scanning the Activity timeline, the colored dots in TimelineEntry (src/pages/Activity.jsx) are solid circles with no icon, making all entry types visually identical at a glance. Add small white type icons inside each dot.",
+      "acceptanceCriteria": [
+        "Read src/pages/Activity.jsx first",
+        "Add imports for Plus, ArrowRight, CalendarDays from lucide-react direct subpath imports at the top of the file",
+        "Add a TYPE_ICONS constant after TYPE_STYLES: const TYPE_ICONS = { applied: Plus, stage_change: ArrowRight, event_created: CalendarDays };",
+        "In TimelineEntry, get the icon: const DotIcon = TYPE_ICONS[entry.type];",
+        "Change the dot from <span className={`block h-3 w-3 rounded-full ${dotClass} ring-2 ring-card`} /> to <span className={`flex h-4 w-4 items-center justify-center rounded-full ${dotClass} ring-2 ring-card`}>{DotIcon && <DotIcon className='h-2 w-2 text-white/80' aria-hidden='true' />}</span>",
+        "Keep all other TimelineEntry props and structure unchanged",
+        "npm run build passes with no errors"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": "Read src/pages/Activity.jsx. TimelineEntry is at line ~39. The dot is a <span className='block h-3 w-3 rounded-full...' />. Change it to flex h-4 w-4 and render a small icon inside. Import Plus, ArrowRight, CalendarDays from their direct subpath imports: lucide-react/dist/esm/icons/plus, lucide-react/dist/esm/icons/arrow-right, lucide-react/dist/esm/icons/calendar-days. Add aria-hidden='true' to the icon. The DotIcon may be undefined for unknown types — use {DotIcon && <DotIcon .../>} to guard."
+    },
+    {
+      "id": "US-666",
+      "title": "Add 'Today' navigation button to Calendar.jsx page header",
+      "description": "As a user, the Calendar page (src/pages/Calendar.jsx) has no 'Today' button to jump back to the current month/week. Add a 'Today' button to the calendar header that calls the goToToday navigation handler.",
+      "acceptanceCriteria": [
+        "Read src/pages/Calendar.jsx first",
+        "Locate the calendar header area with navigation controls (prev/next month buttons, month title)",
+        "Add a 'Today' button adjacent to the existing navigation buttons: <Button type='button' variant='outline' size='sm' onClick={goToToday} aria-label='Jump to today'>Today</Button>",
+        "If there is no goToToday function, add one: const goToToday = () => setCurrentDate(new Date()); (or equivalent that resets the calendar view to today)",
+        "Place the Today button before or after the prev/next navigation buttons, keeping the existing button layout",
+        "Keep all existing Calendar.jsx logic unchanged",
+        "npm run build passes with no errors"
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": "Read src/pages/Calendar.jsx. Look for the header with month navigation (prev/next buttons and current month display). The calendar likely has a currentDate state or similar. Add a Today button that resets currentDate to new Date(). Place it in the header next to existing nav buttons. Button component is likely already imported. Use variant='outline' size='sm' to match other secondary actions."
+    },
+    {
+      "id": "US-667",
+      "title": "Add keyboard shortcut hint and aria-keyshortcuts to Dashboard add-application button",
+      "description": "As a keyboard power user, the Dashboard add-application button in src/pages/Dashboard.jsx has no visible keyboard shortcut hint, even though the page likely listens for 'a' or similar shortcuts. Add aria-keyshortcuts='a' and a visible kbd hint for desktop users.",
+      "acceptanceCriteria": [
+        "Read src/pages/Dashboard.jsx first",
+        "Locate the primary add-application button in the page header (likely 'Add application' or 'New' button)",
+        "Add aria-keyshortcuts='a' to the Button element",
+        "Inside the Button, after the existing button text or icon, add: <kbd className='ml-1.5 hidden rounded bg-muted px-1 py-0.5 text-xs text-muted-foreground sm:inline'>A</kbd>",
+        "Keep all existing Button props, className, onClick, and text unchanged",
+        "If there is no keyboard shortcut listener for 'a', do not add one — only add the aria-keyshortcuts attribute and kbd hint",
+        "npm run build passes with no errors"
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": "Read src/pages/Dashboard.jsx. The add-application button is in the page header area. It likely has an aria-label or text like 'Add application'. Add aria-keyshortcuts='a' as a prop and a <kbd> hint element inside the button after the label text. The kbd element should only show on sm: and above (hidden on mobile). Do not change any existing keyboard shortcut handling — only add the ARIA attribute and visual hint."
+    },
+    {
+      "id": "US-668",
+      "title": "Expose SavedSearchesSidebar on mobile in JobBoard.jsx",
+      "description": "As a mobile user on the Job Board (src/pages/JobBoard.jsx), the SavedSearchesSidebar is hidden behind hidden lg:block and completely inaccessible on small screens. Add a 'Saved searches' toggle button visible below lg that opens the sidebar in a slide-over or modal.",
+      "acceptanceCriteria": [
+        "Read src/pages/JobBoard.jsx first",
+        "Add useState import (it's likely not already imported, or confirm it is)",
+        "Add state: const [savedOpen, setSavedOpen] = useState(false);",
+        "In the mobile toolbar area (below the search input, above the job list, only visible below lg), add: <Button type='button' variant='ghost' size='sm' className='flex items-center gap-1.5 lg:hidden' onClick={() => setSavedOpen(true)}>Saved searches</Button>",
+        "Add a conditional slide-over panel below the search area: {savedOpen && (<div className='fixed inset-0 z-40 lg:hidden' onClick={() => setSavedOpen(false)}><div className='absolute inset-y-0 left-0 w-72 bg-card border-r border-border p-4 shadow-lg' onClick={(e) => e.stopPropagation()}><div className='mb-3 flex items-center justify-between'><span className='font-medium text-sm text-foreground'>Saved searches</span><Button type='button' variant='ghost' size='icon' aria-label='Close saved searches' onClick={() => setSavedOpen(false)}><XIcon className='h-4 w-4' aria-hidden='true' /></Button></div><SavedSearchesSidebar onApply={(s) => { handleApplySavedSearch(s); setSavedOpen(false); }} /></div></div>)}",
+        "Import XIcon from lucide-react/dist/esm/icons/x if not already imported",
+        "Keep all existing lg:block sidebar and other JobBoard logic unchanged",
+        "npm run build passes with no errors"
+      ],
+      "priority": 7,
+      "passes": false,
+      "notes": "Read src/pages/JobBoard.jsx. The aside with SavedSearchesSidebar uses 'hidden w-56 shrink-0 lg:block'. For mobile, add a 'Saved searches' ghost button in the top toolbar area that only shows below lg. When clicked, it opens a slide-over panel (fixed inset-0 overlay with a left-side drawer) containing SavedSearchesSidebar. The overlay click closes it, stopPropagation on the drawer prevents it from closing. On apply, also close the drawer with setSavedOpen(false)."
+    },
+    {
+      "id": "US-669",
+      "title": "Replace Analytics.jsx AnalyticsLoading full-page spinner with skeleton chart placeholders",
+      "description": "As a user, the AnalyticsLoading component in src/pages/Analytics.jsx renders a full-page spinner with no sense of content shape. Replace it with skeleton chart placeholder blocks that mirror the analytics layout.",
+      "acceptanceCriteria": [
+        "Read src/pages/Analytics.jsx first",
+        "Locate the AnalyticsLoading component (lines ~21-30) which renders a centered spinner",
+        "Replace its return value with a <div className='flex flex-col gap-6' aria-hidden='true'>",
+        "Add 3 skeleton chart blocks inside:",
+        "Block 1 (stats row): <div className='grid grid-cols-2 gap-4 sm:grid-cols-4'>{Array.from({length:4}).map((_,i) => <div key={i} className='rounded-xl border border-border bg-card p-4'><div className='h-4 w-16 rounded shimmer-bg animate-shimmer mb-2' /><div className='h-7 w-12 rounded shimmer-bg animate-shimmer' /></div>)}</div>",
+        "Block 2 (main chart): <div className='rounded-xl border border-border bg-card p-4'><div className='h-4 w-32 rounded shimmer-bg animate-shimmer mb-4' /><div className='h-48 rounded shimmer-bg animate-shimmer' /></div>",
+        "Block 3 (secondary chart): <div className='rounded-xl border border-border bg-card p-4'><div className='h-4 w-28 rounded shimmer-bg animate-shimmer mb-4' /><div className='h-32 rounded shimmer-bg animate-shimmer' /></div>",
+        "Remove the old spinner div entirely",
+        "npm run build passes with no errors"
+      ],
+      "priority": 8,
+      "passes": false,
+      "notes": "Read src/pages/Analytics.jsx. AnalyticsLoading is at lines ~21-30. It renders a full-page centered spinner. Replace with skeleton placeholders shaped like the analytics content: a stats row of 4 metric cards, a large chart area, and a smaller chart area. Use shimmer-bg animate-shimmer (same as SkeletonRow). Add aria-hidden='true' to the skeleton container so screen readers skip it."
+    }
+  ]
+}

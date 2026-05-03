@@ -1,0 +1,140 @@
+{
+  "id": "PRD-65",
+  "title": "UX polish: replace loading spinners with skeletons in Activity/Tags/PublicPipeline, fix footer placeholder links, sync Settings tab to URL, show date on mobile in PublicPipeline, og:description in PublicPipeline",
+  "description": "Eight UX improvements from the per-page audit. Covers: (1) Activity loading spinner → inline skeleton timeline entries; (2) Activity empty state missing CTA; (3) Tags loading spinner → skeleton rows; (4) PublicPipeline loading spinner → inline skeleton app rows; (5) PublicPipeline useEffect missing og:description meta update; (6) LandingPage footer FOOTER_LINKS with placeholder # hrefs; (7) Settings tab active section not synced to URL; (8) PublicPipeline date hidden on mobile.",
+  "userStories": [
+    {
+      "id": "US-654",
+      "title": "Replace Activity.jsx loading spinner with inline skeleton timeline entries",
+      "description": "As a user, the full-page spinner in ActivityTimeline (lines ~116-122 of src/pages/Activity.jsx) gives no sense of the content shape. Replace it with 5 shimmer skeleton timeline-entry rows that mirror the dot + text layout.",
+      "acceptanceCriteria": [
+        "Read src/pages/Activity.jsx first",
+        "In ActivityTimeline, replace the isLoading spinner block (lines ~116-122) with a <div> containing 5 skeleton timeline-entry shapes",
+        "Each skeleton entry: <div className='flex items-start gap-4 px-2 py-3'> with a <div className='mt-1.5 h-3 w-3 flex-shrink-0 rounded-full shimmer-bg animate-shimmer' /> dot and a <div className='flex flex-1 flex-col gap-1.5'> with a <div className='h-4 w-3/4 rounded shimmer-bg animate-shimmer' /> title and a <div className='h-3 w-1/3 rounded shimmer-bg animate-shimmer' /> timestamp</div></div>",
+        "Wrap the 5 entries in <div className='rounded-xl bg-card border border-border px-4'><div className='relative border-l border-border pl-4 ml-1.5'>{...5 entries}</div></div> to match the real list wrapper",
+        "Add aria-hidden='true' and aria-label='Loading activity' to the outer wrapper",
+        "Remove the old spinner div entirely",
+        "Keep all other ActivityTimeline logic unchanged",
+        "npm run build passes with no errors"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Read src/pages/Activity.jsx. ActivityTimeline is at line ~115. The isLoading branch at lines ~116-122 renders a centered spinner. Replace it with 5 inline skeleton rows matching the TimelineEntry shape (dot circle + two text lines). Use shimmer-bg animate-shimmer classes (already used in SkeletonRow.jsx). Each skeleton entry should be aria-hidden since it is decorative placeholder content."
+    },
+    {
+      "id": "US-655",
+      "title": "Add 'Add your first application' CTA to Activity.jsx empty state",
+      "description": "As a user with no activity, the empty state in ActivityTimeline (lines ~124-134 of src/pages/Activity.jsx) only shows explanatory text with no action. Add a CTA button linking to the dashboard add flow.",
+      "acceptanceCriteria": [
+        "Read src/pages/Activity.jsx first",
+        "Add import for Link from 'react-router-dom' at the top of the file (after existing imports)",
+        "In the empty state branch of ActivityTimeline (lines ~124-134), after the existing <p className='mt-1 text-xs text-muted-foreground'> paragraph, add: <Button asChild variant='outline' size='sm' className='mt-4'><Link to='/dashboard'>Go to dashboard</Link></Button>",
+        "Keep all existing elements in the empty state unchanged",
+        "Keep all existing imports unchanged (only add Link if not already imported)",
+        "npm run build passes with no errors"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Read src/pages/Activity.jsx. Empty state in ActivityTimeline is at lines ~124-134. It renders an Activity icon, a heading 'No activity yet', and a muted paragraph. After the paragraph, add a Button asChild with Link to='/dashboard'. Button component is already imported. Only add 'Link' import from react-router-dom — useNavigate is already imported but Link is not."
+    },
+    {
+      "id": "US-656",
+      "title": "Replace Tags.jsx loading spinner with skeleton table rows",
+      "description": "As a user, the full-page spinner in src/pages/Tags.jsx (lines ~196-202) gives no sense of the tag list shape. Replace it with 4 shimmer skeleton rows that mirror the tag row layout.",
+      "acceptanceCriteria": [
+        "Read src/pages/Tags.jsx first",
+        "Locate the isLoading spinner block (a div with animate-spin near lines ~196-202)",
+        "Replace it with a <div className='divide-y divide-border'> containing 4 skeleton tag rows",
+        "Each skeleton row: <div className='flex items-center justify-between px-4 py-3'> with a <div className='h-4 w-32 rounded-full shimmer-bg animate-shimmer' /> for the tag name pill and a <div className='flex gap-1'><div className='h-7 w-7 rounded shimmer-bg animate-shimmer' /><div className='h-7 w-7 rounded shimmer-bg animate-shimmer' /></div> for the two icon buttons",
+        "Add aria-hidden='true' to the outer wrapper div",
+        "Remove the old spinner entirely",
+        "npm run build passes with no errors"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "Read src/pages/Tags.jsx. The loading branch is near lines ~196-202 and renders a centered spinner inside the card. Replace with 4 skeleton rows. Each row mirrors the TagRow layout: a colored pill badge (h-4 w-32 rounded-full shimmer) on the left and two small icon buttons (h-7 w-7 shimmer squares) on the right. Use shimmer-bg animate-shimmer classes. Wrap in divide-y divide-border for visual separation matching real rows."
+    },
+    {
+      "id": "US-657",
+      "title": "Replace PublicPipeline.jsx LoadingState spinner with skeleton app rows",
+      "description": "As a public visitor, the full-page spinner in src/pages/PublicPipeline.jsx (LoadingState component, lines ~60-66) gives no sense of the pipeline shape. Replace it with 5 shimmer skeleton app rows.",
+      "acceptanceCriteria": [
+        "Read src/pages/PublicPipeline.jsx first",
+        "Locate the LoadingState component (lines ~60-66) which renders a centered spinner",
+        "Replace its return value with a <div className='flex flex-col divide-y divide-border rounded-xl border border-border bg-card' aria-hidden='true'> containing 5 skeleton rows",
+        "Each skeleton row: <div className='flex items-center gap-4 px-4 py-3'> with <div className='h-4 w-32 rounded shimmer-bg animate-shimmer' /> (company), <div className='h-4 flex-1 rounded shimmer-bg animate-shimmer' /> (role), <div className='h-5 w-16 rounded-full shimmer-bg animate-shimmer' /> (stage pill), <div className='h-4 w-20 rounded shimmer-bg animate-shimmer hidden sm:block' /> (date)",
+        "Remove the old spinner div entirely",
+        "npm run build passes with no errors"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": "Read src/pages/PublicPipeline.jsx. LoadingState is at lines ~60-66. It renders a full-page centered spinner. Replace the spinner with a card containing 5 skeleton rows shaped like the PublicAppRow: company name (w-32), role title (flex-1), stage pill (w-16 rounded-full), date (w-20 hidden sm:block). Use shimmer-bg animate-shimmer. Add aria-hidden='true' to the skeleton container."
+    },
+    {
+      "id": "US-658",
+      "title": "Add og:description and meta description update to PublicPipeline.jsx useEffect",
+      "description": "As a developer sharing a public pipeline link, the useEffect in src/pages/PublicPipeline.jsx (lines ~130-140) updates document.title and og:title but does NOT update og:description or meta[name='description'], leaving social previews with a generic default.",
+      "acceptanceCriteria": [
+        "Read src/pages/PublicPipeline.jsx first",
+        "In the useEffect that updates document.title (lines ~130-140), after the og:title update, add code to also update og:description and meta description:",
+        "const descContent = `${pipeline.display_name}'s job application pipeline — tracked with Pipelined`;",
+        "Find or create meta[name='description']: let descMeta = document.querySelector('meta[name=\"description\"]'); if (!descMeta) { descMeta = document.createElement('meta'); descMeta.name = 'description'; document.head.appendChild(descMeta); } descMeta.content = descContent;",
+        "Find or create meta[property='og:description']: let ogDescMeta = document.querySelector('meta[property=\"og:description\"]'); if (!ogDescMeta) { ogDescMeta = document.createElement('meta'); ogDescMeta.setAttribute('property', 'og:description'); document.head.appendChild(ogDescMeta); } ogDescMeta.content = descContent;",
+        "In the cleanup function, also reset these two metas to empty string or original value",
+        "Keep all existing useEffect logic unchanged",
+        "npm run build passes with no errors"
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": "Read src/pages/PublicPipeline.jsx. The useEffect at lines ~130-140 already updates document.title and og:title meta tag. Extend it to also set meta[name='description'] and meta[property='og:description'] to the same descriptive string. The pipeline object has a display_name property. Use querySelector to find or createElement to create each meta tag if missing."
+    },
+    {
+      "id": "US-659",
+      "title": "Fix LandingPage.jsx FOOTER_LINKS placeholder # hrefs",
+      "description": "As a keyboard user navigating the footer of src/pages/LandingPage.jsx, the Company section links (About, Blog, Careers) and Legal section links (Privacy Policy, Terms of Service) all use href='#', which causes keyboard focus to scroll to the top and provides no real navigation.",
+      "acceptanceCriteria": [
+        "Read src/pages/LandingPage.jsx first",
+        "Locate the FOOTER_LINKS constant (lines ~57-71)",
+        "For Company links: change About href from '#' to '/about', Blog href from '#' to '/blog', Careers href from '#' to '/careers'",
+        "For Legal links: change Privacy Policy href from '#' to '/privacy', Terms of Service href from '#' to '/terms'",
+        "Keep all labels, the FOOTER_LINKS array structure, and all className/rendering logic unchanged",
+        "npm run build passes with no errors"
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": "Read src/pages/LandingPage.jsx. FOOTER_LINKS is at lines ~57-71. Each entry has { label, href }. The Company section has About/#, Blog/#, Careers/#. The Legal section has Privacy Policy/# and Terms of Service/#. Change each # to the matching route path. The routes do not need to exist for the build to pass — this removes the broken # href behavior for keyboard users."
+    },
+    {
+      "id": "US-660",
+      "title": "Sync Settings.jsx active tab to ?section= URL query param",
+      "description": "As a user, refreshing the Settings page (src/pages/Settings.jsx) or sharing a settings link always resets to the first tab because the active section is stored only in useState. Sync the active tab to the ?section= query parameter using useSearchParams.",
+      "acceptanceCriteria": [
+        "Read src/pages/Settings.jsx first",
+        "Add useSearchParams to the react-router-dom import at the top of the file",
+        "In the Settings component (or wherever useState('pipeline') is for active section), replace useState initialization: const [searchParams, setSearchParams] = useSearchParams(); and derive activeSection from searchParams: const activeSection = searchParams.get('section') || 'pipeline';",
+        "Remove the setActiveSection useState setter — instead use setSearchParams when tab changes: in TabNav's onSelect (or equivalent), call setSearchParams({ section: id }) instead of setActiveSection(id)",
+        "Keep all tab IDs, TabNav structure, and content rendering logic unchanged",
+        "npm run build passes with no errors"
+      ],
+      "priority": 7,
+      "passes": false,
+      "notes": "Read src/pages/Settings.jsx. TabNav is at line ~36. The active section state is likely useState('pipeline') near line ~155 in the Settings component. Import useSearchParams from react-router-dom (it's probably already imported, just needs useSearchParams added). Replace the useState pattern with useSearchParams so that ?section=pipeline, ?section=notifications, etc. work. The setActiveSection call in the tab onSelect handler should become setSearchParams({ section: id })."
+    },
+    {
+      "id": "US-661",
+      "title": "Show application date on all screen sizes in PublicPipeline.jsx",
+      "description": "As a mobile user viewing a public pipeline in src/pages/PublicPipeline.jsx, the application date is hidden on small screens due to 'hidden ... sm:block' classes, making the row feel incomplete and reducing scanability.",
+      "acceptanceCriteria": [
+        "Read src/pages/PublicPipeline.jsx first",
+        "Locate the date <span> inside the PublicAppRow (or equivalent row component) at line ~55 with className containing 'hidden' and 'sm:block'",
+        "Remove the 'hidden' and 'sm:block' classes from the className string so the date is visible on all screen sizes",
+        "Change the date format to a short format: replace the existing toLocaleDateString options with { month: 'short', day: 'numeric' } to prevent overflow on mobile",
+        "Keep all other className values, formatDate function, and row structure unchanged",
+        "npm run build passes with no errors"
+      ],
+      "priority": 8,
+      "passes": false,
+      "notes": "Read src/pages/PublicPipeline.jsx. The date span is at line ~55 inside the app row component with className 'hidden text-sm text-muted-foreground sm:block'. Remove 'hidden' and 'sm:block' to make it always visible. Also shorten the format to { month: 'short', day: 'numeric' } to avoid text overflow on narrow screens. The formatDate utility function may be inline or imported — check and adjust accordingly."
+    }
+  ]
+}
