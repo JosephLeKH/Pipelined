@@ -16,7 +16,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/lib/designTokens.js. BADGE_SUCCESS is at line 87. The string ends with 'rounded-full' — append the three dark: classes after it. BADGE_FIT_HIGH and BADGE_FIT_MEDIUM already have dark variants (lines 142-143) — do not touch those. Only change BADGE_SUCCESS."
     },
     {

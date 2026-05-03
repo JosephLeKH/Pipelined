@@ -1,3 +1,15 @@
 # Ralph Progress Log
 Started: Sat May  2 17:06:40 PDT 2026
 ---
+
+## US-598: Add dark: variants to BADGE_SUCCESS in lib/designTokens.js
+**Status:** PASSED
+**Commit:** 656219e
+
+**Investigated:** Read frontend/src/lib/designTokens.js line 87. BADGE_SUCCESS had `bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-display font-medium px-2 py-0.5 rounded-full` with no dark: variants.
+
+**Changed:** Appended `dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-700/50` after `rounded-full` in BADGE_SUCCESS only. Left BADGE_WARNING, BADGE_ERROR, BADGE_INFO, BADGE_FIT_HIGH, BADGE_FIT_MEDIUM, and all other tokens unchanged.
+
+**Learned:** Badge dark mode pattern: use color-900/30 for bg opacity (semi-transparent dark bg), color-300 for text (light enough on dark), and color-700/50 for border (semi-transparent border). This matches the STAGE_COLORS pattern established in PRD-56/57.
+
+**Build:** Passed in 2.78s with no errors.
