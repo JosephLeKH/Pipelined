@@ -43,7 +43,7 @@ export function RowMenu({ application, onArchive, onUnarchive, onDelete }) {
             aria-label="Application actions"
             className="h-7 w-7 rounded text-muted-foreground"
           >
-            <MoreHorizontal className="h-4 w-4" />
+            <MoreHorizontal className="h-4 w-4" aria-hidden="true" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-36">
