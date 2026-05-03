@@ -39,3 +39,15 @@ Started: Sat May  2 17:43:22 PDT 2026
 - npm run build passed cleanly
 - Committed: feat: US-618 - Add aria-label and scope='col' to Tags page table
 US-619 PASS: Added aria-label='Offer comparison' to table and scope='col' to Field th in OfferComparison.jsx. Build passed. Committed as 'feat: US-619 - Add aria-label and scope\'s col to OfferComparison Field header column'.
+
+## US-620 — Add role='img' aria-label wrappers to 5 chart ResponsiveContainers in AnalyticsCharts.jsx
+- Wrapped all 5 ResponsiveContainers in role='img' aria-label divs:
+  - WeeklyApplicationsChart: aria-label='Bar chart: Applications per Week'
+  - StageFunnelChart: aria-label='Bar chart: Stage Funnel'
+  - ResponseRateChart: aria-label='Line chart: Response Rate by Month'
+  - TopCompaniesChart: aria-label='Bar chart: Top 10 Companies Applied To'
+  - FunnelBarChart: aria-label='Bar chart: Stage Conversion Funnel'
+- No className added to wrapper divs; all ResponsiveContainer props unchanged
+- Build passed (✓ built in 2.71s)
+- Committed: feat: US-620 - Add role='img' aria-label wrappers to 5 chart ResponsiveContainers in AnalyticsCharts.jsx
+- Learning: Recharts ResponsiveContainer renders a plain div+SVG with no ARIA role. Wrapping in <div role='img' aria-label='...'> gives screen readers an accessible name and announces the element as an image, which is the correct semantic for a non-interactive chart.

@@ -125,7 +125,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 7,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/AnalyticsCharts.jsx. The 5 chart functions are WeeklyApplicationsChart (line 60), StageFunnelChart (line 76), ResponseRateChart (line 92), TopCompaniesChart (line 109), FunnelBarChart (line 210). In each function, wrap the <ResponsiveContainer ...> element with <div role='img' aria-label='...'></div>. Use the ChartCard title as the label: 'Bar chart: Applications per Week', 'Bar chart: Stage Funnel', 'Line chart: Response Rate by Month', 'Bar chart: Top 10 Companies Applied To', 'Bar chart: Stage Conversion Funnel'. The chart type prefix (Bar chart / Line chart) matches the recharts component used inside. Do not add className to the wrapper div. Do not change any chart props, ResponsiveContainer, or ChartCard."
     },
     {
