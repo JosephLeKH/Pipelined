@@ -1,0 +1,143 @@
+{
+  "id": "PRD-59",
+  "title": "focus-visible ring fixes in App.jsx and INPUT_BASE, dark variants for TAG/TOOLTIP design tokens, EVENT_TYPE_COLORS.other/DEFAULT_EVENT_COLOR text/dot, and toggle knob dark:bg in DigestSection and SettingsNotificationsSection",
+  "description": "Continuation of the systematic UI improvement loop. This batch fixes two focus:ring-* → focus-visible:ring-* regressions (App.jsx skip link, INPUT_BASE), adds missing dark: variants to TAG and TOOLTIP design tokens, adds dark: text/dot variants to EVENT_TYPE_COLORS.other and DEFAULT_EVENT_COLOR (bg/border already use semantic tokens), and adds dark:bg-gray-100 to toggle knobs in DigestSection and SettingsNotificationsSection.",
+  "userStories": [
+    {
+      "id": "US-606",
+      "title": "Fix App.jsx skip link: focus:ring-* → focus-visible:ring-*",
+      "description": "As a developer, the skip link in src/App.jsx (line ~149) uses focus:ring-2 focus:ring-ring — causing a visible focus ring on mouse click. Replace only those two ring classes with focus-visible: prefix.",
+      "acceptanceCriteria": [
+        "Read src/App.jsx first",
+        "On the skip link <a> element (line ~149), replace focus:ring-2 with focus-visible:ring-2, and focus:ring-ring with focus-visible:ring-ring",
+        "Keep all other focus: classes unchanged: focus:not-sr-only, focus:fixed, focus:left-4, focus:top-4, focus:z-[9999], focus:rounded, focus:bg-background, focus:px-4, focus:py-2, focus:text-sm, focus:font-medium, focus:text-primary, focus:shadow-lg",
+        "Final ring classes on the skip link: focus-visible:ring-2 focus-visible:ring-ring",
+        "If already using focus-visible on ring classes, mark passes: true with note 'already using focus-visible'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 1,
+      "passes": true,
+      "notes": "Read src/App.jsx. The skip link is near line 149. Its className contains many focus: utilities (focus:not-sr-only, focus:fixed, etc.) that are reveal-on-focus utilities — leave those unchanged. Only replace the two ring classes: focus:ring-2 → focus-visible:ring-2 and focus:ring-ring → focus-visible:ring-ring. Do NOT touch focus:outline-none or any non-ring focus: class."
+    },
+    {
+      "id": "US-607",
+      "title": "Fix designTokens.js INPUT_BASE: focus:ring-* → focus-visible:ring-*",
+      "description": "As a developer, INPUT_BASE in lib/designTokens.js (line ~43) uses focus:ring-1 focus:ring-brand-500/20 — causing focus rings on mouse click for all form inputs. Replace only those two classes with focus-visible: prefix.",
+      "acceptanceCriteria": [
+        "Read src/lib/designTokens.js first",
+        "In INPUT_BASE (line ~43), replace focus:ring-1 with focus-visible:ring-1, and focus:ring-brand-500/20 with focus-visible:ring-brand-500/20",
+        "Keep focus:border-brand-500 and focus:outline-none unchanged",
+        "Final focus ring classes in INPUT_BASE: focus-visible:ring-1 focus-visible:ring-brand-500/20",
+        "If already using focus-visible on ring classes, mark passes: true with note 'already using focus-visible'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Read src/lib/designTokens.js. INPUT_BASE spans two lines starting around line 41. It contains focus:border-brand-500 focus:ring-1 focus:ring-brand-500/20 focus:outline-none. Only replace focus:ring-1 and focus:ring-brand-500/20 with focus-visible: prefix. Leave focus:border-brand-500 and focus:outline-none exactly as-is — border highlight on focus is intentional for inputs."
+    },
+    {
+      "id": "US-608",
+      "title": "Add dark: variant to TAG in lib/designTokens.js",
+      "description": "As a developer, the TAG token in lib/designTokens.js (line ~103) uses text-gray-600 with no dark: variant — causing filter chips to have poor contrast in dark mode.",
+      "acceptanceCriteria": [
+        "Read src/lib/designTokens.js first",
+        "In TAG (line ~103), append dark:text-gray-400 to the class string",
+        "Final value: 'bg-surface-secondary text-gray-600 text-xs px-2 py-1 rounded-full hover:bg-surface-tertiary transition-colors dark:text-gray-400'",
+        "Leave all other tokens unchanged",
+        "If dark:text-gray-400 already present on TAG, mark passes: true with note 'already has dark variant'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "Read src/lib/designTokens.js. TAG is at line 103. bg-surface-secondary already adapts to dark mode via CSS variable. Only text-gray-600 needs a dark variant — append dark:text-gray-400. Do not touch hover:bg-surface-tertiary (semantic token). Only change TAG."
+    },
+    {
+      "id": "US-609",
+      "title": "Add dark: variant to TOOLTIP in lib/designTokens.js",
+      "description": "As a developer, the TOOLTIP token in lib/designTokens.js (line ~125) uses bg-gray-800 — which is fine in light mode but in dark mode the surface may be too close to the background. Append dark:bg-gray-700 for a slightly lighter tooltip surface in dark mode.",
+      "acceptanceCriteria": [
+        "Read src/lib/designTokens.js first",
+        "In TOOLTIP (line ~125), append dark:bg-gray-700 to the class string",
+        "Final value: 'absolute z-10 whitespace-nowrap rounded-full bg-gray-800 px-2 py-1 text-xs text-white opacity-0 transition-opacity pointer-events-none group-hover:opacity-100 dark:bg-gray-700'",
+        "Leave all other tokens unchanged",
+        "If dark:bg-gray-700 already present on TOOLTIP, mark passes: true with note 'already has dark variant'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": "Read src/lib/designTokens.js. TOOLTIP is at line 125. bg-gray-800 in this project's custom palette is #1f1b17 — very dark, so it blends into dark mode page backgrounds. Use dark:bg-gray-700 (#292524 approximately) for a slightly more distinct tooltip surface. text-white remains correct in dark mode. Only change TOOLTIP."
+    },
+    {
+      "id": "US-610",
+      "title": "Add dark: variants to EVENT_TYPE_COLORS.other text and dot in lib/constants.js",
+      "description": "As a developer, EVENT_TYPE_COLORS.other in lib/constants.js uses text-gray-600 (text) and bg-gray-400 (dot) with no dark: variants. The bg and border use semantic tokens and are already fine in dark mode.",
+      "acceptanceCriteria": [
+        "Read src/lib/constants.js first",
+        "In EVENT_TYPE_COLORS.other (line ~57), add dark: variants to text and dot only:",
+        "  text: 'text-gray-600 dark:text-gray-400'",
+        "  dot: 'bg-gray-400 dark:bg-gray-300'",
+        "  Leave bg: 'bg-surface-secondary' and border: 'border-border-default' unchanged",
+        "Final other entry: { bg: 'bg-surface-secondary', text: 'text-gray-600 dark:text-gray-400', dot: 'bg-gray-400 dark:bg-gray-300', border: 'border-border-default' }",
+        "Leave all other EVENT_TYPE_COLORS entries unchanged",
+        "If dark: variants already present on other text/dot, mark passes: true with note 'already has dark variants'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": "Read src/lib/constants.js. EVENT_TYPE_COLORS.other is at line 57. bg-surface-secondary and border-border-default are semantic tokens that already adapt to dark mode — leave them exactly as-is. Only add dark:text-gray-400 to the text class and dark:bg-gray-300 to the dot class. Use gray-300 for the dot (lighter in dark mode) and gray-400 for text. Only change the other entry."
+    },
+    {
+      "id": "US-611",
+      "title": "Add dark: variants to DEFAULT_EVENT_COLOR text and dot in lib/constants.js",
+      "description": "As a developer, DEFAULT_EVENT_COLOR in lib/constants.js (line ~60) uses text-gray-600 (text) and bg-gray-400 (dot) with no dark: variants — causing fallback calendar event chips to have poor contrast in dark mode.",
+      "acceptanceCriteria": [
+        "Read src/lib/constants.js first",
+        "In DEFAULT_EVENT_COLOR (line ~60), add dark: variants to text and dot only:",
+        "  text: 'text-gray-600 dark:text-gray-400'",
+        "  dot: 'bg-gray-400 dark:bg-gray-300'",
+        "  Leave bg: 'bg-surface-secondary' and border: 'border-border-default' unchanged",
+        "Final value: { bg: 'bg-surface-secondary', text: 'text-gray-600 dark:text-gray-400', dot: 'bg-gray-400 dark:bg-gray-300', border: 'border-border-default' }",
+        "Leave all other constants unchanged",
+        "If dark: variants already present on DEFAULT_EVENT_COLOR text/dot, mark passes: true with note 'already has dark variants'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": "Read src/lib/constants.js. DEFAULT_EVENT_COLOR is at line 60. Same semantic token pattern as EVENT_TYPE_COLORS.other — only the text and dot values are hardcoded gray classes that need dark variants. bg-surface-secondary and border-border-default use CSS variables that are already dark-mode-aware. Only change DEFAULT_EVENT_COLOR."
+    },
+    {
+      "id": "US-612",
+      "title": "Add dark:bg-gray-100 to toggle knob in DigestSection.jsx",
+      "description": "As a developer, the toggle knob in src/components/DigestSection.jsx uses bg-white with no dark: variant — causing the knob to disappear against dark backgrounds in dark mode.",
+      "acceptanceCriteria": [
+        "Read src/components/DigestSection.jsx first",
+        "Find the toggle knob <span> (line ~23) with className containing bg-white shadow",
+        "Add dark:bg-gray-100 to the className after bg-white",
+        "Final className: 'inline-block h-4 w-4 transform rounded-full bg-white dark:bg-gray-100 shadow transition-transform ...'",
+        "Leave the dynamic translate class logic (digestEnabled ? 'translate-x-6' : 'translate-x-1') unchanged",
+        "If dark:bg-gray-100 already present, mark passes: true with note 'already has dark variant'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 7,
+      "passes": false,
+      "notes": "Read src/components/DigestSection.jsx. The toggle knob span is around line 23. Its className uses a template literal with the dynamic translate class. Add dark:bg-gray-100 immediately after bg-white in the static class string. gray-100 (#f5f5f4 in this project) provides a slightly off-white knob that remains visible against dark mode card backgrounds. Only change the toggle knob span."
+    },
+    {
+      "id": "US-613",
+      "title": "Add dark:bg-gray-100 to toggle knob in SettingsNotificationsSection.jsx",
+      "description": "As a developer, the toggle knob in src/components/SettingsNotificationsSection.jsx uses bg-white with no dark: variant — causing the knob to disappear against dark backgrounds in dark mode.",
+      "acceptanceCriteria": [
+        "Read src/components/SettingsNotificationsSection.jsx first",
+        "Find the toggle knob <span> (line ~29) with className containing bg-white shadow",
+        "Add dark:bg-gray-100 to the className after bg-white",
+        "Final className: 'inline-block h-4 w-4 transform rounded-full bg-white dark:bg-gray-100 shadow transition-transform ...'",
+        "Leave the dynamic translate class logic (checked ? 'translate-x-5' : 'translate-x-1') unchanged",
+        "If dark:bg-gray-100 already present, mark passes: true with note 'already has dark variant'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 8,
+      "passes": false,
+      "notes": "Read src/components/SettingsNotificationsSection.jsx. The toggle knob span is around line 29. Same pattern as DigestSection — add dark:bg-gray-100 after bg-white. Only change the toggle knob span className."
+    }
+  ]
+}
