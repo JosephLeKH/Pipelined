@@ -67,7 +67,7 @@ function DesktopNavLinks({ navLinks, pathname }) {
         const active = pathname === to;
         return (
           <Link key={to} to={to} aria-current={active ? "page" : undefined} className={`flex items-center gap-1.5 ${active ? NAV_LINK_ACTIVE : NAV_LINK}`}>
-            <Icon className="h-4 w-4" />
+            <Icon className="h-4 w-4" aria-hidden="true" />
             {label}
           </Link>
         );
@@ -153,7 +153,7 @@ function MobileMenu({ navLinks, pathname, closeMobileMenu, ThemeIcon, theme, han
         return (
           <Link key={to} to={to} onClick={closeMobileMenu} aria-current={active ? "page" : undefined}
             className={`flex items-center gap-2 ${active ? NAV_LINK_ACTIVE : NAV_LINK}`}>
-            <Icon className="h-4 w-4" />
+            <Icon className="h-4 w-4" aria-hidden="true" />
             {label}
           </Link>
         );
