@@ -28,7 +28,7 @@ export function ChecklistItem({ item, onToggle, onDelete }) {
       <Button type="button" variant="ghost" size="icon" onClick={() => onDelete(item.id)}
         className="h-6 w-6 flex-shrink-0 text-muted-foreground/50 hover:text-destructive hover:bg-destructive/10"
         aria-label={`Delete checklist item: ${item.text}`}>
-        <Trash2 className="h-3.5 w-3.5" />
+        <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
       </Button>
     </div>
   );
@@ -50,7 +50,7 @@ export function AddChecklistItem({ onAdd }) {
 
   return (
     <div className="flex items-center gap-2 pt-1">
-      <Plus className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
+      <Plus className="h-4 w-4 flex-shrink-0 text-muted-foreground" aria-hidden="true" />
       <Input
         type="text"
         value={text}
