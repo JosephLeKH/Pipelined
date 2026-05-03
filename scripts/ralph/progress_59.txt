@@ -29,3 +29,10 @@ Started: Sat May  2 17:22:13 PDT 2026
 - text-white remains correct in dark mode (no change needed)
 - Build passed (✓ built in 2.74s)
 - Committed: 1813565
+
+## US-610 — Add dark: variants to EVENT_TYPE_COLORS.other text and dot in lib/constants.js
+- In frontend/src/lib/constants.js line 57, added dark:text-gray-400 to text and dark:bg-gray-300 to dot
+- bg-surface-secondary and border-border-default are semantic tokens already adapted — left unchanged
+- Final: { bg: 'bg-surface-secondary', text: 'text-gray-600 dark:text-gray-400', dot: 'bg-gray-400 dark:bg-gray-300', border: 'border-border-default' }
+- Build passed (✓ built in 2.71s)
+- Committed: f0a6f19
