@@ -1,0 +1,9 @@
+# Ralph Progress Log
+Started: Sun May  3 16:55:14 PDT 2026
+---
+
+## US-654 — Replace Activity.jsx loading spinner with inline skeleton timeline entries
+
+**Completed**: Modified `ActivityTimeline` in `frontend/src/pages/Activity.jsx`. Extracted a new `ActivityTimelineSkeleton` component that renders 5 shimmer skeleton rows (dot circle + title line + timestamp line) wrapped in the same `rounded-xl bg-card border border-border px-4` / `relative border-l border-border pl-4 ml-1.5` structure as the real list. Added `aria-hidden='true'` and `aria-label='Loading activity'` to the outer wrapper. Removed the old centered spinner entirely. Build passed in 2.84s. Committed as c6a9dfa.
+
+**Learnings**: Extracting the skeleton into its own component (`ActivityTimelineSkeleton`) keeps `ActivityTimeline` readable and makes the loading branch a one-liner. The `Array.from({ length: 5 })` pattern avoids needing a separate constant for the count while keeping the skeleton count easy to scan.

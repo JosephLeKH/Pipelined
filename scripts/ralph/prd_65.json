@@ -18,7 +18,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/pages/Activity.jsx. ActivityTimeline is at line ~115. The isLoading branch at lines ~116-122 renders a centered spinner. Replace it with 5 inline skeleton rows matching the TimelineEntry shape (dot circle + two text lines). Use shimmer-bg animate-shimmer classes (already used in SkeletonRow.jsx). Each skeleton entry should be aria-hidden since it is decorative placeholder content."
     },
     {
