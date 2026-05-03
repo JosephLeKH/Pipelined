@@ -34,7 +34,7 @@ function JobBoard() {
           {hasActiveFilters && (
             <div className="relative shrink-0">
               <Button type="button" variant="outline" aria-label="Save this search" onClick={() => setSavePopoverOpen((v) => !v)} className="flex items-center gap-1.5">
-                <Bookmark className="h-4 w-4" />
+                <Bookmark className="h-4 w-4" aria-hidden="true" />
                 Save this search
               </Button>
               {savePopoverOpen && <SaveSearchPopover currentFilters={filters} onClose={() => setSavePopoverOpen(false)} />}
