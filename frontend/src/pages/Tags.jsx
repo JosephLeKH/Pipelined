@@ -68,10 +68,10 @@ function TagNameEditor({ name, onSave, onCancel }) {
         className="max-w-xs"
       />
       <Button type="button" variant="ghost" onClick={handleSave} aria-label="Save" className="p-1.5 h-auto">
-        <Check className="h-4 w-4 text-primary" />
+        <Check className="h-4 w-4 text-primary" aria-hidden="true" />
       </Button>
       <Button type="button" variant="ghost" onClick={onCancel} aria-label="Cancel" className="p-1.5 h-auto">
-        <XIcon className="h-4 w-4 text-muted-foreground" />
+        <XIcon className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
       </Button>
     </div>
   );
