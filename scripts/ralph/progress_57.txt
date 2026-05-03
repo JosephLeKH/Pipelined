@@ -41,3 +41,11 @@ Commit: bd3dfe9 feat: US-593 - Fix ui/badge.jsx badgeVariants base: focus:ring-*
 **Commit:** 423cac9
 **Summary:** Added dark: variants to STAGE_COLORS.Offer in frontend/src/lib/constants.js (line 7). Updated bg to 'bg-emerald-100 dark:bg-emerald-900/30', text to 'text-emerald-800 dark:text-emerald-300', dot/activeBg to 'bg-emerald-500 dark:bg-emerald-400', border to 'border-emerald-500 dark:border-emerald-400'. Build passed in 2.69s. Only Offer entry was modified.
 **Learnings:** Pattern is consistent with Onsite (amber) and Rejected (rose) from PRD-56 — use 900/30 for backgrounds, 300 for text, 400 for dot/border in dark mode. This is the 6th of 8 stories in PRD-57 (US-590 through US-596 done). Remaining: US-597 (DEFAULT_STAGE_COLOR dark variants).
+
+## US-597 — Add dark: variants to DEFAULT_STAGE_COLOR in lib/constants.js
+**Status:** PASSED
+**Commit:** 6fa0179
+
+**Summary:** Updated DEFAULT_STAGE_COLOR in frontend/src/lib/constants.js (lines 11-17) to add dark: variants to all five properties: bg (dark:bg-gray-800), text (dark:text-gray-200), dot (dark:bg-gray-400), border (dark:border-gray-600), activeBg (dark:bg-gray-400). STAGE_COLORS entries were left unchanged. Build passed in 2.75s.
+
+**Learnings:** DEFAULT_STAGE_COLOR serves as the fallback for any stage not in STAGE_COLORS. The gray palette used (gray-100 light / gray-800 dark bg) ensures sufficient contrast in both modes. Pattern follows the same dark: variant approach used across all named STAGE_COLORS entries in this PRD batch.

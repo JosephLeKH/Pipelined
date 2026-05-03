@@ -144,7 +144,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 8,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/lib/constants.js. DEFAULT_STAGE_COLOR is at line 11 with bg-gray-100, text-gray-800, bg-gray-500, border-gray-400. Note that gray-100 in this project's custom palette is #f5f5f4 (very light), and gray-800 is #1f1b17 (very dark) — both problematic in dark mode. Use dark:bg-gray-800 for bg (maps to #1f1b17 — deep dark), dark:text-gray-200 for text, dark:bg-gray-400 for dot/activeBg, dark:border-gray-600 for border. Only touch DEFAULT_STAGE_COLOR, not STAGE_COLORS entries."
     }
   ]
