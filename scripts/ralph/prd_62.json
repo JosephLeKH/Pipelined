@@ -64,7 +64,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 4,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/DetailPanelHeader.jsx. The X at line 22 is inside a Button with aria-label='Close panel' and size='icon' — icon-only button. The Trash2 at line 26 is inside a Button with aria-label='Delete application' and size='icon' — icon-only button. Add aria-hidden='true' to each icon. Do not change className, aria-label, or the surrounding Button props."
     },
     {

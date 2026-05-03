@@ -33,3 +33,15 @@ Both className values were left unchanged. Build verified clean (✓ built in 2.
 - Icon-only buttons (size='icon', no visible text) are accessible via aria-label alone; the icon inside should always get aria-hidden='true'.
 - Buttons with both aria-label AND visible text are doubly covered; the icon is redundant and should also be hidden.
 - Two-edit pattern is clean: one Edit call per icon, minimal diff, no risk of cascading changes.
+
+---
+## US-633: Add aria-hidden='true' to X and Trash2 icons in DetailPanelHeader.jsx
+**Status:** COMPLETE
+**Commit:** feat: US-633 - Add aria-hidden='true' to X and Trash2 icons in DetailPanelHeader.jsx
+
+### Summary
+Added aria-hidden='true' to the X icon (line 22, inside aria-label='Close panel' button) and Trash2 icon (line 26, inside aria-label='Delete application' button) in DetailPanelHeader.jsx. Both are icon-only buttons where the aria-label already fully describes the action — the icons are purely decorative.
+
+### Learnings
+- Icon-only buttons (size='icon') with aria-label are the clearest case for aria-hidden on the contained icon — the aria-label is the sole accessible name, and the icon adds no additional information.
+- The pattern here (Button with aria-label + single icon child) is consistent across CalendarEventsList and DetailPanelHeader, making these fixes straightforward and safe.
