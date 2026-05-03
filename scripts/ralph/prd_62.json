@@ -96,7 +96,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 6,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/CalendarGrid.jsx. CalendarHeader is at line 103. The ChevronLeft at line 120 is inside a Button with aria-label='Previous month' and className='p-1.5 h-auto' — icon-only navigation button. The ChevronRight at line 129 is inside a Button with aria-label='Next month' — same pattern. Add aria-hidden='true' to each chevron icon. Do not change className, aria-label, variant, or any other prop. Do NOT change the BookOpen icon at line 61 — it has a meaningful aria-label conveying prep data exists."
     },
     {

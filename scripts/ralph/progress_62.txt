@@ -61,3 +61,8 @@ Both className values were left unchanged. Build verified clean (✓ built in 2.
 ### Learnings
 - Two-file edits can be parallelized safely (independent files, same minimal pattern).
 - ErrorBoundary uses a class component — the JSX render method is treated identically to functional components for aria-hidden purposes.
+
+## US-635: Add aria-hidden='true' to ChevronLeft and ChevronRight in CalendarGrid.jsx
+**Status:** PASSED
+**Summary:** Added aria-hidden="true" to ChevronLeft (line 120) inside Button[aria-label="Previous month"] and ChevronRight (line 129) inside Button[aria-label="Next month"] in src/components/CalendarGrid.jsx. Build passed in 2.70s.
+**Learning:** Navigation chevron icons inside aria-labeled icon-only buttons are purely decorative. The aria-label on the Button fully describes the navigation action (previous/next month), so the visual chevron carries no additional information for screen readers. This pattern is consistent with other icon-only button accessibility fixes in this PRD.
