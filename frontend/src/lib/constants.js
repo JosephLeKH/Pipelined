@@ -49,9 +49,9 @@ export const SKELETON_ROW_COUNT = 8;
 export const COMPANY_TYPE_OPTIONS = ["startup", "mid", "enterprise", "gov", "nonprofit", "other"];
 
 export const EVENT_TYPE_COLORS = {
-  phone_screen: { bg: "bg-blue-50", text: "text-accent-blue", dot: "bg-accent-blue", border: "border-blue-200" },
-  technical: { bg: "bg-brand-50", text: "text-brand-600", dot: "bg-brand-500", border: "border-brand-200" },
-  onsite: { bg: "bg-amber-50", text: "text-amber-700", dot: "bg-amber-500", border: "border-amber-200" },
+  phone_screen: { bg: "bg-blue-50 dark:bg-blue-900/20", text: "text-accent-blue dark:text-blue-300", dot: "bg-accent-blue dark:bg-blue-400", border: "border-blue-200 dark:border-blue-700/50" },
+  technical: { bg: "bg-brand-50 dark:bg-brand-900/20", text: "text-brand-600 dark:text-brand-300", dot: "bg-brand-500 dark:bg-brand-400", border: "border-brand-200 dark:border-brand-700/50" },
+  onsite: { bg: "bg-amber-50 dark:bg-amber-900/20", text: "text-amber-700 dark:text-amber-300", dot: "bg-amber-500 dark:bg-amber-400", border: "border-amber-200 dark:border-amber-700/50" },
   behavioral: { bg: "bg-sky-50", text: "text-sky-700", dot: "bg-sky-500", border: "border-sky-200" },
   offer: { bg: "bg-emerald-50", text: "text-emerald-700", dot: "bg-emerald-500", border: "border-emerald-200" },
   other: { bg: "bg-surface-secondary", text: "text-gray-600", dot: "bg-gray-400", border: "border-border-default" },
