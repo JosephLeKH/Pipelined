@@ -100,7 +100,7 @@ function UserMenu({ user, handleLogout }) {
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
           <Link to="/settings" className="flex cursor-pointer items-center gap-2">
-            <User className="h-4 w-4" />
+            <User className="h-4 w-4" aria-hidden="true" />
             Profile & Settings
           </Link>
         </DropdownMenuItem>
@@ -109,7 +109,7 @@ function UserMenu({ user, handleLogout }) {
           onClick={handleLogout}
           className="flex cursor-pointer items-center gap-2 text-destructive focus:text-destructive"
         >
-          <LogOut className="h-4 w-4" />
+          <LogOut className="h-4 w-4" aria-hidden="true" />
           Log out
         </DropdownMenuItem>
       </DropdownMenuContent>
@@ -122,7 +122,7 @@ function DesktopActions({ user, ThemeIcon, theme, handleCycleTheme, handleLogout
     <div className="ml-auto hidden items-center gap-2 md:flex">
       <NotificationBell />
       <Button type="button" variant="ghost" size="icon" onClick={handleCycleTheme} aria-label={THEME_LABELS[theme]}>
-        <ThemeIcon className="h-4 w-4" />
+        <ThemeIcon className="h-4 w-4" aria-hidden="true" />
       </Button>
       <UserMenu user={user} handleLogout={handleLogout} />
     </div>
@@ -140,7 +140,7 @@ function HamburgerButton({ mobileMenuOpen, setMobileMenuOpen }) {
       aria-expanded={mobileMenuOpen}
       className="ml-auto md:hidden"
     >
-      {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+      {mobileMenuOpen ? <X className="h-5 w-5" aria-hidden="true" /> : <Menu className="h-5 w-5" aria-hidden="true" />}
     </Button>
   );
 }
@@ -160,10 +160,10 @@ function MobileMenu({ navLinks, pathname, closeMobileMenu, ThemeIcon, theme, han
       })}
       <div className="mt-2 flex items-center gap-2 border-t border-border pt-2">
         <Button type="button" variant="ghost" size="icon" onClick={handleCycleTheme} aria-label={THEME_LABELS[theme]}>
-          <ThemeIcon className="h-4 w-4" />
+          <ThemeIcon className="h-4 w-4" aria-hidden="true" />
         </Button>
         <Button type="button" variant="ghost" onClick={handleLogout} aria-label="Log out" className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground">
-          <LogOut className="h-4 w-4" />
+          <LogOut className="h-4 w-4" aria-hidden="true" />
           Log out
         </Button>
       </div>
