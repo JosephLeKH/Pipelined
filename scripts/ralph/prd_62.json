@@ -80,7 +80,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 5,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/NotesEditor.jsx and src/components/ErrorBoundary.jsx. In NotesEditor.jsx, the Pencil at line 58 is inside a Button with aria-label='Edit notes' and size='icon' — icon-only button. In ErrorBoundary.jsx, the RefreshCw at line 41 is inside a Button alongside visible text 'Try again' — decorative. Add aria-hidden='true' to each icon. Do not change className or any other attribute. These are two different files; apply the fix to each."
     },
     {

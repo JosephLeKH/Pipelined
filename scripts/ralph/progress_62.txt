@@ -45,3 +45,19 @@ Added aria-hidden='true' to the X icon (line 22, inside aria-label='Close panel'
 ### Learnings
 - Icon-only buttons (size='icon') with aria-label are the clearest case for aria-hidden on the contained icon — the aria-label is the sole accessible name, and the icon adds no additional information.
 - The pattern here (Button with aria-label + single icon child) is consistent across CalendarEventsList and DetailPanelHeader, making these fixes straightforward and safe.
+
+---
+## US-634: Add aria-hidden='true' to Pencil in NotesEditor.jsx and RefreshCw in ErrorBoundary.jsx
+**Status:** COMPLETE
+**Commit:** feat: US-634 - Add aria-hidden='true' to Pencil in NotesEditor.jsx and RefreshCw in ErrorBoundary.jsx
+
+### Summary
+Added aria-hidden='true' to two decorative icons across two files:
+1. Pencil (line 58, NotesEditor.jsx) — inside icon-only Button with aria-label='Edit notes'; icon is purely decorative.
+2. RefreshCw (line 41, ErrorBoundary.jsx) — inside Button with visible 'Try again' text; icon reinforces but doesn't add information.
+
+Both className values were left unchanged. Build verified clean (✓ built in 2.87s).
+
+### Learnings
+- Two-file edits can be parallelized safely (independent files, same minimal pattern).
+- ErrorBoundary uses a class component — the JSX render method is treated identically to functional components for aria-hidden purposes.
