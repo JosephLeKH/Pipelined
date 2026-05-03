@@ -35,7 +35,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/DashboardToolbar.jsx. Three icons need aria-hidden='true': (1) Line 24: <List className='h-4 w-4' /> inside Button with aria-label='List view' — icon-only button, add aria-hidden='true'. (2) Line 33: <LayoutGrid className='h-4 w-4' /> inside Button with aria-label='Kanban view' — icon-only button, add aria-hidden='true'. (3) Line 40: <Loader2 className='h-4 w-4 animate-spin' /> inside the Export CSV Button which already has visible text 'Export CSV' — decorative spinner, add aria-hidden='true'. Only add aria-hidden='true' to the three icons listed. Do not change any other part of the file."
     },
     {
