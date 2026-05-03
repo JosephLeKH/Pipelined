@@ -6,3 +6,11 @@ Started: Sun May  3 11:38:29 PDT 2026
 **Status:** PASS
 **Change:** Added `aria-hidden="true"` to `<Plus className="h-3.5 w-3.5" />` at line 35 inside the Button with `aria-label="Add contact"` and visible "New" text.
 **Learnings:** Icon inside a button that has both an aria-label and visible text is doubly decorative — aria-hidden is the correct fix. Build confirmed clean (3.89s).
+## US-640 - Add aria-hidden='true' to MoreHorizontal icon in ApplicationRowActions.jsx
+Date: 2026-05-03
+Status: PASS
+
+Summary: Added aria-hidden='true' to <MoreHorizontal className='h-4 w-4' /> at line 46 inside the RowMenu component's icon-only Button with aria-label='Application actions'. The button's aria-label fully describes the action, making the icon purely decorative.
+
+Learnings: Standard icon-only button pattern — when Button has aria-label and size='icon', the icon inside is always decorative and should have aria-hidden='true'. Build passed immediately.
+

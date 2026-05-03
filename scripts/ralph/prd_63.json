@@ -44,7 +44,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/ApplicationRowActions.jsx. The MoreHorizontal is at line ~46 inside a Button with aria-label='Application actions' and size='icon'. Icon-only button pattern — icon is decorative. Add aria-hidden='true' to the MoreHorizontal icon only. Do not change any className, aria-label, or other attribute."
     },
     {
