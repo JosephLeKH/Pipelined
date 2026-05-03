@@ -137,13 +137,13 @@ function AnalyticsTagsTable({ tagOfferRates }) {
   return (
     <ChartCard title="Tags" description="Offer rate for each tag across your applications">
       <div className="overflow-x-auto">
-        <table className="w-full text-sm">
+        <table className="w-full text-sm" aria-label="Tags offer rate">
           <thead>
             <tr className="border-b border-border">
-              <th className="pb-2 text-left text-xs font-medium text-muted-foreground">Tag</th>
-              <th className="pb-2 text-right text-xs font-medium text-muted-foreground">Applications</th>
-              <th className="pb-2 text-right text-xs font-medium text-muted-foreground">Offers</th>
-              <th className="pb-2 text-right text-xs font-medium text-muted-foreground">Offer Rate</th>
+              <th scope="col" className="pb-2 text-left text-xs font-medium text-muted-foreground">Tag</th>
+              <th scope="col" className="pb-2 text-right text-xs font-medium text-muted-foreground">Applications</th>
+              <th scope="col" className="pb-2 text-right text-xs font-medium text-muted-foreground">Offers</th>
+              <th scope="col" className="pb-2 text-right text-xs font-medium text-muted-foreground">Offer Rate</th>
             </tr>
           </thead>
           <tbody>
