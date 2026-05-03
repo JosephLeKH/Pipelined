@@ -28,7 +28,7 @@ function CalendarEventsList({ applicationId, onAddEvent }) {
           className="text-xs text-primary hover:bg-primary/10 hover:text-primary gap-1"
           aria-label="Add event"
         >
-          <Plus className="h-3.5 w-3.5" />
+          <Plus className="h-3.5 w-3.5" aria-hidden="true" />
           Add Event
         </Button>
       </div>
@@ -59,7 +59,7 @@ function CalendarEventsList({ applicationId, onAddEvent }) {
                   className="h-7 w-7 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
                   aria-label={`Delete event: ${ev.event_type.replace("_", " ")} on ${ev.date}`}
                 >
-                  <Trash2 className="h-3.5 w-3.5" />
+                  <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
                 </Button>
               </li>
             );
