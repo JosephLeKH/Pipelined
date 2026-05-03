@@ -22,8 +22,8 @@ function StepRow({ id, label, description, done }) {
   return (
     <div key={id} className="flex items-start gap-3">
       {done
-        ? <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
-        : <Circle className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground/30" />
+        ? <><CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-primary" aria-hidden="true" /><span className="sr-only">Completed</span></>
+        : <><Circle className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground/30" aria-hidden="true" /><span className="sr-only">Incomplete</span></>
       }
       <div className="min-w-0">
         <p className={`text-sm font-medium ${done ? "text-muted-foreground" : "text-foreground"}`}>
