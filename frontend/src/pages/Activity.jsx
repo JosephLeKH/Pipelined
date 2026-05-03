@@ -86,6 +86,7 @@ function ActivityHeader({ days, total, isLoading, onDaysChange }) {
             key={range.days}
             type="button"
             variant="ghost"
+            aria-pressed={days === range.days}
             onClick={() => onDaysChange(range.days)}
             className={`rounded-full px-3 py-1 text-xs font-medium h-auto ${
               days === range.days
