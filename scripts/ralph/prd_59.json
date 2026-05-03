@@ -102,7 +102,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 6,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/lib/constants.js. DEFAULT_EVENT_COLOR is at line 60. Same semantic token pattern as EVENT_TYPE_COLORS.other — only the text and dot values are hardcoded gray classes that need dark variants. bg-surface-secondary and border-border-default use CSS variables that are already dark-mode-aware. Only change DEFAULT_EVENT_COLOR."
     },
     {

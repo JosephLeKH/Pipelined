@@ -36,3 +36,12 @@ Started: Sat May  2 17:22:13 PDT 2026
 - Final: { bg: 'bg-surface-secondary', text: 'text-gray-600 dark:text-gray-400', dot: 'bg-gray-400 dark:bg-gray-300', border: 'border-border-default' }
 - Build passed (✓ built in 2.71s)
 - Committed: f0a6f19
+
+## US-611 — Add dark: variants to DEFAULT_EVENT_COLOR text and dot in lib/constants.js
+- Status: PASS
+- Changed: frontend/src/lib/constants.js line 60
+- DEFAULT_EVENT_COLOR text updated: text-gray-600 → text-gray-600 dark:text-gray-400
+- DEFAULT_EVENT_COLOR dot updated: bg-gray-400 → bg-gray-400 dark:bg-gray-300
+- bg and border left unchanged (semantic CSS variable tokens)
+- Build: ✓ passed
+- Commit: feat: US-611 - Add dark: variants to DEFAULT_EVENT_COLOR text and dot in lib/constants.js
