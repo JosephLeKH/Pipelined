@@ -44,7 +44,7 @@ function EmptyState() {
     <>
       <NavBar />
       <div className="flex min-h-[60vh] flex-col items-center justify-center gap-3 text-muted-foreground">
-        <Trophy className="mb-2 h-10 w-10 text-muted-foreground/40" />
+        <Trophy className="mb-2 h-10 w-10 text-muted-foreground/40" aria-hidden="true" />
         <p className="text-sm font-medium font-display text-foreground">No offers yet</p>
         <p className="text-xs font-sans text-muted-foreground">
           Move an application to the Offer stage to compare packages here.
@@ -67,7 +67,7 @@ function OfferHeaderCell({ app, isWinner, onMarkWinner }) {
     <th scope="col" className="min-w-[180px] px-4 py-3 text-left">
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-1.5">
-          {isWinner && <Trophy className="h-4 w-4 text-amber-500 dark:text-amber-400" aria-label="Winner" />}
+          {isWinner && <Trophy className="h-4 w-4 text-amber-500 dark:text-amber-400" aria-hidden="true" />}
           <span className="truncate text-sm font-semibold text-foreground">
             {app.company ?? "Unknown"}
           </span>
@@ -85,7 +85,7 @@ function OfferHeaderCell({ app, isWinner, onMarkWinner }) {
               : "bg-muted text-muted-foreground hover:bg-primary/10 hover:text-primary"
           }`}
         >
-          <Trophy className="h-3 w-3" />
+          <Trophy className="h-3 w-3" aria-hidden="true" />
           {isWinner ? "Winner!" : "Mark winner"}
         </Button>
       </div>
