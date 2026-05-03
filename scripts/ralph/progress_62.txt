@@ -1,0 +1,11 @@
+# Ralph Progress Log
+Started: Sat May  2 18:12:02 PDT 2026
+---
+
+## US-630: Add aria-hidden='true' to decorative Activity icons in Activity.jsx
+Status: PASSED
+Summary: Added aria-hidden='true' to two Activity icons in src/pages/Activity.jsx:
+  1. Line 73: h1 heading icon alongside 'Activity' text (purely decorative)
+  2. Line 127: empty-state icon alongside 'No activity yet' paragraph (purely decorative)
+Build: npm run build passed with no errors.
+Learnings: Both icons use the same component name (Activity) as the page — confirm the import alias matches the target icon before editing to avoid ambiguity.

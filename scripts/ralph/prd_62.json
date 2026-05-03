@@ -1,0 +1,139 @@
+{
+  "id": "PRD-62",
+  "title": "Accessibility: aria-hidden='true' for decorative icons in Activity, EmailVerificationBanner, CalendarEventsList, DetailPanelHeader, NotesEditor, ErrorBoundary, CalendarGrid, ShareTimeline, and ApplicationTimeline",
+  "description": "Continuation of the systematic UI improvement loop. This batch fixes 8 aria-hidden gaps: Activity page heading and empty-state Activity icons; EmailVerificationBanner AlertTriangle and X icons; CalendarEventsList Plus and Trash2 icons; DetailPanelHeader X and Trash2 icons; NotesEditor Pencil and ErrorBoundary RefreshCw icons; CalendarGrid ChevronLeft and ChevronRight icons; ShareTimeline Check/Copy/Loader2/Link2Off/Link2 icons; and ApplicationTimeline EventTimelineNode Icon and toggle chevrons.",
+  "userStories": [
+    {
+      "id": "US-630",
+      "title": "Add aria-hidden='true' to decorative Activity icons in Activity.jsx",
+      "description": "As a screen reader user, the Activity icon in the page heading (line ~73) and the empty-state icon (line ~127) in src/pages/Activity.jsx convey no information beyond the adjacent visible text and should be hidden from assistive technology.",
+      "acceptanceCriteria": [
+        "Read src/pages/Activity.jsx first",
+        "On the <Activity className='h-5 w-5 text-muted-foreground' /> at line ~73 (inside the <h1> alongside 'Activity' text), add aria-hidden='true'",
+        "On the <Activity className='mx-auto mb-3 h-10 w-10 text-muted-foreground/40' /> at line ~127 (inside empty-state div alongside 'No activity yet' text), add aria-hidden='true'",
+        "Keep all existing className values on both icons unchanged",
+        "If aria-hidden='true' already present on both icons, mark passes: true with note 'already has aria-hidden'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 1,
+      "passes": true,
+      "notes": "Read src/pages/Activity.jsx. ActivityHeader is at line 68; the h1 icon is at line 73: <Activity className='h-5 w-5 text-muted-foreground' /> — alongside the text 'Activity', so it is purely decorative. ActivityTimeline is at line 115; the empty-state icon is at line 127: <Activity className='mx-auto mb-3 h-10 w-10 text-muted-foreground/40' /> — the paragraph at line 128 already says 'No activity yet'. Add aria-hidden='true' to both icons. Do not change any className values or any other code."
+    },
+    {
+      "id": "US-631",
+      "title": "Add aria-hidden='true' to AlertTriangle and X icons in EmailVerificationBanner.jsx",
+      "description": "As a screen reader user, the AlertTriangle warning icon (line ~54) alongside the verification text and the X icon (line ~80) inside the Dismiss icon-only button in src/components/EmailVerificationBanner.jsx should be hidden from assistive technology — both are decorative given the surrounding text and aria-label.",
+      "acceptanceCriteria": [
+        "Read src/components/EmailVerificationBanner.jsx first",
+        "On the <AlertTriangle className='h-4 w-4 flex-shrink-0 text-amber-600 dark:text-amber-400' /> at line ~54, add aria-hidden='true'",
+        "On the <X className='h-3.5 w-3.5' /> at line ~80 (inside Button with aria-label='Dismiss'), add aria-hidden='true'",
+        "Keep all existing className values on both icons unchanged",
+        "If aria-hidden='true' already present on both icons, mark passes: true with note 'already has aria-hidden'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Read src/components/EmailVerificationBanner.jsx. The AlertTriangle at line 54 is alongside the text span 'Please verify your email to continue.' / 'Verification email sent — check your inbox.' — the text fully describes the state. The X at line 80 is the sole content of a Button with aria-label='Dismiss' — it is an icon-only button so the icon is decorative. Add aria-hidden='true' to each. Do not change className values, role='alert', or any other attribute."
+    },
+    {
+      "id": "US-632",
+      "title": "Add aria-hidden='true' to Plus and Trash2 icons in CalendarEventsList.jsx",
+      "description": "As a screen reader user, the Plus icon (line ~31) inside the 'Add Event' button and the Trash2 icon (line ~62) inside the delete icon-only button in src/components/CalendarEventsList.jsx are decorative — both buttons already convey their meaning via aria-label or visible text.",
+      "acceptanceCriteria": [
+        "Read src/components/CalendarEventsList.jsx first",
+        "On the <Plus className='h-3.5 w-3.5' /> at line ~31 (inside Button with aria-label='Add event' and visible 'Add Event' text), add aria-hidden='true'",
+        "On the <Trash2 className='h-3.5 w-3.5' /> at line ~62 (inside Button with aria-label='Delete event: ...'), add aria-hidden='true'",
+        "Keep all existing className values on both icons unchanged",
+        "If aria-hidden='true' already present on both icons, mark passes: true with note 'already has aria-hidden'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "Read src/components/CalendarEventsList.jsx. The Plus at line 31 is inside a Button that has both aria-label='Add event' and visible text 'Add Event' — doubly covered, icon is decorative. The Trash2 at line 62 is inside a Button with aria-label='Delete event: {event_type} on {date}' with no visible text — icon-only button. Add aria-hidden='true' to each. Do not change className, aria-label, or any other attribute."
+    },
+    {
+      "id": "US-633",
+      "title": "Add aria-hidden='true' to X and Trash2 icons in DetailPanelHeader.jsx",
+      "description": "As a screen reader user, the X icon (line ~22) inside the 'Close panel' button and the Trash2 icon (line ~26) inside the 'Delete application' button in src/components/DetailPanelHeader.jsx are decorative — both buttons have aria-label attributes that fully describe their purpose.",
+      "acceptanceCriteria": [
+        "Read src/components/DetailPanelHeader.jsx first",
+        "On the <X className='h-4 w-4' /> at line ~22 (inside Button with aria-label='Close panel'), add aria-hidden='true'",
+        "On the <Trash2 className='h-4 w-4' /> at line ~26 (inside Button with aria-label='Delete application'), add aria-hidden='true'",
+        "Keep all existing className values on both icons unchanged",
+        "If aria-hidden='true' already present on both icons, mark passes: true with note 'already has aria-hidden'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": "Read src/components/DetailPanelHeader.jsx. The X at line 22 is inside a Button with aria-label='Close panel' and size='icon' — icon-only button. The Trash2 at line 26 is inside a Button with aria-label='Delete application' and size='icon' — icon-only button. Add aria-hidden='true' to each icon. Do not change className, aria-label, or the surrounding Button props."
+    },
+    {
+      "id": "US-634",
+      "title": "Add aria-hidden='true' to Pencil in NotesEditor.jsx and RefreshCw in ErrorBoundary.jsx",
+      "description": "As a screen reader user, the Pencil icon (line ~58) inside the 'Edit notes' icon-only button in NotesEditor.jsx and the RefreshCw icon (line ~41) inside the 'Try again' button in ErrorBoundary.jsx are decorative — both buttons already convey their purpose via aria-label or visible text.",
+      "acceptanceCriteria": [
+        "Read src/components/NotesEditor.jsx first; then read src/components/ErrorBoundary.jsx",
+        "In NotesEditor.jsx, on the <Pencil className='h-3.5 w-3.5' /> at line ~58 (inside Button with aria-label='Edit notes'), add aria-hidden='true'",
+        "In ErrorBoundary.jsx, on the <RefreshCw className='h-4 w-4' /> at line ~41 (inside Button with visible 'Try again' text), add aria-hidden='true'",
+        "Keep all existing className values on both icons unchanged",
+        "If aria-hidden='true' already present on both icons, mark passes: true with note 'already has aria-hidden'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": "Read src/components/NotesEditor.jsx and src/components/ErrorBoundary.jsx. In NotesEditor.jsx, the Pencil at line 58 is inside a Button with aria-label='Edit notes' and size='icon' — icon-only button. In ErrorBoundary.jsx, the RefreshCw at line 41 is inside a Button alongside visible text 'Try again' — decorative. Add aria-hidden='true' to each icon. Do not change className or any other attribute. These are two different files; apply the fix to each."
+    },
+    {
+      "id": "US-635",
+      "title": "Add aria-hidden='true' to ChevronLeft and ChevronRight in CalendarGrid.jsx",
+      "description": "As a screen reader user, the ChevronLeft icon (line ~120) inside the 'Previous month' button and the ChevronRight icon (line ~129) inside the 'Next month' button in src/components/CalendarGrid.jsx are decorative — both buttons have aria-label attributes that fully describe navigation direction.",
+      "acceptanceCriteria": [
+        "Read src/components/CalendarGrid.jsx first",
+        "On the <ChevronLeft className='h-4 w-4' /> at line ~120 (inside Button with aria-label='Previous month'), add aria-hidden='true'",
+        "On the <ChevronRight className='h-4 w-4' /> at line ~129 (inside Button with aria-label='Next month'), add aria-hidden='true'",
+        "Keep all existing className values on both icons unchanged",
+        "If aria-hidden='true' already present on both icons, mark passes: true with note 'already has aria-hidden'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": "Read src/components/CalendarGrid.jsx. CalendarHeader is at line 103. The ChevronLeft at line 120 is inside a Button with aria-label='Previous month' and className='p-1.5 h-auto' — icon-only navigation button. The ChevronRight at line 129 is inside a Button with aria-label='Next month' — same pattern. Add aria-hidden='true' to each chevron icon. Do not change className, aria-label, variant, or any other prop. Do NOT change the BookOpen icon at line 61 — it has a meaningful aria-label conveying prep data exists."
+    },
+    {
+      "id": "US-636",
+      "title": "Add aria-hidden='true' to Check/Copy/Loader2/Link2Off/Link2 icons in ShareTimeline.jsx",
+      "description": "As a screen reader user, the Check and Copy icons in CopyButton (line ~47), the Loader2 and Link2Off icons in the Revoke button (line ~73), and the Loader2 and Link2 icons in the Generate button (line ~94) in src/components/ShareTimeline.jsx are all decorative — each button already has visible text or aria-label. The standalone Loader2 at line ~119 has aria-label='Loading' and must NOT be changed.",
+      "acceptanceCriteria": [
+        "Read src/components/ShareTimeline.jsx first",
+        "In CopyButton (~line 47): add aria-hidden='true' to both <Check className='h-3.5 w-3.5' /> and <Copy className='h-3.5 w-3.5' />",
+        "In ActiveShare revoke Button (~line 73): add aria-hidden='true' to both <Loader2 className='h-3.5 w-3.5 animate-spin' /> and <Link2Off className='h-3.5 w-3.5' />",
+        "In NoShare generate Button (~line 94): add aria-hidden='true' to both <Loader2 className='h-4 w-4 animate-spin' /> and <Link2 className='h-4 w-4' />",
+        "Do NOT change the standalone <Loader2 className='h-5 w-5 animate-spin text-muted-foreground' aria-label='Loading' /> at line ~119 — it is the only accessible loading indicator and must keep its aria-label",
+        "Keep all existing className values on all changed icons unchanged",
+        "If aria-hidden='true' already present on all 6 icons, mark passes: true with note 'already has aria-hidden'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 7,
+      "passes": false,
+      "notes": "Read src/components/ShareTimeline.jsx. CopyButton (~line 39) has a Button with aria-label and 'Copied!'/'Copy link' text — Check and Copy are decorative. The revoke Button (~line 64) has visible text 'Revoke link' — Loader2 and Link2Off are decorative. The generate Button (~line 87) has visible text 'Generate link' — Loader2 and Link2 are decorative. The Loader2 at line 119 is a standalone loading spinner — it is the sole indicator of loading state with aria-label='Loading', so leave it alone. Add aria-hidden='true' to the 6 decorative icons only."
+    },
+    {
+      "id": "US-637",
+      "title": "Fix ApplicationTimeline.jsx: aria-hidden on EventTimelineNode Icon and toggle chevrons",
+      "description": "As a screen reader user, the EventTimelineNode Icon (lines ~73-75) uses aria-label to duplicate the visible node.title text — it should use aria-hidden='true' instead since the title is already readable. The ChevronDown/ChevronRight toggle chevrons (lines ~102-103) inside the aria-labeled Toggle Timeline button also need aria-hidden='true'.",
+      "acceptanceCriteria": [
+        "Read src/components/ApplicationTimeline.jsx first",
+        "In EventTimelineNode (line ~70), on the <Icon className='mt-0.5 h-5 w-5 shrink-0 text-muted-foreground' aria-label={node.eventType.replace(/_/g, ' ')} />, replace aria-label={node.eventType.replace(/_/g, ' ')} with aria-hidden='true'",
+        "Final EventTimelineNode Icon: <Icon className='mt-0.5 h-5 w-5 shrink-0 text-muted-foreground' aria-hidden='true' />",
+        "In ApplicationTimeline toggle Button (line ~101-104): add aria-hidden='true' to <ChevronDown className='h-3.5 w-3.5' /> and to <ChevronRight className='h-3.5 w-3.5' />",
+        "Keep all existing className values on all icons unchanged",
+        "Leave aria-expanded, aria-label='Toggle timeline', and all other Button props unchanged",
+        "If aria-hidden='true' already present on all 3 icons, mark passes: true with note 'already has aria-hidden'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 8,
+      "passes": false,
+      "notes": "Read src/components/ApplicationTimeline.jsx. EventTimelineNode is at line 69; the Icon is at line 73 with aria-label={node.eventType.replace(/_/g, ' ')}. The visible node.title at line 78 already shows the same text (title = ev.title || ev.event_type.replace(/_/g, ' ')). Replace aria-label with aria-hidden='true' to avoid duplicate announcement. The toggle Button is at line 93; the chevrons at lines 102-103 are inside a Button with aria-label='Toggle timeline' and visible 'Timeline' text. Add aria-hidden='true' to both ChevronDown and ChevronRight."
+    }
+  ]
+}
