@@ -70,7 +70,7 @@ function ActivityHeader({ days, total, isLoading, onDaysChange }) {
     <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
         <h1 className="flex items-center gap-2 font-display text-2xl font-semibold text-foreground">
-          <Activity className="h-5 w-5 text-muted-foreground" />
+          <Activity className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
           Activity
         </h1>
         {!isLoading && (
@@ -124,7 +124,7 @@ function ActivityTimeline({ isLoading, entries, onEntryClick }) {
   if (entries.length === 0) {
     return (
       <div className="rounded-xl bg-card border border-border px-6 py-16 text-center">
-        <Activity className="mx-auto mb-3 h-10 w-10 text-muted-foreground/40" />
+        <Activity className="mx-auto mb-3 h-10 w-10 text-muted-foreground/40" aria-hidden="true" />
         <p className="text-sm font-medium text-foreground">No activity yet</p>
         <p className="mt-1 text-xs text-muted-foreground">
           Actions will appear here as you apply, move stages, and schedule interviews.
