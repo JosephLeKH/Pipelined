@@ -13,3 +13,11 @@ Started: Sat May  2 17:22:13 PDT 2026
 - Changed `focus:ring-1 focus:ring-brand-500/20` → `focus-visible:ring-1 focus-visible:ring-brand-500/20` on line 43 of src/lib/designTokens.js
 - Left `focus:border-brand-500` and `focus:outline-none` unchanged (intentional for inputs)
 - Build passed. Committed: c64dd27
+
+## US-608 — Add dark: variant to TAG in lib/designTokens.js
+- Appended dark:text-gray-400 to TAG token at line 103 of frontend/src/lib/designTokens.js
+- bg-surface-secondary and hover:bg-surface-tertiary are semantic tokens; only the text class needed a dark variant
+- Build passed (npm run build) with no errors
+- Committed: feat: US-608 - Add dark: variant to TAG in lib/designTokens.js
+- Status: PASS
+

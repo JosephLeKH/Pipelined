@@ -48,7 +48,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/lib/designTokens.js. TAG is at line 103. bg-surface-secondary already adapts to dark mode via CSS variable. Only text-gray-600 needs a dark variant — append dark:text-gray-400. Do not touch hover:bg-surface-tertiary (semantic token). Only change TAG."
     },
     {
