@@ -32,7 +32,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/pages/Tags.jsx. TagNameEditor is at line ~46. The Check is at line ~71 inside a Button with aria-label='Save' and className='p-1.5 h-auto'. The XIcon is at line ~74 inside a Button with aria-label='Cancel' and className='p-1.5 h-auto'. Add aria-hidden='true' to each. Do not change className, aria-label, onClick, or any other attribute on either button."
     },
     {

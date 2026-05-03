@@ -8,3 +8,9 @@ Started: Sun May  3 12:07:26 PDT 2026
 - Both icons are inside icon-only buttons with descriptive aria-label attributes; icons are purely decorative
 - npm run build passed with no errors
 - Committed: feat: US-646 - Add aria-hidden='true' to Pencil and Trash2 icons in Tags.jsx TagRow
+
+## US-647 — Add aria-hidden='true' to Check and XIcon in Tags.jsx TagNameEditor
+- Added aria-hidden="true" to <Check> at line 71 (Save button) and <XIcon> at line 74 (Cancel button) in TagNameEditor
+- Both buttons already had aria-label attributes; icons are purely decorative
+- Build passed; committed as feat: US-647
+- Learning: Pattern is consistent with US-646 in the same file — icon-only buttons with aria-label always need aria-hidden on the icon
