@@ -1,0 +1,11 @@
+# Ralph Progress Log
+Started: Sat May  2 17:43:22 PDT 2026
+---
+
+## US-614 - Fix PipelineStagesEditor drag handle: focus:outline-none → focus-visible ring pattern
+**Status:** PASS
+**File:** frontend/src/components/PipelineStagesEditor.jsx (line 82)
+**Change:** Replaced `focus:outline-none` with `focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1` on the drag handle button's className.
+**Build:** Passed (2.66s)
+**Commit:** d8845ae
+**Learning:** The drag handle already had `aria-label='Drag to reorder'` which is correct. The only gap was that `focus:outline-none` removed focus indicators for all focus (including keyboard), while the fix scopes the outline removal and ring to `focus-visible` only — keyboard users now see a ring, mouse users see no ring.

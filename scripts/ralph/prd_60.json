@@ -1,0 +1,148 @@
+{
+  "id": "PRD-60",
+  "title": "Accessibility: drag handle focus-visible ring, OnboardingChecklist icon aria-hidden, table aria-label+scope attributes in AnalyticsCharts/Tags/OfferComparison, and chart container role=img aria-label",
+  "description": "Continuation of the systematic UI improvement loop. This batch fixes 8 accessibility issues: drag handle button in PipelineStagesEditor replaces focus:outline-none with focus-visible ring pattern; OnboardingChecklist StepRow icons get aria-hidden and sr-only completion state text; 4 tables (AnalyticsCharts tags, AnalyticsCharts conversion, Tags page, OfferComparison) get aria-label and scope='col' on th elements; 5 chart ResponsiveContainers in AnalyticsCharts get role='img' aria-label wrappers; and OfferHeaderCell th gets scope='col'.",
+  "userStories": [
+    {
+      "id": "US-614",
+      "title": "Fix PipelineStagesEditor drag handle: focus:outline-none → focus-visible ring pattern",
+      "description": "As a keyboard user, the drag handle button in src/components/PipelineStagesEditor.jsx (line ~82) uses focus:outline-none with no focus-visible:ring-* — removing the focus indicator entirely for keyboard navigation. Replace focus:outline-none with focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1.",
+      "acceptanceCriteria": [
+        "Read src/components/PipelineStagesEditor.jsx first",
+        "On the drag handle <button> (line ~82) with className containing 'cursor-grab text-muted-foreground hover:text-foreground transition-colors focus:outline-none', replace focus:outline-none with focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+        "Final className on drag handle button: 'cursor-grab text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1'",
+        "Keep all other classes unchanged (cursor-grab, text-muted-foreground, hover:text-foreground, transition-colors)",
+        "If focus-visible ring already present on drag handle, mark passes: true with note 'already has focus-visible ring'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 1,
+      "passes": true,
+      "notes": "Read src/components/PipelineStagesEditor.jsx. The drag handle button is at line 82. It has aria-label='Drag to reorder' already — good. The only issue is focus:outline-none with no focus-visible ring. Replace only focus:outline-none with focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1. The ring-offset-1 provides a small gap from the button edge that works well for compact icon buttons. Do NOT change any other attributes (aria-label, {...attributes}, {...listeners}, cursor-grab, etc.)."
+    },
+    {
+      "id": "US-615",
+      "title": "Add aria-hidden and sr-only completion text to OnboardingChecklist StepRow icons",
+      "description": "As a screen reader user, the CheckCircle2 and Circle icons in StepRow (OnboardingChecklist.jsx line ~25-26) convey completion state visually but have no accessible text. Add aria-hidden='true' to both icons and a sr-only span for completion state.",
+      "acceptanceCriteria": [
+        "Read src/components/OnboardingChecklist.jsx first",
+        "In StepRow (line ~21), add aria-hidden='true' to the CheckCircle2 icon and the Circle icon",
+        "Add a <span className='sr-only'> after the icon (inside the ternary or as a sibling) that reads 'Completed' when done=true and 'Incomplete' when done=false",
+        "Final StepRow icon/sr-only block: done ? (<><CheckCircle2 aria-hidden='true' .../><span className='sr-only'>Completed</span></>) : (<><Circle aria-hidden='true' .../><span className='sr-only'>Incomplete</span></>)",
+        "Keep all existing className values on both icons unchanged",
+        "Leave the label, description, and done text/color logic unchanged",
+        "If aria-hidden already present on both icons, mark passes: true with note 'already has aria-hidden'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Read src/components/OnboardingChecklist.jsx. StepRow is at line 21. The ternary renders either CheckCircle2 or Circle. Wrap each branch in a Fragment (<>) to add the sr-only span alongside the icon: {done ? <><CheckCircle2 className='mt-0.5 h-5 w-5 shrink-0 text-primary' aria-hidden='true' /><span className='sr-only'>Completed</span></> : <><Circle className='mt-0.5 h-5 w-5 shrink-0 text-muted-foreground/30' aria-hidden='true' /><span className='sr-only'>Incomplete</span></>}. The existing className values on both icons must stay exactly as-is. Only add aria-hidden='true' and the sr-only span. Do not change anything else in StepRow."
+    },
+    {
+      "id": "US-616",
+      "title": "Add aria-label and scope='col' to AnalyticsCharts tags table",
+      "description": "As a screen reader user, the tags table in AnalyticsCharts.jsx (line ~140) has no accessible name and its column headers lack scope='col' — making it hard to navigate with a screen reader.",
+      "acceptanceCriteria": [
+        "Read src/components/AnalyticsCharts.jsx first",
+        "On the <table className='w-full text-sm'> in AnalyticsTagsTable (line ~140), add aria-label='Tags offer rate'",
+        "On all 4 <th> elements in that table (Tag, Applications, Offers, Offer Rate), add scope='col'",
+        "Final table opening tag: <table className='w-full text-sm' aria-label='Tags offer rate'>",
+        "Final th elements: <th scope='col' className='pb-2 text-left ...'>, etc.",
+        "Leave ConversionRatesTable unchanged",
+        "If aria-label and scope='col' already present on tags table, mark passes: true with note 'already accessible'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "Read src/components/AnalyticsCharts.jsx. AnalyticsTagsTable is at line 136. The table is at line 140. There are 4 th elements: Tag, Applications, Offers, Offer Rate. Add aria-label='Tags offer rate' to the table element, and scope='col' to each of the 4 th elements. Do NOT change ConversionRatesTable — that is a separate story (US-617). Do not change td elements, class values, or any other attributes."
+    },
+    {
+      "id": "US-617",
+      "title": "Add aria-label and scope='col' to AnalyticsCharts conversion rates table",
+      "description": "As a screen reader user, the conversion rates table in AnalyticsCharts.jsx (line ~189) has no accessible name and its column headers lack scope='col'.",
+      "acceptanceCriteria": [
+        "Read src/components/AnalyticsCharts.jsx first",
+        "On the <table className='w-full text-sm'> in ConversionRatesTable (line ~189), add aria-label='Conversion rates by stage'",
+        "On all 5 <th> elements in that table (Stage, Entered, Converted, Rate, Avg Days), add scope='col'",
+        "Final table opening tag: <table className='w-full text-sm' aria-label='Conversion rates by stage'>",
+        "Final th elements: <th scope='col' className='pb-2 text-left ...'>, etc.",
+        "Leave AnalyticsTagsTable unchanged",
+        "If aria-label and scope='col' already present on conversion table, mark passes: true with note 'already accessible'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": "Read src/components/AnalyticsCharts.jsx. ConversionRatesTable is at line 185. The table is at line 189. There are 5 th elements: Stage, Entered, Converted, Rate, Avg Days. Add aria-label='Conversion rates by stage' to the table element, and scope='col' to each of the 5 th elements. Do NOT change AnalyticsTagsTable — that was US-616. Do not change td elements, class values, ConversionRatesRow, or any other attributes."
+    },
+    {
+      "id": "US-618",
+      "title": "Add aria-label and scope='col' to Tags page table",
+      "description": "As a screen reader user, the tags management table in src/pages/Tags.jsx (line ~128) has no accessible name and its column headers lack scope='col'.",
+      "acceptanceCriteria": [
+        "Read src/pages/Tags.jsx first",
+        "On the <table className='w-full'> in TagsTable (line ~128), add aria-label='Tags'",
+        "On all 3 <th> elements (Tag, Applications, Actions), add scope='col'",
+        "Final table opening tag: <table className='w-full' aria-label='Tags'>",
+        "Final th elements: <th scope='col' className='px-4 py-2.5 ...'>, etc.",
+        "If aria-label and scope='col' already present, mark passes: true with note 'already accessible'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": "Read src/pages/Tags.jsx. TagsTable is at line 125. The table is at line 128. There are 3 th elements: Tag, Applications, Actions. Add aria-label='Tags' to the table element, and scope='col' to each th. Do not change td elements, TagRow, or any other part of the file."
+    },
+    {
+      "id": "US-619",
+      "title": "Add aria-label and scope='col' to OfferComparison Field header column",
+      "description": "As a screen reader user, the offer comparison table in OfferComparison.jsx (line ~99) has no accessible name, and the static 'Field' column header (line ~102) lacks scope='col'.",
+      "acceptanceCriteria": [
+        "Read src/pages/OfferComparison.jsx first",
+        "On the <table className='min-w-full divide-y divide-border'> in OfferComparisonTable (line ~99), add aria-label='Offer comparison'",
+        "On the static 'Field' <th> (line ~102) with className 'w-36 px-4 py-3 ...', add scope='col'",
+        "Final table opening tag: <table className='min-w-full divide-y divide-border' aria-label='Offer comparison'>",
+        "Final Field th: <th scope='col' className='w-36 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground'>",
+        "Leave OfferHeaderCell unchanged (that is covered by US-621)",
+        "If aria-label and scope='col' already present on Field th, mark passes: true with note 'already accessible'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": "Read src/pages/OfferComparison.jsx. OfferComparisonTable is at line 96. The table is at line 99. The 'Field' th is at line 102. Add aria-label='Offer comparison' to the table element and scope='col' to the Field th only. Do NOT change OfferHeaderCell (the dynamic company column th) — that is a separate story (US-621). Do not change td, EditableCell, or any other part of the table."
+    },
+    {
+      "id": "US-620",
+      "title": "Add role='img' aria-label wrappers to 5 chart ResponsiveContainers in AnalyticsCharts.jsx",
+      "description": "As a screen reader user, recharts ResponsiveContainer wrappers generate div+SVG with no accessible name — charts are invisible to assistive technology. Wrap each of the 5 chart ResponsiveContainers in a div with role='img' and an aria-label describing the chart.",
+      "acceptanceCriteria": [
+        "Read src/components/AnalyticsCharts.jsx first",
+        "Wrap the ResponsiveContainer in WeeklyApplicationsChart with <div role='img' aria-label='Bar chart: Applications per Week'>",
+        "Wrap the ResponsiveContainer in StageFunnelChart with <div role='img' aria-label='Bar chart: Stage Funnel'>",
+        "Wrap the ResponsiveContainer in ResponseRateChart with <div role='img' aria-label='Line chart: Response Rate by Month'>",
+        "Wrap the ResponsiveContainer in TopCompaniesChart with <div role='img' aria-label='Bar chart: Top 10 Companies Applied To'>",
+        "Wrap the ResponsiveContainer in FunnelBarChart with <div role='img' aria-label='Bar chart: Stage Conversion Funnel'>",
+        "Each wrapper div has no className — just role='img' aria-label='...'",
+        "ResponsiveContainer props (width, height, etc.) remain unchanged",
+        "If role='img' aria-label wrappers already present on all 5 charts, mark passes: true with note 'already has aria wrappers'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 7,
+      "passes": false,
+      "notes": "Read src/components/AnalyticsCharts.jsx. The 5 chart functions are WeeklyApplicationsChart (line 60), StageFunnelChart (line 76), ResponseRateChart (line 92), TopCompaniesChart (line 109), FunnelBarChart (line 210). In each function, wrap the <ResponsiveContainer ...> element with <div role='img' aria-label='...'></div>. Use the ChartCard title as the label: 'Bar chart: Applications per Week', 'Bar chart: Stage Funnel', 'Line chart: Response Rate by Month', 'Bar chart: Top 10 Companies Applied To', 'Bar chart: Stage Conversion Funnel'. The chart type prefix (Bar chart / Line chart) matches the recharts component used inside. Do not add className to the wrapper div. Do not change any chart props, ResponsiveContainer, or ChartCard."
+    },
+    {
+      "id": "US-621",
+      "title": "Add scope='col' to OfferHeaderCell th in OfferComparison.jsx",
+      "description": "As a screen reader user, the company column header th elements rendered by OfferHeaderCell in OfferComparison.jsx (line ~67) lack scope='col' — making the dynamic column headers invisible to screen reader table navigation.",
+      "acceptanceCriteria": [
+        "Read src/pages/OfferComparison.jsx first",
+        "In OfferHeaderCell (line ~67), on the <th className='min-w-[180px] px-4 py-3 text-left'>, add scope='col'",
+        "Final th in OfferHeaderCell: <th scope='col' className='min-w-[180px] px-4 py-3 text-left'>",
+        "Leave all content inside the th (Trophy icon, company name, role_title span, Mark winner Button) unchanged",
+        "If scope='col' already present on OfferHeaderCell th, mark passes: true with note 'already has scope'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 8,
+      "passes": false,
+      "notes": "Read src/pages/OfferComparison.jsx. OfferHeaderCell is at line 65. The th is at line 67: <th className='min-w-[180px] px-4 py-3 text-left'>. Add scope='col' to this th element — that is the only change in OfferHeaderCell. Do not change any of the content inside the th (Trophy icon, company name span, role_title span, Button), and do not change the className. The Trophy icon at line 70 has aria-label='Winner' which is correct for a meaningful icon — do not change that."
+    }
+  ]
+}
