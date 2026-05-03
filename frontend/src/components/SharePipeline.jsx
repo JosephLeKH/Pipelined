@@ -44,7 +44,7 @@ function CopyButton({ url }) {
       className="gap-1.5 text-xs text-primary hover:bg-primary/10 hover:text-primary"
       aria-label={copied ? "Link copied" : "Copy share link"}
     >
-      {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+      {copied ? <Check className="h-3.5 w-3.5" aria-hidden="true" /> : <Copy className="h-3.5 w-3.5" aria-hidden="true" />}
       {copied ? "Copied!" : "Copy link"}
     </Button>
   );
@@ -70,8 +70,8 @@ function ActiveShare({ share, onRevoke, isRevoking }) {
         className="self-start gap-1.5 text-xs text-destructive hover:bg-destructive/10 hover:text-destructive"
       >
         {isRevoking
-          ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
-          : <Link2Off className="h-3.5 w-3.5" />}
+          ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
+          : <Link2Off className="h-3.5 w-3.5" aria-hidden="true" />}
         Revoke link
       </Button>
     </div>
@@ -91,8 +91,8 @@ function NoShare({ onCreate, isCreating }) {
         className="flex items-center gap-1.5 self-start"
       >
         {isCreating
-          ? <Loader2 className="h-4 w-4 animate-spin" />
-          : <Link2 className="h-4 w-4" />}
+          ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+          : <Link2 className="h-4 w-4" aria-hidden="true" />}
         Generate link
       </Button>
     </div>
