@@ -105,7 +105,7 @@ function TagRow({ tag, onRename, onDelete }) {
             aria-label={`Rename tag ${tag.name}`}
             className="p-1.5 h-auto"
           >
-            <Pencil className="h-3.5 w-3.5" />
+            <Pencil className="h-3.5 w-3.5" aria-hidden="true" />
           </Button>
           <Button
             type="button"
@@ -114,7 +114,7 @@ function TagRow({ tag, onRename, onDelete }) {
             aria-label={`Delete tag ${tag.name}`}
             className="p-1.5 h-auto text-destructive hover:text-destructive"
           >
-            <Trash2 className="h-3.5 w-3.5" />
+            <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
           </Button>
         </div>
       </td>
