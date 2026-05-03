@@ -21,3 +21,11 @@ Started: Sat May  2 17:22:13 PDT 2026
 - Committed: feat: US-608 - Add dark: variant to TAG in lib/designTokens.js
 - Status: PASS
 
+
+
+## US-609 — Add dark: variant to TOOLTIP in lib/designTokens.js
+- Appended dark:bg-gray-700 to TOOLTIP token in frontend/src/lib/designTokens.js (line 125)
+- bg-gray-800 (#1f1b17) blends into dark mode backgrounds; dark:bg-gray-700 (#292524) gives a slightly lighter surface
+- text-white remains correct in dark mode (no change needed)
+- Build passed (✓ built in 2.74s)
+- Committed: 1813565

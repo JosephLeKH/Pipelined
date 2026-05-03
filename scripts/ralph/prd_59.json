@@ -64,7 +64,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 4,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/lib/designTokens.js. TOOLTIP is at line 125. bg-gray-800 in this project's custom palette is #1f1b17 — very dark, so it blends into dark mode page backgrounds. Use dark:bg-gray-700 (#292524 approximately) for a slightly more distinct tooltip surface. text-white remains correct in dark mode. Only change TOOLTIP."
     },
     {
