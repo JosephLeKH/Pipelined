@@ -88,7 +88,7 @@ export const BADGE_SUCCESS =
 
 /** Warning badge — muted amber pastel bg, border-defined, pill shape. Maps to Interview pipeline status. */
 export const BADGE_WARNING =
-  "bg-amber-50 text-amber-700 border border-amber-200 text-xs font-display font-medium px-2 py-0.5 rounded-full";
+  "bg-amber-50 text-amber-700 border border-amber-200 text-xs font-display font-medium px-2 py-0.5 rounded-full dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-700/50";
 
 /** Error badge — muted red pastel bg, border-defined, pill shape. Maps to Rejected pipeline status. */
 export const BADGE_ERROR =
