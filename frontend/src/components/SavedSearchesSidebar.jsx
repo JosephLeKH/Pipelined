@@ -57,7 +57,7 @@ export default function SavedSearchesSidebar({ onApply }) {
                 onClick={(e) => handleDelete(e, s.id)}
                 className="h-6 w-6 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
               >
-                <Trash2 className="h-3.5 w-3.5" />
+                <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
               </Button>
             </div>
           </li>
