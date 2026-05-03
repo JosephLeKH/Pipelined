@@ -113,9 +113,9 @@ export const STALE_CONTACT_DAYS = 14;
 export const RELATIONSHIP_OPTIONS = ["recruiter", "referral", "mentor", "peer", "hiring_manager", "other"];
 
 export const RELATIONSHIP_COLORS = {
-  recruiter: { bg: "bg-brand-100", text: "text-brand-700" },
-  referral: { bg: "bg-emerald-100", text: "text-emerald-700" },
-  mentor: { bg: "bg-blue-100", text: "text-accent-blue" },
+  recruiter: { bg: "bg-brand-100 dark:bg-brand-900/30", text: "text-brand-700 dark:text-brand-300" },
+  referral: { bg: "bg-emerald-100 dark:bg-emerald-900/30", text: "text-emerald-700 dark:text-emerald-300" },
+  mentor: { bg: "bg-blue-100 dark:bg-blue-900/30", text: "text-accent-blue dark:text-blue-300" },
   peer: { bg: "bg-sky-100", text: "text-sky-700" },
   hiring_manager: { bg: "bg-amber-100", text: "text-amber-700" },
   other: { bg: "bg-gray-100", text: "text-gray-700" },
