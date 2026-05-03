@@ -64,7 +64,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 4,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/lib/designTokens.js. BADGE_INFO is at line 99. accent-blue is a static Tailwind color (#6a9bcc) — not a CSS variable, so it has no automatic dark variant. Use dark:text-blue-300 as the dark text variant. Append dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-700/50 after 'rounded-full'. Only change BADGE_INFO."
     },
     {

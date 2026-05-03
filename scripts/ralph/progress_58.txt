@@ -26,3 +26,9 @@ Started: Sat May  2 17:06:40 PDT 2026
 **Summary:** Appended `dark:bg-red-900/30 dark:text-red-300 dark:border-red-700/50` to BADGE_ERROR in `frontend/src/lib/designTokens.js` (line 95). Pattern matches BADGE_SUCCESS (emerald) and BADGE_WARNING (amber) — red-900/30 for background, red-300 for text, red-700/50 for border. Build passed in 2.75s.
 
 **Learnings:** The three badge tokens (SUCCESS, WARNING, ERROR) all follow the identical pattern: color-50 light bg → dark:bg-color-900/30, color-700 text → dark:text-color-300, border-color-200 → dark:border-color-700/50. BADGE_INFO uses accent-blue (static color, not CSS variable) so its dark text variant uses blue-300 instead.
+
+---
+US-601: Add dark: variants to BADGE_INFO in lib/designTokens.js
+Status: COMPLETE
+Commit: d0165be
+Summary: Appended dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-700/50 to BADGE_INFO in frontend/src/lib/designTokens.js. accent-blue is a static Tailwind color with no automatic dark variant, so dark:text-blue-300 is used as the dark mode substitute. Build passed in 2.72s.
