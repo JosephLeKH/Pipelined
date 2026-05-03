@@ -51,7 +51,7 @@ function EmailVerificationBanner() {
       className="flex items-center justify-between border-b border-amber-200 bg-amber-50 px-4 py-2.5 dark:border-amber-700/50 dark:bg-amber-900/20"
     >
       <div className="flex items-center gap-2">
-        <AlertTriangle className="h-4 w-4 flex-shrink-0 text-amber-600 dark:text-amber-400" />
+        <AlertTriangle aria-hidden="true" className="h-4 w-4 flex-shrink-0 text-amber-600 dark:text-amber-400" />
         <span className="text-sm font-medium text-amber-800 dark:text-amber-300">
           {resendSent
             ? "Verification email sent — check your inbox."
@@ -77,7 +77,7 @@ function EmailVerificationBanner() {
         aria-label="Dismiss"
         className="ml-4 h-6 w-6 text-amber-400 hover:bg-amber-100 hover:text-amber-600 dark:hover:bg-amber-800/30 dark:hover:text-amber-200"
       >
-        <X className="h-3.5 w-3.5" />
+        <X aria-hidden="true" className="h-3.5 w-3.5" />
       </Button>
     </div>
   );
