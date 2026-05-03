@@ -79,7 +79,7 @@ function SortableStageItem({ id, value, onRename, onRemove, canRemove }) {
       style={{ transform: CSS.Transform.toString(transform), transition }}
       className={`flex items-center gap-2 rounded-xl bg-card border border-border px-3 py-2 ${isDragging ? "opacity-50" : "opacity-100"}`}
     >
-      <button type="button" {...attributes} {...listeners} aria-label="Drag to reorder" className="cursor-grab text-muted-foreground hover:text-foreground transition-colors focus:outline-none">
+      <button type="button" {...attributes} {...listeners} aria-label="Drag to reorder" className="cursor-grab text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1">
         <GripVertical className="h-4 w-4" />
       </button>
       <Input type="text" value={value} maxLength={STAGE_NAME_MAX_LENGTH} onChange={(e) => onRename(id, e.target.value)} className="flex-1 rounded border-0 bg-transparent text-sm text-foreground focus:outline-none focus-visible:ring-1 focus-visible:ring-ring" aria-label={`Stage name: ${value}`} />
