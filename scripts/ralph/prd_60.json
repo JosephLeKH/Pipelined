@@ -34,7 +34,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/OnboardingChecklist.jsx. StepRow is at line 21. The ternary renders either CheckCircle2 or Circle. Wrap each branch in a Fragment (<>) to add the sr-only span alongside the icon: {done ? <><CheckCircle2 className='mt-0.5 h-5 w-5 shrink-0 text-primary' aria-hidden='true' /><span className='sr-only'>Completed</span></> : <><Circle className='mt-0.5 h-5 w-5 shrink-0 text-muted-foreground/30' aria-hidden='true' /><span className='sr-only'>Incomplete</span></>}. The existing className values on both icons must stay exactly as-is. Only add aria-hidden='true' and the sr-only span. Do not change anything else in StepRow."
     },
     {

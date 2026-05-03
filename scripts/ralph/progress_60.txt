@@ -9,3 +9,11 @@ Started: Sat May  2 17:43:22 PDT 2026
 **Build:** Passed (2.66s)
 **Commit:** d8845ae
 **Learning:** The drag handle already had `aria-label='Drag to reorder'` which is correct. The only gap was that `focus:outline-none` removed focus indicators for all focus (including keyboard), while the fix scopes the outline removal and ring to `focus-visible` only — keyboard users now see a ring, mouse users see no ring.
+
+## US-615 - Add aria-hidden and sr-only completion text to OnboardingChecklist StepRow icons
+**Status:** PASS
+**File:** frontend/src/components/OnboardingChecklist.jsx (line 24-27)
+**Change:** Wrapped each branch of the done ternary in a Fragment, added `aria-hidden="true"` to CheckCircle2 and Circle icons, and added `<span className="sr-only">Completed</span>` / `<span className="sr-only">Incomplete</span>` sibling spans.
+**Build:** Passed (2.67s)
+**Commit:** 1f7e4c4
+**Learning:** Decorative icons that convey state (check vs. empty circle) should be aria-hidden so screen readers skip them, then a sr-only text sibling provides the accessible label. Wrapping in a Fragment lets us add the span without introducing a layout div.
