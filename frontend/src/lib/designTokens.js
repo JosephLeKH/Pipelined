@@ -100,7 +100,7 @@ export const BADGE_INFO =
 
 /** Tag / filter chip — warm surface bg, muted text, pill shape, subtle hover. */
 export const TAG =
-  "bg-surface-secondary text-gray-600 text-xs px-2 py-1 rounded-full hover:bg-surface-tertiary transition-colors";
+  "bg-surface-secondary text-gray-600 text-xs px-2 py-1 rounded-full hover:bg-surface-tertiary transition-colors dark:text-gray-400";
 
 /** Success banner — brand-tinted bg, border-defined, used for confirmation messages on auth pages. */
 export const SUCCESS_BANNER =
