@@ -14,3 +14,8 @@ Summary: Added aria-hidden='true' to <MoreHorizontal className='h-4 w-4' /> at l
 
 Learnings: Standard icon-only button pattern — when Button has aria-label and size='icon', the icon inside is always decorative and should have aria-hidden='true'. Build passed immediately.
 
+
+## US-641 - Add aria-hidden='true' to PhoneCall and Unlink icons in ContactCard.jsx
+**Status:** PASSED
+**Changes:** Added aria-hidden='true' to PhoneCall icon (line ~76, inside Button aria-label='Mark as pinged') and Unlink icon (line ~93, inside Button aria-label='Unlink contact') in src/components/ContactCard.jsx.
+**Learnings:** Two icons in the same component, both in separate icon-only buttons (size='icon') each with an aria-label. Straightforward pattern — both icons purely decorative relative to their button's aria-label. Build passed cleanly.

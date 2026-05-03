@@ -60,7 +60,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 4,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/ContactCard.jsx. The PhoneCall is at line ~76 inside a Button with aria-label='Mark as pinged' and size='icon'. The Unlink is at line ~93 inside a Button with aria-label='Unlink contact' and size='icon'. Both are icon-only buttons — icons are decorative. Add aria-hidden='true' to each. Do not change className, aria-label, disabled, onClick, or any other attribute on either button."
     },
     {
