@@ -40,7 +40,7 @@ export const BUTTON_DANGER =
 /** Text input, select, textarea base styles — semantic palette, Inter body text. */
 export const INPUT_BASE =
   "border border-input rounded-md bg-background text-foreground " +
-  "placeholder:text-muted-foreground focus:border-brand-500 focus:ring-1 focus:ring-brand-500/20 " +
+  "placeholder:text-muted-foreground focus:border-brand-500 focus-visible:ring-1 focus-visible:ring-brand-500/20 " +
   "focus:outline-none transition-colors text-sm px-3 py-2 font-sans w-full " +
   "disabled:opacity-50 disabled:cursor-not-allowed";
 
