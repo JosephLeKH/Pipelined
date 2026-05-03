@@ -103,7 +103,7 @@ function CommandPaletteDialog({ query, setQuery, filteredApps, actions, idx, act
         className="fixed left-1/2 top-[20%] z-50 -translate-x-1/2 w-full max-w-xl overflow-hidden bg-card rounded-2xl border border-border shadow-lg"
       >
         <div className="flex items-center gap-2 border-b border-border px-3">
-          <SearchIcon className="h-4 w-4 shrink-0 text-muted-foreground" />
+          <SearchIcon className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
           <Input
             autoFocus
             type="text"
