@@ -1,0 +1,8 @@
+# Ralph Progress Log
+Started: Sun May  3 11:38:29 PDT 2026
+---
+
+## US-638 — Add aria-hidden='true' to Plus icon in ContactsSection.jsx Add-contact button
+**Status:** PASS
+**Change:** Added `aria-hidden="true"` to `<Plus className="h-3.5 w-3.5" />` at line 35 inside the Button with `aria-label="Add contact"` and visible "New" text.
+**Learnings:** Icon inside a button that has both an aria-label and visible text is doubly decorative — aria-hidden is the correct fix. Build confirmed clean (3.89s).

@@ -1,0 +1,131 @@
+{
+  "id": "PRD-63",
+  "title": "Accessibility: aria-hidden='true' for decorative icons in ContactsSection, TagInput, ApplicationRowActions, ContactCard, SavedSearchesSidebar, OfferDetailsSection, DetailPanelBody, and focus-visible ring fix for KanbanBoard navigation dots",
+  "description": "Continuation of the systematic UI improvement loop. This batch fixes 8 accessibility gaps: ContactsSection Plus icon in Add-contact button; TagInput XIcon in Remove-tag button; ApplicationRowActions MoreHorizontal in Application-actions button; ContactCard PhoneCall and Unlink icons in icon-only buttons; SavedSearchesSidebar Trash2 in Delete-saved-search button; OfferDetailsSection ChevronDown/ChevronRight alongside visible Offer Details text; DetailPanelBody AlertTriangle alongside overdue text; and KanbanBoard mobile navigation dot buttons missing focus-visible ring.",
+  "userStories": [
+    {
+      "id": "US-638",
+      "title": "Add aria-hidden='true' to Plus icon in ContactsSection.jsx Add-contact button",
+      "description": "As a screen reader user, the Plus icon (line ~35) inside the 'Add contact' button in src/components/ContactsSection.jsx is decorative — the button has both aria-label='Add contact' and visible 'New' text, so the icon conveys no additional information.",
+      "acceptanceCriteria": [
+        "Read src/components/ContactsSection.jsx first",
+        "On the <Plus className='h-3.5 w-3.5' /> at line ~35 (inside Button with aria-label='Add contact' and visible 'New' text), add aria-hidden='true'",
+        "Keep all existing className values on the icon unchanged",
+        "If aria-hidden='true' already present on the icon, mark passes: true with note 'already has aria-hidden'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 1,
+      "passes": true,
+      "notes": "Read src/components/ContactsSection.jsx. The Plus is at line ~35 inside a Button with aria-label='Add contact' and className containing 'gap-1' — the button also renders visible text 'New'. The icon is doubly covered (aria-label + visible text) so it is purely decorative. Add aria-hidden='true' to the Plus icon only. Do not change any className values, aria-label, or any other attribute."
+    },
+    {
+      "id": "US-639",
+      "title": "Add aria-hidden='true' to XIcon in TagInput.jsx Remove-tag button",
+      "description": "As a screen reader user, the XIcon (line ~113) inside the icon-only 'Remove tag' button in src/components/TagInput.jsx is decorative — the button already has aria-label={`Remove tag ${tag}`} that fully describes the action.",
+      "acceptanceCriteria": [
+        "Read src/components/TagInput.jsx first",
+        "On the <XIcon className='h-2.5 w-2.5' /> at line ~113 (inside Button with aria-label={`Remove tag ${tag}`}), add aria-hidden='true'",
+        "Keep all existing className values on the icon unchanged",
+        "If aria-hidden='true' already present on the icon, mark passes: true with note 'already has aria-hidden'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 2,
+      "notes": "Read src/components/TagInput.jsx. The XIcon is at line ~113 inside a Button with aria-label={`Remove tag ${tag}`} and size='icon'. It is an icon-only button — the icon conveys no information beyond the aria-label. Add aria-hidden='true' to the XIcon only. Do not change className, aria-label, onClick, or any other attribute."
+    },
+    {
+      "id": "US-640",
+      "title": "Add aria-hidden='true' to MoreHorizontal icon in ApplicationRowActions.jsx",
+      "description": "As a screen reader user, the MoreHorizontal icon (line ~46) inside the icon-only 'Application actions' button in src/components/ApplicationRowActions.jsx is decorative — the button already has aria-label='Application actions'.",
+      "acceptanceCriteria": [
+        "Read src/components/ApplicationRowActions.jsx first",
+        "On the <MoreHorizontal className='h-4 w-4' /> at line ~46 (inside Button with aria-label='Application actions'), add aria-hidden='true'",
+        "Keep all existing className values on the icon unchanged",
+        "If aria-hidden='true' already present on the icon, mark passes: true with note 'already has aria-hidden'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "Read src/components/ApplicationRowActions.jsx. The MoreHorizontal is at line ~46 inside a Button with aria-label='Application actions' and size='icon'. Icon-only button pattern — icon is decorative. Add aria-hidden='true' to the MoreHorizontal icon only. Do not change any className, aria-label, or other attribute."
+    },
+    {
+      "id": "US-641",
+      "title": "Add aria-hidden='true' to PhoneCall and Unlink icons in ContactCard.jsx",
+      "description": "As a screen reader user, the PhoneCall icon (line ~76) inside the 'Mark as pinged' button and the Unlink icon (line ~93) inside the 'Unlink contact' button in src/components/ContactCard.jsx are decorative — both buttons have aria-label attributes that fully describe their purpose.",
+      "acceptanceCriteria": [
+        "Read src/components/ContactCard.jsx first",
+        "On the <PhoneCall className='h-3.5 w-3.5' /> at line ~76 (inside Button with aria-label='Mark as pinged'), add aria-hidden='true'",
+        "On the <Unlink className='h-3.5 w-3.5' /> at line ~93 (inside Button with aria-label='Unlink contact'), add aria-hidden='true'",
+        "Keep all existing className values on both icons unchanged",
+        "If aria-hidden='true' already present on both icons, mark passes: true with note 'already has aria-hidden'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": "Read src/components/ContactCard.jsx. The PhoneCall is at line ~76 inside a Button with aria-label='Mark as pinged' and size='icon'. The Unlink is at line ~93 inside a Button with aria-label='Unlink contact' and size='icon'. Both are icon-only buttons — icons are decorative. Add aria-hidden='true' to each. Do not change className, aria-label, disabled, onClick, or any other attribute on either button."
+    },
+    {
+      "id": "US-642",
+      "title": "Add aria-hidden='true' to Trash2 icon in SavedSearchesSidebar.jsx Delete button",
+      "description": "As a screen reader user, the Trash2 icon (line ~60) inside the icon-only 'Delete saved search' button in src/components/SavedSearchesSidebar.jsx is decorative — the button has aria-label='Delete saved search'.",
+      "acceptanceCriteria": [
+        "Read src/components/SavedSearchesSidebar.jsx first",
+        "On the <Trash2 className='h-3.5 w-3.5' /> at line ~60 (inside Button with aria-label='Delete saved search'), add aria-hidden='true'",
+        "Keep all existing className values on the icon unchanged",
+        "If aria-hidden='true' already present on the icon, mark passes: true with note 'already has aria-hidden'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": "Read src/components/SavedSearchesSidebar.jsx. The Trash2 is at line ~60 inside a Button with aria-label='Delete saved search' and size='icon'. Icon-only button — icon is decorative. Add aria-hidden='true' to the Trash2 only. Do not change className, aria-label, onClick, or any other attribute."
+    },
+    {
+      "id": "US-643",
+      "title": "Add aria-hidden='true' to ChevronDown and ChevronRight in OfferDetailsSection.jsx",
+      "description": "As a screen reader user, the ChevronDown icon (line ~84) and ChevronRight icon (line ~86) in the toggle button in src/components/OfferDetailsSection.jsx are decorative — the button has visible 'Offer Details' text and aria-expanded conveys the open/closed state.",
+      "acceptanceCriteria": [
+        "Read src/components/OfferDetailsSection.jsx first",
+        "On the <ChevronDown className='h-4 w-4' /> at line ~84 (inside Button with aria-expanded and visible 'Offer Details' text), add aria-hidden='true'",
+        "On the <ChevronRight className='h-4 w-4' /> at line ~86 (inside the same Button, alternate branch), add aria-hidden='true'",
+        "Keep all existing className values on both icons unchanged",
+        "Leave aria-expanded and all other Button props unchanged",
+        "If aria-hidden='true' already present on both icons, mark passes: true with note 'already has aria-hidden'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": "Read src/components/OfferDetailsSection.jsx. The toggle button is at line ~83 with aria-expanded={open}. The ternary at lines ~84-86 renders ChevronDown when open and ChevronRight when closed, both alongside visible 'Offer Details' text. The expansion state is already communicated by aria-expanded — the chevron icon is purely decorative. Add aria-hidden='true' to both ChevronDown and ChevronRight. Do not change className, aria-expanded, variant, onClick, or any other prop."
+    },
+    {
+      "id": "US-644",
+      "title": "Add aria-hidden='true' to AlertTriangle in DetailPanelBody.jsx overdue indicator",
+      "description": "As a screen reader user, the AlertTriangle icon (line ~47) inside the 'Follow-up overdue' indicator div in src/components/DetailPanelBody.jsx is decorative — the adjacent text 'Follow-up overdue by N days' fully communicates the warning.",
+      "acceptanceCriteria": [
+        "Read src/components/DetailPanelBody.jsx first",
+        "On the <AlertTriangle className='h-3.5 w-3.5 shrink-0' /> at line ~47 (inside div alongside 'Follow-up overdue by {overdueDays} day...' text), add aria-hidden='true'",
+        "Keep all existing className values on the icon unchanged",
+        "If aria-hidden='true' already present on the icon, mark passes: true with note 'already has aria-hidden'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 7,
+      "passes": false,
+      "notes": "Read src/components/DetailPanelBody.jsx. The AlertTriangle is at line ~47 inside a div that also renders text 'Follow-up overdue by {overdueDays} day{overdueDays !== 1 ? \"s\" : \"\"}'. The text fully communicates the warning — the icon is decorative. Add aria-hidden='true' to the AlertTriangle. Do not change className, the conditional rendering logic, or any surrounding elements."
+    },
+    {
+      "id": "US-645",
+      "title": "Add focus-visible ring to KanbanBoard mobile stage navigation dot buttons",
+      "description": "As a keyboard user, the mobile stage navigation dot buttons in src/components/KanbanBoard.jsx (line ~58) use no focus-visible ring classes — keyboard focus is invisible. Add focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring to each dot button's className.",
+      "acceptanceCriteria": [
+        "Read src/components/KanbanBoard.jsx first",
+        "On the <button> at line ~58 (inside the stage navigation dots map) with className containing 'h-2 w-2 rounded-full transition-colors', add focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 to the className string",
+        "Final className (active state): 'h-2 w-2 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 bg-primary'",
+        "Final className (inactive state): 'h-2 w-2 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 bg-muted-foreground/30'",
+        "Keep aria-label, aria-pressed, onClick, type, and key props unchanged",
+        "If focus-visible ring already present on dot buttons, mark passes: true with note 'already has focus-visible ring'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 8,
+      "passes": false,
+      "notes": "Read src/components/KanbanBoard.jsx. The navigation dots are at line ~58 inside a map over stages. Each button has aria-label={s} and aria-pressed={s === mobileStage} — good keyboard semantics. The only issue is missing focus-visible ring. The className is a template literal with the conditional: `h-2 w-2 rounded-full transition-colors ${s === mobileStage ? 'bg-primary' : 'bg-muted-foreground/30'}`. Add focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 to the static part of the className. Do not change aria-label, aria-pressed, or the active/inactive color logic."
+    }
+  ]
+}
