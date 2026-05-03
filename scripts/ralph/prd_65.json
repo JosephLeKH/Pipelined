@@ -51,7 +51,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/pages/Tags.jsx. The loading branch is near lines ~196-202 and renders a centered spinner inside the card. Replace with 4 skeleton rows. Each row mirrors the TagRow layout: a colored pill badge (h-4 w-32 rounded-full shimmer) on the left and two small icon buttons (h-7 w-7 shimmer squares) on the right. Use shimmer-bg animate-shimmer classes. Wrap in divide-y divide-border for visual separation matching real rows."
     },
     {

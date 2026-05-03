@@ -14,3 +14,10 @@ Started: Sun May  3 16:55:14 PDT 2026
 - Added `<Button asChild variant="outline" size="sm" className="mt-4"><Link to="/dashboard">Go to dashboard</Link></Button>` after the explanatory paragraph in the empty state branch of ActivityTimeline
 - Build passed (`npm run build` clean)
 - Committed: feat: US-655 - Add 'Add your first application' CTA to Activity.jsx empty state
+
+---
+## US-656: Replace Tags.jsx loading spinner with skeleton table rows
+
+**Completed**: Replaced the centered spinner in Tags.jsx (lines ~195-198) with 4 shimmer skeleton rows matching the TagRow layout. The skeleton wraps in a card div (`rounded-xl bg-card border border-border overflow-hidden divide-y divide-border`) with `aria-hidden="true"`. Each of the 4 rows uses `flex items-center justify-between px-4 py-3` with a `h-4 w-32 rounded-full shimmer-bg animate-shimmer` pill on the left and two `h-7 w-7 rounded shimmer-bg animate-shimmer` squares on the right, mirroring the real TagRow's badge + action buttons. Used `Array.from({ length: 4 })` for concise generation. Build passed in 3.69s. Committed as f84bc70.
+
+**Learned**: The real TagRow uses a `<tr>` inside a `<table>`, but the skeleton uses divs as specified — this is intentional since the skeleton is purely visual and doesn't need table semantics. Including the card wrapper (`rounded-xl bg-card border border-border`) on the skeleton container ensures the skeleton visually matches where the real TagsTable will appear.
