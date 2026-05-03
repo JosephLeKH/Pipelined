@@ -57,7 +57,7 @@ export const EVENT_TYPE_COLORS = {
   other: { bg: "bg-surface-secondary", text: "text-gray-600 dark:text-gray-400", dot: "bg-gray-400 dark:bg-gray-300", border: "border-border-default" },
 };
 
-export const DEFAULT_EVENT_COLOR = { bg: "bg-surface-secondary", text: "text-gray-600", dot: "bg-gray-400", border: "border-border-default" };
+export const DEFAULT_EVENT_COLOR = { bg: "bg-surface-secondary", text: "text-gray-600 dark:text-gray-400", dot: "bg-gray-400 dark:bg-gray-300", border: "border-border-default" };
 
 export const CALENDAR_STALE_TIME_MS = 60_000;
 
