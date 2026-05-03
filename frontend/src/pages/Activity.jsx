@@ -113,13 +113,31 @@ function ActivityError({ onRetry }) {
   );
 }
 
+function ActivityTimelineSkeleton() {
+  return (
+    <div
+      className="rounded-xl bg-card border border-border px-4"
+      aria-hidden="true"
+      aria-label="Loading activity"
+    >
+      <div className="relative border-l border-border pl-4 ml-1.5">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <div key={i} className="flex items-start gap-4 px-2 py-3">
+            <div className="mt-1.5 h-3 w-3 flex-shrink-0 rounded-full shimmer-bg animate-shimmer" />
+            <div className="flex flex-1 flex-col gap-1.5">
+              <div className="h-4 w-3/4 rounded shimmer-bg animate-shimmer" />
+              <div className="h-3 w-1/3 rounded shimmer-bg animate-shimmer" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function ActivityTimeline({ isLoading, entries, onEntryClick }) {
   if (isLoading) {
-    return (
-      <div className="flex justify-center py-16">
-        <div className="h-6 w-6 animate-spin rounded-full border-2 border-border border-t-primary" />
-      </div>
-    );
+    return <ActivityTimelineSkeleton />;
   }
 
   if (entries.length === 0) {
