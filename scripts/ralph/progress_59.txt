@@ -45,3 +45,9 @@ Started: Sat May  2 17:22:13 PDT 2026
 - bg and border left unchanged (semantic CSS variable tokens)
 - Build: ✓ passed
 - Commit: feat: US-611 - Add dark: variants to DEFAULT_EVENT_COLOR text and dot in lib/constants.js
+
+US-612: Add dark:bg-gray-100 to toggle knob in DigestSection.jsx
+- Added dark:bg-gray-100 after bg-white on the toggle knob span (line 23)
+- Build passed, committed as feat: US-612
+- Learnings: Simple one-class addition; template literal className with dynamic translate logic was left unchanged as required
+
