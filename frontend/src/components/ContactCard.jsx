@@ -73,7 +73,7 @@ function ContactCard({ contact, applicationId }) {
                 className="h-7 w-7 text-muted-foreground hover:bg-primary/10 hover:text-primary"
                 aria-label="Mark as pinged"
               >
-                <PhoneCall className="h-3.5 w-3.5" />
+                <PhoneCall className="h-3.5 w-3.5" aria-hidden="true" />
               </Button>
             </TooltipTrigger>
             <TooltipContent>Mark as pinged</TooltipContent>
@@ -90,7 +90,7 @@ function ContactCard({ contact, applicationId }) {
                   className="h-7 w-7 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
                   aria-label="Unlink contact"
                 >
-                  <Unlink className="h-3.5 w-3.5" />
+                  <Unlink className="h-3.5 w-3.5" aria-hidden="true" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>Unlink from application</TooltipContent>
