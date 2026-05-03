@@ -1,7 +1,7 @@
 /** Activity feed page: unified chronological timeline of all user actions. */
 
 import { useState, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 import Activity from "lucide-react/dist/esm/icons/activity";
 
@@ -148,6 +148,9 @@ function ActivityTimeline({ isLoading, entries, onEntryClick }) {
         <p className="mt-1 text-xs text-muted-foreground">
           Actions will appear here as you apply, move stages, and schedule interviews.
         </p>
+        <Button asChild variant="outline" size="sm" className="mt-4">
+          <Link to="/dashboard">Go to dashboard</Link>
+        </Button>
       </div>
     );
   }
