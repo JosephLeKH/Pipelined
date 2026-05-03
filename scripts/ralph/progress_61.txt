@@ -30,3 +30,15 @@ Started: Sat May  2 17:58:25 PDT 2026
 2. Plus (line 53) alongside Input with aria-label='New checklist item' — icon reinforces visual affordance but Input label is the accessible name.
 **Build:** npm run build passed with no errors.
 **Commit:** feat: US-625 - Add aria-hidden='true' to Trash2 and Plus icons in PrepChecklist.jsx
+
+---
+US-626: Add aria-hidden='true' to icon props in SharePipeline.jsx (CopyButton, revoke button, generate button)
+Status: PASSED
+Summary: Added aria-hidden='true' to 6 icon instances across 3 locations in SharePipeline.jsx:
+  1. CopyButton (line 47): Check and Copy icons alongside 'Copied!'/'Copy link' text
+  2. ActiveShare revoke Button (lines 72-74): Loader2 and Link2Off alongside 'Revoke link' text
+  3. NoShare generate Button (lines 93-95): Loader2 and Link2 alongside 'Generate link' text
+  Left the standalone Loader2 at line 119 (aria-label='Loading') unchanged — it is not decorative.
+Learnings: When a button has both visible text and an icon, the icon is always decorative regardless of whether it's a loading spinner or a static icon. The spinner (Loader2) in a disabled button state is decorative because the button text already communicates the pending state. The exception is a standalone spinner with no accompanying text, where aria-label on the element is required (as seen at line 119).
+Build: npm run build passed with no errors.
+Commit: feat: US-626 - Add aria-hidden='true' to icon props in SharePipeline.jsx (CopyButton, revoke button, generate button)

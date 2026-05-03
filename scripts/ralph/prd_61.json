@@ -86,7 +86,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 5,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/SharePipeline.jsx. Three locations need aria-hidden='true': (1) CopyButton line ~47: ternary {copied ? <Check .../> : <Copy .../>} — both icons are alongside 'Copied!'/'Copy link' text, so both need aria-hidden='true'. (2) ActiveShare revoke Button line ~73: ternary {isRevoking ? <Loader2 .../> : <Link2Off .../>} — button has 'Revoke link' text, both icons decorative. (3) NoShare generate Button lines ~94-95: ternary {isCreating ? <Loader2 .../> : <Link2 .../>} — button has 'Generate link' text, both decorative. Do NOT touch the Loader2 at line ~119 which has aria-label='Loading' — that spinner is standalone with no surrounding text and intentionally accessible. Only change the 6 icon instances listed."
     },
     {
