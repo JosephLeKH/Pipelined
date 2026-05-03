@@ -9,11 +9,11 @@ export const STAGE_COLORS = {
 };
 
 export const DEFAULT_STAGE_COLOR = {
-  bg: "bg-gray-100",
-  text: "text-gray-800",
-  dot: "bg-gray-500",
-  border: "border-gray-400",
-  activeBg: "bg-gray-500",
+  bg: "bg-gray-100 dark:bg-gray-800",
+  text: "text-gray-800 dark:text-gray-200",
+  dot: "bg-gray-500 dark:bg-gray-400",
+  border: "border-gray-400 dark:border-gray-600",
+  activeBg: "bg-gray-500 dark:bg-gray-400",
 };
 
 export const MS_PER_DAY = 86_400_000;
