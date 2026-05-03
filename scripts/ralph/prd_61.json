@@ -68,7 +68,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 4,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/PrepChecklist.jsx. Two icons need aria-hidden='true': (1) Line 31: <Trash2 className='h-3.5 w-3.5' /> inside a Button with aria-label={`Delete checklist item: ${item.text}`}. This is an icon-only button pattern — the Button already has a complete aria-label, so Trash2 is decorative. (2) Line 53: <Plus className='h-4 w-4 flex-shrink-0 text-muted-foreground' /> in AddChecklistItem alongside an Input with aria-label='New checklist item'. The Plus visually suggests 'add' but the Input already has its accessible name. Add aria-hidden='true' to both. Only change the icon props — do not change className, onClick, or any other attributes."
     },
     {

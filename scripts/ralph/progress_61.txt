@@ -22,3 +22,11 @@ Started: Sat May  2 17:58:25 PDT 2026
 **Build:** Passed (npm run build ✓)
 **Commit:** feat: US-624 - Add aria-hidden='true' to SearchIcon in CommandPalette.jsx
 **Learned:** Icon-only decorative icons alongside labeled inputs should always carry aria-hidden='true' to prevent screen readers from announcing redundant icon names.
+
+## US-625: Add aria-hidden='true' to Trash2 and Plus icons in PrepChecklist.jsx
+**Status:** PASSED
+**Changes:** Added aria-hidden='true' to two icons in PrepChecklist.jsx:
+1. Trash2 (line 31) inside delete Button with aria-label — icon-only button pattern, icon is decorative.
+2. Plus (line 53) alongside Input with aria-label='New checklist item' — icon reinforces visual affordance but Input label is the accessible name.
+**Build:** npm run build passed with no errors.
+**Commit:** feat: US-625 - Add aria-hidden='true' to Trash2 and Plus icons in PrepChecklist.jsx
