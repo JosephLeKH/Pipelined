@@ -186,14 +186,14 @@ function ConversionRatesTable({ data }) {
   return (
     <ChartCard title="Conversion Rates by Stage" description="Progression rate from each stage to the next, and average time spent">
       <div className="overflow-x-auto">
-        <table className="w-full text-sm">
+        <table className="w-full text-sm" aria-label="Conversion rates by stage">
           <thead>
             <tr className="border-b border-border">
-              <th className="pb-2 text-left text-xs font-medium text-muted-foreground">Stage</th>
-              <th className="pb-2 text-right text-xs font-medium text-muted-foreground">Entered</th>
-              <th className="pb-2 text-right text-xs font-medium text-muted-foreground">Converted</th>
-              <th className="pb-2 text-right text-xs font-medium text-muted-foreground">Rate</th>
-              <th className="pb-2 text-right text-xs font-medium text-muted-foreground">Avg Days</th>
+              <th scope="col" className="pb-2 text-left text-xs font-medium text-muted-foreground">Stage</th>
+              <th scope="col" className="pb-2 text-right text-xs font-medium text-muted-foreground">Entered</th>
+              <th scope="col" className="pb-2 text-right text-xs font-medium text-muted-foreground">Converted</th>
+              <th scope="col" className="pb-2 text-right text-xs font-medium text-muted-foreground">Rate</th>
+              <th scope="col" className="pb-2 text-right text-xs font-medium text-muted-foreground">Avg Days</th>
             </tr>
           </thead>
           <tbody>
