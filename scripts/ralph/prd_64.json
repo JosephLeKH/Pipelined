@@ -50,7 +50,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/pages/Pricing.jsx. FeatureRow is at line ~39. The included branch at line ~43 renders <Check> and the excluded branch at line ~45 renders <X>. ProTierCard badge at line ~105-108 renders <Zap> with text 'Most popular'. For the excluded branch span at line ~47, change the text from {label} to <><span className='sr-only'>Not included: </span>{label}</> so screen readers announce 'Not included: Priority support' rather than just 'Priority support'. Keep all classNames unchanged."
     },
     {

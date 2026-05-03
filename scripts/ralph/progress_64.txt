@@ -14,3 +14,21 @@ Started: Sun May  3 12:07:26 PDT 2026
 - Both buttons already had aria-label attributes; icons are purely decorative
 - Build passed; committed as feat: US-647
 - Learning: Pattern is consistent with US-646 in the same file — icon-only buttons with aria-label always need aria-hidden on the icon
+
+---
+US-648 | Add aria-hidden='true' to Check, X, and Zap icons in Pricing.jsx, and add sr-only 'Not included:' prefix for excluded feature rows
+Status: COMPLETE
+Commit: ee48a5c
+
+Changes made:
+- frontend/src/pages/Pricing.jsx line ~43: added aria-hidden="true" to <Check> in FeatureRow included branch
+- frontend/src/pages/Pricing.jsx line ~45: added aria-hidden="true" to <X> in FeatureRow excluded branch
+- frontend/src/pages/Pricing.jsx line ~47: wrapped excluded label in <><span className="sr-only">Not included: </span>{label}</> for WCAG 1.4.1 compliance
+- frontend/src/pages/Pricing.jsx line ~106: added aria-hidden="true" to <Zap> in ProTierCard badge
+
+Learnings:
+- WCAG 1.4.1 (Use of Color): when icon color is the sole differentiator (green check vs gray X), sr-only text must supplement to convey meaning independently of color perception
+- The sr-only prefix technique ("Not included: ") allows screen readers to announce full context while visual design stays unchanged
+- All three icon changes followed the same pattern: aria-hidden="true" added before className to keep className values intact
+
+Build: passed in 2.70s
