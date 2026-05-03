@@ -41,3 +41,4 @@ Summary: Appended dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-700/50
 - Left peer, hiring_manager, other unchanged
 - Build passed in 2.76s
 - Committed: af75a4e
+US-603 complete (Sat May  2 17:12:20 PDT 2026): Added dark: variants to RELATIONSHIP_COLORS peer (sky-900/30, sky-300), hiring_manager (amber-900/30, amber-300), and other (gray-800, gray-300) in frontend/src/lib/constants.js. Build passed. Committed cb0f3cf.

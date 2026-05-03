@@ -100,7 +100,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 6,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/lib/constants.js. RELATIONSHIP_COLORS is at line 115. peer uses sky, hiring_manager uses amber, other uses gray. For gray-100 (very light in this project's custom palette), use dark:bg-gray-800 (deep dark background). Only change peer, hiring_manager, and other entries — leave recruiter, referral, mentor unchanged (they will be updated by US-602)."
     },
     {
