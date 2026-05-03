@@ -48,3 +48,22 @@ Commit: feat: US-626 - Add aria-hidden='true' to icon props in SharePipeline.jsx
 - Added aria-hidden="true" to Icon in MobileMenu .map() render (line 156)
 - Both icons are dynamic (from NAV_LINKS array) and rendered alongside visible text labels
 - Build passed; committed as feat: US-627
+
+## US-628: Add aria-hidden='true' to icon-only button icons and UserMenu/MobileMenu text-button icons in NavBar.jsx
+**Status:** PASSED
+**Changes:** Added aria-hidden='true' to 6 icons across 4 sub-components in NavBar.jsx:
+1. HamburgerButton (line 143): X and Menu in ternary — icon-only Button with aria-label, both decorative
+2. DesktopActions (line 125): ThemeIcon — icon-only Button with aria-label={THEME_LABELS[theme]}
+3. UserMenu DropdownMenuItem Profile (line 103): User icon alongside 'Profile & Settings' text
+4. UserMenu DropdownMenuItem Log out (line 112): LogOut alongside 'Log out' text
+5. MobileMenu theme Button (line 163): ThemeIcon — icon-only Button with aria-label
+6. MobileMenu Log out Button (line 166): LogOut alongside 'Log out' text
+**Build:** npm run build passed with no errors.
+**Commit:** feat: US-628 - Add aria-hidden='true' to icon-only button icons and UserMenu/MobileMenu text-button icons in NavBar.jsx
+**Learned:** Dynamic icon components (ThemeIcon resolved from THEME_ICONS map) follow the same aria-hidden rule as static icons — if the button has an aria-label or visible text, the icon is decorative. DropdownMenuItems behave like buttons: an icon alongside item text is always decorative.
+
+## US-629: Add aria-hidden='true' to Bookmark icon in JobBoard.jsx
+**Status:** PASSED
+**Change:** Added aria-hidden='true' to Bookmark icon (line 37) inside Button with aria-label='Save this search' and visible text 'Save this search'. The icon is purely decorative.
+**Build:** npm run build passed with no errors.
+**Commit:** feat: US-629 - Add aria-hidden='true' to Bookmark icon in JobBoard.jsx

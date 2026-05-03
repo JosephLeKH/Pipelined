@@ -125,7 +125,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 7,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/NavBar.jsx. Six icons need aria-hidden='true': (1) HamburgerButton ~line 143: ternary {mobileMenuOpen ? <X className='h-5 w-5' /> : <Menu className='h-5 w-5' />} — icon-only Button with aria-label, both icons decorative. (2) DesktopActions ~line 125: <ThemeIcon className='h-4 w-4' /> inside icon-only Button with aria-label={THEME_LABELS[theme]}. (3) UserMenu ~line 103: <User className='h-4 w-4' /> in DropdownMenuItem alongside 'Profile & Settings' text. (4) UserMenu ~line 112: <LogOut className='h-4 w-4' /> in DropdownMenuItem alongside 'Log out' text. (5) MobileMenu theme button ~line 163: <ThemeIcon className='h-4 w-4' /> inside icon-only Button with aria-label. (6) MobileMenu log out button ~line 166: <LogOut className='h-4 w-4' /> in Button with aria-label and 'Log out' text. Add aria-hidden='true' to all six. Do not change any className or other prop. Do NOT change DesktopNavLinks or MobileMenu nav link icons — those are covered by US-627."
     },
     {
@@ -142,7 +142,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 8,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/pages/JobBoard.jsx. At line ~38, the Button has aria-label='Save this search' and contains visible text 'Save this search' alongside <Bookmark className='h-4 w-4' />. The Bookmark icon is decorative — the button label and text already fully describe the action. Add aria-hidden='true': <Bookmark className='h-4 w-4' aria-hidden='true' />. Only this one change. Do not modify the Button props, the SaveSearchPopover, or any other part of the file."
     }
   ]
