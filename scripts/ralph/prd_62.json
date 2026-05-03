@@ -132,7 +132,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 8,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/ApplicationTimeline.jsx. EventTimelineNode is at line 69; the Icon is at line 73 with aria-label={node.eventType.replace(/_/g, ' ')}. The visible node.title at line 78 already shows the same text (title = ev.title || ev.event_type.replace(/_/g, ' ')). Replace aria-label with aria-hidden='true' to avoid duplicate announcement. The toggle Button is at line 93; the chevrons at lines 102-103 are inside a Button with aria-label='Toggle timeline' and visible 'Timeline' text. Add aria-hidden='true' to both ChevronDown and ChevronRight."
     }
   ]

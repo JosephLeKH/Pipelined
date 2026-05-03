@@ -86,3 +86,20 @@ The standalone Loader2 at line 119 (aria-label='Loading', sole loading indicator
 - When a button has both visible text AND an icon, the icon is always decorative — the visible text is the accessible name.
 - The exception: a standalone spinner with aria-label is the *sole* loading indicator — it must keep its aria-label and must NOT get aria-hidden. Always check if an icon is the only accessible indicator of state before marking it decorative.
 - Three separate Edit calls (one per button context) keeps diffs minimal and reviewable.
+
+---
+Story: US-637
+Status: COMPLETE
+Date: 2026-05-02
+
+Summary:
+Fixed ApplicationTimeline.jsx for two aria accessibility issues:
+1. EventTimelineNode Icon (line 73): replaced aria-label={node.eventType.replace(/_/g, ' ')} with aria-hidden='true'. The visible node.title text (line 78) already provides the same information, so the aria-label was causing duplicate announcements.
+2. ChevronDown/ChevronRight toggle chevrons (lines 102-103): added aria-hidden='true' to both. The parent Button already has aria-label='Toggle timeline' and visible 'Timeline' text, making the chevrons purely decorative.
+
+Build: passed in 2.71s with no errors.
+Commit: feat: US-637 - Fix ApplicationTimeline.jsx: aria-hidden on EventTimelineNode Icon and toggle chevrons
+
+Learnings:
+- When an icon has aria-label that duplicates adjacent visible text, replace the aria-label with aria-hidden='true' — the label creates double-announcement without adding value.
+- Chevron icons inside toggle buttons with both aria-label and visible text are purely decorative; always mark them aria-hidden='true'.
