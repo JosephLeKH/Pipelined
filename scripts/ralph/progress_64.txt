@@ -60,3 +60,10 @@ US-651: Add bg-primary/10 background to active tab in Settings.jsx TabNav
 **Learning:** Toggle-group pill buttons acting as radio-button selectors should use `aria-pressed` (or `aria-checked` with `role="radio"`) to convey selection state to screen readers — visual-only selection via className is not sufficient for WCAG 4.1.2.
 **Build:** Passed (2.83s)
 **Commit:** feat: US-652 - Add aria-pressed to TIME_RANGES pill buttons in Activity.jsx ActivityHeader
+
+## US-653: Add aria-pressed to date-range pill buttons in Analytics.jsx AnalyticsDateRangePicker
+**Status:** COMPLETE
+**Change:** Added `aria-pressed={days === value}` to each `<Button>` in the `DATE_RANGES.map()` inside `AnalyticsDateRangePicker` (Analytics.jsx line ~50). The `days` prop is compared to the current `value` entry.
+**Learning:** Mirrors the same pattern as US-652 (Activity.jsx). Both pages use visually identical pill-button toggle groups — the same `aria-pressed` fix applies consistently across both.
+**Build:** Passed (2.89s)
+**Commit:** feat: US-653 - Add aria-pressed to date-range pill buttons in Analytics.jsx AnalyticsDateRangePicker

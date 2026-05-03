@@ -131,7 +131,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 8,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/pages/Analytics.jsx. AnalyticsDateRangePicker is at line ~46. The DATE_RANGES map renders Button elements at lines ~49-63 inside a rounded-full container. Each Button needs aria-pressed={days === value} added — 'days' is the prop and 'value' is the current DATE_RANGES entry's value. Do not change className, onClick, key, type='button', or variant='ghost'."
     }
   ]
