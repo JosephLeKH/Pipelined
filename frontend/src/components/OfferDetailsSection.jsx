@@ -81,9 +81,9 @@ function OfferDetailsSection({ application, onUpdate }) {
         aria-expanded={open}
       >
         {open ? (
-          <ChevronDown className="h-4 w-4" />
+          <ChevronDown className="h-4 w-4" aria-hidden="true" />
         ) : (
-          <ChevronRight className="h-4 w-4" />
+          <ChevronRight className="h-4 w-4" aria-hidden="true" />
         )}
         Offer Details
       </Button>
