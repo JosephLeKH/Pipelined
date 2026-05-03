@@ -96,7 +96,7 @@ export const BADGE_ERROR =
 
 /** Info badge — muted blue pastel bg, border-defined, accent-blue text, pill shape. Maps to Applied pipeline status. */
 export const BADGE_INFO =
-  "bg-blue-50 text-accent-blue border border-blue-200 text-xs font-display font-medium px-2 py-0.5 rounded-full";
+  "bg-blue-50 text-accent-blue border border-blue-200 text-xs font-display font-medium px-2 py-0.5 rounded-full dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-700/50";
 
 /** Tag / filter chip — warm surface bg, muted text, pill shape, subtle hover. */
 export const TAG =
