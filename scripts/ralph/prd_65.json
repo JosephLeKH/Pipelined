@@ -34,7 +34,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/pages/Activity.jsx. Empty state in ActivityTimeline is at lines ~124-134. It renders an Activity icon, a heading 'No activity yet', and a muted paragraph. After the paragraph, add a Button asChild with Link to='/dashboard'. Button component is already imported. Only add 'Link' import from react-router-dom — useNavigate is already imported but Link is not."
     },
     {

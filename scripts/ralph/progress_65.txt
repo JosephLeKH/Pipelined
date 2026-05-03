@@ -7,3 +7,10 @@ Started: Sun May  3 16:55:14 PDT 2026
 **Completed**: Modified `ActivityTimeline` in `frontend/src/pages/Activity.jsx`. Extracted a new `ActivityTimelineSkeleton` component that renders 5 shimmer skeleton rows (dot circle + title line + timestamp line) wrapped in the same `rounded-xl bg-card border border-border px-4` / `relative border-l border-border pl-4 ml-1.5` structure as the real list. Added `aria-hidden='true'` and `aria-label='Loading activity'` to the outer wrapper. Removed the old centered spinner entirely. Build passed in 2.84s. Committed as c6a9dfa.
 
 **Learnings**: Extracting the skeleton into its own component (`ActivityTimelineSkeleton`) keeps `ActivityTimeline` readable and makes the loading branch a one-liner. The `Array.from({ length: 5 })` pattern avoids needing a separate constant for the count while keeping the skeleton count easy to scan.
+
+---
+[US-655] Add 'Add your first application' CTA to Activity.jsx empty state
+- Added `Link` to the react-router-dom import alongside existing `useNavigate`
+- Added `<Button asChild variant="outline" size="sm" className="mt-4"><Link to="/dashboard">Go to dashboard</Link></Button>` after the explanatory paragraph in the empty state branch of ActivityTimeline
+- Build passed (`npm run build` clean)
+- Committed: feat: US-655 - Add 'Add your first application' CTA to Activity.jsx empty state
