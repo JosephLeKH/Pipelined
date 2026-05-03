@@ -16,3 +16,20 @@ Learnings: Both icons use the same component name (Activity) as the page — con
 - Build: passed (no errors)
 - Commit: feat: US-631 - Add aria-hidden='true' to AlertTriangle and X icons in EmailVerificationBanner.jsx
 - Learnings: Role='alert' banner with icon+text pair — icon is always decorative; X inside aria-label button is standard icon-only pattern
+
+---
+## US-632: Add aria-hidden='true' to Plus and Trash2 icons in CalendarEventsList.jsx
+**Status:** COMPLETE
+**Commit:** feat: US-632 - Add aria-hidden='true' to Plus and Trash2 icons in CalendarEventsList.jsx
+
+**Summary:**
+Added aria-hidden='true' to two decorative icons in CalendarEventsList.jsx:
+1. Plus icon (line 31) inside Button with both aria-label='Add event' and visible 'Add Event' text — doubly covered, icon is purely decorative.
+2. Trash2 icon (line 62) inside icon-only Button with aria-label='Delete event: {event_type} on {date}' — the aria-label is the sole accessible name, icon is decorative.
+
+Both className values were left unchanged. Build verified clean (✓ built in 2.72s).
+
+**Learnings:**
+- Icon-only buttons (size='icon', no visible text) are accessible via aria-label alone; the icon inside should always get aria-hidden='true'.
+- Buttons with both aria-label AND visible text are doubly covered; the icon is redundant and should also be hidden.
+- Two-edit pattern is clean: one Edit call per icon, minimal diff, no risk of cascading changes.

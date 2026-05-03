@@ -48,7 +48,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/CalendarEventsList.jsx. The Plus at line 31 is inside a Button that has both aria-label='Add event' and visible text 'Add Event' — doubly covered, icon is decorative. The Trash2 at line 62 is inside a Button with aria-label='Delete event: {event_type} on {date}' with no visible text — icon-only button. Add aria-hidden='true' to each. Do not change className, aria-label, or any other attribute."
     },
     {
