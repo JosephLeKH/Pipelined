@@ -25,3 +25,10 @@ Learnings: Standard icon-only button pattern — when Button has aria-label and 
 - Added aria-hidden='true' to <Trash2 className='h-3.5 w-3.5' /> inside Button with aria-label='Delete saved search'
 - Build passed, committed: feat: US-642
 - Learnings: Straightforward single-icon pattern; icon-only button already has aria-label so icon is purely decorative
+
+---
+US-643: Add aria-hidden='true' to ChevronDown and ChevronRight in OfferDetailsSection.jsx
+Status: PASSED
+Changes: Added aria-hidden="true" to <ChevronDown className="h-4 w-4" /> (line 84) and <ChevronRight className="h-4 w-4" /> (line 86) inside the toggle button that already has aria-expanded and visible 'Offer Details' text.
+Learning: Both sides of a ternary inside the same button need individual aria-hidden attributes; aria-expanded communicates open/close state so chevron direction is purely decorative.
+Build: Passed (✓ built in 2.77s)

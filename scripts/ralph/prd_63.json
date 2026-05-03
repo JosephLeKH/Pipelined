@@ -92,7 +92,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 6,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/OfferDetailsSection.jsx. The toggle button is at line ~83 with aria-expanded={open}. The ternary at lines ~84-86 renders ChevronDown when open and ChevronRight when closed, both alongside visible 'Offer Details' text. The expansion state is already communicated by aria-expanded — the chevron icon is purely decorative. Add aria-hidden='true' to both ChevronDown and ChevronRight. Do not change className, aria-expanded, variant, onClick, or any other prop."
     },
     {
