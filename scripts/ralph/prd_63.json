@@ -75,7 +75,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 5,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/SavedSearchesSidebar.jsx. The Trash2 is at line ~60 inside a Button with aria-label='Delete saved search' and size='icon'. Icon-only button — icon is decorative. Add aria-hidden='true' to the Trash2 only. Do not change className, aria-label, onClick, or any other attribute."
     },
     {
