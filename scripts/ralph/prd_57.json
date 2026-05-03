@@ -104,7 +104,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 6,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/lib/constants.js. STAGE_COLORS 'Phone Screen' is at line 5 with bg-blue-100, text-blue-800, bg-accent-blue, border-accent-blue. accent-blue is defined in tailwind.config.js as the static hex #6a9bcc (NOT a CSS variable, so it has no automatic dark variant). Use dark:bg-blue-400 as the dark variant for dot/border/activeBg — blue-400 (#60a5fa) is close to accent-blue and appropriate for dark mode. Only touch the Phone Screen entry."
     },
     {
