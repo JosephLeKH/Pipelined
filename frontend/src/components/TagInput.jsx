@@ -110,7 +110,7 @@ function TagInput({ value = [], onChange, placeholder = "Add a tag…", id }) {
               onClick={(e) => { e.stopPropagation(); removeTag(tag); }}
               className="h-4 w-4 rounded-full p-0 hover:bg-primary/25"
             >
-              <XIcon className="h-2.5 w-2.5" />
+              <XIcon className="h-2.5 w-2.5" aria-hidden="true" />
             </Button>
           </span>
         ))}

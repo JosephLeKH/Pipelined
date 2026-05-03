@@ -30,6 +30,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 2,
+      "passes": true,
       "notes": "Read src/components/TagInput.jsx. The XIcon is at line ~113 inside a Button with aria-label={`Remove tag ${tag}`} and size='icon'. It is an icon-only button — the icon conveys no information beyond the aria-label. Add aria-hidden='true' to the XIcon only. Do not change className, aria-label, onClick, or any other attribute."
     },
     {
