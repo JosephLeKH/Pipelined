@@ -87,7 +87,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 5,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/pages/Tags.jsx. TagsTable is at line 125. The table is at line 128. There are 3 th elements: Tag, Applications, Actions. Add aria-label='Tags' to the table element, and scope='col' to each th. Do not change td elements, TagRow, or any other part of the file."
     },
     {

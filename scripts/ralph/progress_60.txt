@@ -32,3 +32,9 @@ Started: Sat May  2 17:43:22 PDT 2026
 - Build passed (✓ built in 2.73s)
 - Committed: feat: US-617 - Add aria-label and scope='col' to AnalyticsCharts conversion rates table
 
+
+[US-618] Add aria-label and scope='col' to Tags page table
+- Added aria-label='Tags' to <table className='w-full'> in TagsTable (frontend/src/pages/Tags.jsx:128)
+- Added scope='col' to all 3 th elements (Tag, Applications, Actions) at lines 131-133
+- npm run build passed cleanly
+- Committed: feat: US-618 - Add aria-label and scope='col' to Tags page table
