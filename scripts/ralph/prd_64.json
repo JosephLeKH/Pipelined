@@ -84,7 +84,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 5,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/pages/OfferComparison.jsx. useOfferHandlers is at line ~165. handleMarkWinner at line ~178 calls setWinnerId(appId) then confetti(CONFETTI_CONFIG) at line ~180. The fix is to change line ~180 to: if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) { confetti(CONFETTI_CONFIG); }. setWinnerId must still run unconditionally. Do not change CONFETTI_CONFIG or any other logic."
     },
     {
