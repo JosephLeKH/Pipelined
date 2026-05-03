@@ -1,0 +1,142 @@
+{
+  "id": "PRD-58",
+  "title": "Dark variant coverage for BADGE_SUCCESS/WARNING/ERROR/INFO design tokens, RELATIONSHIP_COLORS, and EVENT_TYPE_COLORS in lib/constants.js",
+  "description": "Continuation of the systematic UI improvement loop. This batch adds dark: variants to four badge design tokens in lib/designTokens.js (BADGE_SUCCESS, BADGE_WARNING, BADGE_ERROR, BADGE_INFO), all six RELATIONSHIP_COLORS entries in lib/constants.js, and five of six EVENT_TYPE_COLORS entries (phone_screen, technical, onsite, behavioral, offer — 'other' uses semantic tokens already correct in dark mode).",
+  "userStories": [
+    {
+      "id": "US-598",
+      "title": "Add dark: variants to BADGE_SUCCESS in lib/designTokens.js",
+      "description": "As a developer, the BADGE_SUCCESS token in lib/designTokens.js uses bg-emerald-50 text-emerald-700 border border-emerald-200 with no dark: variants — causing the success badge to look washed out in dark mode.",
+      "acceptanceCriteria": [
+        "Read src/lib/designTokens.js first",
+        "In BADGE_SUCCESS (line ~87), append dark: variants to the class string:",
+        "  Final value: 'bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-display font-medium px-2 py-0.5 rounded-full dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-700/50'",
+        "Leave all other tokens (BADGE_WARNING, BADGE_ERROR, BADGE_INFO, BADGE_FIT_*, etc.) unchanged",
+        "If dark: variants already present on BADGE_SUCCESS, mark passes: true with note 'already has dark variants'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Read src/lib/designTokens.js. BADGE_SUCCESS is at line 87. The string ends with 'rounded-full' — append the three dark: classes after it. BADGE_FIT_HIGH and BADGE_FIT_MEDIUM already have dark variants (lines 142-143) — do not touch those. Only change BADGE_SUCCESS."
+    },
+    {
+      "id": "US-599",
+      "title": "Add dark: variants to BADGE_WARNING in lib/designTokens.js",
+      "description": "As a developer, BADGE_WARNING in lib/designTokens.js uses bg-amber-50 text-amber-700 border border-amber-200 with no dark: variants.",
+      "acceptanceCriteria": [
+        "Read src/lib/designTokens.js first",
+        "In BADGE_WARNING (line ~91), append dark: variants to the class string:",
+        "  Final value: 'bg-amber-50 text-amber-700 border border-amber-200 text-xs font-display font-medium px-2 py-0.5 rounded-full dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-700/50'",
+        "Leave all other tokens unchanged",
+        "If dark: variants already present on BADGE_WARNING, mark passes: true with note 'already has dark variants'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Read src/lib/designTokens.js. BADGE_WARNING is at line 91. Append dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-700/50 after 'rounded-full'. Only change BADGE_WARNING."
+    },
+    {
+      "id": "US-600",
+      "title": "Add dark: variants to BADGE_ERROR in lib/designTokens.js",
+      "description": "As a developer, BADGE_ERROR in lib/designTokens.js uses bg-red-50 text-red-700 border border-red-200 with no dark: variants.",
+      "acceptanceCriteria": [
+        "Read src/lib/designTokens.js first",
+        "In BADGE_ERROR (line ~95), append dark: variants to the class string:",
+        "  Final value: 'bg-red-50 text-red-700 border border-red-200 text-xs font-display font-medium px-2 py-0.5 rounded-full dark:bg-red-900/30 dark:text-red-300 dark:border-red-700/50'",
+        "Leave all other tokens unchanged",
+        "If dark: variants already present on BADGE_ERROR, mark passes: true with note 'already has dark variants'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "Read src/lib/designTokens.js. BADGE_ERROR is at line 95. Append dark:bg-red-900/30 dark:text-red-300 dark:border-red-700/50 after 'rounded-full'. Only change BADGE_ERROR."
+    },
+    {
+      "id": "US-601",
+      "title": "Add dark: variants to BADGE_INFO in lib/designTokens.js",
+      "description": "As a developer, BADGE_INFO in lib/designTokens.js uses bg-blue-50 text-accent-blue border border-blue-200 with no dark: variants.",
+      "acceptanceCriteria": [
+        "Read src/lib/designTokens.js first",
+        "In BADGE_INFO (line ~99), append dark: variants to the class string:",
+        "  Final value: 'bg-blue-50 text-accent-blue border border-blue-200 text-xs font-display font-medium px-2 py-0.5 rounded-full dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-700/50'",
+        "Leave all other tokens unchanged",
+        "If dark: variants already present on BADGE_INFO, mark passes: true with note 'already has dark variants'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": "Read src/lib/designTokens.js. BADGE_INFO is at line 99. accent-blue is a static Tailwind color (#6a9bcc) — not a CSS variable, so it has no automatic dark variant. Use dark:text-blue-300 as the dark text variant. Append dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-700/50 after 'rounded-full'. Only change BADGE_INFO."
+    },
+    {
+      "id": "US-602",
+      "title": "Add dark: variants to RELATIONSHIP_COLORS recruiter, referral, mentor in lib/constants.js",
+      "description": "As a developer, lib/constants.js RELATIONSHIP_COLORS entries recruiter, referral, and mentor all use hardcoded light-pastel color classes with no dark: variants.",
+      "acceptanceCriteria": [
+        "Read src/lib/constants.js first",
+        "In RELATIONSHIP_COLORS (line ~115), update the first three entries:",
+        "  recruiter: { bg: 'bg-brand-100 dark:bg-brand-900/30', text: 'text-brand-700 dark:text-brand-300' }",
+        "  referral: { bg: 'bg-emerald-100 dark:bg-emerald-900/30', text: 'text-emerald-700 dark:text-emerald-300' }",
+        "  mentor: { bg: 'bg-blue-100 dark:bg-blue-900/30', text: 'text-accent-blue dark:text-blue-300' }",
+        "Leave peer, hiring_manager, other, and all other constants unchanged",
+        "If dark: variants already present on all three, mark passes: true with note 'already has dark variants'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": "Read src/lib/constants.js. RELATIONSHIP_COLORS is at line 115. The recruiter entry uses bg-brand-100 (brand-900 is defined as #5c3020 in tailwind.config.js). The mentor entry uses text-accent-blue which is a static color — use dark:text-blue-300 for dark mode. Only change recruiter, referral, and mentor entries — leave peer, hiring_manager, other unchanged."
+    },
+    {
+      "id": "US-603",
+      "title": "Add dark: variants to RELATIONSHIP_COLORS peer, hiring_manager, other in lib/constants.js",
+      "description": "As a developer, lib/constants.js RELATIONSHIP_COLORS entries peer, hiring_manager, and other all use hardcoded light-pastel color classes with no dark: variants.",
+      "acceptanceCriteria": [
+        "Read src/lib/constants.js first",
+        "In RELATIONSHIP_COLORS (line ~115), update the last three entries:",
+        "  peer: { bg: 'bg-sky-100 dark:bg-sky-900/30', text: 'text-sky-700 dark:text-sky-300' }",
+        "  hiring_manager: { bg: 'bg-amber-100 dark:bg-amber-900/30', text: 'text-amber-700 dark:text-amber-300' }",
+        "  other: { bg: 'bg-gray-100 dark:bg-gray-800', text: 'text-gray-700 dark:text-gray-300' }",
+        "Leave recruiter, referral, mentor, and all other constants unchanged",
+        "If dark: variants already present on all three, mark passes: true with note 'already has dark variants'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": "Read src/lib/constants.js. RELATIONSHIP_COLORS is at line 115. peer uses sky, hiring_manager uses amber, other uses gray. For gray-100 (very light in this project's custom palette), use dark:bg-gray-800 (deep dark background). Only change peer, hiring_manager, and other entries — leave recruiter, referral, mentor unchanged (they will be updated by US-602)."
+    },
+    {
+      "id": "US-604",
+      "title": "Add dark: variants to EVENT_TYPE_COLORS phone_screen, technical, onsite in lib/constants.js",
+      "description": "As a developer, EVENT_TYPE_COLORS phone_screen, technical, and onsite all use hardcoded -50 pastel bg with no dark: variants, causing calendar event chips to look washed out in dark mode.",
+      "acceptanceCriteria": [
+        "Read src/lib/constants.js first",
+        "In EVENT_TYPE_COLORS (line ~51), update phone_screen, technical, and onsite:",
+        "  phone_screen: { bg: 'bg-blue-50 dark:bg-blue-900/20', text: 'text-accent-blue dark:text-blue-300', dot: 'bg-accent-blue dark:bg-blue-400', border: 'border-blue-200 dark:border-blue-700/50' }",
+        "  technical: { bg: 'bg-brand-50 dark:bg-brand-900/20', text: 'text-brand-600 dark:text-brand-300', dot: 'bg-brand-500 dark:bg-brand-400', border: 'border-brand-200 dark:border-brand-700/50' }",
+        "  onsite: { bg: 'bg-amber-50 dark:bg-amber-900/20', text: 'text-amber-700 dark:text-amber-300', dot: 'bg-amber-500 dark:bg-amber-400', border: 'border-amber-200 dark:border-amber-700/50' }",
+        "Leave behavioral, offer, other, DEFAULT_EVENT_COLOR, and all other constants unchanged",
+        "If dark: variants already present on all three, mark passes: true with note 'already has dark variants'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 7,
+      "passes": false,
+      "notes": "Read src/lib/constants.js. EVENT_TYPE_COLORS is at line 51. The -50 bg shades (very light pastels) are the primary issue. Using dark:bg-X-900/20 (slightly less opaque than the STAGE_COLORS pattern of /30) to differentiate calendar chips from stage pills. The 'other' entry uses semantic tokens (bg-surface-secondary, border-border-default) — leave it unchanged. Only change phone_screen, technical, and onsite."
+    },
+    {
+      "id": "US-605",
+      "title": "Add dark: variants to EVENT_TYPE_COLORS behavioral and offer in lib/constants.js",
+      "description": "As a developer, EVENT_TYPE_COLORS behavioral and offer use hardcoded -50 pastel bg with no dark: variants, causing calendar event chips to look washed out in dark mode.",
+      "acceptanceCriteria": [
+        "Read src/lib/constants.js first",
+        "In EVENT_TYPE_COLORS (line ~51), update behavioral and offer:",
+        "  behavioral: { bg: 'bg-sky-50 dark:bg-sky-900/20', text: 'text-sky-700 dark:text-sky-300', dot: 'bg-sky-500 dark:bg-sky-400', border: 'border-sky-200 dark:border-sky-700/50' }",
+        "  offer: { bg: 'bg-emerald-50 dark:bg-emerald-900/20', text: 'text-emerald-700 dark:text-emerald-300', dot: 'bg-emerald-500 dark:bg-emerald-400', border: 'border-emerald-200 dark:border-emerald-700/50' }",
+        "Leave phone_screen, technical, onsite, other, DEFAULT_EVENT_COLOR, and all other constants unchanged",
+        "If dark: variants already present on both, mark passes: true with note 'already has dark variants'",
+        "npm run build passes with no errors"
+      ],
+      "priority": 8,
+      "passes": false,
+      "notes": "Read src/lib/constants.js. EVENT_TYPE_COLORS behavioral uses sky, offer uses emerald. The 'other' entry (bg-surface-secondary, border-border-default) uses semantic tokens that already adapt to dark mode — do NOT change it. DEFAULT_EVENT_COLOR (line 60) also uses semantic tokens — leave it unchanged. Only change behavioral and offer."
+    }
+  ]
+}

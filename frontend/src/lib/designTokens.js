@@ -84,7 +84,7 @@ export const BADGE_DEFAULT =
 
 /** Success badge — muted emerald pastel bg, border-defined, pill shape. Maps to Offer pipeline status. */
 export const BADGE_SUCCESS =
-  "bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-display font-medium px-2 py-0.5 rounded-full";
+  "bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-display font-medium px-2 py-0.5 rounded-full dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-700/50";
 
 /** Warning badge — muted amber pastel bg, border-defined, pill shape. Maps to Interview pipeline status. */
 export const BADGE_WARNING =
