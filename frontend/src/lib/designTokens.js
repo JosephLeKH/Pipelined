@@ -122,7 +122,7 @@ export const BUTTON_TOGGLE_INACTIVE =
 
 /** Tooltip — pill-shaped, small text, opacity-based show/hide via group-hover. */
 export const TOOLTIP =
-  "absolute z-10 whitespace-nowrap rounded-full bg-gray-800 px-2 py-1 text-xs text-white opacity-0 transition-opacity pointer-events-none group-hover:opacity-100";
+  "absolute z-10 whitespace-nowrap rounded-full bg-gray-800 px-2 py-1 text-xs text-white opacity-0 transition-opacity pointer-events-none group-hover:opacity-100 dark:bg-gray-700";
 
 /** Icon-only button base — rounded-full, padding, hover states, focus ring, transition. */
 export const ICON_BUTTON =
