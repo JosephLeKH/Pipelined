@@ -101,7 +101,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 6,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/pages/Settings.jsx. TabNav is at line ~36. The active tab button className at line ~47 is 'text-primary text-sm font-display font-semibold px-3 py-2 rounded-md'. Prepend 'bg-primary/10 ' to this string. The inactive className at line ~49 stays unchanged. This makes the active tab visually distinct via background shape, not color alone. Do not change any ARIA attributes or other props."
     },
     {

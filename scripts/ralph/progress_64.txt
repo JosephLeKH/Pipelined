@@ -46,3 +46,10 @@ Build: passed in 2.70s
 **Commit:** b587bd6
 **Summary:** Wrapped the `confetti(CONFETTI_CONFIG)` call in `handleMarkWinner` (line ~180) with `if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches)`. The `setWinnerId(appId)` call remains unconditional so the winner state always updates. CONFETTI_CONFIG and all other logic unchanged. Build passed in 4.32s.
 **Learnings:** WCAG 2.3.3 requires that animations triggered by interaction can be disabled via OS/browser prefers-reduced-motion preference. The `window.matchMedia` check is the correct pattern for respecting this in browser JS outside of CSS.
+
+---
+US-651: Add bg-primary/10 background to active tab in Settings.jsx TabNav
+- Changed: Active tab className in TabNav (line 49 of Settings.jsx) from 'text-primary text-sm font-display font-semibold px-3 py-2 rounded-md' to 'bg-primary/10 text-primary text-sm font-display font-semibold px-3 py-2 rounded-md'
+- Learning: WCAG 1.4.1 (Use of Color) requires active/selected state to have a non-color visual indicator. Adding a background fill (bg-primary/10) alongside the existing color change satisfies this — the tab now has both a shape/fill change and a color change.
+- Build: passed (2.70s)
+- Commit: 866c3dd
