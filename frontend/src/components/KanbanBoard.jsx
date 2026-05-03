@@ -56,7 +56,7 @@ function KanbanMobileView({ stages, mobileStage, setMobileStage, byStage, onSele
       <div className="mt-3 flex justify-center gap-2 md:hidden" aria-label="Stage navigation dots">
         {stages.map((s) => (
           <button key={s} type="button" aria-label={s} aria-pressed={s === mobileStage} onClick={() => setMobileStage(s)}
-            className={`h-2 w-2 rounded-full transition-colors ${s === mobileStage ? "bg-primary" : "bg-muted-foreground/30"}`} />
+            className={`h-2 w-2 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 ${s === mobileStage ? "bg-primary" : "bg-muted-foreground/30"}`} />
         ))}
       </div>
     </>
