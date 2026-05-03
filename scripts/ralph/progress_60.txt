@@ -24,3 +24,11 @@ Started: Sat May  2 17:43:22 PDT 2026
 - Left ConversionRatesTable unchanged
 - Build passed with no errors
 - Committed: feat: US-616 - Add aria-label and scope='col' to AnalyticsCharts tags table
+
+## US-617 — Add aria-label and scope='col' to AnalyticsCharts conversion rates table
+- Added aria-label='Conversion rates by stage' to the ConversionRatesTable <table> element (line 189)
+- Added scope='col' to all 5 <th> elements (Stage, Entered, Converted, Rate, Avg Days)
+- AnalyticsTagsTable (US-616) left untouched
+- Build passed (✓ built in 2.73s)
+- Committed: feat: US-617 - Add aria-label and scope='col' to AnalyticsCharts conversion rates table
+

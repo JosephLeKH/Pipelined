@@ -70,7 +70,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 4,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/components/AnalyticsCharts.jsx. ConversionRatesTable is at line 185. The table is at line 189. There are 5 th elements: Stage, Entered, Converted, Rate, Avg Days. Add aria-label='Conversion rates by stage' to the table element, and scope='col' to each of the 5 th elements. Do NOT change AnalyticsTagsTable — that was US-616. Do not change td elements, class values, ConversionRatesRow, or any other attributes."
     },
     {
