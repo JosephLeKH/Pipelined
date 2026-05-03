@@ -117,7 +117,7 @@ function CalendarHeader({ month, year, onPrev, onNext, onToday }) {
           aria-label="Previous month"
           className="p-1.5 h-auto"
         >
-          <ChevronLeft className="h-4 w-4" />
+          <ChevronLeft className="h-4 w-4" aria-hidden="true" />
         </Button>
         <Button
           type="button"
@@ -126,7 +126,7 @@ function CalendarHeader({ month, year, onPrev, onNext, onToday }) {
           aria-label="Next month"
           className="p-1.5 h-auto"
         >
-          <ChevronRight className="h-4 w-4" />
+          <ChevronRight className="h-4 w-4" aria-hidden="true" />
         </Button>
       </div>
     </div>
