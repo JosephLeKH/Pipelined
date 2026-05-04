@@ -89,7 +89,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 5,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/pages/Calendar.jsx. Look for the header with month navigation (prev/next buttons and current month display). The calendar likely has a currentDate state or similar. Add a Today button that resets currentDate to new Date(). Place it in the header next to existing nav buttons. Button component is likely already imported. Use variant='outline' size='sm' to match other secondary actions."
     },
     {

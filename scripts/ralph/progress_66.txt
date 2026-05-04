@@ -43,3 +43,9 @@ Added imports for `Plus`, `ArrowRight`, `CalendarDays` from lucide-react direct 
 - Using `{DotIcon && <DotIcon ... />}` guards against undefined icons for future/unknown entry types without needing a fallback.
 - Changing `block` to `flex items-center justify-center` is the minimal change needed to center child content inside a span.
 - Icon size `h-2 w-2` (8px) fits neatly inside a `h-4 w-4` (16px) dot with ring-2 accounted for.
+
+---
+US-666: Add 'Today' navigation button to Calendar.jsx page header
+Status: COMPLETE
+Files changed: frontend/src/components/CalendarGrid.jsx
+Summary: The Today button was already implemented in CalendarGrid.jsx (CalendarHeader component) with variant="outline" and onClick={onToday}. Added the missing size="sm" and aria-label="Jump to today" attributes to match the acceptance criteria exactly. The handleToday function was already present resetting the view to today's month/year via onMonthChange. Build passes.
