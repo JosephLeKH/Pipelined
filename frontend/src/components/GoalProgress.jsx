@@ -40,11 +40,11 @@ function GoalProgress() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center gap-4 p-4 rounded-xl bg-card border border-border">
-        <div className="h-20 w-20 animate-pulse rounded-full bg-muted" />
+      <div className="flex items-center gap-4 p-4 rounded-xl bg-card border border-border" aria-hidden="true">
+        <div className="h-20 w-20 shimmer-bg animate-shimmer rounded-full" />
         <div className="flex flex-col gap-2">
-          <div className="h-4 w-32 animate-pulse rounded bg-muted" />
-          <div className="h-3 w-20 animate-pulse rounded bg-muted" />
+          <div className="h-4 w-32 shimmer-bg animate-shimmer rounded" />
+          <div className="h-3 w-20 shimmer-bg animate-shimmer rounded" />
         </div>
       </div>
     );
