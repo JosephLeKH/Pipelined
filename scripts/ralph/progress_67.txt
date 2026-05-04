@@ -49,3 +49,18 @@ Started: Mon May  4 08:40:17 PDT 2026
 **Learnings:**
 - PublicPipeline.jsx is the canonical reference for the meta tag update pattern in public share pages
 - Both description meta tags reset to empty string `""` on cleanup (not to a default description string), matching PublicPipeline behavior
+
+## US-672: Make Pipelined brand text a home link in AuthLayout
+**Status:** COMPLETE
+**Date:** 2026-05-04
+
+**Changes:**
+- Added `import { Link } from 'react-router-dom'` to AuthLayout.jsx
+- Replaced `<p className="mb-6 font-display font-semibold text-xl text-foreground">Pipelined</p>` with `<Link to="/" className="mb-6 block font-display font-semibold text-xl text-foreground no-underline">Pipelined</Link>`
+- Added `block` to preserve block-level layout behavior the `<p>` had, and `no-underline` to suppress default anchor underline styling
+- Build passed with no errors
+- Committed: feat: US-672 - Make Pipelined brand text a home link in AuthLayout
+
+**Learnings:**
+- When replacing a `<p>` with a `<Link>`, add `block` to restore block-level display so margin/spacing stays correct
+- The Tailwind `no-underline` utility is the right way to strip anchor underlines without inline styles

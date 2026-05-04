@@ -1,0 +1,113 @@
+{
+  "id": "prd_70",
+  "title": "Interactive ARIA Fixes",
+  "description": "Fix WCAG violations in interactive components: correct role='row' without grid parent in ApplicationRow, add unique aria-labels to SavedSearchesSidebar delete buttons, fix DigestSection label wrapping a switch button, add aria-modal to JobDetailPanel, fix KanbanCard stale dot aria usage, add aria-hidden to decorative SourceIcon in ApplicationRow, add aria-haspopup to NotificationBell trigger, and add role/label to CommandPalette results container.",
+  "userStories": [
+    {
+      "id": "US-694",
+      "title": "Fix ApplicationRow role='row' WCAG violation",
+      "description": "ApplicationRow.jsx renders its root div with role='row', but there is no parent element with role='grid' or role='table'. This is a WCAG failure — row roles must be owned by a grid, table, or rowgroup. Remove role='row' from the div and replace it with a semantically appropriate element or role that doesn't require a parent grid context.",
+      "acceptanceCriteria": [
+        "ApplicationRow.jsx root element does not use role='row' without a parent grid/table context",
+        "The component renders as a div or li (not role='row') that is valid without a grid parent",
+        "All existing layout and styling classes are preserved",
+        "Build passes with no errors"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-695",
+      "title": "Add unique aria-labels to SavedSearchesSidebar delete buttons",
+      "description": "SavedSearchesSidebar.jsx renders a delete button for each saved search, but all delete buttons share the same aria-label='Delete saved search'. Screen reader users cannot distinguish which search they are about to delete. Update each delete button's aria-label to include the search name, e.g. aria-label={`Delete saved search: ${search.name}`}.",
+      "acceptanceCriteria": [
+        "Each delete button in SavedSearchesSidebar.jsx has a unique aria-label that includes the search name",
+        "The aria-label format is 'Delete saved search: {name}' or equivalent descriptive pattern",
+        "Build passes with no errors"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-696",
+      "title": "Fix DigestSection label wrapping switch button double-announcement",
+      "description": "DigestSection.jsx wraps a <button role='switch'> inside a <label> element. This causes screen readers to double-announce the control (once as label, once as button). Replace the <label> wrapper with a <div> and keep the text as a separate <span> so the label text and switch remain siblings rather than parent/child.",
+      "acceptanceCriteria": [
+        "DigestSection.jsx outer wrapper is a <div> (or other non-label element), not a <label>",
+        "The descriptive text ('Weekly digest emails' or similar) is a sibling <span> or <p>, not a label for the switch",
+        "The switch button still has an accessible name (either via aria-label or aria-labelledby pointing to the text span)",
+        "Build passes with no errors"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-697",
+      "title": "Add aria-modal='true' to JobDetailPanel dialog",
+      "description": "JobDetailPanel.jsx has role='dialog' but is missing aria-modal='true'. Without aria-modal, screen readers may continue reading content behind the dialog. Add aria-modal='true' to the dialog root element.",
+      "acceptanceCriteria": [
+        "JobDetailPanel.jsx dialog root element has aria-modal='true'",
+        "The element already has role='dialog' — both attributes should be present together",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-698",
+      "title": "Fix KanbanCard stale dot aria-label on non-interactive span",
+      "description": "KanbanCard.jsx renders a stale indicator <span> with aria-label='Stale application…' nested inside a draggable/clickable card. The aria-label on a non-interactive span inside an interactive ancestor causes confusing announcements. Replace with aria-hidden='true' on the indicator span and add a <span className='sr-only'> with the stale message as a sibling.",
+      "acceptanceCriteria": [
+        "KanbanCard.jsx stale indicator span has aria-hidden='true' instead of aria-label",
+        "A <span className='sr-only'> with the stale message text is rendered adjacent to (not inside) the indicator dot",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-699",
+      "title": "Add aria-hidden to decorative SourceIcon in ApplicationRow",
+      "description": "ApplicationRow.jsx renders a SourceIcon with aria-label={application.source}. Since the source name is already displayed as visible text nearby, the icon is decorative and its aria-label causes a duplicate announcement. Change the icon to aria-hidden='true' and remove the aria-label.",
+      "acceptanceCriteria": [
+        "ApplicationRow.jsx SourceIcon has aria-hidden='true'",
+        "The aria-label on SourceIcon is removed",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-700",
+      "title": "Add aria-haspopup to NotificationBell trigger button",
+      "description": "NotificationBell.jsx trigger button has aria-expanded but is missing aria-haspopup='true' (or aria-haspopup='dialog'). Without aria-haspopup, screen readers don't announce that activating the button opens a popup. Add aria-haspopup='true' to the trigger button.",
+      "acceptanceCriteria": [
+        "NotificationBell.jsx trigger button has aria-haspopup='true'",
+        "The button already has aria-expanded — both attributes should be present",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-701",
+      "title": "Add role and aria-label to CommandPalette results container",
+      "description": "CommandPalette.jsx renders search results in a scrollable div with no role or label. Screen reader users cannot identify the results region. Add role='listbox' and aria-label='Search results' (or role='list' with aria-label) to the results container div.",
+      "acceptanceCriteria": [
+        "CommandPalette.jsx results container div has role='listbox' (or role='list') and aria-label='Search results'",
+        "The role is appropriate for the children (option items if listbox, listitem if list)",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}
