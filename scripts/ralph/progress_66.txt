@@ -17,3 +17,16 @@ Replaced the disabled `<Button type="button" aria-label="Upgrade to Pro plan —
 ### Learnings
 - The Button component already supported `asChild` (used in `FreeTierCard` for the register link), so no changes needed to the Button component itself.
 - Removing `disabled` prop was implicit — the old button had no explicit `disabled` attribute but was non-functional; the new `asChild` + `<a>` pattern makes it fully interactive.
+
+---
+Story: US-664 - Add FAQ accordion section to Pricing.jsx below the pricing grid
+Date: 2026-05-03
+Status: COMPLETE
+
+Summary:
+Added a native HTML <details>/<summary> FAQ accordion section to Pricing.jsx below the pricing grid (md:grid-cols-2 div). The section uses Tailwind's open: variant (open:pb-4) to add bottom padding only when an accordion item is expanded. Three questions added: "When does Pro launch?", "Can I switch plans?", and "Is there a student discount?". Build passed in 2.75s.
+
+Learnings:
+- Tailwind's open: variant works directly on <details> elements to style the expanded state (e.g., open:pb-4).
+- Native <details>/<summary> requires no JS and is keyboard-accessible by default (Enter/Space to toggle).
+- Used &apos; HTML entity for the apostrophe in "We're" to avoid JSX string escaping issues inside JSX.

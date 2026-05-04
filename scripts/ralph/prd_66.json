@@ -55,7 +55,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/pages/Pricing.jsx. The pricing grid div is near the bottom of the JSX before the closing </main> or </div>. Add the FAQ section after it. Use native <details>/<summary> HTML (no library needed). Each <details> has a <summary> with the question and a <p> with the answer. The open: variant is a Tailwind variant for the open attribute on details elements — use 'open:pb-4' to add bottom padding only when expanded."
     },
     {
