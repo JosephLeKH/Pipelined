@@ -28,3 +28,13 @@ Started: Sun May  3 16:55:14 PDT 2026
 **Completed**: Replaced the full-page centered spinner in `LoadingState` (PublicPipeline.jsx lines ~60-66) with a card containing 5 shimmer skeleton rows shaped like `PublicAppRow`. Added a `SKELETON_ROW_COUNT = 5` constant at module scope. The skeleton card uses `flex flex-col divide-y divide-border rounded-xl border border-border bg-card` with `aria-hidden="true"`. Each row mirrors the real app row: `w-32` company name, `flex-1` role title, `w-16 rounded-full` stage pill, and `w-20 hidden sm:block` date. Removed the `min-h-screen items-center justify-center` spinner wrapper entirely. Build passed in 2.79s. Committed as 11cdabf.
 
 **Learned**: Using a named constant (`SKELETON_ROW_COUNT`) rather than an inline `5` satisfies the no-magic-values rule from CLAUDE.md. The `hidden sm:block` classes are preserved on the date skeleton column to match the real row's responsive behavior, keeping the skeleton visually accurate at all breakpoints.
+
+## US-658: Add og:description and meta description update to PublicPipeline.jsx useEffect
+
+**Implemented**: Extended the useEffect in PublicPipeline.jsx (lines ~139-171) that already updated document.title and og:title. Added descContent string `${pipeline.display_name}'s job application pipeline — tracked with Pipelined`, then used querySelector/createElement pattern to find-or-create both meta[name="description"] and meta[property="og:description"] tags and set their content. Cleanup function now resets both metas to empty string alongside the existing document.title reset.
+
+**Learned**: The find-or-create pattern (querySelector → if null createElement + setAttribute + appendChild) is the correct approach for meta tags in SPAs since index.html may or may not have them pre-declared. The cleanup is important to avoid stale meta leaking when navigating away from the public pipeline page.
+
+**Completed**: Build passed. Git commit created. PRD updated with passes: true.
+
+**Next Steps**: PRD-65 has 3 remaining stories: US-659 (footer link hrefs), US-660 (Settings tab URL sync), US-661 (PublicPipeline mobile date visibility).

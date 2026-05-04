@@ -85,7 +85,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 5,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/pages/PublicPipeline.jsx. The useEffect at lines ~130-140 already updates document.title and og:title meta tag. Extend it to also set meta[name='description'] and meta[property='og:description'] to the same descriptive string. The pipeline object has a display_name property. Use querySelector to find or createElement to create each meta tag if missing."
     },
     {
