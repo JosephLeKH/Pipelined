@@ -159,6 +159,40 @@ function Pricing() {
           <ProTierCard />
         </div>
 
+        <section className="mt-12 mx-auto max-w-2xl">
+          <h2 className="mb-6 text-center font-display text-xl font-semibold text-foreground">
+            Frequently Asked Questions
+          </h2>
+          <div className="flex flex-col gap-3">
+            <details className="rounded-xl border border-border bg-card px-5 py-4 open:pb-4">
+              <summary className="cursor-pointer font-medium text-foreground">
+                When does Pro launch?
+              </summary>
+              <p className="mt-3 text-sm text-muted-foreground">
+                We&apos;re actively developing Pro features. Join the waitlist to get notified and
+                receive early-bird pricing when we launch.
+              </p>
+            </details>
+            <details className="rounded-xl border border-border bg-card px-5 py-4 open:pb-4">
+              <summary className="cursor-pointer font-medium text-foreground">
+                Can I switch plans?
+              </summary>
+              <p className="mt-3 text-sm text-muted-foreground">
+                Yes. You can upgrade or downgrade at any time. Changes take effect immediately.
+              </p>
+            </details>
+            <details className="rounded-xl border border-border bg-card px-5 py-4 open:pb-4">
+              <summary className="cursor-pointer font-medium text-foreground">
+                Is there a student discount?
+              </summary>
+              <p className="mt-3 text-sm text-muted-foreground">
+                We offer a free tier that covers everything most students need. Pro discounts for
+                verified students are planned — join the waitlist to stay updated.
+              </p>
+            </details>
+          </div>
+        </section>
+
         <p className="mt-12 text-center text-sm text-muted-foreground">
           Questions?{" "}
           <a href="mailto:support@pipelined.app" className="text-primary hover:underline">
