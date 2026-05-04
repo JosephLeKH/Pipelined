@@ -148,8 +148,30 @@ function PublicTimeline() {
     document.title = title;
     const ogTitle = document.querySelector('meta[property="og:title"]');
     if (ogTitle) ogTitle.setAttribute("content", title);
+
+    const descContent = `${timeline.display_name}'s job search timeline — tracked with Pipelined`;
+    let descMeta = document.querySelector('meta[name="description"]');
+    if (!descMeta) {
+      descMeta = document.createElement("meta");
+      descMeta.name = "description";
+      document.head.appendChild(descMeta);
+    }
+    descMeta.content = descContent;
+
+    let ogDescMeta = document.querySelector('meta[property="og:description"]');
+    if (!ogDescMeta) {
+      ogDescMeta = document.createElement("meta");
+      ogDescMeta.setAttribute("property", "og:description");
+      document.head.appendChild(ogDescMeta);
+    }
+    ogDescMeta.content = descContent;
+
     return () => {
       document.title = "Pipelined — Job Application Tracker for Students & Engineers";
+      const cleanDescMeta = document.querySelector('meta[name="description"]');
+      if (cleanDescMeta) cleanDescMeta.content = "";
+      const cleanOgDescMeta = document.querySelector('meta[property="og:description"]');
+      if (cleanOgDescMeta) cleanOgDescMeta.content = "";
     };
   }, [data]);
 
