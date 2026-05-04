@@ -16,7 +16,7 @@ import {
   STAGES,
 } from "../lib/constants";
 
-const EXTENSION_STEP_HREF = "#install-extension";
+const EXTENSION_STEP_HREF = "https://chromewebstore.google.com/detail/pipelined";
 
 function StepRow({ id, label, description, done }) {
   return (
@@ -123,6 +123,8 @@ function OnboardingChecklist({ onAdd }) {
           {!hasExtensionApp && (
             <a
               href={EXTENSION_STEP_HREF}
+              target="_blank"
+              rel="noopener noreferrer"
               className="ml-8 text-xs text-primary underline hover:text-primary/80 transition-colors"
             >
               Get the extension
