@@ -42,3 +42,11 @@ Started: Mon May  4 08:50:11 PDT 2026
 
 **Learnings:** For decorative icons inside interactive elements that already carry an `aria-label`, the correct pattern is to hide the icon (`aria-hidden="true"`) and include any additional context as an `sr-only` text node. This avoids double-announcements while keeping the information available to assistive technology.
 
+## US-683: Add screen-reader captions to AnalyticsCharts tables
+**Status:** COMPLETE
+**Commit:** 4e1b3ea
+
+**Summary:** `AnalyticsCharts.jsx` had two data tables — `AnalyticsTagsTable` (tag offer rates) and `ConversionRatesTable` (conversion rates by stage) — with no `<caption>` elements. Screen readers could not identify each table's purpose. Added `<caption className="sr-only">Tag offer rates</caption>` as the first child of the tags table and `<caption className="sr-only">Conversion rates by stage</caption>` as the first child of the conversion rates table. Both tables already had `aria-label` attributes; the `<caption>` adds a visible-to-AT caption that satisfies WCAG SC 1.3.1.
+
+**Learnings:** `<caption>` is the semantically correct way to label a `<table>` for screen readers; `aria-label` on the table element is a secondary technique. Adding both is valid and reinforces accessibility. Using `className="sr-only"` (Tailwind's visually-hidden utility) hides the caption from sighted users while keeping it in the accessibility tree. The caption must be the first child of `<table>`, before `<thead>`.
+
