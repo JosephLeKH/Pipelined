@@ -106,10 +106,15 @@ function FeaturesSection() {
     const cards = Array.from(grid.querySelectorAll(".scroll-reveal"));
     const observer = new IntersectionObserver(
       (entries) => {
+        const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         entries.forEach((entry) => {
           if (!entry.isIntersecting) return;
-          const index = cards.indexOf(entry.target);
-          setTimeout(() => entry.target.classList.add("in-view"), index * STAGGER_MS);
+          if (prefersReducedMotion) {
+            entry.target.classList.add("in-view");
+          } else {
+            const index = cards.indexOf(entry.target);
+            setTimeout(() => entry.target.classList.add("in-view"), index * STAGGER_MS);
+          }
           observer.unobserve(entry.target);
         });
       },
