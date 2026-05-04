@@ -58,7 +58,10 @@ function EventChip({ event, onEventClick }) {
       <span className={`inline-block h-2 w-2 flex-shrink-0 rounded-full ${colors.dot}`} aria-hidden="true" />
       <span className="truncate">{label}</span>
       {hasPrepData && (
-        <BookOpen className="h-3 w-3 flex-shrink-0 ml-auto" aria-label="Has prep data" />
+        <>
+          <BookOpen className="h-3 w-3 flex-shrink-0 ml-auto" aria-hidden="true" />
+          <span className="sr-only">Has prep notes</span>
+        </>
       )}
     </button>
   );
