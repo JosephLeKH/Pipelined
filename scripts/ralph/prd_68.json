@@ -90,7 +90,7 @@
         "Build passes with no errors"
       ],
       "priority": "medium",
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {

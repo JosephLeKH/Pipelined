@@ -50,3 +50,11 @@ Started: Mon May  4 08:50:11 PDT 2026
 
 **Learnings:** `<caption>` is the semantically correct way to label a `<table>` for screen readers; `aria-label` on the table element is a secondary technique. Adding both is valid and reinforces accessibility. Using `className="sr-only"` (Tailwind's visually-hidden utility) hides the caption from sighted users while keeping it in the accessibility tree. The caption must be the first child of `<table>`, before `<thead>`.
 
+
+## US-684: Add role and aria-label to Activity timeline region
+**Status:** Complete
+**Commit:** 35f4c70
+
+**Summary:** Added `role='region'` and `aria-label='Activity timeline'` to the outermost div in the `ActivityTimeline` component in `Activity.jsx` (the filled/non-empty/non-loading branch). This creates a navigable ARIA landmark for screen reader users.
+
+**Learnings:** The change was a one-liner on the outermost container div. The skeleton and empty state branches were not touched since they are transient UI states, not the actual timeline region. Build passed with no errors.
