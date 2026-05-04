@@ -1,0 +1,111 @@
+{
+  "id": "prd_68",
+  "title": "Accessibility Fixes",
+  "description": "Fix WCAG violations across CalendarGrid, Settings, OfferComparison, EmptyState, AnalyticsCharts, and Activity: add aria-current on today's cell, wrap weekday abbreviations in abbr, fix icon aria usage, repair Settings tab aria-controls, add table captions, and label the activity timeline region.",
+  "userStories": [
+    {
+      "id": "US-678",
+      "title": "Add aria-current='date' to today's calendar cell",
+      "description": "CalendarGrid.jsx DayCell renders each day but never marks the current date for screen readers. When isToday is true, add aria-current='date' to the day cell's role='button' element.",
+      "acceptanceCriteria": [
+        "CalendarGrid.jsx DayCell adds aria-current='date' to the interactive cell element when isToday is true",
+        "When isToday is false, aria-current is not set (or set to undefined/false)",
+        "Build passes with no errors"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-679",
+      "title": "Wrap CalendarGrid weekday headers in abbr elements",
+      "description": "CalendarGrid.jsx renders short weekday abbreviations (Sun, Mon, etc.) as plain text in divs. Screen readers read these aloud as words; wrap each in <abbr title='full weekday name'> so the full name is accessible.",
+      "acceptanceCriteria": [
+        "CalendarGrid.jsx WEEK_DAYS map renders each day as <abbr title='Sunday'>Sun</abbr>, <abbr title='Monday'>Mon</abbr>, etc. with matching full titles",
+        "All 7 weekdays have correct full-name titles",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-680",
+      "title": "Fix EventChip BookOpen icon aria usage in CalendarGrid",
+      "description": "CalendarGrid.jsx EventChip renders a BookOpen icon with aria-label='Has prep data'. The aria-label on an SVG inside an interactive element is confusing for screen readers. Change the icon to aria-hidden='true' and add a <span className='sr-only'>Has prep notes</span> sibling.",
+      "acceptanceCriteria": [
+        "CalendarGrid.jsx EventChip BookOpen icon has aria-hidden='true' instead of aria-label",
+        "A <span className='sr-only'>Has prep notes</span> element is rendered adjacent to the icon when prep data exists",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-681",
+      "title": "Fix Settings.jsx tab aria-controls WCAG violation",
+      "description": "Settings.jsx TabNav gives each tab button aria-controls={'panel-' + id}, but only the active panel has that id in the DOM. Inactive tabs' aria-controls point to non-existent elements, which is a WCAG failure. Fix by giving all inactive panels a hidden div with the correct id, OR by using a single stable panel id for all tabs.",
+      "acceptanceCriteria": [
+        "Every tab button's aria-controls value matches an element id that exists in the DOM at all times",
+        "The tabpanel element always has role='tabpanel' and id matching the active tab's aria-controls",
+        "Non-active panels are hidden but their ids remain in the DOM (use hidden attribute or display:none), or a single panel id is reused across all tabs",
+        "Build passes with no errors"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-682",
+      "title": "Add aria-hidden to EmptyState icon",
+      "description": "EmptyState.jsx renders the Icon prop without aria-hidden='true'. Since the icon is decorative (the title and description text convey the meaning), add aria-hidden='true' to prevent screen readers from announcing the SVG.",
+      "acceptanceCriteria": [
+        "EmptyState.jsx passes aria-hidden='true' to the Icon component render",
+        "Build passes with no errors"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-683",
+      "title": "Add screen-reader captions to AnalyticsCharts tables",
+      "description": "AnalyticsCharts.jsx renders TagsTable and any conversion/funnel tables without <caption> elements. Screen reader users cannot identify the table's purpose. Add a visually hidden <caption className='sr-only'> to each data table.",
+      "acceptanceCriteria": [
+        "AnalyticsCharts.jsx TagsTable <table> has <caption className='sr-only'>Tag offer rates</caption> (or equivalent descriptive text) as its first child",
+        "Any other data tables in AnalyticsCharts.jsx also receive a <caption className='sr-only'> with a descriptive label",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-684",
+      "title": "Add role and aria-label to Activity timeline region",
+      "description": "Activity.jsx ActivityTimeline renders a list of events with no landmark role. Add role='region' and aria-label='Activity timeline' to the container so screen reader users can navigate to it via landmark shortcuts.",
+      "acceptanceCriteria": [
+        "Activity.jsx timeline container (the outermost div wrapping all activity entries) has role='region' and aria-label='Activity timeline'",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-685",
+      "title": "Fix OfferComparison tab aria-controls wiring",
+      "description": "OfferComparison.jsx has a tab bar for switching between offer views. Ensure each tab button has aria-controls pointing to the corresponding panel id, and each panel has the matching id and role='tabpanel'. If panels are conditionally rendered, use hidden attribute to keep non-active panels in the DOM.",
+      "acceptanceCriteria": [
+        "OfferComparison.jsx tab buttons have aria-controls matching their panel id",
+        "Tab panels have role='tabpanel' and matching ids",
+        "Non-active panels are either hidden (not removed) from the DOM, or the component uses a single panel with a stable id",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

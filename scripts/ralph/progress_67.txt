@@ -1,0 +1,11 @@
+# Ralph Progress Log
+Started: Mon May  4 08:40:17 PDT 2026
+---
+
+## US-670: Add NavBar to JobBoard page
+- Imported NavBar from ../components/NavBar
+- Wrapped return in <div className="flex min-h-screen flex-col bg-background">
+- Added <NavBar /> as first child of the wrapper div
+- Changed root <main> to keep gap-6, px-4, py-8, sm:px-6 but removed flex min-h-screen flex-col bg-background (moved to outer div)
+- Build passed with no errors
+- Committed: feat: US-670 - Add NavBar to JobBoard page

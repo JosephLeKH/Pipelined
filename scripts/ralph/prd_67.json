@@ -1,0 +1,120 @@
+{
+  "id": "prd_67",
+  "title": "Navigation & Loading Consistency",
+  "description": "Fix missing NavBar on JobBoard, add Job Board to nav links, fix AuthLayout brand link, replace all spinner-based loading states with shimmer skeletons, fix broken OnboardingChecklist extension link, and add missing meta tags to PublicTimeline.",
+  "userStories": [
+    {
+      "id": "US-670",
+      "title": "Add NavBar to JobBoard page",
+      "description": "JobBoard.jsx renders a bare <main> with no navigation bar, making it impossible to navigate away without the browser back button. Wrap the page in a flex column div, add <NavBar /> at the top, and change the root element from <main> to a <div> wrapper with <main> inside for the content.",
+      "acceptanceCriteria": [
+        "JobBoard.jsx imports NavBar from ../components/NavBar",
+        "NavBar renders at the top of the JobBoard page",
+        "The page root is a <div className='flex min-h-screen flex-col bg-background'> wrapping NavBar and a <main> for content",
+        "All existing layout classes (gap-6, px-4, py-8, sm:px-6) remain on the content <main>",
+        "Build passes with no errors"
+      ],
+      "priority": "high",
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-671",
+      "title": "Add Job Board to NavBar navigation links",
+      "description": "NavBar.jsx's NAV_LINKS array does not include the /jobs route, so users have no way to navigate to the Job Board from the nav. Add a Job Board entry using the Briefcase icon from lucide-react.",
+      "acceptanceCriteria": [
+        "NavBar.jsx imports Briefcase from lucide-react/dist/esm/icons/briefcase",
+        "NAV_LINKS includes { to: '/jobs', label: 'Job Board', Icon: Briefcase } positioned after Dashboard (index 1 or wherever makes sense between Dashboard and Calendar)",
+        "The link renders correctly in both desktop sidebar and mobile nav",
+        "Build passes with no errors"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-672",
+      "title": "Make Pipelined brand text a home link in AuthLayout",
+      "description": "AuthLayout.jsx renders the brand name 'Pipelined' as a plain <p> tag. It should be a <Link to='/'> from react-router-dom so users on login/register pages can click back to the landing page.",
+      "acceptanceCriteria": [
+        "AuthLayout.jsx imports Link from react-router-dom",
+        "The 'Pipelined' brand text is wrapped in <Link to='/'>",
+        "The link has no underline and preserves the existing font-display font-semibold text-xl text-foreground styling",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-673",
+      "title": "Replace PublicTimeline spinner with shimmer skeleton",
+      "description": "PublicTimeline.jsx LoadingState uses a spinning border div. Replace it with a shimmer skeleton that matches the page layout: a header area and several timeline entry rows.",
+      "acceptanceCriteria": [
+        "LoadingState in PublicTimeline.jsx no longer uses animate-spin",
+        "LoadingState renders shimmer-bg animate-shimmer skeleton elements: a header block and at least 4 timeline row skeletons",
+        "The skeleton is wrapped in a max-w container matching the page's content width",
+        "aria-hidden='true' is set on the skeleton wrapper",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-674",
+      "title": "Replace OfferComparison spinner with shimmer skeleton",
+      "description": "OfferComparison.jsx LoadingState uses an animate-spin spinner. Replace it with a shimmer skeleton showing card placeholders that match the page's offer card layout.",
+      "acceptanceCriteria": [
+        "LoadingState in OfferComparison.jsx no longer uses animate-spin",
+        "LoadingState renders shimmer-bg animate-shimmer skeleton: NavBar at top, then 2-3 offer card skeletons in the page layout area",
+        "Each card skeleton has a header row and several content rows",
+        "aria-hidden='true' is set on the skeleton content area",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-675",
+      "title": "Replace GoalProgress animate-pulse with shimmer skeleton",
+      "description": "GoalProgress.jsx uses animate-pulse on its loading skeleton. Replace with the project-standard shimmer-bg animate-shimmer classes.",
+      "acceptanceCriteria": [
+        "GoalProgress.jsx loading skeleton uses shimmer-bg animate-shimmer instead of animate-pulse bg-muted",
+        "The circular ring placeholder and text placeholders all use the shimmer classes",
+        "Build passes with no errors"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-676",
+      "title": "Fix OnboardingChecklist broken extension install link",
+      "description": "OnboardingChecklist.jsx has EXTENSION_STEP_HREF = '#install-extension' which is a broken anchor — no element with that id exists. Replace with the Chrome Web Store URL for the extension.",
+      "acceptanceCriteria": [
+        "EXTENSION_STEP_HREF in OnboardingChecklist.jsx is set to 'https://chromewebstore.google.com/detail/pipelined' or similar reasonable placeholder Chrome Web Store URL",
+        "The link opens in a new tab (target='_blank' rel='noopener noreferrer')",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-677",
+      "title": "Add og:description and meta description to PublicTimeline",
+      "description": "PublicTimeline.jsx useEffect updates og:title but never sets the meta description or og:description. Add these updates following the same pattern used in PublicPipeline.jsx.",
+      "acceptanceCriteria": [
+        "PublicTimeline.jsx useEffect sets document querySelector 'meta[name=description]' content to a relevant description when timeline data loads",
+        "useEffect sets querySelector 'meta[property=og:description]' content to the same description",
+        "On cleanup the meta tags are reset to their default values",
+        "Build passes with no errors"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

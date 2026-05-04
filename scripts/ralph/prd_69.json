@@ -1,0 +1,117 @@
+{
+  "id": "prd_69",
+  "title": "UX Polish",
+  "description": "Polish the Activity timeline with date group separators, gate GoalProgress SVG animation on prefers-reduced-motion, add an Edit Goal shortcut, add a sort toggle to Tags, add a live region for calendar month announcements, show an active filter dot on the mobile saved searches button, add a visual progress bar to OnboardingChecklist, and add a caption to the OfferComparison table.",
+  "userStories": [
+    {
+      "id": "US-686",
+      "title": "Add date group separators to Activity timeline",
+      "description": "Activity.jsx renders all timeline entries in a flat list with no indication of which day they belong to. Group entries by calendar date and render a sticky or inline date separator heading (e.g., 'Today', 'Yesterday', 'May 2, 2026') between groups.",
+      "acceptanceCriteria": [
+        "Activity.jsx groups timeline entries by calendar date",
+        "A date separator element renders between groups showing the date label (Today / Yesterday / formatted date for older entries)",
+        "Separator is visually distinct (e.g., small muted text with a horizontal rule or background)",
+        "Entries within each group retain their existing styling",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-687",
+      "title": "Gate GoalProgress SVG ring transition on prefers-reduced-motion",
+      "description": "GoalProgress.jsx applies an inline transition style [transition:stroke-dashoffset_0.4s_ease] to the SVG ring unconditionally. Gate this animation so it only runs when the user has not requested reduced motion.",
+      "acceptanceCriteria": [
+        "GoalProgress.jsx checks window.matchMedia('(prefers-reduced-motion: reduce)').matches",
+        "When reduced motion is preferred, the stroke-dashoffset transition style is not applied",
+        "When reduced motion is not preferred, the transition runs as before",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-688",
+      "title": "Add Edit Goal shortcut button to GoalProgress",
+      "description": "GoalProgress.jsx displays the goal ring and stats but provides no way to edit the goal directly. Add a small 'Edit goal' link/button that navigates to /settings?section=pipeline so users can quickly adjust their goal.",
+      "acceptanceCriteria": [
+        "GoalProgress.jsx renders an 'Edit goal' button or link below or near the goal display",
+        "Clicking it navigates to /settings?section=pipeline (use react-router-dom Link or useNavigate)",
+        "The button is visually understated (e.g., text-xs text-muted-foreground underline or a ghost Button)",
+        "Build passes with no errors"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-689",
+      "title": "Add sort toggle to Tags page",
+      "description": "Tags.jsx renders a flat list of tags with no sorting control. Add a sort toggle in the page header area (Name A→Z / Count ↓) that reorders the displayed tags.",
+      "acceptanceCriteria": [
+        "Tags.jsx has a sort control with at least two options: sort by name (A-Z) and sort by count (descending)",
+        "The currently active sort is visually indicated (e.g., aria-pressed or active styling)",
+        "Switching sort reorders the tag list in the UI without a page reload",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-690",
+      "title": "Add aria-live region for Calendar month navigation",
+      "description": "Calendar.jsx changes the displayed month but never announces the change to screen readers. Add an aria-live='polite' region that announces the new month/year string whenever navigation occurs.",
+      "acceptanceCriteria": [
+        "Calendar.jsx (or CalendarGrid.jsx) has an aria-live='polite' element that is updated with the current month and year on every navigation",
+        "The announcement element is visually hidden (sr-only) so it doesn't affect layout",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-691",
+      "title": "Show active filter dot on mobile Saved Searches button in JobBoard",
+      "description": "JobBoard.jsx mobile 'Saved searches' button has no indicator of how many saved searches exist. Add a small badge or dot on the button when there are saved searches available, giving users a visual cue to open the panel.",
+      "acceptanceCriteria": [
+        "JobBoard.jsx mobile 'Saved searches' button shows a small numeric badge or dot indicator when saved searches exist (count > 0)",
+        "The indicator is hidden when there are no saved searches",
+        "Use the useSavedSearches hook or equivalent to get the count",
+        "Build passes with no errors"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-692",
+      "title": "Add visual progress bar to OnboardingChecklist",
+      "description": "OnboardingChecklist.jsx shows steps as a list but has no overall progress indicator. Add a simple progress bar (or '2 of 3 steps complete' text) at the top of the checklist to motivate completion.",
+      "acceptanceCriteria": [
+        "OnboardingChecklist.jsx counts completed steps (checked items) and total steps",
+        "A progress bar or 'N of M steps complete' label renders above or below the step list",
+        "The progress bar uses the project's color tokens (bg-primary for fill, bg-muted for track)",
+        "Build passes with no errors"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-693",
+      "title": "Add caption to OfferComparison comparison table",
+      "description": "OfferComparison.jsx renders an offer comparison table without a <caption>. Screen reader users cannot identify the table's purpose. Add <caption className='sr-only'>Offer comparison</caption> as the first child of the table.",
+      "acceptanceCriteria": [
+        "OfferComparison.jsx comparison <table> has <caption className='sr-only'>Offer comparison</caption> as its first child",
+        "Build passes with no errors"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}
