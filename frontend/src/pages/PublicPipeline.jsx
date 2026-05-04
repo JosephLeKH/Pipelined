@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 
 import { STAGE_COLORS, DEFAULT_STAGE_COLOR } from "../lib/constants";
-import { formatDate } from "../lib/dateUtils";
+import { formatDateShort } from "../lib/dateUtils";
 import { usePublicPipeline } from "../hooks/useSharing";
 import { trackEvent } from "../lib/analytics";
 
@@ -52,7 +52,7 @@ function PublicAppRow({ app }) {
         <span className="truncate text-sm text-muted-foreground">{app.role_title}</span>
       </div>
       <StagePill stage={app.current_stage} />
-      <span className="hidden text-sm text-muted-foreground sm:block">{formatDate(app.date_applied)}</span>
+      <span className="text-sm text-muted-foreground">{formatDateShort(app.date_applied)}</span>
     </div>
   );
 }

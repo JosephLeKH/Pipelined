@@ -18,6 +18,16 @@ function parseISOSafe(isoString) {
   return new Date(isoString);
 }
 
+/** Format an ISO string as "Apr 7" (no year) for compact displays. */
+export function formatDateShort(isoString) {
+  if (!isoString) return "";
+  return parseISOSafe(isoString).toLocaleDateString(LOCALE, {
+    month: "short",
+    day: "numeric",
+    timeZone: TIMEZONE,
+  });
+}
+
 /** Format an ISO string as "Apr 7, 2026". */
 export function formatDate(isoString) {
   if (!isoString) return "";
