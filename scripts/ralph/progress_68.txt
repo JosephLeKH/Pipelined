@@ -34,3 +34,11 @@ Started: Mon May  4 08:50:11 PDT 2026
 
 **Learnings:** Using `<abbr title="full name">abbr</abbr>` is the correct HTML pattern for exposing screen-reader-friendly full text for abbreviations. Pairing the short `WEEK_DAYS` array with a companion `WEEK_DAYS_FULL` array indexed by position keeps the mapping explicit, zero-magic, and consistent with the project's no-magic-values rule. The index approach avoids an object/Map lookup while staying readable.
 
+## US-680: Fix EventChip BookOpen icon aria usage in CalendarGrid
+**Status:** COMPLETE
+**Commit:** 25e43c8
+
+**Summary:** `CalendarGrid.jsx` `EventChip` had `<BookOpen aria-label="Has prep data" />` on the prep-data indicator icon. An `aria-label` on an SVG inside an already-labeled interactive button duplicates and confuses screen reader announcements. Changed `aria-label` to `aria-hidden="true"` and added `<span className="sr-only">Has prep notes</span>` as a sibling inside a React Fragment so screen readers still get the textual cue without reading the SVG directly.
+
+**Learnings:** For decorative icons inside interactive elements that already carry an `aria-label`, the correct pattern is to hide the icon (`aria-hidden="true"`) and include any additional context as an `sr-only` text node. This avoids double-announcements while keeping the information available to assistive technology.
+
