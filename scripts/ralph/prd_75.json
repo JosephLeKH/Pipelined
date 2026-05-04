@@ -1,0 +1,113 @@
+{
+  "id": "prd_75",
+  "title": "Feedback Announcements & Structural Improvements",
+  "description": "Add screen reader feedback for copy-to-clipboard in SharePipeline, wire aria-describedby on ManualAddForm validation errors, add aria-hidden to NavBar mobile menu page backdrop, add id='main-content' to Calendar/Activity/Settings/Analytics page main elements for skip-link compatibility, improve ApplicationTimeline toggle aria-controls, add section landmarks to Dashboard, and add sr-only page heading to Analytics page.",
+  "userStories": [
+    {
+      "id": "US-734",
+      "title": "Announce copy-to-clipboard success in SharePipeline",
+      "description": "SharePipeline.jsx has a copy URL button that sets a `copied` state to show visual feedback, but never announces the success to screen readers. Add an aria-live='polite' sr-only region that updates with 'Link copied to clipboard' when the copied state is true, then clears after the state resets.",
+      "acceptanceCriteria": [
+        "SharePipeline.jsx has an aria-live='polite' aria-atomic='true' element (sr-only) that says 'Link copied to clipboard' when copied is true",
+        "The region clears (empty string) when copied resets to false",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-735",
+      "title": "Wire aria-describedby on ManualAddForm validation error messages",
+      "description": "ManualAddForm.jsx shows validation error messages for fields but the error text elements are not linked to their inputs via aria-describedby. Screen readers may not announce field errors when the user focuses the invalid input. Add id attributes to error message spans and aria-describedby on the corresponding inputs.",
+      "acceptanceCriteria": [
+        "ManualAddForm.jsx error message elements have unique id attributes",
+        "The corresponding Input elements have aria-describedby matching the error element's id",
+        "When no error is present the aria-describedby is omitted or the error element is empty",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-736",
+      "title": "Add aria-hidden to page content behind NavBar mobile menu",
+      "description": "NavBar.jsx mobile menu opens as an overlay but the page content behind it is still accessible to screen readers. When the mobile menu is open, add aria-hidden='true' to the main page content container so screen readers are constrained to the menu. Remove aria-hidden when the menu closes.",
+      "acceptanceCriteria": [
+        "NavBar.jsx adds aria-hidden='true' to the main page content area when the mobile menu is open",
+        "aria-hidden is removed or set to false when the menu closes",
+        "The NavBar itself (containing the menu) is not hidden",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-737",
+      "title": "Add id='main-content' to Calendar, Activity, Settings, and Analytics page main elements",
+      "description": "Calendar.jsx, Activity.jsx, Settings.jsx, and Analytics.jsx page <main> elements lack id='main-content', which is required for the NavBar skip-to-content link (US-712) to work on these pages. Add id='main-content' to the <main> element in each of these pages.",
+      "acceptanceCriteria": [
+        "Calendar.jsx <main> element has id='main-content'",
+        "Activity.jsx <main> element has id='main-content'",
+        "Settings.jsx <main> element has id='main-content'",
+        "Analytics.jsx <main> element has id='main-content'",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-738",
+      "title": "Add aria-controls to ApplicationTimeline toggle button",
+      "description": "ApplicationTimeline.jsx toggle button has aria-expanded and aria-label but may be missing aria-controls pointing to the collapsible timeline panel. Add an id to the collapsible panel and aria-controls={id} to the toggle button so screen readers can navigate from the button to the controlled region.",
+      "acceptanceCriteria": [
+        "ApplicationTimeline.jsx collapsible panel has a unique id attribute",
+        "The toggle button has aria-controls matching the panel's id",
+        "Build passes with no errors"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-739",
+      "title": "Add role='region' and aria-label landmarks to Dashboard sections",
+      "description": "Dashboard.jsx renders several distinct content sections (goal progress, stats bar, kanban board, etc.) in a single page with no landmark regions differentiating them. Add role='region' and aria-label to the major content sections so screen reader users can navigate between them using landmark shortcuts.",
+      "acceptanceCriteria": [
+        "Dashboard.jsx wraps its major content sections (e.g. goal/stats area, main board area) in elements with role='region' and descriptive aria-label",
+        "At least 2 distinct landmarks are added",
+        "Build passes with no errors"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-740",
+      "title": "Add sr-only page heading to Analytics page",
+      "description": "Analytics.jsx renders content sections and charts but has no visible or sr-only <h1> page heading. Screen reader users navigating by headings cannot identify the current page. Add an <h1 className='sr-only'>Analytics</h1> as the first element in the Analytics page main content.",
+      "acceptanceCriteria": [
+        "Analytics.jsx has an <h1 className='sr-only'>Analytics</h1> (or visible equivalent) as the first heading in the page",
+        "Build passes with no errors"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-741",
+      "title": "Add sr-only page heading to Activity page",
+      "description": "Activity.jsx renders a timeline and filter controls but lacks a visible or sr-only <h1> page heading. Add an <h1 className='sr-only'>Activity</h1> as the first heading in the page so screen reader users can orient themselves when navigating by headings.",
+      "acceptanceCriteria": [
+        "Activity.jsx has an <h1 className='sr-only'>Activity</h1> (or visible equivalent) as the first heading in the page",
+        "Build passes with no errors"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

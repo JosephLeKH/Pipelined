@@ -1,0 +1,112 @@
+{
+  "id": "prd_73",
+  "title": "Focus Visibility & Design Token Fixes",
+  "description": "Add missing focus-visible ring styling to keyboard-navigable elements across TagInput, LandingPage, Pricing, and OnboardingChecklist; fix NavBar avatar fallback accessible label; replace hardcoded amber color in NotesEditor with design tokens; fix PublicPipeline StagePill decorative aria-label; and add aria-selected to CommandPalette active result row.",
+  "userStories": [
+    {
+      "id": "US-718",
+      "title": "Add focus-visible ring to TagInput input field",
+      "description": "TagInput.jsx input element has focus:outline-none but no focus-visible:ring-* classes, making keyboard focus invisible for users who navigate by keyboard. Add focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 (or matching project token) to the input field.",
+      "acceptanceCriteria": [
+        "TagInput.jsx input element has focus-visible:ring-2 (or equivalent) in its className",
+        "focus:outline-none is preserved to avoid double-ring with the custom ring",
+        "The ring only appears on keyboard focus, not mouse click",
+        "Build passes with no errors"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-719",
+      "title": "Add focus-visible rings to LandingPage nav and footer links",
+      "description": "LandingPage.jsx anchor links in the nav bar (e.g. href='#features') and footer link list items lack focus-visible:ring-* classes. Keyboard users receive no visual focus indicator when tabbing through these links. Add focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none to all anchor/link elements in the LandingNav and footer sections.",
+      "acceptanceCriteria": [
+        "LandingPage.jsx nav anchor links (href='#features', etc.) have focus-visible:ring-2 focus-visible:ring-ring focus-visible:rounded (or equivalent) classes",
+        "Footer link list items have matching focus-visible ring classes",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-720",
+      "title": "Add focus-visible rings to Pricing.jsx FAQ summary elements",
+      "description": "Pricing.jsx FAQ accordion uses native <details>/<summary> elements. The <summary> elements lack focus-visible:ring-* styling so keyboard users see no focus indicator when tabbing through the FAQ items. Add focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none to each <summary> element.",
+      "acceptanceCriteria": [
+        "Each <summary> element in Pricing.jsx has focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none (or equivalent) in its className",
+        "The ring does not appear on mouse click (focus-visible only)",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-721",
+      "title": "Add focus-visible ring to OnboardingChecklist extension install link",
+      "description": "OnboardingChecklist.jsx extension install link (<a> element pointing to Chrome Web Store) has hover styling but no focus-visible:ring-* classes. Keyboard users cannot see focus on this link. Add focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none to the anchor element.",
+      "acceptanceCriteria": [
+        "OnboardingChecklist.jsx extension install <a> element has focus-visible:ring-2 (or equivalent) classes",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-722",
+      "title": "Add aria-label to NavBar avatar fallback span",
+      "description": "NavBar.jsx shows a fallback avatar span (showing initials or a placeholder) when no profile image is available. This span lacks an accessible label so screen readers cannot announce whose avatar it is. Add aria-label={`${user.display_name ?? user.email}'s avatar`} to the fallback span element.",
+      "acceptanceCriteria": [
+        "NavBar.jsx fallback avatar span has aria-label including the user's display name or email",
+        "The aria-label format is '{name}'s avatar' or equivalent",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-723",
+      "title": "Replace hardcoded amber color in NotesEditor with design token",
+      "description": "NotesEditor.jsx uses hardcoded Tailwind color classes text-amber-600 dark:text-amber-400 for an unsaved-changes indicator or similar UI element. These bypass the design token system. Replace with an appropriate semantic token (e.g. text-warning if defined, or the closest token in the project's tailwind config).",
+      "acceptanceCriteria": [
+        "NotesEditor.jsx no longer uses text-amber-600 or text-amber-400 hardcoded classes",
+        "The replacement uses a design token class consistent with the project's color system",
+        "The visual appearance is equivalent (amber/warning color)",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-724",
+      "title": "Fix PublicPipeline StagePill decorative span aria-label",
+      "description": "PublicPipeline.jsx StagePill component renders a colored dot span with aria-label={stage}. The dot is a decorative indicator — the stage name is already conveyed by nearby visible text. The aria-label on a non-interactive decorative span causes duplicate announcements. Replace aria-label with aria-hidden='true' on the dot span.",
+      "acceptanceCriteria": [
+        "PublicPipeline.jsx StagePill dot span has aria-hidden='true' instead of aria-label={stage}",
+        "The stage name is still conveyed by visible text elsewhere in the component",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-725",
+      "title": "Add aria-selected to CommandPalette active result row",
+      "description": "CommandPalette.jsx PaletteRow renders the currently active/highlighted result with a visual highlight but no aria-selected attribute. Screen reader users cannot tell which result is currently active. Add aria-selected={isActive} to each PaletteRow button and ensure the parent container has role='listbox' (or role='list' with role='option' on items).",
+      "acceptanceCriteria": [
+        "CommandPalette.jsx PaletteRow has aria-selected={isActive} (true for the active row, false or undefined for others)",
+        "The parent results container role is consistent with the child role (listbox+option or list+listitem)",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

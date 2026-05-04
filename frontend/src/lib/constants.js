@@ -62,6 +62,7 @@ export const DEFAULT_EVENT_COLOR = { bg: "bg-surface-secondary", text: "text-gra
 export const CALENDAR_STALE_TIME_MS = 60_000;
 
 export const WEEK_DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+export const WEEK_DAYS_FULL = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 export const ROLE_TYPE_OPTIONS = ["full_time", "part_time", "contract", "internship"];
 

@@ -1,0 +1,116 @@
+{
+  "id": "prd_74",
+  "title": "Dialog, Form & Interactive Element Fixes",
+  "description": "Fix WCAG violations in dialogs and interactive components: add aria-modal and aria-labelledby to JobBoard saved searches overlay, convert CalendarGrid DayCell from div+role='button' to semantic button element, add aria-expanded and aria-controls to ContactsSection add-mode buttons, wire aria-controls in OfferDetailsSection collapsible, fix OfferDetailsSection edit form label association, add aria-live for NotificationBell unread count, add role='tooltip' to AnalyticsCharts CustomTooltip, and add sr-only label to JobBoard search input.",
+  "userStories": [
+    {
+      "id": "US-726",
+      "title": "Add aria-modal and aria-labelledby to JobBoard saved searches overlay",
+      "description": "JobBoard.jsx renders a mobile saved searches overlay panel (fixed position, covers the page) that functions as a dialog but is missing aria-modal='true' and aria-labelledby. Without these, screen readers continue reading content behind the overlay. Add role='dialog', aria-modal='true', and aria-labelledby pointing to the 'Saved searches' heading inside the panel.",
+      "acceptanceCriteria": [
+        "JobBoard.jsx mobile saved searches overlay has role='dialog' (or equivalent) and aria-modal='true'",
+        "The overlay has aria-labelledby pointing to an id on the 'Saved searches' heading element",
+        "The heading element has a matching id attribute",
+        "Build passes with no errors"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-727",
+      "title": "Convert CalendarGrid DayCell from div+role='button' to semantic button",
+      "description": "CalendarGrid.jsx DayCell renders a div with role='button' and tabIndex={0}. Using a div instead of a native <button> means default Enter/Space key handling and other implicit button behaviors must be manually implemented. Replace the div root with a <button> element, remove role='button' and tabIndex={0}' (now implicit), and ensure existing className and event handlers are preserved.",
+      "acceptanceCriteria": [
+        "CalendarGrid.jsx DayCell root element is a <button> instead of a <div>",
+        "role='button' and tabIndex={0} are removed (redundant on a native button)",
+        "All existing onClick, className, and conditional attributes (aria-current, aria-label, etc.) are preserved",
+        "The button has type='button' to prevent accidental form submission",
+        "Build passes with no errors"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-728",
+      "title": "Add aria-expanded and aria-controls to ContactsSection add-mode buttons",
+      "description": "ContactsSection.jsx has 'Link' and 'New' buttons that toggle an addMode state, showing a form below. These buttons lack aria-expanded (indicating whether the form is open) and aria-controls (pointing to the form container). Add aria-expanded={addMode === CONTACTS_ADD_MODE_LINK} to the Link button, aria-expanded={addMode === CONTACTS_ADD_MODE_NEW} to the New button, and aria-controls pointing to the id of the form container.",
+      "acceptanceCriteria": [
+        "ContactsSection.jsx 'Link' button has aria-expanded reflecting whether the link form is open",
+        "ContactsSection.jsx 'New' button has aria-expanded reflecting whether the new contact form is open",
+        "Both buttons have aria-controls pointing to the id of the controlled form container",
+        "The form container has a matching id attribute",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-729",
+      "title": "Add aria-controls to OfferDetailsSection collapsible button",
+      "description": "OfferDetailsSection.jsx has a collapsible section toggle button with aria-expanded but missing aria-controls. Screen readers announce expand/collapse state but cannot navigate to the controlled region. Add an id to the collapsible panel div and aria-controls={id} to the toggle button.",
+      "acceptanceCriteria": [
+        "OfferDetailsSection.jsx collapsible panel has a unique id attribute",
+        "The toggle button has aria-controls matching the panel's id",
+        "The toggle button already has aria-expanded — both should be present",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-730",
+      "title": "Associate OfferDetailsSection edit form inputs with labels",
+      "description": "OfferDetailsSection.jsx renders editable Input fields when in edit mode, but the inputs are not associated with visible labels via htmlFor/id pairs. Screen reader users cannot identify which field they are editing. Add an id to each Input and a matching htmlFor on its label element (or aria-label if no visible label is present).",
+      "acceptanceCriteria": [
+        "Each Input in OfferDetailsSection.jsx edit mode has a unique id attribute",
+        "Each field label uses htmlFor matching the input's id, OR the input has an aria-label if no visible label exists",
+        "Build passes with no errors"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-731",
+      "title": "Add aria-live region for NotificationBell unread count changes",
+      "description": "NotificationBell.jsx shows an unread count badge that changes dynamically but never announces changes to screen readers. Add an aria-live='polite' visually-hidden region that announces the unread count when it changes (e.g., '3 unread notifications'). When count is 0, announce 'No unread notifications' or clear the region.",
+      "acceptanceCriteria": [
+        "NotificationBell.jsx has an aria-live='polite' aria-atomic='true' element (sr-only) that reflects the current unread count",
+        "The element updates when the unread count changes",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-732",
+      "title": "Add role='tooltip' to AnalyticsCharts CustomTooltip",
+      "description": "AnalyticsCharts.jsx CustomTooltip renders a tooltip div for chart hover states without role='tooltip'. Screen reader users relying on the tooltip for data cannot identify it as a tooltip. Add role='tooltip' to the CustomTooltip container div.",
+      "acceptanceCriteria": [
+        "AnalyticsCharts.jsx CustomTooltip container div has role='tooltip'",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-733",
+      "title": "Add sr-only label to JobBoard search input",
+      "description": "JobBoard.jsx JobSearchInput (or the search input component rendered in JobBoard) uses aria-label but has no visible or sr-only <label> element. Add a <label className='sr-only' htmlFor='job-search-input'>Search jobs</label> and a matching id='job-search-input' on the input for improved semantic structure.",
+      "acceptanceCriteria": [
+        "JobBoard.jsx search input has a <label className='sr-only'> with matching htmlFor",
+        "The input has a matching id attribute",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

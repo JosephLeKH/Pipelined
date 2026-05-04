@@ -7,7 +7,7 @@ import ChevronLeft from "lucide-react/dist/esm/icons/chevron-left";
 import ChevronRight from "lucide-react/dist/esm/icons/chevron-right";
 
 import { useCalendarEvents } from "../hooks/useCalendar";
-import { DEFAULT_EVENT_COLOR, EVENT_TYPE_COLORS, WEEK_DAYS } from "../lib/constants";
+import { DEFAULT_EVENT_COLOR, EVENT_TYPE_COLORS, WEEK_DAYS, WEEK_DAYS_FULL } from "../lib/constants";
 import { toISODate, formatDateLong, formatTime } from "../lib/dateUtils";
 import { Button } from "./ui/button";
 import ApiErrorMessage from "./ApiErrorMessage";
@@ -218,9 +218,9 @@ function CalendarGrid({ month, year, onMonthChange, onEventClick, onDayClick }) 
     <div className="overflow-hidden rounded-xl border border-border bg-card">
       <CalendarHeader month={month} year={year} onPrev={handlePrev} onNext={handleNext} onToday={handleToday} />
       <div className="grid grid-cols-7 border-t border-border">
-        {WEEK_DAYS.map((d) => (
+        {WEEK_DAYS.map((d, i) => (
           <div key={d} className="border-b border-border py-2 text-center text-xs font-display font-medium uppercase text-muted-foreground">
-            {d}
+            <abbr title={WEEK_DAYS_FULL[i]}>{d}</abbr>
           </div>
         ))}
       </div>
