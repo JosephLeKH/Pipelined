@@ -12,6 +12,9 @@ import NavBar from "../components/NavBar";
 import { useActivityFeed } from "../hooks/useActivity";
 import { Button } from "../components/ui/button";
 
+const DATE_LABEL_TODAY = "Today";
+const DATE_LABEL_YESTERDAY = "Yesterday";
+
 const TIME_RANGES = [
   { label: "Last 7 days", days: 7 },
   { label: "Last 30 days", days: 30 },
@@ -30,6 +33,50 @@ const TYPE_ICONS = {
   stage_change: ArrowRight,
   event_created: CalendarDays,
 };
+
+function toDateKey(timestamp) {
+  const d = new Date(timestamp);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+function getDateLabel(dateKey) {
+  const todayKey = toDateKey(Date.now());
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayKey = toDateKey(yesterday);
+  if (dateKey === todayKey) return DATE_LABEL_TODAY;
+  if (dateKey === yesterdayKey) return DATE_LABEL_YESTERDAY;
+  const [year, month, day] = dateKey.split("-").map(Number);
+  return new Date(year, month - 1, day).toLocaleDateString(undefined, {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
+function groupEntriesByDate(entries) {
+  const groups = [];
+  const seen = new Map();
+  for (const entry of entries) {
+    const key = toDateKey(entry.timestamp);
+    if (!seen.has(key)) {
+      const group = { dateKey: key, label: getDateLabel(key), entries: [] };
+      seen.set(key, group);
+      groups.push(group);
+    }
+    seen.get(key).entries.push(entry);
+  }
+  return groups;
+}
+
+function DateSeparator({ label }) {
+  return (
+    <div className="flex items-center gap-3 py-2 px-2">
+      <span className="text-xs font-medium text-muted-foreground whitespace-nowrap">{label}</span>
+      <div className="h-px flex-1 bg-border" aria-hidden="true" />
+    </div>
+  );
+}
 
 function entryLabel(entry) {
   const { type, company, role_title, details } = entry;
@@ -165,15 +212,22 @@ function ActivityTimeline({ isLoading, entries, onEntryClick }) {
     );
   }
 
+  const groups = groupEntriesByDate(entries);
+
   return (
     <div role="region" aria-label="Activity timeline" className="rounded-xl bg-card border border-border px-4">
       <div className="relative border-l border-border pl-4 ml-1.5">
-        {entries.map((entry, idx) => (
-          <TimelineEntry
-            key={`${entry.type}-${entry.application_id}-${idx}`}
-            entry={entry}
-            onClick={onEntryClick}
-          />
+        {groups.map((group) => (
+          <div key={group.dateKey}>
+            <DateSeparator label={group.label} />
+            {group.entries.map((entry, idx) => (
+              <TimelineEntry
+                key={`${entry.type}-${entry.application_id}-${idx}`}
+                entry={entry}
+                onClick={onEntryClick}
+              />
+            ))}
+          </div>
         ))}
       </div>
     </div>
