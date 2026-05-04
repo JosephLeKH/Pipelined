@@ -62,3 +62,15 @@ Gated the SVG ring `stroke-dashoffset` transition in GoalProgress.jsx on the use
 ### Learnings
 - `window.matchMedia("(prefers-reduced-motion: reduce)").matches` is a synchronous, one-time read sufficient for gating render-time class application
 - For a reactive approach (responding to changes mid-session), `addEventListener("change", ...)` on the MediaQueryList would be needed, but for this use case the static check is sufficient per the acceptance criteria
+
+## US-689: Add sort toggle to Tags page
+**Completed**: 2026-05-04
+
+Added a sort toggle to Tags.jsx header area with two options: "Name A→Z" (alphabetical) and "Count ↓" (descending by usage count). Implementation uses:
+- Two module-scope constants `SORT_NAME` and `SORT_COUNT` (no magic values)
+- `useState` for current sort selection (defaults to `SORT_NAME`)
+- `useMemo` to compute `sortedTags` — name sort uses `localeCompare`, count sort uses numeric descending with name as tiebreaker
+- Two `Button` components in a `role="group"` wrapper with `aria-pressed` to indicate active sort; active button uses `variant="secondary"` for visual distinction
+- `sortedTags` passed to `TagsTable` instead of raw `tags`
+
+Build passed. File stayed at 259 lines (under 300-line limit).

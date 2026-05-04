@@ -1,0 +1,111 @@
+{
+  "id": "prd_82",
+  "title": "Form, Layout & Loading Consistency Fixes",
+  "description": "Address critical and medium accessibility gaps: wire aria-describedby in FormField for validation errors, add main landmark to AuthLayout, add accessible name to AuthLayout logo link, replace dark:bg-gray-100 in DigestSection with design token, replace hardcoded amber color in NotesEditor with design token, replace animate-pulse in ApplicationListBody with shimmer skeleton, add sr-only heading context to ApplicationListEmpty loading state, and replace hardcoded amber colors in OfferComparison OfferHeaderCell.",
+  "userStories": [
+    {
+      "id": "US-790",
+      "title": "Wire aria-describedby in FormField for validation error messages",
+      "description": "FormField.jsx renders a label, input (via children), and optional error message, but the error text element is not linked to the input via aria-describedby. Screen readers cannot associate error messages with their fields. Add a generated id to the error element (e.g., using the field name or a prop) and pass aria-describedby matching that id to the input. When no error is present, omit aria-describedby.",
+      "acceptanceCriteria": [
+        "FormField.jsx error message element has a unique id attribute",
+        "The corresponding input has aria-describedby pointing to the error element's id when an error exists",
+        "aria-describedby is omitted when no error is present",
+        "Build passes with no errors"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-791",
+      "title": "Add main landmark to AuthLayout",
+      "description": "AuthLayout.jsx wraps login, register, forgot-password, and reset-password pages but lacks a <main> landmark element. Screen reader users navigating by landmarks cannot jump directly to the main page content. Wrap the primary content area (children) in a <main> element to provide the main landmark.",
+      "acceptanceCriteria": [
+        "AuthLayout.jsx renders a <main> element wrapping the page content",
+        "Skip links (if present) can target this main element",
+        "Build passes with no errors"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-792",
+      "title": "Add accessible name to AuthLayout logo link",
+      "description": "AuthLayout.jsx renders a logo or brand link to '/' (~line 8) that may lack an accessible name for screen readers. If the link contains only a logo image or SVG without alt text, add aria-label='Pipelined home' to the link. If it contains visible text 'Pipelined', that text serves as the accessible name and no change is needed.",
+      "acceptanceCriteria": [
+        "AuthLayout.jsx logo/brand link has an accessible name either from visible text or aria-label",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-793",
+      "title": "Replace DigestSection hardcoded dark:bg-gray-100 with design token",
+      "description": "DigestSection.jsx uses a hardcoded dark:bg-gray-100 class (~line 23) that bypasses the project's design token system. In dark mode this renders as a light gray background, which is semantically incorrect and inconsistent with themed components. Replace with an appropriate design token (e.g., dark:bg-muted or dark:bg-card) from the project's Tailwind config.",
+      "acceptanceCriteria": [
+        "DigestSection.jsx does not use dark:bg-gray-100",
+        "Replacement uses a semantic design token from the project's theme",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-794",
+      "title": "Replace NotesEditor hardcoded amber color with design token",
+      "description": "NotesEditor.jsx uses hardcoded text-amber-600 dark:text-amber-400 (~line 16) for a status or warning indicator. Replace with the appropriate semantic design token (e.g., text-warning or equivalent from the project's tailwind config) so the color responds to theme changes.",
+      "acceptanceCriteria": [
+        "NotesEditor.jsx does not use hardcoded amber-* Tailwind classes",
+        "Colors use semantic design tokens from the project theme",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-795",
+      "title": "Replace ApplicationListBody animate-pulse loading skeleton with shimmer",
+      "description": "ApplicationListBody.jsx uses animate-pulse on a progress bar or loading indicator (~line 65) instead of the project-standard shimmer-bg animate-shimmer pattern. Replace with shimmer classes to match the loading pattern used throughout the app.",
+      "acceptanceCriteria": [
+        "ApplicationListBody.jsx loading skeleton uses shimmer-bg animate-shimmer instead of animate-pulse",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-796",
+      "title": "Add sr-only loading context to ApplicationListEmpty skeleton",
+      "description": "ApplicationListEmpty.jsx renders a loading skeleton state without any accessible context for screen reader users. Add an <h2 className='sr-only'>Loading applications</h2> or a role='status' aria-label='Loading applications' element before the skeleton rows so screen readers can announce that applications are loading.",
+      "acceptanceCriteria": [
+        "ApplicationListEmpty.jsx loading state includes a visually hidden label or heading announcing 'Loading applications' or equivalent",
+        "The element uses either sr-only heading or role='status' aria-live='polite'",
+        "Build passes with no errors"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-797",
+      "title": "Replace OfferComparison OfferHeaderCell hardcoded amber colors with design tokens",
+      "description": "OfferComparison.jsx OfferHeaderCell component uses multiple hardcoded amber Tailwind classes (~lines 91 and 105-106): text-amber-500 dark:text-amber-400, bg-amber-100 text-amber-800 hover:bg-amber-100 dark:bg-amber-900/40 dark:text-amber-300. Replace all with semantic design tokens from the project's color system (e.g., text-warning, bg-warning/10, text-warning-foreground or equivalents).",
+      "acceptanceCriteria": [
+        "OfferComparison.jsx OfferHeaderCell does not use hardcoded amber-* Tailwind classes",
+        "Colors use semantic design tokens from the project theme",
+        "Visual appearance is equivalent (warning/amber tone)",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}
