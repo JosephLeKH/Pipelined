@@ -14,3 +14,10 @@ Added a `Link` from react-router-dom in GoalProgress.jsx that navigates to `/set
 - Added an absolutely-positioned `<span>` badge (`-right-1 -top-1`, `bg-primary`, `rounded-full`) shown only when `savedCount > 0`
 - Badge shows the numeric count; `aria-hidden="true"` since the button label already communicates purpose
 - Build passed cleanly.
+
+[US-692] Add visual progress bar to OnboardingChecklist
+- Added TOTAL_ONBOARDING_STEPS = 3 constant at module scope
+- Added a progress section between the header and step list showing "N of 3 steps complete" text
+- Visual bar uses bg-muted as track and bg-primary as fill, width driven by inline style percentage
+- completedSteps array (already computed) drives both the label and bar fill width
+- Build passed clean; committed as feat: US-692
