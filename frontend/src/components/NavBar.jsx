@@ -5,6 +5,7 @@ import { Link, useLocation } from "react-router-dom";
 
 import Activity from "lucide-react/dist/esm/icons/activity";
 import BarChart2 from "lucide-react/dist/esm/icons/bar-chart-2";
+import Briefcase from "lucide-react/dist/esm/icons/briefcase";
 import CalendarDays from "lucide-react/dist/esm/icons/calendar-days";
 import LayoutDashboard from "lucide-react/dist/esm/icons/layout-dashboard";
 import LogOut from "lucide-react/dist/esm/icons/log-out";
@@ -36,6 +37,7 @@ import NotificationBell from "./NotificationBell";
 
 const NAV_LINKS = [
   { to: "/dashboard", label: "Dashboard", Icon: LayoutDashboard },
+  { to: "/jobs", label: "Job Board", Icon: Briefcase },
   { to: "/calendar", label: "Calendar", Icon: CalendarDays },
   { to: "/analytics", label: "Analytics", Icon: BarChart2 },
   { to: "/activity", label: "Activity", Icon: Activity },
