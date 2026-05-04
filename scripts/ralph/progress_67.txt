@@ -22,3 +22,16 @@ Started: Mon May  4 08:40:17 PDT 2026
 **Learnings:**
 - NavBar renders nav links from a single NAV_LINKS constant array, shared by both desktop and mobile via props — one insertion covers both surfaces
 - Direct subpath import pattern for lucide-react is enforced by project style guide
+
+## US-675: Replace GoalProgress animate-pulse with shimmer skeleton
+**Status:** COMPLETE
+**Date:** 2026-05-04
+
+**Changes:**
+- Replaced `animate-pulse rounded-full bg-muted` with `shimmer-bg animate-shimmer rounded-full` on the circular ring placeholder
+- Replaced two `animate-pulse rounded bg-muted` instances with `shimmer-bg animate-shimmer rounded` on the text placeholders
+- Added `aria-hidden="true"` to the loading skeleton wrapper div
+
+**Learnings:**
+- The project-standard shimmer pattern is `shimmer-bg animate-shimmer` (defined in animations.css) — always replaces `animate-pulse bg-muted`
+- The class order convention seen in other components puts shimmer classes before shape classes (rounded, rounded-full)
