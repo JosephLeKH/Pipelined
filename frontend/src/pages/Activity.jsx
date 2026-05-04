@@ -166,7 +166,7 @@ function ActivityTimeline({ isLoading, entries, onEntryClick }) {
   }
 
   return (
-    <div className="rounded-xl bg-card border border-border px-4">
+    <div role="region" aria-label="Activity timeline" className="rounded-xl bg-card border border-border px-4">
       <div className="relative border-l border-border pl-4 ml-1.5">
         {entries.map((entry, idx) => (
           <TimelineEntry
