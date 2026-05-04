@@ -74,3 +74,8 @@ Added a sort toggle to Tags.jsx header area with two options: "Name A→Z" (alph
 - `sortedTags` passed to `TagsTable` instead of raw `tags`
 
 Build passed. File stayed at 259 lines (under 300-line limit).
+
+## US-690: Add aria-live region for Calendar month navigation
+**Completed**: 2026-05-04
+
+Added a visually-hidden `aria-live="polite" aria-atomic="true"` div inside `CalendarGrid`'s return JSX, containing `{MONTH_NAMES[month - 1]} {year}`. Since `month` and `year` are props that change on every navigation, the live region content updates automatically, causing screen readers to announce the new month/year. The `sr-only` Tailwind class hides the element visually without removing it from the accessibility tree. Build passed cleanly.
