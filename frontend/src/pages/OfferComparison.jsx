@@ -168,6 +168,7 @@ function TabBar({ activeTab, onTabChange }) {
           key={id}
           role="tab"
           aria-selected={activeTab === id}
+          aria-controls={`panel-${id}`}
           onClick={() => onTabChange(id)}
           className={`flex items-center gap-1.5 rounded-md px-4 py-1.5 text-sm font-medium transition-colors ${
             activeTab === id
@@ -238,10 +239,12 @@ function OfferComparison() {
             </Button>
           </div>
         </div>
-        {activeTab === "compare" && (
+        <div id="panel-compare" role="tabpanel" hidden={activeTab !== "compare"}>
           <OfferComparisonTable apps={apps} winnerId={winnerId} handleSave={handleSave} handleMarkWinner={handleMarkWinner} />
-        )}
-        {activeTab === "negotiate" && <OfferNegotiationPanel apps={apps} />}
+        </div>
+        <div id="panel-negotiate" role="tabpanel" hidden={activeTab !== "negotiate"}>
+          <OfferNegotiationPanel apps={apps} />
+        </div>
       </main>
     </>
   );
