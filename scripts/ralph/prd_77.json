@@ -1,0 +1,111 @@
+{
+  "id": "prd_77",
+  "title": "Popover, Dialog & Event Detail Accessibility",
+  "description": "Fix high-severity aria issues in SaveSearchPopover (missing aria-modal and aria-labelledby), add focus trapping to DetailPanel DiscardDialog, wire aria-describedby on DiscardDialog description text, add aria-labelledby to ShortcutHelp dialog, add aria-label to CalendarGrid event list containers, add accessible names to ApplicationRowActions icon-only buttons, and add aria-hidden to CompanyLogo decorative images.",
+  "userStories": [
+    {
+      "id": "US-750",
+      "title": "Add aria-modal and aria-labelledby to SaveSearchPopover",
+      "description": "SaveSearchPopover.jsx renders a popover/dialog for saving searches but is missing aria-modal='true' and aria-labelledby linking to its heading. Without these, screen readers do not treat it as a modal and may read content behind it. Add role='dialog', aria-modal='true', and aria-labelledby pointing to the popover heading's id.",
+      "acceptanceCriteria": [
+        "SaveSearchPopover.jsx dialog container has aria-modal='true'",
+        "The dialog has aria-labelledby pointing to its title/heading element's id",
+        "The title element has a matching id attribute",
+        "Build passes with no errors"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-751",
+      "title": "Add focus trap to DetailPanel DiscardDialog",
+      "description": "DetailPanel.jsx DiscardDialog is a confirmation modal that appears when discarding unsaved changes. It lacks focus trapping — keyboard users can Tab outside the dialog while it is open. Implement focus trapping so Tab and Shift+Tab cycle only within the dialog. Return focus to the triggering element when the dialog closes.",
+      "acceptanceCriteria": [
+        "DetailPanel.jsx DiscardDialog traps focus — Tab and Shift+Tab stay within the dialog while it is open",
+        "When the dialog closes (confirm or cancel), focus returns to the element that triggered it",
+        "Build passes with no errors"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-752",
+      "title": "Add aria-describedby to DetailPanel DiscardDialog description",
+      "description": "DetailPanel.jsx DiscardDialog has aria-labelledby on the dialog element but the description text ('Your changes will be lost.' or similar) is not linked via aria-describedby. Add id='discard-dialog-description' to the description paragraph and aria-describedby='discard-dialog-description' to the dialog element.",
+      "acceptanceCriteria": [
+        "DetailPanel.jsx DiscardDialog description paragraph has id='discard-dialog-description'",
+        "The dialog element has aria-describedby='discard-dialog-description'",
+        "Build passes with no errors"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-753",
+      "title": "Add aria-labelledby to ShortcutHelp dialog",
+      "description": "ShortcutHelp.jsx uses a Dialog component that has a DialogTitle (line ~41) but the dialog container may not be wired with aria-labelledby pointing to the title. Ensure the dialog element has aria-labelledby referencing the DialogTitle's id so screen readers announce the dialog name when it opens.",
+      "acceptanceCriteria": [
+        "ShortcutHelp.jsx dialog container has aria-labelledby pointing to the DialogTitle element's id",
+        "The DialogTitle has a matching id attribute",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-754",
+      "title": "Add aria-label to CalendarGrid day event list containers",
+      "description": "CalendarGrid.jsx renders a div containing event chips for each day with no aria-label. Screen reader users navigating the calendar cannot tell which day's events they are in. Add aria-label='Events for {formatted date}' to each day's event container div.",
+      "acceptanceCriteria": [
+        "CalendarGrid.jsx event container div has aria-label='Events for {date}' where {date} is the formatted day date",
+        "The label changes for each day cell",
+        "Build passes with no errors"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-755",
+      "title": "Add aria-labels to ApplicationRowActions icon-only buttons",
+      "description": "ApplicationRowActions.jsx renders icon-only action buttons (edit, delete, view, etc.) for each application row. Icon-only buttons with no visible text must have aria-label attributes for screen reader users. Add descriptive aria-label to each icon-only button.",
+      "acceptanceCriteria": [
+        "Each icon-only button in ApplicationRowActions.jsx has a descriptive aria-label (e.g. 'Edit application', 'Delete application', 'View details')",
+        "Icons within the buttons have aria-hidden='true'",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-756",
+      "title": "Add aria-hidden to CompanyLogo decorative images",
+      "description": "CompanyLogo.jsx renders company logo images that are decorative (the company name is conveyed elsewhere in the application card or row). Ensure logo img elements have either alt='' (empty alt for decorative images) or aria-hidden='true' to prevent screen readers from announcing them.",
+      "acceptanceCriteria": [
+        "CompanyLogo.jsx img elements have alt='' (empty alt) or aria-hidden='true'",
+        "If a fallback initial/placeholder is shown, it also has aria-hidden='true' or empty alt",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-757",
+      "title": "Add aria-live region to DuplicateWarning component",
+      "description": "DuplicateWarning.jsx appears dynamically when a duplicate application is detected (typically in a form flow). Dynamic content that appears without user action should be announced to screen readers. Add role='alert' or aria-live='polite' to the DuplicateWarning container so screen readers announce when a duplicate is detected.",
+      "acceptanceCriteria": [
+        "DuplicateWarning.jsx container has role='alert' (or aria-live='polite' aria-atomic='true')",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

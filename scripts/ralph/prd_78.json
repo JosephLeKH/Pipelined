@@ -1,0 +1,108 @@
+{
+  "id": "prd_78",
+  "title": "Editor, Filter & Detail Panel Accessibility",
+  "description": "Add accessible names to MarkdownEditor toolbar buttons, fix JobFilters form control label associations, add aria-label to CalendarEventDetail close button and keyboard navigation, add aria-hidden to decorative CalendarEventsList icons, fix DetailPanelNotes section heading semantics, add aria-describedby to SaveSearchPopover form fields, and ensure TemplateBar template buttons have accessible names.",
+  "userStories": [
+    {
+      "id": "US-758",
+      "title": "Add aria-labels to MarkdownEditor toolbar buttons",
+      "description": "MarkdownEditor.jsx renders a rich-text toolbar with formatting buttons (bold, italic, heading, link, etc.) that are icon-only with no visible text. Each toolbar button must have an aria-label describing its action (e.g. 'Bold', 'Italic', 'Heading 1', 'Insert link'). Also add aria-hidden='true' to the icons within toolbar buttons.",
+      "acceptanceCriteria": [
+        "Each toolbar button in MarkdownEditor.jsx has a descriptive aria-label",
+        "Toolbar icons have aria-hidden='true'",
+        "Build passes with no errors"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-759",
+      "title": "Fix JobFilters form control label associations",
+      "description": "JobFilters.jsx renders filter form controls (dropdowns, checkboxes, etc.) for filtering the job board. Verify each form control has a properly associated label via htmlFor/id pair or aria-label. Add missing associations where inputs lack accessible labels.",
+      "acceptanceCriteria": [
+        "Every form control in JobFilters.jsx has an associated label (via htmlFor/id or aria-label)",
+        "No input is unlabeled",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-760",
+      "title": "Add aria-label to CalendarEventDetail close button",
+      "description": "CalendarEventDetail.jsx renders an event detail panel/modal with a close button. If the close button is icon-only (X icon), it must have aria-label='Close event details' so screen reader users know its purpose.",
+      "acceptanceCriteria": [
+        "CalendarEventDetail.jsx close button has aria-label='Close event details' (or equivalent)",
+        "The X icon within the close button has aria-hidden='true'",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-761",
+      "title": "Add aria-hidden to decorative icons in CalendarEventsList",
+      "description": "CalendarEventsList.jsx renders a list of calendar events, each with decorative status or type icons. These icons are purely decorative — the event title and time convey the information. Add aria-hidden='true' to all decorative icons in the events list.",
+      "acceptanceCriteria": [
+        "CalendarEventsList.jsx decorative event icons have aria-hidden='true'",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-762",
+      "title": "Fix DetailPanelNotes section heading semantics",
+      "description": "DetailPanelNotes.jsx renders a 'Notes' section header as a non-semantic element (span or div) rather than a proper heading. Replace it with an appropriate heading element (h3 or h4) to support navigation by headings for screen reader users.",
+      "acceptanceCriteria": [
+        "DetailPanelNotes.jsx 'Notes' section title uses a semantic heading element (h3 or h4)",
+        "The visual styling is preserved via className",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-763",
+      "title": "Add aria-describedby to SaveSearchPopover input fields",
+      "description": "SaveSearchPopover.jsx has a form for naming and saving a search. If the form has helper text or validation error messages for the input fields, add aria-describedby linking each input to its helper/error text element so screen readers announce the context.",
+      "acceptanceCriteria": [
+        "SaveSearchPopover.jsx form input(s) have aria-describedby pointing to helper text or error message elements when those elements exist",
+        "Helper/error text elements have matching id attributes",
+        "Build passes with no errors"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-764",
+      "title": "Add accessible names to TemplateBar template buttons",
+      "description": "TemplateBar.jsx renders template selection buttons. If these buttons display only a short template name or icon without sufficient context for screen readers, add aria-label with the full template name or description.",
+      "acceptanceCriteria": [
+        "Each template button in TemplateBar.jsx has an accessible name (either via visible text content or aria-label) that uniquely identifies the template",
+        "Build passes with no errors"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-765",
+      "title": "Add aria-hidden to DetailPanelTimeline decorative stage icons",
+      "description": "DetailPanelTimeline.jsx renders a timeline of application stage changes with stage icons or colored dots. These visual indicators are decorative — the stage name is conveyed by text. Add aria-hidden='true' to the decorative stage icon/dot elements.",
+      "acceptanceCriteria": [
+        "DetailPanelTimeline.jsx decorative stage icons or dots have aria-hidden='true'",
+        "Build passes with no errors"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

@@ -1,0 +1,111 @@
+{
+  "id": "prd_76",
+  "title": "Icon Aria-Hidden, Shimmer & Color Token Fixes",
+  "description": "Add missing aria-hidden to decorative icons in OfferNegotiationPanel and ShareTimeline, replace animate-pulse loading skeletons in JobRecommendations and JobBoardContent with shimmer, replace hardcoded amber color classes in EmailVerificationBanner with design tokens, fix SettingsNotificationsSection hardcoded gray class, replace AnalyticsCharts hardcoded CHART_COLORS hex array with CSS variables, and fix JobBoardContent BriefcaseSvg inline color values.",
+  "userStories": [
+    {
+      "id": "US-742",
+      "title": "Add aria-hidden to decorative Copy icon in OfferNegotiationPanel",
+      "description": "OfferNegotiationPanel.jsx renders a Copy icon in a button that already has a visible or aria-label based accessible name. The icon is decorative and should have aria-hidden='true' to prevent duplicate announcement.",
+      "acceptanceCriteria": [
+        "OfferNegotiationPanel.jsx Copy icon has aria-hidden='true'",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-743",
+      "title": "Add aria-hidden to decorative icons in ShareTimeline",
+      "description": "ShareTimeline.jsx renders Link2Off (line ~74) and Link2 (line ~95) icons without aria-hidden='true'. These are decorative status icons — the button or container already conveys the meaning through text or aria-label. Add aria-hidden='true' to both icons.",
+      "acceptanceCriteria": [
+        "ShareTimeline.jsx Link2Off icon has aria-hidden='true'",
+        "ShareTimeline.jsx Link2 icon has aria-hidden='true'",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-744",
+      "title": "Replace JobRecommendations animate-pulse skeleton with shimmer",
+      "description": "JobRecommendations.jsx loading skeleton uses animate-pulse bg-muted (line ~46) instead of the project-standard shimmer-bg animate-shimmer. Replace the pulse skeleton with shimmer classes to match the loading pattern used throughout the app.",
+      "acceptanceCriteria": [
+        "JobRecommendations.jsx loading skeleton uses shimmer-bg animate-shimmer instead of animate-pulse bg-muted",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-745",
+      "title": "Replace JobBoardContent animate-pulse skeleton with shimmer",
+      "description": "JobBoardContent.jsx loading skeleton (line ~11) uses animate-pulse bg-muted instead of the project-standard shimmer-bg animate-shimmer. Replace with shimmer classes.",
+      "acceptanceCriteria": [
+        "JobBoardContent.jsx loading skeleton uses shimmer-bg animate-shimmer instead of animate-pulse bg-muted",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-746",
+      "title": "Replace EmailVerificationBanner hardcoded amber colors with design tokens",
+      "description": "EmailVerificationBanner.jsx uses many hardcoded Tailwind amber-* color classes (border-amber-200, bg-amber-50, text-amber-600, hover:text-amber-900, etc.) that bypass the design token system and do not respond to theme changes. Replace with appropriate semantic tokens (bg-warning/10, text-warning, border-warning/30 or equivalents available in the project's tailwind config).",
+      "acceptanceCriteria": [
+        "EmailVerificationBanner.jsx does not use hardcoded amber-* Tailwind classes",
+        "Colors are replaced with semantic design tokens from the project's theme",
+        "Visual appearance is equivalent (warning/amber tone)",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-747",
+      "title": "Replace SettingsNotificationsSection hardcoded gray-100 with design token",
+      "description": "SettingsNotificationsSection.jsx uses dark:bg-gray-100 (a hardcoded Tailwind gray) instead of a design token. Replace with the appropriate token (e.g. dark:bg-muted or dark:bg-card) from the project's theme.",
+      "acceptanceCriteria": [
+        "SettingsNotificationsSection.jsx does not use dark:bg-gray-100 or other hardcoded gray-* classes",
+        "The replacement uses a design token consistent with the project's color system",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-748",
+      "title": "Replace AnalyticsCharts CHART_COLORS hardcoded hex values with CSS variables",
+      "description": "AnalyticsCharts.jsx defines CHART_COLORS as an array of hardcoded hex strings (e.g. '#d97757', '#6a9bcc', etc.). These don't respond to theme changes. Replace with CSS variable references (e.g. 'hsl(var(--chart-1))') or use the project's existing chart color tokens if defined. If no chart CSS vars exist, define them in the tailwind config or index.css to match the existing hex values.",
+      "acceptanceCriteria": [
+        "AnalyticsCharts.jsx CHART_COLORS does not contain hardcoded hex strings",
+        "Colors reference CSS variables (hsl(var(--chart-N))) or equivalent design tokens",
+        "Chart colors render identically to the current palette",
+        "Build passes with no errors"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-749",
+      "title": "Fix JobBoardContent BriefcaseSvg hardcoded inline SVG colors",
+      "description": "JobBoardContent.jsx BriefcaseSvg component has hardcoded fill and stroke color values (#fae4d4, #d97757, #eeac80) as inline SVG attributes. These don't adapt to theme changes. Replace with CSS variables or use className with design token colors.",
+      "acceptanceCriteria": [
+        "JobBoardContent.jsx BriefcaseSvg does not use hardcoded hex fill/stroke attributes",
+        "Colors reference CSS variables or Tailwind classes using design tokens",
+        "The SVG visual appearance is equivalent",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

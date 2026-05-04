@@ -14,6 +14,7 @@ import { JobBoardContent } from "../components/JobBoardContent";
 import { JobFilters } from "../components/JobFilters";
 import { JobRecommendations } from "../components/JobRecommendations";
 import { useJobBoardState } from "../hooks/useJobBoardState";
+import { useSavedSearches } from "../hooks/useSavedSearches";
 import { Button } from "../components/ui/button";
 
 const PAGE_TITLE = "Job Board — Pipelined";
@@ -22,6 +23,8 @@ const DEFAULT_TITLE = "Pipelined — Job Application Tracker for Students & Engi
 function JobBoard() {
   const { filters, hasActiveFilters, jobs, total, isLoading, error, refetch, hasMore, savePopoverOpen, setSavePopoverOpen, selectedJob, setSelectedJob, handleLoadMore, handleClearFilters, handleApplySavedSearch } = useJobBoardState();
   const [savedOpen, setSavedOpen] = useState(false);
+  const { data: savedSearches } = useSavedSearches();
+  const savedCount = savedSearches?.length ?? 0;
 
   useEffect(() => {
     document.title = PAGE_TITLE;
@@ -47,7 +50,14 @@ function JobBoard() {
           )}
         </div>
         <JobFilters />
-        <Button type="button" variant="ghost" size="sm" className="flex items-center gap-1.5 lg:hidden" onClick={() => setSavedOpen(true)}>Saved searches</Button>
+        <div className="relative lg:hidden">
+          <Button type="button" variant="ghost" size="sm" className="flex items-center gap-1.5" onClick={() => setSavedOpen(true)}>Saved searches</Button>
+          {savedCount > 0 && (
+            <span aria-hidden="true" className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-medium text-primary-foreground">
+              {savedCount}
+            </span>
+          )}
+        </div>
       </div>
       {savedOpen && (
         <div className="fixed inset-0 z-40 lg:hidden" onClick={() => setSavedOpen(false)}>
