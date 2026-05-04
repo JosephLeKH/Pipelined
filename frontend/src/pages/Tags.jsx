@@ -1,6 +1,6 @@
 /** Tag management page: view, rename, and delete tags across all applications. */
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 
 import Check from "lucide-react/dist/esm/icons/check";
 import Pencil from "lucide-react/dist/esm/icons/pencil";
@@ -14,6 +14,9 @@ import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import EmptyState from "../components/EmptyState";
 import NavBar from "../components/NavBar";
+
+const SORT_NAME = "name";
+const SORT_COUNT = "count";
 
 function DeleteConfirmModal({ tag, count, onConfirm, onCancel, isPending }) {
   return (
@@ -148,8 +151,16 @@ function Tags() {
   const renameMutation = useRenameTag();
   const deleteMutation = useDeleteTag();
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const [sortBy, setSortBy] = useState(SORT_NAME);
 
   const tags = tagsData?.tags ?? [];
+
+  const sortedTags = useMemo(() => {
+    if (sortBy === SORT_COUNT) {
+      return [...tags].sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+    }
+    return [...tags].sort((a, b) => a.name.localeCompare(b.name));
+  }, [tags, sortBy]);
 
   const handleRename = useCallback((oldTag, newTag) => {
     renameMutation.mutate({ oldTag, newTag });
@@ -167,9 +178,29 @@ function Tags() {
     <div className="flex min-h-screen flex-col bg-background">
       <NavBar />
       <main className="flex-1 px-4 sm:px-6 py-8">
-        <div className="mb-6">
-          <h1 className="font-display text-2xl font-semibold text-foreground">Tags</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Manage tags across all your applications.</p>
+        <div className="mb-6 flex items-end justify-between gap-4">
+          <div>
+            <h1 className="font-display text-2xl font-semibold text-foreground">Tags</h1>
+            <p className="mt-1 text-sm text-muted-foreground">Manage tags across all your applications.</p>
+          </div>
+          <div className="flex gap-1.5 shrink-0" role="group" aria-label="Sort tags">
+            <Button
+              variant={sortBy === SORT_NAME ? "secondary" : "ghost"}
+              size="sm"
+              onClick={() => setSortBy(SORT_NAME)}
+              aria-pressed={sortBy === SORT_NAME}
+            >
+              Name A→Z
+            </Button>
+            <Button
+              variant={sortBy === SORT_COUNT ? "secondary" : "ghost"}
+              size="sm"
+              onClick={() => setSortBy(SORT_COUNT)}
+              aria-pressed={sortBy === SORT_COUNT}
+            >
+              Count ↓
+            </Button>
+          </div>
         </div>
 
         {fetchError && (
@@ -207,7 +238,7 @@ function Tags() {
         ) : tags.length === 0 ? (
           <EmptyState title="No tags yet" description="Add tags to your applications to organise and filter them." icon={Tag} />
         ) : (
-          <TagsTable tags={tags} onRename={handleRename} onDelete={setDeleteTarget} />
+          <TagsTable tags={sortedTags} onRename={handleRename} onDelete={setDeleteTarget} />
         )}
 
         {deleteTarget && (
