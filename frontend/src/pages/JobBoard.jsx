@@ -1,8 +1,9 @@
 /** Job board page: curated marketplace with rich cards and slide-in detail panel. */
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import Bookmark from "lucide-react/dist/esm/icons/bookmark";
+import XIcon from "lucide-react/dist/esm/icons/x";
 
 import JobDetailPanel from "../components/JobDetailPanel";
 import JobSearchInput from "../components/JobSearchInput";
@@ -19,6 +20,7 @@ const DEFAULT_TITLE = "Pipelined — Job Application Tracker for Students & Engi
 
 function JobBoard() {
   const { filters, hasActiveFilters, jobs, total, isLoading, error, refetch, hasMore, savePopoverOpen, setSavePopoverOpen, selectedJob, setSelectedJob, handleLoadMore, handleClearFilters, handleApplySavedSearch } = useJobBoardState();
+  const [savedOpen, setSavedOpen] = useState(false);
 
   useEffect(() => {
     document.title = PAGE_TITLE;
@@ -42,7 +44,21 @@ function JobBoard() {
           )}
         </div>
         <JobFilters />
+        <Button type="button" variant="ghost" size="sm" className="flex items-center gap-1.5 lg:hidden" onClick={() => setSavedOpen(true)}>Saved searches</Button>
       </div>
+      {savedOpen && (
+        <div className="fixed inset-0 z-40 lg:hidden" onClick={() => setSavedOpen(false)}>
+          <div className="absolute inset-y-0 left-0 w-72 bg-card border-r border-border p-4 shadow-lg" onClick={(e) => e.stopPropagation()}>
+            <div className="mb-3 flex items-center justify-between">
+              <span className="font-medium text-sm text-foreground">Saved searches</span>
+              <Button type="button" variant="ghost" size="icon" aria-label="Close saved searches" onClick={() => setSavedOpen(false)}>
+                <XIcon className="h-4 w-4" aria-hidden="true" />
+              </Button>
+            </div>
+            <SavedSearchesSidebar onApply={(s) => { handleApplySavedSearch(s); setSavedOpen(false); }} />
+          </div>
+        </div>
+      )}
       <div className="flex gap-6">
         <aside className="hidden w-56 shrink-0 lg:block">
           <SavedSearchesSidebar onApply={handleApplySavedSearch} />
