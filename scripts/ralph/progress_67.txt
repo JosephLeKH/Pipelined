@@ -74,3 +74,11 @@ Replaced the animate-spin spinner in LoadingState (PublicTimeline.jsx) with a sh
 - SKELETON_ROW_COUNT=4 constant added at module scope per the no-magic-values rule
 
 Learnings: The pattern from PublicPipeline.jsx (shimmer-bg animate-shimmer, aria-hidden on wrapper, named count constant) transfers cleanly. For timeline-style pages, mirroring the actual dot+connector layout in the skeleton gives a realistic preview of the real content.
+
+## US-674: Replace OfferComparison spinner with shimmer skeleton
+**Status:** Complete
+**Commit:** feat: US-674 - Replace OfferComparison spinner with shimmer skeleton
+
+**Summary:** Replaced the `animate-spin` spinner in `OfferComparison.jsx`'s `LoadingState` with a shimmer skeleton. The new skeleton renders NavBar at the top, then 3 offer card skeletons in a responsive grid (1/2/3 columns). Each card has a header row (company name + role title placeholders) and 5 content rows (field label + value placeholders). The `<main>` content area has `aria-hidden="true"`. Added `SKELETON_CARD_COUNT = 3` and `SKELETON_ROW_COUNT = 5` constants to avoid magic values.
+
+**Learnings:** The shimmer pattern uses `shimmer-bg animate-shimmer` classes. Shimmer classes should be placed before shape classes (rounded, rounded-full). For card grid skeletons, use the same responsive grid classes as the real content. The `aria-hidden` attribute goes on the content wrapper (not NavBar).
