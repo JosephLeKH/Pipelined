@@ -27,8 +27,8 @@
         "Build passes with no errors"
       ],
       "priority": "high",
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Changed aria-label from static 'Delete saved search' to dynamic template literal `Delete saved search: ${s.name}` on line 56."
     },
     {
       "id": "US-696",

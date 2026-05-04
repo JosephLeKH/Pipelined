@@ -8,3 +8,10 @@ Status: COMPLETE
 - The div already had tabIndex, onClick, and onKeyDown — removing the orphaned row role fixes the WCAG ownership violation
 - All layout and styling classes preserved; build passes ✓
 - Learning: role='row' must always be owned by role='grid', 'table', or 'rowgroup'. A plain interactive div is valid here since the component is not part of a grid/table structure.
+
+## US-695 — Add unique aria-labels to SavedSearchesSidebar delete buttons
+Status: COMPLETE
+- Changed `aria-label="Delete saved search"` to `aria-label={\`Delete saved search: ${s.name}\`}` in SavedSearchesSidebar.jsx (line 56)
+- One-line change: static string → dynamic template literal using the map variable `s.name`
+- Build passes ✓
+- Learning: When rendering lists of interactive controls, always include the item's name in action button aria-labels so screen reader users know which item they're acting on.
