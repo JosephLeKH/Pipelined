@@ -1,3 +1,8 @@
 # Ralph Progress Log
 Started: Mon May  4 10:40:24 PDT 2026
 ---
+
+## US-688 - Add Edit Goal shortcut button to GoalProgress
+**Status:** DONE
+
+Added a `Link` from react-router-dom in GoalProgress.jsx that navigates to `/settings?section=pipeline`. The link renders below the "Weekly goal" label with `text-xs text-muted-foreground underline` styling for a visually understated appearance. Build passed cleanly.
