@@ -18,7 +18,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/pages/LandingPage.jsx. FeaturesSection is somewhere in the component tree with a useEffect that sets up an IntersectionObserver. When entries are intersecting, it uses setTimeout with index * STAGGER_MS delay before adding 'in-view' class. The fix is to check window.matchMedia('(prefers-reduced-motion: reduce)').matches inside the observer callback: if true, call entry.target.classList.add('in-view') directly; if false, use the existing setTimeout approach."
     },
     {

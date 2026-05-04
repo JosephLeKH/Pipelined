@@ -1,3 +1,8 @@
 # Ralph Progress Log
 Started: Sun May  3 22:41:44 PDT 2026
 ---
+
+## US-662: Gate LandingPage.jsx FeaturesSection stagger animation with prefers-reduced-motion
+**Status:** PASS
+**Summary:** Added a `prefersReducedMotion` check inside the IntersectionObserver callback in FeaturesSection. When `window.matchMedia('(prefers-reduced-motion: reduce)').matches` is true, `in-view` is added immediately without any setTimeout delay; otherwise the existing STAGGER_MS setTimeout logic runs unchanged. STAGGER_MS constant and all other useEffect logic left untouched.
+**Learnings:** The prefersReducedMotion check should be evaluated inside the observer callback (not once at effect setup time) so it reflects the user's live media query state at the moment the intersection fires.
