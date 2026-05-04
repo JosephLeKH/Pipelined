@@ -9,3 +9,16 @@ Started: Mon May  4 08:40:17 PDT 2026
 - Changed root <main> to keep gap-6, px-4, py-8, sm:px-6 but removed flex min-h-screen flex-col bg-background (moved to outer div)
 - Build passed with no errors
 - Committed: feat: US-670 - Add NavBar to JobBoard page
+
+## US-671: Add Job Board to NavBar navigation links
+**Status:** COMPLETE
+**Date:** 2026-05-04
+
+**Changes:**
+- Added `import Briefcase from "lucide-react/dist/esm/icons/briefcase"` to NavBar.jsx
+- Inserted `{ to: "/jobs", label: "Job Board", Icon: Briefcase }` at index 1 in NAV_LINKS (after Dashboard, before Calendar)
+- Both desktop (DesktopNavLinks) and mobile (MobileMenu) render from the same navLinks array, so both automatically pick up the new entry
+
+**Learnings:**
+- NavBar renders nav links from a single NAV_LINKS constant array, shared by both desktop and mobile via props — one insertion covers both surfaces
+- Direct subpath import pattern for lucide-react is enforced by project style guide
