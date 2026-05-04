@@ -22,8 +22,25 @@ function AnalyticsLoading() {
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <NavBar />
-      <main className="flex flex-1 items-center justify-center">
-        <div className="h-10 w-10 animate-spin rounded-full border-4 border-border border-t-primary" />
+      <main className="flex-1 px-4 sm:px-6 py-8">
+        <div className="flex flex-col gap-6" aria-hidden="true">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="rounded-xl border border-border bg-card p-4">
+                <div className="h-4 w-16 rounded shimmer-bg animate-shimmer mb-2" />
+                <div className="h-7 w-12 rounded shimmer-bg animate-shimmer" />
+              </div>
+            ))}
+          </div>
+          <div className="rounded-xl border border-border bg-card p-4">
+            <div className="h-4 w-32 rounded shimmer-bg animate-shimmer mb-4" />
+            <div className="h-48 rounded shimmer-bg animate-shimmer" />
+          </div>
+          <div className="rounded-xl border border-border bg-card p-4">
+            <div className="h-4 w-28 rounded shimmer-bg animate-shimmer mb-4" />
+            <div className="h-32 rounded shimmer-bg animate-shimmer" />
+          </div>
+        </div>
       </main>
     </div>
   );
