@@ -42,8 +42,9 @@ export function DashboardToolbar({ viewMode, onSetViewMode, isExporting, onImpor
         </Button>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button type="button" onClick={onAdd}>
+            <Button type="button" onClick={onAdd} aria-keyshortcuts="a">
               Add Application
+              <kbd className="ml-1.5 hidden rounded bg-muted px-1 py-0.5 text-xs text-muted-foreground sm:inline">A</kbd>
             </Button>
           </TooltipTrigger>
           <TooltipContent>Add Application (A)</TooltipContent>
