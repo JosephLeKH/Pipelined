@@ -4,6 +4,9 @@ import { useState, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
 
 import Activity from "lucide-react/dist/esm/icons/activity";
+import Plus from "lucide-react/dist/esm/icons/plus";
+import ArrowRight from "lucide-react/dist/esm/icons/arrow-right";
+import CalendarDays from "lucide-react/dist/esm/icons/calendar-days";
 
 import NavBar from "../components/NavBar";
 import { useActivityFeed } from "../hooks/useActivity";
@@ -22,6 +25,12 @@ const TYPE_STYLES = {
   event_created: "bg-amber-400 dark:bg-amber-900/40",
 };
 
+const TYPE_ICONS = {
+  applied: Plus,
+  stage_change: ArrowRight,
+  event_created: CalendarDays,
+};
+
 function entryLabel(entry) {
   const { type, company, role_title, details } = entry;
   if (type === "applied") {
@@ -38,6 +47,7 @@ function entryLabel(entry) {
 
 function TimelineEntry({ entry, onClick }) {
   const dotClass = TYPE_STYLES[entry.type] ?? "bg-muted-foreground";
+  const DotIcon = TYPE_ICONS[entry.type];
   const ts = new Date(entry.timestamp);
   const dateStr = ts.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
   const timeStr = ts.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
@@ -50,7 +60,7 @@ function TimelineEntry({ entry, onClick }) {
       className="group relative h-auto w-full items-start justify-start gap-4 rounded-md px-2 py-3 text-left hover:bg-muted/50"
     >
       <div className="mt-1.5 flex-shrink-0">
-        <span className={`block h-3 w-3 rounded-full ${dotClass} ring-2 ring-card`} />
+        <span className={`flex h-4 w-4 items-center justify-center rounded-full ${dotClass} ring-2 ring-card`}>{DotIcon && <DotIcon className="h-2 w-2 text-white/80" aria-hidden="true" />}</span>
       </div>
 
       <div className="min-w-0 flex-1">
