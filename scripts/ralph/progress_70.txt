@@ -1,3 +1,10 @@
 # Ralph Progress Log
 Started: Mon May  4 11:04:35 PDT 2026
 ---
+
+## US-694 — Fix ApplicationRow role='row' WCAG violation
+Status: COMPLETE
+- Removed `role="row"` from the inner interactive div in ApplicationRow.jsx (line 99)
+- The div already had tabIndex, onClick, and onKeyDown — removing the orphaned row role fixes the WCAG ownership violation
+- All layout and styling classes preserved; build passes ✓
+- Learning: role='row' must always be owned by role='grid', 'table', or 'rowgroup'. A plain interactive div is valid here since the component is not part of a grid/table structure.

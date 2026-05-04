@@ -14,8 +14,8 @@
         "Build passes with no errors"
       ],
       "priority": "high",
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Removed role='row' from the inner interactive div (line 99). The element retains tabIndex, onClick, and onKeyDown for keyboard accessibility without the orphaned WCAG row role."
     },
     {
       "id": "US-695",
