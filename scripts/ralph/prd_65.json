@@ -67,7 +67,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 4,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/pages/PublicPipeline.jsx. LoadingState is at lines ~60-66. It renders a full-page centered spinner. Replace the spinner with a card containing 5 skeleton rows shaped like the PublicAppRow: company name (w-32), role title (flex-1), stage pill (w-16 rounded-full), date (w-20 hidden sm:block). Use shimmer-bg animate-shimmer. Add aria-hidden='true' to the skeleton container."
     },
     {
