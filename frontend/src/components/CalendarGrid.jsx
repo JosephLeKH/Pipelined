@@ -76,6 +76,7 @@ function DayCell({ date, isCurrentMonth, events, onDayClick, onEventClick }) {
       onClick={() => onDayClick(date)}
       onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") onDayClick(date); }}
       aria-label={formatDateLong(date)}
+      aria-current={isToday ? "date" : undefined}
       className={`min-h-[48px] cursor-pointer border border-border p-1.5 transition-colors hover:bg-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring md:min-h-[80px] ${
         isCurrentMonth ? "bg-card" : "bg-muted/50"
       }`}
