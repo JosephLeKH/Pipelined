@@ -82,3 +82,12 @@ Learnings: The pattern from PublicPipeline.jsx (shimmer-bg animate-shimmer, aria
 **Summary:** Replaced the `animate-spin` spinner in `OfferComparison.jsx`'s `LoadingState` with a shimmer skeleton. The new skeleton renders NavBar at the top, then 3 offer card skeletons in a responsive grid (1/2/3 columns). Each card has a header row (company name + role title placeholders) and 5 content rows (field label + value placeholders). The `<main>` content area has `aria-hidden="true"`. Added `SKELETON_CARD_COUNT = 3` and `SKELETON_ROW_COUNT = 5` constants to avoid magic values.
 
 **Learnings:** The shimmer pattern uses `shimmer-bg animate-shimmer` classes. Shimmer classes should be placed before shape classes (rounded, rounded-full). For card grid skeletons, use the same responsive grid classes as the real content. The `aria-hidden` attribute goes on the content wrapper (not NavBar).
+
+## US-676: Fix OnboardingChecklist broken extension install link
+**Status:** COMPLETE
+**Date:** 2026-05-04
+**Commit:** feat: US-676 - Fix OnboardingChecklist broken extension install link
+
+**Summary:** Changed `EXTENSION_STEP_HREF` from `'#install-extension'` (a broken anchor pointing to a nonexistent element) to `'https://chromewebstore.google.com/detail/pipelined'`. Added `target="_blank"` and `rel="noopener noreferrer"` to the `<a>` tag so the link opens in a new tab safely. Build passed with no errors.
+
+**Learnings:** When using `target="_blank"` always pair with `rel="noopener noreferrer"` to prevent tab-napping and referrer leakage — this is a standard security practice for external links.
