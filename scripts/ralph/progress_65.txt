@@ -38,3 +38,14 @@ Started: Sun May  3 16:55:14 PDT 2026
 **Completed**: Build passed. Git commit created. PRD updated with passes: true.
 
 **Next Steps**: PRD-65 has 3 remaining stories: US-659 (footer link hrefs), US-660 (Settings tab URL sync), US-661 (PublicPipeline mobile date visibility).
+
+## US-659 — Fix LandingPage.jsx FOOTER_LINKS placeholder # hrefs
+Completed: Sat May  3 17:05 PDT 2026
+
+Changed 5 `href: '#'` entries in the FOOTER_LINKS constant (lines 62-70) to real route paths:
+- About → /about, Blog → /blog, Careers → /careers
+- Privacy Policy → /privacy, Terms of Service → /terms
+
+Build passed. Committed as feat: US-659.
+
+Learnings: Simple data-only fix — no logic or rendering changes needed. Route paths don't need to exist for the build to pass.

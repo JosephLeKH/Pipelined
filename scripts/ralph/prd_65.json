@@ -101,7 +101,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 6,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/pages/LandingPage.jsx. FOOTER_LINKS is at lines ~57-71. Each entry has { label, href }. The Company section has About/#, Blog/#, Careers/#. The Legal section has Privacy Policy/# and Terms of Service/#. Change each # to the matching route path. The routes do not need to exist for the build to pass — this removes the broken # href behavior for keyboard users."
     },
     {
