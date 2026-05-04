@@ -10,3 +10,11 @@ Started: Mon May  4 08:50:11 PDT 2026
 
 **Learnings:** React omits attributes with `undefined` values, so `aria-current={condition ? "date" : undefined}` is the idiomatic way to conditionally include an ARIA attribute without setting it to a falsy string like `"false"`.
 
+## US-681: Fix Settings.jsx tab aria-controls WCAG violation
+**Status:** COMPLETE
+**Commit:** e1e2a49
+
+**Summary:** Settings.jsx had `aria-controls={"panel-" + id}` on each of the 11 tab buttons, but only the active panel existed in the DOM (with `id={"panel-" + activeSection}`). Inactive tabs' `aria-controls` pointed to non-existent elements — a WCAG failure. Fixed by introducing a module-level constant `SETTINGS_PANEL_ID = "settings-panel"` and using it everywhere: all tab buttons now share `aria-controls={SETTINGS_PANEL_ID}`, and the `<main>` tabpanel always has `id={SETTINGS_PANEL_ID}`.
+
+**Learnings:** For a single-panel tab UI where only one section is displayed at a time, using a single stable `aria-controls` target ID is the correct WCAG pattern. Each tab button should still have a unique `id` (for `aria-labelledby` on the panel), but since `renderSection` drives which content appears and the `<main>` element always exists, one stable panel ID cleanly satisfies the ARIA tab pattern without requiring all panels to be rendered and hidden.
+
