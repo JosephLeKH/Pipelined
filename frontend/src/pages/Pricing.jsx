@@ -119,12 +119,8 @@ function ProTierCard() {
         </p>
       </div>
 
-      <Button
-        type="button"
-        aria-label="Upgrade to Pro plan — coming soon"
-        className="mb-8 w-full"
-      >
-        Upgrade to Pro — coming soon
+      <Button asChild className="mb-8 w-full">
+        <a href="mailto:support@pipelined.app?subject=Pro%20waitlist%20request">Join the waitlist</a>
       </Button>
 
       <ul className="divide-y divide-border">
