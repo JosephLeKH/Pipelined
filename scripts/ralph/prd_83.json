@@ -1,0 +1,113 @@
+{
+  "id": "prd_83",
+  "title": "GitHub Auth, Resume & Tags Table Accessibility",
+  "description": "Fix high-priority issues: add accessible loading announcement to GithubCallback spinner, convert SettingsResumeSection div role='button' drop zone to native button element, add semantic caption to Tags table, improve SharePipeline loading spinner label specificity, remove redundant aria-labels from OfferComparison buttons, and verify KanbanBoard drag-and-drop has screen reader announcements.",
+  "userStories": [
+    {
+      "id": "US-798",
+      "title": "Add role='status' aria-live to GithubCallback loading spinner",
+      "description": "GithubCallback.jsx renders a loading spinner (~lines 37-39) while authenticating with GitHub, but the spinner has no accessible announcement. Screen reader users land on this page with no context about what is happening. Add role='status' aria-live='polite' and aria-label='Authenticating with GitHub' to the spinner container div so screen readers announce the loading state.",
+      "acceptanceCriteria": [
+        "GithubCallback.jsx spinner container has role='status' and aria-live='polite'",
+        "The container has aria-label='Authenticating with GitHub' or equivalent text",
+        "Build passes with no errors"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-799",
+      "title": "Convert SettingsResumeSection ResumeDropZone div to native button",
+      "description": "SettingsResumeSection.jsx ResumeDropZone (~lines 89-100) uses <div role='button' tabIndex={0}> instead of a native <button> element. Using a div requires manually implementing all keyboard behavior that buttons provide natively. Replace the div root with a <button type='button'> element, remove role='button' and tabIndex={0}' (redundant on button), and preserve all existing onClick, onKeyDown, className, and other attributes.",
+      "acceptanceCriteria": [
+        "SettingsResumeSection.jsx ResumeDropZone root element is a <button type='button'>",
+        "role='button' and tabIndex={0} are removed",
+        "All existing event handlers and className are preserved",
+        "Build passes with no errors"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-800",
+      "title": "Add semantic caption to Tags TagsTable instead of aria-label",
+      "description": "Tags.jsx TagsTable component uses aria-label='Tags' on the <table> element (~line 128). The preferred semantic approach for table titles is a <caption> element inside the table, which is more broadly supported by assistive technologies. Replace the aria-label with a <caption className='sr-only'>Tags management</caption> as the first child of the table.",
+      "acceptanceCriteria": [
+        "Tags.jsx table has a <caption className='sr-only'> element instead of aria-label",
+        "The aria-label attribute is removed from the table",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-801",
+      "title": "Improve SharePipeline Loader2 aria-label specificity",
+      "description": "SharePipeline.jsx renders a Loader2 spinning icon (~line 119) with a generic aria-label='Loading'. This doesn't communicate what is loading. Update the aria-label to 'Loading share settings' or wrap the spinner in an aria-live='polite' region that announces context-specific loading status.",
+      "acceptanceCriteria": [
+        "SharePipeline.jsx Loader2 icon has a specific aria-label (e.g., 'Loading share settings') instead of generic 'Loading'",
+        "Build passes with no errors"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-802",
+      "title": "Remove redundant aria-labels from OfferComparison buttons with visible text",
+      "description": "OfferComparison.jsx has two buttons with redundant aria-labels that differ from their visible text: the ErrorState retry button (~line 55) has aria-label='Retry loading offers' while displaying 'Try again', and the export button (~line 236) has aria-label='Export as PDF' while displaying 'Export PDF'. When aria-label and button text differ, screen readers announce the aria-label but sighted users see different text. Remove the aria-label from both buttons and let their visible text serve as the accessible name.",
+      "acceptanceCriteria": [
+        "OfferComparison.jsx ErrorState retry button does not have a redundant aria-label",
+        "OfferComparison.jsx export button does not have a redundant aria-label",
+        "Both buttons retain their visible text which serves as the accessible name",
+        "Build passes with no errors"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-803",
+      "title": "Add drag-and-drop accessibility announcements to KanbanBoard",
+      "description": "KanbanBoard.jsx implements drag-and-drop for application cards using dnd-kit. Screen reader users cannot perceive visual drag operations. Read KanbanBoard.jsx and add an aria-live='polite' region or use DndContext's accessibility announcements (via getMovementAnnouncement or screenReaderInstructions) to announce when a card is picked up, moved, and dropped, providing context like 'Application moved to Interview stage'.",
+      "acceptanceCriteria": [
+        "KanbanBoard.jsx provides screen reader announcements for drag-and-drop operations",
+        "Either uses DndContext accessibility props or an aria-live='assertive' region for drag state changes",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-804",
+      "title": "Add aria-hidden to ApiErrorMessage decorative icon",
+      "description": "ApiErrorMessage.jsx renders an error state component that likely includes a decorative icon (such as an alert triangle or X circle) alongside error text. Read ApiErrorMessage.jsx and add aria-hidden='true' to any decorative icon elements. Also verify the component has role='alert' or aria-live='polite' for dynamic error announcements.",
+      "acceptanceCriteria": [
+        "ApiErrorMessage.jsx decorative icons have aria-hidden='true'",
+        "The error container has role='alert' or aria-live='polite' if not already present",
+        "Build passes with no errors"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-805",
+      "title": "Add accessible name to ErrorBoundary fallback UI",
+      "description": "ErrorBoundary.jsx renders a fallback UI when an uncaught error occurs. The fallback likely includes an error message, and possibly a reload or retry button. Read ErrorBoundary.jsx and ensure: (1) the fallback has a <h1> or <h2> heading announcing the error, (2) any icon-only retry button has an aria-label, (3) the error container has role='alert' to announce the error to screen readers automatically.",
+      "acceptanceCriteria": [
+        "ErrorBoundary.jsx fallback UI has a semantic heading element",
+        "ErrorBoundary.jsx fallback container has role='alert'",
+        "Any icon-only buttons have aria-label attributes",
+        "Build passes with no errors"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

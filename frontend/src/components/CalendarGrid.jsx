@@ -219,6 +219,9 @@ function CalendarGrid({ month, year, onMonthChange, onEventClick, onDayClick }) 
 
   return (
     <div className="overflow-hidden rounded-xl border border-border bg-card">
+      <div aria-live="polite" aria-atomic="true" className="sr-only">
+        {MONTH_NAMES[month - 1]} {year}
+      </div>
       <CalendarHeader month={month} year={year} onPrev={handlePrev} onNext={handleNext} onToday={handleToday} />
       <div className="grid grid-cols-7 border-t border-border">
         {WEEK_DAYS.map((d, i) => (
