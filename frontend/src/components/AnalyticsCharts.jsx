@@ -146,6 +146,7 @@ function AnalyticsTagsTable({ tagOfferRates }) {
     <ChartCard title="Tags" description="Offer rate for each tag across your applications">
       <div className="overflow-x-auto">
         <table className="w-full text-sm" aria-label="Tags offer rate">
+          <caption className="sr-only">Tag offer rates</caption>
           <thead>
             <tr className="border-b border-border">
               <th scope="col" className="pb-2 text-left text-xs font-medium text-muted-foreground">Tag</th>
@@ -195,6 +196,7 @@ function ConversionRatesTable({ data }) {
     <ChartCard title="Conversion Rates by Stage" description="Progression rate from each stage to the next, and average time spent">
       <div className="overflow-x-auto">
         <table className="w-full text-sm" aria-label="Conversion rates by stage">
+          <caption className="sr-only">Conversion rates by stage</caption>
           <thead>
             <tr className="border-b border-border">
               <th scope="col" className="pb-2 text-left text-xs font-medium text-muted-foreground">Stage</th>
