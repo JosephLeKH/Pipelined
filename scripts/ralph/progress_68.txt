@@ -58,3 +58,12 @@ Started: Mon May  4 08:50:11 PDT 2026
 **Summary:** Added `role='region'` and `aria-label='Activity timeline'` to the outermost div in the `ActivityTimeline` component in `Activity.jsx` (the filled/non-empty/non-loading branch). This creates a navigable ARIA landmark for screen reader users.
 
 **Learnings:** The change was a one-liner on the outermost container div. The skeleton and empty state branches were not touched since they are transient UI states, not the actual timeline region. Build passed with no errors.
+
+## US-685: Fix OfferComparison tab aria-controls wiring
+
+**Summary:** Added `aria-controls` attribute to each tab button in `TabBar` (pointing to `panel-{id}`), and changed panel rendering from conditional unmounting (`&&`) to always-in-DOM divs with `hidden` attribute. Each panel now has `id="panel-{id}"` and `role="tabpanel"`.
+
+**Learnings:**
+- The `hidden` HTML attribute is the WCAG-compliant way to keep non-active panels in the DOM while making them inaccessible — it maps to `display: none` but is semantically clearer than CSS-only approaches.
+- `aria-controls` values must always resolve to an existing DOM element; conditional rendering (`&&`) breaks this invariant for inactive tabs.
+- React renders `hidden={false}` as no attribute and `hidden={true}` as the boolean `hidden` attribute, which works correctly with HTML semantics.
