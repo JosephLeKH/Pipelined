@@ -6,3 +6,11 @@ Started: Mon May  4 10:40:24 PDT 2026
 **Status:** DONE
 
 Added a `Link` from react-router-dom in GoalProgress.jsx that navigates to `/settings?section=pipeline`. The link renders below the "Weekly goal" label with `text-xs text-muted-foreground underline` styling for a visually understated appearance. Build passed cleanly.
+
+## US-691 — Show active filter dot on mobile Saved Searches button in JobBoard
+- Imported `useSavedSearches` hook into `JobBoard.jsx`
+- Derived `savedCount` from `savedSearches?.length ?? 0`
+- Wrapped mobile "Saved searches" button in a `relative` div (with `lg:hidden`)
+- Added an absolutely-positioned `<span>` badge (`-right-1 -top-1`, `bg-primary`, `rounded-full`) shown only when `savedCount > 0`
+- Badge shows the numeric count; `aria-hidden="true"` since the button label already communicates purpose
+- Build passed cleanly.
