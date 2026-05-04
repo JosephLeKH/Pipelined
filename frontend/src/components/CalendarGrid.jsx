@@ -107,7 +107,7 @@ function CalendarHeader({ month, year, onPrev, onNext, onToday }) {
         {MONTH_NAMES[month - 1]} {year}
       </h2>
       <div className="flex items-center gap-2">
-        <Button type="button" variant="outline" onClick={onToday}>
+        <Button type="button" variant="outline" size="sm" onClick={onToday} aria-label="Jump to today">
           Today
         </Button>
         <Button
