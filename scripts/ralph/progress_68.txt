@@ -26,3 +26,11 @@ Started: Mon May  4 08:50:11 PDT 2026
 
 **Learnings:** When an icon component is passed as a prop and used decoratively alongside descriptive text, `aria-hidden="true"` must be applied at the call site. The change is a single attribute addition on the JSX element — no structural refactoring needed.
 
+## US-679: Wrap CalendarGrid weekday headers in abbr elements
+**Status:** COMPLETE
+**Commit:** 327d081
+
+**Summary:** `CalendarGrid.jsx` was rendering short weekday abbreviations (Sun, Mon, etc.) as plain text inside `<div>` elements. Added `WEEK_DAYS_FULL` constant to `constants.js` with the 7 full weekday names (Sunday–Saturday). Updated the weekday header row to use `WEEK_DAYS.map((d, i) => ...)` and wrap each abbreviation in `<abbr title={WEEK_DAYS_FULL[i]}>{d}</abbr>`. Build passed successfully.
+
+**Learnings:** Using `<abbr title="full name">abbr</abbr>` is the correct HTML pattern for exposing screen-reader-friendly full text for abbreviations. Pairing the short `WEEK_DAYS` array with a companion `WEEK_DAYS_FULL` array indexed by position keeps the mapping explicit, zero-magic, and consistent with the project's no-magic-values rule. The index approach avoids an object/Map lookup while staying readable.
+
