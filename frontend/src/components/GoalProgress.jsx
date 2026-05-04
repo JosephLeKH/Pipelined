@@ -31,6 +31,7 @@ function GoalProgress() {
   const currentStreak = stats?.current_streak ?? 0;
   const pct = weeklyGoal > 0 ? Math.min(appliedThisWeek / weeklyGoal, 1) : 0;
   const dashOffset = RING_CIRCUMFERENCE * (1 - pct);
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   useEffect(() => {
     if (!isLoading && appliedThisWeek >= weeklyGoal && weeklyGoal > 0 && !goalReachedRef.current) {
@@ -77,7 +78,7 @@ function GoalProgress() {
           strokeDasharray={RING_CIRCUMFERENCE}
           strokeDashoffset={dashOffset}
           transform={`rotate(-90 ${RING_RADIUS + 4} ${RING_RADIUS + 4})`}
-          className={cn(ringColor(pct), "[transition:stroke-dashoffset_0.4s_ease]")}
+          className={cn(ringColor(pct), !reducedMotion && "[transition:stroke-dashoffset_0.4s_ease]")}
         />
         <text
           x={RING_RADIUS + 4}
