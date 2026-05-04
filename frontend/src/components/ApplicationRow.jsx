@@ -96,7 +96,6 @@ function ApplicationRow({
         style={{ transform: offset !== 0 ? `translateX(${offset}px)` : undefined, transition: offset !== 0 ? "none" : undefined }}
         onClick={() => onSelect(application)}
         onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") onSelect(application); }}
-        role="row"
         tabIndex={0}
         {...handlers}
       >
