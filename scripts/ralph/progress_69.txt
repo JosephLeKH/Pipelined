@@ -27,3 +27,22 @@ Added a `Link` from react-router-dom in GoalProgress.jsx that navigates to `/set
 - Removed redundant `aria-label="Offer comparison"` from the table element (caption serves the same role)
 - Build passed with no errors
 - Committed: feat: US-693 - Add caption to OfferComparison comparison table
+
+## US-686 - Add date group separators to Activity timeline
+**Status:** Complete
+**Date:** 2026-05-04
+
+### Summary
+Added date grouping to the Activity timeline in Activity.jsx. Entries are now grouped by calendar date with a `DateSeparator` component rendered between each group showing "Today", "Yesterday", or a formatted date (e.g., "May 2, 2026").
+
+### Implementation
+- Added `toDateKey(timestamp)` to produce a YYYY-MM-DD string key from any timestamp
+- Added `getDateLabel(dateKey)` returning "Today"/"Yesterday"/formatted date using native `toLocaleDateString`
+- Added `groupEntriesByDate(entries)` to group the flat entry array into `{ dateKey, label, entries }` objects
+- Added `DateSeparator` component: muted xs label text + a horizontal `bg-border` rule
+- Modified `ActivityTimeline` to render one `DateSeparator` per group before that group's entries
+- All 8 existing tests still pass; build clean at 267 lines (under 300 limit)
+
+### Learnings
+- Native `Date.toLocaleDateString()` handles "Today"/"Yesterday" labeling cleanly without date-fns
+- Using a `Map` to build groups in order preserves the original sort order of entries
