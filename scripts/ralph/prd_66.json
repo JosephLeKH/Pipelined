@@ -72,7 +72,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 4,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/pages/Activity.jsx. TimelineEntry is at line ~39. The dot is a <span className='block h-3 w-3 rounded-full...' />. Change it to flex h-4 w-4 and render a small icon inside. Import Plus, ArrowRight, CalendarDays from their direct subpath imports: lucide-react/dist/esm/icons/plus, lucide-react/dist/esm/icons/arrow-right, lucide-react/dist/esm/icons/calendar-days. Add aria-hidden='true' to the icon. The DotIcon may be undefined for unknown types — use {DotIcon && <DotIcon .../>} to guard."
     },
     {

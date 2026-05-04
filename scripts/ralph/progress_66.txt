@@ -30,3 +30,16 @@ Learnings:
 - Tailwind's open: variant works directly on <details> elements to style the expanded state (e.g., open:pb-4).
 - Native <details>/<summary> requires no JS and is keyboard-accessible by default (Enter/Space to toggle).
 - Used &apos; HTML entity for the apostrophe in "We're" to avoid JSX string escaping issues inside JSX.
+
+---
+## US-665: Add type-specific icons inside Activity.jsx timeline dot indicators
+**Status:** PASS
+**Commit:** 821af7b
+
+### Summary
+Added imports for `Plus`, `ArrowRight`, `CalendarDays` from lucide-react direct subpath imports. Added `TYPE_ICONS` constant mapping entry types to icon components. In `TimelineEntry`, derived `DotIcon = TYPE_ICONS[entry.type]` and changed the dot span from `block h-3 w-3` to `flex h-4 w-4 items-center justify-center` with `{DotIcon && <DotIcon className="h-2 w-2 text-white/80" aria-hidden="true" />}` inside it. Unknown types get no icon (guard handles undefined).
+
+### Learnings
+- Using `{DotIcon && <DotIcon ... />}` guards against undefined icons for future/unknown entry types without needing a fallback.
+- Changing `block` to `flex items-center justify-center` is the minimal change needed to center child content inside a span.
+- Icon size `h-2 w-2` (8px) fits neatly inside a `h-4 w-4` (16px) dot with ring-2 accounted for.
