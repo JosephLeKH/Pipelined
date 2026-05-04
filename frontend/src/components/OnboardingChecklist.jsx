@@ -17,6 +17,7 @@ import {
 } from "../lib/constants";
 
 const EXTENSION_STEP_HREF = "https://chromewebstore.google.com/detail/pipelined";
+const TOTAL_ONBOARDING_STEPS = 3;
 
 function StepRow({ id, label, description, done }) {
   return (
@@ -111,6 +112,17 @@ function OnboardingChecklist({ onAdd }) {
         >
           Dismiss
         </Button>
+      </div>
+      <div className="mb-3">
+        <div className="mb-1 flex items-center text-xs text-muted-foreground">
+          <span>{completedSteps.length} of {TOTAL_ONBOARDING_STEPS} steps complete</span>
+        </div>
+        <div className="h-1.5 overflow-hidden rounded-full bg-muted">
+          <div
+            className="h-full rounded-full bg-primary transition-all"
+            style={{ width: `${(completedSteps.length / TOTAL_ONBOARDING_STEPS) * 100}%` }}
+          />
+        </div>
       </div>
       <div className="flex flex-col gap-3">
         <div>
