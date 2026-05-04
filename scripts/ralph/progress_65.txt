@@ -49,3 +49,11 @@ Changed 5 `href: '#'` entries in the FOOTER_LINKS constant (lines 62-70) to real
 Build passed. Committed as feat: US-659.
 
 Learnings: Simple data-only fix — no logic or rendering changes needed. Route paths don't need to exist for the build to pass.
+
+## US-660 — Sync Settings.jsx active tab to ?section= URL query param
+**Completed**: Imported useSearchParams from react-router-dom. Replaced useState('pipeline') with useSearchParams hook: const [searchParams, setSearchParams] = useSearchParams(). Derived activeSection from searchParams.get('section') || 'pipeline'. Updated TabNav's onSelect to call setSearchParams({ section: id }). Build passed (2.82s). Committed as c29f1e0.
+**Learnings**: This is a simple two-line pattern swap. The key is that useSearchParams replaces both the state value and setter — the derived activeSection reads from URL on every render, so refreshes and deep links work automatically. No useState needed at all for this tab.
+
+## US-661 — Show application date on all screen sizes in PublicPipeline.jsx
+**Completed**: Removed 'hidden' and 'sm:block' from the date span className in PublicAppRow. Added formatDateShort utility to dateUtils.js (format: { month: 'short', day: 'numeric' } — no year) to keep the date compact on mobile. Swapped formatDate import for formatDateShort in PublicPipeline.jsx. Build passed (2.74s). Committed as 5bb07be.
+**Learnings**: The skeleton row for this column should also update its hidden sm:block classes for consistency — but that's out of scope for this story. Adding a new formatDateShort utility rather than modifying existing formatDate avoids regressions in other components that depend on the year being present.

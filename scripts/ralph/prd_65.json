@@ -117,7 +117,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 7,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/pages/Settings.jsx. TabNav is at line ~36. The active section state is likely useState('pipeline') near line ~155 in the Settings component. Import useSearchParams from react-router-dom (it's probably already imported, just needs useSearchParams added). Replace the useState pattern with useSearchParams so that ?section=pipeline, ?section=notifications, etc. work. The setActiveSection call in the tab onSelect handler should become setSearchParams({ section: id })."
     },
     {
@@ -133,7 +133,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 8,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/pages/PublicPipeline.jsx. The date span is at line ~55 inside the app row component with className 'hidden text-sm text-muted-foreground sm:block'. Remove 'hidden' and 'sm:block' to make it always visible. Also shorten the format to { month: 'short', day: 'numeric' } to avoid text overflow on narrow screens. The formatDate utility function may be inline or imported — check and adjust accordingly."
     }
   ]
