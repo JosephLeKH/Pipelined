@@ -1,6 +1,7 @@
 /** Circular progress ring showing weekly application goal and streak count. */
 
 import { useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 import { toast } from "sonner";
 
 import { cn } from "../lib/utils";
@@ -96,6 +97,12 @@ function GoalProgress() {
           {appliedThisWeek} / {weeklyGoal} this week
         </span>
         <span className="text-xs text-muted-foreground">Weekly goal</span>
+        <Link
+          to="/settings?section=pipeline"
+          className="mt-0.5 text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground transition-colors"
+        >
+          Edit goal
+        </Link>
         {currentStreak > 0 && (
           <span className="mt-1 flex items-center gap-1 text-xs font-medium text-primary">
             <Flame className="h-3.5 w-3.5" aria-hidden="true" />
