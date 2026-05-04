@@ -64,3 +64,13 @@ Started: Mon May  4 08:40:17 PDT 2026
 **Learnings:**
 - When replacing a `<p>` with a `<Link>`, add `block` to restore block-level display so margin/spacing stays correct
 - The Tailwind `no-underline` utility is the right way to strip anchor underlines without inline styles
+
+--- US-673: Replace PublicTimeline spinner with shimmer skeleton ---
+Replaced the animate-spin spinner in LoadingState (PublicTimeline.jsx) with a shimmer skeleton matching the page layout. The new skeleton:
+- Has a header section (mirroring TimelineHeader) with a name placeholder, subtitle placeholder, and CTA button placeholder, all wrapped in max-w-2xl
+- Renders 4 timeline row skeletons using the timeline dot + connector structure, with company/role and date/stage pill placeholders
+- Uses shimmer-bg animate-shimmer consistently (no animate-pulse or animate-spin)
+- Sets aria-hidden="true" on the root wrapper
+- SKELETON_ROW_COUNT=4 constant added at module scope per the no-magic-values rule
+
+Learnings: The pattern from PublicPipeline.jsx (shimmer-bg animate-shimmer, aria-hidden on wrapper, named count constant) transfers cleanly. For timeline-style pages, mirroring the actual dot+connector layout in the skeleton gives a realistic preview of the real content.
