@@ -18,3 +18,11 @@ Started: Mon May  4 08:50:11 PDT 2026
 
 **Learnings:** For a single-panel tab UI where only one section is displayed at a time, using a single stable `aria-controls` target ID is the correct WCAG pattern. Each tab button should still have a unique `id` (for `aria-labelledby` on the panel), but since `renderSection` drives which content appears and the `<main>` element always exists, one stable panel ID cleanly satisfies the ARIA tab pattern without requiring all panels to be rendered and hidden.
 
+## US-682: Add aria-hidden to EmptyState icon
+**Status:** COMPLETE
+**Commit:** 67ab492
+
+**Summary:** `EmptyState.jsx` renders an icon via `<Icon className="..." />` on the ternary branch that handles the `icon` prop. Added `aria-hidden="true"` to this render so screen readers skip the decorative SVG and rely solely on the `title` and `description` text props for context.
+
+**Learnings:** When an icon component is passed as a prop and used decoratively alongside descriptive text, `aria-hidden="true"` must be applied at the call site. The change is a single attribute addition on the JSX element — no structural refactoring needed.
+
