@@ -124,7 +124,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 7,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/pages/JobBoard.jsx. The aside with SavedSearchesSidebar uses 'hidden w-56 shrink-0 lg:block'. For mobile, add a 'Saved searches' ghost button in the top toolbar area that only shows below lg. When clicked, it opens a slide-over panel (fixed inset-0 overlay with a left-side drawer) containing SavedSearchesSidebar. The overlay click closes it, stopPropagation on the drawer prevents it from closing. On apply, also close the drawer with setSavedOpen(false)."
     },
     {
@@ -143,7 +143,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 8,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/pages/Analytics.jsx. AnalyticsLoading is at lines ~21-30. It renders a full-page centered spinner. Replace with skeleton placeholders shaped like the analytics content: a stats row of 4 metric cards, a large chart area, and a smaller chart area. Use shimmer-bg animate-shimmer (same as SkeletonRow). Add aria-hidden='true' to the skeleton container so screen readers skip it."
     }
   ]

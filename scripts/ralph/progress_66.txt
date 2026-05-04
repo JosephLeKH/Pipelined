@@ -62,3 +62,29 @@ The add-application button lives in `DashboardToolbar.jsx` (not Dashboard.jsx it
 - The button is in DashboardToolbar.jsx, not Dashboard.jsx; always trace the component tree from the page before editing.
 - The Tooltip already showed "Add Application (A)" — the kbd hint adds a persistent visible indicator so power users don't need to hover.
 - `sm:inline` + `hidden` pattern ensures the kbd hint is invisible on mobile (where keyboard shortcuts don't apply) but visible on desktop.
+
+---
+## US-668: Expose SavedSearchesSidebar on mobile in JobBoard.jsx
+**Status:** PASS
+**Commit:** ee528a1
+
+### Summary
+Added `useState` to the existing `useEffect` import and a new `XIcon` import from `lucide-react/dist/esm/icons/x`. Added `savedOpen` state. Added a `lg:hidden` "Saved searches" ghost button after `<JobFilters />` that opens a fixed slide-over overlay. The overlay covers `inset-0` with `z-40`; clicking it closes the drawer. The inner drawer (`left-0 w-72`) uses `stopPropagation` to prevent closure when clicked. The drawer header includes a close Button with XIcon. `SavedSearchesSidebar` inside the drawer calls `setSavedOpen(false)` on `onApply` in addition to `handleApplySavedSearch`. The existing `lg:block` desktop sidebar is unchanged. Build passes.
+
+### Learnings
+- The slide-over pattern (fixed overlay + absolute drawer with stopPropagation) is a clean zero-dependency mobile drawer approach without needing a Dialog component.
+- `lg:hidden` on the trigger button and overlay ensures the mobile UI is completely suppressed at desktop breakpoints where the sidebar is always visible.
+- Chaining `handleApplySavedSearch(s); setSavedOpen(false)` in the onApply callback cleanly closes the drawer when a saved search is applied, avoiding state lingering.
+
+---
+## US-669: Replace Analytics.jsx AnalyticsLoading full-page spinner with skeleton chart placeholders
+**Status:** PASS
+**Commit:** e90aa86
+
+### Summary
+Replaced the centered spinner in `AnalyticsLoading` with three skeleton chart blocks. Changed `<main className="flex flex-1 items-center justify-center">` to `<main className="flex-1 px-4 sm:px-6 py-8">` to match the real page padding. The new skeleton container uses `flex flex-col gap-6 aria-hidden="true"`. Block 1: a 4-column stats grid with `grid-cols-2 sm:grid-cols-4`, each card having a shimmer label and value placeholder. Block 2: a main chart area with label and `h-48` chart body. Block 3: a secondary chart with label and `h-32` chart body. All use `shimmer-bg animate-shimmer` classes consistent with SkeletonRow usage elsewhere. Build passes.
+
+### Learnings
+- Adjusting the `<main>` className from centered-flex to padded-layout when switching from spinner to skeleton is essential — skeleton content needs spatial context to look right.
+- `aria-hidden="true"` on the skeleton container ensures screen readers skip the decorative placeholders entirely.
+- `Array.from({length: 4}).map((_, i) => ...)` is the idiomatic pattern for rendering N skeleton items without a real data array.
