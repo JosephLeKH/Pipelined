@@ -1,0 +1,108 @@
+{
+  "id": "prd_79",
+  "title": "Contact, Form & Filter Accessibility",
+  "description": "Fix accessibility issues across contact and form components: replace aria-required with HTML required in ManualAddFormFields, fix ContactCard amber color token and role='img' semantic, add aria-hidden to decorative icons in ContactLinkDropdown, FilterBar, and FollowUpBanner, add aria-busy to FormActions and ContactForm loading buttons, and remove redundant aria-label from CsvImportModal import button.",
+  "userStories": [
+    {
+      "id": "US-766",
+      "title": "Replace aria-required with HTML required in ManualAddFormFields",
+      "description": "ManualAddFormFields.jsx uses aria-required='true' on input elements instead of the native HTML required attribute. The HTML required attribute is more broadly supported and provides native browser validation. Also add aria-atomic='true' to the role='alert' error message container so screen readers announce the full error message atomically.",
+      "acceptanceCriteria": [
+        "ManualAddFormFields.jsx inputs use the native 'required' attribute instead of aria-required='true'",
+        "The role='alert' error container has aria-atomic='true'",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-767",
+      "title": "Fix ContactCard amber color token and role='img' semantic",
+      "description": "ContactCard.jsx has two issues: (1) a hardcoded bg-amber-400 dark:bg-amber-900/40 color on an indicator element (~line 42) that bypasses the design token system, and (2) a decorative indicator span using role='img' with aria-label (~line 43) instead of aria-hidden='true'. Replace the hardcoded amber with semantic tokens (bg-warning or equivalent) and replace role='img' with aria-hidden='true' on the decorative indicator.",
+      "acceptanceCriteria": [
+        "ContactCard.jsx does not use hardcoded bg-amber-400 or dark:bg-amber-900/40",
+        "Colors use semantic design tokens from the project theme",
+        "The decorative indicator has aria-hidden='true' instead of role='img'",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-768",
+      "title": "Add aria-hidden to Search icon in ContactLinkDropdown",
+      "description": "ContactLinkDropdown.jsx renders a Search icon (~line 40) that is decorative — the input it accompanies already conveys the search intent. Add aria-hidden='true' to the Search icon to prevent screen readers from announcing it redundantly.",
+      "acceptanceCriteria": [
+        "ContactLinkDropdown.jsx Search icon has aria-hidden='true'",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-769",
+      "title": "Add aria-hidden to Search icon in FilterBar",
+      "description": "FilterBar.jsx renders a Search icon (~line 52) as a decorative prefix inside a search input. The input's placeholder and label convey the search function. Add aria-hidden='true' to the Search icon so screen readers skip it.",
+      "acceptanceCriteria": [
+        "FilterBar.jsx Search icon has aria-hidden='true'",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-770",
+      "title": "Add aria-hidden to FollowUpBanner Bell and X icons",
+      "description": "FollowUpBanner.jsx renders two decorative icons: a Bell icon (~line 22) in the banner header area and an X icon (~line 34) inside an icon-only close button that already has an aria-label. Both icons should have aria-hidden='true' to prevent screen readers from announcing them alongside the containing text or button label.",
+      "acceptanceCriteria": [
+        "FollowUpBanner.jsx Bell icon has aria-hidden='true'",
+        "FollowUpBanner.jsx X icon has aria-hidden='true'",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-771",
+      "title": "Add aria-busy to FormActions submit button during loading state",
+      "description": "FormActions.jsx renders a submit button that shows a loading spinner when a form is submitting, but does not set aria-busy='true' on the button during the loading state. Screen readers cannot detect that the button is busy. Add aria-busy={isLoading} (or equivalent loading prop) to the submit button element.",
+      "acceptanceCriteria": [
+        "FormActions.jsx submit button has aria-busy='true' when loading/submitting",
+        "aria-busy is false or absent when not loading",
+        "Build passes with no errors"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-772",
+      "title": "Add aria-busy to ContactForm submit button during pending state",
+      "description": "ContactForm.jsx renders a submit button that transitions to a pending/loading state but lacks aria-busy='true' during that state. Add aria-busy={isPending} to the submit button so screen readers announce when the form is submitting.",
+      "acceptanceCriteria": [
+        "ContactForm.jsx submit button has aria-busy={isPending} or equivalent",
+        "Build passes with no errors"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-773",
+      "title": "Remove redundant aria-label from CsvImportModal Import button",
+      "description": "CsvImportModal.jsx has an Import button (~line 119) with both visible text content ('Import') and an aria-label attribute (' Import CSV'). When a button has visible text, the aria-label overrides it for screen readers, creating inconsistency. Remove the redundant aria-label and let the button's visible text serve as its accessible name. If a more descriptive label is desired, use aria-label only when the button text alone is insufficient.",
+      "acceptanceCriteria": [
+        "CsvImportModal.jsx Import button does not have a redundant aria-label when it already has descriptive visible text",
+        "Build passes with no errors"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

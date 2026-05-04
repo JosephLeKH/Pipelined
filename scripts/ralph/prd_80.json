@@ -1,0 +1,114 @@
+{
+  "id": "prd_80",
+  "title": "KanbanColumn, JobCard & Pipeline Icon Accessibility",
+  "description": "Fix high-priority accessibility issues: add aria-hidden to JobCard Bookmark icon, add aria-live to KanbanColumn empty state, replace hardcoded amber colors in MergeDialog and JobRow with design tokens, add aria-hidden to PipelineStagesEditor decorative icons, replace SettingsPipelineSection amber colors with tokens, and add aria-labelledby to SettingsAccountSection and UpgradePlanModal dialogs.",
+  "userStories": [
+    {
+      "id": "US-774",
+      "title": "Add aria-hidden to JobCard Bookmark icon",
+      "description": "JobCard.jsx renders a bookmark/save button that is icon-only with an aria-label, but the Bookmark icon inside the button (~line 101) is missing aria-hidden='true'. Screen readers may announce the icon in addition to the button's aria-label. Add aria-hidden='true' to the Bookmark icon.",
+      "acceptanceCriteria": [
+        "JobCard.jsx Bookmark icon has aria-hidden='true'",
+        "The icon-only button retains its aria-label",
+        "Build passes with no errors"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-775",
+      "title": "Add aria-live to KanbanColumn empty state message",
+      "description": "KanbanColumn.jsx renders a 'No applications' message (~line 34) when a column is empty. This message can appear dynamically as cards are moved away. Add role='status' and aria-live='polite' to the empty state container so screen readers announce when a column becomes empty. The current aria-label alone does not provide live region behavior.",
+      "acceptanceCriteria": [
+        "KanbanColumn.jsx empty state element has role='status' and aria-live='polite'",
+        "Build passes with no errors"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-776",
+      "title": "Replace MergeDialog hardcoded amber colors with design tokens",
+      "description": "MergeDialog.jsx Alert section (~lines 82-84) uses hardcoded amber Tailwind classes: border-amber-200, bg-amber-50, dark:border-amber-700, dark:bg-amber-900/30, text-amber-600, dark:text-amber-400, text-amber-800, dark:text-amber-300. These bypass the design token system and don't respond to theme changes. Replace with semantic warning tokens (e.g., border-warning/30, bg-warning/10, text-warning, text-warning-foreground or equivalents from the project's tailwind config).",
+      "acceptanceCriteria": [
+        "MergeDialog.jsx does not use hardcoded amber-* Tailwind classes",
+        "Colors use semantic design tokens consistent with the project theme",
+        "Visual appearance is equivalent (warning/amber tone)",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-777",
+      "title": "Add aria-hidden to PipelineStagesEditor decorative icons",
+      "description": "PipelineStagesEditor.jsx SortableStageItem and AddStageInput render several decorative icons that lack aria-hidden='true': the GripVertical drag handle icon (~line 83), the Trash2 delete icon in an icon-only button with aria-label (~line 88), and the Plus icon in an icon-only add button (~line 100). Add aria-hidden='true' to all three icons.",
+      "acceptanceCriteria": [
+        "PipelineStagesEditor.jsx GripVertical icon has aria-hidden='true'",
+        "PipelineStagesEditor.jsx Trash2 icon has aria-hidden='true'",
+        "PipelineStagesEditor.jsx Plus icon has aria-hidden='true'",
+        "Build passes with no errors"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-778",
+      "title": "Replace JobRow hardcoded amber colors with design tokens",
+      "description": "JobRow.jsx uses hardcoded amber Tailwind classes in two places: the remote status badge (~line 11) with text-amber-600 dark:text-amber-400, and the badge element (~line 64) with bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300. Replace with semantic design tokens from the project's color system.",
+      "acceptanceCriteria": [
+        "JobRow.jsx does not use hardcoded amber-* Tailwind classes",
+        "Colors use semantic design tokens from the project theme",
+        "Visual appearance is equivalent",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-779",
+      "title": "Add aria-labelledby to SettingsAccountSection dialog",
+      "description": "SettingsAccountSection.jsx renders a confirmation dialog (~line 92) that lacks aria-labelledby pointing to the DialogTitle. Screen readers cannot identify the dialog by its title. Add an id to the DialogTitle element and aria-labelledby matching that id to the DialogContent.",
+      "acceptanceCriteria": [
+        "SettingsAccountSection.jsx DialogContent has aria-labelledby pointing to the DialogTitle's id",
+        "The DialogTitle has a matching id attribute",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-780",
+      "title": "Add aria-labelledby to UpgradePlanModal and aria-hidden to Zap icon",
+      "description": "UpgradePlanModal.jsx has a Dialog (~line 53) missing aria-labelledby pointing to its heading, and a Zap icon (~line 55) that is decorative but lacks aria-hidden='true'. Add an id to the modal heading element, wire aria-labelledby on the DialogContent, and add aria-hidden='true' to the Zap icon.",
+      "acceptanceCriteria": [
+        "UpgradePlanModal.jsx DialogContent has aria-labelledby pointing to the heading element's id",
+        "The heading element has a matching id attribute",
+        "UpgradePlanModal.jsx Zap icon has aria-hidden='true'",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-781",
+      "title": "Replace SettingsPipelineSection hardcoded amber colors with design tokens",
+      "description": "SettingsPipelineSection.jsx uses hardcoded text-amber-500 dark:text-amber-400 (~line 85) for a warning or status indicator. Replace with a semantic design token (e.g., text-warning or equivalent from the project's Tailwind config).",
+      "acceptanceCriteria": [
+        "SettingsPipelineSection.jsx does not use hardcoded amber-* Tailwind classes",
+        "Colors use semantic design tokens consistent with the project theme",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

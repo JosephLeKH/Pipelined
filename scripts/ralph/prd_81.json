@@ -1,0 +1,112 @@
+{
+  "id": "prd_81",
+  "title": "Email Pages, ResumeFit & Auth Accessibility",
+  "description": "Fix accessibility issues in email verification pages and auth-adjacent components: add aria-hidden to decorative status icons in VerifyEmailConfirm and VerifyEmailPending, replace ResumeFitSection hardcoded amber color with design token, promote ResumeFitSection section header from non-semantic span to h3, add aria-hidden to HeroSection decorative SVG illustrations, ensure LandingPage HeroSection images have appropriate alt text, and add aria-label to auth provider social login buttons.",
+  "userStories": [
+    {
+      "id": "US-782",
+      "title": "Add aria-hidden to VerifyEmailConfirm decorative status icons",
+      "description": "VerifyEmailConfirm.jsx renders three decorative status icons — CheckCircle (~line 28) for success, XCircle (~lines 40 and 59) for error, and Loader (~line 18) for the loading state. These icons are decorative because the surrounding text already conveys the meaning ('Email verified', 'Verification failed', etc.). Add aria-hidden='true' to all three icon imports wherever they are rendered in this component.",
+      "acceptanceCriteria": [
+        "VerifyEmailConfirm.jsx CheckCircle icon has aria-hidden='true'",
+        "VerifyEmailConfirm.jsx XCircle icon has aria-hidden='true'",
+        "VerifyEmailConfirm.jsx Loader icon has aria-hidden='true'",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-783",
+      "title": "Add aria-hidden to VerifyEmailPending Mail icon",
+      "description": "VerifyEmailPending.jsx renders a Mail icon (~line 84) that is decorative — the heading and body text communicate the verification pending state. Add aria-hidden='true' to the Mail icon so screen readers skip it.",
+      "acceptanceCriteria": [
+        "VerifyEmailPending.jsx Mail icon has aria-hidden='true'",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-784",
+      "title": "Replace ResumeFitSection hardcoded amber color with design token",
+      "description": "ResumeFitSection.jsx uses hardcoded text-amber-600 dark:text-amber-400 (~line 21) for a score or status indicator. This bypasses the design token system and doesn't adapt to theme changes. Replace with the appropriate semantic token (e.g., text-warning or equivalent from the project's tailwind config).",
+      "acceptanceCriteria": [
+        "ResumeFitSection.jsx does not use hardcoded amber-* Tailwind classes",
+        "Colors use semantic design tokens from the project theme",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-785",
+      "title": "Promote ResumeFitSection section header to semantic heading",
+      "description": "ResumeFitSection.jsx renders a 'Resume Fit' section header as a non-semantic span (~lines 20 and 34) rather than a proper heading element. Screen reader users navigating by headings cannot find this section. Replace the span with an appropriate heading element (h3 or h4) and preserve visual styling via className.",
+      "acceptanceCriteria": [
+        "ResumeFitSection.jsx 'Resume Fit' header uses a semantic heading element (h3 or h4)",
+        "Visual styling is preserved via className",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-786",
+      "title": "Audit and fix HeroSection decorative image and icon accessibility",
+      "description": "HeroSection.jsx (LandingPage hero section component) likely renders decorative SVG illustrations, background graphics, or feature icons that convey visual appeal rather than information. Read HeroSection.jsx and add aria-hidden='true' to any purely decorative SVG or img elements. Any img that conveys meaningful content should have a descriptive alt attribute; purely decorative images should have alt='' or aria-hidden='true'.",
+      "acceptanceCriteria": [
+        "HeroSection.jsx decorative SVG/img elements have aria-hidden='true' or alt=''",
+        "Informational images have descriptive alt text",
+        "Build passes with no errors"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-787",
+      "title": "Add accessible names to GithubAuthButton and GoogleAuthButton",
+      "description": "GithubAuthButton.jsx and GoogleAuthButton.jsx render social authentication buttons. Verify that each button has an accessible name that is both visible (text) and programmatically determinable. If either button is icon-only or relies solely on a logo SVG for its label, add aria-label describing the action (e.g., 'Sign in with GitHub', 'Sign in with Google'). Also ensure any SVG logos have aria-hidden='true'.",
+      "acceptanceCriteria": [
+        "GithubAuthButton.jsx button has an accessible name describing the action",
+        "GoogleAuthButton.jsx button has an accessible name describing the action",
+        "SVG logos in both buttons have aria-hidden='true'",
+        "Build passes with no errors"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-788",
+      "title": "Fix NotesEditor missing aria-label on save/discard toolbar buttons",
+      "description": "NotesEditor.jsx renders a toolbar with save and discard buttons that appear when editing notes. If these buttons are icon-only (showing only icons like Save, X, or Check), they must have aria-label describing their action. Read NotesEditor.jsx and add aria-label to any icon-only action buttons, and aria-hidden='true' to icons inside labeled buttons.",
+      "acceptanceCriteria": [
+        "NotesEditor.jsx icon-only toolbar buttons have descriptive aria-label attributes",
+        "Icons within buttons with labels have aria-hidden='true'",
+        "Build passes with no errors"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-789",
+      "title": "Add aria-hidden to AuthLayout decorative visual elements",
+      "description": "AuthLayout.jsx wraps login, register, forgot-password, and reset-password pages with a shared layout that may include decorative background shapes, brand illustrations, or pattern elements. Read AuthLayout.jsx and add aria-hidden='true' to any decorative SVG or div-based visual elements that convey no information to screen reader users.",
+      "acceptanceCriteria": [
+        "AuthLayout.jsx decorative visual elements have aria-hidden='true' or equivalent",
+        "Meaningful structural elements (nav, main, headings) are not hidden",
+        "Build passes with no errors"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

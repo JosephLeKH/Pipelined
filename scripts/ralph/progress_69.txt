@@ -21,3 +21,9 @@ Added a `Link` from react-router-dom in GoalProgress.jsx that navigates to `/set
 - Visual bar uses bg-muted as track and bg-primary as fill, width driven by inline style percentage
 - completedSteps array (already computed) drives both the label and bar fill width
 - Build passed clean; committed as feat: US-692
+
+## US-693: Add caption to OfferComparison comparison table
+- Added `<caption className="sr-only">Offer comparison</caption>` as first child of the comparison `<table>` in OfferComparison.jsx
+- Removed redundant `aria-label="Offer comparison"` from the table element (caption serves the same role)
+- Build passed with no errors
+- Committed: feat: US-693 - Add caption to OfferComparison comparison table
