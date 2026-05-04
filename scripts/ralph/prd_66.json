@@ -34,7 +34,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/pages/Pricing.jsx. The CTA button is in ProTierCard near lines ~122-128. It has disabled={true} and text 'Upgrade to Pro — coming soon'. Replace with Button asChild wrapping an <a> tag with href='mailto:support@pipelined.app?subject=Pro%20waitlist%20request' and text 'Join the waitlist'. Keep the mb-8 w-full className on the Button. The Button component supports asChild for rendering as a link."
     },
     {

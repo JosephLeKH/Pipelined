@@ -6,3 +6,14 @@ Started: Sun May  3 22:41:44 PDT 2026
 **Status:** PASS
 **Summary:** Added a `prefersReducedMotion` check inside the IntersectionObserver callback in FeaturesSection. When `window.matchMedia('(prefers-reduced-motion: reduce)').matches` is true, `in-view` is added immediately without any setTimeout delay; otherwise the existing STAGGER_MS setTimeout logic runs unchanged. STAGGER_MS constant and all other useEffect logic left untouched.
 **Learnings:** The prefersReducedMotion check should be evaluated inside the observer callback (not once at effect setup time) so it reflects the user's live media query state at the moment the intersection fires.
+
+## US-663 — Replace disabled Pricing.jsx Pro CTA button with 'Join the waitlist' mailto link
+**Status:** COMPLETE
+**Commit:** 38084ea
+
+### Summary
+Replaced the disabled `<Button type="button" aria-label="Upgrade to Pro plan — coming soon" className="mb-8 w-full">Upgrade to Pro — coming soon</Button>` in `ProTierCard` with `<Button asChild className="mb-8 w-full"><a href="mailto:support@pipelined.app?subject=Pro%20waitlist%20request">Join the waitlist</a></Button>`. Removed the `type="button"` and `aria-label` props; kept the `mb-8 w-full` className.
+
+### Learnings
+- The Button component already supported `asChild` (used in `FreeTierCard` for the register link), so no changes needed to the Button component itself.
+- Removing `disabled` prop was implicit — the old button had no explicit `disabled` attribute but was non-functional; the new `asChild` + `<a>` pattern makes it fully interactive.
