@@ -34,6 +34,8 @@ const NAV_ITEMS = [
   { id: "account", label: "Account" },
 ];
 
+const SETTINGS_PANEL_ID = "settings-panel";
+
 function TabNav({ activeSection, onSelect }) {
   return (
     <nav role="tablist" className="mb-6 flex flex-wrap gap-1 border-b border-border pb-3">
@@ -43,7 +45,7 @@ function TabNav({ activeSection, onSelect }) {
           type="button"
           role="tab"
           aria-selected={activeSection === id}
-          aria-controls={"panel-" + id}
+          aria-controls={SETTINGS_PANEL_ID}
           onClick={() => onSelect(id)}
           className={
             activeSection === id
@@ -164,7 +166,7 @@ function Settings() {
           Settings
         </h1>
         <TabNav activeSection={activeSection} onSelect={(id) => setSearchParams({ section: id })} />
-        <main id={"panel-" + activeSection} role="tabpanel">
+        <main id={SETTINGS_PANEL_ID} role="tabpanel">
           {renderSection(activeSection, user)}
         </main>
       </div>
