@@ -1,6 +1,7 @@
 /** Settings page — tab-navigated settings with organized card sections. */
 
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 
 import NavBar from "../components/NavBar";
 import SettingsAccountSection from "../components/SettingsAccountSection";
@@ -152,7 +153,8 @@ function renderSection(activeSection, user) {
 
 function Settings() {
   const { user } = useAuth();
-  const [activeSection, setActiveSection] = useState("pipeline");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeSection = searchParams.get("section") || "pipeline";
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
@@ -161,7 +163,7 @@ function Settings() {
         <h1 className="mb-6 text-2xl font-semibold font-display text-foreground">
           Settings
         </h1>
-        <TabNav activeSection={activeSection} onSelect={setActiveSection} />
+        <TabNav activeSection={activeSection} onSelect={(id) => setSearchParams({ section: id })} />
         <main id={"panel-" + activeSection} role="tabpanel">
           {renderSection(activeSection, user)}
         </main>
