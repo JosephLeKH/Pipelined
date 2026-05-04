@@ -106,7 +106,7 @@
         "npm run build passes with no errors"
       ],
       "priority": 6,
-      "passes": false,
+      "passes": true,
       "notes": "Read src/pages/Dashboard.jsx. The add-application button is in the page header area. It likely has an aria-label or text like 'Add application'. Add aria-keyshortcuts='a' as a prop and a <kbd> hint element inside the button after the label text. The kbd element should only show on sm: and above (hidden on mobile). Do not change any existing keyboard shortcut handling — only add the ARIA attribute and visual hint."
     },
     {

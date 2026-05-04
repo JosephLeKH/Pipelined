@@ -49,3 +49,16 @@ US-666: Add 'Today' navigation button to Calendar.jsx page header
 Status: COMPLETE
 Files changed: frontend/src/components/CalendarGrid.jsx
 Summary: The Today button was already implemented in CalendarGrid.jsx (CalendarHeader component) with variant="outline" and onClick={onToday}. Added the missing size="sm" and aria-label="Jump to today" attributes to match the acceptance criteria exactly. The handleToday function was already present resetting the view to today's month/year via onMonthChange. Build passes.
+
+---
+## US-667: Add keyboard shortcut hint and aria-keyshortcuts to Dashboard add-application button
+**Status:** PASS
+**Commit:** 5fd1f0b
+
+### Summary
+The add-application button lives in `DashboardToolbar.jsx` (not Dashboard.jsx itself — Dashboard.jsx delegates to `<DashboardToolbar onAdd={...} />`). Added `aria-keyshortcuts="a"` to the Button and a `<kbd className="ml-1.5 hidden rounded bg-muted px-1 py-0.5 text-xs text-muted-foreground sm:inline">A</kbd>` after the "Add Application" text. The 'a' keyboard shortcut was already wired up in Dashboard.jsx via `useHotkeys("a", () => setIsModalOpen(true), { enabled: shortcutsEnabled })` — no new listener added.
+
+### Learnings
+- The button is in DashboardToolbar.jsx, not Dashboard.jsx; always trace the component tree from the page before editing.
+- The Tooltip already showed "Add Application (A)" — the kbd hint adds a persistent visible indicator so power users don't need to hover.
+- `sm:inline` + `hidden` pattern ensures the kbd hint is invisible on mobile (where keyboard shortcuts don't apply) but visible on desktop.
