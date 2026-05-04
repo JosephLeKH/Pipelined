@@ -1,3 +1,12 @@
 # Ralph Progress Log
 Started: Mon May  4 08:50:11 PDT 2026
 ---
+
+## US-678: Add aria-current='date' to today's calendar cell
+**Status:** COMPLETE
+**Commit:** 4608d8e
+
+**Summary:** Added `aria-current={isToday ? "date" : undefined}` to the `role="button"` div in `DayCell` in `CalendarGrid.jsx`. When `isToday` is true the attribute is set to `"date"`; when false, passing `undefined` causes React to omit the attribute entirely from the DOM.
+
+**Learnings:** React omits attributes with `undefined` values, so `aria-current={condition ? "date" : undefined}` is the idiomatic way to conditionally include an ARIA attribute without setting it to a falsy string like `"false"`.
+
