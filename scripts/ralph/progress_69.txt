@@ -46,3 +46,19 @@ Added date grouping to the Activity timeline in Activity.jsx. Entries are now gr
 ### Learnings
 - Native `Date.toLocaleDateString()` handles "Today"/"Yesterday" labeling cleanly without date-fns
 - Using a `Map` to build groups in order preserves the original sort order of entries
+
+## US-687 - Gate GoalProgress SVG ring transition on prefers-reduced-motion
+**Status:** Complete
+**Date:** 2026-05-04
+
+### Summary
+Gated the SVG ring `stroke-dashoffset` transition in GoalProgress.jsx on the user's `prefers-reduced-motion` media query.
+
+### Implementation
+- Added `const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;` in the component body
+- Changed the progress circle `className` from unconditionally including `[transition:stroke-dashoffset_0.4s_ease]` to `!reducedMotion && "[transition:stroke-dashoffset_0.4s_ease]"` so the transition only applies when reduced motion is not preferred
+- Build passed cleanly
+
+### Learnings
+- `window.matchMedia("(prefers-reduced-motion: reduce)").matches` is a synchronous, one-time read sufficient for gating render-time class application
+- For a reactive approach (responding to changes mid-session), `addEventListener("change", ...)` on the MediaQueryList would be needed, but for this use case the static check is sufficient per the acceptance criteria
