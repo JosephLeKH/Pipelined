@@ -35,3 +35,17 @@ Started: Mon May  4 08:40:17 PDT 2026
 **Learnings:**
 - The project-standard shimmer pattern is `shimmer-bg animate-shimmer` (defined in animations.css) — always replaces `animate-pulse bg-muted`
 - The class order convention seen in other components puts shimmer classes before shape classes (rounded, rounded-full)
+
+## US-677: Add og:description and meta description to PublicTimeline
+**Status:** COMPLETE
+**Date:** 2026-05-04
+
+**Changes:**
+- Extended the data-dependent `useEffect` in `PublicTimeline.jsx` to also set `meta[name="description"]` and `meta[property="og:description"]` with the description `"${timeline.display_name}'s job search timeline — tracked with Pipelined"`
+- Follows the exact same pattern as `PublicPipeline.jsx`: create the meta element if not found, set `.content`, reset to `""` on cleanup
+- Build passed with no errors
+- Committed: feat: US-677 - Add og:description and meta description to PublicTimeline
+
+**Learnings:**
+- PublicPipeline.jsx is the canonical reference for the meta tag update pattern in public share pages
+- Both description meta tags reset to empty string `""` on cleanup (not to a default description string), matching PublicPipeline behavior
