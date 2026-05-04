@@ -1,0 +1,114 @@
+{
+  "id": "prd_72",
+  "title": "Focus Management & UX Polish",
+  "description": "Fix focus management in modal/dialog components: trap focus in Tags DeleteConfirmModal, make FeedbackWidget close button label specific, add skip-to-content link to NavBar for keyboard users, improve ApplicationRow drag handle accessibility, add visible focus ring to KanbanCard, and add loading state to the ManualAddForm submit button.",
+  "userStories": [
+    {
+      "id": "US-710",
+      "title": "Trap focus in Tags page DeleteConfirmModal",
+      "description": "Tags.jsx DeleteConfirmModal opens a confirmation dialog but does not trap focus. Keyboard users can tab out of the modal into the page behind it. Add focus trapping so Tab and Shift+Tab cycle only within the modal while it is open. On close, return focus to the delete button that triggered the modal.",
+      "acceptanceCriteria": [
+        "Tags.jsx DeleteConfirmModal traps focus while open — Tab and Shift+Tab cycle only within the modal",
+        "When the modal closes (confirm or cancel), focus returns to the element that triggered it",
+        "The modal already has role='dialog' or equivalent — focus trap is in addition to existing attributes",
+        "Build passes with no errors"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-711",
+      "title": "Make FeedbackWidget close button aria-label more specific",
+      "description": "FeedbackWidget.jsx close button has aria-label='Close'. In the context of an open feedback widget, 'Close' alone is ambiguous. Change the aria-label to 'Close feedback' so screen reader users know what they are closing.",
+      "acceptanceCriteria": [
+        "FeedbackWidget.jsx close button aria-label is 'Close feedback' instead of 'Close'",
+        "Build passes with no errors"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-712",
+      "title": "Add skip-to-content link to NavBar",
+      "description": "NavBar.jsx has no skip navigation link, forcing keyboard-only users to tab through all navigation items on every page load. Add a visually hidden 'Skip to main content' link as the first focusable element in NavBar that becomes visible on focus and links to #main-content. Ensure the main content area of pages that use NavBar has id='main-content'.",
+      "acceptanceCriteria": [
+        "NavBar.jsx renders a 'Skip to main content' anchor as its first focusable element",
+        "The link is visually hidden by default (sr-only or equivalent) and becomes visible when focused",
+        "The link href is '#main-content'",
+        "JobBoard.jsx and Dashboard.jsx (or their main content areas) have id='main-content' on the content <main> element",
+        "Build passes with no errors"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-713",
+      "title": "Add accessible label to ApplicationRow drag handle",
+      "description": "ApplicationRow.jsx renders a drag handle (GripVertical icon or similar) with no accessible name. Screen readers announce it as an unlabeled interactive element. Add aria-label='Drag to reorder' (or similar) and aria-roledescription='sortable item' to the drag handle element.",
+      "acceptanceCriteria": [
+        "ApplicationRow.jsx drag handle has aria-label='Drag to reorder' or equivalent",
+        "The drag handle also has aria-roledescription='sortable item' to clarify the interaction model",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-714",
+      "title": "Add visible focus ring to KanbanCard",
+      "description": "KanbanCard.jsx is keyboard-focusable (tabIndex=0 or draggable) but may not have a visible focus ring. Ensure the card has focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none Tailwind classes so keyboard users can see which card is focused.",
+      "acceptanceCriteria": [
+        "KanbanCard.jsx card element has focus-visible:ring-2 focus-visible:ring-primary (or equivalent visible focus indicator) in its className",
+        "The focus ring only appears on keyboard focus (focus-visible), not on mouse click",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-715",
+      "title": "Add loading state to ManualAddForm submit button",
+      "description": "ManualAddForm.jsx submit button has no loading state. When the form is submitted, the user gets no feedback that the request is in progress, and may click multiple times. Add a loading prop or mutation isPending check: disable the button and show a spinner or 'Saving…' text while the mutation is pending.",
+      "acceptanceCriteria": [
+        "ManualAddForm.jsx submit button is disabled while the mutation is pending",
+        "While pending, the button shows a loading indicator (spinner icon or 'Saving…' text)",
+        "After success or error, the button returns to its normal state",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-716",
+      "title": "Add NotificationBell panel role and aria-label",
+      "description": "NotificationBell.jsx notification panel div has no role or aria-label. Screen reader users cannot identify the panel as a distinct region. Add role='region' and aria-label='Notifications' to the panel container.",
+      "acceptanceCriteria": [
+        "NotificationBell.jsx notification panel has role='region' and aria-label='Notifications'",
+        "Build passes with no errors"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-717",
+      "title": "Add aria-live result count announcement to CommandPalette",
+      "description": "CommandPalette.jsx shows filtered results as the user types but never announces the result count to screen readers. Add an aria-live='polite' region that announces the number of results (e.g., '5 results') when the filtered list changes.",
+      "acceptanceCriteria": [
+        "CommandPalette.jsx has an aria-live='polite' element (visually hidden) that updates with the result count when filtering changes",
+        "The announcement text is '0 results' when empty, 'N results' otherwise",
+        "The element has aria-atomic='true' so the full count is re-announced on each update",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

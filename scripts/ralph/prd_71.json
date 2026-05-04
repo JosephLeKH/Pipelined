@@ -1,0 +1,110 @@
+{
+  "id": "prd_71",
+  "title": "Loading Polish & PrepSection Accessibility",
+  "description": "Replace StatsBar animate-pulse skeleton with shimmer, fix PrepSection accessibility (semantic section labels, aria-hidden on decorative bullet and plus icon, aria-controls on toggle button), add aria-label to KanbanBoard skeleton, add sr-only text for sort direction arrows in ApplicationListHeader, and add aria-labels to NPS score buttons in FeedbackWidget.",
+  "userStories": [
+    {
+      "id": "US-702",
+      "title": "Replace StatsBar animate-pulse skeleton with shimmer",
+      "description": "StatsBar.jsx MetricCard loading state uses animate-pulse rounded bg-muted classes instead of the project-standard shimmer-bg animate-shimmer. Replace the pulse skeleton with shimmer classes to match the loading pattern used throughout the rest of the app.",
+      "acceptanceCriteria": [
+        "StatsBar.jsx MetricCard loading skeleton uses shimmer-bg animate-shimmer instead of animate-pulse bg-muted",
+        "The skeleton shape (rounded rectangle placeholder) is preserved",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-703",
+      "title": "Replace PrepSection checklist label span with semantic heading",
+      "description": "PrepSection.jsx renders section titles like 'Checklist' and 'Practice Questions' as plain <span> elements with no semantic role. These function as section headings. Replace them with <h3> (or appropriate heading level) so screen reader users can navigate by headings.",
+      "acceptanceCriteria": [
+        "PrepSection.jsx section title elements ('Checklist', 'Practice Questions') use a semantic heading element (h3 or h4) instead of <span>",
+        "The visual styling is preserved via className",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-704",
+      "title": "Add aria-hidden to decorative bullet in PrepSection QuestionItem",
+      "description": "PrepSection.jsx QuestionItem renders a bullet character '•' as visible decoration before each question. The bullet is purely decorative and should not be read by screen readers. Add aria-hidden='true' to the bullet element.",
+      "acceptanceCriteria": [
+        "PrepSection.jsx QuestionItem bullet ('•') has aria-hidden='true'",
+        "Build passes with no errors"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-705",
+      "title": "Add aria-hidden to decorative Plus icon in PrepSection AddQuestionItem",
+      "description": "PrepSection.jsx AddQuestionItem renders a Plus icon that is purely decorative (the button's text already conveys the action). Add aria-hidden='true' to the Plus icon to prevent duplicate announcement.",
+      "acceptanceCriteria": [
+        "PrepSection.jsx AddQuestionItem Plus icon has aria-hidden='true'",
+        "Build passes with no errors"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-706",
+      "title": "Add aria-controls to PrepSection section toggle button",
+      "description": "PrepSection.jsx has a toggle button that expands/collapses a section, but the button is missing aria-controls pointing to the collapsible panel's id. Add an id to the collapsible panel and aria-controls={id} to the toggle button.",
+      "acceptanceCriteria": [
+        "PrepSection.jsx toggle button has aria-controls pointing to the id of the collapsible panel",
+        "The collapsible panel has a matching id attribute",
+        "The toggle button already has aria-expanded — both aria-expanded and aria-controls should be present",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-707",
+      "title": "Add aria-label to KanbanBoard loading skeleton",
+      "description": "KanbanBoard.jsx KanbanLoadingSkeleton renders with aria-busy='true' but no aria-label. Screen readers announce it without context. Add aria-label='Loading board' (or similar) to the skeleton container.",
+      "acceptanceCriteria": [
+        "KanbanBoard.jsx KanbanLoadingSkeleton container has aria-label='Loading board' (or equivalent)",
+        "The container already has aria-busy='true' — both attributes should be present",
+        "Build passes with no errors"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-708",
+      "title": "Add sr-only text for sort direction arrows in ApplicationListHeader",
+      "description": "ApplicationListHeader.jsx renders sort direction arrows (↑/↓) as plain text characters with no screen reader context. A user navigating by keyboard cannot tell which column is sorted or in what direction. Wrap each arrow in a <span aria-hidden='true'> and add a <span className='sr-only'> sibling with the sort direction text (e.g. 'sorted ascending').",
+      "acceptanceCriteria": [
+        "ApplicationListHeader.jsx sort direction arrows (↑/↓) are wrapped in <span aria-hidden='true'>",
+        "A <span className='sr-only'> with the direction text ('sorted ascending' or 'sorted descending') is rendered adjacent to the arrow",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-709",
+      "title": "Add aria-labels to FeedbackWidget NPS score buttons",
+      "description": "FeedbackWidget.jsx renders NPS score buttons (0–10) showing only the numeric value with no accessible name. Screen reader users hear just a number with no context. Add aria-label={`Score ${score}`} (or equivalent) to each score button.",
+      "acceptanceCriteria": [
+        "FeedbackWidget.jsx NPS score buttons each have aria-label='Score N' where N is the numeric score",
+        "All 11 buttons (0 through 10) have unique aria-labels",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

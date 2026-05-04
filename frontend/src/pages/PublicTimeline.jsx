@@ -57,10 +57,45 @@ function TimelineRow({ app, isLast }) {
   );
 }
 
+const SKELETON_ROW_COUNT = 4;
+
 function LoadingState() {
   return (
-    <div className="flex min-h-screen items-center justify-center">
-      <div className="h-10 w-10 animate-spin rounded-full border-4 border-border border-t-primary" />
+    <div className="min-h-screen bg-background" aria-hidden="true">
+      <div className="border-b border-border bg-card px-6 py-4">
+        <div className="mx-auto flex max-w-2xl items-center justify-between">
+          <div className="flex flex-col gap-2">
+            <div className="h-5 w-48 rounded shimmer-bg animate-shimmer" />
+            <div className="h-3 w-32 rounded shimmer-bg animate-shimmer" />
+          </div>
+          <div className="h-8 w-28 rounded-md shimmer-bg animate-shimmer" />
+        </div>
+      </div>
+      <div className="mx-auto max-w-2xl px-6 py-8">
+        <div className="mb-6 h-4 w-36 rounded shimmer-bg animate-shimmer" />
+        <div className="flex flex-col">
+          {Array.from({ length: SKELETON_ROW_COUNT }).map((_, i) => (
+            <div key={i} className="flex gap-4 pb-6">
+              <div className="flex flex-col items-center">
+                <div className="h-3 w-3 rounded-full shimmer-bg animate-shimmer" />
+                {i < SKELETON_ROW_COUNT - 1 && (
+                  <div className="mt-1 w-0.5 flex-1 shimmer-bg animate-shimmer" />
+                )}
+              </div>
+              <div className="flex flex-1 flex-col gap-2">
+                <div className="flex gap-2">
+                  <div className="h-4 w-28 rounded shimmer-bg animate-shimmer" />
+                  <div className="h-4 w-20 rounded shimmer-bg animate-shimmer" />
+                </div>
+                <div className="flex gap-2">
+                  <div className="h-3 w-16 rounded shimmer-bg animate-shimmer" />
+                  <div className="h-5 w-20 rounded-full shimmer-bg animate-shimmer" />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
