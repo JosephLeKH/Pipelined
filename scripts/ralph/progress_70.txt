@@ -15,3 +15,10 @@ Status: COMPLETE
 - One-line change: static string → dynamic template literal using the map variable `s.name`
 - Build passes ✓
 - Learning: When rendering lists of interactive controls, always include the item's name in action button aria-labels so screen reader users know which item they're acting on.
+
+## US-696 — Fix DigestSection label wrapping switch button double-announcement
+- Changed `<label className="flex cursor-pointer items-center gap-3">` to `<div>` (line 12)
+- Changed closing `</label>` to `</div>` (line 29)
+- Button already had `aria-label="Weekly digest email"` so accessible name is preserved
+- The Enabled/Disabled `<span>` is now a sibling of the button rather than a label child
+- Build passed with no errors

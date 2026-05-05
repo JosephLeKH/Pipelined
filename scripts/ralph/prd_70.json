@@ -41,8 +41,8 @@
         "Build passes with no errors"
       ],
       "priority": "high",
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Replaced <label> wrapper with <div> on lines 12 and 29. Button retains aria-label='Weekly digest email' for its accessible name. The Enabled/Disabled <span> is now a sibling of the button, not inside a label element."
     },
     {
       "id": "US-697",
