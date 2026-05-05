@@ -67,8 +67,8 @@
         "Build passes with no errors"
       ],
       "priority": "medium",
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Replaced aria-label on the stale indicator span with aria-hidden='true'. Added a sibling <span className='sr-only'> with the stale message text inside a React fragment so the sr-only span and the visual dot are siblings, not parent/child."
     },
     {
       "id": "US-699",

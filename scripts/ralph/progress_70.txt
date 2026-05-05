@@ -28,3 +28,10 @@ Status: COMPLETE
 - Element already had `role="dialog"` and `aria-label` — both attributes now present together
 - Build passed cleanly
 - Learning: aria-modal is a single-attribute fix — search for `role="dialog"` missing `aria-modal` as a standard accessibility audit step
+
+## US-698 — Fix KanbanCard stale dot aria-label on non-interactive span
+- Removed `aria-label="Stale application — no updates in 14+ days"` from the stale indicator span
+- Added `aria-hidden="true"` to the visual indicator dot span
+- Wrapped both the indicator and a new `<span className="sr-only">Stale application — no updates in 14+ days</span>` in a React fragment so they are siblings (not parent/child)
+- Build passed cleanly (commit e8f289c)
+- Learning: aria-label on non-interactive spans inside interactive ancestors confuses screen readers. The correct pattern is aria-hidden on the decorative element plus a sr-only sibling for the meaningful text.
