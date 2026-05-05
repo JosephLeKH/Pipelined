@@ -80,8 +80,8 @@
         "Build passes with no errors"
       ],
       "priority": "medium",
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Replaced aria-label={application.source} with aria-hidden='true' on the SourceIcon at line 144. The source name is already visible as text in the row, so the icon is purely decorative."
     },
     {
       "id": "US-700",

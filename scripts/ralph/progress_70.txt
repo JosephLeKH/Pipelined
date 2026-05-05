@@ -35,3 +35,9 @@ Status: COMPLETE
 - Wrapped both the indicator and a new `<span className="sr-only">Stale application — no updates in 14+ days</span>` in a React fragment so they are siblings (not parent/child)
 - Build passed cleanly (commit e8f289c)
 - Learning: aria-label on non-interactive spans inside interactive ancestors confuses screen readers. The correct pattern is aria-hidden on the decorative element plus a sr-only sibling for the meaningful text.
+
+## US-699 — Add aria-hidden to decorative SourceIcon in ApplicationRow
+- **File:** frontend/src/components/ApplicationRow.jsx (line 144)
+- **Change:** Replaced `aria-label={application.source}` with `aria-hidden="true"` on the SourceIcon component. The source value is already rendered as visible text in the row, making the icon purely decorative. Duplicate announcements confuse screen reader users.
+- **Build:** Passed (✓ built in 2.78s)
+- **Commit:** 9fe61d3
