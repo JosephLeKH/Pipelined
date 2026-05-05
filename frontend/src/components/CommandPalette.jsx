@@ -44,6 +44,8 @@ function PaletteRow({ item, isActive, activate, highlightRef, hint, children }) 
     <Button
       ref={isActive ? highlightRef : null}
       type="button"
+      role="option"
+      aria-selected={isActive}
       variant="ghost"
       onClick={() => activate(item)}
       className={cn(
@@ -114,7 +116,7 @@ function CommandPaletteDialog({ query, setQuery, filteredApps, actions, idx, act
             className="w-full bg-transparent py-3 text-foreground border-0 shadow-none rounded-none h-auto px-0 focus-visible:ring-0"
           />
         </div>
-        <div className="max-h-80 overflow-y-auto py-1">
+        <div role="listbox" aria-label="Search results" className="max-h-80 overflow-y-auto py-1">
           <CommandPaletteResults
             query={query} filteredApps={filteredApps} actions={actions}
             idx={idx} activate={activate} highlightRef={highlightRef}

@@ -1,0 +1,114 @@
+{
+  "id": "prd_84",
+  "title": "Sort Semantics, Group Labels & Live Region Fixes",
+  "description": "Fix a set of missing ARIA semantics: wire aria-describedby in WeeklyGoalSection to its error paragraph, add role='group' to DashboardToolbar view toggle, replace raw ↑↓ sort arrows with sr-only text in ApplicationListHeader, add aria-hidden to PublicTimeline decorative timeline dots/lines/separators, remove redundant aria-label from PublicTimeline StagePill, add sr-only met/not-met state to RegisterForm password requirements, and add aria-busy to DashboardToolbar Export button.",
+  "userStories": [
+    {
+      "id": "US-806",
+      "title": "Add aria-describedby to WeeklyGoalSection Input for error paragraph",
+      "description": "WeeklyGoalSection.jsx renders a validation error in a <p role='alert'> (~line 22) but that paragraph has no id, so the Input has no aria-describedby. Screen reader users hear the role='alert' but the Input still lacks a programmatic error association. Add id='goal-error' to the error <p> and add aria-describedby={goalError ? 'goal-error' : undefined} to the Input element.",
+      "acceptanceCriteria": [
+        "WeeklyGoalSection.jsx error <p> has id='goal-error'",
+        "Input has aria-describedby='goal-error' when goalError is non-null",
+        "aria-describedby is omitted when there is no error",
+        "Build passes with no errors"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-807",
+      "title": "Add role='group' label to DashboardToolbar view toggle container",
+      "description": "DashboardToolbar.jsx has a div containing List view and Kanban view toggle buttons (~lines 17-33). While both buttons have aria-pressed, the container has no group semantics. Screen readers read them as isolated buttons. Wrap the two buttons in a div with role='group' and aria-label='View mode' so assistive technologies understand they are a related set of toggle controls.",
+      "acceptanceCriteria": [
+        "DashboardToolbar.jsx view toggle container div has role='group' and aria-label='View mode'",
+        "Both child buttons retain their aria-label and aria-pressed attributes",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-808",
+      "title": "Add sr-only sort direction text to ApplicationListHeader ColumnHeader",
+      "description": "ApplicationListHeader.jsx ColumnHeader (~lines 9-16) renders a raw Unicode arrow character (↑ or ↓) inside a <span> when a column is actively sorted. These Unicode characters are not reliably announced by all screen readers. Replace the <span>{sortOrder === 'asc' ? '↑' : '↓'}</span> with <span aria-hidden='true'>{sortOrder === 'asc' ? '↑' : '↓'}</span><span className='sr-only'>{sortOrder === 'asc' ? ', ascending' : ', descending'}</span> so screen readers announce the sort direction.",
+      "acceptanceCriteria": [
+        "ApplicationListHeader.jsx ColumnHeader sort arrow span has aria-hidden='true'",
+        "A sr-only span follows with text ', ascending' or ', descending' matching sort direction",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-809",
+      "title": "Add aria-hidden to PublicTimeline TimelineRow decorative dots and connecting line",
+      "description": "PublicTimeline.jsx TimelineRow (~lines 27-32) renders a decorative h-3 w-3 rounded-full border div (timeline dot) and a w-0.5 flex-1 bg-border div (connecting line) that are purely visual. These divs have no aria-hidden and screen readers may announce them as empty containers. Add aria-hidden='true' to both the timeline dot div and the connecting line div.",
+      "acceptanceCriteria": [
+        "PublicTimeline.jsx timeline dot div has aria-hidden='true'",
+        "PublicTimeline.jsx connecting line div has aria-hidden='true'",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-810",
+      "title": "Fix PublicTimeline StagePill redundant aria-label and add dot aria-hidden",
+      "description": "PublicTimeline.jsx StagePill (~lines 13-20) has aria-label={stage} on the outer span AND renders {stage} as visible text inside. When aria-label and text content match, the aria-label is redundant and can confuse some AT. Remove aria-label from the StagePill outer span (the text content already serves as accessible name). Also add aria-hidden='true' to the inner colored dot span (~line 18).",
+      "acceptanceCriteria": [
+        "PublicTimeline.jsx StagePill outer span does not have aria-label",
+        "StagePill inner dot span has aria-hidden='true'",
+        "The visible stage text still appears and serves as the accessible name",
+        "Build passes with no errors"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-811",
+      "title": "Add aria-hidden to decorative separator dots in PublicTimeline and CalendarEventDetail",
+      "description": "PublicTimeline.jsx TimelineRow (~line 36) and CalendarEventDetail.jsx EventApplicationInfo (~line 43) both render a <span className='text-muted-foreground'> · </span> as a visual separator. These decorative middot characters should be hidden from screen readers. Add aria-hidden='true' to both separator span elements.",
+      "acceptanceCriteria": [
+        "PublicTimeline.jsx separator middot span has aria-hidden='true'",
+        "CalendarEventDetail.jsx separator middot span has aria-hidden='true'",
+        "Build passes with no errors"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-812",
+      "title": "Add sr-only met/not-met state to RegisterForm password requirement items",
+      "description": "RegisterForm.jsx renders password requirements in a <ul aria-label='Password requirements'> (~line 21). Each item shows a ✓ or ○ character inside aria-hidden='true', but the met/not-met state is never communicated to screen readers. Add a sr-only span after the requirement text: <span className='sr-only'>{met ? ' (met)' : ' (not met)'}</span> inside each requirement list item so screen readers announce whether each criterion is satisfied.",
+      "acceptanceCriteria": [
+        "RegisterForm.jsx each password requirement list item has a sr-only span with '(met)' or '(not met)' text",
+        "The sr-only state changes dynamically as the user types",
+        "Existing aria-hidden checkmark symbol is unchanged",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-813",
+      "title": "Add aria-busy to DashboardToolbar Export CSV button",
+      "description": "DashboardToolbar.jsx Export CSV button (~line 44) shows a spinning Loader2 icon when isExporting is true, but the button has no aria-busy attribute. Screen readers do not know the button is in a loading state. Add aria-busy={isExporting} to the Export CSV Button element so assistive technologies announce the busy state.",
+      "acceptanceCriteria": [
+        "DashboardToolbar.jsx Export CSV Button has aria-busy={isExporting}",
+        "aria-busy is false (or omitted) when not exporting",
+        "Build passes with no errors"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

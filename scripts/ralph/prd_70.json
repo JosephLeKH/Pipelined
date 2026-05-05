@@ -93,8 +93,8 @@
         "Build passes with no errors"
       ],
       "priority": "medium",
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added aria-haspopup='true' to the trigger Button (line 96) alongside the existing aria-expanded={open} attribute. Screen readers will now announce that activating the button opens a popup."
     },
     {
       "id": "US-701",

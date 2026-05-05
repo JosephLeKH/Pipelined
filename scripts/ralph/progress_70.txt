@@ -41,3 +41,10 @@ Status: COMPLETE
 - **Change:** Replaced `aria-label={application.source}` with `aria-hidden="true"` on the SourceIcon component. The source value is already rendered as visible text in the row, making the icon purely decorative. Duplicate announcements confuse screen reader users.
 - **Build:** Passed (✓ built in 2.78s)
 - **Commit:** 9fe61d3
+
+## US-700 — Add aria-haspopup to NotificationBell trigger button
+- **File:** frontend/src/components/NotificationBell.jsx (line 96)
+- **Change:** Added `aria-haspopup="true"` to the trigger Button alongside the existing `aria-expanded={open}`. Without aria-haspopup, screen readers do not announce that activating the bell button opens a popup panel.
+- **Build:** Passed (✓ built in 2.87s)
+- **Commit:** 85da00b
+- **Learning:** aria-expanded alone is not sufficient — aria-haspopup tells screen readers the type of popup to expect before activation, while aria-expanded communicates the current open/closed state.
