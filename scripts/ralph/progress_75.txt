@@ -1,3 +1,10 @@
 # Ralph Progress Log
 Started: Tue May  5 00:28:06 PDT 2026
 ---
+
+## US-738: Add aria-controls to ApplicationTimeline toggle button
+- Added `id={`timeline-panel-${applicationId}`}` to a wrapper div around the collapsible content
+- Added `aria-controls={`timeline-panel-${applicationId}`}` to the toggle Button
+- Used applicationId prop to ensure id uniqueness when multiple timelines are on the same page
+- Wrapped both the empty-state <p> and the timeline <ol> in the same div so aria-controls always references a stable element
+- Build passed with no errors
