@@ -22,3 +22,9 @@ Status: COMPLETE
 - Button already had `aria-label="Weekly digest email"` so accessible name is preserved
 - The Enabled/Disabled `<span>` is now a sibling of the button rather than a label child
 - Build passed with no errors
+
+## US-697 — Add aria-modal='true' to JobDetailPanel dialog
+- Added `aria-modal="true"` to the root dialog div in JobDetailPanel.jsx (line 108)
+- Element already had `role="dialog"` and `aria-label` — both attributes now present together
+- Build passed cleanly
+- Learning: aria-modal is a single-attribute fix — search for `role="dialog"` missing `aria-modal` as a standard accessibility audit step

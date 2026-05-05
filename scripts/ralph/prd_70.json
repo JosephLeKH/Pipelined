@@ -54,8 +54,8 @@
         "Build passes with no errors"
       ],
       "priority": "medium",
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added aria-modal='true' to the dialog root div (line 108) alongside the existing role='dialog' and aria-label attributes."
     },
     {
       "id": "US-698",
