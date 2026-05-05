@@ -105,6 +105,7 @@ function JobDetailPanel({ job, onClose }) {
     <div
       className="fixed inset-0 z-40 flex justify-end"
       role="dialog"
+      aria-modal="true"
       aria-label={`${job.role ?? "Job"} detail`}
     >
       <Button
