@@ -9,7 +9,7 @@ function DigestSection({ digestEnabled, isDigestPending, onDigestToggle }) {
       <p className="mb-4 text-sm text-muted-foreground">
         Receive a weekly summary of your job search activity every Monday morning.
       </p>
-      <label className="flex cursor-pointer items-center gap-3">
+      <div className="flex cursor-pointer items-center gap-3">
         <button
           type="button"
           role="switch"
@@ -26,7 +26,7 @@ function DigestSection({ digestEnabled, isDigestPending, onDigestToggle }) {
         <span className="text-sm text-foreground">
           {digestEnabled ? "Enabled" : "Disabled"}
         </span>
-      </label>
+      </div>
     </section>
   );
 }
