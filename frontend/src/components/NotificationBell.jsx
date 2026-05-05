@@ -93,6 +93,7 @@ function NotificationBell() {
         variant="ghost"
         size="icon"
         aria-label={`Notifications${unreadCount > 0 ? `, ${unreadCount} unread` : ""}`}
+        aria-haspopup="true"
         aria-expanded={open}
         onClick={() => setOpen((prev) => !prev)}
         className="relative text-muted-foreground hover:bg-muted hover:text-foreground"
