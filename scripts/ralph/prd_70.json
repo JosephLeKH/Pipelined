@@ -106,8 +106,8 @@
         "Build passes with no errors"
       ],
       "priority": "medium",
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added role='listbox' and aria-label='Search results' to the results container div (line 117). Added role='option' and aria-selected={isActive} to PaletteRow Button elements to satisfy the listbox/option ownership requirement. Build passes cleanly."
     }
   ]
 }

@@ -1,0 +1,106 @@
+{
+  "id": "prd_85",
+  "title": "Amber Design Tokens & Shimmer Skeleton Consistency",
+  "description": "Replace hardcoded amber color classes with semantic design tokens and convert remaining animate-pulse loading skeletons to the project-standard shimmer-bg animate-shimmer pattern. Affected components: AnalyticsCharts conversion rate text, KanbanCard stale/follow-up dots, ApplicationRow follow-up dot and swipe button, SettingsProfileSection avatar ring, SettingsReportSection alert text, EmailVerificationBanner, StatsBar skeleton, and JobBoardContent skeleton.",
+  "userStories": [
+    {
+      "id": "US-814",
+      "title": "Replace AnalyticsCharts amber conversion rate text with text-warning token",
+      "description": "AnalyticsCharts.jsx getConversionClass (~line 23) returns 'text-amber-600 dark:text-amber-400 font-medium' for low conversion rates. The project uses a `warning` design token (maps to amber-500). Replace 'text-amber-600 dark:text-amber-400' with 'text-warning' to use the semantic token.",
+      "acceptanceCriteria": [
+        "AnalyticsCharts.jsx getConversionClass returns 'text-warning font-medium' instead of amber classes",
+        "Build passes with no errors"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-815",
+      "title": "Replace KanbanCard stale and follow-up dot amber colors with design tokens",
+      "description": "KanbanCard.jsx has two indicator dots with hardcoded amber: the stale pulse dot (~line 51) uses 'bg-amber-400 dark:bg-amber-900/40' and the follow-up overdue dot (~line 60) uses 'bg-amber-500 dark:bg-amber-900/60'. Replace both with 'bg-warning/80' and 'bg-warning' respectively to use the semantic design token.",
+      "acceptanceCriteria": [
+        "KanbanCard.jsx stale pulse dot uses bg-warning/80 instead of amber classes",
+        "KanbanCard.jsx follow-up dot uses bg-warning instead of amber classes",
+        "Build passes with no errors"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-816",
+      "title": "Replace ApplicationRow amber follow-up dot and swipe button with design tokens",
+      "description": "ApplicationRow.jsx has two amber usages: the follow-up pulse dot (~line 115) uses 'bg-amber-400 dark:bg-amber-900/40' and the swipe-to-follow-up button (~line 51) uses 'bg-amber-500 text-white hover:bg-amber-600 active:bg-amber-700'. Replace the dot with 'bg-warning/80' and the swipe button with 'bg-warning text-white hover:bg-warning/90 active:bg-warning/80'.",
+      "acceptanceCriteria": [
+        "ApplicationRow.jsx follow-up pulse dot uses bg-warning/80 instead of amber classes",
+        "ApplicationRow.jsx swipe button uses bg-warning design token classes",
+        "Build passes with no errors"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-817",
+      "title": "Replace SettingsProfileSection avatar ring amber with design token",
+      "description": "SettingsProfileSection.jsx AVATAR_COLORS array (~line 17) includes 'bg-amber-400 dark:bg-amber-500' as one of the avatar background options. Replace it with 'bg-warning' to use the semantic design token consistently.",
+      "acceptanceCriteria": [
+        "SettingsProfileSection.jsx AVATAR_COLORS replaces 'bg-amber-400 dark:bg-amber-500' with 'bg-warning'",
+        "Build passes with no errors"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-818",
+      "title": "Replace SettingsReportSection amber alert text with text-warning token",
+      "description": "SettingsReportSection.jsx renders an amber alert paragraph (~line 34) with 'text-amber-600 dark:text-amber-400'. Replace with 'text-warning' to use the semantic design token.",
+      "acceptanceCriteria": [
+        "SettingsReportSection.jsx alert paragraph uses text-warning instead of amber classes",
+        "Build passes with no errors"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-819",
+      "title": "Convert StatsBar animate-pulse loading skeleton to shimmer-bg animate-shimmer",
+      "description": "StatsBar.jsx loading state (~lines 79-80) renders skeleton divs with 'animate-pulse rounded bg-muted'. The project standard for loading skeletons is 'shimmer-bg animate-shimmer'. Replace 'animate-pulse bg-muted' with 'shimmer-bg animate-shimmer' on all skeleton divs in StatsBar.jsx.",
+      "acceptanceCriteria": [
+        "StatsBar.jsx skeleton divs use shimmer-bg animate-shimmer instead of animate-pulse bg-muted",
+        "Build passes with no errors"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-820",
+      "title": "Convert JobBoardContent animate-pulse loading skeletons to shimmer-bg animate-shimmer",
+      "description": "JobBoardContent.jsx loading state (~line 11) renders skeleton cards with 'h-52 animate-pulse rounded-xl bg-muted'. The project standard for loading skeletons is 'shimmer-bg animate-shimmer'. Replace 'animate-pulse bg-muted' with 'shimmer-bg animate-shimmer' on all skeleton divs.",
+      "acceptanceCriteria": [
+        "JobBoardContent.jsx skeleton divs use shimmer-bg animate-shimmer instead of animate-pulse bg-muted",
+        "Build passes with no errors"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-821",
+      "title": "Convert EmailVerificationBanner amber hardcoded colors to design tokens",
+      "description": "EmailVerificationBanner.jsx uses multiple hardcoded amber classes (~lines 51-78): border-amber-200, bg-amber-50, text-amber-600, text-amber-800, text-amber-700, text-amber-400, bg-amber-100, dark:border-amber-700/50, dark:bg-amber-900/20, etc. Replace with semantic design tokens: use 'border-warning/30 bg-warning/10 text-warning' for the banner container and inline elements, adapting each usage to the nearest semantic equivalent.",
+      "acceptanceCriteria": [
+        "EmailVerificationBanner.jsx has no hardcoded amber-* color classes",
+        "Banner uses semantic design token classes (text-warning, bg-warning/10, border-warning/30, etc.)",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

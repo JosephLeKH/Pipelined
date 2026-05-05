@@ -48,3 +48,12 @@ Status: COMPLETE
 - **Build:** Passed (✓ built in 2.87s)
 - **Commit:** 85da00b
 - **Learning:** aria-expanded alone is not sufficient — aria-haspopup tells screen readers the type of popup to expect before activation, while aria-expanded communicates the current open/closed state.
+
+## US-701 — Add role and aria-label to CommandPalette results container
+- **File:** frontend/src/components/CommandPalette.jsx (lines 44–57, 117)
+- **Changes:**
+  1. Added `role="listbox"` and `aria-label="Search results"` to the results container div (line 117)
+  2. Added `role="option"` and `aria-selected={isActive}` to the `PaletteRow` Button to satisfy the listbox/option ownership requirement
+- **Build:** Passed (✓ built in 2.94s)
+- **Commit:** 832414b
+- **Learning:** `role="listbox"` requires its direct interactive children to have `role="option"` with `aria-selected`. Without the paired option roles, the listbox pattern is semantically incomplete and may confuse screen readers.
