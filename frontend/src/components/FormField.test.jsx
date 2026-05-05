@@ -26,4 +26,22 @@ describe("FormField", () => {
 
     expect(screen.queryByText("Required")).not.toBeInTheDocument();
   });
+
+  it("should give error element a unique id based on htmlFor", () => {
+    render(<FormField label="Email" htmlFor="email" error="Required"><input id="email" /></FormField>);
+
+    expect(screen.getByText("Required")).toHaveAttribute("id", "email-error");
+  });
+
+  it("should set aria-describedby on input pointing to error id when error exists", () => {
+    render(<FormField label="Email" htmlFor="email" error="Required"><input id="email" /></FormField>);
+
+    expect(screen.getByRole("textbox")).toHaveAttribute("aria-describedby", "email-error");
+  });
+
+  it("should omit aria-describedby on input when no error is present", () => {
+    render(<FormField label="Email" htmlFor="email"><input id="email" /></FormField>);
+
+    expect(screen.getByRole("textbox")).not.toHaveAttribute("aria-describedby");
+  });
 });
