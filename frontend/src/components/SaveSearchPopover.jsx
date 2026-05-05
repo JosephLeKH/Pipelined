@@ -33,10 +33,11 @@ export default function SaveSearchPopover({ currentFilters, onClose }) {
   return (
     <div
       role="dialog"
-      aria-label="Save this search"
+      aria-modal="true"
+      aria-labelledby="save-search-dialog-title"
       className="rounded-xl bg-card border border-border absolute right-0 top-10 z-30 w-64 p-4 shadow-lg"
     >
-      <p className="mb-2 text-sm font-medium text-foreground">Name this search</p>
+      <p id="save-search-dialog-title" className="mb-2 text-sm font-medium text-foreground">Name this search</p>
       <Input
         type="text"
         aria-label="Saved search name"

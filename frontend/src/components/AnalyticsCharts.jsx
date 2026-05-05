@@ -11,7 +11,13 @@ import { Tooltip } from "recharts/es6/component/Tooltip";
 import { Legend } from "recharts/es6/component/Legend";
 import { ResponsiveContainer } from "recharts/es6/component/ResponsiveContainer";
 
-const CHART_COLORS = ["#d97757", "#6a9bcc", "#788c5d", "#9ca3af", "#d1d5db"];
+const CHART_COLORS = [
+  "hsl(var(--chart-1))",
+  "hsl(var(--chart-2))",
+  "hsl(var(--chart-3))",
+  "hsl(var(--chart-4))",
+  "hsl(var(--chart-5))",
+];
 const CHART_GRID_COLOR = "hsl(var(--border))";
 const CHART_TICK_COLOR = "hsl(var(--muted-foreground))";
 const CONVERSION_HIGH_THRESHOLD = 0.6;
@@ -20,7 +26,7 @@ const AVG_DAYS_HIGHLIGHT_THRESHOLD = 21;
 
 function rateColorClass(rate) {
   if (rate > CONVERSION_HIGH_THRESHOLD) return "text-primary font-medium";
-  if (rate >= CONVERSION_LOW_THRESHOLD) return "text-amber-600 dark:text-amber-400 font-medium";
+  if (rate >= CONVERSION_LOW_THRESHOLD) return "text-warning font-medium";
   return "text-destructive font-medium";
 }
 

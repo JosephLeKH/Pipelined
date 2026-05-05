@@ -1,6 +1,6 @@
 /** Tag management page: view, rename, and delete tags across all applications. */
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useRef, useEffect } from "react";
 
 import Check from "lucide-react/dist/esm/icons/check";
 import Pencil from "lucide-react/dist/esm/icons/pencil";
@@ -17,10 +17,48 @@ import NavBar from "../components/NavBar";
 
 const SORT_NAME = "name";
 const SORT_COUNT = "count";
+const FOCUSABLE_SELECTORS = 'button:not([disabled]), [href]:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 function DeleteConfirmModal({ tag, count, onConfirm, onCancel, isPending }) {
+  const dialogRef = useRef(null);
+  const triggerRef = useRef(null);
+
+  useEffect(() => {
+    triggerRef.current = document.activeElement;
+
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    const getFocusable = () => [...dialog.querySelectorAll(FOCUSABLE_SELECTORS)];
+
+    const elements = getFocusable();
+    if (elements.length > 0) elements[0].focus();
+
+    const handleKeyDown = (e) => {
+      if (e.key !== "Tab") return;
+      const focusable = getFocusable();
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      triggerRef.current?.focus();
+    };
+  }, []);
+
   return (
     <div
+      ref={dialogRef}
       role="dialog"
       aria-modal="true"
       aria-labelledby="delete-tag-heading"

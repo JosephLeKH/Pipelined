@@ -45,7 +45,7 @@ function WeeklyGoalSection({ weeklyGoal, isGoalPending, onSaveGoal }) {
         </p>
       )}
       {goalError && (
-        <p role="alert" className="mb-4 text-sm text-destructive">{goalError}</p>
+        <p id="goal-error" role="alert" className="mb-4 text-sm text-destructive">{goalError}</p>
       )}
       <div className="flex items-center gap-3">
         <Input
@@ -55,6 +55,7 @@ function WeeklyGoalSection({ weeklyGoal, isGoalPending, onSaveGoal }) {
           value={localGoal}
           onChange={(e) => setLocalGoal(e.target.value)}
           aria-label="Weekly application goal"
+          aria-describedby={goalError ? "goal-error" : undefined}
           className="w-24"
         />
         <span className="text-sm text-muted-foreground">applications / week</span>

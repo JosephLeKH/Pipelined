@@ -61,9 +61,9 @@ function JobBoard() {
       </div>
       {savedOpen && (
         <div className="fixed inset-0 z-40 lg:hidden" onClick={() => setSavedOpen(false)}>
-          <div className="absolute inset-y-0 left-0 w-72 bg-card border-r border-border p-4 shadow-lg" onClick={(e) => e.stopPropagation()}>
+          <div role="dialog" aria-modal="true" aria-labelledby="saved-searches-heading" className="absolute inset-y-0 left-0 w-72 bg-card border-r border-border p-4 shadow-lg" onClick={(e) => e.stopPropagation()}>
             <div className="mb-3 flex items-center justify-between">
-              <span className="font-medium text-sm text-foreground">Saved searches</span>
+              <span id="saved-searches-heading" className="font-medium text-sm text-foreground">Saved searches</span>
               <Button type="button" variant="ghost" size="icon" aria-label="Close saved searches" onClick={() => setSavedOpen(false)}>
                 <XIcon className="h-4 w-4" aria-hidden="true" />
               </Button>

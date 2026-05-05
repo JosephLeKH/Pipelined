@@ -25,6 +25,13 @@
   --ring: 15 63% 60%;               /* brand-500 focus ring */
   --radius: 0.5rem;
 
+  /* Chart palette */
+  --chart-1: 15 63% 60%;            /* #d97757 brand-500 */
+  --chart-2: 210 49% 61%;           /* #6a9bcc accent-blue */
+  --chart-3: 85 20% 46%;            /* #788c5d accent-green */
+  --chart-4: 218 11% 65%;           /* #9ca3af muted gray */
+  --chart-5: 217 12% 84%;           /* #d1d5db light gray */
+
   /* Legacy custom tokens */
   --color-body-bg: #fafafa;
   --color-body-text: #141413;
@@ -57,6 +64,13 @@
   --border: 30 5% 20%;              /* rgba(255,255,255,0.08) approx */
   --input: 30 5% 20%;
   --ring: 15 63% 60%;
+
+  /* Chart palette (unchanged in dark — charts need stable colors) */
+  --chart-1: 15 63% 60%;
+  --chart-2: 210 49% 61%;
+  --chart-3: 85 20% 46%;
+  --chart-4: 218 11% 65%;
+  --chart-5: 217 12% 84%;
 
   /* Legacy dark custom tokens */
   --color-prose-blockquote-border: #4a4139;

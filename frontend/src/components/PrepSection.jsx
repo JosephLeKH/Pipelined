@@ -21,7 +21,7 @@ import { ChecklistItem, AddChecklistItem } from "./PrepChecklist";
 function QuestionItem({ question, onDelete }) {
   return (
     <div className="flex items-start gap-2 py-1">
-      <span className="mt-0.5 flex-shrink-0 text-muted-foreground text-sm">•</span>
+      <span aria-hidden="true" className="mt-0.5 flex-shrink-0 text-muted-foreground text-sm">•</span>
       <span className="flex-1 text-sm text-foreground">{question}</span>
       <Button type="button" variant="ghost" size="icon" onClick={onDelete}
         className="h-6 w-6 flex-shrink-0 text-muted-foreground/50 hover:text-destructive hover:bg-destructive/10"

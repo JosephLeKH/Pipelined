@@ -8,7 +8,7 @@ export function FormActions({ isPending, onCancel }) {
   return (
     <div className="flex justify-end gap-3 border-t border-border pt-4">
       <Button type="button" variant="outline" size="sm" onClick={onCancel}>Cancel</Button>
-      <Button type="submit" size="sm" disabled={isPending} className="flex items-center gap-2">
+      <Button type="submit" size="sm" disabled={isPending} aria-busy={isPending} className="flex items-center gap-2">
         {isPending ? (
           <>
             <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />

@@ -96,6 +96,7 @@ function ApplicationTimeline({ stageHistory, applicationId }) {
         onClick={() => setIsExpanded((prev) => !prev)}
         className="h-auto p-0 gap-1 text-xs font-medium uppercase text-muted-foreground hover:bg-transparent hover:text-foreground"
         aria-expanded={isExpanded}
+        aria-controls={`timeline-panel-${applicationId}`}
         aria-label="Toggle timeline"
       >
         {isExpanded
@@ -104,19 +105,21 @@ function ApplicationTimeline({ stageHistory, applicationId }) {
         Timeline
       </Button>
       {isExpanded && (
-        nodes.length === 0 ? (
-          <p className="text-xs text-muted-foreground" data-testid="timeline-empty" role="status">
-            No activity yet
-          </p>
-        ) : (
-          <ol className="flex flex-col" data-testid="timeline" aria-live="polite" aria-label="Application timeline">
-            {nodes.map((node, i) =>
-              node.kind === "stage"
-                ? <StageTimelineNode key={`s-${i}`} node={node} />
-                : <EventTimelineNode key={`e-${i}`} node={node} />
-            )}
-          </ol>
-        )
+        <div id={`timeline-panel-${applicationId}`}>
+          {nodes.length === 0 ? (
+            <p className="text-xs text-muted-foreground" data-testid="timeline-empty" role="status">
+              No activity yet
+            </p>
+          ) : (
+            <ol className="flex flex-col" data-testid="timeline" aria-live="polite" aria-label="Application timeline">
+              {nodes.map((node, i) =>
+                node.kind === "stage"
+                  ? <StageTimelineNode key={`s-${i}`} node={node} />
+                  : <EventTimelineNode key={`e-${i}`} node={node} />
+              )}
+            </ol>
+          )}
+        </div>
       )}
     </div>
   );

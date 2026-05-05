@@ -34,7 +34,12 @@ function GithubCallback() {
   }, [searchParams, signInWithGithub, login, navigate]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
+    <div
+      className="flex min-h-screen items-center justify-center"
+      role="status"
+      aria-live="polite"
+      aria-label="Authenticating with GitHub"
+    >
       <div className="h-10 w-10 animate-spin rounded-full border-4 border-border border-t-primary" />
     </div>
   );

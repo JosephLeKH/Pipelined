@@ -98,7 +98,7 @@ function JobCard({ job, onSelect }) {
           aria-label="Bookmark job"
           className="rounded-full text-muted-foreground hover:bg-accent hover:text-accent-foreground"
         >
-          <Bookmark className="h-4 w-4" />
+          <Bookmark className="h-4 w-4" aria-hidden="true" />
         </Button>
       </div>
     </article>

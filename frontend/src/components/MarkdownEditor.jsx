@@ -49,7 +49,7 @@ function MarkdownTabBar({ activeTab, onTabChange }) {
       </div>
       <div className="relative">
         <Button type="button" variant="ghost" size="icon" aria-label="Markdown supported" onClick={() => setShowCheatsheet((v) => !v)} className="h-7 w-7">
-          <HelpCircle className="h-3.5 w-3.5" />
+          <HelpCircle className="h-3.5 w-3.5" aria-hidden="true" />
         </Button>
         {showCheatsheet && <MarkdownCheatsheet />}
       </div>
