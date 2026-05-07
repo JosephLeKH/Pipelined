@@ -24,6 +24,12 @@ Started: Thu May  7 13:03:21 PDT 2026
 - The acceptance criteria was pre-satisfied; build confirmed clean
 - Only Ralph tracking files (prd_87.json, progress_87.txt) updated in this commit
 
+## US-831: Convert SavedSearchesSidebar li role='button' to semantic button element
+- Replaced `<li role="button" tabIndex={0}>` with plain `<li>` containing `<button type="button" className="flex w-full ...">` in SavedSearchesSidebar.jsx
+- Moved onClick, onKeyDown, and all className styles to the native button element; added `w-full` to preserve flex layout
+- The prior iteration (auto-commit b5eeac1) already landed this change; this iteration confirmed correctness and marked it passing
+- Build passed clean; all acceptance criteria satisfied
+
 ## US-830: Change ApplicationTimeline stage dot from role='img' to aria-hidden
 - Removed role="img" and aria-label={`Stage: ${node.stage}`} from the stage dot span in ApplicationTimeline.jsx (StageTimelineNode, lines 56-59)
 - Added aria-hidden="true" to hide the decorative dot from screen readers
