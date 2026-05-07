@@ -19,6 +19,7 @@ function JobCard({ job, onSelect }) {
     <article
       className="relative flex flex-col gap-3 p-4 transition-all duration-150 hover:shadow-md cursor-pointer rounded-xl border border-border bg-card text-card-foreground shadow-sm"
       data-testid="job-card"
+      aria-label={`${job.role ?? 'Job'} at ${job.company ?? 'company'}`}
       onClick={() => onSelect?.(job)}
     >
       {job.is_stale && (
