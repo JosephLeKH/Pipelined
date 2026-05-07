@@ -83,7 +83,7 @@ function ContactFormFields({ form, handleChange, disabled, suggestion }) {
 function ContactFormActions({ isPending, nameValue, onDone }) {
   return (
     <div className="flex items-center gap-2">
-      <Button type="submit" size="sm" disabled={isPending || !nameValue.trim()}>
+      <Button type="submit" size="sm" disabled={isPending || !nameValue.trim()} aria-busy={isPending}>
         {isPending ? "Saving…" : "Add Contact"}
       </Button>
       <Button type="button" variant="ghost" size="sm" onClick={() => onDone?.()}>Cancel</Button>
