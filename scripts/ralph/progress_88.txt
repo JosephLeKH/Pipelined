@@ -9,3 +9,9 @@ Status: DONE
 - Added `aria-labelledby="tab-negotiate"` to the negotiate tabpanel div
 - Build passed with no errors
 - Changes were auto-committed in the iteration 1 snapshot
+
+## US-845: Replace ContactCard stale dot amber bg with design token
+Status: DONE
+- Replaced `bg-amber-400 dark:bg-amber-900/40` with `bg-warning/80` on stale dot span at line 42
+- Build passed with no errors
+- Committed as "feat: US-845 - Replace ContactCard stale dot amber bg with design token"
