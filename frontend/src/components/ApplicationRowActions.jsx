@@ -146,7 +146,7 @@ function BulkEditControls({ followUpDate, setFollowUpDate, tagsAdd, setTagsAdd, 
       <Input type="text" aria-label="Tags to remove" placeholder="Tags to remove…" value={tagsRemove}
         onChange={(e) => setTagsRemove(e.target.value)} disabled={isBusy || overLimit} className="h-8 w-36 text-sm" />
       <Button type="button" size="sm" disabled={isBusy || overLimit} onClick={onApply}
-        className="flex items-center gap-1">
+        aria-busy={isEditing} className="flex items-center gap-1">
         {isEditing && <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />}
         Apply
       </Button>
@@ -159,7 +159,7 @@ function BulkDangerControls({ selectedCount, isMerging, isDeleting, isBusy, onMe
     <>
       {selectedCount === 2 && (
         <Button type="button" size="sm" disabled={isBusy} onClick={onMerge}
-          className="flex items-center gap-1">
+          aria-busy={isMerging} className="flex items-center gap-1">
           {isMerging && <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />}
           Merge
         </Button>

@@ -12,10 +12,9 @@ function StagePill({ stage }) {
   const color = STAGE_COLORS[stage] ?? DEFAULT_STAGE_COLOR;
   return (
     <span
-      aria-label={stage}
       className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium ${color.bg} ${color.text}`}
     >
-      <span className={`h-1.5 w-1.5 rounded-full ${color.dot}`} />
+      <span aria-hidden="true" className={`h-1.5 w-1.5 rounded-full ${color.dot}`} />
       {stage}
     </span>
   );
