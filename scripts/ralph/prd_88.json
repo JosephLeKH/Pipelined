@@ -13,8 +13,8 @@
         "Build passes with no errors"
       ],
       "priority": "high",
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added id={`tab-${id}`} to TabBar button elements and aria-labelledby to both tabpanel divs. Build passed."
     },
     {
       "id": "US-839",

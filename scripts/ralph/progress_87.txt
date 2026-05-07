@@ -23,3 +23,9 @@ Started: Thu May  7 13:03:21 PDT 2026
 - No source code change needed: BriefcaseSvg in JobBoardContent.jsx already had aria-hidden="true" on the <svg> element (line 19)
 - The acceptance criteria was pre-satisfied; build confirmed clean
 - Only Ralph tracking files (prd_87.json, progress_87.txt) updated in this commit
+
+## US-830: Change ApplicationTimeline stage dot from role='img' to aria-hidden
+- Removed role="img" and aria-label={`Stage: ${node.stage}`} from the stage dot span in ApplicationTimeline.jsx (StageTimelineNode, lines 56-59)
+- Added aria-hidden="true" to hide the decorative dot from screen readers
+- Stage name text in the surrounding <p> element is preserved, so screen readers still hear the label
+- Build passed clean; change captured in auto-commit (e60406a)

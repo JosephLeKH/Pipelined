@@ -1,3 +1,11 @@
 # Ralph Progress Log
 Started: Thu May  7 13:12:09 PDT 2026
 ---
+
+## US-838: Add aria-labelledby to OfferComparison tabpanels
+Status: DONE
+- Added `id={`tab-${id}`}` to the button elements in TabBar's TABS.map()
+- Added `aria-labelledby="tab-compare"` to the compare tabpanel div
+- Added `aria-labelledby="tab-negotiate"` to the negotiate tabpanel div
+- Build passed with no errors
+- Changes were auto-committed in the iteration 1 snapshot

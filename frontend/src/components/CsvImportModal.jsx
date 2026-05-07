@@ -116,7 +116,7 @@ function CsvImportModal({ isOpen, onClose }) {
         </div>
         <DialogFooter className="border-t border-border px-6 py-4">
           <Button type="button" variant="outline" onClick={handleClose}>Close</Button>
-          <Button type="button" onClick={handleImport} disabled={!file || isPending} aria-label="Import CSV" className="flex items-center gap-2">
+          <Button type="button" onClick={handleImport} disabled={!file || isPending} aria-busy={isPending} aria-label="Import CSV" className="flex items-center gap-2">
             {isPending
               ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
               : <Upload className="h-4 w-4" aria-hidden="true" />}
