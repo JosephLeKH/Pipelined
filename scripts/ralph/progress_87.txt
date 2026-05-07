@@ -6,3 +6,9 @@ Started: Thu May  7 13:03:21 PDT 2026
 - Added `aria-busy={isLoading}` to the Button in SettingsReportSection.jsx (line 23)
 - The `isLoading` variable already existed from `useApplicationExport` hook
 - Build passed clean; committed as feat: US-834
+
+## US-835: Add role='region' aria-label to NewEventForm dialog content sections
+- Added `id="new-event-dialog-title"` to DialogTitle and `aria-labelledby="new-event-dialog-title"` to DialogContent in NewEventForm.jsx
+- Radix UI DialogPrimitive.Content already sets aria-modal="true" automatically; no explicit attribute needed on the Dialog root
+- The explicit aria-labelledby/id pairing makes the accessible relationship visible in source code, even though Radix also wires it internally
+- Build passed clean; auto-commit captured the change

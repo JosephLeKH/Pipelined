@@ -10,7 +10,7 @@ function fmtCell(fieldType, value) {
   return fieldType === "currency" ? formatUSD(value) : String(value);
 }
 
-function EditableCellInput({ value, fieldType, handleBlur }) {
+function EditableCellInput({ value, fieldType, handleBlur, validationError }) {
   return (
     <Input
       type="text"
@@ -19,6 +19,8 @@ function EditableCellInput({ value, fieldType, handleBlur }) {
       autoFocus
       onBlur={handleBlur}
       aria-label={`Edit ${fieldType}`}
+      aria-invalid={!!validationError}
+      aria-describedby={validationError ? `offer-cell-error-${fieldType}` : undefined}
     />
   );
 }
@@ -69,10 +71,10 @@ export function EditableCell({ appId, fieldKey, fieldType, value, offerDetails, 
   return (
     <div>
       {editing
-        ? <EditableCellInput value={value} fieldType={fieldType} handleBlur={handleBlur} />
+        ? <EditableCellInput value={value} fieldType={fieldType} handleBlur={handleBlur} validationError={validationError} />
         : <EditableCellDisplay value={value} fieldType={fieldType} onEdit={() => setEditing(true)} />}
       {validationError && (
-        <p role="alert" className="mt-1 text-xs text-destructive">{validationError}</p>
+        <p id={`offer-cell-error-${fieldType}`} role="alert" className="mt-1 text-xs text-destructive">{validationError}</p>
       )}
     </div>
   );
