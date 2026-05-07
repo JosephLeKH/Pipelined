@@ -52,9 +52,9 @@ function NewEventForm({ initialDate, initialApplicationId, onClose }) {
   const hook = useNewEventForm({ initialDate, initialApplicationId, onClose });
   return (
     <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}>
-      <DialogContent className="gap-0 p-0 sm:max-w-lg">
+      <DialogContent className="gap-0 p-0 sm:max-w-lg" aria-labelledby="new-event-dialog-title">
         <DialogHeader className="border-b border-border px-6 py-4">
-          <DialogTitle>New Event</DialogTitle>
+          <DialogTitle id="new-event-dialog-title">New Event</DialogTitle>
         </DialogHeader>
         <form id="new-event-form" onSubmit={hook.handleSubmit} className="flex flex-col gap-4 px-6 py-4">
           <AppSelector apps={hook.apps} applicationId={hook.applicationId} onApplicationChange={hook.setApplicationId} />
