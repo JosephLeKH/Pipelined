@@ -15,3 +15,10 @@ Status: DONE
 - Replaced `bg-amber-400 dark:bg-amber-900/40` with `bg-warning/80` on stale dot span at line 42
 - Build passed with no errors
 - Committed as "feat: US-845 - Replace ContactCard stale dot amber bg with design token"
+
+## US-839: Replace OfferComparison winner badge amber classes with design tokens
+Status: DONE
+- Replaced `bg-amber-100 text-amber-800 hover:bg-amber-100 dark:bg-amber-900/40 dark:text-amber-300` with `bg-warning/10 text-warning hover:bg-warning/10` on winner badge Button (~line 105)
+- Change was already present in OfferComparison.jsx (committed via prior iteration auto-commit 704cb48)
+- Build passed (✓ built in 2m 4s)
+- Learning: Always check git log to confirm whether a change was already committed in a prior auto-commit snapshot before attempting a new commit

@@ -25,8 +25,8 @@
         "Build passes with no errors"
       ],
       "priority": "medium",
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Replaced bg-amber-100 text-amber-800 hover:bg-amber-100 dark:bg-amber-900/40 dark:text-amber-300 with bg-warning/10 text-warning hover:bg-warning/10 on winner badge Button. Build passed."
     },
     {
       "id": "US-840",
