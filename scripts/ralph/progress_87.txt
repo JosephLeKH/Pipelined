@@ -18,3 +18,8 @@ Started: Thu May  7 13:03:21 PDT 2026
 - US-829 had already added tabIndex={0} and onKeyDown to the article, so the keyboard accessibility was already in place
 - A linter post-processed the label wording to "View details for ... at ..." (more descriptive than the spec's minimal version), which still satisfies all acceptance criteria
 - Build passed clean; committed in auto-commit
+
+## US-837: Add aria-hidden to JobBoardContent empty-state decorative icon
+- No source code change needed: BriefcaseSvg in JobBoardContent.jsx already had aria-hidden="true" on the <svg> element (line 19)
+- The acceptance criteria was pre-satisfied; build confirmed clean
+- Only Ralph tracking files (prd_87.json, progress_87.txt) updated in this commit
