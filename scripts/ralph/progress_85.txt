@@ -1,3 +1,8 @@
 # Ralph Progress Log
 Started: Tue May  5 00:28:30 PDT 2026
 ---
+## US-814: Replace AnalyticsCharts amber conversion rate text with text-warning token
+Status: PASS
+Date: 2026-05-07
+Summary: The amber class replacement was already completed in a prior commit (US-517). AnalyticsCharts.jsx rateColorClass() already returns 'text-warning font-medium' for the mid-range conversion rate case. Build passes with no errors.
+Learnings: Always check whether a prior Ralph run has already addressed the acceptance criteria before making changes. The PRD story was still marked passes: false even though the implementation was done.

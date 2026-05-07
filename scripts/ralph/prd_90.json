@@ -1,0 +1,105 @@
+{
+  "id": "prd_90",
+  "title": "MergeDialog & Banner Amber Tokens, aria-busy & Icon Accessibility",
+  "description": "Replace amber color classes with design tokens in MergeDialog and use warning tokens. Add aria-busy to loading buttons in MergeDialog, EmailVerificationBanner, Tags, and Settings. Add aria-hidden to FollowUpBanner decorative Bell icon and aria-label to its View button. Add sr-only loading text to TemplateBar.",
+  "userStories": [
+    {
+      "id": "US-854",
+      "title": "Replace MergeDialog warning alert amber classes with design tokens",
+      "description": "MergeDialog.jsx renders an Alert warning at ~line 82 with className 'border-amber-200 bg-amber-50 dark:border-amber-700 dark:bg-amber-900/30'. The AlertTriangle at line 83 has 'text-amber-600 dark:text-amber-400' and the AlertDescription at line 84 has 'text-amber-800 dark:text-amber-300'. Replace all these amber classes with warning design tokens: use 'border-warning/30 bg-warning/10' on the Alert, 'text-warning' on the AlertTriangle, and 'text-warning' on the AlertDescription.",
+      "acceptanceCriteria": [
+        "MergeDialog.jsx Alert uses border-warning/30 bg-warning/10 instead of amber border/bg classes",
+        "MergeDialog.jsx AlertTriangle icon uses text-warning instead of text-amber-600 dark:text-amber-400",
+        "MergeDialog.jsx AlertDescription uses text-warning instead of text-amber-800 dark:text-amber-300",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-855",
+      "title": "Add aria-busy to MergeDialog confirm merge button",
+      "description": "MergeDialog.jsx confirm merge Button (~line 142) renders a Loader2 spinner when isPending is true but lacks aria-busy. Add aria-busy={isPending} to the confirm merge Button so screen readers announce the merge operation in progress.",
+      "acceptanceCriteria": [
+        "MergeDialog.jsx confirm Button has aria-busy={isPending}",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-856",
+      "title": "Add aria-busy to EmailVerificationBanner resend button",
+      "description": "EmailVerificationBanner.jsx resend email Button (~line 65) shows 'Sending…' text when isPending but lacks aria-busy. Add aria-busy={isPending} to the resend Button so screen readers announce the pending state.",
+      "acceptanceCriteria": [
+        "EmailVerificationBanner.jsx resend Button has aria-busy={isPending}",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-857",
+      "title": "Add aria-hidden to FollowUpBanner decorative Bell icon",
+      "description": "FollowUpBanner.jsx renders a Bell icon at ~line 22 as decoration alongside the follow-up count text, but the Bell lacks aria-hidden='true'. Since the text already conveys the message, the Bell is purely decorative. Add aria-hidden='true' to the Bell icon.",
+      "acceptanceCriteria": [
+        "FollowUpBanner.jsx Bell icon has aria-hidden='true'",
+        "Build passes with no errors"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-858",
+      "title": "Add aria-label to FollowUpBanner View button",
+      "description": "FollowUpBanner.jsx renders a View button (~line 28) with only 'View' as its text content. Without more context, screen reader users may not know what they are viewing. Add aria-label='View follow-ups' to the View Button to provide a descriptive accessible name.",
+      "acceptanceCriteria": [
+        "FollowUpBanner.jsx View Button has aria-label='View follow-ups'",
+        "Build passes with no errors"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-859",
+      "title": "Add aria-busy to Tags page delete confirmation button",
+      "description": "Tags.jsx DeleteConfirmModal (~line 78) renders a destructive Delete Button with disabled={isPending} and shows 'Deleting…' when pending but lacks aria-busy. Add aria-busy={isPending} to the Delete Button in DeleteConfirmModal.",
+      "acceptanceCriteria": [
+        "Tags.jsx DeleteConfirmModal Delete Button has aria-busy={isPending}",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-860",
+      "title": "Add aria-busy to Settings.jsx save timezone button",
+      "description": "Settings.jsx renders a Save timezone Button (~line 82) with disabled={isPending} but no aria-busy. Add aria-busy={isPending} to the Save timezone Button so screen readers announce the saving state.",
+      "acceptanceCriteria": [
+        "Settings.jsx Save timezone Button has aria-busy={isPending}",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-861",
+      "title": "Add sr-only loading text to TemplateBar loading state",
+      "description": "TemplateBar.jsx renders an empty div when isLoading is true (~line 34), providing no accessible feedback that templates are loading. Replace the empty div with a div that contains a <span className='sr-only'>Loading templates…</span> so screen reader users know the template selector is loading.",
+      "acceptanceCriteria": [
+        "TemplateBar.jsx loading div contains a sr-only span with 'Loading templates…' text",
+        "Build passes with no errors"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

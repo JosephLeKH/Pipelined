@@ -16,3 +16,9 @@ US-829 DONE: Added tabIndex={0}, onKeyDown handler (Enter/Space triggers onSelec
 - Build passed with no errors
 - Change captured in auto-commit snapshot e60406a
 - Learning: When an anchor has an aria-label, any icon inside is purely decorative and must be aria-hidden to prevent screen readers from announcing the SVG title or role twice.
+
+## US-824 - Add aria-busy to ApplicationRowActions Move button when loading
+- Added aria-busy={isMoving} to the Move Button at line 130 of ApplicationRowActions.jsx
+- Build passed with no errors
+- Committed: feat: US-824 - Add aria-busy to ApplicationRowActions Move button when loading
+- Learning: aria-busy should be placed on the interactive element itself (the Button), not the spinner icon, so assistive technologies can poll the element's state during the operation.

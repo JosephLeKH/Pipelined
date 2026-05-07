@@ -12,7 +12,7 @@
         "Build passes with no errors"
       ],
       "priority": "low",
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
