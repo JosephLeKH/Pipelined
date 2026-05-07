@@ -1,3 +1,4 @@
 # Ralph Progress Log
 Started: Thu May  7 13:03:21 PDT 2026
 ---
+US-822 DONE: Added id='event-form-error' and role='alert' to the formError <p> in NewEventFormFields.jsx. Added aria-describedby={formError ? 'event-form-error' : undefined} to the date Input so screen readers announce the error when date validation fails. Build passes.
