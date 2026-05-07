@@ -167,6 +167,7 @@ function TabBar({ activeTab, onTabChange }) {
       {TABS.map(({ id, label, Icon }) => (
         <button
           key={id}
+          id={`tab-${id}`}
           role="tab"
           aria-selected={activeTab === id}
           aria-controls={`panel-${id}`}
@@ -240,10 +241,10 @@ function OfferComparison() {
             </Button>
           </div>
         </div>
-        <div id="panel-compare" role="tabpanel" hidden={activeTab !== "compare"}>
+        <div id="panel-compare" role="tabpanel" aria-labelledby="tab-compare" hidden={activeTab !== "compare"}>
           <OfferComparisonTable apps={apps} winnerId={winnerId} handleSave={handleSave} handleMarkWinner={handleMarkWinner} />
         </div>
-        <div id="panel-negotiate" role="tabpanel" hidden={activeTab !== "negotiate"}>
+        <div id="panel-negotiate" role="tabpanel" aria-labelledby="tab-negotiate" hidden={activeTab !== "negotiate"}>
           <OfferNegotiationPanel apps={apps} />
         </div>
       </main>

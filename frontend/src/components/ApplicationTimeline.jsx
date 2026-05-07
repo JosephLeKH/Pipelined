@@ -55,8 +55,7 @@ function StageTimelineNode({ node }) {
     <li className="flex items-start gap-3 pb-3" data-testid="timeline-stage-node">
       <span
         className={`mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full ${colors.dot}`}
-        aria-label={`Stage: ${node.stage}`}
-        role="img"
+        aria-hidden="true"
       />
       <div>
         <p className="text-sm font-medium text-foreground">{node.label}</p>
