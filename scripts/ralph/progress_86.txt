@@ -10,3 +10,9 @@ US-829 DONE: Added tabIndex={0}, onKeyDown handler (Enter/Space triggers onSelec
 - Build passed with no errors
 - Committed: feat: US-827 - Replace ApplicationRowActions bulk limit warning amber text with text-warning token
 - Learning: Single-class design token replacements are straightforward one-liner edits; the `text-warning` token already handles dark mode via the design system, removing the need for the explicit `dark:` variant.
+
+## US-828 - Add aria-hidden to DetailPanelBody ExternalLink decorative icon
+- Added aria-hidden="true" to the ExternalLink icon inside the JobPostingLink anchor at line 153 of DetailPanelBody.jsx
+- Build passed with no errors
+- Change captured in auto-commit snapshot e60406a
+- Learning: When an anchor has an aria-label, any icon inside is purely decorative and must be aria-hidden to prevent screen readers from announcing the SVG title or role twice.
