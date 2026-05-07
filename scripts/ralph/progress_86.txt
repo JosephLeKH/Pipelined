@@ -2,3 +2,4 @@
 Started: Thu May  7 13:03:21 PDT 2026
 ---
 US-822 DONE: Added id='event-form-error' and role='alert' to the formError <p> in NewEventFormFields.jsx. Added aria-describedby={formError ? 'event-form-error' : undefined} to the date Input so screen readers announce the error when date validation fails. Build passes.
+US-823 DONE: Added id={`offer-cell-error-${fieldType}`} to the validationError <p> in OfferEditableCell.jsx. Passed validationError prop to EditableCellInput and added aria-invalid={!!validationError} and aria-describedby={validationError ? `offer-cell-error-${fieldType}` : undefined} to the Input. Build passes. Key learning: EditableCellInput was a separate component so validationError had to be threaded as a new prop.
