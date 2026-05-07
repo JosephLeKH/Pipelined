@@ -74,7 +74,7 @@ function ChangePasswordCard() {
         <PasswordField id="pw-confirm" label="Confirm new password" value={confirm} onChange={(e) => setConfirm(e.target.value)} />
         {pwError && <p role="alert" className="text-sm text-destructive">{pwError}</p>}
         <div className="flex justify-end">
-          <Button type="button" onClick={handleSubmit} disabled={isPending} className="flex items-center gap-2">
+          <Button type="button" onClick={handleSubmit} disabled={isPending} aria-busy={isPending} className="flex items-center gap-2">
             {isPending && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
             Change password
           </Button>

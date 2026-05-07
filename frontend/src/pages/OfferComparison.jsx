@@ -102,7 +102,7 @@ function OfferHeaderCell({ app, isWinner, onMarkWinner }) {
           onClick={() => onMarkWinner(app.id)}
           className={`mt-1 gap-1 rounded-full px-2.5 py-1 text-xs font-medium h-auto ${
             isWinner
-              ? "bg-amber-100 text-amber-800 hover:bg-amber-100 dark:bg-amber-900/40 dark:text-amber-300"
+              ? "bg-warning/10 text-warning hover:bg-warning/10"
               : "bg-muted text-muted-foreground hover:bg-primary/10 hover:text-primary"
           }`}
         >

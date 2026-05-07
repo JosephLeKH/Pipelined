@@ -1,3 +1,11 @@
 # Ralph Progress Log
 Started: Tue May  5 00:28:30 PDT 2026
 ---
+
+## US-806: Add aria-describedby to WeeklyGoalSection Input for error paragraph
+Status: COMPLETE
+Date: 2026-05-07
+
+Changes: WeeklyGoalSection.jsx already had id='goal-error' on the error <p role='alert'> and aria-describedby={goalError ? "goal-error" : undefined} on the Input element, committed previously in f8b2ec6. Build passes (exit 0).
+
+Learnings: When implementing multiple accessibility fixes in sequence, some stories may already be resolved from prior sessions. Always verify file state before making changes to avoid duplicate work.
