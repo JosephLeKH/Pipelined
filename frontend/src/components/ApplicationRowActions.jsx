@@ -128,7 +128,7 @@ function BulkMoveControls({ stageOptions, selectedStage, setSelectedStage, isMov
         </SelectContent>
       </Select>
       <Button type="button" size="sm" disabled={!selectedStage || isBusy} onClick={onMove}
-        className="flex items-center gap-1">
+        aria-busy={isMoving} className="flex items-center gap-1">
         {isMoving && <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />}
         Move
       </Button>

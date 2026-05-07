@@ -6,3 +6,9 @@ Started: Thu May  7 13:12:11 PDT 2026
 - Added `aria-busy={isPending}` to the submit Button in ContactFormActions (~line 86) of ContactForm.jsx
 - Build passed with no errors
 - Committed: feat: US-846 - Add aria-busy to ContactForm submit button
+
+## US-847: Add aria-busy to CsvImportModal import button
+- Added `aria-busy={isPending}` to the Import Button at line 119 of CsvImportModal.jsx
+- Build passed with no errors (1m 14s)
+- Change was included in prior snapshot commit (63a8c60)
+- Learning: the aria-busy pattern for loading buttons is consistent — add to the button element alongside disabled, mirroring the Loader2 spinner condition

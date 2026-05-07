@@ -39,7 +39,7 @@ function ContactCard({ contact, applicationId }) {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <span
-                    className="inline-block h-2 w-2 shrink-0 rounded-full bg-amber-400 dark:bg-amber-900/40"
+                    className="inline-block h-2 w-2 shrink-0 rounded-full bg-warning/80"
                     aria-label="Stale contact — no activity in 14+ days"
                     role="img"
                   />
