@@ -48,7 +48,7 @@ function KanbanCard({ application, onSelect }) {
       {stale && (
         <>
           <span
-            className="absolute right-2 top-2 h-2 w-2 animate-pulse-dot rounded-full bg-amber-400 dark:bg-amber-900/40"
+            className="absolute right-2 top-2 h-2 w-2 animate-pulse-dot rounded-full bg-warning/80"
             aria-hidden="true"
             data-testid="stale-indicator"
           />
@@ -57,7 +57,7 @@ function KanbanCard({ application, onSelect }) {
       )}
       {followUpOverdue && (
         <span
-          className="absolute right-6 top-2 h-2 w-2 rounded-full bg-amber-500 dark:bg-amber-900/60"
+          className="absolute right-6 top-2 h-2 w-2 rounded-full bg-warning"
           aria-label="Follow-up overdue"
           data-testid="follow-up-indicator"
         />

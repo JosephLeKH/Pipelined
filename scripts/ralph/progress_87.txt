@@ -30,6 +30,11 @@ Started: Thu May  7 13:03:21 PDT 2026
 - The prior iteration (auto-commit b5eeac1) already landed this change; this iteration confirmed correctness and marked it passing
 - Build passed clean; all acceptance criteria satisfied
 
+## US-832: Add aria-busy to SettingsAccountSection save/change-password button
+- Added `aria-busy={isPending}` to the ChangePasswordCard submit Button in SettingsAccountSection.jsx (line 77)
+- The `isPending` variable already existed from `useChangePassword()` hook and was used for `disabled` and the Loader2 spinner
+- Build passed clean; committed as feat: US-832
+
 ## US-830: Change ApplicationTimeline stage dot from role='img' to aria-hidden
 - Removed role="img" and aria-label={`Stage: ${node.stage}`} from the stage dot span in ApplicationTimeline.jsx (StageTimelineNode, lines 56-59)
 - Added aria-hidden="true" to hide the decorative dot from screen readers
