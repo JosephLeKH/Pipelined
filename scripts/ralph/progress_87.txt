@@ -1,3 +1,8 @@
 # Ralph Progress Log
 Started: Thu May  7 13:03:21 PDT 2026
 ---
+
+## US-834: Add aria-busy to SettingsReportSection generate-report button
+- Added `aria-busy={isLoading}` to the Button in SettingsReportSection.jsx (line 23)
+- The `isLoading` variable already existed from `useApplicationExport` hook
+- Build passed clean; committed as feat: US-834
