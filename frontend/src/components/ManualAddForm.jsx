@@ -26,7 +26,7 @@ function ManualAddForm({ isOpen, onClose }) {
         </form>
         <DialogFooter className="border-t border-border px-6 py-4">
           <Button type="button" variant="outline" onClick={handleClose}>Cancel</Button>
-          <Button type="submit" form="manual-add-form" disabled={isPending}>
+          <Button type="submit" form="manual-add-form" disabled={isPending} aria-busy={isPending}>
             {isPending ? "Saving…" : "Add Application"}
           </Button>
         </DialogFooter>

@@ -19,7 +19,7 @@ function FollowUpBanner({ followUpsDue, onView }) {
       data-testid="follow-up-banner"
     >
       <div className="flex items-center gap-2">
-        <Bell className="h-4 w-4 text-primary" />
+        <Bell className="h-4 w-4 text-primary" aria-hidden="true" />
         <span className="text-sm font-medium text-foreground">
           You have {followUpsDue} follow-up{followUpsDue !== 1 ? "s" : ""} due
         </span>
