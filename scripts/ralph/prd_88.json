@@ -99,8 +99,8 @@
         "Build passes with no errors"
       ],
       "priority": "low",
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Replaced bg-amber-400 dark:bg-amber-900/40 with bg-warning/80 on stale dot span at line 42. Build passed."
     }
   ]
 }
