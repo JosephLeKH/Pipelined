@@ -20,6 +20,7 @@ export default function SettingsReportSection() {
         type="button"
         onClick={handleDownload}
         disabled={isLoading}
+        aria-busy={isLoading}
         className="flex items-center gap-2"
       >
         {isLoading ? (

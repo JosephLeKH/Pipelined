@@ -1,0 +1,109 @@
+{
+  "id": "prd_87",
+  "title": "Timeline Dots, Semantic Lists & Account Button States",
+  "description": "Fix ApplicationTimeline stage dot role='img' redundancy, convert SavedSearchesSidebar li role='button' to semantic button element, add aria-busy to SettingsAccountSection loading buttons, fix ApplicationTimeline dot role and aria-label to use aria-hidden since surrounding text conveys stage, and ensure consistent accessible state announcements.",
+  "userStories": [
+    {
+      "id": "US-830",
+      "title": "Change ApplicationTimeline stage dot from role='img' to aria-hidden",
+      "description": "ApplicationTimeline.jsx renders a colored stage dot with role='img' and aria-label='Stage: ${node.stage}' (~lines 57-59). The surrounding timeline list item already renders the stage name as visible text, making the role='img' aria-label redundant. Remove role='img' and aria-label from the dot span and add aria-hidden='true' instead so the decorative dot is hidden from screen readers.",
+      "acceptanceCriteria": [
+        "ApplicationTimeline.jsx stage dot span has aria-hidden='true'",
+        "role='img' and aria-label are removed from the dot span",
+        "Stage name text in the surrounding list item is preserved",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-831",
+      "title": "Convert SavedSearchesSidebar li role='button' to semantic button element",
+      "description": "SavedSearchesSidebar.jsx renders saved search items as <li role='button' tabIndex={0} onKeyDown={...}> (~lines 27-35). While the keyboard handling exists, using a div/li as a button is less reliable across AT than a native <button> element. Replace the role='button' li pattern by wrapping the content in a <button type='button'> element inside the <li>, then remove role='button' and tabIndex from the li.",
+      "acceptanceCriteria": [
+        "SavedSearchesSidebar.jsx saved search items use a <button type='button'> inside the <li>",
+        "role='button' and tabIndex are removed from the <li>",
+        "Existing onClick, onKeyDown, and className behavior is preserved on the button",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-832",
+      "title": "Add aria-busy to SettingsAccountSection save/change-password button",
+      "description": "SettingsAccountSection.jsx change-password submit button (~line 77) shows Loader2 when isPending is true but lacks aria-busy. Add aria-busy={isPending} to the submit Button so screen readers announce the saving state.",
+      "acceptanceCriteria": [
+        "SettingsAccountSection.jsx submit Button has aria-busy={isPending}",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-833",
+      "title": "Add aria-busy to SettingsAccountSection delete-account confirmation button",
+      "description": "SettingsAccountSection.jsx DeleteAccountModal confirm button (~line 99) shows Loader2 when isPending is true but lacks aria-busy. Add aria-busy={isPending} to the destructive confirm Button in the DeleteAccountModal so screen readers announce the delete operation in progress.",
+      "acceptanceCriteria": [
+        "SettingsAccountSection.jsx DeleteAccountModal confirm Button has aria-busy={isPending}",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-834",
+      "title": "Add aria-busy to SettingsReportSection generate-report button",
+      "description": "SettingsReportSection.jsx renders a generate report button that shows a Loader2 spinner when isLoading is true but lacks aria-busy. Read SettingsReportSection.jsx and add aria-busy={isLoading} (or the relevant loading state variable) to the generate report Button.",
+      "acceptanceCriteria": [
+        "SettingsReportSection.jsx report generation Button has aria-busy reflecting its loading state",
+        "Build passes with no errors"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-835",
+      "title": "Add role='region' aria-label to NewEventForm dialog content sections",
+      "description": "NewEventForm.jsx renders a dialog for adding calendar events. The dialog content area (~line 54) wraps event type, date, time, and notes fields in a generic div. Add aria-modal='true' to the dialog container (if not already set) and verify the DialogContent has proper aria-labelledby pointing to the dialog title heading so screen readers correctly announce the dialog context.",
+      "acceptanceCriteria": [
+        "NewEventForm.jsx dialog has aria-modal='true' if not already set by Dialog component",
+        "DialogContent is labelled via aria-labelledby pointing to the dialog title",
+        "Build passes with no errors"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-836",
+      "title": "Add aria-label to JobCard article for screen reader job identification",
+      "description": "JobCard.jsx renders a clickable <article> without an accessible name (~line 19). After adding keyboard accessibility (tabIndex, onKeyDown in US-829), also verify the aria-label includes both role and company so the card is uniquely identifiable when screen readers list all landmark regions. Ensure the aria-label reads: aria-label={`${job.role ?? 'Job'} at ${job.company ?? 'company'}`}.",
+      "acceptanceCriteria": [
+        "JobCard.jsx article has a meaningful aria-label combining role and company",
+        "aria-label is different for each card in the list",
+        "Build passes with no errors"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-837",
+      "title": "Add aria-hidden to JobBoardContent empty-state decorative icon",
+      "description": "JobBoardContent.jsx renders an empty state when no jobs are found. Read JobBoardContent.jsx and check if any decorative icon in the empty state (e.g. Briefcase or Search icon) lacks aria-hidden='true'. Add aria-hidden='true' to any decorative icons in the empty state since the surrounding text already conveys the empty message.",
+      "acceptanceCriteria": [
+        "JobBoardContent.jsx empty-state decorative icons have aria-hidden='true'",
+        "Build passes with no errors"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

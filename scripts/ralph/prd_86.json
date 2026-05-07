@@ -1,0 +1,109 @@
+{
+  "id": "prd_86",
+  "title": "Bulk Actions aria-busy, Form Error Linkage & Card Keyboard Access",
+  "description": "Wire aria-busy to ApplicationRowActions bulk action buttons so screen readers announce loading states, add id/aria-describedby to NewEventFormFields and OfferEditableCell validation error messages, add aria-hidden to DetailPanelBody ExternalLink decorative icon, add text-warning design token to ApplicationRowActions limit warning, and add keyboard accessibility to JobCard clickable article element.",
+  "userStories": [
+    {
+      "id": "US-822",
+      "title": "Add aria-describedby to NewEventFormFields date input for form error",
+      "description": "NewEventFormFields.jsx renders a formError message in a <p> element (~line 50) but it has no id and no role='alert'. The Date input and other fields do not reference this error via aria-describedby. Add id='event-form-error' to the error <p> and role='alert' to announce it. Add aria-describedby={formError ? 'event-form-error' : undefined} to the date input since date validation is the most common trigger.",
+      "acceptanceCriteria": [
+        "NewEventFormFields.jsx error <p> has id='event-form-error' and role='alert'",
+        "The date input has aria-describedby='event-form-error' when formError is non-null",
+        "Build passes with no errors"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-823",
+      "title": "Add aria-describedby and aria-invalid to OfferEditableCell editing input",
+      "description": "OfferEditableCell.jsx renders a validationError in a <p role='alert'> (~line 75) but the error paragraph has no id. The editing input element lacks aria-invalid and aria-describedby. Add id='offer-cell-error-{fieldType}' to the error paragraph and add aria-invalid={!!validationError} and aria-describedby={validationError ? `offer-cell-error-${fieldType}` : undefined} to the editing input element.",
+      "acceptanceCriteria": [
+        "OfferEditableCell.jsx error paragraph has a unique id referencing fieldType",
+        "Editing input has aria-invalid when validationError is non-null",
+        "Editing input has aria-describedby pointing to the error paragraph when error exists",
+        "Build passes with no errors"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-824",
+      "title": "Add aria-busy to ApplicationRowActions Move button when loading",
+      "description": "ApplicationRowActions.jsx Move to stage button (~line 130) shows a Loader2 spinner when isMoving is true but lacks aria-busy. Screen readers do not announce the loading state. Add aria-busy={isMoving} to the Move action button (the SelectTrigger or wrapper button element) so assistive technologies announce that an action is in progress.",
+      "acceptanceCriteria": [
+        "ApplicationRowActions.jsx Move button has aria-busy={isMoving}",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-825",
+      "title": "Add aria-busy to ApplicationRowActions Edit and Merge buttons when loading",
+      "description": "ApplicationRowActions.jsx Apply/Edit button (~line 150) shows Loader2 when isEditing but has no aria-busy. The Merge button (~line 163) shows Loader2 when isMerging but has no aria-busy. Add aria-busy={isEditing} to the Apply bulk-edit Button and aria-busy={isMerging} to the Merge duplicates Button.",
+      "acceptanceCriteria": [
+        "ApplicationRowActions.jsx Apply/Edit Button has aria-busy={isEditing}",
+        "ApplicationRowActions.jsx Merge Button has aria-busy={isMerging}",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-826",
+      "title": "Add aria-busy to ApplicationRowActions Delete button when loading",
+      "description": "ApplicationRowActions.jsx Delete selected button (~line 167) shows Loader2 when isDeleting but has no aria-busy attribute. Add aria-busy={isDeleting} to the Delete selected Button so screen readers announce the delete operation is in progress.",
+      "acceptanceCriteria": [
+        "ApplicationRowActions.jsx Delete selected Button has aria-busy={isDeleting}",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-827",
+      "title": "Replace ApplicationRowActions bulk limit warning amber text with text-warning token",
+      "description": "ApplicationRowActions.jsx (~line 208) renders an overLimit warning span with 'text-amber-700 dark:text-amber-400'. The project uses a `warning` design token. Replace 'text-amber-700 dark:text-amber-400' with 'text-warning' on the overLimit warning span.",
+      "acceptanceCriteria": [
+        "ApplicationRowActions.jsx overLimit span uses text-warning instead of amber classes",
+        "Build passes with no errors"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-828",
+      "title": "Add aria-hidden to DetailPanelBody ExternalLink decorative icon",
+      "description": "DetailPanelBody.jsx renders a job posting link (~line 152) as <a aria-label='Job posting'><ExternalLink className='h-3.5 w-3.5' /></a>. The ExternalLink icon inside this anchor lacks aria-hidden='true'. Since the anchor already has aria-label='Job posting', the icon is decorative and should be hidden. Add aria-hidden='true' to the ExternalLink icon.",
+      "acceptanceCriteria": [
+        "DetailPanelBody.jsx ExternalLink icon inside job posting link has aria-hidden='true'",
+        "Build passes with no errors"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-829",
+      "title": "Add keyboard accessibility to JobCard clickable article element",
+      "description": "JobCard.jsx renders an <article> element with onClick to select the job (~line 19-22), but the article lacks tabIndex={0} and a keyboard handler, making it unreachable via keyboard. Add tabIndex={0}, onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelect?.(job); } }}, and aria-label={`View details for ${job.role ?? 'role'} at ${job.company ?? 'company'}`} to the article element.",
+      "acceptanceCriteria": [
+        "JobCard.jsx article element has tabIndex={0}",
+        "Article has onKeyDown handler triggering onSelect on Enter or Space",
+        "Article has a descriptive aria-label including role and company",
+        "Build passes with no errors"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

@@ -25,7 +25,7 @@ export function NewEventFormFields({ eventType, setEventType, date, setDate, tim
       </div>
       <div className="flex flex-col gap-1.5">
         <label className="text-xs font-medium uppercase text-muted-foreground" htmlFor="event-date">Date</label>
-        <Input id="event-date" type="date" value={date} onChange={(e) => setDate(e.target.value)} required />
+        <Input id="event-date" type="date" value={date} onChange={(e) => setDate(e.target.value)} required aria-describedby={formError ? 'event-form-error' : undefined} />
       </div>
       <div className="flex flex-col gap-1.5">
         <label className="text-xs font-medium uppercase text-muted-foreground" htmlFor="event-time">
@@ -39,7 +39,7 @@ export function NewEventFormFields({ eventType, setEventType, date, setDate, tim
         </label>
         <Textarea id="event-notes" value={notes} onChange={(e) => setNotes(e.target.value)} />
       </div>
-      {formError && <p className="text-sm text-destructive">{formError}</p>}
+      {formError && <p id="event-form-error" role="alert" className="text-sm text-destructive">{formError}</p>}
     </>
   );
 }
