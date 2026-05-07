@@ -1,0 +1,106 @@
+{
+  "id": "prd_89",
+  "title": "aria-busy on Loading Buttons Across Multiple Components",
+  "description": "Multiple components show a Loader2 spinner when a mutation is in progress but lack aria-busy on the button element, so screen readers do not announce the loading state. Add aria-busy to buttons in ContactForm, CsvImportModal, ManualAddForm, SaveSearchPopover, ShareTimeline, SharePipeline, SettingsResumeSection, and SettingsTemplatesSection.",
+  "userStories": [
+    {
+      "id": "US-846",
+      "title": "Add aria-busy to ContactForm submit button",
+      "description": "ContactForm.jsx ContactFormActions (~line 86) renders a submit Button with disabled={isPending} but no aria-busy. Add aria-busy={isPending} to the submit Button so screen readers announce the saving state.",
+      "acceptanceCriteria": [
+        "ContactForm.jsx ContactFormActions submit Button has aria-busy={isPending}",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-847",
+      "title": "Add aria-busy to CsvImportModal import button",
+      "description": "CsvImportModal.jsx (~line 119) renders an Import Button with disabled={!file || isPending} and a Loader2 spinner when isPending but lacks aria-busy. Add aria-busy={isPending} to the Import Button.",
+      "acceptanceCriteria": [
+        "CsvImportModal.jsx Import Button has aria-busy={isPending}",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-848",
+      "title": "Add aria-busy to ManualAddForm submit button",
+      "description": "ManualAddForm.jsx (~line 29) renders a submit Button with disabled={isPending} and shows 'Saving…' text when pending but lacks aria-busy. Add aria-busy={isPending} to the submit Button.",
+      "acceptanceCriteria": [
+        "ManualAddForm.jsx submit Button has aria-busy={isPending}",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-849",
+      "title": "Add aria-busy to SaveSearchPopover save button",
+      "description": "SaveSearchPopover.jsx (~line 55) renders a save Button with disabled={!name.trim() || createMutation.isPending} but no aria-busy. Add aria-busy={createMutation.isPending} to the save Button.",
+      "acceptanceCriteria": [
+        "SaveSearchPopover.jsx save Button has aria-busy={createMutation.isPending}",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-850",
+      "title": "Add aria-busy to ShareTimeline revoke and generate buttons",
+      "description": "ShareTimeline.jsx ShareCard component (~line 64) renders a Revoke link Button with disabled={isRevoking} and Loader2 spinner but no aria-busy. The NoShare component (~line 87) renders a Generate link Button with disabled={isCreating} and Loader2 but no aria-busy. Add aria-busy={isRevoking} to the Revoke Button and aria-busy={isCreating} to the Generate Button.",
+      "acceptanceCriteria": [
+        "ShareTimeline.jsx Revoke link Button has aria-busy={isRevoking}",
+        "ShareTimeline.jsx Generate link Button has aria-busy={isCreating}",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-851",
+      "title": "Add aria-busy to SharePipeline revoke and generate buttons",
+      "description": "SharePipeline.jsx mirrors ShareTimeline structure — the Revoke link Button and Generate link Button also show Loader2 spinners when isRevoking/isCreating but lack aria-busy. Read SharePipeline.jsx and add aria-busy={isRevoking} to the Revoke Button and aria-busy={isCreating} to the Generate Button.",
+      "acceptanceCriteria": [
+        "SharePipeline.jsx Revoke link Button has aria-busy={isRevoking}",
+        "SharePipeline.jsx Generate link Button has aria-busy={isCreating}",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-852",
+      "title": "Add aria-busy to SettingsResumeSection delete button",
+      "description": "SettingsResumeSection.jsx ResumeFileCard (~line 76) renders a Remove resume Button with disabled={isDeleting || isUploading} and Loader2 when isDeleting but no aria-busy. Add aria-busy={isDeleting} to the Remove resume Button.",
+      "acceptanceCriteria": [
+        "SettingsResumeSection.jsx Remove resume Button has aria-busy={isDeleting}",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-853",
+      "title": "Add aria-busy to SettingsTemplatesSection rename confirm and delete buttons",
+      "description": "SettingsTemplatesSection.jsx TemplateRow (~line 78) renders a Confirm rename Button with disabled={isUpdating} and a Delete Button with disabled={isDeleting}, both lacking aria-busy. Add aria-busy={isUpdating} to the Confirm rename Button and aria-busy={isDeleting} to the Delete Button.",
+      "acceptanceCriteria": [
+        "SettingsTemplatesSection.jsx Confirm rename Button has aria-busy={isUpdating}",
+        "SettingsTemplatesSection.jsx Delete Button has aria-busy={isDeleting}",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

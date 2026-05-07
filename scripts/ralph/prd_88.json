@@ -1,0 +1,106 @@
+{
+  "id": "prd_88",
+  "title": "OfferComparison ARIA Tabs, Amber Tokens & Filter Accessibility",
+  "description": "Add aria-labelledby to OfferComparison tabpanels, replace amber color classes with design tokens in OfferComparison and Activity, add aria-pressed to JobFilters filter chips, add role='group' to JobFilter groups, add role='progressbar' semantics to OnboardingChecklist, and replace amber dot color in ContactCard.",
+  "userStories": [
+    {
+      "id": "US-838",
+      "title": "Add aria-labelledby to OfferComparison tabpanels",
+      "description": "OfferComparison.jsx has tab buttons with aria-controls but no id attributes, and the tabpanel divs at lines 243 and 246 have role='tabpanel' but lack aria-labelledby. Add id='tab-compare' to the compare tab button and id='tab-negotiate' to the negotiate tab button (in the TabBar function map). Then add aria-labelledby='tab-compare' to the compare tabpanel div and aria-labelledby='tab-negotiate' to the negotiate tabpanel div so the ARIA tab pattern is complete.",
+      "acceptanceCriteria": [
+        "OfferComparison.jsx tab buttons have id matching their panel id (e.g. id='tab-compare')",
+        "Tabpanel divs have aria-labelledby pointing to the corresponding tab button id",
+        "Build passes with no errors"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-839",
+      "title": "Replace OfferComparison winner badge amber classes with design tokens",
+      "description": "OfferComparison.jsx OfferHeaderCell renders a winner badge Button (~line 105) with class string 'bg-amber-100 text-amber-800 hover:bg-amber-100 dark:bg-amber-900/40 dark:text-amber-300'. Replace the winner-state classes with design token equivalents: 'bg-warning/10 text-warning hover:bg-warning/10'.",
+      "acceptanceCriteria": [
+        "OfferComparison.jsx winner badge Button uses bg-warning/10 text-warning hover:bg-warning/10 instead of amber classes",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-840",
+      "title": "Replace OfferComparison Trophy icon winner color with text-warning token",
+      "description": "OfferComparison.jsx OfferHeaderCell renders a Trophy icon for winners (~line 91) with className 'h-4 w-4 text-amber-500 dark:text-amber-400'. Replace the amber color classes with the text-warning design token: className='h-4 w-4 text-warning'.",
+      "acceptanceCriteria": [
+        "OfferComparison.jsx winner Trophy icon uses text-warning instead of text-amber-500 dark:text-amber-400",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-841",
+      "title": "Replace Activity.jsx event_created amber bg with design token",
+      "description": "Activity.jsx defines TYPE_STYLES (~line 28) with event_created: 'bg-amber-400 dark:bg-amber-900/40'. Replace this with the warning design token: 'bg-warning/80'.",
+      "acceptanceCriteria": [
+        "Activity.jsx TYPE_STYLES event_created value uses bg-warning/80 instead of bg-amber-400 dark:bg-amber-900/40",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-842",
+      "title": "Add aria-pressed to JobFilters FilterChip buttons",
+      "description": "JobFilters.jsx FilterChip component (~line 22) renders a Button with an active prop that visually indicates selection via className, but has no aria-pressed. Screen readers cannot determine whether a filter chip is selected. Add aria-pressed={active} to the Button element in FilterChip.",
+      "acceptanceCriteria": [
+        "JobFilters.jsx FilterChip Button has aria-pressed={active}",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-843",
+      "title": "Add role='group' and aria-label to JobFilters filter group containers",
+      "description": "JobFilters.jsx renders each filter group in a div (~line 63) with a visible label span but no group semantics. Add role='group' and aria-label={groupLabel} to each filter group div so screen reader users understand which group each chip belongs to.",
+      "acceptanceCriteria": [
+        "JobFilters.jsx each filter group div has role='group' and aria-label matching its group label",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-844",
+      "title": "Add role='progressbar' to OnboardingChecklist progress bar",
+      "description": "OnboardingChecklist.jsx renders a visual progress bar div (~line 123) with inline style width but no ARIA progressbar semantics. The outer div needs role='progressbar', aria-valuenow={completedSteps.length}, aria-valuemin={0}, aria-valuemax={TOTAL_ONBOARDING_STEPS}, and aria-label='Onboarding progress' on the container div (the one with className='h-1.5 overflow-hidden rounded-full bg-muted').",
+      "acceptanceCriteria": [
+        "OnboardingChecklist.jsx progress bar container has role='progressbar'",
+        "Progress bar has aria-valuenow, aria-valuemin=0, aria-valuemax matching TOTAL_ONBOARDING_STEPS",
+        "Progress bar has aria-label='Onboarding progress'",
+        "Build passes with no errors"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-845",
+      "title": "Replace ContactCard stale dot amber bg with design token",
+      "description": "ContactCard.jsx renders a stale indicator span (~line 42) with className '...bg-amber-400 dark:bg-amber-900/40'. Replace the amber background classes with the warning design token: use 'bg-warning/80' in place of 'bg-amber-400 dark:bg-amber-900/40'.",
+      "acceptanceCriteria": [
+        "ContactCard.jsx stale dot span uses bg-warning/80 instead of bg-amber-400 dark:bg-amber-900/40",
+        "Build passes with no errors"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}
