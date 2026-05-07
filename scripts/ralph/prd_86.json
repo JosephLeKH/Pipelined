@@ -102,7 +102,7 @@
         "Build passes with no errors"
       ],
       "priority": "high",
-      "passes": false,
+      "passes": true,
       "notes": ""
     }
   ]

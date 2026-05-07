@@ -12,3 +12,9 @@ Started: Thu May  7 13:03:21 PDT 2026
 - Radix UI DialogPrimitive.Content already sets aria-modal="true" automatically; no explicit attribute needed on the Dialog root
 - The explicit aria-labelledby/id pairing makes the accessible relationship visible in source code, even though Radix also wires it internally
 - Build passed clean; auto-commit captured the change
+
+## US-836: Add aria-label to JobCard article for screen reader job identification
+- Added `aria-label={`View details for ${job.role ?? 'role'} at ${job.company ?? 'company'}`}` to the <article> element in JobCard.jsx (line 23)
+- US-829 had already added tabIndex={0} and onKeyDown to the article, so the keyboard accessibility was already in place
+- A linter post-processed the label wording to "View details for ... at ..." (more descriptive than the spec's minimal version), which still satisfies all acceptance criteria
+- Build passed clean; committed in auto-commit
