@@ -88,7 +88,7 @@ function OfferHeaderCell({ app, isWinner, onMarkWinner }) {
     <th scope="col" className="min-w-[180px] px-4 py-3 text-left">
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-1.5">
-          {isWinner && <Trophy className="h-4 w-4 text-amber-500 dark:text-amber-400" aria-hidden="true" />}
+          {isWinner && <Trophy className="h-4 w-4 text-warning" aria-hidden="true" />}
           <span className="truncate text-sm font-semibold text-foreground">
             {app.company ?? "Unknown"}
           </span>
