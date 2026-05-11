@@ -11,6 +11,7 @@ from fastapi.responses import JSONResponse
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 
+from applications.interview_prep.router import router as interview_prep_router
 from applications.router import router as applications_router
 from contacts.router import router as contacts_router
 from custom_fields.router import router as custom_fields_router
@@ -90,6 +91,7 @@ def _register_routers(app: FastAPI) -> None:
     app.include_router(resume_router)
     app.include_router(verification_router)
     app.include_router(applications_router)
+    app.include_router(interview_prep_router)
     app.include_router(custom_fields_router)
     app.include_router(documents_router)
     app.include_router(calendar_router)

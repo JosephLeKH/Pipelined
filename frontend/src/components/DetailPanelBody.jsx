@@ -13,6 +13,7 @@ import { DetailPanelNotes } from "./DetailPanelNotes";
 import { DetailPanelTimeline } from "./DetailPanelTimeline";
 import OfferDetailsSection from "./OfferDetailsSection";
 import { ChecklistItem, AddChecklistItem } from "./PrepChecklist";
+import { InterviewPrepAgent } from "./InterviewPrepAgent";
 import ResumeFitSection from "./ResumeFitSection";
 import TagInput from "./TagInput";
 import { Button } from "./ui/button";
@@ -207,6 +208,7 @@ export function PanelBody({ application, handleStageChange, handleUpdate, onAddE
       )}
       <DetailPanelNotes applicationId={application.id} initialValue={application.notes} onDirtyChange={onDirtyChange} />
       <ApplicationPrepSection applicationId={application.id} initialChecklist={application.prep_checklist} />
+      <InterviewPrepAgent applicationId={application.id} />
       <DetailPanelTimeline stageHistory={application.stage_history} applicationId={application.id} onAddEvent={onAddEvent} />
       <ContactsSection applicationId={application.id} />
       {(application.ai_analysis || user?.ai_scores_remaining_today === 0) && user?.has_resume && (

@@ -47,6 +47,10 @@ class Settings(BaseSettings):
     github_client_id: str = ""
     github_client_secret: str = ""
 
+    # Anthropic / Interview Prep Agent
+    anthropic_api_key: str = ""
+    exa_api_key: str = ""
+
     # OpenAI
     openai_api_key: str = ""
     openai_model: str = "gpt-4o-mini"
