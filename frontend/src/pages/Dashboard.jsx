@@ -28,14 +28,18 @@ function DashboardContent({ viewMode, onSetViewMode, isExporting, onExport, filt
         <DashboardToolbar viewMode={viewMode} onSetViewMode={onSetViewMode} isExporting={isExporting} onImport={onImportCsv} onExport={onExport} onAdd={onAdd} />
         <OnboardingChecklist onAdd={onAdd} />
         <FollowUpBanner followUpsDue={followUpsDue} onView={onViewFollowUps} />
-        <GoalProgress />
-        <StatsBar />
-        <FilterBar />
-        {viewMode === "kanban" ? (
-          <KanbanBoard filters={filters} onSelect={onSelect} />
-        ) : (
-          <ApplicationList filters={filters} onSelect={onSelect} onAdd={onAdd} onImportCsv={onImportCsv} shortcutsEnabled={shortcutsEnabled} onClearFilters={onClearFilters} />
-        )}
+        <section role="region" aria-label="Goal progress and statistics">
+          <GoalProgress />
+          <StatsBar />
+        </section>
+        <section role="region" aria-label="Application board">
+          <FilterBar />
+          {viewMode === "kanban" ? (
+            <KanbanBoard filters={filters} onSelect={onSelect} />
+          ) : (
+            <ApplicationList filters={filters} onSelect={onSelect} onAdd={onAdd} onImportCsv={onImportCsv} shortcutsEnabled={shortcutsEnabled} onClearFilters={onClearFilters} />
+          )}
+        </section>
         <DetailPanel application={selectedApp ?? null} onClose={onClosePanel} />
         <ManualAddForm isOpen={isModalOpen} onClose={onCloseModal} />
         <CsvImportModal isOpen={isImportOpen} onClose={onCloseImport} />

@@ -74,10 +74,15 @@ class EmailService:
 
     async def send_verification_email(self, to_email: str, raw_token: str) -> None:
         """Send an email verification link to the user."""
-        if not settings.smtp_host or settings.smtp_host == "localhost":
-            logger.info("email_suppressed_dev_mode", to=to_email, subject=VERIFICATION_EMAIL_SUBJECT)
-            return
         verify_link = f"{settings.frontend_url}/verify-email?token={raw_token}"
+        if not settings.smtp_host or settings.smtp_host == "localhost":
+            logger.info(
+                "email_suppressed_dev_mode",
+                to=to_email,
+                subject=VERIFICATION_EMAIL_SUBJECT,
+                verify_link=verify_link,
+            )
+            return
         message = self._build_verification_message(to_email, verify_link)
         loop = asyncio.get_running_loop()
         try:

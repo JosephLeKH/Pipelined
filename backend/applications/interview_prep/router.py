@@ -58,10 +58,10 @@ async def interview_prep_stream(
     if not company:
         raise HTTPException(status_code=422, detail="Application has no company name")
 
-    if not settings.anthropic_api_key:
+    if not settings.gemini_api_key:
         raise HTTPException(
             status_code=503,
-            detail="Interview prep is not configured (missing ANTHROPIC_API_KEY)",
+            detail="Interview prep is not configured (missing GEMINI_API_KEY)",
         )
 
     async def event_stream():
@@ -70,7 +70,7 @@ async def interview_prep_stream(
                 company=company,
                 role=role,
                 resume_text=resume_text,
-                anthropic_api_key=settings.anthropic_api_key,
+                gemini_api_key=settings.gemini_api_key,
                 exa_api_key=settings.exa_api_key,
             ):
                 event_type = event.pop("type")

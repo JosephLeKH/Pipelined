@@ -8,7 +8,7 @@ Job application tracker with an AI layer on top. The **Interview Prep Agent** au
 
 ## Features
 
-- **Interview Prep Agent** — agentic AI loop (Claude Haiku) that pulls salary data from Levels.fyi, interview Q&A from Reddit and Glassdoor, and company intel, then generates a personalized briefing streamed live to the UI
+- **Interview Prep Agent** — agentic AI loop (Gemini 2.0 Flash) that pulls salary data from Levels.fyi, interview Q&A from Reddit and Glassdoor, and company intel, then generates a personalized briefing streamed live to the UI
 - **Resume fit scoring** — GPT-4o scores your resume against a job description and explains the gaps
 - **One-click capture** — Chrome extension extracts job details from LinkedIn, Greenhouse, Workday, and more; falls back to GPT-4o mini parsing for unstructured pages
 - **Pipeline dashboard** — Kanban board across custom stages with drag-and-drop and follow-up reminders
@@ -53,12 +53,12 @@ JWT_REFRESH_TTL_DAYS=7
 ALLOWED_ORIGINS=["http://localhost:5173"]
 DEBUG=true
 
-# OpenAI — enables resume parsing fallback and resume fit scoring
+# OpenAI — enables resume parsing and fit scoring
 OPENAI_API_KEY=sk-...
 OPENAI_MODEL=gpt-4o-mini
 
-# Anthropic — enables the Interview Prep Agent
-ANTHROPIC_API_KEY=sk-ant-...
+# Gemini — enables the Interview Prep Agent (free tier at aistudio.google.com)
+GEMINI_API_KEY=AIza...
 
 # Exa — required for Interview Prep Agent web search
 EXA_API_KEY=...

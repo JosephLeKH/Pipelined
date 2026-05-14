@@ -4,103 +4,120 @@ The agent receives company/role/resume context, decides which tools to call,
 and iterates until it calls `finish` with a structured InterviewBriefing.
 """
 
+import json
 from collections.abc import AsyncGenerator
 from datetime import UTC, datetime
 from typing import Any
 
-import anthropic
 import structlog
+from openai import AsyncOpenAI
 
 from .schemas import InterviewBriefing
 from .tools import fetch_page, get_levels_data, search_reddit, web_search
 
 logger = structlog.get_logger()
 
-_MODEL = "claude-haiku-4-5-20251001"
+_MODEL = "gemini-2.0-flash"
+_GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/openai/"
 _MAX_ITERATIONS = 12
 
 TOOL_DEFS: list[dict[str, Any]] = [
     {
-        "name": "web_search",
-        "description": (
-            "Search the web for any topic. Use for: company culture, interview experiences, "
-            "Glassdoor/Blind snippets, engineering blogs, funding news, LeetCode discussion threads. "
-            "Examples: '{company} software engineer interview experience 2024', "
-            "'{company} engineering blog', '{company} layoffs OR acquisition 2024'."
-        ),
-        "input_schema": {
-            "type": "object",
-            "properties": {
-                "query": {"type": "string", "description": "The search query"}
+        "type": "function",
+        "function": {
+            "name": "web_search",
+            "description": (
+                "Search the web for any topic. Use for: company culture, interview experiences, "
+                "Glassdoor/Blind snippets, engineering blogs, funding news, LeetCode discussion threads. "
+                "Examples: '{company} software engineer interview experience 2024', "
+                "'{company} engineering blog', '{company} layoffs OR acquisition 2024'."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "query": {"type": "string", "description": "The search query"}
+                },
+                "required": ["query"],
             },
-            "required": ["query"],
         },
     },
     {
-        "name": "get_levels_data",
-        "description": (
-            "Get compensation data from Levels.fyi for a specific company and role. "
-            "Returns total comp percentiles filtered to the candidate's experience level."
-        ),
-        "input_schema": {
-            "type": "object",
-            "properties": {
-                "company": {"type": "string"},
-                "role": {"type": "string"},
-                "location": {"type": "string", "description": "e.g. 'San Francisco, CA' or 'Remote'"},
-                "yoe": {"type": "integer", "description": "Years of experience"},
+        "type": "function",
+        "function": {
+            "name": "get_levels_data",
+            "description": (
+                "Get compensation data from Levels.fyi for a specific company and role. "
+                "Returns total comp percentiles filtered to the candidate's experience level."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "company": {"type": "string"},
+                    "role": {"type": "string"},
+                    "location": {"type": "string", "description": "e.g. 'San Francisco, CA' or 'Remote'"},
+                    "yoe": {"type": "integer", "description": "Years of experience"},
+                },
+                "required": ["company", "role", "location", "yoe"],
             },
-            "required": ["company", "role", "location", "yoe"],
         },
     },
     {
-        "name": "search_reddit",
-        "description": (
-            "Search Reddit for interview reports. Good subreddits: "
-            "cscareerquestions, leetcode, ExperiencedDevs, cscareeradvice. "
-            "Use for: recent interview experiences, actual questions asked, process specifics."
-        ),
-        "input_schema": {
-            "type": "object",
-            "properties": {
-                "subreddit": {"type": "string", "description": "Subreddit name without r/"},
-                "query": {"type": "string", "description": "Search query"},
+        "type": "function",
+        "function": {
+            "name": "search_reddit",
+            "description": (
+                "Search Reddit for interview reports. Good subreddits: "
+                "cscareerquestions, leetcode, ExperiencedDevs, cscareeradvice. "
+                "Use for: recent interview experiences, actual questions asked, process specifics."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "subreddit": {"type": "string", "description": "Subreddit name without r/"},
+                    "query": {"type": "string", "description": "Search query"},
+                },
+                "required": ["subreddit", "query"],
             },
-            "required": ["subreddit", "query"],
         },
     },
     {
-        "name": "fetch_page",
-        "description": (
-            "Fetch and read the text content of a specific URL. "
-            "Use when a search result points to a high-value page worth reading in full "
-            "(e.g., company engineering blog post, public Glassdoor page, StackShare profile)."
-        ),
-        "input_schema": {
-            "type": "object",
-            "properties": {
-                "url": {"type": "string", "description": "Full URL to fetch"}
+        "type": "function",
+        "function": {
+            "name": "fetch_page",
+            "description": (
+                "Fetch and read the text content of a specific URL. "
+                "Use when a search result points to a high-value page worth reading in full "
+                "(e.g., company engineering blog post, public Glassdoor page, StackShare profile)."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "url": {"type": "string", "description": "Full URL to fetch"}
+                },
+                "required": ["url"],
             },
-            "required": ["url"],
         },
     },
     {
-        "name": "finish",
-        "description": (
-            "Call this when you have gathered sufficient information. "
-            "Provide the complete InterviewBriefing as structured JSON. "
-            "Do not call this until you have data for ALL four sections: "
-            "compensation, interview_process, company_intel, and personalized."
-        ),
-        "input_schema": {
-            "type": "object",
-            "properties": {
-                "briefing": {
-                    "type": "object",
-                    "description": "Complete InterviewBriefing JSON matching the schema",
-                }
+        "type": "function",
+        "function": {
+            "name": "finish",
+            "description": (
+                "Call this when you have gathered sufficient information. "
+                "Provide the complete InterviewBriefing as structured JSON. "
+                "Do not call this until you have data for ALL four sections: "
+                "compensation, interview_process, company_intel, and personalized."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "briefing": {
+                        "type": "object",
+                        "description": "Complete InterviewBriefing JSON matching the schema",
+                    }
+                },
+                "required": ["briefing"],
             },
-            "required": ["briefing"],
         },
     },
 ]
@@ -159,7 +176,7 @@ async def run_agent(
     company: str,
     role: str,
     resume_text: str,
-    anthropic_api_key: str,
+    gemini_api_key: str,
     exa_api_key: str,
 ) -> AsyncGenerator[ProgressEvent, None]:
     """Run the interview prep agent loop, yielding progress events then the final briefing.
@@ -169,10 +186,11 @@ async def run_agent(
       {"type": "done", "briefing": {...}}
       {"type": "error", "message": "..."}
     """
-    client = anthropic.AsyncAnthropic(api_key=anthropic_api_key)
+    client = AsyncOpenAI(api_key=gemini_api_key, base_url=_GEMINI_BASE_URL)
     system_prompt = _build_system_prompt(company, role, resume_text)
 
     messages: list[dict[str, Any]] = [
+        {"role": "system", "content": system_prompt},
         {
             "role": "user",
             "content": (
@@ -180,28 +198,22 @@ async def run_agent(
                 "Gather compensation data, interview process details, company intelligence, "
                 "and personalize everything based on my resume. Call finish() when ready."
             ),
-        }
+        },
     ]
 
     for iteration in range(_MAX_ITERATIONS):
-        response = await client.messages.create(
+        response = await client.chat.completions.create(
             model=_MODEL,
             max_tokens=4096,
-            system=[
-                {
-                    "type": "text",
-                    "text": system_prompt,
-                    "cache_control": {"type": "ephemeral"},
-                }
-            ],
-            tools=TOOL_DEFS,
-            messages=messages,
+            messages=messages,  # type: ignore[arg-type]
+            tools=TOOL_DEFS,  # type: ignore[arg-type]
+            tool_choice="auto",
         )
 
-        tool_calls = [b for b in response.content if b.type == "tool_use"]
+        message = response.choices[0].message
+        tool_calls = message.tool_calls or []
 
         if not tool_calls:
-            # Model stopped without calling finish — shouldn't happen but handle gracefully
             logger.warning("agent_stopped_without_finish", iteration=iteration)
             yield {
                 "type": "error",
@@ -209,24 +221,29 @@ async def run_agent(
             }
             return
 
-        # Append the assistant's response to messages
-        messages.append({"role": "assistant", "content": response.content})
+        # Append the assistant turn (including tool_calls) to history
+        assistant_msg: dict[str, Any] = {"role": "assistant", "content": message.content}
+        assistant_msg["tool_calls"] = [
+            {
+                "id": tc.id,
+                "type": "function",
+                "function": {"name": tc.function.name, "arguments": tc.function.arguments},
+            }
+            for tc in tool_calls
+        ]
+        messages.append(assistant_msg)
 
-        tool_results: list[dict[str, Any]] = []
         briefing_result: dict[str, Any] | None = None
 
-        for call in tool_calls:
-            tool_name: str = call.name
-            tool_input: dict[str, Any] = call.input
+        for tc in tool_calls:
+            tool_name: str = tc.function.name
+            tool_input: dict[str, Any] = json.loads(tc.function.arguments)
 
             if tool_name == "finish":
                 briefing_result = tool_input.get("briefing", {})
-                tool_results.append(
-                    {"type": "tool_result", "tool_use_id": call.id, "content": "Done."}
-                )
+                messages.append({"role": "tool", "tool_call_id": tc.id, "content": "Done."})
                 continue
 
-            # Emit progress event
             step_labels = {
                 "web_search": f"Searching: {tool_input.get('query', '')}",
                 "get_levels_data": f"Getting comp data for {tool_input.get('company', '')}",
@@ -239,7 +256,6 @@ async def run_agent(
                 "tool": tool_name,
             }
 
-            # Execute the tool
             try:
                 if tool_name == "web_search":
                     result = await web_search(tool_input["query"], exa_api_key)
@@ -261,11 +277,8 @@ async def run_agent(
                 logger.exception("tool_error", tool=tool_name, error=str(e))
                 result = f"Tool error ({tool_name}): {e}"
 
-            tool_results.append(
-                {"type": "tool_result", "tool_use_id": call.id, "content": result}
-            )
+            messages.append({"role": "tool", "tool_call_id": tc.id, "content": result})
 
-        # If finish was called, validate and emit the briefing
         if briefing_result is not None:
             try:
                 briefing_result["company"] = company
@@ -280,9 +293,6 @@ async def run_agent(
                     "message": f"Briefing data was malformed: {e}. Please try again.",
                 }
             return
-
-        # Continue the loop with tool results
-        messages.append({"role": "user", "content": tool_results})
 
     yield {
         "type": "error",

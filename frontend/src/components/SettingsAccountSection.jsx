@@ -96,7 +96,7 @@ function DeleteAccountModal({ isOpen, onClose, onConfirm, isPending }) {
         </p>
         <DialogFooter>
           <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
-          <Button type="button" variant="destructive" onClick={onConfirm} disabled={isPending} className="flex items-center gap-2">
+          <Button type="button" variant="destructive" onClick={onConfirm} disabled={isPending} aria-busy={isPending} className="flex items-center gap-2">
             {isPending && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
             Delete my account
           </Button>

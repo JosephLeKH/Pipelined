@@ -8,6 +8,7 @@ from fastapi import Cookie, Depends, HTTPException
 
 from auth import service as auth_service
 from auth.service import ACCESS_TOKEN_TYPE, decode_token
+from config import settings
 
 logger = structlog.get_logger()
 
@@ -64,7 +65,8 @@ async def get_verified_user(user: dict = Depends(get_current_user)) -> dict:
     """Extend get_current_user by also requiring email_verified=True.
 
     Raises 403 EMAIL_NOT_VERIFIED if the user hasn't confirmed their email.
+    In DEBUG mode the check is skipped so local dev doesn't require real email.
     """
-    if not user.get("email_verified"):
+    if not settings.debug and not user.get("email_verified"):
         raise HTTPException(status_code=403, detail=EMAIL_NOT_VERIFIED_DETAIL)
     return user

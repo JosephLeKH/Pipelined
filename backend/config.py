@@ -47,8 +47,10 @@ class Settings(BaseSettings):
     github_client_id: str = ""
     github_client_secret: str = ""
 
-    # Anthropic / Interview Prep Agent
-    anthropic_api_key: str = ""
+    # Gemini — Interview Prep Agent (free tier via Google AI Studio, OpenAI-compatible)
+    gemini_api_key: str = ""
+
+    # Exa — web search for Interview Prep Agent
     exa_api_key: str = ""
 
     # OpenAI
