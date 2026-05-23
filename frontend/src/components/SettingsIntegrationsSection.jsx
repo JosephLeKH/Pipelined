@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import CheckCircle from "lucide-react/dist/esm/icons/check-circle";
 import Mail from "lucide-react/dist/esm/icons/mail";
+import RefreshCw from "lucide-react/dist/esm/icons/refresh-cw";
 import Trash2 from "lucide-react/dist/esm/icons/trash-2";
 
 import InboxSetupDialog from "./InboxSetupDialog";
@@ -23,6 +24,7 @@ import {
   useGmailDisconnectMutation,
   useGmailSettingsMutation,
   useGmailStatus,
+  useGmailSyncMutation,
 } from "../hooks/useGmailStatus";
 
 function formatDate(iso) {
@@ -63,6 +65,7 @@ function ToggleRow({ label, description, id, checked, onChange, disabled }) {
 
 function ConnectedState({ status, onDisconnect }) {
   const settingsMutation = useGmailSettingsMutation();
+  const syncMutation = useGmailSyncMutation();
 
   const handleToggle = (key) => (val) => {
     settingsMutation.mutate({ [key]: val });
