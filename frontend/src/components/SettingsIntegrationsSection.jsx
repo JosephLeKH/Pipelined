@@ -170,11 +170,27 @@ function ConnectedState({ status, onDisconnect }) {
             </div>
           ))}
         </div>
-        {status.last_sync_at && (
-          <p className="mt-2.5 text-xs text-muted-foreground">
-            Last synced {formatDate(status.last_sync_at)}
-          </p>
-        )}
+        <div className="mt-2.5 flex items-center justify-between gap-2">
+          {status.last_sync_at ? (
+            <p className="text-xs text-muted-foreground">
+              Last synced {formatDate(status.last_sync_at)}
+            </p>
+          ) : (
+            <span />
+          )}
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="gap-1.5 text-xs"
+            aria-busy={syncMutation.isPending}
+            disabled={syncMutation.isPending}
+            onClick={() => syncMutation.mutate()}
+          >
+            <RefreshCw className="h-3.5 w-3.5" aria-hidden="true" />
+            Sync Now
+          </Button>
+        </div>
       </div>
     </div>
   );
