@@ -1,0 +1,125 @@
+{
+  "id": "prd_94",
+  "title": "Agentic Features — Interview Prep Auto-Trigger UI & Agent Transparency",
+  "description": "Surface AI agent activity to users: show when interview prep was auto-generated, indicate which apps were auto-tracked from email, and add visual indicators that make the autonomous agents visible and trustworthy.",
+  "userStories": [
+    {
+      "id": "US-878",
+      "title": "Interview prep auto-generated badge on ApplicationRow",
+      "description": "In `frontend/src/components/ApplicationRow.jsx`, when `application.interview_prep_briefing` is truthy (auto-generated prep briefing exists), show a small badge or indicator. Add a Sparkles icon (import from 'lucide-react/dist/esm/icons/sparkles') next to the company name or in the actions area. Wrap it in a Tooltip with text 'Interview prep ready'. The icon should use `text-primary` color and be size h-3.5 w-3.5. Check the row layout to find the best location (near the stage pill or in the info row).",
+      "acceptanceCriteria": [
+        "Sparkles icon visible on rows where interview_prep_briefing is truthy",
+        "Icon wrapped in Tooltip with text 'Interview prep ready'",
+        "Icon is aria-hidden='true', Tooltip provides accessible label",
+        "No layout shift for rows without briefing",
+        "Direct import: lucide-react/dist/esm/icons/sparkles"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-879",
+      "title": "Interview prep auto-generated notice in DetailPanel",
+      "description": "Find where interview prep is displayed in the detail panel (search for 'interview_prep' or 'PrepSection' in frontend/src/components/). When `application.interview_prep_briefing` exists AND `application.interview_prep_generated_at` exists, show a small notice above the prep section saying 'Auto-generated when interview invite detected'. Style it with a Sparkles icon (text-primary, h-3.5 w-3.5), inline text-xs text-muted-foreground. This communicates the agent acted autonomously.",
+      "acceptanceCriteria": [
+        "Notice shown only when both interview_prep_briefing and interview_prep_generated_at exist",
+        "Text: 'Auto-generated when interview invite detected' with Sparkles icon",
+        "Notice styled as text-xs text-muted-foreground with flex items-center gap-1.5",
+        "Sparkles icon aria-hidden='true'",
+        "No changes to existing prep content"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-880",
+      "title": "ConnectedState — add agent status summary line",
+      "description": "In `frontend/src/components/SettingsIntegrationsSection.jsx` `ConnectedState` (line 53), the connected card shows email and timestamps but no agent activity summary. Add a text line below the email/connected_at info block (inside the first card, after line 89): if `status.apps_tracked > 0`, show 'Your agent has tracked {apps_tracked} application{s} automatically.' with a Sparkles icon. Import Sparkles from lucide-react directly. This tells users the agent is actively working.",
+      "acceptanceCriteria": [
+        "When apps_tracked > 0, summary line shown with Sparkles icon",
+        "Text pluralized correctly (application vs applications)",
+        "Icon is text-primary h-3.5 w-3.5 aria-hidden='true'",
+        "When apps_tracked === 0, no extra line shown",
+        "Renders inside the Connected card below the email info block"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-881",
+      "title": "Dashboard — Gmail connected banner shows agent activity",
+      "description": "In `frontend/src/components/InboxSetupBanner.jsx`, when `status?.connected` is true (and banner would normally hide), instead of returning null, show a minimal 'agent active' indicator — a slim banner or a small chip: a Sparkles icon + 'Email agent active' text + '({apps_tracked} apps tracked)' if apps_tracked > 0. This should be subtle: use `text-xs text-muted-foreground` with no border, just a flex row in the same mb-4 space. If the user has dismissed the banner, still show the agent-active chip (use a separate dismissed state key or override). Actually: only show the agent-active line if status.apps_tracked > 0 AND status.connected. Keep it minimal.",
+      "acceptanceCriteria": [
+        "When status.connected and status.apps_tracked > 0, show agent-active chip",
+        "Chip shows: Sparkles icon + 'Email agent active · {N} apps tracked'",
+        "Chip styled as text-xs text-muted-foreground flex items-center gap-1.5 mb-2",
+        "Sparkles icon is text-primary h-3 w-3 aria-hidden='true'",
+        "Original banner (for disconnected state) behavior unchanged",
+        "No banner shown when apps_tracked === 0 to avoid noise"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-882",
+      "title": "Interview prep auto-trigger setting label improvement",
+      "description": "In `frontend/src/components/SettingsIntegrationsSection.jsx` ToggleRow for interview_prep (line 114-121), the label says 'Auto-generate interview prep' and description 'Start a briefing the moment an interview invite arrives'. Add context about what the agent does: update description to 'The prep agent researches the company and role automatically — ready before your first interview.' This better communicates the agentic nature of the feature.",
+      "acceptanceCriteria": [
+        "interview_prep ToggleRow description updated to the new copy",
+        "Label unchanged: 'Auto-generate interview prep'",
+        "No other changes"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-883",
+      "title": "Settings Integrations page — add 'How it works' section",
+      "description": "In `frontend/src/components/SettingsIntegrationsSection.jsx` `DisconnectedState` (line 149), add a 'How it works' steps section before the Connect button. Show 3 steps: (1) 'Connect your job-search Gmail' with Mail icon; (2) 'Agent reads job emails automatically' with Sparkles icon; (3) 'Dashboard updates without lifting a finger' with Zap icon. Use a simple numbered step list with icons. Import Sparkles and Zap from lucide-react directly. Steps should be text-sm text-muted-foreground.",
+      "acceptanceCriteria": [
+        "3-step 'How it works' section added to DisconnectedState before the Connect button",
+        "Each step has an icon (Mail, Sparkles, Zap) aria-hidden='true' and step text",
+        "Direct lucide-react imports: .../icons/sparkles, .../icons/zap",
+        "Steps are visually distinct (numbered or icon-labeled)",
+        "DisconnectedState layout still centers the Connect button"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-884",
+      "title": "ApplicationRow — email source icon tooltip",
+      "description": "In `frontend/src/components/ApplicationRow.jsx`, check how the SOURCE_ICONS are rendered in the row. If the source icon renders without a tooltip, find where it's used in the JSX and wrap the Mail icon (email source) in a Tooltip with content 'Auto-tracked from Gmail'. For other sources keep existing behavior. Search for SOURCE_ICONS usage in the file to find the render location.",
+      "acceptanceCriteria": [
+        "Mail icon for email-source apps has Tooltip with text 'Auto-tracked from Gmail'",
+        "Other source icons unchanged",
+        "Tooltip uses existing Tooltip/TooltipTrigger/TooltipContent pattern",
+        "Source icon remains aria-hidden='true'"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-885",
+      "title": "GmailCallback page — replace no-op with loading indicator",
+      "description": "In `frontend/src/pages/GmailCallback.jsx` (line 6-14), the component returns null while `useEffect` fires the navigate. This means the page is blank for a brief moment. Replace `return null` with a centered loading spinner: a div with `flex items-center justify-center min-h-screen`, containing a Loader2 icon (import from 'lucide-react/dist/esm/icons/loader-2') with `className='h-8 w-8 animate-spin text-primary'` and a `<span className='sr-only'>Connecting Gmail…</span>` for screen readers.",
+      "acceptanceCriteria": [
+        "GmailCallback renders a centered Loader2 spinner instead of null",
+        "Loader2 has animate-spin text-primary h-8 w-8",
+        "sr-only span reads 'Connecting Gmail…'",
+        "useEffect navigate behavior unchanged",
+        "Direct import: lucide-react/dist/esm/icons/loader-2"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

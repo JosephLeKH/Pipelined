@@ -44,6 +44,9 @@ class Settings(BaseSettings):
     jwt_access_ttl_minutes: int = 15
     jwt_refresh_ttl_days: int = 7
     google_client_id: str = ""
+    google_client_secret: str = ""
+    gmail_redirect_uri: str = "http://localhost:8000/api/email/callback"
+    gmail_sync_interval_hours: int = 4
     github_client_id: str = ""
     github_client_secret: str = ""
 

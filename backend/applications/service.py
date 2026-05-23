@@ -125,14 +125,15 @@ def _build_application_doc(
     company_domain: str | None,
 ) -> dict:
     """Assemble the full application document for insertion."""
+    initial_stage = body_dict.get("current_stage") or INITIAL_STAGE
     return {
         **body_dict,
         "user_id": uid,
         "normalised_company": normalised_company,
         "normalised_role": normalised_role,
-        "current_stage": INITIAL_STAGE,
+        "current_stage": initial_stage,
         "stages": stages,
-        "stage_history": [{"stage": INITIAL_STAGE, "transitioned_at": now}],
+        "stage_history": [{"stage": initial_stage, "transitioned_at": now}],
         "date_applied": body_dict.get("date_applied") or now,
         "created_at": now,
         "updated_at": now,

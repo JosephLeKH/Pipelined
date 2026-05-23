@@ -5,7 +5,9 @@ import Bell from "lucide-react/dist/esm/icons/bell";
 import CalendarClock from "lucide-react/dist/esm/icons/calendar-clock";
 import Globe from "lucide-react/dist/esm/icons/globe";
 import LayoutDashboard from "lucide-react/dist/esm/icons/layout-dashboard";
+import Mail from "lucide-react/dist/esm/icons/mail";
 import Pencil from "lucide-react/dist/esm/icons/pencil";
+import Sparkles from "lucide-react/dist/esm/icons/sparkles";
 
 import { STAGE_COLORS, DEFAULT_STAGE_COLOR } from "../lib/constants";
 import { Button } from "./ui/button";
@@ -21,6 +23,7 @@ const SOURCE_ICONS = {
   extension: Globe,
   board: LayoutDashboard,
   manual: Pencil,
+  email: Mail,
 };
 
 
@@ -129,6 +132,18 @@ function ApplicationRow({
           {application.role_title}
         </span>
         <StagePill stage={application.current_stage} />
+        <span className="w-5 shrink-0 inline-flex items-center justify-center">
+          {application.interview_prep_briefing && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span tabIndex={0} className="inline-flex cursor-default">
+                  <Sparkles className="h-3.5 w-3.5 text-primary" aria-hidden="true" />
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>Interview prep ready</TooltipContent>
+            </Tooltip>
+          )}
+        </span>
         <FitBadge score={application.ai_analysis?.fit_score ?? null} />
         <span className="relative w-4 shrink-0">
           {followUpOverdue && !archived && (
@@ -141,7 +156,16 @@ function ApplicationRow({
           )}
         </span>
         <span className="w-28 text-sm text-muted-foreground">{dateApplied}</span>
-        <SourceIcon className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+        {application.source === "email" ? (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Mail className="h-4 w-4 shrink-0 text-primary cursor-default" aria-label="Auto-tracked from email" />
+            </TooltipTrigger>
+            <TooltipContent>Auto-tracked from your job-search inbox</TooltipContent>
+          </Tooltip>
+        ) : (
+          <SourceIcon className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+        )}
         <RowMenu
           application={application}
           onArchive={onArchive}

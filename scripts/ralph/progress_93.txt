@@ -1,0 +1,12 @@
+# Ralph Progress Log
+Started: Sat May 23 11:00:34 PDT 2026
+---
+
+## US-870: Disconnect Gmail confirmation dialog
+Status: DONE
+- Wrapped the Disconnect Button in ConnectedState with an AlertDialog
+- AlertDialogTrigger asChild preserves the existing Button styling
+- AlertDialogAction uses buttonVariants({ variant: "destructive" }) for destructive red styling
+- disconnectMutation.mutate() (via onDisconnect prop) only fires when the dialog's Disconnect action is clicked
+- All AlertDialog imports use direct path ./ui/alert-dialog; buttonVariants from ./ui/button
+- Frontend build passes (✓ built in 3.17s)

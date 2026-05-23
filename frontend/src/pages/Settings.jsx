@@ -12,6 +12,7 @@ import SettingsResumeSection from "../components/SettingsResumeSection";
 import SettingsTemplatesSection from "../components/SettingsTemplatesSection";
 import SettingsReferralSection from "../components/SettingsReferralSection";
 import SettingsReportSection from "../components/SettingsReportSection";
+import SettingsIntegrationsSection from "../components/SettingsIntegrationsSection";
 import SettingsUsageSection from "../components/SettingsUsageSection";
 import SharePipeline from "../components/SharePipeline";
 import ShareTimeline from "../components/ShareTimeline";
@@ -25,6 +26,7 @@ const NAV_ITEMS = [
   { id: "profile", label: "Profile" },
   { id: "calendar", label: "Calendar" },
   { id: "notifications", label: "Notifications" },
+  { id: "integrations", label: "Integrations" },
   { id: "resume", label: "Resume & AI" },
   { id: "templates", label: "Templates" },
   { id: "sharing", label: "Sharing" },
@@ -142,6 +144,7 @@ function renderSection(activeSection, user) {
     case "pipeline": return <SettingsPipelineSection />;
     case "calendar": return <CalendarSection />;
     case "notifications": return <SettingsNotificationsSection />;
+    case "integrations": return <SettingsIntegrationsSection />;
     case "resume": return <SettingsResumeSection />;
     case "templates": return <SettingsTemplatesSection />;
     case "sharing": return <SharingSection />;

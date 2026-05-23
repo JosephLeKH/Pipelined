@@ -1,0 +1,115 @@
+{
+  "id": "prd_92",
+  "title": "Gmail Integration — Critical Bug Fixes",
+  "description": "Fix critical bugs discovered in the new Gmail integration: token refresh regression, stage ordering, JSON parse failures, loading flash, and missing rate limiting.",
+  "userStories": [
+    {
+      "id": "US-862",
+      "title": "Preserve existing refresh_token when re-connecting Gmail",
+      "description": "In `backend/email_integration/service.py` `store_gmail_tokens` (lines 166-195), when `token_data.get('refresh_token')` is empty (Google omits it on re-auth when the previous token is still valid), the current code sets `gmail_refresh_token` to `''`, destroying the working token. Fix: only include `gmail_refresh_token` in the `$set` dict when `token_data.get('refresh_token')` is non-empty.",
+      "acceptanceCriteria": [
+        "In store_gmail_tokens, build the $set dict conditionally: only add `gmail_refresh_token` key when `token_data.get('refresh_token')` is truthy",
+        "All other fields (access_token, expiry, email, etc.) are still updated unconditionally",
+        "No new imports required"
+      ],
+      "priority": "critical",
+      "passes": true,
+      "notes": "Built $set dict as a local `fields` variable and conditionally inserted gmail_refresh_token only when token_data.get('refresh_token') is truthy."
+    },
+    {
+      "id": "US-863",
+      "title": "Set current_stage when creating application from email",
+      "description": "In `backend/email_integration/service.py` `_process_message` (around line 362), `ApplicationCreate` is called with only `company`, `role_title`, and `source='email'`. If the email indicates an Interview or Assessment, the new app is incorrectly created at the default 'Applied' stage. Fix: pass `current_stage=stage` to ApplicationCreate when stage is not 'Applied'. Check that ApplicationCreate in `backend/applications/schemas.py` accepts `current_stage` as an optional field.",
+      "acceptanceCriteria": [
+        "When stage != 'Applied', ApplicationCreate receives current_stage=stage",
+        "When stage == 'Applied', no change in behavior",
+        "If ApplicationCreate does not have current_stage field, add it as optional with default None",
+        "The STAGE_MAP already maps classifier output to valid stage strings"
+      ],
+      "priority": "critical",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-864",
+      "title": "Stage ordering guard — prevent application regression",
+      "description": "In `backend/email_integration/service.py` `_process_message` (around line 350), `update_application` is called with the new stage unconditionally. A stale confirmation email could downgrade an app from 'Offer' back to 'Applied'. Add a STAGE_ORDER dict at module scope mapping stage names to integers, and only call update_application if the new stage is >= the existing stage. Add STAGE_ORDER = {'Applied': 1, 'OA': 2, 'Phone Screen': 3, 'Interviewing': 4, 'Offer': 5, 'Rejected': 6} as a module-level constant.",
+      "acceptanceCriteria": [
+        "STAGE_ORDER dict defined at module scope in service.py with 6 entries",
+        "In _process_message, fetch existing['current_stage'] and compare orders before updating",
+        "If new stage order <= existing stage order, skip the update and return (False, False)",
+        "If existing stage has no entry in STAGE_ORDER, allow update (defensive default)"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-865",
+      "title": "Strip markdown code fences from Gemini JSON response",
+      "description": "In `backend/email_integration/classifier.py` (line 68), `json.loads(content.strip())` will throw JSONDecodeError if Gemini wraps the response in ```json ... ``` fences despite the system prompt. The error is silently caught and returns None. Fix: before calling json.loads, strip markdown fences. Add a helper: `raw = re.sub(r'^```(?:json)?\\s*|\\s*```$', '', content.strip(), flags=re.DOTALL)` and parse `raw`. Import `re` at the top of the file.",
+      "acceptanceCriteria": [
+        "Add `import re` at top of classifier.py",
+        "Before json.loads, apply regex to strip leading ```json or ``` and trailing ``` from content",
+        "json.loads parses the stripped string, not the original content",
+        "JSONDecodeError handling unchanged"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-866",
+      "title": "Prevent InboxSetupBanner flash during loading",
+      "description": "In `frontend/src/components/InboxSetupBanner.jsx` (line 15-19), `useGmailStatus` returns `{ data: status, isLoading }`. When `isLoading` is true, `status` is undefined, so `status?.connected` is falsy and the banner renders briefly before hiding. Fix: also destructure `isLoading` from `useGmailStatus()` and add `if (isLoading || status?.connected || dismissed) return null;`",
+      "acceptanceCriteria": [
+        "Destructure isLoading from useGmailStatus()",
+        "Return null when isLoading is true",
+        "No visible banner flash on dashboard load when Gmail is already connected"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-867",
+      "title": "Clear gmail_last_sync_at in _disable_gmail",
+      "description": "In `backend/email_integration/batch_sync.py` `_disable_gmail` (line 73), the `$unset` dict clears credential fields but misses `gmail_last_sync_at`, `gmail_emails_scanned`, `gmail_apps_tracked`, and `gmail_status_updates_count`. This leaves stale stats in the user doc after credentials are cleared. Fix: add those four fields to the $unset dict.",
+      "acceptanceCriteria": [
+        "The $unset dict in _disable_gmail includes: gmail_last_sync_at, gmail_emails_scanned, gmail_apps_tracked, gmail_status_updates_count",
+        "No other changes to the function"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-868",
+      "title": "Rate-limit manual Gmail sync endpoint",
+      "description": "In `backend/email_integration/router.py` (line 74), the `POST /api/email/sync` endpoint has no rate limit. Users could spam it, burning Gmail API quota. Add `@limiter.limit('3/15minutes')` decorator. Check how other rate-limited endpoints in the codebase apply `limiter` — look at `backend/applications/router.py` or `backend/auth/router.py` for the pattern (likely `from slowapi import Limiter` imported via `from main import limiter`). Apply the same pattern. The decorator needs a `request: Request` parameter added to `trigger_sync`.",
+      "acceptanceCriteria": [
+        "trigger_sync has @limiter.limit('3/15minutes') decorator",
+        "trigger_sync signature includes request: Request parameter",
+        "Import Request from fastapi if not already imported",
+        "Pattern matches existing rate-limited endpoints in the codebase"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-869",
+      "title": "Gate useGmailStatus query on authenticated state",
+      "description": "In `frontend/src/hooks/useGmailStatus.js` (line 16), `useQuery` runs unconditionally, including for unauthenticated users. This fires a 401 request that triggers the token refresh interceptor unnecessarily. Fix: import `useAuth` from `../hooks/useAuth` and add `enabled: !!user` to the useQuery config. Look at `useAuth` to see how to get user (likely returns `{ user }`).",
+      "acceptanceCriteria": [
+        "Import useAuth from '../hooks/useAuth' (check exact export name first)",
+        "In useGmailStatus, call useAuth() to get user",
+        "Add enabled: !!user to useQuery options",
+        "Other hooks in useGmailStatus.js (mutations) are unaffected"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

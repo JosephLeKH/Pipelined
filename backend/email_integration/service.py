@@ -363,6 +363,7 @@ async def _process_message(
             company=company,
             role_title=role_title or None,
             source="email",
+            current_stage=stage if stage != "Applied" else None,
         )
         new_app = await create_application(user_id, app_body)
         if stage == "Interviewing" and user.get("gmail_interview_prep") and new_app:

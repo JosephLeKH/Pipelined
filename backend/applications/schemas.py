@@ -5,7 +5,7 @@ from typing import Literal
 
 from pydantic import AnyHttpUrl, BaseModel, ConfigDict, Field, field_validator
 
-ValidSource = Literal["extension", "board", "manual"]
+ValidSource = Literal["extension", "board", "manual", "email"]
 ValidCompanyType = Literal["startup", "mid", "enterprise", "gov", "nonprofit", "other"]
 ValidRemoteStatus = Literal["remote", "hybrid", "onsite", "unknown"]
 ValidSortField = Literal["date_applied", "company", "current_stage", "updated_at", "follow_up_date"]
@@ -49,6 +49,7 @@ class ApplicationCreate(BaseModel):
 
     role_title: str | None = Field(None, min_length=1, max_length=MAX_ROLE_TITLE_LENGTH)
     company: str | None = Field(None, min_length=1, max_length=MAX_COMPANY_LENGTH)
+    current_stage: str | None = Field(None, min_length=1, max_length=MAX_STAGE_LENGTH)
     source: ValidSource
     source_url: AnyHttpUrl | None = None
     compensation: str | None = Field(None, max_length=MAX_COMPENSATION_LENGTH)

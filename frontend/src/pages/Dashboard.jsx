@@ -1,10 +1,14 @@
 /** Dashboard page: composes StatsBar, FilterBar, ApplicationList or KanbanBoard, DetailPanel, ManualAddForm. */
 
-import { useState, useCallback } from "react";
+import { useEffect, useState, useCallback } from "react";
+import { useSearchParams } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import { useHotkeys } from "../hooks/useHotkeys";
+import { GMAIL_STATUS_KEY } from "../hooks/useGmailStatus";
 
 import FilterBar from "../components/FilterBar";
 import FollowUpBanner from "../components/FollowUpBanner";
+import InboxSetupBanner from "../components/InboxSetupBanner";
 import GoalProgress from "../components/GoalProgress";
 import NavBar from "../components/NavBar";
 import StatsBar from "../components/StatsBar";
@@ -27,6 +31,7 @@ function DashboardContent({ viewMode, onSetViewMode, isExporting, onExport, filt
       <div className="max-w-7xl mx-auto px-4 sm:px-6 space-y-6">
         <DashboardToolbar viewMode={viewMode} onSetViewMode={onSetViewMode} isExporting={isExporting} onImport={onImportCsv} onExport={onExport} onAdd={onAdd} />
         <OnboardingChecklist onAdd={onAdd} />
+        <InboxSetupBanner />
         <FollowUpBanner followUpsDue={followUpsDue} onView={onViewFollowUps} />
         <section role="region" aria-label="Goal progress and statistics">
           <GoalProgress />
@@ -49,8 +54,17 @@ function DashboardContent({ viewMode, onSetViewMode, isExporting, onExport, filt
 }
 
 function Dashboard() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isImportOpen, setIsImportOpen] = useState(false);
+
+  useEffect(() => {
+    if (searchParams.get("gmail_connected") === "1") {
+      queryClient.invalidateQueries({ queryKey: GMAIL_STATUS_KEY });
+      setSearchParams((prev) => { prev.delete("gmail_connected"); prev.delete("email"); return prev; }, { replace: true });
+    }
+  }, [searchParams, setSearchParams, queryClient]);
   const [viewMode, setViewMode] = useState(() => {
     try { return localStorage.getItem(VIEW_MODE_STORAGE_KEY) ?? "list"; }
     catch { return "list"; }

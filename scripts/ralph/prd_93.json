@@ -1,0 +1,122 @@
+{
+  "id": "prd_93",
+  "title": "Gmail Integration — UX Polish & Activity Events",
+  "description": "Improve the Gmail integration UX: disconnect confirmation, sync feedback toasts, activity log entries for agent actions, and better sync stats display.",
+  "userStories": [
+    {
+      "id": "US-870",
+      "title": "Disconnect Gmail confirmation dialog",
+      "description": "In `frontend/src/components/SettingsIntegrationsSection.jsx` (line 192), `onDisconnect={() => disconnectMutation.mutate()}` fires immediately with no confirmation. Disconnecting removes all tokens and history. Fix: add a confirmation AlertDialog. Import AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction from './ui/alert-dialog'. Replace the Disconnect Button with an AlertDialogTrigger. The confirmation text should read: 'Disconnect job-search inbox? Pipelined will stop auto-tracking applications from this inbox. Your existing tracked applications will not be deleted.'",
+      "acceptanceCriteria": [
+        "Clicking Disconnect opens a confirmation AlertDialog",
+        "Dialog has Cancel and Disconnect buttons",
+        "disconnectMutation.mutate() only fires after Confirm is clicked",
+        "Disconnect button in dialog has variant destructive styling",
+        "Imports use direct paths (./ui/alert-dialog)"
+      ],
+      "priority": "high",
+      "passes": true,
+      "notes": "Added AlertDialog confirmation wrapping the Disconnect button in ConnectedState. Imported AlertDialog components from ./ui/alert-dialog and buttonVariants from ./ui/button. disconnectMutation.mutate() only fires on AlertDialogAction click."
+    },
+    {
+      "id": "US-871",
+      "title": "Add Sync Now button with result feedback in SettingsIntegrationsSection",
+      "description": "In `frontend/src/components/SettingsIntegrationsSection.jsx` `ConnectedState` (line 53), there is no way to trigger a manual sync. Add a Sync Now button that calls `useGmailSyncMutation`. Import `useGmailSyncMutation` from `../hooks/useGmailStatus`. Add the button next to the last_sync_at timestamp in the Activity card (around line 139). Show `aria-busy={syncMutation.isPending}` on the button. After a successful sync, update the last_sync_at display immediately by invalidating the query (already done in onSuccess of the mutation hook).",
+      "acceptanceCriteria": [
+        "Sync Now button added to Activity card in ConnectedState",
+        "Button calls syncMutation.mutate()",
+        "Button shows aria-busy={syncMutation.isPending} and disabled when pending",
+        "Button has RefreshCw icon from lucide-react (direct import)",
+        "No console errors"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-872",
+      "title": "Toast notification when Gmail connects successfully",
+      "description": "In `frontend/src/pages/Dashboard.jsx` (lines 62-67), when `gmail_connected=1` is detected in the URL params, the code invalidates the query but shows no user feedback. Add a success toast. Check how other toasts are fired in the codebase (look for `useToast` or `toast()` in Dashboard.jsx or nearby files). Show: 'Gmail connected — syncing your emails now.'",
+      "acceptanceCriteria": [
+        "When gmail_connected=1 param is present, show a success toast",
+        "Toast message: 'Gmail connected — syncing your emails now.' (or equivalent pattern used in codebase)",
+        "Toast fires after query invalidation",
+        "Search for existing toast usage in the file or nearby to find the correct import/pattern"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-873",
+      "title": "Log activity event when email auto-creates an application",
+      "description": "In `backend/email_integration/service.py` `_process_message` (around line 372), when a new application is created via email (`create_application` succeeds), no activity event is logged. Check the applications module for an activity logging pattern — look in `backend/applications/service.py` for calls to `activity_service` or `log_event`. Import the activity logging function and call it after successful create with event type 'application_created' and source 'email'. Include user_id and app_id.",
+      "acceptanceCriteria": [
+        "After successful create_application in _process_message, log an activity event",
+        "Use the same activity logging pattern found in applications/service.py",
+        "Event type matches the pattern used elsewhere (e.g. 'application_created' or 'created')",
+        "source='email' included in event metadata if the schema allows it",
+        "Exception from activity logging is caught and logged (don't break sync on log failure)"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-874",
+      "title": "Log activity event when email auto-updates application stage",
+      "description": "In `backend/email_integration/service.py` `_process_message` (around line 351), when `update_application` is called to advance a stage via email, no activity event is logged. After the stage ordering guard from US-864 is in place, also log an activity event for stage changes. Use the same pattern as US-873 but with event type indicating a stage change.",
+      "acceptanceCriteria": [
+        "After successful update_application in _process_message, log an activity event",
+        "Event captures the new stage and source='email'",
+        "Exception from activity logging is caught (don't break sync on log failure)",
+        "Uses same activity logging import/pattern as US-873"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-875",
+      "title": "InboxSetupBanner — add aria-live region for screen readers",
+      "description": "In `frontend/src/components/InboxSetupBanner.jsx`, the banner disappears when dismissed or when Gmail connects. Screen readers won't announce this change. Add `aria-live='polite'` and `aria-atomic='true'` to the outer wrapper div (line 23). Also add `aria-label='Gmail inbox setup'` to the outer div to give it a clear accessible name.",
+      "acceptanceCriteria": [
+        "Outer banner div has aria-live='polite'",
+        "Outer banner div has aria-atomic='true'",
+        "Outer banner div has aria-label='Gmail inbox setup'",
+        "No layout or visual changes"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-876",
+      "title": "Structured email source badge on ApplicationRow",
+      "description": "In `frontend/src/components/ApplicationRow.jsx`, SOURCE_ICONS already maps 'email' to the Mail icon (line 25). Check how source icons are rendered — if the mail icon is already shown for email-sourced apps, add a tooltip that reads 'Auto-tracked from Gmail' when source === 'email'. Look at how Tooltip is used in ApplicationRow already (it's already imported on line 18). Apply TooltipTrigger/TooltipContent pattern to the source icon.",
+      "acceptanceCriteria": [
+        "When application source is 'email', the Mail icon has a tooltip 'Auto-tracked from Gmail'",
+        "Tooltip uses the existing Tooltip/TooltipTrigger/TooltipContent pattern",
+        "Tooltip arrow icon or source icon is aria-hidden='true'",
+        "No layout changes for other source types"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-877",
+      "title": "SettingsIntegrationsSection activity stats — improved formatting",
+      "description": "In `frontend/src/components/SettingsIntegrationsSection.jsx` Activity card (lines 125-144), the stats grid shows raw numbers but there's no context. Improve: (1) add a subtitle under each stat value showing the unit label in a smaller font (already done); (2) if a stat value is 0, show '—' instead of '0' to reduce cognitive noise; (3) move last_sync_at above the stat grid with a label 'Last sync'; (4) format last_sync_at with time component too (use toLocaleString instead of toLocaleDateString in formatDate, or add a separate formatDateTime helper).",
+      "acceptanceCriteria": [
+        "Stats with value 0 render as '—' not '0'",
+        "last_sync_at shown above stats with label 'Last sync:' followed by date+time",
+        "Add formatDateTime helper or update formatDate to accept a showTime param",
+        "No other layout changes"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

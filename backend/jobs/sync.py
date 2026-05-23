@@ -11,6 +11,7 @@ import httpx
 import structlog
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
+from apscheduler.triggers.interval import IntervalTrigger
 
 from config import settings
 from database import get_collection
@@ -239,6 +240,15 @@ def create_scheduler() -> AsyncIOScheduler:
         generate_notifications,
         trigger=CronTrigger(minute=NOTIFICATION_GEN_MINUTE, timezone="UTC"),
         id="generate_notifications",
+        replace_existing=True,
+    )
+
+    from email_integration.batch_sync import sync_all_users  # noqa: PLC0415
+
+    scheduler.add_job(
+        sync_all_users,
+        trigger=IntervalTrigger(hours=settings.gmail_sync_interval_hours),
+        id="gmail_sync",
         replace_existing=True,
     )
     return scheduler
