@@ -10,3 +10,13 @@ Status: DONE
 - disconnectMutation.mutate() (via onDisconnect prop) only fires when the dialog's Disconnect action is clicked
 - All AlertDialog imports use direct path ./ui/alert-dialog; buttonVariants from ./ui/button
 - Frontend build passes (✓ built in 3.17s)
+
+## US-871: Add Sync Now button with result feedback in SettingsIntegrationsSection
+Status: DONE
+- Imported RefreshCw from lucide-react/dist/esm/icons/refresh-cw (direct subpath, per CLAUDE.md)
+- Added useGmailSyncMutation to the existing import from ../hooks/useGmailStatus
+- Called useGmailSyncMutation() in ConnectedState, stored as syncMutation
+- Replaced bare last_sync_at paragraph with a flex row containing the timestamp (or empty span) + Sync Now button
+- Button: aria-busy={syncMutation.isPending}, disabled={syncMutation.isPending}, calls syncMutation.mutate() on click
+- onSuccess in the mutation hook already invalidates GMAIL_STATUS_KEY, so last_sync_at refreshes automatically
+- Frontend build passes (✓ built in 3.34s)

@@ -27,8 +27,8 @@
         "The STAGE_MAP already maps classifier output to valid stage strings"
       ],
       "priority": "critical",
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added current_stage: str | None = Field(None, ...) to ApplicationCreate in schemas.py. Updated _build_application_doc in applications/service.py to use body_dict.get('current_stage') or INITIAL_STAGE. In _process_message, pass current_stage=stage when stage != 'Applied'."
     },
     {
       "id": "US-864",

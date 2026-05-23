@@ -30,8 +30,8 @@
         "No console errors"
       ],
       "priority": "high",
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added useGmailSyncMutation hook call in ConnectedState. Imported RefreshCw from lucide-react/dist/esm/icons/refresh-cw (direct subpath). Added Sync Now button with aria-busy and disabled when pending, placed in a flex row alongside last_sync_at timestamp. Build passes clean."
     },
     {
       "id": "US-872",
