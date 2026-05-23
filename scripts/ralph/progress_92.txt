@@ -1,3 +1,8 @@
 # Ralph Progress Log
 Started: Sat May 23 11:00:34 PDT 2026
 ---
+## US-863: Set current_stage when creating application from email [DONE]
+- Added `current_stage: str | None = Field(None, min_length=1, max_length=MAX_STAGE_LENGTH)` to `ApplicationCreate` in `backend/applications/schemas.py`
+- Updated `_build_application_doc` in `backend/applications/service.py` to use `body_dict.get("current_stage") or INITIAL_STAGE` so the field flows through to the document
+- In `_process_message` (email_integration/service.py), pass `current_stage=stage if stage != "Applied" else None` to `ApplicationCreate`
+- Learning: `_build_application_doc` hardcoded `INITIAL_STAGE`; the fix needed both schema and service changes to wire the field end-to-end.
