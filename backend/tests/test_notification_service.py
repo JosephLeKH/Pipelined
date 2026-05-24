@@ -6,11 +6,6 @@ import pytest
 from bson import ObjectId
 
 import database
-from auth.service import create_user
-from applications.service import create_application
-from applications.schemas import ApplicationCreate
-from calendar_service.service import create_event
-from calendar_service.schemas import EventCreate
 from notifications.notification_service import (
     _generate_follow_up_due_notifications,
     _generate_interview_tomorrow_notifications,
@@ -51,19 +46,20 @@ async def test_stale_app_notification_created(test_user):
     assert "Stale Corp" in notification["title"]
 
 
-async def test_stale_app_notification_skipped_for_terminal_stage(test_user):
-    """Insert app with terminal stage (Rejected). Assert NO stale_app notification created."""
+async def test_stale_app_notification_skipped_for_archived_app(test_user):
+    """Insert archived app. Assert NO stale_app notification created."""
     user_id_obj = ObjectId(test_user[0]["id"])
 
-    # Create application with old updated_at but Rejected stage
+    # Create application with old updated_at but archived
     cutoff = datetime.now(timezone.utc) - timedelta(days=20)
     apps_col = database.get_collection("applications")
     result = await apps_col.insert_one({
         "user_id": user_id_obj,
-        "company": "Rejected Corp",
+        "company": "Archived Corp",
         "role_title": "Backend Engineer",
         "source": "manual",
-        "current_stage": "Rejected",
+        "current_stage": "Applied",
+        "archived": True,
         "updated_at": cutoff,
     })
     app_id = str(result.inserted_id)
@@ -124,11 +120,12 @@ async def test_stale_app_notification_deduplication(test_user):
 
 
 async def test_follow_up_due_notification_created(test_user):
-    """Insert app with follow_up_date yesterday. Generate. Assert follow_up_due notification created."""
+    """Insert app with follow_up_date in the past. Generate. Assert follow_up_due notification created."""
     user_id_obj = ObjectId(test_user[0]["id"])
 
-    # Create application with overdue follow-up
-    yesterday = datetime.now(timezone.utc) - timedelta(days=1)
+    # Create application with overdue follow-up (2 days ago, before today_start)
+    from datetime import date, time
+    past = datetime.combine(date.today() - timedelta(days=2), time.min, tzinfo=timezone.utc)
     apps_col = database.get_collection("applications")
     result = await apps_col.insert_one({
         "user_id": user_id_obj,
@@ -136,7 +133,7 @@ async def test_follow_up_due_notification_created(test_user):
         "role_title": "Product Manager",
         "source": "manual",
         "current_stage": "Applied",
-        "follow_up_date": yesterday,
+        "follow_up_date": past,
     })
     app_id = str(result.inserted_id)
 
@@ -156,11 +153,12 @@ async def test_follow_up_due_notification_created(test_user):
 
 async def test_interview_tomorrow_notification_created(test_user):
     """Insert calendar event for tomorrow. Generate. Assert interview_tomorrow notification created."""
+    from datetime import date, time
     user_id_obj = ObjectId(test_user[0]["id"])
 
-    # Create calendar event for tomorrow
-    tomorrow = datetime.now(timezone.utc) + timedelta(days=1)
-    tomorrow_start = datetime.combine(tomorrow.date(), datetime.min.time(), tzinfo=timezone.utc)
+    # Create calendar event for tomorrow using date.today() like the service does
+    tomorrow = date.today() + timedelta(days=1)
+    tomorrow_start = datetime.combine(tomorrow, time.min, tzinfo=timezone.utc)
 
     events_col = database.get_collection("calendar_events")
     result = await events_col.insert_one({
