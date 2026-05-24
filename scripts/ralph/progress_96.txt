@@ -70,3 +70,35 @@ Started: Sat May 23 19:35:41 PDT 2026
 **Acceptance criteria**: All 7 criteria met.
 **Build**: Successful with zero type errors via `npm run build`
 **Commit**: d677452 feat: US-894 - Stale application visual indicator in ApplicationRow
+
+---
+
+## US-895 ✅ PASSED
+
+**Verified**: Interview prep router test suite at `backend/tests/test_interview_prep_router.py`.
+
+**Fix applied**: Unauthenticated tests no longer depend on session-scoped `test_app_id` fixture (conflicted with per-test `clean_db` wipe). Use hardcoded `_UNAUTH_APP_ID = "507f1f77bcf86cd799439011"` per PRD spec.
+
+**Tests (6/6 pass)**:
+- test_interview_prep_stream_unauthenticated → 401
+- test_interview_prep_stream_app_not_found → 404
+- test_interview_prep_stream_no_api_key → 503 (patch.object on router.settings.gemini_api_key)
+- test_interview_prep_stream_no_company → 422
+- test_follow_up_draft_unauthenticated → 401
+- test_follow_up_draft_no_api_key → 503
+
+**Command**: `pytest tests/test_interview_prep_router.py -v` → 6 passed
+
+---
+
+## US-896 ✅ PASSED
+
+**Verified**: Email deduplication tests already present in `backend/tests/test_email_service.py`.
+
+**Tests (2 dedup + 6 existing = 8/8 pass)**:
+- test_sync_emails_skips_already_processed_ids — skips msg1/msg2, processes only msg3, persists msg3
+- test_sync_emails_adds_new_ids_to_processed — persists msg_new1 and msg_new2 to gmail_processed_ids
+
+**Command**: `pytest tests/test_email_service.py -v` → 8 passed
+
+**PRD status**: prd_96 fully complete — all 5 stories pass.
