@@ -3,11 +3,13 @@
 import Archive from "lucide-react/dist/esm/icons/archive";
 import Bell from "lucide-react/dist/esm/icons/bell";
 import CalendarClock from "lucide-react/dist/esm/icons/calendar-clock";
+import Clock from "lucide-react/dist/esm/icons/clock";
 import Globe from "lucide-react/dist/esm/icons/globe";
 import LayoutDashboard from "lucide-react/dist/esm/icons/layout-dashboard";
 import Mail from "lucide-react/dist/esm/icons/mail";
 import Pencil from "lucide-react/dist/esm/icons/pencil";
 import Sparkles from "lucide-react/dist/esm/icons/sparkles";
+import { differenceInDays } from "date-fns/differenceInDays";
 
 import { STAGE_COLORS, DEFAULT_STAGE_COLOR } from "../lib/constants";
 import { Button } from "./ui/button";
@@ -25,6 +27,9 @@ const SOURCE_ICONS = {
   manual: Pencil,
   email: Mail,
 };
+
+const STALE_DAYS = 14;
+const TERMINAL_STAGES = ['Offer', 'Rejected'];
 
 
 export function StagePill({ stage }) {
@@ -80,6 +85,11 @@ function ApplicationRow({
   const dateApplied = formatDate(application.date_applied);
   const archived = Boolean(application.archived);
   const checkboxVisible = hasSelection ? "opacity-100" : "opacity-0 group-hover:opacity-100";
+
+  const staleDays = application.updated_at
+    ? differenceInDays(new Date(), new Date(application.updated_at))
+    : 0;
+  const isStaleIndicator = staleDays >= STALE_DAYS && !TERMINAL_STAGES.includes(application.current_stage);
 
   const { offset, revealed, handlers, handleAction } = useSwipeAction();
 
@@ -145,6 +155,16 @@ function ApplicationRow({
           )}
         </span>
         <FitBadge score={application.ai_analysis?.fit_score ?? null} />
+        <span className="relative w-4 shrink-0">
+          {isStaleIndicator && !archived && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Clock className="h-3.5 w-3.5 text-warning cursor-default" data-testid="stale-clock" aria-hidden="true" />
+              </TooltipTrigger>
+              <TooltipContent>No update in {staleDays} days</TooltipContent>
+            </Tooltip>
+          )}
+        </span>
         <span className="relative w-4 shrink-0">
           {followUpOverdue && !archived && (
             <Tooltip>

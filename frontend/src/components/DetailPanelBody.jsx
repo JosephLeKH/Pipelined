@@ -288,6 +288,7 @@ export function PanelBody({ application, handleStageChange, handleUpdate, onAddE
       </div>
       <JobPostingLink url={application.source_url} />
       <StageSelector stageOptions={stageOptions} currentStage={application.current_stage} onStageChange={handleStageChange} />
+      <FollowUpDraftSection application={application} />
       <TagsSection application={application} onUpdate={handleUpdate} />
       <FollowUpSection application={application} onUpdate={handleUpdate} />
       {application.current_stage === "Offer" && (

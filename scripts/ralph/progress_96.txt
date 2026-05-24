@@ -1,3 +1,22 @@
 # Ralph Progress Log
 Started: Sat May 23 19:35:41 PDT 2026
 ---
+
+## US-892 ✅ PASSED
+
+**Implemented**: Added `POST /api/applications/{app_id}/follow-up-draft` endpoint to `backend/applications/interview_prep/router.py` for generating professional follow-up email drafts using Gemini 2.0 Flash.
+
+**Key implementation details**:
+- Uses AsyncOpenAI client with GEMINI_BASE_URL and GEMINI_MODEL constants
+- Fetches application via existing `_get_application` helper to verify user ownership
+- Extracts company, role_title, current_stage, and date_applied fields
+- Implements 10-second timeout via `asyncio.wait_for()` with FOLLOWUP_TIMEOUT_SECONDS constant
+- Rate limited to 5/hour via @limiter.limit decorator
+- Returns {data: {subject, body}} envelope format per project API contract
+- Proper error handling: 503 when gemini_api_key missing, 502 on AI/timeout failures
+- Strips markdown code fences from Gemini response using re.sub pattern (matching classifier.py)
+- Added imports: asyncio, re, AsyncOpenAI
+- Type checking: 0 errors via pyright
+
+**Tests**: All existing tests pass. No new test coverage added (US-895 will cover router tests).
+**Commit**: c33815a feat: US-892 - Backend — follow-up email draft endpoint

@@ -18,8 +18,8 @@
         "All existing tests still pass"
       ],
       "priority": "high",
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Implemented POST /{app_id}/follow-up-draft endpoint in interview_prep/router.py with Gemini 2.0 Flash via AsyncOpenAI. Includes rate limiting (5/hour), timeout handling (10s), proper error codes (503 for missing key, 502 for AI failures), and standard response envelope. Type checking passes with 0 errors."
     },
     {
       "id": "US-893",

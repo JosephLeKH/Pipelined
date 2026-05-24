@@ -4,14 +4,13 @@ import pytest
 
 from tests.conftest import as_anonymous, as_user
 
-pytestmark = pytest.mark.asyncio(loop_scope="session")
-
 
 # ---------------------------------------------------------------------------
 # GET /api/email/status
 # ---------------------------------------------------------------------------
 
 
+@pytest.mark.asyncio
 async def test_get_status_unauthenticated(client):
     """GET /api/email/status without auth cookies should return 401."""
     # Act
@@ -22,6 +21,7 @@ async def test_get_status_unauthenticated(client):
     assert response.status_code == 401
 
 
+@pytest.mark.asyncio
 async def test_get_status_authenticated_no_gmail(client, test_user):
     """GET /api/email/status as test_user (no Gmail token) should return 200 with connected=false."""
     # Arrange
@@ -43,6 +43,7 @@ async def test_get_status_authenticated_no_gmail(client, test_user):
 # ---------------------------------------------------------------------------
 
 
+@pytest.mark.asyncio
 async def test_sync_requires_gmail_connected(client, test_user):
     """POST /api/email/sync as test_user (no Gmail token) should return 400 with GMAIL_NOT_CONNECTED."""
     # Arrange
@@ -63,6 +64,7 @@ async def test_sync_requires_gmail_connected(client, test_user):
 # ---------------------------------------------------------------------------
 
 
+@pytest.mark.asyncio
 async def test_get_auth_url_requires_verified_user(client, test_user):
     """GET /api/email/auth as verified test_user should return 200 with auth_url key."""
     # Arrange
