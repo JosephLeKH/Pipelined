@@ -59,16 +59,17 @@ def _local_date_for_user(user_doc: dict, when: dt.datetime | None = None) -> str
     return moment.date().isoformat()
 
 
-def _build_summary_line(sections: MorningBriefSections) -> str:
+def _build_summary_line(sections: MorningBriefSections, pending_count: int = 0) -> str:
     parts: list[str] = []
+    if pending_count > 0:
+        match_word = "match" if pending_count == 1 else "matches"
+        parts.append(f"I found {pending_count} great {match_word} overnight")
     if sections.follow_ups:
         parts.append(f"{len(sections.follow_ups)} follow-up{'s' if len(sections.follow_ups) != 1 else ''}")
     if sections.interviews:
         parts.append(f"{len(sections.interviews)} interview{'s' if len(sections.interviews) != 1 else ''}")
     if sections.high_matches:
         parts.append(f"{len(sections.high_matches)} high match{'es' if len(sections.high_matches) != 1 else ''}")
-    if sections.pending_approvals:
-        parts.append(f"{len(sections.pending_approvals)} pending approval{'s' if len(sections.pending_approvals) != 1 else ''}")
     if not parts:
         return "You're all caught up today"
     return ", ".join(parts)
@@ -176,6 +177,11 @@ async def _fetch_high_matches(uid: ObjectId) -> list[BriefItem]:
     return items
 
 
+async def _count_pending_approvals(uid: ObjectId) -> int:
+    pending_col = get_collection("pending_opportunities")
+    return await pending_col.count_documents({"user_id": uid, "status": "pending"})
+
+
 async def _fetch_pending_approvals(uid: ObjectId) -> list[BriefItem]:
     pending_col = get_collection("pending_opportunities")
     docs = await pending_col.find(
@@ -222,11 +228,12 @@ async def build_morning_brief(user_id: str, local_date: str | None = None) -> Mo
     today_start = dt.datetime.combine(today, dt.time.min, tzinfo=dt.timezone.utc)
     lookahead = today + dt.timedelta(days=INTERVIEW_LOOKAHEAD_DAYS)
 
-    follow_ups, interviews, high_matches, pending_approvals = await asyncio.gather(
+    follow_ups, interviews, high_matches, pending_approvals, pending_count = await asyncio.gather(
         _fetch_follow_ups(uid, today_start),
         _fetch_interviews(uid, today, lookahead),
         _fetch_high_matches(uid),
         _fetch_pending_approvals(uid),
+        _count_pending_approvals(uid),
     )
     sections = MorningBriefSections(
         follow_ups=follow_ups,
@@ -238,7 +245,7 @@ async def build_morning_brief(user_id: str, local_date: str | None = None) -> Mo
         user_id=user_id,
         date=brief_date,
         sections=sections,
-        summary_line=_build_summary_line(sections),
+        summary_line=_build_summary_line(sections, pending_count),
     )
 
 

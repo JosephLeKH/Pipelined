@@ -1,6 +1,7 @@
 """Tests for morning brief assembly and storage."""
 
 import datetime as dt
+import hashlib
 from unittest.mock import AsyncMock, patch
 
 import pytest
@@ -67,6 +68,31 @@ async def _insert_high_match(user_id: str, score: int) -> None:
     })
 
 
+async def _insert_pending_opportunity(user_id: str, score: int, company: str, role: str) -> None:
+    listing_id = ObjectId()
+    apply_url = f"https://example.com/jobs/{listing_id}"
+    url_hash = hashlib.sha256(apply_url.lower().strip().encode()).hexdigest()
+    await database.get_collection("job_listings").insert_one({
+        "_id": listing_id,
+        "company": company,
+        "role": role,
+        "apply_url": apply_url,
+        "url_hash": url_hash,
+        "ingested_at": dt.datetime.now(dt.timezone.utc),
+    })
+    await database.get_collection("pending_opportunities").insert_one({
+        "user_id": ObjectId(user_id),
+        "job_listing_id": listing_id,
+        "match_score": score,
+        "match_reason": "Strong fit",
+        "cover_letter": {"subject": "Application", "body": "Hello"},
+        "resume_tips": {"summary": "Tip", "bullet_suggestions": []},
+        "status": "pending",
+        "created_at": dt.datetime.now(dt.timezone.utc),
+        "reviewed_at": None,
+    })
+
+
 @pytest.mark.asyncio(loop_scope="session")
 async def test_build_morning_brief_includes_follow_ups(brief_user):
     await _insert_follow_up(brief_user)
@@ -102,6 +128,28 @@ async def test_generate_and_store_brief_upserts(brief_user):
 
     again = await generate_and_store_brief(brief_user)
     assert again["date"] == stored["date"]
+
+
+@pytest.mark.asyncio(loop_scope="session")
+async def test_build_morning_brief_includes_pending_approvals(brief_user):
+    await _insert_pending_opportunity(brief_user, 91, "Gamma", "Staff Engineer")
+    await _insert_pending_opportunity(brief_user, 88, "Delta", "Platform Engineer")
+
+    brief = await build_morning_brief(brief_user)
+
+    assert len(brief.sections.pending_approvals) == 2
+    assert brief.sections.pending_approvals[0].title == "Gamma — Staff Engineer"
+    assert brief.sections.pending_approvals[0].action_url == "/inbox/pending"
+    assert "I found 2 great matches overnight" in brief.summary_line
+
+
+@pytest.mark.asyncio(loop_scope="session")
+async def test_build_morning_brief_summary_singular_pending_match(brief_user):
+    await _insert_pending_opportunity(brief_user, 95, "Solo Co", "Engineer")
+
+    brief = await build_morning_brief(brief_user)
+
+    assert brief.summary_line.startswith("I found 1 great match overnight")
 
 
 @pytest.mark.asyncio(loop_scope="session")
