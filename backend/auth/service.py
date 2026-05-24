@@ -16,6 +16,9 @@ from bson import ObjectId
 from bson.errors import InvalidId
 
 from auth.constants import (
+    DEFAULT_AUTOPILOT_ENABLED,
+    DEFAULT_AUTOPILOT_MAX_DAILY,
+    DEFAULT_AUTOPILOT_MIN_MATCH_SCORE,
     DEFAULT_MORNING_BRIEF_EMAIL,
     DEFAULT_MORNING_BRIEF_ENABLED,
     DEFAULT_MORNING_BRIEF_HOUR,
@@ -131,6 +134,9 @@ def _build_user_doc(email: str, password: str, display_name: str) -> dict:
         "referral_code": new_code,
         "referral_count": 0,
         "referred_by": None,
+        "autopilot_enabled": DEFAULT_AUTOPILOT_ENABLED,
+        "autopilot_min_match_score": DEFAULT_AUTOPILOT_MIN_MATCH_SCORE,
+        "autopilot_max_daily": DEFAULT_AUTOPILOT_MAX_DAILY,
     }
 
 
@@ -235,6 +241,9 @@ async def update_user_profile(
     morning_brief_email: bool | None = None,
     morning_brief_in_app: bool | None = None,
     weekly_digest_enabled: bool | None = None,
+    autopilot_enabled: bool | None = None,
+    autopilot_min_match_score: int | None = None,
+    autopilot_max_daily: int | None = None,
 ) -> dict:
     """Update user profile fields and return the updated document."""
     users = get_collection("users")
@@ -257,6 +266,12 @@ async def update_user_profile(
         update_fields["morning_brief_email"] = morning_brief_email
     if morning_brief_in_app is not None:
         update_fields["morning_brief_in_app"] = morning_brief_in_app
+    if autopilot_enabled is not None:
+        update_fields["autopilot_enabled"] = autopilot_enabled
+    if autopilot_min_match_score is not None:
+        update_fields["autopilot_min_match_score"] = autopilot_min_match_score
+    if autopilot_max_daily is not None:
+        update_fields["autopilot_max_daily"] = autopilot_max_daily
     if update_fields:
         await users.update_one(
             {"_id": ObjectId(user_id)},
@@ -363,6 +378,7 @@ async def delete_user(user_id: str) -> None:
         get_collection("user_custom_fields").delete_many({"user_id": oid}),
         get_collection("shares").delete_many({"user_id": oid}),
         get_collection("application_templates").delete_many({"user_id": oid}),
+        get_collection("pending_opportunities").delete_many({"user_id": oid}),
         get_collection("users").delete_one({"_id": oid}),
     )
     logger.info("user_deleted", user_id=user_id)

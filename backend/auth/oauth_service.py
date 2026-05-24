@@ -8,6 +8,9 @@ import structlog
 from motor.motor_asyncio import AsyncIOMotorCollection
 
 from auth.constants import (
+    DEFAULT_AUTOPILOT_ENABLED,
+    DEFAULT_AUTOPILOT_MAX_DAILY,
+    DEFAULT_AUTOPILOT_MIN_MATCH_SCORE,
     DEFAULT_MORNING_BRIEF_EMAIL,
     DEFAULT_MORNING_BRIEF_ENABLED,
     DEFAULT_MORNING_BRIEF_HOUR,
@@ -87,6 +90,9 @@ async def get_or_create_google_user(
         "morning_brief_hour": DEFAULT_MORNING_BRIEF_HOUR,
         "morning_brief_email": DEFAULT_MORNING_BRIEF_EMAIL,
         "morning_brief_in_app": DEFAULT_MORNING_BRIEF_IN_APP,
+        "autopilot_enabled": DEFAULT_AUTOPILOT_ENABLED,
+        "autopilot_min_match_score": DEFAULT_AUTOPILOT_MIN_MATCH_SCORE,
+        "autopilot_max_daily": DEFAULT_AUTOPILOT_MAX_DAILY,
         "email_verified": True,
         "created_at": datetime.now(timezone.utc),
     }
@@ -174,6 +180,9 @@ async def _insert_github_user(
         "morning_brief_hour": DEFAULT_MORNING_BRIEF_HOUR,
         "morning_brief_email": DEFAULT_MORNING_BRIEF_EMAIL,
         "morning_brief_in_app": DEFAULT_MORNING_BRIEF_IN_APP,
+        "autopilot_enabled": DEFAULT_AUTOPILOT_ENABLED,
+        "autopilot_min_match_score": DEFAULT_AUTOPILOT_MIN_MATCH_SCORE,
+        "autopilot_max_daily": DEFAULT_AUTOPILOT_MAX_DAILY,
         "email_verified": True,
         "created_at": datetime.now(timezone.utc),
     }

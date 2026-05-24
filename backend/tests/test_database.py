@@ -72,3 +72,14 @@ async def test_ensure_indexes_creates_users_indexes(app):
     assert index_info["email"].get("unique") is True
     assert index_info["google_id"].get("sparse") is True
     assert index_info["google_id"].get("unique") is True
+
+
+async def test_ensure_indexes_creates_pending_opportunities_indexes(app):
+    await ensure_indexes()
+
+    index_info = await get_collection("pending_opportunities").index_information()
+
+    index_names = set(index_info.keys())
+    assert "pending_user_status" in index_names
+    assert "pending_user_listing_unique" in index_names
+    assert index_info["pending_user_listing_unique"].get("unique") is True

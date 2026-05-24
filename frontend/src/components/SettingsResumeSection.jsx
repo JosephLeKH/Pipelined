@@ -8,7 +8,7 @@ import UploadCloud from "lucide-react/dist/esm/icons/upload-cloud";
 import X from "lucide-react/dist/esm/icons/x";
 
 import { useAuth } from "../context/AuthContext";
-import { useDeleteResume, useUploadResume } from "../hooks/useAuth";
+import { useDeleteResume, useUploadResume, useUpdateUser } from "../hooks/useAuth";
 import { AI_SCORE_LIMIT, RESUME_ACCEPT, RESUME_MAX_MB } from "../lib/constants";
 import { Button } from "./ui/button";
 
@@ -135,6 +135,57 @@ function AiScoreMeter({ aiScores, aiPct }) {
   );
 }
 
+function AutopilotToggle() {
+  const { user } = useAuth();
+  const { mutateAsync, isPending } = useUpdateUser();
+  const [enabled, setEnabled] = useState(() => user?.autopilot_enabled ?? false);
+  const [error, setError] = useState(null);
+
+  const handleToggle = async (next) => {
+    setEnabled(next);
+    setError(null);
+    try {
+      await mutateAsync({ autopilot_enabled: next });
+    } catch {
+      setEnabled(!next);
+      setError("Failed to save autopilot setting.");
+    }
+  };
+
+  return (
+    <div className="rounded-xl bg-card border border-border p-6">
+      <h3 className="font-display mb-1 text-base font-semibold text-foreground">Application autopilot</h3>
+      <p className="mb-4 text-sm text-muted-foreground">
+        Find high-fit jobs overnight and queue them for your review. We never submit applications for you.
+      </p>
+      {error && <p role="alert" className="mb-3 text-sm text-destructive">{error}</p>}
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p id="autopilot-enabled-label" className="text-sm font-medium text-foreground">Enable autopilot</p>
+          <p className="mt-0.5 text-sm text-muted-foreground">Requires a uploaded resume.</p>
+        </div>
+        <button
+          type="button"
+          role="switch"
+          aria-checked={enabled}
+          aria-labelledby="autopilot-enabled-label"
+          disabled={isPending}
+          onClick={() => handleToggle(!enabled)}
+          className={`relative mt-0.5 inline-flex h-6 w-10 shrink-0 cursor-pointer items-center rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 ${
+            enabled ? "bg-primary" : "bg-muted"
+          }`}
+        >
+          <span
+            className={`inline-block h-4 w-4 transform rounded-full bg-white dark:bg-gray-100 shadow transition-transform ${
+              enabled ? "translate-x-5" : "translate-x-1"
+            }`}
+          />
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function SettingsResumeSection() {
   const { user, fileInputRef, isDragOver, setIsDragOver, isUploading, isDeleting,
           uploadedFile, resumeError, resumeSuccess, handleDrop, handleInputChange, handleDelete } = useResumeUpload();
@@ -164,6 +215,7 @@ function SettingsResumeSection() {
             fileInputRef={fileInputRef} onDrop={handleDrop} onInputChange={handleInputChange} />
         )}
       </div>
+      <AutopilotToggle />
       <AiScoreMeter aiScores={aiScores} aiPct={aiPct} />
     </div>
   );

@@ -159,6 +159,9 @@ async def update_me(
         morning_brief_email=body.morning_brief_email,
         morning_brief_in_app=body.morning_brief_in_app,
         weekly_digest_enabled=body.weekly_digest_enabled,
+        autopilot_enabled=body.autopilot_enabled,
+        autopilot_min_match_score=body.autopilot_min_match_score,
+        autopilot_max_daily=body.autopilot_max_daily,
     )
     logger.info("user_profile_updated", user_id=str(user["_id"]))
     return {"data": UserResponse.from_doc(updated)}

@@ -899,3 +899,45 @@ async def test_legacy_digest_enabled_maps_to_weekly_digest(client):
 
     assert response.status_code == 200
     assert response.json()["data"]["weekly_digest_enabled"] is True
+
+
+async def test_get_me_includes_autopilot_defaults(client):
+    reg = await client.post("/api/auth/register", json={
+        "email": "autopilot_defaults@example.com",
+        "password": "password123",
+        "display_name": "Autopilot Defaults",
+    })
+    cookies = dict(reg.cookies)
+
+    response = await client.get("/api/auth/me", cookies=cookies)
+
+    assert response.status_code == 200
+    data = response.json()["data"]
+    assert data["autopilot_enabled"] is False
+    assert data["autopilot_min_match_score"] == 80
+    assert data["autopilot_max_daily"] == 5
+
+
+async def test_patch_me_updates_autopilot_preferences(client):
+    reg = await client.post("/api/auth/register", json={
+        "email": "autopilot_prefs@example.com",
+        "password": "password123",
+        "display_name": "Autopilot User",
+    })
+    cookies = dict(reg.cookies)
+
+    response = await client.patch(
+        "/api/auth/me",
+        json={
+            "autopilot_enabled": True,
+            "autopilot_min_match_score": 85,
+            "autopilot_max_daily": 3,
+        },
+        cookies=cookies,
+    )
+
+    assert response.status_code == 200
+    data = response.json()["data"]
+    assert data["autopilot_enabled"] is True
+    assert data["autopilot_min_match_score"] == 85
+    assert data["autopilot_max_daily"] == 3

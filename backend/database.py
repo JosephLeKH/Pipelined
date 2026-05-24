@@ -123,6 +123,7 @@ async def ensure_indexes() -> None:
     undo_stack = get_collection("undo_stack")
     morning_briefs = get_collection("morning_briefs")
     morning_brief_on_demand = get_collection("morning_brief_on_demand")
+    pending_opportunities = get_collection("pending_opportunities")
 
     await asyncio.gather(
         _ensure_app_event_listing_indexes(apps, events, listings),
@@ -131,4 +132,11 @@ async def ensure_indexes() -> None:
         undo_stack.create_index([("user_id", 1), ("created_at", -1)], name="undo_stack_user_date"),
         morning_briefs.create_index([("user_id", 1), ("date", 1)], unique=True, name="brief_user_date"),
         morning_brief_on_demand.create_index([("user_id", 1), ("created_at", -1)], name="brief_on_demand_user_date"),
+        pending_opportunities.create_index([("user_id", 1), ("status", 1)], name="pending_user_status"),
+        pending_opportunities.create_index(
+            [("user_id", 1), ("job_listing_id", 1)],
+            unique=True,
+            partialFilterExpression={"status": "pending"},
+            name="pending_user_listing_unique",
+        ),
     )

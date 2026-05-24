@@ -5,6 +5,13 @@ from zoneinfo import available_timezones
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 from auth.constants import (
+    AUTOPILOT_MAX_DAILY_MAX,
+    AUTOPILOT_MAX_DAILY_MIN,
+    AUTOPILOT_MIN_SCORE_MAX,
+    AUTOPILOT_MIN_SCORE_MIN,
+    DEFAULT_AUTOPILOT_ENABLED,
+    DEFAULT_AUTOPILOT_MAX_DAILY,
+    DEFAULT_AUTOPILOT_MIN_MATCH_SCORE,
     DEFAULT_MORNING_BRIEF_EMAIL,
     DEFAULT_MORNING_BRIEF_ENABLED,
     DEFAULT_MORNING_BRIEF_HOUR,
@@ -78,6 +85,9 @@ class UserResponse(BaseModel):
     ai_scores_remaining_today: int = 20
     referral_code: str | None = None
     referral_count: int = 0
+    autopilot_enabled: bool = DEFAULT_AUTOPILOT_ENABLED
+    autopilot_min_match_score: int = DEFAULT_AUTOPILOT_MIN_MATCH_SCORE
+    autopilot_max_daily: int = DEFAULT_AUTOPILOT_MAX_DAILY
 
     @classmethod
     def from_doc(cls, doc: dict) -> "UserResponse":
@@ -102,6 +112,11 @@ class UserResponse(BaseModel):
             ai_scores_remaining_today=get_ai_scores_remaining(doc),
             referral_code=doc.get("referral_code"),
             referral_count=doc.get("referral_count", 0),
+            autopilot_enabled=doc.get("autopilot_enabled", DEFAULT_AUTOPILOT_ENABLED),
+            autopilot_min_match_score=doc.get(
+                "autopilot_min_match_score", DEFAULT_AUTOPILOT_MIN_MATCH_SCORE
+            ),
+            autopilot_max_daily=doc.get("autopilot_max_daily", DEFAULT_AUTOPILOT_MAX_DAILY),
         )
 
 
@@ -160,6 +175,13 @@ class UpdateUserRequest(BaseModel):
     morning_brief_in_app: bool | None = None
     weekly_digest_enabled: bool | None = None
     weekly_goal: int | None = Field(None, ge=WEEKLY_GOAL_MIN, le=WEEKLY_GOAL_MAX)
+    autopilot_enabled: bool | None = None
+    autopilot_min_match_score: int | None = Field(
+        None, ge=AUTOPILOT_MIN_SCORE_MIN, le=AUTOPILOT_MIN_SCORE_MAX
+    )
+    autopilot_max_daily: int | None = Field(
+        None, ge=AUTOPILOT_MAX_DAILY_MIN, le=AUTOPILOT_MAX_DAILY_MAX
+    )
 
     def model_post_init(self, __context: object) -> None:
         if self.default_stages is not None:
