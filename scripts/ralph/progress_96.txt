@@ -20,3 +20,29 @@ Started: Sat May 23 19:35:41 PDT 2026
 
 **Tests**: All existing tests pass. No new test coverage added (US-895 will cover router tests).
 **Commit**: c33815a feat: US-892 - Backend — follow-up email draft endpoint
+
+---
+
+## US-893 ✅ PASSED
+
+**Verified**: Frontend 'Draft follow-up' button implementation in DetailPanel already complete and committed.
+
+**Key implementation details**:
+- **API function**: `generateFollowUpDraft(appId)` added to `frontend/src/api/applications.js` (line 125-129). Calls `POST /api/applications/{appId}/follow-up-draft` and returns `res.data.data`.
+- **Component**: `FollowUpDraftSection` component in `frontend/src/components/DetailPanelBody.jsx` (lines 164-245)
+  - Uses `differenceInDays` from `date-fns/differenceInDays` to compute staleness (14+ days)
+  - Displays button only when `isStale && ['Applied', 'Phone Screen'].includes(application.current_stage)`
+  - Mail icon from `lucide-react/dist/esm/icons/mail` using direct subpath import
+  - Loading state on button during API call
+  - Displays draft in collapsible expandable block with subject + body
+  - Copy button uses `navigator.clipboard.writeText()` to copy full email (Subject + body)
+  - Error handling with `toast.error('Could not generate draft — try again')` via sonner
+  - Draft stored in local component state (useState), no React Query needed
+- **Integrated**: Component mounted in PanelBody at line 291
+- **Type checking**: 0 errors via `npx tsc --noEmit`
+- **Direct imports**: All lucide-react imports use `dist/esm/icons/` subpath per project requirements
+- **No new files**: Feature added entirely to existing DetailPanelBody.jsx component
+
+**Acceptance criteria**: All 8 criteria met.
+**Tests**: Frontend test suite runs (pre-existing Tooltip context errors in other tests unrelated to this feature).
+**Commit**: 2f9f9da chore(ralph): iteration 1 snapshot (auto-commit)
