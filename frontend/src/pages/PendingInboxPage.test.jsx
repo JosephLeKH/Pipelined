@@ -20,6 +20,7 @@ const MOCK_OPPORTUNITY = {
   match_reason: "Strong Python overlap",
   cover_letter: { subject: "Application", body: "Dear hiring team" },
   resume_tips: { summary: "Highlight backend work", bullet_suggestions: ["Add metrics"] },
+  talking_points: ["Strong Python overlap", "FastAPI experience"],
   status: "pending",
   created_at: "2026-05-23T05:00:00.000Z",
   listing_company: "Acme",

@@ -16,6 +16,7 @@ import FitBadge from "./FitBadge";
 import { Button } from "./ui/button";
 
 const RESUME_TIPS_DISCLAIMER = "Suggestions only — review and edit before applying.";
+const APPLY_PACK_HINT = "After approving, open Apply pack in the application detail to copy materials.";
 
 function CoverLetterSection({ coverLetter }) {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -140,6 +141,18 @@ function PendingOpportunityCard({
               </ul>
             )}
             <p className="mt-2 text-xs text-muted-foreground">{RESUME_TIPS_DISCLAIMER}</p>
+          </div>
+        )}
+
+        {opportunity.talking_points?.length > 0 && (
+          <div>
+            <h3 className="text-sm font-medium text-foreground">Talking points</h3>
+            <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-foreground">
+              {opportunity.talking_points.map((point) => (
+                <li key={point}>{point}</li>
+              ))}
+            </ul>
+            <p className="mt-2 text-xs text-muted-foreground">{APPLY_PACK_HINT}</p>
           </div>
         )}
       </div>

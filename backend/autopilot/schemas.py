@@ -22,6 +22,7 @@ class PendingOpportunityResponse(BaseModel):
     match_reason: str
     cover_letter: CoverLetterDraft
     resume_tips: ResumeTips
+    talking_points: list[str] = []
     status: str
     created_at: datetime
     reviewed_at: datetime | None = None
@@ -39,6 +40,7 @@ class PendingOpportunityResponse(BaseModel):
             match_reason=doc["match_reason"],
             cover_letter=CoverLetterDraft(**doc["cover_letter"]),
             resume_tips=ResumeTips(**doc["resume_tips"]),
+            talking_points=doc.get("talking_points") or [],
             status=doc["status"],
             created_at=doc["created_at"],
             reviewed_at=doc.get("reviewed_at"),

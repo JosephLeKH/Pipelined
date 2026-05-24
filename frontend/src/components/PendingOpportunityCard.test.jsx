@@ -14,6 +14,7 @@ const MOCK_OPPORTUNITY = {
   match_reason: "Strong Python overlap",
   cover_letter: { subject: "Application", body: "Dear hiring team" },
   resume_tips: { summary: "Highlight backend work", bullet_suggestions: ["Add metrics"] },
+  talking_points: ["5 years Python", "Led API migration"],
   listing_company: "Acme",
   listing_role: "Backend Engineer",
   listing_apply_url: "https://example.com/jobs/acme",
@@ -63,5 +64,21 @@ describe("PendingOpportunityCard", () => {
       "Subject: Application\n\nDear hiring team"
     );
     expect(screen.getByRole("button", { name: /cover letter copied/i })).toBeInTheDocument();
+  });
+
+  it("should render talking points and apply pack hint", () => {
+    render(
+      <PendingOpportunityCard
+        opportunity={MOCK_OPPORTUNITY}
+        onApprove={vi.fn()}
+        onDismiss={vi.fn()}
+        isApproving={false}
+        isDismissing={false}
+      />
+    );
+
+    expect(screen.getByText("Talking points")).toBeInTheDocument();
+    expect(screen.getByText("5 years Python")).toBeInTheDocument();
+    expect(screen.getByText(/open apply pack in the application detail/i)).toBeInTheDocument();
   });
 });

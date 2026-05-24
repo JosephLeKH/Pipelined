@@ -3,6 +3,7 @@
 from datetime import datetime, timezone
 
 import structlog
+from ai.agent_log import AGENT_TYPE_AUTOPILOT, STATUS_SUCCESS, log_agent_run
 from auth.constants import DEFAULT_AUTOPILOT_MAX_DAILY, DEFAULT_AUTOPILOT_MIN_MATCH_SCORE
 from autopilot.constants import PENDING_STATUS
 from autopilot.match_scorer import score_listing_for_user
@@ -101,6 +102,7 @@ async def _scan_for_user(user_doc: dict) -> int:
             "match_reason": score_result["reason"],
             "cover_letter": prep["cover_letter"],
             "resume_tips": prep["resume_tips"],
+            "talking_points": prep.get("talking_points") or [],
             "status": PENDING_STATUS,
             "created_at": now,
             "reviewed_at": None,
@@ -119,6 +121,14 @@ async def _scan_for_user(user_doc: dict) -> int:
             continue
         excluded_ids.add(listing_id)
         matches_created += 1
+        company = listing.get("company") or "Unknown"
+        role = listing.get("role") or "Role"
+        await log_agent_run(
+            user_id,
+            AGENT_TYPE_AUTOPILOT,
+            STATUS_SUCCESS,
+            f"Matched {company} — {role} ({score_result['score']}%)",
+        )
 
     if matches_created:
         logger.info("autopilot_scan_user_complete", user_id=user_id, matches_created=matches_created)

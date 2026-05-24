@@ -93,9 +93,19 @@ async def approve_pending_opportunity(user_id: str, opportunity_id: str) -> tupl
         app_id = str(app_doc["_id"])
 
     cover = doc.get("cover_letter") or {}
+    talking_points = doc.get("talking_points") or []
+    apply_pack = {
+        "cover_letter": cover.get("body") or "",
+        "short_answers": [],
+        "linkedin_note": "",
+        "talking_points": talking_points,
+    }
     await get_collection("applications").update_one(
         {"_id": ObjectId(app_id), "user_id": ObjectId(user_id)},
-        {"$set": {"cover_letter_draft": cover}},
+        {"$set": {
+            "cover_letter_draft": cover,
+            "apply_pack": apply_pack,
+        }},
     )
 
     now = datetime.now(timezone.utc)
