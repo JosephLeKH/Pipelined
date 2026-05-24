@@ -247,6 +247,7 @@ async def update_user_profile(
     autopilot_min_match_score: int | None = None,
     autopilot_max_daily: int | None = None,
     agent_profile: dict | None = None,
+    watchlist_companies: list[dict] | None = None,
 ) -> dict:
     """Update user profile fields and return the updated document."""
     users = get_collection("users")
@@ -277,6 +278,8 @@ async def update_user_profile(
         update_fields["autopilot_max_daily"] = autopilot_max_daily
     if agent_profile is not None:
         update_fields["agent_profile"] = agent_profile
+    if watchlist_companies is not None:
+        update_fields["watchlist_companies"] = watchlist_companies
     if update_fields:
         await users.update_one(
             {"_id": ObjectId(user_id)},

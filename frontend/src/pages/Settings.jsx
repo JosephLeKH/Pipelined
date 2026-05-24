@@ -8,6 +8,7 @@ import SettingsAccountSection from "../components/SettingsAccountSection";
 import SettingsNotificationsSection from "../components/SettingsNotificationsSection";
 import SettingsPipelineSection from "../components/SettingsPipelineSection";
 import SettingsAutopilotSection from "../components/SettingsAutopilotSection";
+import SettingsWatchlistSection from "../components/SettingsWatchlistSection";
 import SettingsAgentProfileSection from "../components/SettingsAgentProfileSection";
 import SettingsAgentActivitySection from "../components/SettingsAgentActivitySection";
 import SettingsProfileSection from "../components/SettingsProfileSection";
@@ -150,7 +151,13 @@ function renderSection(activeSection, user) {
     case "calendar": return <CalendarSection />;
     case "notifications": return <SettingsNotificationsSection />;
     case "integrations": return <SettingsIntegrationsSection />;
-    case "autopilot": return <SettingsAutopilotSection />;
+    case "autopilot":
+      return (
+        <div className="flex flex-col gap-6">
+          <SettingsAutopilotSection />
+          <SettingsWatchlistSection />
+        </div>
+      );
     case "agent":
       return (
         <div className="flex flex-col gap-6">

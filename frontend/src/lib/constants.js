@@ -219,3 +219,8 @@ export const NEGOTIATION_TEMPLATES = [
     },
   },
 ];
+
+// SYNC: backend/auth/constants.py
+export const WATCHLIST_COMPANIES_MAX = 25;
+export const WATCHLIST_COMPANY_NAME_MAX_LENGTH = 100;
+export const WATCHLIST_CAREERS_URL_MAX_LENGTH = 500;

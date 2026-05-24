@@ -28,6 +28,9 @@ from auth.constants import (
     DEFAULT_WEEKLY_DIGEST_ENABLED,
     MORNING_BRIEF_HOUR_MAX,
     MORNING_BRIEF_HOUR_MIN,
+    WATCHLIST_CAREERS_URL_MAX_LENGTH,
+    WATCHLIST_COMPANIES_MAX,
+    WATCHLIST_COMPANY_NAME_MAX_LENGTH,
 )
 
 _VALID_TIMEZONES: frozenset[str] = frozenset(available_timezones())
@@ -86,6 +89,35 @@ class AgentProfileRequest(BaseModel):
                 raise ValueError(
                     f"Each preferred location must be 1–{AGENT_LOCATION_MAX_LENGTH} characters."
                 )
+
+
+class WatchlistCompanyRequest(BaseModel):
+    model_config = ConfigDict(strict=True)
+
+    name: str = Field(min_length=1, max_length=WATCHLIST_COMPANY_NAME_MAX_LENGTH)
+    careers_url: str = Field(min_length=1, max_length=WATCHLIST_CAREERS_URL_MAX_LENGTH)
+
+    def model_post_init(self, __context: object) -> None:
+        url = self.careers_url.strip()
+        if not url.startswith(("http://", "https://")):
+            raise ValueError("careers_url must start with http:// or https://")
+
+
+class WatchlistCompanyResponse(BaseModel):
+    name: str
+    careers_url: str
+
+
+def watchlist_companies_from_doc(doc: dict | None) -> list[dict]:
+    """Normalize watchlist_companies from a user document."""
+    raw = (doc or {}).get("watchlist_companies") or []
+    items: list[dict] = []
+    for entry in raw[:WATCHLIST_COMPANIES_MAX]:
+        name = str(entry.get("name") or "").strip()[:WATCHLIST_COMPANY_NAME_MAX_LENGTH]
+        careers_url = str(entry.get("careers_url") or "").strip()[:WATCHLIST_CAREERS_URL_MAX_LENGTH]
+        if name and careers_url:
+            items.append({"name": name, "careers_url": careers_url})
+    return items
 
 
 class AgentProfileResponse(BaseModel):
@@ -161,6 +193,7 @@ class UserResponse(BaseModel):
     autopilot_min_match_score: int = DEFAULT_AUTOPILOT_MIN_MATCH_SCORE
     autopilot_max_daily: int = DEFAULT_AUTOPILOT_MAX_DAILY
     agent_profile: AgentProfileResponse = Field(default_factory=lambda: AgentProfileResponse(**_default_agent_profile()))
+    watchlist_companies: list[WatchlistCompanyResponse] = Field(default_factory=list)
 
     @classmethod
     def from_doc(cls, doc: dict) -> "UserResponse":
@@ -191,6 +224,10 @@ class UserResponse(BaseModel):
             ),
             autopilot_max_daily=doc.get("autopilot_max_daily", DEFAULT_AUTOPILOT_MAX_DAILY),
             agent_profile=AgentProfileResponse.from_doc(doc),
+            watchlist_companies=[
+                WatchlistCompanyResponse(**item)
+                for item in watchlist_companies_from_doc(doc)
+            ],
         )
 
 
@@ -257,6 +294,10 @@ class UpdateUserRequest(BaseModel):
         None, ge=AUTOPILOT_MAX_DAILY_MIN, le=AUTOPILOT_MAX_DAILY_MAX
     )
     agent_profile: AgentProfileRequest | None = None
+    watchlist_companies: list[WatchlistCompanyRequest] | None = Field(
+        None,
+        max_length=WATCHLIST_COMPANIES_MAX,
+    )
 
     def model_post_init(self, __context: object) -> None:
         if self.default_stages is not None:

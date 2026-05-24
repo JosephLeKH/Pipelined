@@ -163,6 +163,11 @@ async def update_me(
         autopilot_min_match_score=body.autopilot_min_match_score,
         autopilot_max_daily=body.autopilot_max_daily,
         agent_profile=body.agent_profile.model_dump() if body.agent_profile else None,
+        watchlist_companies=(
+            [entry.model_dump() for entry in body.watchlist_companies]
+            if body.watchlist_companies is not None
+            else None
+        ),
     )
     logger.info("user_profile_updated", user_id=str(user["_id"]))
     return {"data": UserResponse.from_doc(updated)}
