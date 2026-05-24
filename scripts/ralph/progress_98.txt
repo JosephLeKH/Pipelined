@@ -1,0 +1,9 @@
+## US-910: Unify fit score display across list and detail views
+
+- Added `backend/applications/fit_display.py` with `get_display_fit()` returning `{score, reason, source}` — prefers `ai_analysis.fit_score`, falls back to top-level `fit_score` / `fit_score_reason`
+- Added `frontend/src/lib/fitDisplay.js` with `getDisplayFitScore()` mirroring the same preference for list/card views
+- Updated `ApplicationRow.jsx` and `KanbanCard.jsx` to use unified score via `getDisplayFitScore()`
+- Added `fit_score` to `LIST_PROJECTION` so list API returns interview-prep scores
+- Updated `service_export.py` PDF export to use `get_display_fit()`
+- Backend: 4/4 tests pass (`tests/test_fit_display.py`)
+- Frontend: 4/4 new fit-score tests pass in ApplicationRow and KanbanCard test files

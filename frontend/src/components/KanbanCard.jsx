@@ -7,6 +7,7 @@ import { STAGE_COLORS, DEFAULT_STAGE_COLOR } from "../lib/constants";
 import { cn } from "../lib/utils";
 import CompanyLogo from "./CompanyLogo";
 import FitBadge from "./FitBadge";
+import { getDisplayFitScore } from "../lib/fitDisplay";
 
 function KanbanCard({ application, onSelect }) {
   const {
@@ -75,7 +76,7 @@ function KanbanCard({ application, onSelect }) {
         <p className="text-xs text-muted-foreground">
           {formatRelative(application.date_applied)}
         </p>
-        <FitBadge score={application.ai_analysis?.fit_score ?? null} />
+        <FitBadge score={getDisplayFitScore(application)} />
       </div>
     </div>
   );

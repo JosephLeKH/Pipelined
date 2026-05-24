@@ -95,4 +95,16 @@ describe("KanbanCard", () => {
     const indicator = screen.getByTestId("stale-indicator");
     expect(indicator).toHaveAttribute("aria-label", expect.stringContaining("Stale"));
   });
+
+  it("should show fit score from ai_analysis when present", () => {
+    renderCard({ ...FRESH_APP, ai_analysis: { fit_score: 91 } });
+
+    expect(screen.getByTestId("fit-badge")).toHaveTextContent("91%");
+  });
+
+  it("should fall back to top-level fit_score when ai_analysis is absent", () => {
+    renderCard({ ...FRESH_APP, fit_score: 58 });
+
+    expect(screen.getByTestId("fit-badge")).toHaveTextContent("58%");
+  });
 });

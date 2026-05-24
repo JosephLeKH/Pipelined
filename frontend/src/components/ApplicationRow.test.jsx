@@ -88,6 +88,18 @@ describe("ApplicationRow — desktop interactions", () => {
 
     expect(screen.getByTestId("follow-up-bell")).toBeInTheDocument();
   });
+
+  it("should show fit score from ai_analysis when present", () => {
+    renderRow({ application: { ...APP, ai_analysis: { fit_score: 82 } } });
+
+    expect(screen.getByTestId("fit-badge")).toHaveTextContent("82%");
+  });
+
+  it("should fall back to top-level fit_score when ai_analysis is absent", () => {
+    renderRow({ application: { ...APP, fit_score: 67 } });
+
+    expect(screen.getByTestId("fit-badge")).toHaveTextContent("67%");
+  });
 });
 
 describe("ApplicationRow — swipe actions", () => {

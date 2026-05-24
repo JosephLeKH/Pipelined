@@ -127,7 +127,10 @@ def _pdf_apps_elements(styles: Any, apps: list[dict]) -> list:
     for app in apps:
         applied = app.get("date_applied")
         applied_str = applied.strftime("%Y-%m-%d") if isinstance(applied, datetime) else str(applied or "")[:10]
-        fit = app.get("ai_analysis", {}).get("fit_score")
+        from applications.fit_display import get_display_fit  # noqa: PLC0415
+
+        fit_data = get_display_fit(app)
+        fit = fit_data["score"] if fit_data else None
         rows.append([
             app.get("company") or "—",
             (app.get("role_title") or "—")[:40],

@@ -1,0 +1,61 @@
+{
+  "id": "prd_98",
+  "title": "OpenRouter AI Foundation — Unified LLM Layer",
+  "description": "Migrate all agentic LLM calls to OpenRouter (single API key, model routing) so new AI features stay within funded infra. DigitalOcean hosts the FastAPI app + SMTP; OpenRouter hosts models. Prerequisite for Resume Insights, Morning Brief, and Autopilot. OUT OF SCOPE: Cloudflare Workers, Exa for new features, direct Gemini/OpenAI keys for new code paths.",
+  "userStories": [
+    {
+      "id": "US-907",
+      "title": "OpenRouter config and shared client module",
+      "description": "Add OpenRouter as the canonical LLM provider for agent features.\n\n**Config** (`backend/config.py`):\n- `openrouter_api_key: str = \"\"`\n- `openrouter_base_url: str = \"https://openrouter.ai/api/v1\"`\n- `openrouter_default_model: str = \"google/gemini-2.0-flash-001\"`\n\n**New module** `backend/ai/openrouter_client.py`:\n- `get_openrouter_client() -> AsyncOpenAI` using openai SDK with OpenRouter base URL\n- `async def complete_json(system, user, *, model=None, temperature=0.3, max_tokens=500, timeout=15.0) -> dict` — strips markdown fences, parses JSON\n\nUpdate `.env.example` with `OPENROUTER_API_KEY`. Keep legacy GEMINI/OPENAI keys for backward compat during migration.",
+      "acceptanceCriteria": [
+        "backend/ai/openrouter_client.py with get_openrouter_client() and complete_json()",
+        "Config fields openrouter_api_key, openrouter_base_url, openrouter_default_model added",
+        ".env.example documents OPENROUTER_API_KEY",
+        "File under 120 lines, type annotations on all functions"
+      ],
+      "priority": "high",
+      "passes": true,
+      "notes": "OpenRouter config, ai/openrouter_client.py, tests/test_openrouter_client.py (6 passed). Commit 39438ea."
+    },
+    {
+      "id": "US-908"
+      "title": "Migrate email classifier and fit score to OpenRouter",
+      "description": "Replace direct Gemini calls with OpenRouter in classifier.py, fit_score.py, and generate_follow_up_draft in router.py.\n\nFallback: if openrouter_api_key set use OpenRouter; elif legacy gemini_api_key set keep existing path; else None/503.\n\nDo NOT migrate interview prep agent loop (uses Exa tools) in this story.",
+      "acceptanceCriteria": [
+        "classifier.py, fit_score.py, follow-up draft use OpenRouter when configured",
+        "Legacy gemini_api_key fallback preserved",
+        "Existing tests pass"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-909",
+      "title": "Extend ai_cache quota layer to OpenRouter calls",
+      "description": "Extend parsing/ai_cache.py so OpenRouter agent calls share budget + per-user daily quota. Wire into fit_score and follow-up draft when user_id available. Classifier uses global budget only.",
+      "acceptanceCriteria": [
+        "ai_cache supports openrouter provider",
+        "Per-user quota on fit_score and follow-up draft",
+        "Global budget for classifier",
+        "Tests for quota exceeded path"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-910",
+      "title": "Unify fit score display across list and detail views",
+      "description": "Add backend/applications/fit_display.py get_display_fit() preferring ai_analysis then fit_score. Update ApplicationRow.jsx and KanbanCard.jsx to use unified score. Read-time merge only, no schema migration.",
+      "acceptanceCriteria": [
+        "get_display_fit() helper with type hints",
+        "ApplicationRow and KanbanCard show score from either field",
+        "Frontend tests updated if needed"
+      ],
+      "priority": "medium",
+      "passes": true,
+      "notes": ""
+    }
+  ]
+}

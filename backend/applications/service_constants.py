@@ -24,6 +24,7 @@ LIST_PROJECTION = {
     "archived": 1,
     "archived_at": 1,
     "ai_analysis.fit_score": 1,
+    "fit_score": 1,
     "follow_up_date": 1,
     "offer_details": 1,
     "deadline": 1,

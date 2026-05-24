@@ -18,6 +18,7 @@ import { useSwipeAction } from "../hooks/useSwipeAction";
 import { RowMenu } from "./ApplicationRowActions";
 import CompanyLogo from "./CompanyLogo";
 import FitBadge from "./FitBadge";
+import { getDisplayFitScore } from "../lib/fitDisplay";
 import { Tooltip, TooltipTrigger, TooltipContent } from "./ui/tooltip";
 import { Checkbox } from "./ui/checkbox";
 
@@ -154,7 +155,7 @@ function ApplicationRow({
             </Tooltip>
           )}
         </span>
-        <FitBadge score={application.ai_analysis?.fit_score ?? null} />
+        <FitBadge score={getDisplayFitScore(application)} />
         <span className="relative w-4 shrink-0">
           {isStaleIndicator && !archived && (
             <Tooltip>
