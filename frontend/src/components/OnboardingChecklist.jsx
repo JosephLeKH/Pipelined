@@ -8,6 +8,7 @@ import Circle from "lucide-react/dist/esm/icons/circle";
 
 import { useAuth } from "../context/AuthContext";
 import { useApplications } from "../hooks/useApplications";
+import { useGmailStatus } from "../hooks/useGmailStatus";
 import { trackEvent } from "../lib/analytics";
 import { Button } from "./ui/button";
 import {
@@ -17,7 +18,8 @@ import {
 } from "../lib/constants";
 
 const EXTENSION_STEP_HREF = "https://chromewebstore.google.com/detail/pipelined";
-const TOTAL_ONBOARDING_STEPS = 3;
+const BASE_ONBOARDING_STEPS = 3;
+const AI_ONBOARDING_STEPS = 3;
 
 function StepRow({ id, label, description, done }) {
   return (
@@ -45,6 +47,7 @@ function OnboardingChecklist({ onAdd }) {
   const [showSuccess, setShowSuccess] = useState(false);
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { data: gmailStatus } = useGmailStatus();
 
   const { data: env } = useApplications({ limit: 100 });
   const apps = env?.data ?? [];
@@ -56,7 +59,16 @@ function OnboardingChecklist({ onAdd }) {
     user?.default_stages &&
     JSON.stringify(user.default_stages) !== JSON.stringify(STAGES)
   );
-  const allDone = hasExtensionApp && hasAddedApp && hasCustomStages;
+  const showAiSteps = hasAddedApp;
+  const hasResume = Boolean(user?.has_resume);
+  const hasGmail = Boolean(gmailStatus?.connected);
+  const hasAutopilot = Boolean(user?.autopilot_enabled);
+
+  const baseDone = hasExtensionApp && hasAddedApp && hasCustomStages;
+  const aiDone = !showAiSteps || (hasResume && hasGmail && hasAutopilot);
+  const allDone = baseDone && aiDone;
+
+  const totalSteps = showAiSteps ? BASE_ONBOARDING_STEPS + AI_ONBOARDING_STEPS : BASE_ONBOARDING_STEPS;
 
   useEffect(() => {
     if (!allDone || dismissed) return;
@@ -72,16 +84,14 @@ function OnboardingChecklist({ onAdd }) {
     hasExtensionApp && "install_extension",
     hasAddedApp && "add_application",
     hasCustomStages && "customize_stages",
+    showAiSteps && hasResume && "upload_resume",
+    showAiSteps && hasGmail && "connect_gmail",
+    showAiSteps && hasAutopilot && "enable_autopilot",
   ].filter(Boolean);
 
   useEffect(() => {
-    const steps = [
-      hasExtensionApp && "install_extension",
-      hasAddedApp && "add_application",
-      hasCustomStages && "customize_stages",
-    ].filter(Boolean);
-    steps.forEach((step) => trackEvent("onboarding_step_completed", { step }));
-  }, [hasExtensionApp, hasAddedApp, hasCustomStages]);
+    completedSteps.forEach((step) => trackEvent("onboarding_step_completed", { step }));
+  }, [hasExtensionApp, hasAddedApp, hasCustomStages, showAiSteps, hasResume, hasGmail, hasAutopilot]);
 
   const handleDismiss = () => {
     localStorage.setItem(ONBOARDING_DISMISSED_KEY, "true");
@@ -115,12 +125,12 @@ function OnboardingChecklist({ onAdd }) {
       </div>
       <div className="mb-3">
         <div className="mb-1 flex items-center text-xs text-muted-foreground">
-          <span>{completedSteps.length} of {TOTAL_ONBOARDING_STEPS} steps complete</span>
+          <span>{completedSteps.length} of {totalSteps} steps complete</span>
         </div>
         <div className="h-1.5 overflow-hidden rounded-full bg-muted">
           <div
             className="h-full rounded-full bg-primary transition-all"
-            style={{ width: `${(completedSteps.length / TOTAL_ONBOARDING_STEPS) * 100}%` }}
+            style={{ width: `${(completedSteps.length / totalSteps) * 100}%` }}
           />
         </div>
       </div>
@@ -179,6 +189,69 @@ function OnboardingChecklist({ onAdd }) {
             </Button>
           )}
         </div>
+        {showAiSteps && (
+          <>
+            <div className="mt-1 border-t border-border pt-3">
+              <p className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                Unlock AI features
+              </p>
+            </div>
+            <div>
+              <StepRow
+                id="resume"
+                label="Upload your resume"
+                description="Power fit scores, resume insights, and interview prep."
+                done={hasResume}
+              />
+              {!hasResume && (
+                <Button
+                  type="button"
+                  variant="link"
+                  onClick={() => navigate("/settings?section=resume")}
+                  className="ml-8 h-auto p-0 text-xs"
+                >
+                  Go to Resume settings
+                </Button>
+              )}
+            </div>
+            <div>
+              <StepRow
+                id="gmail"
+                label="Connect your job-search Gmail"
+                description="Auto-track applications and status updates from email."
+                done={hasGmail}
+              />
+              {!hasGmail && (
+                <Button
+                  type="button"
+                  variant="link"
+                  onClick={() => navigate("/settings?section=integrations")}
+                  className="ml-8 h-auto p-0 text-xs"
+                >
+                  Go to Integrations
+                </Button>
+              )}
+            </div>
+            <div>
+              <StepRow
+                id="autopilot"
+                label="Enable Autopilot"
+                description="Get daily job matches scored against your resume — you approve every apply."
+                done={hasAutopilot}
+              />
+              {!hasAutopilot && (
+                <Button
+                  type="button"
+                  variant="link"
+                  onClick={() => navigate("/settings?section=autopilot")}
+                  className="ml-8 h-auto p-0 text-xs"
+                >
+                  Go to Autopilot settings
+                </Button>
+              )}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

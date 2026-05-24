@@ -23,8 +23,13 @@ const server = setupServer(
         email: "test@example.com",
         display_name: "Test User",
         default_stages: DEFAULT_STAGES,
+        has_resume: false,
+        autopilot_enabled: false,
       },
     })
+  ),
+  http.get("/api/email/status", () =>
+    HttpResponse.json({ data: { connected: false } })
   )
 );
 
@@ -131,5 +136,29 @@ describe("OnboardingChecklist", () => {
 
     // Assert
     expect(onAdd).toHaveBeenCalledOnce();
+  });
+
+  it("should not show AI steps before first application is saved", () => {
+    render(<OnboardingChecklist onAdd={vi.fn()} />, { wrapper: Wrapper });
+
+    expect(screen.queryByText("Upload your resume")).not.toBeInTheDocument();
+    expect(screen.queryByText("Connect your job-search Gmail")).not.toBeInTheDocument();
+  });
+
+  it("should show 3 AI steps after first application is saved", async () => {
+    server.use(
+      http.get("/api/applications", () =>
+        HttpResponse.json({
+          data: [{ id: "app1", company: "Acme", role_title: "SWE", current_stage: "Applied", source: "manual" }],
+          meta: { total: 1, cursor: null },
+        })
+      )
+    );
+
+    render(<OnboardingChecklist onAdd={vi.fn()} />, { wrapper: Wrapper });
+
+    expect(await screen.findByText("Upload your resume")).toBeInTheDocument();
+    expect(screen.getByText("Connect your job-search Gmail")).toBeInTheDocument();
+    expect(screen.getByText("Enable Autopilot")).toBeInTheDocument();
   });
 });
