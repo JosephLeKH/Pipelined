@@ -13,6 +13,7 @@ import {
   fetchAnalytics,
   fetchApplication,
   fetchApplications,
+  fetchEmailEvents,
   fetchFunnel,
   fetchStats,
   fetchTags,
@@ -34,6 +35,7 @@ export const KEYS = {
   list: (filters) => [...KEYS.lists(), filters],
   details: () => [...KEYS.all, "detail"],
   detail: (id) => [...KEYS.details(), id],
+  emailEvents: (id) => [...KEYS.details(), id, "email-events"],
   stats: ["applications", "stats"],
   analytics: (days) => ["applications", "analytics", days],
   funnel: ["applications", "funnel"],
@@ -55,6 +57,16 @@ export function useApplication(id) {
     queryKey: KEYS.detail(id),
     queryFn: () => fetchApplication(id),
     enabled: Boolean(id),
+    staleTime: QUERY_STALE_TIME_MS,
+  });
+}
+
+/** Fetch email classification events for an application. */
+export function useEmailEvents(appId) {
+  return useQuery({
+    queryKey: KEYS.emailEvents(appId),
+    queryFn: () => fetchEmailEvents(appId),
+    enabled: Boolean(appId),
     staleTime: QUERY_STALE_TIME_MS,
   });
 }

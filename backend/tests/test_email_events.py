@@ -147,3 +147,57 @@ async def test_email_events_query_scoped_by_user_id(app):  # noqa: ARG001
 
     assert len(events) == 1
     assert events[0]["company"] == "Mine"
+
+
+async def test_email_events_api_returns_events_for_application(client, test_user):
+    """GET /api/applications/{id}/email-events returns user-scoped timeline."""
+    user, cookies = test_user
+    user_id = user["id"]
+
+    apps_col = database.get_collection("applications")
+    result = await apps_col.insert_one({
+        "user_id": ObjectId(user_id),
+        "company": "Timeline Co",
+        "role_title": "Engineer",
+        "source": "email",
+        "current_stage": "Interviewing",
+    })
+    app_id = str(result.inserted_id)
+
+    now = datetime.now(timezone.utc)
+    await database.get_collection(EMAIL_EVENTS_COLLECTION).insert_one({
+        "user_id": ObjectId(user_id),
+        "type": "stage_updated",
+        "timestamp": now,
+        "application_id": app_id,
+        "company": "Timeline Co",
+        "role_title": "Engineer",
+        "stage": "Interviewing",
+        "subject": "Interview scheduled",
+    })
+
+    resp = await client.get(f"/api/applications/{app_id}/email-events", cookies=cookies)
+
+    assert resp.status_code == 200
+    events = resp.json()["data"]
+    assert len(events) == 1
+    assert events[0]["type"] == "stage_updated"
+    assert events[0]["subject"] == "Interview scheduled"
+    assert "body" not in events[0]
+
+
+async def test_email_events_api_returns_404_for_missing_app(client, test_user):
+    _, cookies = test_user
+    fake_id = str(ObjectId())
+
+    resp = await client.get(f"/api/applications/{fake_id}/email-events", cookies=cookies)
+
+    assert resp.status_code == 404
+
+
+async def test_email_events_api_requires_auth(client):
+    fake_id = str(ObjectId())
+
+    resp = await client.get(f"/api/applications/{fake_id}/email-events")
+
+    assert resp.status_code == 401

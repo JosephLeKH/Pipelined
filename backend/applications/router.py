@@ -14,6 +14,7 @@ from applications.schemas import (
     ApplicationListQuery,
     ApplicationResponse,
     ApplicationUpdate,
+    EmailEventResponse,
     PrepChecklistUpsertRequest,
     ValidCompanyType,
     ValidRemoteStatus,
@@ -25,6 +26,7 @@ from applications.schemas import (
 from applications.service import DuplicateApplicationError, InvalidCursorError
 from auth.dependencies import get_verified_user as get_current_user
 from config import settings
+from email_integration.email_events import list_email_events_for_application
 from middleware.rate_limit import limiter
 from middleware.tier_check import TierLimitExceeded, check_tier_limit
 
@@ -242,6 +244,21 @@ def _prep_checklist_response(doc: dict) -> dict:
     checklist = doc.get("prep_checklist", [])
     checked = sum(1 for item in checklist if item.get("checked"))
     return {"checklist": checklist, "checked_count": checked, "total": len(checklist)}
+
+
+@router.get("/{app_id}/email-events", status_code=200)
+async def list_application_email_events(
+    app_id: str,
+    user: dict = Depends(get_current_user),
+) -> dict:
+    """Return privacy-safe email events for an application timeline."""
+    user_id = str(user["_id"])
+    doc = await app_service.get(user_id, app_id)
+    if doc is None:
+        raise HTTPException(status_code=404, detail=APP_NOT_FOUND_DETAIL)
+    raw_events = await list_email_events_for_application(user_id, app_id)
+    events = [EmailEventResponse(**event) for event in raw_events]
+    return {"data": events}
 
 
 @router.get("/{app_id}/prep-checklist", status_code=200)

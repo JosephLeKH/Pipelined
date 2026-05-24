@@ -9,3 +9,11 @@ Started: Sat May 23 2026
 **Testing:** `pytest tests/test_email_events.py -v` — 3 passed
 
 ---
+
+## US-967: Application email timeline API and UI ✅ COMPLETE
+
+**Implementation:** GET /api/applications/{id}/email-events; EmailTimelineSection in DetailPanelTimeline; fetchEmailEvents API + useEmailEvents hook.
+
+**Testing:** `pytest tests/test_email_events.py -v` — 6 passed; `npm run test -- --run src/components/EmailTimelineSection.test.jsx src/components/DetailPanelTimeline.test.jsx` — 3 passed
+
+---

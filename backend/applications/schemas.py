@@ -165,6 +165,8 @@ class ApplicationResponse(BaseModel):
     fit_score_at: datetime | None = None
     interview_prep_briefing: dict | None = None
     interview_prep_generated_at: datetime | None = None
+    interview_prep_status: str | None = None
+    interview_prep_triggered_at: datetime | None = None
     parse_enhanced: bool | None = None
 
     @classmethod
@@ -264,3 +266,16 @@ class BulkEditRequest(BaseModel):
 
     application_ids: list[str]
     update: BulkEditUpdate
+
+
+class EmailEventResponse(BaseModel):
+    """Privacy-safe email classification event for an application timeline."""
+
+    id: str
+    type: str
+    timestamp: datetime
+    application_id: str | None = None
+    company: str | None = None
+    role_title: str | None = None
+    stage: str | None = None
+    subject: str | None = None

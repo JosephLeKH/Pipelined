@@ -167,3 +167,8 @@ export async function generateResumeInsights(appId) {
   const res = await client.post(`/applications/${appId}/resume-insights`);
   return res.data.data;
 }
+
+/** Fetch privacy-safe email events for an application timeline. */
+export async function fetchEmailEvents(appId) {
+  return client.get(`/applications/${appId}/email-events`);
+}

@@ -13,7 +13,7 @@
         "user_id on all queries"
       ],
       "priority": "high",
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
@@ -26,7 +26,7 @@
         "Tests"
       ],
       "priority": "high",
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
