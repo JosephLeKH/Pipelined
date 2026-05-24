@@ -133,6 +133,11 @@ class ResumeInsights(BaseModel):
     overall_summary: str | None = None
 
 
+class ThreadSummary(BaseModel):
+    summary: str = ""
+    reply_options: list[str] = Field(default_factory=list)
+
+
 class ApplyPackShortAnswer(BaseModel):
     question: str
     answer: str
@@ -170,6 +175,8 @@ class ApplicationResponse(BaseModel):
     job_description: str | None = None
     resume_insights: ResumeInsights | None = None
     resume_insights_at: datetime | None = None
+    thread_summary: ThreadSummary | None = None
+    thread_summary_at: datetime | None = None
     apply_pack: ApplyPack | None = None
     apply_pack_at: datetime | None = None
     offer_details: OfferDetails | None = None

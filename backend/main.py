@@ -14,6 +14,7 @@ from slowapi.middleware import SlowAPIMiddleware
 from applications.apply_pack.router import router as apply_pack_router
 from applications.interview_prep.router import router as interview_prep_router
 from applications.resume_insights.router import router as resume_insights_router
+from applications.thread_summary.router import router as thread_summary_router
 from email_integration.router import router as email_integration_router
 from applications.router import router as applications_router
 from contacts.router import router as contacts_router
@@ -101,6 +102,7 @@ def _register_routers(app: FastAPI) -> None:
     app.include_router(applications_router)
     app.include_router(interview_prep_router)
     app.include_router(resume_insights_router)
+    app.include_router(thread_summary_router)
     app.include_router(apply_pack_router)
     app.include_router(custom_fields_router)
     app.include_router(documents_router)
