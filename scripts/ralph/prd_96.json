@@ -36,8 +36,8 @@
         "No new component files created"
       ],
       "priority": "high",
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Implemented FollowUpDraftSection component in DetailPanelBody.jsx with staleness check (14+ days via differenceInDays), stage filter (Applied/Phone Screen), and Mail icon. API function generateFollowUpDraft added to applications.js. Handles draft generation with loading state, displays subject + body in collapsible block, copy-to-clipboard functionality, and error toast. Uses direct lucide-react subpath imports and local state. All acceptance criteria met. Committed in iteration 1 snapshot."
     },
     {
       "id": "US-894",

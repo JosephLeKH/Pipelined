@@ -65,9 +65,10 @@ async def test_find_existing_app_returns_none_for_invalid_user_id():
     assert result is None
 
 
-@pytest.mark.asyncio
-async def test_find_existing_app_no_match(app):
+@pytest.mark.asyncio(loop_scope="session")
+async def test_find_existing_app_no_match(app):  # noqa: ARG001
     """Should return None when no application matches the query."""
+    _ = app
     user = await create_user("find@example.com", "TestPass123!", "Find User")
     user_id = str(user["_id"])
 
@@ -76,9 +77,10 @@ async def test_find_existing_app_no_match(app):
     assert result is None
 
 
-@pytest.mark.asyncio
-async def test_find_existing_app_matches_case_insensitively(app):
+@pytest.mark.asyncio(loop_scope="session")
+async def test_find_existing_app_matches_case_insensitively(app):  # noqa: ARG001
     """Should find application with case-insensitive company name match."""
+    _ = app
     user = await create_user("case@example.com", "TestPass123!", "Case User")
     user_id = str(user["_id"])
 

@@ -10,7 +10,7 @@ from tests.conftest import as_anonymous, as_user
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio(loop_scope="session")
 async def test_get_status_unauthenticated(client):
     """GET /api/email/status without auth cookies should return 401."""
     # Act
@@ -21,7 +21,7 @@ async def test_get_status_unauthenticated(client):
     assert response.status_code == 401
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio(loop_scope="session")
 async def test_get_status_authenticated_no_gmail(client, test_user):
     """GET /api/email/status as test_user (no Gmail token) should return 200 with connected=false."""
     # Arrange
@@ -43,7 +43,7 @@ async def test_get_status_authenticated_no_gmail(client, test_user):
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio(loop_scope="session")
 async def test_sync_requires_gmail_connected(client, test_user):
     """POST /api/email/sync as test_user (no Gmail token) should return 400 with GMAIL_NOT_CONNECTED."""
     # Arrange
@@ -64,7 +64,7 @@ async def test_sync_requires_gmail_connected(client, test_user):
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio(loop_scope="session")
 async def test_get_auth_url_requires_verified_user(client, test_user):
     """GET /api/email/auth as verified test_user should return 200 with auth_url key."""
     # Arrange
@@ -86,6 +86,7 @@ async def test_get_auth_url_requires_verified_user(client, test_user):
 # ---------------------------------------------------------------------------
 
 
+@pytest.mark.asyncio(loop_scope="session")
 async def test_disconnect_requires_authentication(client):
     """DELETE /api/email/disconnect without auth should return 401."""
     # Act
@@ -101,6 +102,7 @@ async def test_disconnect_requires_authentication(client):
 # ---------------------------------------------------------------------------
 
 
+@pytest.mark.asyncio(loop_scope="session")
 async def test_update_settings_requires_gmail_connected(client, test_user):
     """PATCH /api/email/settings as test_user with no Gmail should return 400 with GMAIL_NOT_CONNECTED."""
     # Arrange
