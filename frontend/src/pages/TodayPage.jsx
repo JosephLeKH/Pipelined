@@ -14,12 +14,14 @@ import MissionCard from "../components/MissionCard";
 import MissionPriorityPill from "../components/MissionPriorityPill";
 import MissionProgressStrip from "../components/MissionProgressStrip";
 import MorningBriefHistoryPanel from "../components/MorningBriefHistoryPanel";
+import WeeklyReviewSection from "../components/WeeklyReviewSection";
 import MorningBriefSkeleton from "../components/MorningBriefSkeleton";
 import NavBar from "../components/NavBar";
 import { Button } from "../components/ui/button";
 import { useAuth } from "../context/AuthContext";
 import { useMissionActions } from "../hooks/useMissionActions";
 import { useMorningBrief } from "../hooks/useMorningBrief";
+import { useWeeklyReview } from "../hooks/useWeeklyReview";
 import {
   BRIEF_UNAVAILABLE_MESSAGE,
   DEFAULT_MORNING_BRIEF_HOUR,
@@ -177,6 +179,10 @@ function TodayPage() {
 
   const { user } = useAuth();
   const { data: brief, isLoading, isError } = useMorningBrief();
+  const weeklyReviewEnabled = user?.weekly_review_enabled !== false;
+  const { data: weeklyReview, isLoading: isReviewLoading } = useWeeklyReview({
+    enabled: weeklyReviewEnabled,
+  });
   const { snooze, done } = useMissionActions();
   const briefHour = user?.morning_brief_hour ?? DEFAULT_MORNING_BRIEF_HOUR;
   const emptyMessage = getBriefEmptyMessage(briefHour);
@@ -233,6 +239,9 @@ function TodayPage() {
                 donePendingId={done.isPending ? done.variables : null}
               />
               <MissionProgressStrip cleared={progress.cleared} total={progress.total} />
+              {weeklyReviewEnabled && (
+                <WeeklyReviewSection review={weeklyReview} isLoading={isReviewLoading} />
+              )}
               <MorningBriefHistoryPanel />
             </>
           )}

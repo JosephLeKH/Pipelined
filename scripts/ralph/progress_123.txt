@@ -21,3 +21,13 @@ Started: Sun May 24 2026
 **Commit:** pending
 
 ---
+
+## US-1019: WeeklyReviewSection on /today page ✅ COMPLETE
+
+**Implementation:** WeeklyReviewSection component with useWeeklyReview hook; integrated on TodayPage below mission progress.
+
+**Testing:** `npm run test -- --run src/components/WeeklyReviewSection.test.jsx` — 3 passed; `npm run build` — success
+
+**Commit:** pending
+
+---
