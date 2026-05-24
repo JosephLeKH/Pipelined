@@ -6,6 +6,8 @@ import Sparkles from "lucide-react/dist/esm/icons/sparkles";
 import { useEffect, useRef, useState } from "react";
 
 import { useMockInterview } from "../hooks/useMockInterview";
+import { CARD_BASE, INPUT_BASE } from "../lib/designTokens";
+import AiSection from "./AiSection";
 import { Button } from "./ui/button";
 
 function ChatBubble({ message }) {
@@ -13,14 +15,37 @@ function ChatBubble({ message }) {
   return (
     <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
       <div
-        className={`max-w-[90%] rounded-xl px-3 py-2 text-sm leading-relaxed ${
+        className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed shadow-sm ${
           isUser
-            ? "bg-primary text-primary-foreground"
-            : "border border-border bg-muted/40 text-foreground"
+            ? "rounded-br-md bg-brand-500 text-white"
+            : "rounded-bl-md border border-border-default bg-white text-foreground dark:bg-gray-800"
         }`}
       >
         <p className="whitespace-pre-wrap">{message.content}</p>
       </div>
+    </div>
+  );
+}
+
+function TypingIndicator() {
+  return (
+    <div className="flex justify-start" aria-live="polite" aria-label="Interviewer is typing">
+      <div className="flex items-center gap-1.5 rounded-xl border border-border-default bg-surface-secondary px-3 py-2.5">
+        <span className="h-1.5 w-1.5 animate-pulse-soft rounded-full bg-brand-500 [animation-delay:0ms]" />
+        <span className="h-1.5 w-1.5 animate-pulse-soft rounded-full bg-brand-500 [animation-delay:200ms]" />
+        <span className="h-1.5 w-1.5 animate-pulse-soft rounded-full bg-brand-500 [animation-delay:400ms]" />
+      </div>
+    </div>
+  );
+}
+
+function DebriefCard({ debrief }) {
+  return (
+    <div className={`${CARD_BASE} border-l-4 border-brand-500 bg-brand-50/60 p-4 dark:bg-brand-900/20`}>
+      <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-brand-700 dark:text-brand-300">
+        Debrief
+      </p>
+      <p className="whitespace-pre-wrap text-sm leading-relaxed text-foreground">{debrief}</p>
     </div>
   );
 }
@@ -62,59 +87,43 @@ export function MockInterviewPanel({ applicationId, interviewRound = null }) {
 
   if (status === STATUS.IDLE && messages.length === 0 && !debrief) {
     return (
-      <div className="flex flex-col gap-3 rounded-card border border-border bg-muted/20 p-4">
-        <div className="flex items-start gap-3">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary/15">
-            <MessageSquare className="h-4 w-4 text-primary" aria-hidden="true" />
-          </div>
-          <div className="flex flex-col gap-0.5">
-            <span className="text-sm font-semibold text-foreground">Mock Interview</span>
-            <span className="text-xs text-muted-foreground leading-relaxed">
-              Practice with an AI interviewer tailored to your {roundLabel} round. Up to {maxTurns} turns.
-            </span>
-          </div>
-        </div>
-        <Button onClick={startSession} size="sm" className="w-full gap-2" disabled={isStreaming}>
+      <AiSection title="Mock Interview" icon={MessageSquare} id="mock-interview">
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          Practice with an AI interviewer tailored to your {roundLabel} round. Up to {maxTurns} turns.
+        </p>
+        <Button onClick={startSession} size="sm" className="w-full gap-2 sm:w-auto" disabled={isStreaming}>
           <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
           Start Mock Interview
         </Button>
-      </div>
+      </AiSection>
     );
   }
 
   return (
-    <div className="flex flex-col gap-3 rounded-card border border-border overflow-hidden">
-      <div className="flex items-center justify-between border-b border-border bg-muted/30 px-3 py-2">
-        <div className="flex items-center gap-1.5">
-          <MessageSquare className="h-3.5 w-3.5 text-primary" aria-hidden="true" />
-          <span className="text-xs font-medium text-foreground">Mock Interview</span>
-        </div>
+    <AiSection
+      title="Mock Interview"
+      icon={MessageSquare}
+      id="mock-interview-active"
+      headerExtra={
         <span className="text-[11px] text-muted-foreground">
           Turn {turnCount}/{maxTurns}
         </span>
-      </div>
-
-      <div ref={listRef} className="flex max-h-64 flex-col gap-2 overflow-y-auto px-3 py-3">
+      }
+    >
+      <div ref={listRef} className="flex max-h-64 flex-col gap-2 overflow-y-auto">
         {messages.map((message, index) => (
           <ChatBubble key={message.id ?? `${message.role}-${index}`} message={message} />
         ))}
-        {isStreaming && (
-          <p className="text-xs text-muted-foreground">Interviewer is typing…</p>
-        )}
-        {debrief && (
-          <div className="rounded-md border border-primary/30 bg-primary/5 p-3">
-            <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-primary">Debrief</p>
-            <p className="whitespace-pre-wrap text-sm leading-relaxed text-foreground/90">{debrief}</p>
-          </div>
-        )}
+        {isStreaming && <TypingIndicator />}
+        {debrief && <DebriefCard debrief={debrief} />}
       </div>
 
       {errorMessage && (
-        <p role="alert" className="px-3 text-sm text-destructive">{errorMessage}</p>
+        <p role="alert" className="text-sm text-destructive">{errorMessage}</p>
       )}
 
       {status !== STATUS.DEBRIEF && (
-        <form onSubmit={handleSubmit} className="flex flex-col gap-2 border-t border-border p-3">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-2 border-t border-border-default pt-3">
           <div className="flex gap-2">
             <input
               type="text"
@@ -122,7 +131,7 @@ export function MockInterviewPanel({ applicationId, interviewRound = null }) {
               onChange={(event) => setDraft(event.target.value)}
               placeholder="Type your answer…"
               disabled={isStreaming || turnCount >= maxTurns}
-              className="flex-1 rounded-md border border-border bg-background px-3 py-2 text-sm"
+              className={INPUT_BASE}
               aria-label="Mock interview answer"
             />
             <Button
@@ -153,12 +162,10 @@ export function MockInterviewPanel({ applicationId, interviewRound = null }) {
       )}
 
       {status === STATUS.DEBRIEF && (
-        <div className="border-t border-border p-3">
-          <Button type="button" size="sm" onClick={reset} className="w-full">
-            Start new session
-          </Button>
-        </div>
+        <Button type="button" size="sm" onClick={reset} className="w-full sm:w-auto">
+          Start new session
+        </Button>
       )}
-    </div>
+    </AiSection>
   );
 }

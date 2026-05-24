@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { generateApplyPack } from "../api/applications";
 import { getAiToastError } from "../lib/aiConstants";
 import { COPY_RESET_MS } from "../lib/constants";
+import { SUCCESS_BANNER } from "../lib/designTokens";
 import AiSection from "./AiSection";
 import { Button } from "./ui/button";
 
@@ -35,11 +36,15 @@ function CopyFieldButton({ text, label }) {
     <button
       type="button"
       onClick={handleCopy}
-      className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+      className={`inline-flex items-center gap-1 text-xs transition-colors ${
+        copied
+          ? "text-brand-700 font-medium"
+          : "text-muted-foreground hover:text-foreground"
+      }`}
       aria-label={copied ? `${label} copied` : `Copy ${label}`}
     >
       {copied ? (
-        <Check className="h-3.5 w-3.5" aria-hidden="true" />
+        <Check className="h-3.5 w-3.5 text-brand-600" aria-hidden="true" />
       ) : (
         <Copy className="h-3.5 w-3.5" aria-hidden="true" />
       )}
@@ -50,7 +55,7 @@ function CopyFieldButton({ text, label }) {
 
 function ApplyPackField({ label, text, children }) {
   return (
-    <div className="flex flex-col gap-1.5 rounded border border-border bg-card p-3">
+    <div className="flex flex-col gap-1.5 rounded-lg border border-border-default bg-surface-secondary/50 p-3">
       <div className="flex items-center justify-between gap-2">
         <span className="text-xs font-medium text-muted-foreground">{label}</span>
         {text ? <CopyFieldButton text={text} label={label} /> : null}
@@ -85,7 +90,7 @@ function ApplyPackSection({ application, onPackGenerated }) {
 
   return (
     <AiSection title="Apply pack" icon={Sparkles} id="apply-pack">
-      <div className="flex items-start gap-2 rounded border border-border bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
+      <div className={`${SUCCESS_BANNER} flex items-start gap-2 px-3 py-2 text-xs`}>
         <Info className="h-3.5 w-3.5 shrink-0 mt-0.5" aria-hidden="true" />
         <p>{APPLY_PACK_DISCLAIMER}</p>
       </div>
