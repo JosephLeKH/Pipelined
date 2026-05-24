@@ -7,6 +7,8 @@ import { toast } from "sonner";
 import { differenceInDays } from "date-fns/differenceInDays";
 
 import { generateFollowUpDraft } from "../api/applications";
+import { getAiToastError } from "../lib/aiConstants";
+import AiSection from "./AiSection";
 import { Button } from "./ui/button";
 
 function FollowUpDraftSection({ application, autoExpand = false }) {
@@ -35,7 +37,7 @@ function FollowUpDraftSection({ application, autoExpand = false }) {
       setDraft(result);
       setIsExpanded(true);
     } catch (error) {
-      toast.error("Could not generate draft — try again");
+      toast.error(getAiToastError(error, "Could not generate draft — try again"));
     } finally {
       setIsLoading(false);
     }
@@ -53,14 +55,20 @@ function FollowUpDraftSection({ application, autoExpand = false }) {
   }
 
   return (
-    <div ref={sectionRef} className={`flex flex-col gap-1.5${autoExpand ? " rounded-md ring-2 ring-primary/40 p-2 -mx-2" : ""}`}>
+    <div ref={sectionRef}>
+      <AiSection
+        title="Follow-up draft"
+        icon={Mail}
+        id="follow-up-draft"
+        className={autoExpand ? "ring-2 ring-primary/40" : ""}
+      >
       <Button
         type="button"
         variant="outline"
         size="sm"
         onClick={handleGenerateDraft}
         disabled={isLoading}
-        className="w-full sm:w-auto"
+        className="w-full min-h-[44px] sm:min-h-0 sm:w-auto"
       >
         <Mail className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
         {isLoading ? "Generating..." : "Draft follow-up"}
@@ -94,6 +102,7 @@ function FollowUpDraftSection({ application, autoExpand = false }) {
           )}
         </div>
       )}
+      </AiSection>
     </div>
   );
 }

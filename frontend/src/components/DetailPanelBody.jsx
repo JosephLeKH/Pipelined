@@ -11,6 +11,8 @@ import { STAGE_COLORS, DEFAULT_STAGE_COLOR, MS_PER_DAY, PREP_CHECKLIST_STARTER_S
 import { useAuth } from "../context/AuthContext";
 import { useUpdateApplication } from "../hooks/useApplications";
 import { generateFitScore } from "../api/applications";
+import { FIT_SCORE_LABEL, getAiToastError } from "../lib/aiConstants";
+import AiSection from "./AiSection";
 import FitBadge from "./FitBadge";
 import ContactsSection from "./ContactsSection";
 import FollowUpDraftSection from "./FollowUpDraftSection";
@@ -179,14 +181,14 @@ function FitScoreSection({ application, onScoreGenerated }) {
       setLocalReason(result.reason);
       onScoreGenerated(result);
     } catch (error) {
-      toast.error("Could not generate fit score — try again");
+      toast.error(getAiToastError(error, "Could not generate fit score — try again"));
     } finally {
       setIsLoading(false);
     }
   }
 
   return (
-    <div className="flex flex-col gap-1.5">
+    <AiSection title={FIT_SCORE_LABEL} icon={Sparkles} id="fit-score">
       {displayScore !== null && displayScore !== undefined ? (
         <>
           <FitBadge score={displayScore} />
@@ -201,13 +203,13 @@ function FitScoreSection({ application, onScoreGenerated }) {
           size="sm"
           onClick={handleGenerateScore}
           disabled={isLoading}
-          className="w-full sm:w-auto"
+          className="w-full min-h-[44px] sm:min-h-0 sm:w-auto"
         >
           <Sparkles className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
           {isLoading ? "Scoring..." : "Score this application"}
         </Button>
       )}
-    </div>
+    </AiSection>
   );
 }
 

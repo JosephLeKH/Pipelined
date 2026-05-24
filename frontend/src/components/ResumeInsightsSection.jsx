@@ -8,7 +8,9 @@ import Sparkles from "lucide-react/dist/esm/icons/sparkles";
 import { toast } from "sonner";
 
 import { generateResumeInsights } from "../api/applications";
+import { getAiToastError } from "../lib/aiConstants";
 import { JOB_DESCRIPTION_MAX_LENGTH } from "../lib/constants";
+import AiSection from "./AiSection";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 
@@ -25,15 +27,14 @@ function ResumeInsightsSection({ application, onUpdate, onInsightsGenerated }) {
       setLocalInsights(result);
       onInsightsGenerated(result);
     } catch (error) {
-      toast.error("Could not generate insights — try again");
+      toast.error(getAiToastError(error, "Could not generate insights — try again"));
     } finally {
       setIsLoading(false);
     }
   }
 
   return (
-    <div className="flex flex-col gap-3">
-      <span className="text-xs font-medium uppercase text-muted-foreground">Resume Insights</span>
+    <AiSection title="Resume Insights" icon={Sparkles} id="resume-insights">
       <div className="flex items-start gap-2 rounded border border-border bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
         <Info className="h-3.5 w-3.5 shrink-0 mt-0.5" aria-hidden="true" />
         <p>Suggestions only — we never edit your resume file.</p>
@@ -58,7 +59,7 @@ function ResumeInsightsSection({ application, onUpdate, onInsightsGenerated }) {
         size="sm"
         onClick={handleAnalyze}
         disabled={isLoading || !jdValue.trim()}
-        className="w-full sm:w-auto"
+        className="w-full min-h-[44px] sm:min-h-0 sm:w-auto"
       >
         {hasCached ? (
           <RefreshCw className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
@@ -107,7 +108,7 @@ function ResumeInsightsSection({ application, onUpdate, onInsightsGenerated }) {
           )}
         </div>
       )}
-    </div>
+    </AiSection>
   );
 }
 
