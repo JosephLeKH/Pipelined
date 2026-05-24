@@ -49,6 +49,15 @@ STAGE_MAP: dict[str, str] = {
     "Rejected": "Rejected",
 }
 
+STAGE_ORDER: dict[str, int] = {
+    "Applied": 1,
+    "OA": 2,
+    "Phone Screen": 3,
+    "Interviewing": 4,
+    "Offer": 5,
+    "Rejected": 6,
+}
+
 
 class GmailOAuthError(Exception):
     """Raised when Gmail OAuth flow fails."""
@@ -347,13 +356,33 @@ async def _process_message(
         if not user.get("gmail_status_updates", True):
             return False, False
         app_id = str(existing["_id"])
-        app_update = ApplicationUpdate(current_stage=stage)
-        await update_application(user_id, app_id, app_update)
-        if stage == "Interviewing" and user.get("gmail_interview_prep"):
-            asyncio.create_task(
-                _trigger_interview_prep(user_id, app_id, company, role_title)
+
+        # Check stage ordering to prevent regression (e.g., Offer -> Applied)
+        existing_stage = existing.get("current_stage", "Applied")
+        new_stage_order = STAGE_ORDER.get(stage, 0)
+        existing_stage_order = STAGE_ORDER.get(existing_stage, 0)
+
+        # Only update if new stage is >= existing stage (or existing stage unknown)
+        if existing_stage not in STAGE_ORDER or new_stage_order >= existing_stage_order:
+            app_update = ApplicationUpdate(current_stage=stage)
+            await update_application(user_id, app_id, app_update)
+            logger.info(
+                "application_stage_updated_via_email",
+                user_id=user_id,
+                app_id=app_id,
+                company=company,
+                role_title=role_title,
+                from_stage=existing_stage,
+                to_stage=stage,
+                source="email",
             )
-        return False, True
+            if stage == "Interviewing" and user.get("gmail_interview_prep"):
+                asyncio.create_task(
+                    _trigger_interview_prep(user_id, app_id, company, role_title)
+                )
+            return False, True
+
+        return False, False
 
     if not user.get("gmail_auto_track", True):
         return False, False
@@ -366,10 +395,20 @@ async def _process_message(
             current_stage=stage if stage != "Applied" else None,
         )
         new_app = await create_application(user_id, app_body)
-        if stage == "Interviewing" and user.get("gmail_interview_prep") and new_app:
-            asyncio.create_task(
-                _trigger_interview_prep(user_id, str(new_app["_id"]), company, role_title)
+        if new_app:
+            app_id = str(new_app["_id"])
+            logger.info(
+                "application_created_via_email",
+                user_id=user_id,
+                app_id=app_id,
+                company=company,
+                role_title=role_title,
+                source="email",
             )
+            if stage == "Interviewing" and user.get("gmail_interview_prep"):
+                asyncio.create_task(
+                    _trigger_interview_prep(user_id, app_id, company, role_title)
+                )
         return True, False
     except DuplicateApplicationError:
         return False, False
