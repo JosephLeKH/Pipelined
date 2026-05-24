@@ -27,7 +27,7 @@ function DiscardDialog({ onDiscard, onCancel }) {
   );
 }
 
-function PanelContent({ displayApp, panelDragHandlers, actions, undoPendingId, showDiscardDialog }) {
+function PanelContent({ displayApp, panelDragHandlers, actions, undoPendingId, showDiscardDialog, expandFollowUpDraft }) {
   return (
     <>
       {displayApp && (
@@ -42,6 +42,7 @@ function PanelContent({ displayApp, panelDragHandlers, actions, undoPendingId, s
             handleUpdate={actions.onUpdate}
             onAddEvent={actions.onAddEvent}
             onDirtyChange={actions.onDirtyChange}
+            expandFollowUpDraft={expandFollowUpDraft}
           />
         </div>
       )}
@@ -53,7 +54,7 @@ function PanelContent({ displayApp, panelDragHandlers, actions, undoPendingId, s
   );
 }
 
-function DetailPanel({ application, onClose, onAddEvent }) {
+function DetailPanel({ application, onClose, onAddEvent, expandFollowUpDraft = false }) {
   const overlayRef = useRef(null);
   const panelRef = useRef(null);
   const { dragOffset, reset: resetDrag, handlers: panelDragHandlers } = usePanelDrag(onClose);
@@ -89,6 +90,7 @@ function DetailPanel({ application, onClose, onAddEvent }) {
         <PanelContent
           displayApp={displayApp} panelDragHandlers={panelDragHandlers} actions={actions}
           undoPendingId={undoPendingId} showDiscardDialog={showDiscardDialog}
+          expandFollowUpDraft={expandFollowUpDraft}
         />
       </div>
     </div>

@@ -1,6 +1,6 @@
 /** PanelBody and its helpers: field display, follow-up date, tags, and full detail layout. */
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 
 import ExternalLink from "lucide-react/dist/esm/icons/external-link";
 import AlertTriangle from "lucide-react/dist/esm/icons/alert-triangle";
@@ -166,16 +166,22 @@ function JobPostingLink({ url }) {
   );
 }
 
-function FollowUpDraftSection({ application }) {
+function FollowUpDraftSection({ application, autoExpand = false }) {
   const [draft, setDraft] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+  const sectionRef = useRef(null);
 
   const daysSinceUpdate = application.updated_at
     ? differenceInDays(new Date(), new Date(application.updated_at))
     : 0;
   const isStale = daysSinceUpdate >= 14;
-  const shouldShow = isStale && ['Applied', 'Phone Screen'].includes(application.current_stage);
+  const shouldShow = autoExpand || (isStale && ['Applied', 'Phone Screen'].includes(application.current_stage));
+
+  useEffect(() => {
+    if (!autoExpand || !shouldShow) return;
+    sectionRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }, [autoExpand, shouldShow]);
 
   if (!shouldShow) return null;
 
@@ -204,7 +210,7 @@ function FollowUpDraftSection({ application }) {
   }
 
   return (
-    <div className="flex flex-col gap-1.5">
+    <div ref={sectionRef} className={`flex flex-col gap-1.5${autoExpand ? " rounded-md ring-2 ring-primary/40 p-2 -mx-2" : ""}`}>
       <Button
         type="button"
         variant="outline"
@@ -425,7 +431,7 @@ function StageSelector({ stageOptions, currentStage, onStageChange }) {
   );
 }
 
-export function PanelBody({ application, handleStageChange, handleUpdate, onAddEvent, onDirtyChange }) {
+export function PanelBody({ application, handleStageChange, handleUpdate, onAddEvent, onDirtyChange, expandFollowUpDraft = false }) {
   const { user } = useAuth();
   const stageOptions = user?.default_stages ?? [];
   const dateApplied = formatDate(application.date_applied);
@@ -445,7 +451,7 @@ export function PanelBody({ application, handleStageChange, handleUpdate, onAddE
         onInsightsGenerated={(insights) => handleUpdate({ resume_insights: insights })}
       />
       <StageSelector stageOptions={stageOptions} currentStage={application.current_stage} onStageChange={handleStageChange} />
-      <FollowUpDraftSection application={application} />
+      <FollowUpDraftSection application={application} autoExpand={expandFollowUpDraft} />
       <FitScoreSection application={application} onScoreGenerated={(data) => handleUpdate({ fit_score: data.score, fit_score_reason: data.reason })} />
       <TagsSection application={application} onUpdate={handleUpdate} />
       <FollowUpSection application={application} onUpdate={handleUpdate} />

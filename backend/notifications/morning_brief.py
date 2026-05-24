@@ -106,7 +106,7 @@ async def _fetch_follow_ups(uid: ObjectId, today_start: dt.datetime) -> list[Bri
         items.append(BriefItem(
             title=f"{company} — follow-up overdue",
             body="Draft ready in detail panel",
-            action_url=f"/dashboard?selected={app_id}",
+            action_url=f"/dashboard?selected={app_id}&action=follow-up",
         ))
     return items
 

@@ -74,7 +74,12 @@ async def test_build_morning_brief_includes_follow_ups(brief_user):
     brief = await build_morning_brief(brief_user)
 
     assert len(brief.sections.follow_ups) == 1
-    assert "Acme" in brief.sections.follow_ups[0].title
+    item = brief.sections.follow_ups[0]
+    assert "Acme" in item.title
+    assert item.title.endswith("follow-up overdue")
+    assert item.body == "Draft ready in detail panel"
+    assert item.action_url.startswith("/dashboard?selected=")
+    assert "action=follow-up" in item.action_url
 
 
 @pytest.mark.asyncio(loop_scope="session")

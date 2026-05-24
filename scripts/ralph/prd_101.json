@@ -29,8 +29,8 @@
         "Policy comment in service"
       ],
       "priority": "high",
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Follow-up brief items link with action=follow-up; DetailPanel auto-expands FollowUpDraftSection; policy comment in morning_brief.py."
     },
     {
       "id": "US-922",

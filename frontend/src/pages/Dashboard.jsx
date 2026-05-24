@@ -26,7 +26,7 @@ import { useDashboardFilters } from "../hooks/useDashboardFilters";
 import { VIEW_MODE_STORAGE_KEY } from "../lib/constants";
 import { trackEvent } from "../lib/analytics";
 
-function DashboardContent({ viewMode, onSetViewMode, isExporting, onExport, filters, onSelect, onAdd, onImportCsv, shortcutsEnabled, onClearFilters, selectedApp, onClosePanel, isModalOpen, isImportOpen, onCloseModal, onCloseImport, followUpsDue, onViewFollowUps }) {
+function DashboardContent({ viewMode, onSetViewMode, isExporting, onExport, filters, onSelect, onAdd, onImportCsv, shortcutsEnabled, onClearFilters, selectedApp, onClosePanel, isModalOpen, isImportOpen, onCloseModal, onCloseImport, followUpsDue, onViewFollowUps, expandFollowUpDraft }) {
   return (
     <main className="flex-1 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 space-y-6">
@@ -46,7 +46,7 @@ function DashboardContent({ viewMode, onSetViewMode, isExporting, onExport, filt
             <ApplicationList filters={filters} onSelect={onSelect} onAdd={onAdd} onImportCsv={onImportCsv} shortcutsEnabled={shortcutsEnabled} onClearFilters={onClearFilters} />
           )}
         </section>
-        <DetailPanel application={selectedApp ?? null} onClose={onClosePanel} />
+        <DetailPanel application={selectedApp ?? null} onClose={onClosePanel} expandFollowUpDraft={expandFollowUpDraft} />
         <ManualAddForm isOpen={isModalOpen} onClose={onCloseModal} />
         <CsvImportModal isOpen={isImportOpen} onClose={onCloseImport} />
       </div>
@@ -72,6 +72,7 @@ function Dashboard() {
     catch { return "list"; }
   });
   const { handleCsvExport, isLoading: isExporting } = useApplicationExport();
+  const expandFollowUpDraft = searchParams.get("action") === "follow-up";
   const { filters, selectedId, includeArchived, handleSelect, handleClosePanel, handleClearFilters, handleViewFollowUps } = useDashboardFilters();
   const { data: selectedApp } = useApplication(selectedId);
   const { data: stats } = useApplicationStats();
@@ -95,6 +96,7 @@ function Dashboard() {
         shortcutsEnabled={shortcutsEnabled} onClearFilters={handleClearFilters} selectedApp={selectedApp} onClosePanel={handleClosePanel}
         isModalOpen={isModalOpen} isImportOpen={isImportOpen} onCloseModal={() => setIsModalOpen(false)} onCloseImport={() => setIsImportOpen(false)}
         followUpsDue={stats?.follow_ups_due ?? 0} onViewFollowUps={handleViewFollowUps}
+        expandFollowUpDraft={expandFollowUpDraft}
       />
     </div>
   );

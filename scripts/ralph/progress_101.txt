@@ -7,3 +7,11 @@ Started: Sat May 23 2026
 **Implementation:** Added MorningBriefPage at `/brief` with useMorningBrief hook, MorningBriefSectionCard component, NavBar Brief link with Sun icon, route in App.jsx.
 
 **Testing:** `npm run test -- --run src/pages/MorningBriefPage.test.jsx` — 2 passed
+
+---
+
+## US-921: Follow-up items in brief with draft links ✅ COMPLETE
+
+**Implementation:** Follow-up action_url includes `action=follow-up`; Dashboard passes expandFollowUpDraft to DetailPanel; FollowUpDraftSection auto-expands and scrolls into view.
+
+**Testing:** `pytest tests/test_morning_brief.py::test_build_morning_brief_includes_follow_ups -v` — passed; `npm run test -- --run src/components/DetailPanel.test.jsx` — 19 passed
