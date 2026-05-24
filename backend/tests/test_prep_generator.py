@@ -15,6 +15,7 @@ _MOCK_PREP = {
         "summary": "Highlight Python experience.",
         "bullet_suggestions": ["Add FastAPI metrics to a bullet."],
     },
+    "talking_points": ["5 years Python", "API design"],
 }
 
 
@@ -37,3 +38,4 @@ async def test_generate_opportunity_prep_returns_cover_and_tips(app):
 
     assert result["cover_letter"]["subject"].startswith("Application")
     assert result["resume_tips"]["bullet_suggestions"]
+    assert result["talking_points"] == ["5 years Python", "API design"]

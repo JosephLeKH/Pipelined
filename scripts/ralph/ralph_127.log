@@ -1,0 +1,15 @@
+Using CLAUDE.md: /Users/josephle/GitHub/Pipelined/CLAUDE.md (via --append-system-prompt-file)
+PRD file: /Users/josephle/GitHub/Pipelined/scripts/ralph/prd_127.json
+Progress file: /Users/josephle/GitHub/Pipelined/scripts/ralph/progress_127.txt
+Claude model: sonnet (set RALPH_MODEL to override)
+Sleep between iterations: 2s (RALPH_SLEEP_SEC)
+Starting Ralph - Tool: claude - Max iterations: 10
+
+===============================================================
+  Ralph Iteration 1 of 10 (claude)
+===============================================================
+tee: /dev/stderr: Operation not permitted
+
+Ralph: warning — story US-1032 still has passes != true in /Users/josephle/GitHub/Pipelined/scripts/ralph/prd_127.json (next iteration will pick the open story with smallest `priority` number).
+
+Ralph: uncommitted changes detected — creating snapshot commit for iteration 1.

@@ -1,0 +1,43 @@
+# Ralph Progress Log — prd_99
+Started: Sat May 23 2026
+---
+
+## US-911: Job description field on applications ✅ COMPLETE
+
+**Implementation:** Added `job_description` (max 8000 chars) to application schemas and persistence, extension best-effort JD extraction via common selectors, and DetailPanel textarea for manual paste.
+
+**Testing:** `pytest tests/test_applications.py tests/test_applications_service.py -v` — 131 passed
+
+**Commit:** 19dac5d
+
+---
+
+## US-912: Resume insights service and API endpoint ✅ COMPLETE
+
+**Implementation:** Created `applications/resume_insights/` module with POST `/api/applications/{app_id}/resume-insights` (5/hour), OpenRouter `complete_json()`, 422/503 handling, cache as `resume_insights` + `resume_insights_at`.
+
+**Testing:** `pytest tests/test_resume_insights.py -v` — 5 passed
+
+**Commit:** 0447174
+
+---
+
+## US-913: Frontend — Resume Insights section in DetailPanel ✅ COMPLETE
+
+**Implementation:** Added `ResumeInsightsSection` inline in DetailPanelBody with disclaimer, JD paste, analyze/refresh button, cached insights display. Added `generateResumeInsights` API function.
+
+**Testing:** `npm run build` — success; `npm test -- --run src/components/DetailPanelBody.test.jsx` — 1 passed
+
+**Commit:** 456af93
+
+---
+
+## US-914: Tests for resume insights endpoint ✅ COMPLETE
+
+**Implementation:** Added `backend/tests/test_resume_insights.py` with 5 tests: 401, 422 no JD, 422 no resume, 200 success (mock complete_json), 503 no key. Uses loop_scope session and real MongoDB.
+
+**Testing:** `pytest tests/test_resume_insights.py -v` — 5 passed
+
+**Commit:** b7897f8
+
+---

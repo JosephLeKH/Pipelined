@@ -30,6 +30,7 @@ async def _seed_pending(user_id: str) -> tuple[str, str]:
         "match_reason": "Strong fit",
         "cover_letter": {"subject": "Application", "body": "Dear team"},
         "resume_tips": {"summary": "Highlight Python", "bullet_suggestions": ["Add metrics"]},
+        "talking_points": ["Strong Python overlap", "FastAPI experience"],
         "status": PENDING_STATUS,
         "created_at": datetime.now(timezone.utc),
         "reviewed_at": None,
@@ -70,6 +71,8 @@ async def test_approve_creates_to_apply_application(client, test_user):
     assert app_doc["current_stage"] == "To Apply"
     assert app_doc["source"] == "autopilot"
     assert app_doc["cover_letter_draft"]["subject"] == "Application"
+    assert app_doc["apply_pack"]["talking_points"] == ["Strong Python overlap", "FastAPI experience"]
+    assert "Dear team" in app_doc["apply_pack"]["cover_letter"]
 
 
 async def test_dismiss_marks_opportunity_dismissed(client, test_user):

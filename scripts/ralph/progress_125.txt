@@ -1,0 +1,43 @@
+# Ralph Progress Log — prd_125
+Started: Sun May 24 2026
+---
+
+## US-1024: Recruiter thread summary backend ✅ COMPLETE
+
+**Implementation:** POST /api/applications/{id}/thread-summary in applications/thread_summary/; builds prompt from email_events metadata only (no bodies); caches thread_summary on application.
+
+**Testing:** `pytest tests/test_thread_summary.py -v` — 5 passed
+
+**Commit:** 903211d
+
+---
+
+## US-1025: ThreadSummarySection in detail panel ✅ COMPLETE
+
+**Implementation:** ThreadSummarySection AiSection with summarize button, summary copy, reply option chips; wired in DetailPanelBody; generateThreadSummary API helper.
+
+**Testing:** `npm run test -- --run src/components/ThreadSummarySection.test.jsx` — 3 passed; `npm run build` — success
+
+**Commit:** 65626f0
+
+---
+
+## US-1026: Watchlist scan performance pass ✅ COMPLETE
+
+**Implementation:** _upsert_listing uses find_one_and_update with setOnInsert watchlist_user_id; fewer DB round trips on update path.
+
+**Testing:** `pytest tests/test_watchlist_scan.py -v` — 6 passed
+
+**Commit:** 7933fc5
+
+---
+
+## US-1027: Extension fit preview on save ✅ COMPLETE
+
+**Implementation:** Background fetchFitScoreInBackground after save; popup fit-score badge on save cards; fit_score cached in recent_saves.
+
+**Testing:** `cd extension && npm test` — 253 passed
+
+**Commit:** b4b4b3a
+
+---

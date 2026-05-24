@@ -1,0 +1,43 @@
+{
+  "id": "prd_125",
+  "title": "Recruiter Thread Co-pilot & Extension v2",
+  "description": "Thread summary per application and extension fit preview.",
+  "userStories": [
+    {
+      "id": "US-1024",
+      "title": "Recruiter thread summary backend",
+      "description": "POST /api/applications/{id}/thread-summary from email_events metadata.",
+      "acceptanceCriteria": ["Endpoint", "No raw bodies", "Tests"],
+      "priority": "high",
+      "passes": true,
+      "notes": "903211d — thread_summary module, 5 pytest tests pass."
+    },
+    {
+      "id": "US-1025",
+      "title": "ThreadSummarySection in detail panel",
+      "description": "AiSection with summary and reply option chips.",
+      "acceptanceCriteria": ["UI section", "Copy buttons", "Tests"],
+      "priority": "high",
+      "passes": true,
+      "notes": "65626f0 — ThreadSummarySection + 3 vitest tests, build green."
+    },
+    {
+      "id": "US-1026",
+      "title": "Watchlist scan performance pass",
+      "description": "find_one_and_update, setOnInsert watchlist_user_id.",
+      "acceptanceCriteria": ["Fewer DB round trips", "Tests pass"],
+      "priority": "medium",
+      "passes": true,
+      "notes": "7933fc5 — single find_one_and_update upsert, 6 watchlist tests pass."
+    },
+    {
+      "id": "US-1027",
+      "title": "Extension fit preview on save",
+      "description": "Popup fit score badge after background fetch.",
+      "acceptanceCriteria": ["Background fit fetch", "Popup badge", "Extension tests"],
+      "priority": "medium",
+      "passes": true,
+      "notes": "b4b4b3a — background fit fetch + popup badge, 253 extension tests pass."
+    }
+  ]
+}

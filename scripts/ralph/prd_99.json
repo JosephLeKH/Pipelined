@@ -1,0 +1,61 @@
+{
+  "id": "prd_99",
+  "title": "Resume Insights Agent \u2014 Suggest-Only Tailoring",
+  "description": "Compare resume vs job description: keyword gaps, bullet rewrite suggestions, section placement advice. NEVER modify user PDF or stored resume \u2014 suggestions only. Uses OpenRouter.",
+  "userStories": [
+    {
+      "id": "US-911",
+      "title": "Job description field on applications",
+      "description": "Add optional job_description: str | None (max 8000 chars) to application schemas and DB writes. Extension passes best-effort JD text on save. DetailPanel textarea for manual paste.",
+      "acceptanceCriteria": [
+        "job_description in schemas and persistence",
+        "Max 8000 chars validated",
+        "ApplicationResponse includes job_description",
+        "Extension passes field when available"
+      ],
+      "priority": "high",
+      "passes": true,
+      "notes": "job_description in schemas, extension extraction, DetailPanel textarea. Commit 19dac5d."
+    },
+    {
+      "id": "US-912",
+      "title": "Resume insights service and API endpoint",
+      "description": "POST /api/applications/{app_id}/resume-insights (5/hour). Requires job_description and resume_text else 422. OpenRouter returns JSON: keyword_gaps, section_suggestions, bullet_rewrites, overall_summary. Cache on application as resume_insights + resume_insights_at.",
+      "acceptanceCriteria": [
+        "Endpoint returns {data: insights_object}",
+        "422/503 error cases handled",
+        "Persists cache on application",
+        "Uses openrouter_client.complete_json()"
+      ],
+      "priority": "high",
+      "passes": true,
+      "notes": "POST /api/applications/{app_id}/resume-insights with OpenRouter complete_json and cache. Commit 0447174."
+    },
+    {
+      "id": "US-913",
+      "title": "Frontend \u2014 Resume Insights section in DetailPanel",
+      "description": "ResumeInsightsSection inline in DetailPanelBody: JD paste, Analyze button, display gaps/rewrites/suggestions. Disclaimer: 'Suggestions only \u2014 we never edit your resume file.' Cached insights with Refresh. Direct lucide subpath imports.",
+      "acceptanceCriteria": [
+        "generateResumeInsights API function",
+        "Disclaimer banner visible",
+        "Cached insights without re-fetch",
+        "Frontend build passes"
+      ],
+      "priority": "high",
+      "passes": true,
+      "notes": "ResumeInsightsSection in DetailPanelBody, generateResumeInsights API, frontend build passes. Commit 456af93."
+    },
+    {
+      "id": "US-914",
+      "title": "Tests for resume insights endpoint",
+      "description": "backend/tests/test_resume_insights.py: 401, 422 no JD, 422 no resume, 200 success (mock complete_json), 503 no key. loop_scope session, real MongoDB.",
+      "acceptanceCriteria": [
+        "5 tests, all pass",
+        "OpenRouter mocked"
+      ],
+      "priority": "medium",
+      "passes": true,
+      "notes": "test_resume_insights.py \u2014 5 tests, OpenRouter mocked, loop_scope session. Commit b7897f8."
+    }
+  ]
+}

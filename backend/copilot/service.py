@@ -87,3 +87,30 @@ async def stream_copilot_reply(user_id: str, body: CopilotChatRequest):
     actions = parse_copilot_actions(full_text)
     display_text = _strip_action_blocks(full_text)
     yield {"type": "done", "content": display_text, "actions": actions}
+
+
+async def get_copilot_session(user_id: str) -> dict:
+    """Return persisted co-pilot messages for a user."""
+    doc = await get_collection(COLLECTION_NAME).find_one(
+        {"user_id": ObjectId(user_id)},
+        projection={"messages": 1, "_id": 0},
+    )
+    messages = doc.get("messages", []) if doc else []
+    return {"messages": messages}
+
+
+async def save_copilot_session(user_id: str, body: CopilotSessionSaveRequest) -> dict:
+    """Upsert co-pilot session messages for a user."""
+    now = datetime.now(timezone.utc)
+    messages = [item.model_dump() for item in body.messages]
+    await get_collection(COLLECTION_NAME).update_one(
+        {"user_id": ObjectId(user_id)},
+        {"$set": {"messages": messages, "updated_at": now}},
+        upsert=True,
+    )
+    logger.info(
+        "copilot_session_saved",
+        user_id=user_id,
+        message_count=len(messages),
+    )
+    return {"messages": messages}

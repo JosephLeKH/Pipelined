@@ -25,3 +25,11 @@ Started: Sat May 23 2026
 **Testing:** `pytest tests/test_offer_parser.py -v` — 3 passed
 
 ---
+
+## US-969: Offer compare hints in detail panel ✅ COMPLETE
+
+**Implementation:** OfferSummarySection AiSection with comp summary and link to /offers when 2+ Offer-stage applications.
+
+**Testing:** `npm run test -- --run src/components/OfferSummarySection.test.jsx` — 3 passed
+
+---
