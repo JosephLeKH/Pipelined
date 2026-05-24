@@ -81,6 +81,18 @@ def _score_item(section: str, item: dict, index: int) -> tuple[float, str]:
         proximity_bonus = 50.0 if index == 0 else 0.0
         return base - index + proximity_bonus, reason
 
+    if section == "oa_deadlines":
+        if "Overdue" in body:
+            overdue_match = OA_OVERDUE_PATTERN.search(body)
+            days = int(overdue_match.group(1)) if overdue_match else 1
+            return base + 100 + days - index, f"OA overdue by {days} days — complete ASAP"
+        if "Due today" in body:
+            return base + 80 - index, "OA due today — complete before end of day"
+        due_match = OA_DUE_IN_PATTERN.search(body)
+        days = int(due_match.group(1)) if due_match else 3
+        day_word = "day" if days == 1 else "days"
+        return base + (7 - min(days, 7)) - index, f"OA due in {days} {day_word}"
+
     if section == "high_matches":
         fit = _parse_score(body) or 80
         return base + fit - index, f"Strong fit ({fit}%) — worth applying"
