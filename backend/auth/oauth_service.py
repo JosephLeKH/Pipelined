@@ -7,7 +7,15 @@ import httpx
 import structlog
 from motor.motor_asyncio import AsyncIOMotorCollection
 
-from auth.constants import DEFAULT_STAGES, DEFAULT_TIMEZONE
+from auth.constants import (
+    DEFAULT_MORNING_BRIEF_EMAIL,
+    DEFAULT_MORNING_BRIEF_ENABLED,
+    DEFAULT_MORNING_BRIEF_HOUR,
+    DEFAULT_MORNING_BRIEF_IN_APP,
+    DEFAULT_STAGES,
+    DEFAULT_TIMEZONE,
+    DEFAULT_WEEKLY_DIGEST_ENABLED,
+)
 from config import settings
 from database import get_collection
 
@@ -73,7 +81,12 @@ async def get_or_create_google_user(
         "password_hash": None,
         "default_stages": DEFAULT_STAGES,
         "timezone": DEFAULT_TIMEZONE,
-        "digest_enabled": True,
+        "digest_enabled": DEFAULT_WEEKLY_DIGEST_ENABLED,
+        "weekly_digest_enabled": DEFAULT_WEEKLY_DIGEST_ENABLED,
+        "morning_brief_enabled": DEFAULT_MORNING_BRIEF_ENABLED,
+        "morning_brief_hour": DEFAULT_MORNING_BRIEF_HOUR,
+        "morning_brief_email": DEFAULT_MORNING_BRIEF_EMAIL,
+        "morning_brief_in_app": DEFAULT_MORNING_BRIEF_IN_APP,
         "email_verified": True,
         "created_at": datetime.now(timezone.utc),
     }
@@ -155,7 +168,12 @@ async def _insert_github_user(
         "password_hash": None,
         "default_stages": DEFAULT_STAGES,
         "timezone": DEFAULT_TIMEZONE,
-        "digest_enabled": True,
+        "digest_enabled": DEFAULT_WEEKLY_DIGEST_ENABLED,
+        "weekly_digest_enabled": DEFAULT_WEEKLY_DIGEST_ENABLED,
+        "morning_brief_enabled": DEFAULT_MORNING_BRIEF_ENABLED,
+        "morning_brief_hour": DEFAULT_MORNING_BRIEF_HOUR,
+        "morning_brief_email": DEFAULT_MORNING_BRIEF_EMAIL,
+        "morning_brief_in_app": DEFAULT_MORNING_BRIEF_IN_APP,
         "email_verified": True,
         "created_at": datetime.now(timezone.utc),
     }

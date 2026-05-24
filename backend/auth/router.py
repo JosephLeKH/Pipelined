@@ -148,7 +148,18 @@ async def update_me(
     user: dict = Depends(get_current_user),
 ) -> dict:
     """Update the current user's profile settings (default_stages and/or timezone)."""
-    updated = await update_user_profile(str(user["_id"]), body.default_stages, body.timezone, body.digest_enabled, body.weekly_goal)
+    updated = await update_user_profile(
+        str(user["_id"]),
+        body.default_stages,
+        body.timezone,
+        body.digest_enabled,
+        body.weekly_goal,
+        morning_brief_enabled=body.morning_brief_enabled,
+        morning_brief_hour=body.morning_brief_hour,
+        morning_brief_email=body.morning_brief_email,
+        morning_brief_in_app=body.morning_brief_in_app,
+        weekly_digest_enabled=body.weekly_digest_enabled,
+    )
     logger.info("user_profile_updated", user_id=str(user["_id"]))
     return {"data": UserResponse.from_doc(updated)}
 

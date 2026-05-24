@@ -1,0 +1,75 @@
+{
+  "id": "prd_100",
+  "title": "Morning Brief Engine \u2014 Daily Agentic Action List",
+  "description": "Replace weekly digest as primary touchpoint. Daily 8am (user timezone): prioritized action list via email (DO SMTP) + persisted in-app brief. OUT OF SCOPE: auto-sending follow-ups, Web Push (email + in-app notification for v1).",
+  "userStories": [
+    {
+      "id": "US-915",
+      "title": "User timezone and morning brief preferences",
+      "description": "User fields: timezone (IANA), morning_brief_enabled (default true), morning_brief_hour (8), morning_brief_email, morning_brief_in_app, weekly_digest_enabled (default false). PATCH /api/auth/me. SettingsNotificationsSection timezone select + toggles.",
+      "acceptanceCriteria": [
+        "Schema fields with defaults",
+        "Settings UI for timezone and brief toggles",
+        "Legacy digest_enabled migration on read"
+      ],
+      "priority": "high",
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-916",
+      "title": "Morning brief aggregator service",
+      "description": "backend/notifications/morning_brief.py: build_morning_brief(user_id) assembles sections \u2014 follow_ups, interviews (prep_ready flag), high_matches, pending_approvals, summary_line. generate_and_store_brief upserts morning_briefs collection {user_id, date YYYY-MM-DD local, sections, summary_line, created_at}. Unique index (user_id, date).",
+      "acceptanceCriteria": [
+        "MorningBrief dataclass and builder functions",
+        "morning_briefs collection with index",
+        "All queries filter user_id",
+        "Unit tests for section assembly"
+      ],
+      "priority": "high",
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-917",
+      "title": "Timezone-aware daily scheduler job",
+      "description": "APScheduler job morning_brief hourly at :15 UTC. send_due_morning_briefs() checks each user's local hour, generates brief once per local date, sends email if enabled, creates morning_brief_ready notification. Gate weekly digest on weekly_digest_enabled.",
+      "acceptanceCriteria": [
+        "Scheduler job registered",
+        "Timezone dedup one brief per local date",
+        "Email and in-app notification paths",
+        "Weekly digest gated"
+      ],
+      "priority": "high",
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-918",
+      "title": "Morning brief email template",
+      "description": "format_morning_brief_email(brief) plain text via SMTP. Subject: 'Your Pipelined morning brief \u2014 {summary}'. Links to /brief and detail panels. No mailto auto-send.",
+      "acceptanceCriteria": [
+        "Plain-text email formatter",
+        "Subject includes summary",
+        "Links only to frontend routes",
+        "Formatter test"
+      ],
+      "priority": "medium",
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-919",
+      "title": "GET /api/brief/today endpoint",
+      "description": "brief_router.py: GET /today (on-demand gen if missing, 3/hour limit), GET /history?days=7. Auth required, user_id scoped. Register in main.py.",
+      "acceptanceCriteria": [
+        "GET /api/brief/today and /history",
+        "Rate limited on-demand generation",
+        "Router registered"
+      ],
+      "priority": "medium",
+      "passes": true,
+      "notes": ""
+    }
+  ]
+}

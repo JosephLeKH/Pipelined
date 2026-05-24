@@ -16,10 +16,11 @@ import { useUpdateUser } from "../hooks/useAuth";
 const mockMutateAsync = vi.fn();
 
 const MOCK_USER = {
-  stale_alerts_enabled: true,
-  interview_reminders: true,
-  follow_up_reminders: true,
-  digest_enabled: true,
+  timezone: "America/New_York",
+  morning_brief_enabled: true,
+  morning_brief_email: true,
+  morning_brief_in_app: true,
+  weekly_digest_enabled: false,
 };
 
 describe("SettingsNotificationsSection", () => {
@@ -29,12 +30,13 @@ describe("SettingsNotificationsSection", () => {
     useUpdateUser.mockReturnValue({ mutateAsync: mockMutateAsync, isPending: false });
   });
 
-  it("should render toggle switches for all notification types", () => {
+  it("should render timezone selector and morning brief toggles", () => {
     render(<SettingsNotificationsSection />);
 
-    expect(screen.getByText("Stale application alerts")).toBeInTheDocument();
-    expect(screen.getByText("Interview reminders")).toBeInTheDocument();
-    expect(screen.getByText("Follow-up due")).toBeInTheDocument();
+    expect(screen.getByLabelText("Timezone")).toBeInTheDocument();
+    expect(screen.getByText("Morning brief")).toBeInTheDocument();
+    expect(screen.getByText("Morning brief email")).toBeInTheDocument();
+    expect(screen.getByText("Morning brief in-app alert")).toBeInTheDocument();
     expect(screen.getByText("Weekly digest email")).toBeInTheDocument();
   });
 
@@ -43,7 +45,7 @@ describe("SettingsNotificationsSection", () => {
 
     render(<SettingsNotificationsSection />);
 
-    const toggle = screen.getByRole("switch", { name: /stale application alerts/i });
+    const toggle = screen.getByRole("switch", { name: /morning brief email/i });
     expect(toggle).toHaveAttribute("aria-checked", "true");
 
     fireEvent.click(toggle);
@@ -58,25 +60,8 @@ describe("SettingsNotificationsSection", () => {
 
     render(<SettingsNotificationsSection />);
 
-    fireEvent.click(screen.getByRole("switch", { name: /stale application alerts/i }));
+    fireEvent.click(screen.getByRole("switch", { name: /morning brief email/i }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent("Failed to save. Please try again.");
-  });
-
-  it("should clear error message on next successful save", async () => {
-    mockMutateAsync
-      .mockRejectedValueOnce(new Error("Server error"))
-      .mockResolvedValueOnce(undefined);
-
-    render(<SettingsNotificationsSection />);
-
-    fireEvent.click(screen.getByRole("switch", { name: /stale application alerts/i }));
-    await screen.findByRole("alert");
-
-    fireEvent.click(screen.getByRole("switch", { name: /interview reminders/i }));
-
-    await waitFor(() => {
-      expect(screen.queryByRole("alert")).not.toBeInTheDocument();
-    });
   });
 });

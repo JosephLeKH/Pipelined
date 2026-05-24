@@ -4,8 +4,18 @@ from zoneinfo import available_timezones
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
+from auth.constants import (
+    DEFAULT_MORNING_BRIEF_EMAIL,
+    DEFAULT_MORNING_BRIEF_ENABLED,
+    DEFAULT_MORNING_BRIEF_HOUR,
+    DEFAULT_MORNING_BRIEF_IN_APP,
+    DEFAULT_TIMEZONE,
+    DEFAULT_WEEKLY_DIGEST_ENABLED,
+    MORNING_BRIEF_HOUR_MAX,
+    MORNING_BRIEF_HOUR_MIN,
+)
+
 _VALID_TIMEZONES: frozenset[str] = frozenset(available_timezones())
-DEFAULT_TIMEZONE = "America/New_York"
 DEFAULT_WEEKLY_GOAL = 5
 
 
@@ -40,6 +50,15 @@ class GithubAuthRequest(BaseModel):
     code: str = Field(min_length=1)
 
 
+def _weekly_digest_enabled_from_doc(doc: dict) -> bool:
+    """Map legacy digest_enabled to weekly_digest_enabled when unset."""
+    if "weekly_digest_enabled" in doc:
+        return bool(doc["weekly_digest_enabled"])
+    if "digest_enabled" in doc:
+        return bool(doc["digest_enabled"])
+    return DEFAULT_WEEKLY_DIGEST_ENABLED
+
+
 class UserResponse(BaseModel):
     id: str
     email: str | None
@@ -47,6 +66,11 @@ class UserResponse(BaseModel):
     default_stages: list[str]
     timezone: str
     digest_enabled: bool
+    morning_brief_enabled: bool = DEFAULT_MORNING_BRIEF_ENABLED
+    morning_brief_hour: int = DEFAULT_MORNING_BRIEF_HOUR
+    morning_brief_email: bool = DEFAULT_MORNING_BRIEF_EMAIL
+    morning_brief_in_app: bool = DEFAULT_MORNING_BRIEF_IN_APP
+    weekly_digest_enabled: bool = DEFAULT_WEEKLY_DIGEST_ENABLED
     has_resume: bool = False
     weekly_goal: int = DEFAULT_WEEKLY_GOAL
     email_verified: bool = False
@@ -58,13 +82,19 @@ class UserResponse(BaseModel):
     @classmethod
     def from_doc(cls, doc: dict) -> "UserResponse":
         from parsing.ai_cache import get_ai_scores_remaining  # deferred to avoid import cycle
+        weekly_digest = _weekly_digest_enabled_from_doc(doc)
         return cls(
             id=str(doc["_id"]),
             email=doc.get("email"),
             display_name=doc["display_name"],
             default_stages=doc["default_stages"],
             timezone=doc.get("timezone", DEFAULT_TIMEZONE),
-            digest_enabled=doc.get("digest_enabled", True),
+            digest_enabled=weekly_digest,
+            morning_brief_enabled=doc.get("morning_brief_enabled", DEFAULT_MORNING_BRIEF_ENABLED),
+            morning_brief_hour=doc.get("morning_brief_hour", DEFAULT_MORNING_BRIEF_HOUR),
+            morning_brief_email=doc.get("morning_brief_email", DEFAULT_MORNING_BRIEF_EMAIL),
+            morning_brief_in_app=doc.get("morning_brief_in_app", DEFAULT_MORNING_BRIEF_IN_APP),
+            weekly_digest_enabled=weekly_digest,
             has_resume=bool(doc.get("resume_text")),
             weekly_goal=doc.get("weekly_goal", DEFAULT_WEEKLY_GOAL),
             email_verified=bool(doc.get("email_verified", False)),
@@ -124,6 +154,11 @@ class UpdateUserRequest(BaseModel):
     )
     timezone: str | None = None
     digest_enabled: bool | None = None
+    morning_brief_enabled: bool | None = None
+    morning_brief_hour: int | None = Field(None, ge=MORNING_BRIEF_HOUR_MIN, le=MORNING_BRIEF_HOUR_MAX)
+    morning_brief_email: bool | None = None
+    morning_brief_in_app: bool | None = None
+    weekly_digest_enabled: bool | None = None
     weekly_goal: int | None = Field(None, ge=WEEKLY_GOAL_MIN, le=WEEKLY_GOAL_MAX)
 
     def model_post_init(self, __context: object) -> None:

@@ -15,7 +15,15 @@ import structlog
 from bson import ObjectId
 from bson.errors import InvalidId
 
-from auth.constants import DEFAULT_STAGES, DEFAULT_TIMEZONE  # noqa: F401
+from auth.constants import (
+    DEFAULT_MORNING_BRIEF_EMAIL,
+    DEFAULT_MORNING_BRIEF_ENABLED,
+    DEFAULT_MORNING_BRIEF_HOUR,
+    DEFAULT_MORNING_BRIEF_IN_APP,
+    DEFAULT_STAGES,
+    DEFAULT_TIMEZONE,
+    DEFAULT_WEEKLY_DIGEST_ENABLED,
+)
 from auth.schemas import TokenPayload
 from config import settings
 from database import get_collection
@@ -112,7 +120,12 @@ def _build_user_doc(email: str, password: str, display_name: str) -> dict:
         "display_name": display_name,
         "default_stages": DEFAULT_STAGES,
         "timezone": DEFAULT_TIMEZONE,
-        "digest_enabled": True,
+        "digest_enabled": DEFAULT_WEEKLY_DIGEST_ENABLED,
+        "weekly_digest_enabled": DEFAULT_WEEKLY_DIGEST_ENABLED,
+        "morning_brief_enabled": DEFAULT_MORNING_BRIEF_ENABLED,
+        "morning_brief_hour": DEFAULT_MORNING_BRIEF_HOUR,
+        "morning_brief_email": DEFAULT_MORNING_BRIEF_EMAIL,
+        "morning_brief_in_app": DEFAULT_MORNING_BRIEF_IN_APP,
         "email_verified": False,
         "created_at": datetime.now(timezone.utc),
         "referral_code": new_code,
@@ -216,18 +229,34 @@ async def update_user_profile(
     timezone: str | None,
     digest_enabled: bool | None,
     weekly_goal: int | None = None,
+    *,
+    morning_brief_enabled: bool | None = None,
+    morning_brief_hour: int | None = None,
+    morning_brief_email: bool | None = None,
+    morning_brief_in_app: bool | None = None,
+    weekly_digest_enabled: bool | None = None,
 ) -> dict:
-    """Update the user's default_stages, timezone, digest_enabled, and/or weekly_goal; return the updated document."""
+    """Update user profile fields and return the updated document."""
     users = get_collection("users")
     update_fields: dict = {}
     if stages is not None:
         update_fields["default_stages"] = stages
     if timezone is not None:
         update_fields["timezone"] = timezone
-    if digest_enabled is not None:
-        update_fields["digest_enabled"] = digest_enabled
+    resolved_weekly_digest = weekly_digest_enabled if weekly_digest_enabled is not None else digest_enabled
+    if resolved_weekly_digest is not None:
+        update_fields["weekly_digest_enabled"] = resolved_weekly_digest
+        update_fields["digest_enabled"] = resolved_weekly_digest
     if weekly_goal is not None:
         update_fields["weekly_goal"] = weekly_goal
+    if morning_brief_enabled is not None:
+        update_fields["morning_brief_enabled"] = morning_brief_enabled
+    if morning_brief_hour is not None:
+        update_fields["morning_brief_hour"] = morning_brief_hour
+    if morning_brief_email is not None:
+        update_fields["morning_brief_email"] = morning_brief_email
+    if morning_brief_in_app is not None:
+        update_fields["morning_brief_in_app"] = morning_brief_in_app
     if update_fields:
         await users.update_one(
             {"_id": ObjectId(user_id)},

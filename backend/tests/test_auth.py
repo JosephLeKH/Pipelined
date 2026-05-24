@@ -830,3 +830,72 @@ async def test_delete_account_unauthenticated(client):
 
     # Assert
     assert response.status_code == 401
+
+
+async def test_get_me_includes_morning_brief_defaults(client):
+    reg = await client.post("/api/auth/register", json={
+        "email": "brief_defaults@example.com",
+        "password": "password123",
+        "display_name": "Brief Defaults",
+    })
+    cookies = dict(reg.cookies)
+
+    response = await client.get("/api/auth/me", cookies=cookies)
+
+    assert response.status_code == 200
+    data = response.json()["data"]
+    assert data["morning_brief_enabled"] is True
+    assert data["morning_brief_hour"] == 8
+    assert data["morning_brief_email"] is True
+    assert data["morning_brief_in_app"] is True
+    assert data["weekly_digest_enabled"] is False
+
+
+async def test_patch_me_updates_morning_brief_preferences(client):
+    reg = await client.post("/api/auth/register", json={
+        "email": "brief_prefs@example.com",
+        "password": "password123",
+        "display_name": "Brief Prefs",
+    })
+    cookies = dict(reg.cookies)
+
+    response = await client.patch(
+        "/api/auth/me",
+        json={
+            "morning_brief_enabled": False,
+            "morning_brief_email": False,
+            "weekly_digest_enabled": True,
+        },
+        cookies=cookies,
+    )
+
+    assert response.status_code == 200
+    data = response.json()["data"]
+    assert data["morning_brief_enabled"] is False
+    assert data["morning_brief_email"] is False
+    assert data["weekly_digest_enabled"] is True
+    assert data["digest_enabled"] is True
+
+
+async def test_legacy_digest_enabled_maps_to_weekly_digest(client):
+    from bson import ObjectId
+    import database
+
+    reg = await client.post("/api/auth/register", json={
+        "email": "legacy_digest@example.com",
+        "password": "password123",
+        "display_name": "Legacy User",
+    })
+    cookies = dict(reg.cookies)
+    user_id = reg.json()["data"]["id"]
+
+    users = database.get_collection("users")
+    await users.update_one(
+        {"_id": ObjectId(user_id)},
+        {"$unset": {"weekly_digest_enabled": ""}, "$set": {"digest_enabled": True}},
+    )
+
+    response = await client.get("/api/auth/me", cookies=cookies)
+
+    assert response.status_code == 200
+    assert response.json()["data"]["weekly_digest_enabled"] is True

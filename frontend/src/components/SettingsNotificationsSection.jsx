@@ -1,9 +1,10 @@
-/** Settings notifications section — custom toggle switches for alert preferences. */
+/** Settings notifications section — timezone and morning brief preferences. */
 
 import { useState, useCallback } from "react";
 
 import { useAuth } from "../context/AuthContext";
 import { useUpdateUser } from "../hooks/useAuth";
+import TimezoneSelector from "./TimezoneSelector";
 
 function ToggleSwitch({ checked, onChange, disabled, label, description, id }) {
   return (
@@ -37,28 +38,28 @@ function ToggleSwitch({ checked, onChange, disabled, label, description, id }) {
 
 const TOGGLES = [
   {
-    field: "stale_alerts_enabled",
-    label: "Stale application alerts",
-    description: "Get notified when applications haven't had activity in 2+ weeks.",
+    field: "morning_brief_enabled",
+    label: "Morning brief",
+    description: "Daily prioritized action list at your chosen hour.",
     defaultVal: true,
   },
   {
-    field: "interview_reminders",
-    label: "Interview reminders",
-    description: "Reminders 24 hours before scheduled interviews.",
+    field: "morning_brief_email",
+    label: "Morning brief email",
+    description: "Receive your daily brief by email.",
     defaultVal: true,
   },
   {
-    field: "follow_up_reminders",
-    label: "Follow-up due",
-    description: "Alerts when a follow-up email is due after an interview.",
+    field: "morning_brief_in_app",
+    label: "Morning brief in-app alert",
+    description: "Get notified in Pipelined when your brief is ready.",
     defaultVal: true,
   },
   {
-    field: "digest_enabled",
+    field: "weekly_digest_enabled",
     label: "Weekly digest email",
     description: "A weekly summary of your job search activity every Monday.",
-    defaultVal: true,
+    defaultVal: false,
   },
 ];
 
@@ -66,6 +67,9 @@ function SettingsNotificationsSection() {
   const { user } = useAuth();
   const { mutateAsync, isPending } = useUpdateUser();
 
+  const [timezone, setTimezone] = useState(
+    () => user?.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone ?? "America/New_York"
+  );
   const [values, setValues] = useState(() =>
     Object.fromEntries(TOGGLES.map((t) => [t.field, user?.[t.field] ?? t.defaultVal]))
   );
@@ -85,17 +89,37 @@ function SettingsNotificationsSection() {
     [mutateAsync]
   );
 
+  const handleTimezoneChange = useCallback(
+    async (nextTimezone) => {
+      setTimezone(nextTimezone);
+      setSaveError(null);
+      try {
+        await mutateAsync({ timezone: nextTimezone });
+      } catch {
+        setSaveError("Failed to save timezone. Please try again.");
+      }
+    },
+    [mutateAsync]
+  );
+
   return (
     <div className="rounded-xl bg-card border border-border p-6">
       <h2 className="mb-1 font-display text-lg font-semibold text-foreground">
         Notifications
       </h2>
-      <p className="mb-2 text-sm text-muted-foreground">
-        Control which alerts and digests you receive.
+      <p className="mb-4 text-sm text-muted-foreground">
+        Control your daily morning brief, timezone, and weekly digest.
       </p>
       {saveError && (
         <p role="alert" className="mb-3 text-sm text-destructive">{saveError}</p>
       )}
+      <div className="mb-6">
+        <p className="mb-2 text-sm font-medium text-foreground">Timezone</p>
+        <p className="mb-3 text-sm text-muted-foreground">
+          Your morning brief is delivered at 8:00 AM in this timezone.
+        </p>
+        <TimezoneSelector value={timezone} onChange={handleTimezoneChange} />
+      </div>
       <div className="divide-y divide-border">
         {TOGGLES.map((t) => (
           <ToggleSwitch
