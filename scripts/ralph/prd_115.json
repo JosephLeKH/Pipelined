@@ -1,0 +1,70 @@
+{
+  "id": "prd_115",
+  "title": "Agent Memory & Co-pilot Chat",
+  "description": "Agent profile prefs and grounded co-pilot SSE chat over user pipeline data.",
+  "userStories": [
+    {
+      "id": "US-982",
+      "title": "Agent profile document",
+      "description": "agent_profile on user. Settings Agent Profile section.",
+      "acceptanceCriteria": [
+        "Schema fields",
+        "Settings UI"
+      ],
+      "priority": "high",
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-983",
+      "title": "Co-pilot context builder",
+      "description": "backend/ai/copilot_context.py builds scoped context max 8k tokens.",
+      "acceptanceCriteria": [
+        "context builder module",
+        "Unit tests"
+      ],
+      "priority": "high",
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-984",
+      "title": "Co-pilot chat SSE endpoint",
+      "description": "POST /api/copilot/chat streaming. Rate limit 20/hour.",
+      "acceptanceCriteria": [
+        "SSE endpoint",
+        "Policy guardrails",
+        "Tests"
+      ],
+      "priority": "high",
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-985",
+      "title": "CoPilotPanel UI slide-over",
+      "description": "Nav Agent button opens slide-over with streaming chat.",
+      "acceptanceCriteria": [
+        "CoPilotPanel.jsx",
+        "Nav trigger",
+        "Component tests"
+      ],
+      "priority": "medium",
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-986",
+      "title": "Co-pilot tool actions",
+      "description": "Parse open_app action JSON. Frontend navigates only.",
+      "acceptanceCriteria": [
+        "Action parse",
+        "open_app works",
+        "No send/apply"
+      ],
+      "priority": "medium",
+      "passes": true,
+      "notes": ""
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+# Ralph Progress Log — prd_115
+Started: Sat May 23 2026
+---
+
+## US-982: Agent profile document ✅ COMPLETE
+
+**Implementation:** agent_profile nested object on user; AgentProfileRequest/Response schemas; Settings Agent Profile section.
+
+**Testing:** `pytest tests/test_agent_profile.py -v` — 2 passed; `npm run test -- --run src/components/SettingsAgentProfileSection.test.jsx` — 2 passed
+
+---
+
+## US-983: Co-pilot context builder ✅ COMPLETE
+
+**Implementation:** backend/ai/copilot_context.py builds scoped context (profile, pipeline, calendar) capped at 8k tokens with user_id filters.
+
+**Testing:** `pytest tests/test_copilot_context.py -v` — 3 passed
+
+---
+
+## US-984: Co-pilot chat SSE endpoint ✅ COMPLETE
+
+**Implementation:** POST /api/copilot/chat SSE via OpenRouter stream_chat; 20/hour rate limit; suggest-only system prompt; open_app action parse on done.
+
+**Testing:** `pytest tests/test_copilot_router.py -v` — 4 passed
+
+---
+
+## US-985: CoPilotPanel UI slide-over ✅ COMPLETE
+
+**Implementation:** CoPilotPanel.jsx slide-over; NavBar Agent (Bot) trigger; useCopilotChat + api/copilot.js fetch SSE; designTokens + aiConstants.
+
+**Testing:** `npm run test -- --run src/components/CoPilotPanel.test.jsx` — 3 passed; `npm run build` — success
+
+---
+
+## US-986: Co-pilot tool actions ✅ COMPLETE
+
+**Implementation:** frontend/lib/copilotActions.js parse open_app only; executeCopilotAction navigates; blocked send/apply ignored.
+
+**Testing:** `npm run test -- --run src/lib/copilotActions.test.js` — 2 passed
+
+---
