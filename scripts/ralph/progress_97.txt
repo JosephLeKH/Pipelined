@@ -21,3 +21,26 @@ Started: Sat May 23 19:46:15 PDT 2026
 
 **Files modified:** backend/applications/interview_prep/router.py
 **Commit:** b5e0332
+
+---
+
+## US-903: Frontend — FitBadge integration in DetailPanel ✅ COMPLETE
+
+**Implementation:** Integrated FitBadge component into DetailPanelBody to show real AI fit scores and added UI for triggering scoring.
+
+**Key changes:**
+- Added `generateFitScore(appId)` API function to `frontend/src/api/applications.js`
+- Implemented `FitScoreSection` component inline in DetailPanelBody.jsx (no separate file)
+- Imports: generateFitScore from api layer, Sparkles icon with direct subpath import (`lucide-react/dist/esm/icons/sparkles`), FitBadge component
+- Component displays existing fit_score using FitBadge + reason text when present
+- Shows 'Score this application' button (outline variant, sm size, Sparkles icon) when no score
+- On button click: calls generateFitScore with loading state, updates application data via onScoreGenerated callback
+- Stores generated score in local state for immediate UI feedback without refetch
+- Error handling with toast.error('Could not generate fit score — try again')
+- Uses existing Tailwind classes and button variants
+- FitBadge handles color coding based on score (green/amber/gray)
+
+**Testing:** Frontend build successful (Vite build passed), DetailPanelBody.test.jsx passes smoke test. Updated test fixture to include fit_score and fit_score_reason properties.
+
+**Files modified:** frontend/src/api/applications.js, frontend/src/components/DetailPanelBody.jsx, frontend/src/components/DetailPanelBody.test.jsx
+**Commit:** 66f497b
