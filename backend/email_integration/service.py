@@ -340,6 +340,33 @@ async def _apply_offer_details_from_email(
     logger.info("offer_details_extracted_from_email", user_id=user_id, app_id=app_id)
 
 
+async def _apply_oa_deadline_from_email(
+    user_id: str,
+    app_id: str,
+    subject: str,
+    body: str,
+) -> None:
+    """Extract OA deadline from assessment email and set application.deadline."""
+    extracted = await extract_oa_deadline(subject, body)
+    if not extracted:
+        return
+
+    apps = get_collection("applications")
+    existing = await apps.find_one(
+        {"_id": _to_oid(app_id), "user_id": _to_oid(user_id)},
+        {"deadline": 1},
+    )
+    if not existing:
+        return
+
+    update = ApplicationUpdate.model_construct(
+        _fields_set={"deadline"},
+        deadline=extracted,
+    )
+    await update_application(user_id, app_id, update)
+    logger.info("oa_deadline_extracted_from_email", user_id=user_id, app_id=app_id)
+
+
 async def _record_email_event(
     user_id: str,
     *,
@@ -490,6 +517,8 @@ async def _process_message(
             )
             if stage == "Offer":
                 await _apply_offer_details_from_email(user_id, app_id, subject, body)
+            if stage == "OA":
+                await _apply_oa_deadline_from_email(user_id, app_id, subject, body)
             if stage == "Interviewing" and user.get(
                 "gmail_interview_prep", DEFAULT_GMAIL_INTERVIEW_PREP
             ):
@@ -558,6 +587,8 @@ async def _process_message(
             )
             if stage == "Offer":
                 await _apply_offer_details_from_email(user_id, app_id, subject, body)
+            if stage == "OA":
+                await _apply_oa_deadline_from_email(user_id, app_id, subject, body)
             if stage == "Interviewing" and user.get(
                 "gmail_interview_prep", DEFAULT_GMAIL_INTERVIEW_PREP
             ):
