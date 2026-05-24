@@ -4,6 +4,7 @@ from unittest.mock import patch
 
 import pytest
 
+import copilot.router as copilot_router
 from copilot.service import parse_copilot_actions
 from tests.conftest import as_anonymous, as_user
 
@@ -62,6 +63,40 @@ async def test_copilot_chat_streams_done_event(client, test_user, monkeypatch):
     assert "event: token" in body
     assert "event: done" in body
     assert "/today" in body
+
+
+async def test_copilot_chat_logs_audit_metadata(client, test_user, monkeypatch):
+    monkeypatch.setattr("copilot.router.agent_llm_configured", lambda: True)
+
+    async def fake_stream(user_id, body):  # noqa: ARG001
+        yield {"type": "done", "content": "Done", "actions": []}
+
+    with patch("copilot.router.copilot_service.stream_copilot_reply", fake_stream):
+        with patch.object(copilot_router.logger, "info") as mock_info:
+            user, cookies = test_user
+            with as_user(client, cookies):
+                response = await client.post(
+                    "/api/copilot/chat",
+                    json={
+                        "message": "What should I focus on today?",
+                        "history": [
+                            {"role": "user", "content": "Hello"},
+                            {"role": "assistant", "content": "Hi there"},
+                        ],
+                    },
+                )
+
+    assert response.status_code == 200
+    mock_info.assert_any_call(
+        "copilot_chat_request",
+        user_id=user["id"],
+        message_length=len("What should I focus on today?"),
+        history_length=2,
+    )
+    for call in mock_info.call_args_list:
+        kwargs = call.kwargs if call.kwargs else {}
+        assert "message" not in kwargs
+        assert "content" not in kwargs
 
 
 async def test_copilot_chat_returns_503_when_ai_not_configured(client, test_user, monkeypatch):

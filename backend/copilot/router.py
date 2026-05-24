@@ -30,6 +30,12 @@ async def copilot_chat(
         raise HTTPException(status_code=503, detail="AI features not configured")
 
     user_id = str(user["_id"])
+    logger.info(
+        "copilot_chat_request",
+        user_id=user_id,
+        message_length=len(body.message),
+        history_length=len(body.history),
+    )
 
     async def event_stream():
         try:
