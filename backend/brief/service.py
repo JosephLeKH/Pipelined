@@ -6,6 +6,14 @@ from zoneinfo import ZoneInfo
 from bson import ObjectId
 
 from auth.constants import DEFAULT_TIMEZONE
+from brief.mission_scorer import missions_to_dicts, score_missions
+from brief.mission_state import (
+    build_mission_progress,
+    complete_mission,
+    filter_active_missions,
+    get_mission_state,
+    snooze_mission,
+)
 from database import get_collection
 from notifications.morning_brief import (
     generate_and_store_brief,
@@ -23,6 +31,43 @@ async def _local_date_for_user(user_id: str) -> str:
     user = await users_col.find_one({"_id": ObjectId(user_id)}, {"timezone": 1})
     tz = ZoneInfo((user or {}).get("timezone", DEFAULT_TIMEZONE))
     return dt.datetime.now(dt.timezone.utc).astimezone(tz).date().isoformat()
+
+
+async def build_today_brief_payload(user_id: str, doc: dict) -> dict:
+    """Map a stored brief doc to API payload with filtered missions and progress."""
+    sections = doc.get("sections", {})
+    all_missions = missions_to_dicts(score_missions(sections))
+    state = await get_mission_state(user_id, doc["date"])
+    active_missions = filter_active_missions(all_missions, state)
+    for rank, mission in enumerate(active_missions, start=1):
+        mission["priority"] = rank
+    response = brief_doc_to_response(doc)
+    response["missions"] = active_missions
+    response["mission_progress"] = build_mission_progress(all_missions, state)
+    return response
+
+
+async def get_today_brief_response(user_id: str, *, allow_generate: bool = True) -> dict | None:
+    """Return today's brief API payload with missions and progress."""
+    doc = await get_today_brief(user_id, allow_generate=allow_generate)
+    if doc is None:
+        return None
+    return await build_today_brief_payload(user_id, doc)
+
+
+async def snooze_mission_for_user(
+    user_id: str,
+    mission_id: str,
+    *,
+    until: dt.datetime | None = None,
+) -> dict:
+    """Snooze a mission and return updated mission state."""
+    return await snooze_mission(user_id, mission_id, until=until)
+
+
+async def complete_mission_for_user(user_id: str, mission_id: str) -> dict:
+    """Mark a mission done and return updated mission state."""
+    return await complete_mission(user_id, mission_id)
 
 
 async def get_today_brief(user_id: str, *, allow_generate: bool = True) -> dict | None:

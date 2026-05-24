@@ -18,12 +18,33 @@ class MissionResponse(BaseModel):
     prep_ready: bool = False
 
 
+class SnoozeMissionRequest(BaseModel):
+    until: dt.datetime | None = None
+
+
+class MissionProgressResponse(BaseModel):
+    cleared: int
+    total: int
+
+
 class BriefResponse(BaseModel):
     date: str
     sections: dict
     summary_line: str
     missions: list[MissionResponse] = []
+    mission_progress: MissionProgressResponse | None = None
     created_at: dt.datetime | None = None
+
+    @classmethod
+    def from_payload(cls, payload: dict) -> "BriefResponse":
+        return cls(
+            date=payload["date"],
+            sections=payload.get("sections", {}),
+            summary_line=payload.get("summary_line", ""),
+            missions=payload.get("missions", []),
+            mission_progress=payload.get("mission_progress"),
+            created_at=payload.get("created_at"),
+        )
 
     @classmethod
     def from_doc(cls, doc: dict, *, missions: list[dict] | None = None) -> "BriefResponse":

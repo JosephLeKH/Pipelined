@@ -4,7 +4,7 @@ import structlog
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 
 from auth.dependencies import get_current_user
-from brief.schemas import BriefResponse
+from brief.schemas import BriefResponse, SnoozeMissionRequest
 from brief import service as brief_service
 from middleware.rate_limit import get_user_key, limiter
 
@@ -19,8 +19,8 @@ ON_DEMAND_RATE_LIMIT = "3/hour"
 async def get_today_brief(request: Request, user: dict = Depends(get_current_user)) -> dict:
     """Return today's morning brief, generating on demand when missing."""
     user_id = str(user["_id"])
-    doc = await brief_service.get_today_brief(user_id, allow_generate=True)
-    if doc is None:
+    payload = await brief_service.get_today_brief_response(user_id, allow_generate=True)
+    if payload is None:
         raise HTTPException(
             status_code=429,
             detail={
@@ -28,7 +28,31 @@ async def get_today_brief(request: Request, user: dict = Depends(get_current_use
                 "message": "On-demand brief generation limit reached. Try again later.",
             },
         )
-    return {"data": BriefResponse.from_doc(doc)}
+    return {"data": BriefResponse.from_payload(payload)}
+
+
+@router.post("/missions/{mission_id}/snooze", status_code=200)
+async def snooze_mission(
+    mission_id: str,
+    body: SnoozeMissionRequest | None = None,
+    user: dict = Depends(get_current_user),
+) -> dict:
+    """Snooze a mission until later (default: end of next local day)."""
+    user_id = str(user["_id"])
+    until = body.until if body else None
+    state = await brief_service.snooze_mission_for_user(user_id, mission_id, until=until)
+    return {"data": state}
+
+
+@router.post("/missions/{mission_id}/done", status_code=200)
+async def complete_mission(
+    mission_id: str,
+    user: dict = Depends(get_current_user),
+) -> dict:
+    """Mark a mission as done for today."""
+    user_id = str(user["_id"])
+    state = await brief_service.complete_mission_for_user(user_id, mission_id)
+    return {"data": state}
 
 
 @router.get("/history", status_code=200)

@@ -1,0 +1,72 @@
+{
+  "id": "prd_110",
+  "title": "Mission Control — /today Daily Agent Surface",
+  "description": "Evolve Morning Brief into Mission Control: prioritized missions with why, snooze/done actions, priority scoring, and default post-login landing. Builds on GET /api/brief/today and morning_brief.py.",
+  "userStories": [
+    {
+      "id": "US-961",
+      "title": "Mission priority scoring engine",
+      "description": "backend/brief/mission_scorer.py scores each brief item by urgency (overdue days, interview proximity, fit score, pending autopilot). Returns sorted missions with priority rank and reason string.",
+      "acceptanceCriteria": [
+        "mission_scorer.py with score_missions()",
+        "Brief API returns missions array with priority and reason",
+        "Unit tests for scoring logic"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-962",
+      "title": "Mission actions API — snooze and done",
+      "description": "POST /api/brief/missions/{id}/snooze and /done. Store snoozed_until and completed_mission_ids on user or brief_missions collection. Snoozed items excluded from today view.",
+      "acceptanceCriteria": [
+        "Snooze and done endpoints",
+        "Missions respect snooze/done state",
+        "Backend tests"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-963",
+      "title": "TodayPage UI — mission cards with why",
+      "description": "New /today route (alias /brief). Hero shows #1 mission headline. Cards show priority badge, reason line, primary CTA. Snooze and Done buttons. Use AiSection/designTokens.",
+      "acceptanceCriteria": [
+        "/today route works",
+        "Mission cards with reason",
+        "Snooze/Done wired to API",
+        "Component tests"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-964",
+      "title": "Nav and post-login default to Today",
+      "description": "Nav link Today with Sun icon. /brief redirects to /today. morning_brief_ready notification links /today.",
+      "acceptanceCriteria": [
+        "Nav shows Today",
+        "/brief redirects to /today",
+        "Notification links /today"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-965",
+      "title": "End-of-day progress strip",
+      "description": "Today page footer: X of Y missions cleared today using completed_mission_ids.",
+      "acceptanceCriteria": [
+        "Progress strip on Today page",
+        "Updates after Done action"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}
