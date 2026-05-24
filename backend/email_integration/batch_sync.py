@@ -79,6 +79,10 @@ async def _disable_gmail(user_id: str, reason: str) -> None:
                 "gmail_token_expiry",
                 "gmail_email",
                 "gmail_connected_at",
+                "gmail_last_sync_at",
+                "gmail_emails_scanned",
+                "gmail_apps_tracked",
+                "gmail_status_updates_count",
             )}
         },
     )
