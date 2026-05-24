@@ -5,13 +5,15 @@ import { useState, useCallback } from "react";
 import ExternalLink from "lucide-react/dist/esm/icons/external-link";
 import AlertTriangle from "lucide-react/dist/esm/icons/alert-triangle";
 import Mail from "lucide-react/dist/esm/icons/mail";
+import Sparkles from "lucide-react/dist/esm/icons/sparkles";
 import { toast } from "sonner";
 import { differenceInDays } from "date-fns/differenceInDays";
 
 import { STAGE_COLORS, DEFAULT_STAGE_COLOR, MS_PER_DAY, PREP_CHECKLIST_STARTER_SUGGESTIONS } from "../lib/constants";
 import { useAuth } from "../context/AuthContext";
 import { useUpdateApplication } from "../hooks/useApplications";
-import { generateFollowUpDraft } from "../api/applications";
+import { generateFollowUpDraft, generateFitScore } from "../api/applications";
+import FitBadge from "./FitBadge";
 import ContactsSection from "./ContactsSection";
 import { DetailPanelNotes } from "./DetailPanelNotes";
 import { DetailPanelTimeline } from "./DetailPanelTimeline";
@@ -244,6 +246,54 @@ function FollowUpDraftSection({ application }) {
   );
 }
 
+function FitScoreSection({ application, onScoreGenerated }) {
+  const [localScore, setLocalScore] = useState(null);
+  const [localReason, setLocalReason] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const displayScore = localScore !== null ? localScore : application.fit_score;
+  const displayReason = localReason !== null ? localReason : application.fit_score_reason;
+
+  async function handleGenerateScore() {
+    setIsLoading(true);
+    try {
+      const result = await generateFitScore(application.id);
+      setLocalScore(result.score);
+      setLocalReason(result.reason);
+      onScoreGenerated(result);
+    } catch (error) {
+      toast.error('Could not generate fit score — try again');
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  return (
+    <div className="flex flex-col gap-1.5">
+      {displayScore !== null && displayScore !== undefined ? (
+        <>
+          <FitBadge score={displayScore} />
+          {displayReason && (
+            <p className="text-xs text-muted-foreground mt-1">{displayReason}</p>
+          )}
+        </>
+      ) : (
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={handleGenerateScore}
+          disabled={isLoading}
+          className="w-full sm:w-auto"
+        >
+          <Sparkles className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
+          {isLoading ? 'Scoring...' : 'Score this application'}
+        </Button>
+      )}
+    </div>
+  );
+}
+
 function StageSelector({ stageOptions, currentStage, onStageChange }) {
   return (
     <div className="flex flex-col gap-1.5">
@@ -289,6 +339,7 @@ export function PanelBody({ application, handleStageChange, handleUpdate, onAddE
       <JobPostingLink url={application.source_url} />
       <StageSelector stageOptions={stageOptions} currentStage={application.current_stage} onStageChange={handleStageChange} />
       <FollowUpDraftSection application={application} />
+      <FitScoreSection application={application} onScoreGenerated={(data) => handleUpdate({ fit_score: data.score, fit_score_reason: data.reason })} />
       <TagsSection application={application} onUpdate={handleUpdate} />
       <FollowUpSection application={application} onUpdate={handleUpdate} />
       {application.current_stage === "Offer" && (

@@ -128,6 +128,12 @@ export async function generateFollowUpDraft(appId) {
   return res.data.data;
 }
 
+/** Generate an AI fit score for an application. Returns { score, reason }. */
+export async function generateFitScore(appId) {
+  const res = await client.post(`/applications/${appId}/fit-score`);
+  return res.data.data;
+}
+
 /** Rename a tag across all of the current user's applications. */
 export async function renameTag({ oldTag, newTag }) {
   return client.patch("/applications/tags/rename", { old_tag: oldTag, new_tag: newTag });
