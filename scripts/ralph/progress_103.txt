@@ -1,9 +1,43 @@
+# Ralph Progress Log — prd_103
+Started: Sat May 23 2026
+---
+
 ## US-929: Pending Approval inbox page ✅ COMPLETE
 
 **Implementation:** /inbox/pending route, usePendingOpportunities hook, PendingOpportunityCard, NavBar badge.
 
 **Testing:** npm run test -- src/pages/PendingInboxPage.test.jsx — 3 passed
 
-**Commit:** (pending)
+**Commit:** c86ad70
+
+---
+
+## US-930: Approve flow — application draft without auto-apply ✅ COMPLETE
+
+**Implementation:** Approve redirects to /dashboard?selected=appId with toast; backend persists cover_letter_draft.
+
+**Testing:** npm run test -- src/pages/PendingInboxPage.approve.test.jsx; pytest tests/test_autopilot.py — passed
+
+**Commit:** 728d183
+
+---
+
+## US-931: Morning brief autopilot section integration ✅ COMPLETE
+
+**Implementation:** build_morning_brief pending_approvals section; summary_line "I found {n} great matches overnight".
+
+**Testing:** pytest tests/test_morning_brief.py -v — 9 passed
+
+**Commit:** 4865075
+
+---
+
+## US-932: Autopilot settings and onboarding copy ✅ COMPLETE
+
+**Implementation:** SettingsAutopilotSection (toggle, min score 70-95, max daily), explainer copy, AutopilotResumeBanner on dashboard.
+
+**Testing:** npm run test -- src/components/SettingsAutopilotSection.test.jsx src/components/AutopilotResumeBanner.test.jsx — 5 passed
+
+**Commit:** f1c2d0f
 
 ---

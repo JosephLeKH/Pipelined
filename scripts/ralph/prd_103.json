@@ -1,7 +1,7 @@
 {
   "id": "prd_103",
   "title": "Pending Approval Inbox & Autopilot Brief Integration",
-  "description": "User-facing Pending Approval inbox for autopilot matches. Morning brief surfaces overnight finds. Complete the agentic loop: discover → score → prep → user approves → track in pipeline.",
+  "description": "User-facing Pending Approval inbox for autopilot matches. Morning brief surfaces overnight finds. Complete the agentic loop: discover \u2192 score \u2192 prep \u2192 user approves \u2192 track in pipeline.",
   "userStories": [
     {
       "id": "US-929",
@@ -14,13 +14,13 @@
         "Nav badge"
       ],
       "priority": "high",
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "PendingInboxPage, usePendingOpportunities, nav badge"
     },
     {
       "id": "US-930",
-      "title": "Approve flow — application draft without auto-apply",
-      "description": "Approve creates application stage To Apply, source autopilot, persists cover_letter_draft. Redirect to dashboard detail panel. Toast: 'Added to pipeline — apply when ready'.",
+      "title": "Approve flow \u2014 application draft without auto-apply",
+      "description": "Approve creates application stage To Apply, source autopilot, persists cover_letter_draft. Redirect to dashboard detail panel. Toast: 'Added to pipeline \u2014 apply when ready'.",
       "acceptanceCriteria": [
         "Approve creates To Apply application",
         "Cover letter on application",
@@ -28,8 +28,8 @@
         "Integration test"
       ],
       "priority": "high",
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Approve redirect + integration test; cover_letter_draft persisted"
     },
     {
       "id": "US-931",
@@ -41,8 +41,8 @@
         "Tests with fixtures"
       ],
       "priority": "medium",
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Morning brief pending_approvals section + overnight summary_line"
     },
     {
       "id": "US-932",
@@ -54,8 +54,8 @@
         "Resume-required banner"
       ],
       "priority": "medium",
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "SettingsAutopilotSection + dashboard resume banner"
     }
   ]
 }
