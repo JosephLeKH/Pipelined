@@ -1,17 +1,32 @@
 /** Hook managing Interview Prep Agent state and SSE lifecycle. */
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 
 import { openInterviewPrepStream } from "../api/interviewPrep";
 
 const STATUS = { IDLE: "idle", RUNNING: "running", DONE: "done", ERROR: "error" };
 
-export function useInterviewPrep(appId) {
-  const [status, setStatus] = useState(STATUS.IDLE);
+function initialStatus(cachedBriefing) {
+  return cachedBriefing ? STATUS.DONE : STATUS.IDLE;
+}
+
+export function useInterviewPrep(appId, cachedBriefing = null) {
+  const [status, setStatus] = useState(() => initialStatus(cachedBriefing));
   const [progressSteps, setProgressSteps] = useState([]);
-  const [briefing, setBriefing] = useState(null);
+  const [briefing, setBriefing] = useState(cachedBriefing);
   const [errorMessage, setErrorMessage] = useState(null);
   const esRef = useRef(null);
+
+  useEffect(() => {
+    if (esRef.current) {
+      esRef.current.close();
+      esRef.current = null;
+    }
+    setStatus(initialStatus(cachedBriefing));
+    setProgressSteps([]);
+    setBriefing(cachedBriefing);
+    setErrorMessage(null);
+  }, [appId, cachedBriefing]);
 
   const start = useCallback(() => {
     if (esRef.current) {
@@ -40,6 +55,10 @@ export function useInterviewPrep(appId) {
     });
   }, [appId]);
 
+  const refresh = useCallback(() => {
+    start();
+  }, [start]);
+
   const reset = useCallback(() => {
     if (esRef.current) {
       esRef.current.close();
@@ -51,5 +70,5 @@ export function useInterviewPrep(appId) {
     setErrorMessage(null);
   }, []);
 
-  return { status, progressSteps, briefing, errorMessage, start, reset, STATUS };
+  return { status, progressSteps, briefing, errorMessage, start, refresh, reset, STATUS };
 }

@@ -160,6 +160,11 @@ class ApplicationResponse(BaseModel):
     documents: dict[str, Document] | None = None  # resume and cover_letter
     prep_checklist: list[PrepChecklistItem] = Field(default_factory=list)
     cover_letter_draft: dict[str, str] | None = None
+    fit_score: int | None = None
+    fit_score_reason: str | None = None
+    fit_score_at: datetime | None = None
+    interview_prep_briefing: dict | None = None
+    interview_prep_generated_at: datetime | None = None
 
     @classmethod
     def from_doc(cls, doc: dict) -> "ApplicationResponse":
