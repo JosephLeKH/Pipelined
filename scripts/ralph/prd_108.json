@@ -1,0 +1,57 @@
+{
+  "id": "prd_108",
+  "title": "Autopilot & Job Board AI Surfaces",
+  "description": "Polish pending inbox and job discovery. Honest heuristic labeling on recommendations.",
+  "userStories": [
+    {
+      "id": "US-952",
+      "title": "Pending inbox visual upgrade",
+      "description": "Card redesign with FitBadge, collapsible cover letter with copy, empty state with settings link. designTokens.",
+      "acceptanceCriteria": [
+        "FitBadge on cards",
+        "Copy button on cover letter",
+        "Tests pass"
+      ],
+      "priority": "high",
+      "passes": true,
+      "notes": "PendingOpportunityCard CARD_BASE + FitBadge; collapsible cover letter copy; PendingInboxPage empty state → autopilot settings"
+    },
+    {
+      "id": "US-953",
+      "title": "Autopilot settings UX consistency",
+      "description": "Single save button. Scan time preview. Inline resume alert. Minimum fit score label.",
+      "acceptanceCriteria": [
+        "Unified save flow",
+        "Scan preview shown"
+      ],
+      "priority": "medium",
+      "passes": true,
+      "notes": "Single Save persists enabled + sliders; formatNextScanPreview in autopilotUtils.js"
+    },
+    {
+      "id": "US-954",
+      "title": "Job recommendations honest labeling",
+      "description": "TrendingUp icon, heuristic subtitle, expose score, error/retry states.",
+      "acceptanceCriteria": [
+        "No Sparkles",
+        "Honest subtitle",
+        "Error state handled"
+      ],
+      "priority": "medium",
+      "passes": true,
+      "notes": "Ranked by your resume keywords subtitle; FitBadge on score; Try again retry UI"
+    },
+    {
+      "id": "US-955",
+      "title": "Job detail fit preview before add",
+      "description": "Copy explaining fit runs after add. Post-add toast Analyzing fit.",
+      "acceptanceCriteria": [
+        "Expectation copy on job detail",
+        "Post-add toast"
+      ],
+      "priority": "low",
+      "passes": true,
+      "notes": "JobDetailPanel callout + Analyzing fit… toast on pipeline save"
+    }
+  ]
+}

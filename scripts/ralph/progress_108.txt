@@ -1,0 +1,43 @@
+# Ralph Progress Log — prd_108
+Started: Sat May 23 2026
+---
+
+## US-952: Pending inbox visual upgrade ✅ COMPLETE
+
+**Implementation:** PendingOpportunityCard uses CARD_BASE and FitBadge; collapsible cover letter with accessible copy button and success feedback; PendingInboxPage empty state links to autopilot settings.
+
+**Testing:** npm test -- --run PendingOpportunityCard.test.jsx PendingInboxPage.test.jsx — passed
+
+**Commit:** 85848d4
+
+---
+
+## US-953: Autopilot settings UX consistency ✅ COMPLETE
+
+**Implementation:** Single Save button persists enabled + min score + max daily; next scan preview via autopilotUtils.js (AUTOPILOT_SCAN_HOUR_UTC); inline resume alert; MIN_FIT_SCORE_LABEL on slider.
+
+**Testing:** npm test -- --run SettingsAutopilotSection.test.jsx — passed
+
+**Commit:** 2069033
+
+---
+
+## US-954: Job recommendations honest labeling ✅ COMPLETE
+
+**Implementation:** TrendingUp icon (brand clay), subtitle "Ranked by your resume keywords", FitBadge for heuristic score, error panel with Try again retry.
+
+**Testing:** npm test -- --run JobRecommendations.test.jsx — passed
+
+**Commit:** 55747d0
+
+---
+
+## US-955: Job detail fit preview before add ✅ COMPLETE
+
+**Implementation:** JobDetailPanel callout explains fit analysis runs after pipeline add; post-save toast "Analyzing fit…".
+
+**Testing:** npm test -- --run JobDetailPanel.test.jsx — passed; npm run build — passed
+
+**Commit:** f72b6fc
+
+---
