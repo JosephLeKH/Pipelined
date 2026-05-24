@@ -8,15 +8,18 @@ import {
   triggerGmailSync,
   updateGmailSettings,
 } from "../api/email";
+import { useAuth } from "../context/AuthContext";
 
 export const GMAIL_STATUS_KEY = ["gmail", "status"];
 
 /** Fetch the current Gmail connection status. */
 export function useGmailStatus() {
+  const { user } = useAuth();
   return useQuery({
     queryKey: GMAIL_STATUS_KEY,
     queryFn: fetchGmailStatus,
     staleTime: 30_000,
+    enabled: !!user,
   });
 }
 

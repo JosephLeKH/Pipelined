@@ -159,9 +159,9 @@ function ApplicationRow({
         {application.source === "email" ? (
           <Tooltip>
             <TooltipTrigger asChild>
-              <Mail className="h-4 w-4 shrink-0 text-primary cursor-default" aria-label="Auto-tracked from email" />
+              <Mail className="h-4 w-4 shrink-0 text-primary cursor-default" aria-hidden="true" />
             </TooltipTrigger>
-            <TooltipContent>Auto-tracked from your job-search inbox</TooltipContent>
+            <TooltipContent>Auto-tracked from Gmail</TooltipContent>
           </Tooltip>
         ) : (
           <SourceIcon className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />

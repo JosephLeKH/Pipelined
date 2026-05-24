@@ -59,8 +59,8 @@
         "Exception from activity logging is caught and logged (don't break sync on log failure)"
       ],
       "priority": "medium",
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added logger.info call after successful create_application with event type 'application_created_via_email' and source='email'. Includes user_id, app_id, company, role_title, and source."
     },
     {
       "id": "US-874",
@@ -73,8 +73,8 @@
         "Uses same activity logging import/pattern as US-873"
       ],
       "priority": "medium",
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added logger.info call after successful update_application with event type 'application_stage_updated_via_email'. Includes user_id, app_id, company, role_title, from_stage, to_stage, and source='email'."
     },
     {
       "id": "US-875",

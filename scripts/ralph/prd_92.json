@@ -41,8 +41,8 @@
         "If existing stage has no entry in STAGE_ORDER, allow update (defensive default)"
       ],
       "priority": "high",
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added STAGE_ORDER dict with 6 entries at module scope. In _process_message, added stage ordering check before update_application call. Only updates if new stage >= existing stage or existing stage unknown."
     },
     {
       "id": "US-865",
@@ -55,8 +55,8 @@
         "JSONDecodeError handling unchanged"
       ],
       "priority": "high",
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added import re at top. Updated classify_email to strip markdown fences using re.sub before json.loads. JSONDecodeError handling unchanged."
     },
     {
       "id": "US-866",
@@ -80,8 +80,8 @@
         "No other changes to the function"
       ],
       "priority": "medium",
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added the four fields to the $unset dict in _disable_gmail."
     },
     {
       "id": "US-868",
@@ -94,8 +94,8 @@
         "Pattern matches existing rate-limited endpoints in the codebase"
       ],
       "priority": "medium",
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added @limiter.limit('3/15minutes') decorator to trigger_sync. Imported Request from fastapi and added it to function signature. Imported limiter from middleware.rate_limit."
     },
     {
       "id": "US-869",

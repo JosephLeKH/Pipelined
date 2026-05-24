@@ -6,3 +6,26 @@ Started: Sat May 23 11:00:34 PDT 2026
 - Updated `_build_application_doc` in `backend/applications/service.py` to use `body_dict.get("current_stage") or INITIAL_STAGE` so the field flows through to the document
 - In `_process_message` (email_integration/service.py), pass `current_stage=stage if stage != "Applied" else None` to `ApplicationCreate`
 - Learning: `_build_application_doc` hardcoded `INITIAL_STAGE`; the fix needed both schema and service changes to wire the field end-to-end.
+
+## US-864: Stage ordering guard — prevent application regression [DONE]
+- Added STAGE_ORDER dict at module scope in email_integration/service.py with 6 entries (Applied:1, OA:2, Phone Screen:3, Interviewing:4, Offer:5, Rejected:6)
+- In _process_message, added stage ordering check before update_application: only updates if new_stage_order >= existing_stage_order or existing stage is unknown
+- Prevents regression like Offer -> Applied from stale emails
+- Returns (False, False) if update is skipped due to stage regression
+
+## US-865: Strip markdown code fences from Gemini JSON response [DONE]
+- Added `import re` at top of classifier.py
+- Before json.loads, strip markdown fences: `raw = re.sub(r'^```(?:json)?\s*|\s*```$', '', content.strip(), flags=re.DOTALL)`
+- Handles both ```json and ``` prefixes and ``` suffixes
+- Allows Gemini to wrap JSON in markdown fences without breaking parsing
+
+## US-867: Clear gmail_last_sync_at in _disable_gmail [DONE]
+- Added four fields to $unset dict in _disable_gmail: gmail_last_sync_at, gmail_emails_scanned, gmail_apps_tracked, gmail_status_updates_count
+- Ensures stale stats are cleared when credentials are revoked
+
+## US-868: Rate-limit manual Gmail sync endpoint [DONE]
+- Added `from fastapi import Request` to router.py imports
+- Imported `limiter` from middleware.rate_limit
+- Added @limiter.limit('3/15minutes') decorator to trigger_sync
+- Added request: Request parameter to function signature
+- Prevents spam of Gmail sync endpoint
