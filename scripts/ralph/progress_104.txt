@@ -42,6 +42,6 @@ Started: Sat May 23 2026
 
 **Implementation:** Practical guide (189 lines) covering OpenRouter setup, Morning Brief, Resume Insights, Autopilot, follow-up policy, scheduler reference, troubleshooting.
 
-**Commit:** (pending)
+**Commit:** 4d63225
 
 ---
