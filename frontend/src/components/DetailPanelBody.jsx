@@ -9,6 +9,7 @@ import { DetailPanelNotes } from "./DetailPanelNotes";
 import { DetailPanelTimeline } from "./DetailPanelTimeline";
 import OfferDetailsSection from "./OfferDetailsSection";
 import OfferSummarySection from "./OfferSummarySection";
+import AgentActivitySection from "./AgentActivitySection";
 import ApplyPackSection from "./ApplyPackSection";
 import { InterviewPrepAgent } from "./InterviewPrepAgent";
 import ResumeInsightsSection from "./ResumeInsightsSection";
@@ -76,6 +77,7 @@ export function PanelBody({ application, handleStageChange, handleUpdate, onAddE
       )}
       <DetailPanelNotes applicationId={application.id} initialValue={application.notes} onDirtyChange={onDirtyChange} />
       <ApplicationPrepSection applicationId={application.id} initialChecklist={application.prep_checklist} />
+      <AgentActivitySection applicationId={application.id} />
       <DetailPanelTimeline stageHistory={application.stage_history} applicationId={application.id} onAddEvent={onAddEvent} />
       <ContactsSection applicationId={application.id} />
     </div>
