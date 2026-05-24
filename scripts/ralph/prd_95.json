@@ -14,7 +14,7 @@
         "No other changes to the function or file"
       ],
       "priority": "high",
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {

@@ -1,3 +1,23 @@
 # Ralph Progress Log
 Started: Sat May 23 19:22:10 PDT 2026
 ---
+
+## US-886 - Fix _get_resume_text ObjectId bug
+**Status**: ✅ COMPLETED
+
+**Summary**:
+Fixed a critical bug in `backend/applications/interview_prep/router.py` where `_get_resume_text()` was querying MongoDB with a plain string user_id instead of ObjectId. This caused resume_text to always be empty, meaning the interview prep agent never received user context.
+
+**Changes**:
+- Added ObjectId conversion in `_get_resume_text()` before querying users collection
+- Wrapped conversion in try/except to gracefully handle invalid ObjectIds, returning empty string on failure
+- Reused existing `bson.ObjectId` import already present in the file
+
+**Testing**:
+- Pyright type checking: 0 errors
+- All 107 application tests pass
+- No changes to other functions/files
+
+**Commit**: e947ced - feat: US-886 - Fix _get_resume_text ObjectId bug in interview_prep/router.py
+
+**Learning**: The interview prep agent now has access to user resume context when querying for interview preparation. This was a simple but critical fix that required proper ObjectId handling for MongoDB queries.
