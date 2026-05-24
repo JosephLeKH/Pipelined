@@ -36,13 +36,13 @@ export function useLoginForm() {
         const user = await signIn({ email: email.trim(), password });
         login(user);
         _identifyLoggedInUser(user);
-        navigate("/dashboard", { replace: true });
+        navigate("/today", { replace: true });
       } catch (err) { setError(err?.message ?? "Incorrect email or password."); }
     },
     [email, password, signIn, login, navigate]
   );
 
-  const handleGoogleSuccess = useCallback(() => navigate("/dashboard", { replace: true }), [navigate]);
+  const handleGoogleSuccess = useCallback(() => navigate("/today", { replace: true }), [navigate]);
   const handleGoogleError = useCallback((message) => setError(message), []);
 
   return { email, setEmail, password, setPassword, error, isPending, handleSubmit, handleGoogleSuccess, handleGoogleError };

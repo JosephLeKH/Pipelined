@@ -57,7 +57,7 @@ export function useRegisterForm() {
     [displayName, email, password, signUp, login, navigate, refCode]
   );
 
-  const handleGoogleSuccess = useCallback(() => navigate("/dashboard", { replace: true }), [navigate]);
+  const handleGoogleSuccess = useCallback(() => navigate("/today", { replace: true }), [navigate]);
   const handleGoogleError = useCallback((message) => setError(message), []);
 
   return { displayName, setDisplayName, email, setEmail, password, setPassword, error, isPending, handleSubmit, handleGoogleSuccess, handleGoogleError };

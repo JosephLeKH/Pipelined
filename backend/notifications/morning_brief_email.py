@@ -16,7 +16,7 @@ def format_morning_brief_email(brief_doc: dict, display_name: str = "there") -> 
         "",
         summary,
         "",
-        f"View your full brief: {settings.frontend_url}/brief",
+        f"View your full brief: {settings.frontend_url}/today",
         "",
     ]
 

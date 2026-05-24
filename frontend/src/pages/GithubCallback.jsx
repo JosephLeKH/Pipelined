@@ -26,7 +26,7 @@ function GithubCallback() {
     signInWithGithub({ code })
       .then((user) => {
         login(user);
-        navigate("/dashboard", { replace: true });
+        navigate("/today", { replace: true });
       })
       .catch(() => {
         navigate("/login?error=github_auth_failed", { replace: true });

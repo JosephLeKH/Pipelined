@@ -148,7 +148,7 @@ describe("NotificationBell", () => {
     expect(await screen.findByText("No notifications")).toBeDefined();
   });
 
-  it("should navigate to /brief when morning_brief_ready notification is clicked", async () => {
+  it("should navigate to /today when morning_brief_ready notification is clicked", async () => {
     server.use(
       http.get("/api/notifications", () =>
         HttpResponse.json({
@@ -157,7 +157,7 @@ describe("NotificationBell", () => {
             type: "morning_brief_ready",
             title: "Your morning brief is ready",
             body: "1 follow-up, 1 interview",
-            action_url: "/brief",
+            action_url: "/today",
             read: false,
             created_at: new Date().toISOString(),
           }],
@@ -181,7 +181,7 @@ describe("NotificationBell", () => {
     fireEvent.click(screen.getByRole("button", { name: /notifications/i }));
     fireEvent.click(await screen.findByText("Your morning brief is ready"));
 
-    await waitFor(() => expect(capturedPath).toBe("/brief"));
+    await waitFor(() => expect(capturedPath).toBe("/today"));
   });
 
   it("should navigate to follow-up section for follow_up_due notification", async () => {
@@ -224,4 +224,45 @@ describe("NotificationBell", () => {
       expect(capturedSearch).toContain("action=follow-up");
     });
   });
+  it("should navigate to application when interview_prep_ready notification is clicked", async () => {
+    server.use(
+      http.get("/api/notifications", () =>
+        HttpResponse.json({
+          data: [{
+            id: "prep1",
+            type: "interview_prep_ready",
+            title: "Interview prep ready: Acme",
+            body: "Your briefing is ready.",
+            action_url: "/dashboard?selected=app99",
+            read: false,
+            created_at: new Date().toISOString(),
+          }],
+        })
+      ),
+      http.get("/api/notifications/unread-count", () =>
+        HttpResponse.json({ data: { count: 1 } })
+      ),
+      http.patch("/api/notifications/prep1/read", () =>
+        HttpResponse.json({ data: { ok: true } })
+      ),
+    );
+
+    capturedPath = "";
+    capturedSearch = "";
+    render(
+      <Routes>
+        <Route path="*" element={<><LocationCapture /><NotificationBell /></>} />
+      </Routes>,
+      { wrapper: makeWrapper() },
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /notifications/i }));
+    fireEvent.click(await screen.findByText("Interview prep ready: Acme"));
+
+    await waitFor(() => {
+      expect(capturedPath).toBe("/dashboard");
+      expect(capturedSearch).toContain("selected=app99");
+    });
+  });
+
 });

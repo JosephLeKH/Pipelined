@@ -40,7 +40,7 @@ import NotificationBell from "./NotificationBell";
 const NAV_LINKS = [
   { to: "/dashboard", label: "Dashboard", Icon: LayoutDashboard },
   { to: "/inbox/pending", label: "Inbox", Icon: Inbox, badgeKey: "pending" },
-  { to: "/brief", label: "Brief", Icon: Sun },
+  { to: "/today", label: "Today", Icon: Sun },
   { to: "/jobs", label: "Job Board", Icon: Briefcase },
   { to: "/calendar", label: "Calendar", Icon: CalendarDays },
   { to: "/analytics", label: "Analytics", Icon: BarChart2 },

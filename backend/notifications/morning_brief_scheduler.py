@@ -51,6 +51,6 @@ async def send_due_morning_briefs(now_utc: dt.datetime | None = None) -> None:
                 type=NOTIFICATION_TYPE_MORNING_BRIEF,
                 title="Your morning brief is ready",
                 body=stored.get("summary_line", "View your daily action list."),
-                action_url="/brief",
+                action_url="/today",
             )
         logger.info("morning_brief_delivered", user_id=user_id, date=local_date)

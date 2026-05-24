@@ -83,7 +83,7 @@ function VerifyEmailConfirm() {
 
   useEffect(() => {
     if (!isSuccess) return;
-    const timer = setTimeout(() => navigate("/dashboard", { replace: true }), REDIRECT_DELAY_MS);
+    const timer = setTimeout(() => navigate("/today", { replace: true }), REDIRECT_DELAY_MS);
     return () => clearTimeout(timer);
   }, [isSuccess, navigate]);
 
