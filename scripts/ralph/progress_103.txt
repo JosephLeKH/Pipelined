@@ -1,0 +1,9 @@
+## US-929: Pending Approval inbox page ✅ COMPLETE
+
+**Implementation:** /inbox/pending route, usePendingOpportunities hook, PendingOpportunityCard, NavBar badge.
+
+**Testing:** npm run test -- src/pages/PendingInboxPage.test.jsx — 3 passed
+
+**Commit:** (pending)
+
+---
