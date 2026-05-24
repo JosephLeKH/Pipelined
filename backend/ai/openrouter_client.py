@@ -53,6 +53,27 @@ async def complete_json(
     timeout: float = DEFAULT_TIMEOUT_SECONDS,
 ) -> dict:
     """Call OpenRouter chat completions and parse a JSON object from the response."""
+    parsed, _, _ = await complete_json_with_usage(
+        system,
+        user,
+        model=model,
+        temperature=temperature,
+        max_tokens=max_tokens,
+        timeout=timeout,
+    )
+    return parsed
+
+
+async def complete_json_with_usage(
+    system: str,
+    user: str,
+    *,
+    model: str | None = None,
+    temperature: float = DEFAULT_TEMPERATURE,
+    max_tokens: int = DEFAULT_MAX_TOKENS,
+    timeout: float = DEFAULT_TIMEOUT_SECONDS,
+) -> tuple[dict, int, int]:
+    """Like complete_json but also returns input and output token counts."""
     if not settings.openrouter_api_key:
         raise OpenRouterError("OpenRouter API key is not configured")
 
@@ -80,6 +101,10 @@ async def complete_json(
     if not content:
         raise OpenRouterError("OpenRouter returned empty content")
 
+    usage = response.usage
+    input_tokens = usage.prompt_tokens if usage else 0
+    output_tokens = usage.completion_tokens if usage else 0
+
     try:
         raw = _strip_markdown_fences(content)
         parsed = json.loads(raw)
@@ -90,4 +115,4 @@ async def complete_json(
     if not isinstance(parsed, dict):
         raise OpenRouterError("OpenRouter response was not a JSON object")
 
-    return parsed
+    return parsed, input_tokens, output_tokens

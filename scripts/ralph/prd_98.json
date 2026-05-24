@@ -18,7 +18,7 @@
       "notes": "OpenRouter config, ai/openrouter_client.py, tests/test_openrouter_client.py (6 passed). Commit 39438ea."
     },
     {
-      "id": "US-908"
+      "id": "US-908",
       "title": "Migrate email classifier and fit score to OpenRouter",
       "description": "Replace direct Gemini calls with OpenRouter in classifier.py, fit_score.py, and generate_follow_up_draft in router.py.\n\nFallback: if openrouter_api_key set use OpenRouter; elif legacy gemini_api_key set keep existing path; else None/503.\n\nDo NOT migrate interview prep agent loop (uses Exa tools) in this story.",
       "acceptanceCriteria": [
