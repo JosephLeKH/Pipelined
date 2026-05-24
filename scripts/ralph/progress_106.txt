@@ -18,6 +18,8 @@ Started: Sat May 23 2026
 
 **Testing:** npm test -- --run InterviewPrepAgent.test.jsx — passed
 
+**Commit:** bf0255d
+
 ---
 
 ## US-945: DetailPanelHeader AI status strip ✅ COMPLETE
@@ -25,6 +27,8 @@ Started: Sat May 23 2026
 **Implementation:** Compact FitBadge, prep-ready pill, Gmail-synced pill in header with min-height strip to prevent mobile layout shift.
 
 **Testing:** npm test -- --run DetailPanelHeader.test.jsx — passed
+
+**Commit:** 252a45c
 
 ---
 
@@ -34,6 +38,8 @@ Started: Sat May 23 2026
 
 **Testing:** npm test -- --run AiPanelGroup.test.jsx — passed
 
+**Commit:** ded0938
+
 ---
 
 ## US-947: Follow-up draft UX improvements ✅ COMPLETE
@@ -42,4 +48,4 @@ Started: Sat May 23 2026
 
 **Testing:** npm test -- --run MorningBriefPage.test.jsx — passed; npm run build — passed
 
----
+**Commit:** f5fc74e
