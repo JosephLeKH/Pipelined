@@ -1,0 +1,11 @@
+# Ralph Progress Log — prd_113
+Started: Sat May 23 2026
+---
+
+## US-974: Apply pack backend generator ✅ COMPLETE
+
+**Implementation:** POST /api/applications/{id}/apply-pack via OpenRouter; ApplyPackResponse with cover_letter, short_answers[], linkedin_note, talking_points[]; cached on application.apply_pack; 5/hour rate limit.
+
+**Testing:** `pytest tests/test_apply_pack.py -v` — 5 passed
+
+---

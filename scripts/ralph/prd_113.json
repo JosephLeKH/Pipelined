@@ -1,0 +1,51 @@
+{
+  "id": "prd_113",
+  "title": "Apply Pack — Application Coach",
+  "description": "Apply pack generator: cover letter, form answers, LinkedIn note, talking points. Text only — no auto-submit.",
+  "userStories": [
+    {
+      "id": "US-974",
+      "title": "Apply pack backend generator",
+      "description": "POST /api/applications/{id}/apply-pack via OpenRouter. Cache on application.apply_pack.",
+      "acceptanceCriteria": [
+        "Endpoint with rate limit",
+        "Structured JSON response",
+        "Tests"
+      ],
+      "priority": "high",
+      "passes": true,
+      "title": "ApplyPackSection in detail panel",
+      "description": "AiSection with Generate CTA, copy buttons per field.",
+      "acceptanceCriteria": [
+        "ApplyPackSection.jsx",
+        "Copy per field"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-976",
+      "title": "Autopilot approve includes apply pack hints",
+      "description": "Pending card or post-approve shows talking points from prep.",
+      "acceptanceCriteria": [
+        "Talking points on pending or approve flow"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-977",
+      "title": "Extension apply hints stub",
+      "description": "Popup read-only talking points from last save. No auto-fill.",
+      "acceptanceCriteria": [
+        "Popup hints section",
+        "Extension tests"
+      ],
+      "priority": "low",
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

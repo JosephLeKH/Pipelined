@@ -9,6 +9,7 @@ import { DetailPanelNotes } from "./DetailPanelNotes";
 import { DetailPanelTimeline } from "./DetailPanelTimeline";
 import OfferDetailsSection from "./OfferDetailsSection";
 import OfferSummarySection from "./OfferSummarySection";
+import ApplyPackSection from "./ApplyPackSection";
 import { InterviewPrepAgent } from "./InterviewPrepAgent";
 import ResumeInsightsSection from "./ResumeInsightsSection";
 import {
@@ -51,6 +52,10 @@ export function PanelBody({ application, handleStageChange, handleUpdate, onAddE
           application={application}
           onUpdate={handleUpdate}
           onInsightsGenerated={(insights) => handleUpdate({ resume_insights: insights })}
+        />
+        <ApplyPackSection
+          application={application}
+          onPackGenerated={(pack) => handleUpdate({ apply_pack: pack })}
         />
         <InterviewPrepAgent
           applicationId={application.id}

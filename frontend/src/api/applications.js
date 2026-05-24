@@ -168,6 +168,11 @@ export async function generateResumeInsights(appId) {
   return res.data.data;
 }
 
+/** Generate apply pack materials for an application. */
+export async function generateApplyPack(appId) {
+  return client.post(`/applications/${appId}/apply-pack`);
+}
+
 /** Fetch privacy-safe email events for an application timeline. */
 export async function fetchEmailEvents(appId) {
   return client.get(`/applications/${appId}/email-events`);
