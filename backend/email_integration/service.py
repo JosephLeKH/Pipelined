@@ -27,6 +27,7 @@ from applications.service import update as update_application
 from config import settings
 from database import get_collection
 from email_integration.classifier import GmailTransientError, classify_email, normalize_interview_round
+from email_integration.deadline_parser import extract_oa_deadline
 from email_integration.email_events import log_email_event
 from email_integration.offer_parser import extract_offer_details
 

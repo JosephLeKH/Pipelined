@@ -55,3 +55,14 @@ an editor opened by 'git commit'. Please make sure all processes
 are terminated then try again. If it still fails, a git process
 may have crashed in this repository earlier:
 remove the file manually to continue.
+Using CLAUDE.md: /Users/josephle/GitHub/Pipelined/CLAUDE.md (via --append-system-prompt-file)
+PRD file: /Users/josephle/GitHub/Pipelined/scripts/ralph/prd_127.json
+Progress file: /Users/josephle/GitHub/Pipelined/scripts/ralph/progress_127.txt
+Claude model: sonnet (set RALPH_MODEL to override)
+Sleep between iterations: 2s (RALPH_SLEEP_SEC)
+Starting Ralph - Tool: claude - Max iterations: 10
+
+===============================================================
+  Ralph Iteration 1 of 10 (claude)
+===============================================================
+tee: /dev/stderr: Operation not permitted

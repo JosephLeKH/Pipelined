@@ -83,3 +83,23 @@ async def test_ensure_indexes_creates_pending_opportunities_indexes(app):
     assert "pending_user_status" in index_names
     assert "pending_user_listing_unique" in index_names
     assert index_info["pending_user_listing_unique"].get("unique") is True
+
+
+async def test_ensure_indexes_creates_copilot_sessions_indexes(app):
+    await ensure_indexes()
+
+    index_info = await get_collection("copilot_sessions").index_information()
+
+    index_names = set(index_info.keys())
+    assert "copilot_session_user" in index_names
+    assert "copilot_session_ttl" in index_names
+    assert index_info["copilot_session_user"].get("unique") is True
+    assert index_info["copilot_session_ttl"].get("expireAfterSeconds") == 7 * 24 * 3600
+
+
+async def test_ensure_indexes_creates_agent_runs_type_date_index(app):
+    await ensure_indexes()
+
+    index_info = await get_collection("agent_runs").index_information()
+
+    assert "agent_runs_type_date" in index_info
