@@ -168,6 +168,12 @@ export async function generateResumeInsights(appId) {
   return res.data.data;
 }
 
+/** Generate recruiter thread summary from email events metadata. */
+export async function generateThreadSummary(appId) {
+  const res = await client.post(`/applications/${appId}/thread-summary`);
+  return res.data.data;
+}
+
 /** Generate apply pack materials for an application. */
 export async function generateApplyPack(appId) {
   return client.post(`/applications/${appId}/apply-pack`);

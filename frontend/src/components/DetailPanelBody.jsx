@@ -13,6 +13,7 @@ import AgentActivitySection from "./AgentActivitySection";
 import ApplyPackSection from "./ApplyPackSection";
 import { InterviewPrepAgent } from "./InterviewPrepAgent";
 import ResumeInsightsSection from "./ResumeInsightsSection";
+import ThreadSummarySection from "./ThreadSummarySection";
 import {
   ApplicationPrepSection,
   DetailField,
@@ -66,6 +67,10 @@ export function PanelBody({ application, handleStageChange, handleUpdate, onAddE
           interviewRound={application.interview_round}
         />
         <FollowUpDraftSection application={application} autoExpand={expandFollowUpDraft} />
+        <ThreadSummarySection
+          application={application}
+          onSummaryGenerated={(summary) => handleUpdate({ thread_summary: summary })}
+        />
       </AiPanelGroup>
       <StageSelector stageOptions={stageOptions} currentStage={application.current_stage} onStageChange={handleStageChange} />
       <TagsSection application={application} onUpdate={handleUpdate} />
