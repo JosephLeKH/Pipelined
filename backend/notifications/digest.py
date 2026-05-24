@@ -187,6 +187,14 @@ async def send_weekly_digest(user_id: str) -> bool:
 async def send_all_digests() -> None:
     """Send weekly digest to all users with digest_enabled=True."""
     users_col = get_collection("users")
-    cursor = users_col.find({"digest_enabled": {"$ne": False}}, {"_id": 1})
+    cursor = users_col.find(
+        {
+            "$or": [
+                {"weekly_digest_enabled": True},
+                {"weekly_digest_enabled": {"$exists": False}, "digest_enabled": True},
+            ]
+        },
+        {"_id": 1},
+    )
     async for user in cursor:
         await send_weekly_digest(str(user["_id"]))

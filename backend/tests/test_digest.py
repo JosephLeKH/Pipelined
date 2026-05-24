@@ -135,3 +135,23 @@ async def test_send_weekly_digest_returns_false_for_missing_user():
 
     # Assert
     assert result is False
+
+
+@pytest.mark.asyncio(loop_scope="session")
+async def test_send_all_digests_skips_weekly_digest_disabled(client, registered_user):
+    """send_all_digests should only email users with weekly_digest_enabled=True."""
+    user_id, _ = registered_user
+    users = database.get_collection("users")
+    await users.update_one(
+        {"_id": ObjectId(user_id)},
+        {"$set": {"weekly_digest_enabled": False, "digest_enabled": False}},
+    )
+
+    with patch(
+        "notifications.digest.send_weekly_digest",
+        new_callable=AsyncMock,
+    ) as mock_send:
+        from notifications.digest import send_all_digests
+        await send_all_digests()
+
+    mock_send.assert_not_called()
