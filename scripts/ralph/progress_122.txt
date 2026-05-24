@@ -1,0 +1,43 @@
+# Ralph Progress Log — prd_122
+Started: Sun May 24 2026
+---
+
+## US-1013: Cross-user isolation tests ✅ COMPLETE
+
+**Implementation:** Added backend/tests/test_agent_isolation.py with 4 tests covering mission snooze, mock interview quota, email_events API, and agent activity feed — user A cannot see or affect user B.
+
+**Testing:** `pytest tests/test_agent_isolation.py -v` — 4 passed
+
+**Commit:** d547435
+
+---
+
+## US-1014: Copilot request audit logging ✅ COMPLETE
+
+**Implementation:** structlog `copilot_chat_request` event on POST /api/copilot/chat with user_id, message_length, history_length — no raw content.
+
+**Testing:** `pytest tests/test_copilot_router.py -v` — 5 passed
+
+**Commit:** 89abc67
+
+---
+
+## US-1015: Landing page agent-native refresh ✅ COMPLETE
+
+**Implementation:** Hero copy for co-pilot + Today; feature grid adds Co-pilot, Today, Apply Pack, Mock Interview, Watchlist; logged-in redirect to /today.
+
+**Testing:** `npm run test -- --run src/pages/LandingPage.test.jsx` — 6 passed; `npm run build` — success
+
+**Commit:** 2ae29a6
+
+---
+
+## US-1016: Onboarding checklist agent steps v2 ✅ COMPLETE
+
+**Implementation:** Replaced legacy checklist with 3 steps — Set agent profile, Try co-pilot, Open Today. Deep links to /settings?section=agent, co-pilot open event, and /today.
+
+**Testing:** `npm run test -- --run src/components/OnboardingChecklist.test.jsx` — 7 passed; `npm run build` — success
+
+**Commit:** 5843741
+
+---

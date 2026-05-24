@@ -1,0 +1,56 @@
+{
+  "id": "prd_122",
+  "title": "Agent Hardening & Onboarding Refresh",
+  "description": "Cross-user isolation tests, copilot audit log, landing/onboarding for new agent features.",
+  "userStories": [
+    {
+      "id": "US-1013",
+      "title": "Cross-user isolation tests",
+      "description": "Tests: mission snooze user A vs B, mock interview quota per user, email_events isolation, agent activity scoped.",
+      "acceptanceCriteria": [
+        "4+ isolation tests",
+        "All pass"
+      ],
+      "priority": "high",
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-1014",
+      "title": "Copilot request audit logging",
+      "description": "Log copilot chat requests via structlog: user_id, message length, history length. No full PII in logs.",
+      "acceptanceCriteria": [
+        "Logged on each chat",
+        "Tests for log call"
+      ],
+      "priority": "medium",
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-1015",
+      "title": "Landing page agent-native refresh",
+      "description": "Hero copy for co-pilot + /today. Feature grid: Apply Pack, Mock Interview, Watchlist. CTA to /today when logged in.",
+      "acceptanceCriteria": [
+        "Updated hero",
+        "6+ agent features listed",
+        "Landing tests pass"
+      ],
+      "priority": "high",
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-1016",
+      "title": "Onboarding checklist agent steps v2",
+      "description": "Add Connect Agent profile, Try co-pilot, Visit Today steps after existing AI steps.",
+      "acceptanceCriteria": [
+        "3 new steps",
+        "Deep links work"
+      ],
+      "priority": "medium",
+      "passes": true,
+      "notes": ""
+    }
+  ]
+}
