@@ -124,6 +124,14 @@ export const passthroughHandlers = [
     HttpResponse.json({ data: { message: "" } })
   ),
 
+  http.get("/api/copilot/session", () =>
+    HttpResponse.json({ data: { messages: [] } })
+  ),
+
+  http.post("/api/copilot/session", () =>
+    HttpResponse.json({ data: { messages: [] } })
+  ),
+
   http.get("/api/brief/today", () =>
     HttpResponse.json({ data: EMPTY_BRIEF })
   ),

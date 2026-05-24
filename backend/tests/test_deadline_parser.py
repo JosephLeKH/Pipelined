@@ -76,7 +76,8 @@ async def test_apply_oa_deadline_sets_application_deadline(app):  # noqa: ARG001
 
     doc = await apps_col.find_one({"_id": ObjectId(app_id)})
     assert doc is not None
-    assert doc["deadline"] == MOCK_DEADLINE
+    stored = doc["deadline"].replace(tzinfo=timezone.utc) if doc["deadline"].tzinfo is None else doc["deadline"]
+    assert stored == MOCK_DEADLINE
 
 
 async def test_process_message_extracts_deadline_on_oa_stage(app):  # noqa: ARG001
@@ -134,4 +135,5 @@ async def test_process_message_extracts_deadline_on_oa_stage(app):  # noqa: ARG0
     doc = await apps_col.find_one({"_id": ObjectId(app_id)})
     assert doc is not None
     assert doc["current_stage"] == "OA"
-    assert doc["deadline"] == MOCK_DEADLINE
+    stored = doc["deadline"].replace(tzinfo=timezone.utc) if doc["deadline"].tzinfo is None else doc["deadline"]
+    assert stored == MOCK_DEADLINE

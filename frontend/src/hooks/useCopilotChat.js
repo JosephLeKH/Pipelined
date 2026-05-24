@@ -1,9 +1,9 @@
 /** React hook for co-pilot streaming chat state. */
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { streamCopilotChat } from "../api/copilot";
+import { getCopilotSession, saveCopilotSession, streamCopilotChat } from "../api/copilot";
 import {
   COPILOT_ERROR_FALLBACK,
   COPILOT_RATE_LIMIT_MESSAGE,
@@ -13,12 +13,52 @@ import { executeCopilotAction } from "../lib/copilotActions";
 
 const STATUS = { IDLE: "idle", STREAMING: "streaming", ERROR: "error" };
 
+function toSessionPayload(messages) {
+  return messages.map(({ role, content, actions = [] }) => ({
+    role,
+    content,
+    actions,
+  }));
+}
+
+function fromSessionMessages(messages) {
+  return messages.map((msg, index) => ({
+    ...(msg.role === "assistant" ? { id: `assistant-${index}` } : {}),
+    role: msg.role,
+    content: msg.content,
+    actions: msg.actions ?? [],
+  }));
+}
+
 export function useCopilotChat() {
   const navigate = useNavigate();
   const abortRef = useRef(null);
   const [messages, setMessages] = useState([]);
   const [status, setStatus] = useState(STATUS.IDLE);
   const [errorMessage, setErrorMessage] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const { data } = await getCopilotSession();
+        if (!cancelled && data?.messages?.length) {
+          setMessages(fromSessionMessages(data.messages));
+        }
+      } catch {
+        // Session hydration is best-effort.
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const persistSession = useCallback((nextMessages) => {
+    saveCopilotSession(toSessionPayload(nextMessages)).catch(() => {});
+  }, []);
 
   const sendMessage = useCallback(async (text) => {
     const trimmed = text.trim();
@@ -52,15 +92,19 @@ export function useCopilotChat() {
           )));
         },
         onDone: (data) => {
-          setMessages((prev) => prev.map((msg) => (
-            msg.id === assistantId
-              ? {
-                  ...msg,
-                  content: data?.content ?? msg.content,
-                  actions: data?.actions ?? [],
-                }
-              : msg
-          )));
+          setMessages((prev) => {
+            const updated = prev.map((msg) => (
+              msg.id === assistantId
+                ? {
+                    ...msg,
+                    content: data?.content ?? msg.content,
+                    actions: data?.actions ?? [],
+                  }
+                : msg
+            ));
+            persistSession(updated);
+            return updated;
+          });
           setStatus(STATUS.IDLE);
           abortRef.current = null;
         },
@@ -74,7 +118,7 @@ export function useCopilotChat() {
         },
       },
     );
-  }, [messages, status]);
+  }, [messages, persistSession, status]);
 
   const runAction = useCallback((action) => {
     executeCopilotAction(action, navigate);
@@ -86,7 +130,8 @@ export function useCopilotChat() {
     setMessages([]);
     setStatus(STATUS.IDLE);
     setErrorMessage(null);
-  }, []);
+    persistSession([]);
+  }, [persistSession]);
 
   return {
     messages,

@@ -1,5 +1,7 @@
 /** Co-pilot chat — POST SSE streaming client. */
 
+import { client } from "./client";
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "/api";
 const CSRF_COOKIE_NAME = "pipelined_csrf";
 const CSRF_HEADER_NAME = "X-CSRF-Token";
@@ -96,4 +98,16 @@ export async function streamCopilotChat(payload, { onToken, onDone, onError, sig
       else if (eventType === "error") onError(data);
     });
   }
+}
+
+/** Fetch persisted co-pilot session messages. */
+export async function getCopilotSession() {
+  const response = await client.get("/copilot/session");
+  return response.data;
+}
+
+/** Persist co-pilot session messages (empty array clears the session). */
+export async function saveCopilotSession(messages) {
+  const response = await client.post("/copilot/session", { messages });
+  return response.data;
 }
