@@ -40,6 +40,7 @@ class BriefItem:
 class MorningBriefSections:
     follow_ups: list[BriefItem] = field(default_factory=list)
     interviews: list[BriefItem] = field(default_factory=list)
+    oa_deadlines: list[BriefItem] = field(default_factory=list)
     high_matches: list[BriefItem] = field(default_factory=list)
     pending_approvals: list[BriefItem] = field(default_factory=list)
     watchlist_finds: list[BriefItem] = field(default_factory=list)
