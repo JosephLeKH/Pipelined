@@ -1,0 +1,40 @@
+# Ralph Progress Log — prd_120
+Started: Sun May 24 2026
+---
+
+## US-1005: Today page premium polish ✅ COMPLETE
+
+**Implementation:** Mission #1 gradient hero card with snooze/done, section-colored MissionPriorityPill, polished empty state with pulse animation, fade-in-up stagger on list cards; tailwind fadeInUp/pulseSoft keyframes.
+
+**Testing:** `npm run test -- --run src/pages/TodayPage.test.jsx` — 4 passed; `npm run build` — passed
+
+**Commit:** fe32517
+
+---
+## US-1006: CoPilotPanel chat UX ✅ COMPLETE
+
+**Implementation:** TypingIndicator with animated clay dots, COPILOT_SUGGESTED_PROMPTS chips, refined message bubble styling, mobile full-screen + slide-in-right panel.
+
+**Testing:** `npm run test -- --run src/components/CoPilotPanel.test.jsx` — 6 passed
+
+**Commit:** d1083ec
+
+---
+## US-1007: ApplyPack and MockInterview visual pass ✅ COMPLETE
+
+**Implementation:** ApplyPack SUCCESS_BANNER disclaimer and brand copy feedback; MockInterviewPanel wrapped in AiSection with brand chat bubbles and clay debrief accent card.
+
+**Testing:** `npm run test -- --run src/components/ApplyPackSection.test.jsx src/components/MockInterviewPanel.test.jsx` — 7 passed
+
+**Commit:** 306b7b6
+
+---
+## US-1008: Settings agent surfaces unified tab ✅ COMPLETE
+
+**Implementation:** Single Agent tab (Profile + Activity + Watchlist) with section dividers; Autopilot tab is autopilot-only.
+
+**Testing:** `npm run test -- --run src/pages/Settings.test.jsx` — 14 passed
+
+**Commit:** 8154f32
+
+---
