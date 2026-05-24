@@ -119,7 +119,8 @@ describe("CsvImportModal", () => {
     render(<CsvImportModal isOpen={true} onClose={onClose} />, { wrapper: makeWrapper() });
 
     // Act
-    await userEvent.click(screen.getByRole("button", { name: /close import modal/i }));
+    const closeButtons = screen.getAllByRole("button", { name: /^close$/i });
+    await userEvent.click(closeButtons[closeButtons.length - 1]);
 
     // Assert
     expect(onClose).toHaveBeenCalledOnce();

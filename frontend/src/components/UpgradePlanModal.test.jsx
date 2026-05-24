@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import UpgradePlanModal, { TIER_LIMIT_EXCEEDED_EVENT } from "./UpgradePlanModal";
 
 const mockNavigate = vi.fn();
@@ -41,13 +42,15 @@ describe("UpgradePlanModal", () => {
     expect(screen.getByText(/applications: 95 \/ 100/i)).toBeInTheDocument();
   });
 
-  it("should close when backdrop is clicked", () => {
+  it("should close when backdrop is clicked", async () => {
     render(<UpgradePlanModal />);
     fireEvent(window, new CustomEvent(TIER_LIMIT_EXCEEDED_EVENT));
 
-    fireEvent.click(screen.getByRole("dialog"));
+    await userEvent.click(document.querySelector('[data-slot="dialog-overlay"]'));
 
-    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    });
   });
 
   it("should close when X button is clicked", () => {

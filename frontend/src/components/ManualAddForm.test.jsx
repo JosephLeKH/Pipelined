@@ -166,29 +166,28 @@ describe("ManualAddForm", () => {
     expect(screen.getByRole("link", { name: /view existing/i })).toBeInTheDocument();
   });
 
-  it("should call onClose when Escape key is pressed", async () => {
+  it("should call onClose when Cancel is clicked", async () => {
     // Arrange
     const onClose = vi.fn();
     render(<ManualAddForm isOpen onClose={onClose} />, { wrapper: makeWrapper() });
 
     // Act
-    await userEvent.keyboard("{Escape}");
+    await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
 
     // Assert
     expect(onClose).toHaveBeenCalledOnce();
   });
 
-  it("should call onClose when clicking the overlay", () => {
+  it("should call onClose when clicking the overlay", async () => {
     // Arrange
     const onClose = vi.fn();
     render(<ManualAddForm isOpen onClose={onClose} />, { wrapper: makeWrapper() });
 
     // Act
-    const overlay = screen.getByTestId("modal-overlay");
-    fireEvent.click(overlay, { target: overlay });
+    await userEvent.click(document.querySelector('[data-slot="dialog-overlay"]'));
 
     // Assert
-    expect(onClose).toHaveBeenCalledOnce();
+    await waitFor(() => expect(onClose).toHaveBeenCalledOnce());
   });
 
   it("should disable submit button while mutation is pending", async () => {
@@ -229,13 +228,13 @@ describe("ManualAddForm", () => {
     expect(screen.getByRole("alert")).toHaveTextContent(/internal server error/i);
   });
 
-  it("should move focus to the first focusable element when modal opens", async () => {
+  it("should move focus into the dialog when modal opens", async () => {
     // Arrange / Act
     render(<ManualAddForm isOpen onClose={() => {}} />, { wrapper: makeWrapper() });
 
-    // Assert — close button is first focusable element in the dialog header
+    // Assert — Radix traps focus inside the open dialog
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /close modal/i })).toHaveFocus();
+      expect(screen.getByRole("dialog")).toContainElement(document.activeElement);
     });
   });
 

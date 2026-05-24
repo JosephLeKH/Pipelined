@@ -27,9 +27,17 @@ vi.mock("./DetailPanelHeader", () => ({
 vi.mock("./DetailPanelNotes", () => ({ DetailPanelNotes: () => null }));
 vi.mock("./DetailPanelTimeline", () => ({ DetailPanelTimeline: () => null }));
 vi.mock("./UndoToast", () => ({ default: () => null }));
+vi.mock("./AgentActivitySection", () => ({ default: () => null }));
+vi.mock("./ApplyPackSection", () => ({ default: () => null }));
+vi.mock("./InterviewPrepAgent", () => ({ InterviewPrepAgent: () => null }));
+vi.mock("./ResumeInsightsSection", () => ({ default: () => null }));
+vi.mock("./OfferDetailsSection", () => ({ default: () => null }));
+vi.mock("./OfferSummarySection", () => ({ default: () => null }));
+vi.mock("./FollowUpDraftSection", () => ({ default: () => null }));
 
 import { useUpdateApplication, useDeleteApplication, useRestoreApplication } from "../hooks/useApplications";
 import DetailPanel from "./DetailPanel";
+import { makeTestWrapper } from "../test/testProviders";
 
 const APP = {
   id: "app1",
@@ -49,10 +57,11 @@ function setup(mutate = vi.fn()) {
 }
 
 function renderPanel(application = APP) {
+  const Wrapper = makeTestWrapper();
   return render(
-    <MemoryRouter>
+    <Wrapper>
       <DetailPanel application={application} onClose={vi.fn()} onAddEvent={vi.fn()} />
-    </MemoryRouter>
+    </Wrapper>
   );
 }
 

@@ -173,17 +173,15 @@ describe("DangerZone — modal interaction", () => {
     await userEvent.click(screen.getByRole("button", { name: /delete account$/i }));
 
     expect(screen.getByRole("dialog")).toBeInTheDocument();
-    expect(screen.getByRole("dialog")).toHaveAttribute("aria-modal", "true");
+    expect(screen.getByText(/delete account\?/i)).toBeInTheDocument();
   });
 
-  it("should have aria-labelledby pointing to modal title", async () => {
+  it("should have accessible dialog title when delete modal is open", async () => {
     renderSection();
 
     await userEvent.click(screen.getByRole("button", { name: /delete account$/i }));
 
-    const dialog = screen.getByRole("dialog");
-    expect(dialog).toHaveAttribute("aria-labelledby", "delete-acct-title");
-    expect(screen.getByText(/delete account\?/i)).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /delete account\?/i })).toBeInTheDocument();
   });
 
   it("should close modal when cancel is clicked", async () => {

@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { ManualAddFormCategoryRow } from "./ManualAddFormCategoryRow";
 
 describe("ManualAddFormCategoryRow", () => {
@@ -13,7 +14,7 @@ describe("ManualAddFormCategoryRow", () => {
       />
     );
 
-    expect(screen.getByLabelText(/remote status/i)).toHaveValue("remote");
+    expect(screen.getByRole("combobox", { name: /remote status/i })).toHaveTextContent("remote");
   });
 
   it("should render Company Type select with bound value", () => {
@@ -26,10 +27,11 @@ describe("ManualAddFormCategoryRow", () => {
       />
     );
 
-    expect(screen.getByLabelText(/company type/i)).toHaveValue("startup");
+    expect(screen.getByRole("combobox", { name: /company type/i })).toHaveTextContent("startup");
   });
 
-  it("should call setRemoteStatus when Remote Status select changes", () => {
+  it("should call setRemoteStatus when Remote Status select changes", async () => {
+    const user = userEvent.setup();
     const setRemoteStatus = vi.fn();
 
     render(
@@ -40,12 +42,15 @@ describe("ManualAddFormCategoryRow", () => {
         setCompanyType={vi.fn()}
       />
     );
-    fireEvent.change(screen.getByLabelText(/remote status/i), { target: { value: "hybrid" } });
+
+    await user.click(screen.getByRole("combobox", { name: /remote status/i }));
+    await user.click(screen.getByRole("option", { name: "hybrid" }));
 
     expect(setRemoteStatus).toHaveBeenCalledWith("hybrid");
   });
 
-  it("should call setCompanyType when Company Type select changes", () => {
+  it("should call setCompanyType when Company Type select changes", async () => {
+    const user = userEvent.setup();
     const setCompanyType = vi.fn();
 
     render(
@@ -56,7 +61,9 @@ describe("ManualAddFormCategoryRow", () => {
         setCompanyType={setCompanyType}
       />
     );
-    fireEvent.change(screen.getByLabelText(/company type/i), { target: { value: "enterprise" } });
+
+    await user.click(screen.getByRole("combobox", { name: /company type/i }));
+    await user.click(screen.getByRole("option", { name: "enterprise" }));
 
     expect(setCompanyType).toHaveBeenCalledWith("enterprise");
   });

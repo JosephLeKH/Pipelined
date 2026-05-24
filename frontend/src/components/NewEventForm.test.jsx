@@ -37,7 +37,7 @@ const mockHook = {
 
 const mockAppSelector = {
   appSearch: "",
-  filteredApps: [],
+  filteredApps: [{ id: "app1", company: "Acme", role_title: "Engineer" }],
   handleSearchChange: vi.fn(),
   handleSelectChange: vi.fn(),
 };
@@ -71,7 +71,7 @@ describe("NewEventForm", () => {
 
     render(<NewEventForm initialDate={null} initialApplicationId={null} onClose={onClose} />);
 
-    fireEvent.click(screen.getByRole("button", { name: /close form/i }));
+    fireEvent.click(screen.getByRole("button", { name: /^close$/i }));
 
     expect(onClose).toHaveBeenCalledOnce();
   });
