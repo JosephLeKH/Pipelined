@@ -214,6 +214,16 @@ describe("renderSaves()", () => {
     expect(link.href).toContain("highlight=abc123");
     expect(link.href).toContain("/dashboard");
   });
+
+  it("should render fit score badge when fit_score is present", () => {
+    renderSaves([{ company: "Acme", role_title: "SWE", stage: "applied", id: "1", fit_score: 85 }]);
+
+    const fitBadge = document.querySelector(".fit-badge");
+
+    expect(fitBadge).not.toBeNull();
+    expect(fitBadge.textContent).toBe("85%");
+    expect(fitBadge.getAttribute("aria-label")).toBe("Fit score: 85%");
+  });
 });
 
 // ── renderApplyHints() ───────────────────────────────────────────────────────

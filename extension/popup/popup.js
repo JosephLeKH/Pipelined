@@ -13,6 +13,24 @@ const STAGE_COLORS = {
 
 const DEFAULT_STAGE_COLOR = { bg: "#f1f5f9", text: "#475569", bar: "#94a3b8", label: "Applied" };
 
+const FIT_HIGH_MIN = 80;
+const FIT_MED_MIN = 50;
+const FIT_LOW_MIN = 30;
+
+const FIT_COLORS = {
+  high: { bg: "#dcfce7", text: "#15803d" },
+  med: { bg: "#fef9c3", text: "#a16207" },
+  low: { bg: "#ffedd5", text: "#c2410c" },
+  critical: { bg: "#fee2e2", text: "#b91c1c" },
+};
+
+function fitBadgeColors(score) {
+  if (score >= FIT_HIGH_MIN) return FIT_COLORS.high;
+  if (score >= FIT_MED_MIN) return FIT_COLORS.med;
+  if (score >= FIT_LOW_MIN) return FIT_COLORS.low;
+  return FIT_COLORS.critical;
+}
+
 
 /**
  * Escape a string for safe insertion into innerHTML.
@@ -69,6 +87,18 @@ function renderEmptyState(list, emptyState) {
   }
 }
 
+function buildFitBadge(score) {
+  if (score == null) return null;
+  const colors = fitBadgeColors(score);
+  const badge = document.createElement("span");
+  badge.className = "fit-badge";
+  badge.textContent = `${score}%`;
+  badge.style.background = colors.bg;
+  badge.style.color = colors.text;
+  badge.setAttribute("aria-label", `Fit score: ${score}%`);
+  return badge;
+}
+
 function buildCardBody(s, stageStyle) {
   const company = document.createElement("span");
   company.className = "company";
@@ -96,6 +126,8 @@ function buildCardBody(s, stageStyle) {
   const meta = document.createElement("div");
   meta.className = "card-meta";
   meta.appendChild(badge);
+  const fitBadge = buildFitBadge(s.fit_score);
+  if (fitBadge) meta.appendChild(fitBadge);
   meta.appendChild(time);
 
   const body = document.createElement("div");

@@ -116,6 +116,7 @@ async function cacheRecentSave(application) {
       stage: application.current_stage ?? application.stage ?? "Applied",
       date_applied: application.date_applied,
       talking_points: application.apply_pack?.talking_points ?? application.talking_points ?? [],
+      fit_score: application.fit_score ?? application.ai_analysis?.fit_score ?? null,
     };
     const { recent_saves = [] } = await chrome.storage.local.get("recent_saves");
     const updated = [entry, ...recent_saves.filter((s) => s.id !== entry.id)].slice(0, MAX_RECENT);
@@ -123,6 +124,27 @@ async function cacheRecentSave(application) {
   } catch (err) {
     console.error("[background] Failed to cache recent save in local storage:", err);
   }
+}
+
+async function updateCachedFitScore(appId, score) {
+  try {
+    const { recent_saves = [] } = await chrome.storage.local.get("recent_saves");
+    const updated = recent_saves.map((save) =>
+      save.id === appId ? { ...save, fit_score: score } : save
+    );
+    await chrome.storage.local.set({ recent_saves: updated });
+  } catch (err) {
+    console.error("[background] Failed to update fit score in local storage:", err);
+  }
+}
+
+async function fetchFitScoreInBackground(appId) {
+  const response = await fetchWithAuth(`/api/applications/${appId}/fit-score`, {
+    method: "POST",
+  });
+  const score = response.data?.score;
+  if (score == null) return;
+  await updateCachedFitScore(appId, score);
 }
 
 async function executeSave(payload) {
@@ -161,6 +183,11 @@ async function executeSave(payload) {
   }
 
   await cacheRecentSave(response.data);
+  if (response.data.id) {
+    fetchFitScoreInBackground(response.data.id).catch((err) => {
+      console.error("[background] Background fit score fetch failed:", err);
+    });
+  }
   return {
     status: "success",
     application: response.data,
@@ -201,7 +228,7 @@ async function handleSave(payload) {
 // ── Message router ────────────────────────────────────────────────────────────
 
 // Exported for test access only.
-export { handleSave };
+export { handleSave, fetchFitScoreInBackground };
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (sender.id !== chrome.runtime.id) {

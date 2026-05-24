@@ -304,6 +304,15 @@ body {
   white-space: nowrap;
 }
 
+.fit-badge {
+  display: inline-block;
+  padding: 1px 7px;
+  border-radius: 9999px;
+  font-size: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
 .save-time {
   font-size: 10px;
   color: var(--slate-400);

@@ -9,6 +9,7 @@ import { jest, describe, it, expect, beforeAll, beforeEach } from "@jest/globals
 const TOKEN_KEY = "pipelined_auth_token";
 
 let handleSave;
+let fetchFitScoreInBackground;
 
 beforeAll(async () => {
   global.chrome = {
@@ -29,6 +30,7 @@ beforeAll(async () => {
 
   const mod = await import("../background/background.js");
   handleSave = mod.handleSave;
+  fetchFitScoreInBackground = mod.fetchFitScoreInBackground;
 });
 
 beforeEach(() => {
@@ -113,19 +115,25 @@ describe("handleSave() queue recovery", () => {
   });
 
   it("should cache talking points from apply_pack on successful save", async () => {
-    fetch.mockResolvedValueOnce({
-      ok: true,
-      status: 201,
-      json: () => Promise.resolve({
-        data: {
-          id: "app123",
-          company: "Stripe",
-          role_title: "SWE",
-          current_stage: "Applied",
-          apply_pack: { talking_points: ["Payments experience", "Python backend"] },
-        },
-      }),
-    });
+    fetch
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 201,
+        json: () => Promise.resolve({
+          data: {
+            id: "app123",
+            company: "Stripe",
+            role_title: "SWE",
+            current_stage: "Applied",
+            apply_pack: { talking_points: ["Payments experience", "Python backend"] },
+          },
+        }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve({ data: { score: null, reason: null } }),
+      });
 
     const result = await handleSave({ ...BASE_PAYLOAD });
 
@@ -138,7 +146,44 @@ describe("handleSave() queue recovery", () => {
         stage: "Applied",
         date_applied: undefined,
         talking_points: ["Payments experience", "Python backend"],
+        fit_score: null,
       }],
+    });
+  });
+
+  it("should fetch fit score in background after successful save", async () => {
+    const cachedSave = {
+      id: "app456",
+      company: "Meta",
+      role_title: "SWE",
+      stage: "Applied",
+      date_applied: undefined,
+      talking_points: [],
+      fit_score: null,
+    };
+    chrome.storage.local.get.mockImplementation(async () => ({ recent_saves: [cachedSave] }));
+
+    fetch
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 201,
+        json: () => Promise.resolve({
+          data: { id: "app456", company: "Meta", role_title: "SWE", current_stage: "Applied" },
+        }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve({ data: { score: 82, reason: "Strong match" } }),
+      });
+
+    await handleSave({ ...BASE_PAYLOAD });
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(fetch).toHaveBeenCalledTimes(2);
+    expect(fetch.mock.calls[1][0]).toContain("/api/applications/app456/fit-score");
+    expect(chrome.storage.local.set).toHaveBeenLastCalledWith({
+      recent_saves: [{ ...cachedSave, fit_score: 82 }],
     });
   });
 });
