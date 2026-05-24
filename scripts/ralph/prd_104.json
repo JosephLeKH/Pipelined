@@ -1,0 +1,85 @@
+{
+  "id": "prd_104",
+  "title": "Quality Fixes & Agentic Features Documentation",
+  "description": "Post-ship QA for prd_98\u2013103: fix P0 bugs and P1 consistency/style issues found in code review, then update README, CLAUDE.md, and add docs/AGENTIC_FEATURES.md.",
+  "userStories": [
+    {
+      "id": "US-933",
+      "title": "Fix P0 autopilot bugs",
+      "description": "Fix match_scorer _validate_match_score KeyError and scan.py bare except. Add test.",
+      "acceptanceCriteria": [
+        "_validate_match_score returns None on malformed LLM response",
+        "scan.py logs non-duplicate insert failures",
+        "pytest tests/test_autopilot.py passes"
+      ],
+      "priority": "high",
+      "passes": true,
+      "notes": "_validate_match_score KeyError fix; scan.py logs insert failures; test added"
+    },
+    {
+      "id": "US-934",
+      "title": "Autopilot security and rate limits",
+      "description": "get_verified_user on autopilot routes, rate limits on approve/dismiss.",
+      "acceptanceCriteria": [
+        "get_verified_user on all autopilot routes",
+        "Rate limits on approve and dismiss",
+        "Existing autopilot tests pass"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-935",
+      "title": "Frontend style fixes for brief and resume insights",
+      "description": "Extract ResumeInsightsSection, fix BRIEF_EMPTY_MESSAGE, fix React keys. DetailPanelBody under 300 lines.",
+      "acceptanceCriteria": [
+        "DetailPanelBody.jsx under 300 lines",
+        "ResumeInsightsSection.jsx separate file",
+        "Frontend build passes"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-936",
+      "title": "Update README with agentic features",
+      "description": "Update README Features and env setup for OpenRouter, Morning Brief, Resume Insights, Autopilot.",
+      "acceptanceCriteria": [
+        "README lists new features",
+        "OPENROUTER_API_KEY documented",
+        "No false auto-send/resume-edit claims"
+      ],
+      "priority": "medium",
+      "passes": true,
+      "notes": "README features, env vars, product policy, project structure updated."
+    },
+    {
+      "id": "US-937",
+      "title": "Update CLAUDE.md with new module map",
+      "description": "Document new modules, scheduler jobs, product policy.",
+      "acceptanceCriteria": [
+        "CLAUDE.md lists new modules",
+        "Scheduler jobs documented",
+        "Product policy stated"
+      ],
+      "priority": "medium",
+      "passes": true,
+      "notes": "Module map, APScheduler table, product policy, data flows added."
+    },
+    {
+      "id": "US-938",
+      "title": "Create docs/AGENTIC_FEATURES.md",
+      "description": "Practical guide under 200 lines for Morning Brief, Resume Insights, Autopilot, follow-up policy, OpenRouter setup.",
+      "acceptanceCriteria": [
+        "docs/AGENTIC_FEATURES.md created",
+        "Covers all major features",
+        "Under 200 lines"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

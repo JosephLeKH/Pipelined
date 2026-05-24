@@ -1,0 +1,13 @@
+# Ralph Progress Log — prd_104
+Started: Sat May 23 2026
+---
+
+## US-933: Fix P0 autopilot bugs ✅ COMPLETE
+
+**Implementation:** _validate_match_score returns None on malformed LLM JSON; scan.py catches DuplicateKeyError silently and logs other insert failures.
+
+**Testing:** pytest tests/test_match_scorer.py tests/test_autopilot.py tests/test_autopilot_scan.py -v — 10 passed
+
+**Commit:** ca445b3
+
+---
