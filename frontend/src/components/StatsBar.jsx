@@ -10,6 +10,7 @@ import Clock from "lucide-react/dist/esm/icons/clock";
 import Bell from "lucide-react/dist/esm/icons/bell";
 
 import { useApplicationStats } from "../hooks/useApplications";
+import { STALE_APPLICATIONS_LABEL } from "../lib/aiConstants";
 import ApiErrorMessage from "./ApiErrorMessage";
 import { Card } from "./ui/card";
 
@@ -20,7 +21,7 @@ const METRIC_CONFIG = [
   { key: "active_count", label: "Active", Icon: Activity },
   { key: "response_rate", label: "Response Rate", Icon: CheckCircle },
   { key: "avg_days_to_first_response", label: "Avg Days to Response", Icon: Clock },
-  { key: "stale_count", label: "Needs follow-up", Icon: Bell },
+  { key: "stale_count", label: STALE_APPLICATIONS_LABEL, Icon: Bell },
 ];
 
 function getRawValue(key, stats) {

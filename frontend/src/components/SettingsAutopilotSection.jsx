@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 
 import { useAuth } from "../context/AuthContext";
 import { useUpdateUser } from "../hooks/useAuth";
+import { MIN_FIT_SCORE_LABEL } from "../lib/aiConstants";
 import {
   AUTOPILOT_MAX_DAILY_MAX,
   AUTOPILOT_MAX_DAILY_MIN,
@@ -125,7 +126,7 @@ function SettingsAutopilotSection() {
 
         <div className="border-t border-border py-4">
           <label htmlFor="autopilot-min-score" className="text-sm font-medium text-foreground">
-            Minimum match score ({minScore})
+            {MIN_FIT_SCORE_LABEL} ({minScore})
           </label>
           <p className="mt-0.5 text-sm text-muted-foreground">
             Only queue jobs scoring at or above this threshold.

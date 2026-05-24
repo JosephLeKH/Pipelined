@@ -80,11 +80,11 @@ function makeWrapper(initialEntries = ["/inbox/pending"]) {
 }
 
 describe("PendingInboxPage", () => {
-  it("should render pending opportunity cards with match score and cover letter", async () => {
+  it("should render pending opportunity cards with fit score and cover letter", async () => {
     render(<PendingInboxPage />, { wrapper: makeWrapper() });
 
     expect(await screen.findByText("Acme — Backend Engineer")).toBeInTheDocument();
-    expect(screen.getByText(/match score 92/i)).toBeInTheDocument();
+    expect(screen.getByText(/fit score 92/i)).toBeInTheDocument();
     expect(screen.getByText("Dear hiring team")).toBeInTheDocument();
     expect(screen.getByText(/suggestions only/i)).toBeInTheDocument();
   });

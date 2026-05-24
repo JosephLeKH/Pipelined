@@ -2,6 +2,7 @@
 
 import ExternalLink from "lucide-react/dist/esm/icons/external-link";
 
+import { formatFitScore } from "../lib/aiConstants";
 import { Button } from "./ui/button";
 
 const RESUME_TIPS_DISCLAIMER = "Suggestions only — review and edit before applying.";
@@ -29,7 +30,7 @@ function PendingOpportunityCard({
             {company} — {role}
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Match score {opportunity.match_score}
+            {formatFitScore(opportunity.match_score)}
           </p>
           {opportunity.match_reason && (
             <p className="mt-1 text-sm text-foreground">{opportunity.match_reason}</p>

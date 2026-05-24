@@ -89,15 +89,15 @@ describe("StatsBar", () => {
     expect(screen.getByLabelText(/active/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/response rate/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/avg days to response/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/needs follow-up/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/stale applications/i)).toBeInTheDocument();
   });
 
-  it("should render needs follow-up count from stale_count", async () => {
+  it("should render stale applications count from stale_count", async () => {
     // Arrange / Act
     render(<StatsBar />, { wrapper: makeWrapper() });
 
     // Assert
     expect(await screen.findByText("7")).toBeInTheDocument();
-    expect(await screen.findByLabelText(/needs follow-up: 7/i)).toBeInTheDocument();
+    expect(await screen.findByLabelText(/stale applications: 7/i)).toBeInTheDocument();
   });
 });
