@@ -101,7 +101,7 @@ async def test_follow_up_draft_unauthenticated(client):
 
 
 async def test_follow_up_draft_no_api_key(client, test_user):
-    """POST /api/applications/{app_id}/follow-up-draft with no gemini_api_key returns 503."""
+    """POST follow-up-draft with no LLM keys configured returns 503."""
     # Arrange
     _, cookies = test_user
 
@@ -115,7 +115,9 @@ async def test_follow_up_draft_no_api_key(client, test_user):
         app_id = create_resp.json()["data"]["id"]
 
         # Act
-        with patch.object(router.settings, "gemini_api_key", ""):
+        with patch.object(router.settings, "openrouter_api_key", ""), patch.object(
+            router.settings, "gemini_api_key", ""
+        ):
             response = await client.post(f"/api/applications/{app_id}/follow-up-draft")
 
     # Assert

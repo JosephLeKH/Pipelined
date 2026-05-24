@@ -16,10 +16,20 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import StreamingResponse
 from openai import AsyncOpenAI
 
+from ai.openrouter_client import OpenRouterError, agent_llm_configured, complete_json_with_usage
 from auth.dependencies import get_verified_user as get_current_user
 from config import settings
 from database import get_collection
 from middleware.rate_limit import limiter
+from parsing.ai_cache import (
+    PROVIDER_OPENROUTER,
+    QuotaExceededError,
+    check_and_increment_quota,
+    check_budget,
+    compute_cache_key,
+    get_cached_response,
+    store_response,
+)
 
 from .agent import run_agent
 from .fit_score import compute_fit_score
@@ -31,7 +41,12 @@ router = APIRouter(prefix="/api/applications", tags=["interview-prep"])
 GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/openai/"
 GEMINI_MODEL = "gemini-2.0-flash"
 FOLLOWUP_TIMEOUT_SECONDS = 10.0
-FIT_SCORE_TIMEOUT_SECONDS = 10.0
+
+FOLLOWUP_SYSTEM_PROMPT = (
+    "You are a professional job-search assistant. Write a short, polite follow-up "
+    "email for a job application. Return ONLY valid JSON with keys: subject (string), "
+    "body (string). Body should be 3-4 sentences, professional, and not desperate."
+)
 
 
 async def _get_application(app_id: str, user_id: str) -> dict:
@@ -125,44 +140,66 @@ async def generate_follow_up_draft(
     date_applied = app_doc.get("date_applied")
     date_applied_str = date_applied.isoformat() if date_applied else "Unknown"
 
-    if not settings.gemini_api_key:
+    if not agent_llm_configured():
         raise HTTPException(
             status_code=503,
             detail="AI features not configured",
         )
 
-    try:
-        gemini = AsyncOpenAI(api_key=settings.gemini_api_key, base_url=GEMINI_BASE_URL)
-        system_prompt = (
-            "You are a professional job-search assistant. Write a short, polite follow-up "
-            "email for a job application. Return ONLY valid JSON with keys: subject (string), "
-            "body (string). Body should be 3-4 sentences, professional, and not desperate."
-        )
-        user_message = f"Company: {company}\nRole: {role_title}\nCurrent stage: {current_stage}\nApplied: {date_applied_str}"
+    user_message = (
+        f"Company: {company}\nRole: {role_title}\n"
+        f"Current stage: {current_stage}\nApplied: {date_applied_str}"
+    )
 
-        response = await asyncio.wait_for(
-            gemini.chat.completions.create(
-                model=GEMINI_MODEL,
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_message},
-                ],
+    try:
+        if settings.openrouter_api_key:
+            model = settings.openrouter_default_model
+            cache_key = compute_cache_key(model, user_message[:500], PROVIDER_OPENROUTER)
+            cached = await get_cached_response(cache_key)
+            if cached is not None:
+                return {"data": cached}
+
+            if not await check_budget(PROVIDER_OPENROUTER):
+                raise HTTPException(status_code=503, detail="AI budget exceeded")
+
+            await check_and_increment_quota(user_id, PROVIDER_OPENROUTER)
+
+            data, input_tokens, output_tokens = await complete_json_with_usage(
+                FOLLOWUP_SYSTEM_PROMPT,
+                user_message,
                 temperature=0.7,
                 max_tokens=300,
-            ),
-            timeout=FOLLOWUP_TIMEOUT_SECONDS,
-        )
-
-        content = response.choices[0].message.content
-        if not content:
-            raise HTTPException(status_code=502, detail="Draft generation failed")
-
-        # Strip markdown code fences if present
-        raw = re.sub(r'^```(?:json)?\s*|\s*```$', '', content.strip(), flags=re.DOTALL)
-        data = json.loads(raw)
+                timeout=FOLLOWUP_TIMEOUT_SECONDS,
+            )
+            draft = {"subject": data.get("subject", ""), "body": data.get("body", "")}
+            await store_response(
+                cache_key, draft, model, input_tokens, output_tokens, PROVIDER_OPENROUTER
+            )
+            return {"data": draft}
+        else:
+            gemini = AsyncOpenAI(api_key=settings.gemini_api_key, base_url=GEMINI_BASE_URL)
+            response = await asyncio.wait_for(
+                gemini.chat.completions.create(
+                    model=GEMINI_MODEL,
+                    messages=[
+                        {"role": "system", "content": FOLLOWUP_SYSTEM_PROMPT},
+                        {"role": "user", "content": user_message},
+                    ],
+                    temperature=0.7,
+                    max_tokens=300,
+                ),
+                timeout=FOLLOWUP_TIMEOUT_SECONDS,
+            )
+            content = response.choices[0].message.content
+            if not content:
+                raise HTTPException(status_code=502, detail="Draft generation failed")
+            raw = re.sub(r"^```(?:json)?\s*|\s*```$", "", content.strip(), flags=re.DOTALL)
+            data = json.loads(raw)
 
         return {"data": {"subject": data.get("subject", ""), "body": data.get("body", "")}}
-    except (asyncio.TimeoutError, json.JSONDecodeError, KeyError, ValueError):
+    except QuotaExceededError as exc:
+        raise HTTPException(status_code=429, detail=str(exc))
+    except (OpenRouterError, asyncio.TimeoutError, json.JSONDecodeError, KeyError, ValueError):
         logger.exception("follow_up_draft_error", app_id=app_id)
         raise HTTPException(status_code=502, detail="Draft generation failed")
     except Exception:
@@ -187,7 +224,7 @@ async def generate_fit_score(
     if not resume_text:
         resume_text = "No resume available"
 
-    if not settings.gemini_api_key:
+    if not agent_llm_configured():
         raise HTTPException(
             status_code=503,
             detail="AI features not configured",
@@ -198,6 +235,8 @@ async def generate_fit_score(
         if result is None:
             raise HTTPException(status_code=502, detail="Fit score generation failed")
         return {"data": result}
+    except QuotaExceededError as exc:
+        raise HTTPException(status_code=429, detail=str(exc))
     except (asyncio.TimeoutError, json.JSONDecodeError, KeyError, ValueError):
         logger.exception("fit_score_error", app_id=app_id)
         raise HTTPException(status_code=502, detail="Fit score generation failed")
