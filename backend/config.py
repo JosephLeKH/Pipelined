@@ -53,6 +53,11 @@ class Settings(BaseSettings):
     # Gemini — Interview Prep Agent (free tier via Google AI Studio, OpenAI-compatible)
     gemini_api_key: str = ""
 
+    # OpenRouter — canonical LLM provider for agent features
+    openrouter_api_key: str = ""
+    openrouter_base_url: str = "https://openrouter.ai/api/v1"
+    openrouter_default_model: str = "google/gemini-2.0-flash-001"
+
     # Exa — web search for Interview Prep Agent
     exa_api_key: str = ""
 
