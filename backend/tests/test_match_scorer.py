@@ -4,7 +4,11 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from autopilot.match_scorer import ensure_listing_description, score_listing_for_user
+from autopilot.match_scorer import (
+    _validate_match_score,
+    ensure_listing_description,
+    score_listing_for_user,
+)
 from config import settings
 
 pytestmark = pytest.mark.asyncio(loop_scope="session")
@@ -57,6 +61,12 @@ async def test_score_listing_handles_missing_description(app):
         result = await score_listing_for_user("user123", user_doc, listing)
 
     assert result["score"] == 70
+
+
+def test_validate_match_score_returns_none_on_malformed_response():
+    assert _validate_match_score({}) is None
+    assert _validate_match_score({"score": "not-a-number"}) is None
+    assert _validate_match_score({"score": 150}) is None
 
 
 async def test_ensure_listing_description_uses_cached_snippet(app):

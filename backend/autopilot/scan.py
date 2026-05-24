@@ -8,6 +8,8 @@ from autopilot.constants import PENDING_STATUS
 from autopilot.match_scorer import score_listing_for_user
 from autopilot.prep_generator import generate_opportunity_prep
 from bson import ObjectId
+from pymongo.errors import DuplicateKeyError
+
 from database import get_collection
 from jobs.service import get_recommended_listings
 
@@ -105,7 +107,15 @@ async def _scan_for_user(user_doc: dict) -> int:
         }
         try:
             await pending_col.insert_one(doc)
-        except Exception:
+        except DuplicateKeyError:
+            continue
+        except Exception as exc:
+            logger.warning(
+                "pending_opportunity_insert_failed",
+                user_id=user_id,
+                job_listing_id=str(listing_id),
+                error=str(exc),
+            )
             continue
         excluded_ids.add(listing_id)
         matches_created += 1

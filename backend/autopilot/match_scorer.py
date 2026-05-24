@@ -34,7 +34,10 @@ MATCH_SCORE_SYSTEM_PROMPT = (
 
 
 def _validate_match_score(data: dict) -> dict | None:
-    score = int(data["score"])
+    try:
+        score = int(data["score"])
+    except (KeyError, TypeError, ValueError):
+        return None
     if not (0 <= score <= 100):
         return None
     return {"score": score, "reason": str(data.get("reason", ""))}
