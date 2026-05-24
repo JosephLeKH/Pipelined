@@ -1,5 +1,7 @@
 """Daily watchlist scan — fetch career pages, upsert listings, queue matches."""
 
+import asyncio
+import time
 from datetime import datetime, timezone
 
 import httpx
@@ -12,7 +14,7 @@ from pymongo import ReturnDocument
 
 from database import get_collection
 from jobs.sync import compute_url_hash
-from watchlist.constants import FETCH_TIMEOUT_SECONDS, USER_AGENT
+from watchlist.constants import FETCH_TIMEOUT_SECONDS, USER_AGENT, WATCHLIST_FETCH_CONCURRENCY
 from watchlist.matcher import queue_watchlist_matches
 from watchlist.parser import fetch_api_listings, parse_listings_from_content
 
@@ -99,8 +101,24 @@ async def _scan_for_user(user_doc: dict, client: httpx.AsyncClient) -> int:
 
     listings_col = get_collection("job_listings")
     new_listing_ids: list[ObjectId] = []
-    for company in companies:
-        listings = await _fetch_company_listings(client, company)
+    sem = asyncio.Semaphore(WATCHLIST_FETCH_CONCURRENCY)
+
+    async def _fetch_bounded(company: dict) -> tuple[dict, list[dict]]:
+        async with sem:
+            listings = await _fetch_company_listings(client, company)
+            return company, listings
+
+    fetch_started = time.monotonic()
+    fetch_results = await asyncio.gather(*(_fetch_bounded(c) for c in companies))
+    fetch_elapsed_ms = int((time.monotonic() - fetch_started) * 1000)
+    logger.info(
+        "watchlist_fetch_batch_complete",
+        user_id=str(user_id),
+        company_count=len(companies),
+        elapsed_ms=fetch_elapsed_ms,
+    )
+
+    for company, listings in fetch_results:
         logger.info(
             "watchlist_company_parsed",
             user_id=str(user_id),
