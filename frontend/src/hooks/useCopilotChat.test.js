@@ -4,7 +4,16 @@ import { setupServer } from "msw/node";
 import { MemoryRouter } from "react-router-dom";
 import { describe, it, expect, vi, beforeAll, afterAll, afterEach } from "vitest";
 
+import { streamCopilotChat } from "../api/copilot";
 import { useCopilotChat } from "./useCopilotChat";
+
+vi.mock("../api/copilot", async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    streamCopilotChat: vi.fn(),
+  };
+});
 
 const SAVED_MESSAGES = [
   { role: "user", content: "Hello", actions: [] },
@@ -22,9 +31,6 @@ const server = setupServer(
     sessionStore = body.messages ?? [];
     return HttpResponse.json({ data: { messages: sessionStore } });
   }),
-  http.post("/api/copilot/chat", () =>
-    HttpResponse.json({ data: { message: "" } })
-  ),
 );
 
 function wrapper({ children }) {
@@ -35,6 +41,7 @@ beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
 afterEach(() => {
   server.resetHandlers();
   sessionStore = [];
+  vi.mocked(streamCopilotChat).mockReset();
 });
 afterAll(() => server.close());
 
@@ -72,19 +79,7 @@ describe("useCopilotChat", () => {
   });
 
   it("should persist session after stream completes", async () => {
-    vi.mock("../api/copilot", async (importOriginal) => {
-      const actual = await importOriginal();
-      return {
-        ...actual,
-        streamCopilotChat: vi.fn(async (_payload, { onToken, onDone }) => {
-          onToken({ content: "Hel" });
-          onDone({ content: "Hello back", actions: [] });
-        }),
-      };
-    });
-
-    const { streamCopilotChat } = await import("../api/copilot");
-    streamCopilotChat.mockImplementation(async (_payload, { onDone }) => {
+    vi.mocked(streamCopilotChat).mockImplementation(async (_payload, { onDone }) => {
       onDone({ content: "Hello back", actions: [] });
     });
 
