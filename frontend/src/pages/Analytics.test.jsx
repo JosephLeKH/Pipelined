@@ -11,6 +11,8 @@ import { describe, it, expect, beforeAll, afterAll, afterEach } from "vitest";
 import { AuthProvider } from "../context/AuthContext";
 import { ThemeProvider } from "../context/ThemeContext";
 import Analytics from "./Analytics";
+import { passthroughHandlers } from "../test/passthroughHandlers";
+import { withTooltipProvider } from "../test/testProviders";
 
 const FUNNEL_DATA = [
   { stage: "Applied", entered_count: 10, exited_to_next_count: 7, conversion_rate: 0.7, avg_days_in_stage: 5.2, dropped_count: 3 },
@@ -43,13 +45,16 @@ const ANALYTICS_EMPTY = {
 
 const server = setupServer(
   http.get("/api/auth/me", () =>
-    HttpResponse.json({ id: "u1", email: "test@example.com", display_name: "Test" })
+    HttpResponse.json({
+      data: { id: "u1", email: "test@example.com", display_name: "Test" },
+    })
   ),
   http.get("/api/applications/analytics", () =>
     HttpResponse.json({ data: ANALYTICS_FULL })
   ),
   http.get("/api/applications/funnel", () =>
-    HttpResponse.json({ data: FUNNEL_DATA })
+    HttpResponse.json({ data: FUNNEL_DATA }),
+  ...passthroughHandlers,
   )
 );
 
@@ -66,7 +71,7 @@ function renderAnalytics() {
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={["/analytics"]}>
           <AuthProvider>
-            <Analytics />
+            {withTooltipProvider(<Analytics />)}
           </AuthProvider>
         </MemoryRouter>
       </QueryClientProvider>
@@ -159,7 +164,7 @@ describe("Analytics", () => {
 
     // Applied → Phone Screen: 70% → brand (high conversion)
     const cell = screen.getByText("70%");
-    expect(cell.className).toMatch(/text-brand/);
+    expect(cell.className).toMatch(/text-primary/);
   });
 
   it("should color-code mid conversion rate in amber", async () => {
@@ -169,7 +174,7 @@ describe("Analytics", () => {
 
     // Phone Screen → Offer: 43% → amber
     const cell = screen.getByText("43%");
-    expect(cell.className).toMatch(/text-amber/);
+    expect(cell.className).toMatch(/text-warning/);
   });
 
   it("should highlight avg_days_in_stage above 21 in rose", async () => {
@@ -179,7 +184,7 @@ describe("Analytics", () => {
 
     // Offer avg_days = 25.0 > 21 → rose
     const cell = screen.getByText("25.0d");
-    expect(cell.className).toMatch(/text-rose/);
+    expect(cell.className).toMatch(/text-destructive/);
   });
 
   it("should show retry button when analytics loading fails", async () => {

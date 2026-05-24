@@ -26,7 +26,7 @@ describe("SaveSearchPopover", () => {
   it("should render dialog with correct aria-label", () => {
     render(<SaveSearchPopover currentFilters={FILTERS_FIXTURE} onClose={vi.fn()} />);
 
-    expect(screen.getByRole("dialog", { name: /save this search/i })).toBeInTheDocument();
+    expect(screen.getByRole("dialog", { name: /name this search/i })).toBeInTheDocument();
   });
 
   it("should disable Save button when name is empty", () => {

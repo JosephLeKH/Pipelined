@@ -37,8 +37,8 @@
         "Login pass"
       ],
       "priority": "medium",
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Analytics color tokens, JobBoard AuthProvider+MSW, Login /today redirect, Dashboard dialog assertion; 37/37 pass."
     },
     {
       "id": "US-1004",

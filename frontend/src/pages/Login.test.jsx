@@ -40,7 +40,7 @@ function makeWrapper() {
           <AuthProvider>
             <Routes>
               <Route path="/login" element={children} />
-              <Route path="/dashboard" element={<div>Dashboard</div>} />
+              <Route path="/today" element={<div>Today</div>} />
             </Routes>
           </AuthProvider>
         </MemoryRouter>
@@ -101,7 +101,7 @@ describe("Login", () => {
     expect(await screen.findByRole("alert")).toHaveTextContent("Incorrect email or password.");
   });
 
-  it("should redirect to dashboard on successful login", async () => {
+  it("should redirect to today on successful login", async () => {
     render(<Login />, { wrapper: makeWrapper() });
 
     await userEvent.type(screen.getByLabelText("Email"), "alice@example.com");
@@ -109,7 +109,7 @@ describe("Login", () => {
     await userEvent.click(screen.getByRole("button", { name: "Sign in" }));
 
     await waitFor(() => {
-      expect(screen.getByText("Dashboard")).toBeInTheDocument();
+      expect(screen.getByText("Today")).toBeInTheDocument();
     });
   });
 });

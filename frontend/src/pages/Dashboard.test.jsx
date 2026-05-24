@@ -12,6 +12,7 @@ import { AuthProvider } from "../context/AuthContext";
 import { ThemeProvider } from "../context/ThemeContext";
 import Dashboard from "./Dashboard";
 import { withTooltipProvider } from "../test/testProviders";
+import { passthroughHandlers } from "../test/passthroughHandlers";
 
 const APP = {
   id: "app1",
@@ -34,7 +35,7 @@ const STATS = {
 
 const server = setupServer(
   http.get("/api/auth/me", () =>
-    HttpResponse.json({ id: "u1", email: "test@example.com", display_name: "Test" })
+    HttpResponse.json({ data: { id: "u1", email: "test@example.com", display_name: "Test" } })
   ),
   http.get("/api/applications", () =>
     HttpResponse.json({ data: [APP], meta: { count: 1, next_cursor: null } })
@@ -44,7 +45,8 @@ const server = setupServer(
   ),
   http.get("/api/applications/:id", () =>
     HttpResponse.json({ data: APP })
-  )
+  ),
+  ...passthroughHandlers,
 );
 
 beforeAll(() => server.listen({ onUnhandledRequest: "warn" }));
@@ -135,7 +137,7 @@ describe("Dashboard", () => {
     render(<Dashboard />, { wrapper: makeWrapper() });
 
     // Assert — overlay is not in the DOM before click
-    expect(screen.queryByTestId("modal-overlay")).not.toBeInTheDocument();
+    expect(screen.queryByRole("dialog", { name: /add application/i })).not.toBeInTheDocument();
 
     // Act — click the header-level "Add Application" button (type="button")
     const buttons = screen.getAllByRole("button", { name: /add application/i });
@@ -143,7 +145,7 @@ describe("Dashboard", () => {
     await userEvent.click(headerBtn);
 
     // Assert — overlay is now mounted in the DOM
-    expect(screen.getByTestId("modal-overlay")).toBeInTheDocument();
+    expect(screen.getByRole("dialog", { name: /add application/i })).toBeInTheDocument();
   });
 
   it("should render StatsBar metrics after stats load", async () => {

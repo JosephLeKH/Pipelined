@@ -7,7 +7,11 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter } from "react-router-dom";
 import { describe, it, expect, beforeAll, afterAll, afterEach } from "vitest";
 
+import { AuthProvider } from "../context/AuthContext";
+import { ThemeProvider } from "../context/ThemeContext";
 import JobBoard from "./JobBoard";
+import { passthroughHandlers } from "../test/passthroughHandlers";
+import { withTooltipProvider } from "../test/testProviders";
 
 const EMPTY_JOBS = { data: [], meta: { total: 0, page: 1, per_page: 30, total_pages: 0 } };
 const SAVED_SEARCHES_WITH_BADGE = {
@@ -37,7 +41,11 @@ const server = setupServer(
   http.get("/api/jobs", () => HttpResponse.json(EMPTY_JOBS)),
   http.get("/api/saved-searches", () => HttpResponse.json(SAVED_SEARCHES_WITH_BADGE)),
   http.post("/api/saved-searches", () => HttpResponse.json({ data: {} }, { status: 201 })),
-  http.delete("/api/saved-searches/:id", () => new HttpResponse(null, { status: 204 }))
+  http.delete("/api/saved-searches/:id", () => new HttpResponse(null, { status: 204 })),
+  http.get("/api/auth/me", () =>
+    HttpResponse.json({ data: { id: "u1", email: "test@example.com", display_name: "Test" } })
+  ),
+  ...passthroughHandlers,
 );
 
 beforeAll(() => server.listen({ onUnhandledRequest: "warn" }));
@@ -49,11 +57,13 @@ function makeWrapper(initialSearch = "") {
     defaultOptions: { queries: { retry: false } },
   });
   return ({ children }) => (
-    <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={[`/jobs${initialSearch}`]}>
-        {children}
-      </MemoryRouter>
-    </QueryClientProvider>
+    <ThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={[`/jobs${initialSearch}`]}>
+          <AuthProvider>{withTooltipProvider(children)}</AuthProvider>
+        </MemoryRouter>
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 }
 
@@ -88,7 +98,7 @@ describe("JobBoard saved searches", () => {
     await waitFor(() => screen.getByRole("button", { name: /save this search/i }));
     fireEvent.click(screen.getByRole("button", { name: /save this search/i }));
 
-    expect(screen.getByRole("dialog", { name: /save this search/i })).toBeDefined();
+    expect(screen.getByRole("dialog", { name: /name this search/i })).toBeDefined();
     expect(screen.getByLabelText("Saved search name")).toBeDefined();
   });
 
