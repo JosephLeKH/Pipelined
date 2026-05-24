@@ -15,7 +15,7 @@ vi.mock("../context/AuthContext", () => ({
 }));
 vi.mock("../lib/analytics", () => ({ trackEvent: vi.fn() }));
 vi.mock("./ContactsSection", () => ({ default: () => null }));
-vi.mock("./ResumeFitSection", () => ({ default: () => null }));
+vi.mock("./AiFitSection", () => ({ default: () => null }));
 vi.mock("./DetailPanelHeader", () => ({
   DetailPanelHeader: ({ application, onClose }) => (
     <div>
