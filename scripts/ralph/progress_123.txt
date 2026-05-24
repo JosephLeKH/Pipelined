@@ -8,7 +8,7 @@ Started: Sun May 24 2026
 
 **Testing:** `pytest tests/test_weekly_review.py -v` — 5 passed
 
-**Commit:** pending
+**Commit:** 135b173
 
 ---
 
@@ -18,7 +18,7 @@ Started: Sun May 24 2026
 
 **Testing:** `pytest tests/test_review_router.py tests/test_weekly_review.py -v` — 8 passed
 
-**Commit:** pending
+**Commit:** b679d1d
 
 ---
 
@@ -28,7 +28,7 @@ Started: Sun May 24 2026
 
 **Testing:** `npm run test -- --run src/components/WeeklyReviewSection.test.jsx` — 3 passed; `npm run build` — success
 
-**Commit:** pending
+**Commit:** 28110be
 
 ---
 
@@ -38,6 +38,6 @@ Started: Sun May 24 2026
 
 **Testing:** `pytest tests/test_mission_scorer.py -v` — 3 passed
 
-**Commit:** pending
+**Commit:** 06192e3
 
 ---
