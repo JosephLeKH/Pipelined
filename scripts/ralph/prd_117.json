@@ -1,0 +1,57 @@
+{
+  "id": "prd_117",
+  "title": "Agent Activity Log & Trust UI",
+  "description": "agent_runs collection, activity feed, why-this-score explainers.",
+  "userStories": [
+    {
+      "id": "US-991",
+      "title": "Agent runs collection",
+      "description": "agent_runs with user_id, agent_type, status, summary. Log helper agent_log.py.",
+      "acceptanceCriteria": [
+        "agent_runs schema",
+        "Log helper",
+        "user_id scoped"
+      ],
+      "priority": "high",
+      "passes": true,
+      "notes": "agent_log.py + indexes; instrument prep/fit/autopilot/classify/brief"
+    },
+    {
+      "id": "US-992",
+      "title": "Agent activity API and settings section",
+      "description": "GET /api/agent/activity. Settings timeline UI.",
+      "acceptanceCriteria": [
+        "API endpoint",
+        "Settings section",
+        "Tests"
+      ],
+      "priority": "high",
+      "passes": true,
+      "notes": "GET /api/agent/activity?limit=20; Settings Agent tab timeline"
+    },
+    {
+      "id": "US-993",
+      "title": "Why this score explainer",
+      "description": "match_reason on fit/match scores. Why toggle in UI.",
+      "acceptanceCriteria": [
+        "match_reason persisted",
+        "Why toggle in AiFitSection"
+      ],
+      "priority": "medium",
+      "passes": true,
+      "notes": "match_reason on ai_analysis and fit_score; Why? in AiFitSection + PendingOpportunityCard"
+    },
+    {
+      "id": "US-994",
+      "title": "Agent log on detail panel",
+      "description": "Per-app agent activity collapsible section.",
+      "acceptanceCriteria": [
+        "Per-app log UI",
+        "Filter by application_id"
+      ],
+      "priority": "medium",
+      "passes": true,
+      "notes": "AgentActivitySection collapsible; application_id query param"
+    }
+  ]
+}

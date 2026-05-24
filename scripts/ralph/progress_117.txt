@@ -1,0 +1,35 @@
+# Ralph Progress Log — prd_117
+Started: Sat May 23 2026
+---
+
+## US-991: Agent runs collection ✅ COMPLETE
+
+**Implementation:** `agent_runs` collection with user_id indexes; `backend/ai/agent_log.py` helper; logging from prep, fit, autopilot, classify, and brief jobs.
+
+**Testing:** `pytest tests/test_agent_log.py -v` — 2 passed
+
+---
+
+## US-992: Agent activity API and settings section ✅ COMPLETE
+
+**Implementation:** GET `/api/agent/activity?limit=20`; Settings Agent tab timeline UI; backend/agent module.
+
+**Testing:** `pytest tests/test_agent_activity.py -v` — 3 passed; `npm run test -- --run src/components/SettingsAgentActivitySection.test.jsx` — 2 passed
+
+---
+
+## US-993: Why this score explainer ✅ COMPLETE
+
+**Implementation:** `match_reason` persisted on fit scores; Why? toggle in AiFitSection and PendingOpportunityCard.
+
+**Testing:** `npm run test -- --run src/components/AiFitSection.test.jsx src/components/PendingOpportunityCard.test.jsx` — 8 passed
+
+---
+
+## US-994: Agent log on detail panel ✅ COMPLETE
+
+**Implementation:** Collapsible AgentActivitySection in detail panel; API filter by `application_id`.
+
+**Testing:** `npm run test -- --run src/components/AgentActivitySection.test.jsx` — 1 passed; `npm run build` — success
+
+---
