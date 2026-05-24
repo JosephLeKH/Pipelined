@@ -89,8 +89,8 @@
         "DisconnectedState layout still centers the Connect button"
       ],
       "priority": "medium",
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added Sparkles and Zap icon imports. In DisconnectedState, added 'How it works' section with 3 icon-labeled steps: Connect Gmail, Agent reads emails, Dashboard updates. Each step has icon (aria-hidden) and descriptive text."
     },
     {
       "id": "US-884",
@@ -103,8 +103,8 @@
         "Source icon remains aria-hidden='true'"
       ],
       "priority": "medium",
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added Tooltip for email source icon in ApplicationRow with text 'Auto-tracked from Gmail'. Uses existing Tooltip/TooltipTrigger/TooltipContent pattern. Source icon is aria-hidden='true'."
     },
     {
       "id": "US-885",
@@ -118,8 +118,8 @@
         "Direct import: lucide-react/dist/esm/icons/loader-2"
       ],
       "priority": "low",
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Updated GmailCallback to render centered loading spinner with Loader2 icon instead of null. Added sr-only span with 'Connecting Gmail…' for screen readers. useEffect navigate behavior unchanged."
     }
   ]
 }
