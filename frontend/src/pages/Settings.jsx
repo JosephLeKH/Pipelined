@@ -32,7 +32,7 @@ const NAV_ITEMS = [
   { id: "notifications", label: "Notifications" },
   { id: "integrations", label: "Integrations" },
   { id: "autopilot", label: "Autopilot" },
-  { id: "agent", label: "Agent Profile" },
+  { id: "agent", label: "Agent" },
   { id: "resume", label: "Resume & AI" },
   { id: "templates", label: "Templates" },
   { id: "sharing", label: "Sharing" },
@@ -43,6 +43,7 @@ const NAV_ITEMS = [
 ];
 
 const SETTINGS_PANEL_ID = "settings-panel";
+const SETTINGS_SECTION_DIVIDER = "border-t border-border-default pt-8 mt-2";
 
 function TabNav({ activeSection, onSelect }) {
   return (
@@ -152,17 +153,17 @@ function renderSection(activeSection, user) {
     case "notifications": return <SettingsNotificationsSection />;
     case "integrations": return <SettingsIntegrationsSection />;
     case "autopilot":
-      return (
-        <div className="flex flex-col gap-6">
-          <SettingsAutopilotSection />
-          <SettingsWatchlistSection />
-        </div>
-      );
+      return <SettingsAutopilotSection />;
     case "agent":
       return (
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col">
           <SettingsAgentProfileSection />
-          <SettingsAgentActivitySection />
+          <div className={SETTINGS_SECTION_DIVIDER}>
+            <SettingsAgentActivitySection />
+          </div>
+          <div className={SETTINGS_SECTION_DIVIDER}>
+            <SettingsWatchlistSection />
+          </div>
         </div>
       );
     case "resume": return <SettingsResumeSection />;

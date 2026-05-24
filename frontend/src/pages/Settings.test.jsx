@@ -108,6 +108,16 @@ describe("Settings page", () => {
 
       expect(activeTab.getAttribute("aria-controls")).toBe(panel.id);
     });
+
+    it("should render Agent tab with profile, activity, and watchlist sections", async () => {
+      render(<Settings />, { wrapper: makeWrapper() });
+
+      await userEvent.click(screen.getByRole("tab", { name: /^agent$/i }));
+
+      expect(screen.getByRole("heading", { name: /agent profile/i })).toBeInTheDocument();
+      expect(screen.getByRole("heading", { name: /agent activity/i })).toBeInTheDocument();
+      expect(screen.getByRole("heading", { name: /company watchlist/i })).toBeInTheDocument();
+    });
   });
 
   describe("pipeline stages section", () => {
