@@ -1,8 +1,9 @@
 """Tests for watchlist scan job."""
 
 from datetime import datetime, timezone
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
+import httpx
 import pytest
 from bson import ObjectId
 
@@ -41,6 +42,61 @@ def test_parse_html_listings_extracts_job_links():
 
 
 @pytest.mark.asyncio(loop_scope="session")
+async def test_watchlist_scan_skips_blocked_careers_url(app, test_user):
+    user, _ = test_user
+    uid = ObjectId(user["id"])
+
+    await database.get_collection("users").update_one(
+        {"_id": uid},
+        {"$set": {
+            "watchlist_companies": [
+                {"name": "Internal", "careers_url": "http://127.0.0.1/careers"},
+            ],
+        }},
+    )
+
+    with patch("watchlist.scan.fetch_api_listings", new_callable=AsyncMock) as mock_fetch:
+        await watchlist_scan()
+        mock_fetch.assert_not_called()
+
+
+@pytest.mark.asyncio(loop_scope="session")
+async def test_watchlist_scan_client_disables_redirects(app, test_user):
+    user, _ = test_user
+    uid = ObjectId(user["id"])
+
+    await database.get_collection("users").update_one(
+        {"_id": uid},
+        {"$set": {
+            "watchlist_companies": [
+                {"name": "Acme", "careers_url": "https://boards.greenhouse.io/acme"},
+            ],
+        }},
+    )
+
+    captured: dict = {}
+
+    class _ClientFactory:
+        def __init__(self, *args, **kwargs):
+            captured["follow_redirects"] = kwargs.get("follow_redirects")
+
+        async def __aenter__(self):
+            client = MagicMock()
+            client.get = AsyncMock()
+            return client
+
+        async def __aexit__(self, *args):
+            return None
+
+    with patch("watchlist.scan.httpx.AsyncClient", _ClientFactory), patch(
+        "watchlist.scan.fetch_api_listings", new_callable=AsyncMock, return_value=[]
+    ):
+        await watchlist_scan()
+
+    assert captured.get("follow_redirects") is False
+
+
+@pytest.mark.asyncio(loop_scope="session")
 async def test_watchlist_scan_upserts_with_url_hash_dedupe(app, test_user):
     user, _ = test_user
     uid = ObjectId(user["id"])
@@ -62,10 +118,6 @@ async def test_watchlist_scan_upserts_with_url_hash_dedupe(app, test_user):
         "url_hash": url_hash,
         "ingested_at": datetime.now(timezone.utc),
     })
-
-    mock_response = AsyncMock()
-    mock_response.raise_for_status = lambda: None
-    mock_response.json.return_value = {"jobs": GREENHOUSE_PAYLOAD}
 
     with patch("watchlist.scan.fetch_api_listings", new_callable=AsyncMock) as mock_fetch:
         mock_fetch.return_value = parse_greenhouse_jobs(

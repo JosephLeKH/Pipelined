@@ -4,6 +4,7 @@ from zoneinfo import available_timezones
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
+from auth.url_validation import validate_public_http_url
 from auth.constants import (
     AGENT_CAREER_GOALS_MAX_LENGTH,
     AGENT_COMMUNICATION_STYLES,
@@ -101,6 +102,7 @@ class WatchlistCompanyRequest(BaseModel):
         url = self.careers_url.strip()
         if not url.startswith(("http://", "https://")):
             raise ValueError("careers_url must start with http:// or https://")
+        validate_public_http_url(url)
 
 
 class WatchlistCompanyResponse(BaseModel):

@@ -3,6 +3,7 @@
 import httpx
 import structlog
 from auth.schemas import watchlist_companies_from_doc
+from auth.url_validation import validate_public_http_url
 from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorCollection
 
@@ -58,6 +59,11 @@ async def _fetch_company_listings(
     """Fetch and parse listings for one watchlist company."""
     name = company["name"]
     careers_url = company["careers_url"]
+    try:
+        validate_public_http_url(careers_url)
+    except ValueError:
+        logger.warning("watchlist_blocked_url", company=name, careers_url=careers_url)
+        return []
     try:
         api_listings = await fetch_api_listings(client, careers_url, name)
         if api_listings is not None:
@@ -123,7 +129,7 @@ async def watchlist_scan() -> None:
     total_matches = 0
 
     headers = {"User-Agent": USER_AGENT}
-    async with httpx.AsyncClient(headers=headers, timeout=FETCH_TIMEOUT_SECONDS, follow_redirects=True) as client:
+    async with httpx.AsyncClient(headers=headers, timeout=FETCH_TIMEOUT_SECONDS, follow_redirects=False) as client:
         async for user_doc in cursor:
             total_matches += await _scan_for_user(user_doc, client)
 
