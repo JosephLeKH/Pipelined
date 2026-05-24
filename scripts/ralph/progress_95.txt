@@ -21,3 +21,24 @@ Fixed a critical bug in `backend/applications/interview_prep/router.py` where `_
 **Commit**: e947ced - feat: US-886 - Fix _get_resume_text ObjectId bug in interview_prep/router.py
 
 **Learning**: The interview prep agent now has access to user resume context when querying for interview preparation. This was a simple but critical fix that required proper ObjectId handling for MongoDB queries.
+## US-887 - Rate limit the interview prep SSE endpoint
+**Status**: ✅ COMPLETED
+
+**Summary**:
+Added rate limiting to the interview prep SSE endpoint to prevent API quota exhaustion. Each request can take 30+ seconds and spawn multi-step Gemini agent loops, so limiting to 3/hour per user is essential.
+
+**Changes**:
+- Added `Request` to FastAPI imports
+- Imported `limiter` from `middleware.rate_limit`
+- Added `@limiter.limit("3/hour")` decorator after `@router.get` decorator
+- Added `request: Request` as first parameter with `# noqa: ARG001` comment
+- Followed exact pattern from `email_integration/router.py` trigger_sync endpoint
+
+**Testing**:
+- Pyright type checking: 0 errors (request not accessed warning suppressed by # noqa: ARG001)
+- All 107 application tests pass
+- No regression to existing endpoint logic or other endpoints
+
+**Commit**: f921723 - feat: US-887 - Rate limit the interview prep SSE endpoint
+
+**Learning**: Slowapi rate limiting requires the Request parameter even if unused in the function body. The decorator ordering matters: @router decorators come first, then @limiter.limit. This pattern is consistent across the codebase.

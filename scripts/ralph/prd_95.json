@@ -29,7 +29,7 @@
         "Other endpoints in the file not modified"
       ],
       "priority": "high",
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
