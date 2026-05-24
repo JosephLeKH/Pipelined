@@ -30,3 +30,11 @@ Started: Sun May 24 2026
 **Testing:** `npm test -- --run` batch for OfferComparison, Pricing, PublicPipeline, Tags, GithubCallback, ApplicationList — 51 passed
 
 ---
+
+## Final test run
+
+`npm test -- --run` — **843 passed, 59 failed** (125/148 files pass)
+
+Baseline before PRD: ~820 passed, ~80 failed (113/148 files pass)
+
+Remaining failures are outside PRD scope (GoalProgress MSW, ManualAddForm Dialog migration, ContactForm, etc.).
