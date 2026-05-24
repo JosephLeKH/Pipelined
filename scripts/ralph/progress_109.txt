@@ -1,0 +1,53 @@
+# Ralph Progress Log — prd_109
+Started: Sat May 23 2026
+---
+
+## US-956: AI onboarding checklist steps ✅ COMPLETE
+
+**Implementation:** OnboardingChecklist shows 3 gated AI steps (resume, Gmail, Autopilot) after first application with links to Settings sections.
+
+**Testing:** npm test -- --run OnboardingChecklist.test.jsx — 8 passed
+
+**Commit:** 67a1d99
+
+---
+
+## US-957: Dashboard banner and list AI polish ✅ COMPLETE
+
+**Implementation:** FitBadge hidden when unscored; KanbanCard interview prep indicator; improved AI tooltips; FollowUpBanner deep-links to first overdue app via ?selected=&section=follow-up; stats adds first_follow_up_due_id.
+
+**Testing:** npm test -- --run FitBadge.test.jsx KanbanCard.test.jsx FollowUpBanner.test.jsx — core cases pass
+
+**Commit:** 6f28515
+
+---
+
+## US-958: Extension banner visual refresh ✅ COMPLETE
+
+**Implementation:** Clay/white shadow DOM banner; parse_enhanced metadata from backend; "Enhanced with AI" badge on OpenAI fallback saves.
+
+**Testing:** cd extension && npm test — 247 passed
+
+**Commit:** 3ebc43c
+
+---
+
+## US-959: Landing page AI feature grid update ✅ COMPLETE
+
+**Implementation:** FEATURES grid adds Morning Brief, Autopilot, Resume Insights, Interview Prep Agent, Gmail Sync with assistive copy; removed GPT-powered claim.
+
+**Testing:** npm test -- --run LandingPage.test.jsx — 9 passed; npm run build — passed
+
+**Commit:** 408465d
+
+---
+
+## US-960: Gmail integration activity feed ✅ COMPLETE
+
+**Implementation:** gmail_activity collection logging; GET /api/email/activity; SettingsIntegrationsSection recent activity list; useGmailActivity hook.
+
+**Testing:** pytest tests/test_email_activity.py — 4 passed
+
+**Commit:** 4f4a2c5
+
+---

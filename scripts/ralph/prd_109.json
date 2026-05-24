@@ -1,0 +1,69 @@
+{
+  "id": "prd_109",
+  "title": "AI Onboarding, Dashboard, Extension & Landing",
+  "description": "First-run AI discovery, dashboard polish, extension rebrand, landing update.",
+  "userStories": [
+    {
+      "id": "US-956",
+      "title": "AI onboarding checklist steps",
+      "description": "Add resume, Gmail, autopilot steps to OnboardingChecklist after first app.",
+      "acceptanceCriteria": [
+        "3 new AI steps",
+        "Gated after first app"
+      ],
+      "priority": "high",
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-957",
+      "title": "Dashboard banner and list AI polish",
+      "description": "FollowUpBanner deep link. Hide empty FitBadge. Kanban prep indicator. Improved tooltips.",
+      "acceptanceCriteria": [
+        "Deep link follow-ups",
+        "No dash FitBadge",
+        "Kanban parity"
+      ],
+      "priority": "high",
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-958",
+      "title": "Extension banner visual refresh",
+      "description": "Brand colors on shadow DOM banner. Enhanced with AI badge when parse fallback used.",
+      "acceptanceCriteria": [
+        "Brand-aligned banner",
+        "Extension tests pass"
+      ],
+      "priority": "medium",
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-959",
+      "title": "Landing page AI feature grid update",
+      "description": "Add Morning Brief, Autopilot, Resume Insights, Interview Prep, Gmail. Honest AI copy.",
+      "acceptanceCriteria": [
+        "5+ AI features on landing",
+        "No misleading GPT claims"
+      ],
+      "priority": "medium",
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-960",
+      "title": "Gmail integration activity feed",
+      "description": "Recent email activity in Integrations settings. No raw email bodies. Last 5 events.",
+      "acceptanceCriteria": [
+        "Activity list in settings",
+        "Privacy safe",
+        "Tests for endpoint"
+      ],
+      "priority": "low",
+      "passes": true,
+      "notes": ""
+    }
+  ]
+}
