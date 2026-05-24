@@ -2,11 +2,14 @@
 
 from collections.abc import AsyncGenerator
 from datetime import UTC, datetime
+from zoneinfo import ZoneInfo
 
 import structlog
 from bson import ObjectId
+from pymongo import ReturnDocument
 
 from ai.openrouter_client import OpenRouterError, agent_llm_configured, stream_chat
+from auth.constants import DEFAULT_TIMEZONE
 from database import get_collection
 from parsing.ai_cache import PROVIDER_OPENROUTER, QuotaExceededError, check_and_increment_quota
 
@@ -44,6 +47,13 @@ class MockInterviewLimitError(Exception):
     def __init__(self, message: str) -> None:
         self.message = message
         super().__init__(message)
+
+
+async def _local_date_for_user(user_id: str) -> str:
+    users_col = get_collection("users")
+    user = await users_col.find_one({"_id": ObjectId(user_id)}, {"timezone": 1})
+    tz = ZoneInfo((user or {}).get("timezone", DEFAULT_TIMEZONE))
+    return datetime.now(UTC).astimezone(tz).date().isoformat()
 
 
 def _count_user_turns(body: MockInterviewRequest) -> int:
@@ -99,21 +109,51 @@ async def _check_daily_session_quota(user_id: str, is_new_session: bool) -> None
     if not is_new_session:
         return
 
-    today = datetime.now(UTC).strftime("%Y-%m-%d")
+    today = await _local_date_for_user(user_id)
     col = get_collection(MOCK_INTERVIEW_QUOTA_COLLECTION)
     uid = ObjectId(user_id)
-    doc = await col.find_one({"user_id": uid, "date": today})
-    sessions = doc.get("sessions", 0) if doc else 0
-    if sessions >= MOCK_INTERVIEW_DAILY_SESSION_LIMIT:
+    now = datetime.now(UTC)
+
+    updated = await col.find_one_and_update(
+        {
+            "user_id": uid,
+            "date": today,
+            "sessions": {"$lt": MOCK_INTERVIEW_DAILY_SESSION_LIMIT},
+        },
+        {"$inc": {"sessions": 1}, "$set": {"updated_at": now}},
+        return_document=ReturnDocument.AFTER,
+    )
+    if updated is not None:
+        return
+
+    existing = await col.find_one({"user_id": uid, "date": today})
+    if existing is not None:
         raise MockInterviewLimitError(
             f"Daily mock interview limit reached ({MOCK_INTERVIEW_DAILY_SESSION_LIMIT} per day)."
         )
 
-    await col.update_one(
-        {"user_id": uid, "date": today},
-        {"$inc": {"sessions": 1}, "$setOnInsert": {"created_at": datetime.now(UTC)}},
-        upsert=True,
-    )
+    try:
+        await col.insert_one({
+            "user_id": uid,
+            "date": today,
+            "sessions": 1,
+            "created_at": now,
+            "updated_at": now,
+        })
+    except Exception:
+        retry = await col.find_one_and_update(
+            {
+                "user_id": uid,
+                "date": today,
+                "sessions": {"$lt": MOCK_INTERVIEW_DAILY_SESSION_LIMIT},
+            },
+            {"$inc": {"sessions": 1}, "$set": {"updated_at": now}},
+            return_document=ReturnDocument.AFTER,
+        )
+        if retry is None:
+            raise MockInterviewLimitError(
+                f"Daily mock interview limit reached ({MOCK_INTERVIEW_DAILY_SESSION_LIMIT} per day)."
+            )
 
 
 async def stream_mock_interview(

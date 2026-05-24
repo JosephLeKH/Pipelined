@@ -1,8 +1,12 @@
 """Tests for mock interview SSE endpoint and turn limits."""
 
+from datetime import UTC, datetime
 from unittest.mock import patch
 
 import pytest
+from bson import ObjectId
+
+import database
 
 from applications.interview_prep.mock_interview import _count_user_turns
 from applications.interview_prep.schemas import MockInterviewMessage, MockInterviewRequest
@@ -125,3 +129,41 @@ async def test_mock_interview_rejects_turn_limit(client, test_user, monkeypatch)
 
     assert response.status_code == 200
     assert "Maximum 10 turns" in response.text
+
+
+async def test_mock_interview_quota_uses_user_local_date(test_user):
+    from applications.interview_prep import mock_interview as mi
+
+    user, _ = test_user
+    user_id = user["id"]
+    await database.get_collection("users").update_one(
+        {"_id": ObjectId(user_id)},
+        {"$set": {"timezone": "Pacific/Kiritimati"}},
+    )
+
+    with patch.object(mi, "datetime") as mock_dt:
+        mock_dt.now.return_value = datetime(2026, 5, 24, 10, 0, tzinfo=UTC)
+        mock_dt.UTC = UTC
+        local_date = await mi._local_date_for_user(user_id)
+
+    assert local_date == "2026-05-25"
+
+
+async def test_mock_interview_daily_quota_is_atomic(test_user):
+    from applications.interview_prep import mock_interview as mi
+    from applications.interview_prep.constants import MOCK_INTERVIEW_DAILY_SESSION_LIMIT
+
+    user, _ = test_user
+    user_id = user["id"]
+    today = await mi._local_date_for_user(user_id)
+    col = database.get_collection(mi.MOCK_INTERVIEW_QUOTA_COLLECTION)
+    await col.update_one(
+        {"user_id": ObjectId(user_id), "date": today},
+        {"$set": {"sessions": MOCK_INTERVIEW_DAILY_SESSION_LIMIT}},
+        upsert=True,
+    )
+    seeded = await col.find_one({"user_id": ObjectId(user_id), "date": today})
+    assert seeded["sessions"] == MOCK_INTERVIEW_DAILY_SESSION_LIMIT
+
+    with pytest.raises(mi.MockInterviewLimitError):
+        await mi._check_daily_session_quota(user_id, is_new_session=True)
