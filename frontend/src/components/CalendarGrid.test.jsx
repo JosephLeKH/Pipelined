@@ -47,7 +47,7 @@ describe("CalendarGrid", () => {
     render(<CalendarGrid {...DEFAULT_PROPS} />, { wrapper: makeWrapper() });
 
     // Assert
-    expect(await screen.findByText("March 2026")).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: /march 2026/i })).toBeInTheDocument();
   });
 
   it("should render day cells with aria-label containing the date", async () => {
@@ -69,7 +69,7 @@ describe("CalendarGrid", () => {
       <CalendarGrid {...DEFAULT_PROPS} onMonthChange={onMonthChange} />,
       { wrapper: makeWrapper() }
     );
-    await screen.findByText("March 2026");
+    await screen.findByRole("heading", { name: /march 2026/i });
 
     // Act
     await userEvent.click(screen.getByRole("button", { name: /previous month/i }));
@@ -85,7 +85,7 @@ describe("CalendarGrid", () => {
       <CalendarGrid {...DEFAULT_PROPS} onMonthChange={onMonthChange} />,
       { wrapper: makeWrapper() }
     );
-    await screen.findByText("March 2026");
+    await screen.findByRole("heading", { name: /march 2026/i });
 
     // Act
     await userEvent.click(screen.getByRole("button", { name: /next month/i }));

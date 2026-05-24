@@ -10,6 +10,7 @@ import { describe, it, expect, beforeAll, afterAll, afterEach, vi } from "vitest
 
 import { AuthContext } from "../context/AuthContext";
 import FeedbackWidget from "./FeedbackWidget";
+import { withTooltipProvider } from "../test/testProviders";
 
 const server = setupServer(
   http.post("/api/feedback", () =>
@@ -29,7 +30,7 @@ function makeWrapper(user = { id: "u1", email: "test@example.com", email_verifie
       <QueryClientProvider client={qc}>
         <MemoryRouter>
           <AuthContext.Provider value={authValue}>
-            {children}
+            {withTooltipProvider(children)}
           </AuthContext.Provider>
         </MemoryRouter>
       </QueryClientProvider>

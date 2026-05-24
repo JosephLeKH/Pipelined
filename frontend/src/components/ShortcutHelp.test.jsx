@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
 
 import ShortcutHelp from "./ShortcutHelp";
@@ -8,7 +8,7 @@ describe("ShortcutHelp", () => {
   it("should not render dialog initially", () => {
     render(<ShortcutHelp />);
 
-    expect(screen.queryByRole("dialog", { name: "Keyboard shortcuts" })).toBeNull();
+    expect(screen.queryByRole("dialog", { name: /keyboard shortcuts/i })).toBeNull();
   });
 
   it("should open on '?' keydown and show all scope groups", () => {
@@ -16,29 +16,35 @@ describe("ShortcutHelp", () => {
 
     fireEvent.keyDown(document, { key: "?" });
 
-    expect(screen.getByRole("dialog", { name: "Keyboard shortcuts" })).toBeInTheDocument();
+    expect(screen.getByRole("dialog", { name: /keyboard shortcuts/i })).toBeInTheDocument();
     for (const scope of SHORTCUT_SCOPES) {
       expect(screen.getByText(scope)).toBeInTheDocument();
     }
   });
 
-  it("should close when X button is clicked", () => {
+  it("should close when X button is clicked", async () => {
     render(<ShortcutHelp />);
 
     fireEvent.keyDown(document, { key: "?" });
-    expect(screen.getByRole("dialog", { name: "Keyboard shortcuts" })).toBeInTheDocument();
+    expect(screen.getByRole("dialog", { name: /keyboard shortcuts/i })).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: "Close shortcuts" }));
-    expect(screen.queryByRole("dialog")).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: /^close$/i }));
+
+    await waitFor(() => {
+      expect(screen.queryByRole("dialog")).toBeNull();
+    });
   });
 
-  it("should close on Escape keydown", () => {
+  it("should close on Escape keydown", async () => {
     render(<ShortcutHelp />);
 
     fireEvent.keyDown(document, { key: "?" });
-    expect(screen.getByRole("dialog", { name: "Keyboard shortcuts" })).toBeInTheDocument();
+    expect(screen.getByRole("dialog", { name: /keyboard shortcuts/i })).toBeInTheDocument();
 
     fireEvent.keyDown(document, { key: "Escape" });
-    expect(screen.queryByRole("dialog")).toBeNull();
+
+    await waitFor(() => {
+      expect(screen.queryByRole("dialog")).toBeNull();
+    });
   });
 });

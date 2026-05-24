@@ -59,10 +59,9 @@ describe("ApplicationTimeline", () => {
     expect(ol).toHaveAttribute("aria-live", "polite");
   });
 
-  it("should render stage dot with role=img and descriptive aria-label", () => {
+  it("should render stage nodes with visible dots when stageHistory is provided", () => {
     renderTimeline();
-    const dots = screen.getAllByRole("img");
-    expect(dots.some((el) => el.getAttribute("aria-label")?.startsWith("Stage:"))).toBe(true);
+    expect(screen.getAllByTestId("timeline-stage-node").length).toBe(2);
   });
 
   it("should show empty state with role=status when no activity", () => {

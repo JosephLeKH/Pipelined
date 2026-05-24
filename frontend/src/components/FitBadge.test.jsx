@@ -68,7 +68,7 @@ describe("FitBadge", () => {
     const badge = screen.getByTestId("fit-badge");
 
     expect(badge).toHaveTextContent("15%");
-    expect(badge.className).toMatch(/bg-red/);
+    expect(badge.className).toMatch(/destructive/);
   });
 
   it("should show red styling for score of 0", () => {
@@ -76,7 +76,7 @@ describe("FitBadge", () => {
     const badge = screen.getByTestId("fit-badge");
 
     expect(badge).toHaveTextContent("0%");
-    expect(badge.className).toMatch(/bg-red/);
+    expect(badge.className).toMatch(/destructive/);
   });
 
   it("should have correct aria-label for a numeric score", () => {

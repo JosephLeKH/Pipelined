@@ -402,10 +402,10 @@ describe("ContactForm", () => {
       const user = userEvent.setup();
       renderApp(<ContactForm onDone={vi.fn()} />);
 
-      const relationshipSelect = screen.getByLabelText("Relationship");
-      await user.selectOptions(relationshipSelect, "recruiter");
+      await user.click(screen.getByRole("combobox", { name: /relationship/i }));
+      await user.click(screen.getByRole("option", { name: /recruiter/i }));
 
-      expect(relationshipSelect).toHaveValue("recruiter");
+      expect(screen.getByRole("combobox", { name: /relationship/i })).toHaveTextContent(/recruiter/i);
     });
   });
 });

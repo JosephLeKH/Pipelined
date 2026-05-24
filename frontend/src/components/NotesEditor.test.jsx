@@ -107,7 +107,7 @@ describe("NotesEditor — character counter", () => {
     fireEvent.change(getTextarea(), { target: { value: "a".repeat(NOTES_MAX_LENGTH) } });
 
     const counter = screen.getByText(new RegExp(`${NOTES_MAX_LENGTH}/${NOTES_MAX_LENGTH}`));
-    expect(counter).toHaveClass("text-rose-600");
+    expect(counter).toHaveClass("text-destructive");
   });
 });
 

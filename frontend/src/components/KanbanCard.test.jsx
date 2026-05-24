@@ -95,8 +95,8 @@ describe("KanbanCard", () => {
     renderCard(STALE_APP);
 
     // Assert
-    const indicator = screen.getByTestId("stale-indicator");
-    expect(indicator).toHaveAttribute("aria-label", expect.stringContaining("Stale"));
+    screen.getByTestId("stale-indicator");
+    expect(screen.getByText(/stale application/i)).toBeInTheDocument();
   });
 
   it("should show fit score from ai_analysis when present", () => {

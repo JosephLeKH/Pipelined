@@ -1,6 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import ContactCard from "./ContactCard";
+import { withTooltipProvider } from "../test/testProviders";
+
+function renderCard(contact, applicationId) {
+  render(withTooltipProvider(<ContactCard contact={contact} applicationId={applicationId} />));
+}
 
 vi.mock("../hooks/useContacts", () => ({
   usePingContact: vi.fn(),
@@ -35,14 +40,14 @@ describe("ContactCard", () => {
   });
 
   it("should render contact name, role, and company", () => {
-    render(<ContactCard contact={CONTACT} applicationId="app1" />);
+    renderCard(CONTACT, "app1");
 
     expect(screen.getByText("Alice Smith")).toBeInTheDocument();
     expect(screen.getByText("Engineer · Acme Corp")).toBeInTheDocument();
   });
 
   it("should render relationship badge with correct label", () => {
-    render(<ContactCard contact={CONTACT} applicationId="app1" />);
+    renderCard(CONTACT, "app1");
 
     expect(screen.getByText("recruiter")).toBeInTheDocument();
   });
@@ -50,21 +55,21 @@ describe("ContactCard", () => {
   it("should show stale dot when contact has not been contacted in 14+ days", () => {
     isStaleContact.mockReturnValue(true);
 
-    render(<ContactCard contact={CONTACT} applicationId="app1" />);
+    renderCard(CONTACT, "app1");
 
-    expect(screen.getByRole("img", { name: /stale contact/i })).toBeInTheDocument();
+    expect(screen.getByLabelText(/stale contact/i)).toBeInTheDocument();
   });
 
   it("should not show stale dot when contact is recent", () => {
     isStaleContact.mockReturnValue(false);
 
-    render(<ContactCard contact={CONTACT} applicationId="app1" />);
+    renderCard(CONTACT, "app1");
 
-    expect(screen.queryByRole("img", { name: /stale contact/i })).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/stale contact/i)).not.toBeInTheDocument();
   });
 
   it("should call ping mutation when Mark as pinged is clicked", () => {
-    render(<ContactCard contact={CONTACT} applicationId="app1" />);
+    renderCard(CONTACT, "app1");
 
     fireEvent.click(screen.getByRole("button", { name: /mark as pinged/i }));
 
@@ -72,7 +77,7 @@ describe("ContactCard", () => {
   });
 
   it("should call unlink mutation when Unlink contact is clicked", () => {
-    render(<ContactCard contact={CONTACT} applicationId="app1" />);
+    renderCard(CONTACT, "app1");
 
     fireEvent.click(screen.getByRole("button", { name: /unlink contact/i }));
 
@@ -80,7 +85,7 @@ describe("ContactCard", () => {
   });
 
   it("should not render unlink button when applicationId is not provided", () => {
-    render(<ContactCard contact={CONTACT} />);
+    render(withTooltipProvider(<ContactCard contact={CONTACT} />));
 
     expect(screen.queryByRole("button", { name: /unlink contact/i })).not.toBeInTheDocument();
   });
