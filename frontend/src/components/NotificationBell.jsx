@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import Bell from "lucide-react/dist/esm/icons/bell";
+import BookOpen from "lucide-react/dist/esm/icons/book-open";
 import CalendarClock from "lucide-react/dist/esm/icons/calendar-clock";
 import Clock from "lucide-react/dist/esm/icons/clock";
 import Sun from "lucide-react/dist/esm/icons/sun";
@@ -17,6 +18,7 @@ const TYPE_ICONS = {
   interview_tomorrow: CalendarClock,
   follow_up_due: Bell,
   morning_brief_ready: Sun,
+  interview_prep_ready: BookOpen,
 };
 
 function NotificationItem({ notification, onNavigate }) {

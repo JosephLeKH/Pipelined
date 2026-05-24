@@ -7,6 +7,8 @@ from bson import ObjectId
 
 import database
 from notifications.notification_service import (
+    ALLOWED_NOTIFICATION_TYPES,
+    create_notification,
     _generate_follow_up_due_notifications,
     _generate_interview_tomorrow_notifications,
     _generate_stale_app_notifications,
@@ -211,3 +213,17 @@ async def test_no_notifications_for_fresh_application(test_user):
         "action_url": {"$regex": app_id},
     })
     assert notification is None
+
+
+async def test_create_notification_accepts_interview_prep_ready(test_user):
+    """interview_prep_ready is an allowed notification type."""
+    assert "interview_prep_ready" in ALLOWED_NOTIFICATION_TYPES
+    user_id_obj = ObjectId(test_user[0]["id"])
+    notif_id = await create_notification(
+        user_id_obj,
+        type="interview_prep_ready",
+        title="Interview prep ready: Acme",
+        body="Your briefing is ready.",
+        action_url="/dashboard?selected=abc123",
+    )
+    assert notif_id
