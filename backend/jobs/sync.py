@@ -210,6 +210,7 @@ DIGEST_SEND_DAY_OF_WEEK: str = "mon"
 PURGE_DELETED_HOUR_UTC: int = 4
 NOTIFICATION_GEN_MINUTE: int = 0
 MORNING_BRIEF_MINUTE_UTC: int = 15
+WEEKLY_REVIEW_MINUTE_UTC: int = 30
 
 
 def create_scheduler() -> AsyncIOScheduler:
@@ -218,6 +219,7 @@ def create_scheduler() -> AsyncIOScheduler:
     from notifications.digest import send_all_digests  # noqa: PLC0415 — avoid circular at module level
     from notifications.notification_service import generate_notifications  # noqa: PLC0415
     from notifications.morning_brief_scheduler import send_due_morning_briefs  # noqa: PLC0415
+    from review.weekly_review_scheduler import generate_due_weekly_reviews  # noqa: PLC0415
 
     scheduler = AsyncIOScheduler()
     scheduler.add_job(
@@ -242,6 +244,12 @@ def create_scheduler() -> AsyncIOScheduler:
         send_due_morning_briefs,
         trigger=CronTrigger(minute=MORNING_BRIEF_MINUTE_UTC, timezone="UTC"),
         id="morning_brief",
+        replace_existing=True,
+    )
+    scheduler.add_job(
+        generate_due_weekly_reviews,
+        trigger=CronTrigger(minute=WEEKLY_REVIEW_MINUTE_UTC, timezone="UTC"),
+        id="weekly_review",
         replace_existing=True,
     )
     scheduler.add_job(

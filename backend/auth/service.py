@@ -26,6 +26,7 @@ from auth.constants import (
     DEFAULT_STAGES,
     DEFAULT_TIMEZONE,
     DEFAULT_WEEKLY_DIGEST_ENABLED,
+    DEFAULT_WEEKLY_REVIEW_ENABLED,
     DEFAULT_GMAIL_INTERVIEW_PREP,
 )
 from auth.schemas import TokenPayload
@@ -126,6 +127,7 @@ def _build_user_doc(email: str, password: str, display_name: str) -> dict:
         "timezone": DEFAULT_TIMEZONE,
         "digest_enabled": DEFAULT_WEEKLY_DIGEST_ENABLED,
         "weekly_digest_enabled": DEFAULT_WEEKLY_DIGEST_ENABLED,
+        "weekly_review_enabled": DEFAULT_WEEKLY_REVIEW_ENABLED,
         "morning_brief_enabled": DEFAULT_MORNING_BRIEF_ENABLED,
         "morning_brief_hour": DEFAULT_MORNING_BRIEF_HOUR,
         "morning_brief_email": DEFAULT_MORNING_BRIEF_EMAIL,
@@ -243,6 +245,7 @@ async def update_user_profile(
     morning_brief_email: bool | None = None,
     morning_brief_in_app: bool | None = None,
     weekly_digest_enabled: bool | None = None,
+    weekly_review_enabled: bool | None = None,
     autopilot_enabled: bool | None = None,
     autopilot_min_match_score: int | None = None,
     autopilot_max_daily: int | None = None,
@@ -262,6 +265,8 @@ async def update_user_profile(
         update_fields["digest_enabled"] = resolved_weekly_digest
     if weekly_goal is not None:
         update_fields["weekly_goal"] = weekly_goal
+    if weekly_review_enabled is not None:
+        update_fields["weekly_review_enabled"] = weekly_review_enabled
     if morning_brief_enabled is not None:
         update_fields["morning_brief_enabled"] = morning_brief_enabled
     if morning_brief_hour is not None:

@@ -14,6 +14,7 @@ AGENT_TYPE_FIT = "fit"
 AGENT_TYPE_AUTOPILOT = "autopilot"
 AGENT_TYPE_CLASSIFY = "classify"
 AGENT_TYPE_BRIEF = "brief"
+AGENT_TYPE_REVIEW = "review"
 AGENT_TYPE_FOLLOWUP = "follow_up"
 
 STATUS_SUCCESS = "success"

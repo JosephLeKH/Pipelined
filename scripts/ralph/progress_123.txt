@@ -11,3 +11,13 @@ Started: Sun May 24 2026
 **Commit:** pending
 
 ---
+
+## US-1018: Scheduler + GET /api/review/weekly + weekly_review_enabled ✅ COMPLETE
+
+**Implementation:** review/service.py, router.py, weekly_review_scheduler.py; GET /api/review/weekly; weekly_review_enabled user pref; APScheduler job at :30 UTC.
+
+**Testing:** `pytest tests/test_review_router.py tests/test_weekly_review.py -v` — 8 passed
+
+**Commit:** pending
+
+---

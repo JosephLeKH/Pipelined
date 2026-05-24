@@ -159,6 +159,7 @@ async def update_me(
         morning_brief_email=body.morning_brief_email,
         morning_brief_in_app=body.morning_brief_in_app,
         weekly_digest_enabled=body.weekly_digest_enabled,
+        weekly_review_enabled=body.weekly_review_enabled,
         autopilot_enabled=body.autopilot_enabled,
         autopilot_min_match_score=body.autopilot_min_match_score,
         autopilot_max_daily=body.autopilot_max_daily,

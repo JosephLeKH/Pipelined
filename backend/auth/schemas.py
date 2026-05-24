@@ -27,6 +27,7 @@ from auth.constants import (
     DEFAULT_MORNING_BRIEF_IN_APP,
     DEFAULT_TIMEZONE,
     DEFAULT_WEEKLY_DIGEST_ENABLED,
+    DEFAULT_WEEKLY_REVIEW_ENABLED,
     MORNING_BRIEF_HOUR_MAX,
     MORNING_BRIEF_HOUR_MIN,
     WATCHLIST_CAREERS_URL_MAX_LENGTH,
@@ -184,6 +185,7 @@ class UserResponse(BaseModel):
     morning_brief_email: bool = DEFAULT_MORNING_BRIEF_EMAIL
     morning_brief_in_app: bool = DEFAULT_MORNING_BRIEF_IN_APP
     weekly_digest_enabled: bool = DEFAULT_WEEKLY_DIGEST_ENABLED
+    weekly_review_enabled: bool = DEFAULT_WEEKLY_REVIEW_ENABLED
     has_resume: bool = False
     weekly_goal: int = DEFAULT_WEEKLY_GOAL
     email_verified: bool = False
@@ -213,6 +215,9 @@ class UserResponse(BaseModel):
             morning_brief_email=doc.get("morning_brief_email", DEFAULT_MORNING_BRIEF_EMAIL),
             morning_brief_in_app=doc.get("morning_brief_in_app", DEFAULT_MORNING_BRIEF_IN_APP),
             weekly_digest_enabled=weekly_digest,
+            weekly_review_enabled=doc.get(
+                "weekly_review_enabled", DEFAULT_WEEKLY_REVIEW_ENABLED
+            ),
             has_resume=bool(doc.get("resume_text")),
             weekly_goal=doc.get("weekly_goal", DEFAULT_WEEKLY_GOAL),
             email_verified=bool(doc.get("email_verified", False)),
@@ -287,6 +292,7 @@ class UpdateUserRequest(BaseModel):
     morning_brief_email: bool | None = None
     morning_brief_in_app: bool | None = None
     weekly_digest_enabled: bool | None = None
+    weekly_review_enabled: bool | None = None
     weekly_goal: int | None = Field(None, ge=WEEKLY_GOAL_MIN, le=WEEKLY_GOAL_MAX)
     autopilot_enabled: bool | None = None
     autopilot_min_match_score: int | None = Field(

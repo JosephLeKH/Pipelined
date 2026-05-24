@@ -68,6 +68,12 @@ const TOGGLES = [
     description: "A weekly summary of your job search activity every Monday.",
     defaultVal: false,
   },
+  {
+    field: "weekly_review_enabled",
+    label: "Weekly pipeline review",
+    description: "Show response rate, ghost rate, and velocity on your Today page.",
+    defaultVal: true,
+  },
 ];
 
 function SettingsNotificationsSection() {

@@ -18,6 +18,7 @@ from auth.constants import (
     DEFAULT_STAGES,
     DEFAULT_TIMEZONE,
     DEFAULT_WEEKLY_DIGEST_ENABLED,
+    DEFAULT_WEEKLY_REVIEW_ENABLED,
     DEFAULT_GMAIL_INTERVIEW_PREP,
 )
 from config import settings
@@ -87,6 +88,7 @@ async def get_or_create_google_user(
         "timezone": DEFAULT_TIMEZONE,
         "digest_enabled": DEFAULT_WEEKLY_DIGEST_ENABLED,
         "weekly_digest_enabled": DEFAULT_WEEKLY_DIGEST_ENABLED,
+        "weekly_review_enabled": DEFAULT_WEEKLY_REVIEW_ENABLED,
         "morning_brief_enabled": DEFAULT_MORNING_BRIEF_ENABLED,
         "morning_brief_hour": DEFAULT_MORNING_BRIEF_HOUR,
         "morning_brief_email": DEFAULT_MORNING_BRIEF_EMAIL,
@@ -178,6 +180,7 @@ async def _insert_github_user(
         "timezone": DEFAULT_TIMEZONE,
         "digest_enabled": DEFAULT_WEEKLY_DIGEST_ENABLED,
         "weekly_digest_enabled": DEFAULT_WEEKLY_DIGEST_ENABLED,
+        "weekly_review_enabled": DEFAULT_WEEKLY_REVIEW_ENABLED,
         "morning_brief_enabled": DEFAULT_MORNING_BRIEF_ENABLED,
         "morning_brief_hour": DEFAULT_MORNING_BRIEF_HOUR,
         "morning_brief_email": DEFAULT_MORNING_BRIEF_EMAIL,
