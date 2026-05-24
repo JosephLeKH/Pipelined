@@ -12,8 +12,8 @@
         "DetailPanel and Dashboard tests pass"
       ],
       "priority": "high",
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "passthroughHandlers.js handlers added; DetailPanel 19/19 pass."
     },
     {
       "id": "US-1002",
@@ -24,8 +24,8 @@
         "NavBar tests pass"
       ],
       "priority": "high",
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "TooltipProvider + passthroughHandlers in Settings.test.jsx and NavBar.test.jsx; 20/20 pass."
     },
     {
       "id": "US-1003",

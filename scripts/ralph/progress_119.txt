@@ -9,3 +9,10 @@ Started: Sun May 24 2026
 **Testing:** `npm test -- --run src/components/DetailPanel.test.jsx` — 19 passed
 
 ---
+## US-1002: Fix Settings and Nav test wrappers ✅ COMPLETE
+
+**Implementation:** Added TooltipProvider wrapper and passthroughHandlers MSW to Settings.test.jsx and NavBar.test.jsx; fixed Settings tabpanel id assertion.
+
+**Testing:** `npm test -- --run src/pages/Settings.test.jsx src/components/NavBar.test.jsx` — 20 passed
+
+---

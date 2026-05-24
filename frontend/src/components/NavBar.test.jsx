@@ -11,11 +11,20 @@ import { describe, it, expect, beforeAll, afterAll, afterEach } from "vitest";
 import { AuthProvider } from "../context/AuthContext";
 import { ThemeProvider } from "../context/ThemeContext";
 import NavBar from "./NavBar";
+import { passthroughHandlers } from "../test/passthroughHandlers";
+import { withTooltipProvider } from "../test/testProviders";
 
 const server = setupServer(
   http.get("/api/auth/me", () =>
-    HttpResponse.json({ id: "u1", email: "test@example.com", display_name: "Test" })
-  )
+    HttpResponse.json({
+      data: {
+        id: "u1",
+        email: "test@example.com",
+        display_name: "Test",
+      },
+    })
+  ),
+  ...passthroughHandlers,
 );
 
 beforeAll(() => server.listen({ onUnhandledRequest: "warn" }));
@@ -30,7 +39,7 @@ function makeWrapper(initialEntries = ["/dashboard"]) {
     <ThemeProvider>
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={initialEntries}>
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider>{withTooltipProvider(children)}</AuthProvider>
         </MemoryRouter>
       </QueryClientProvider>
     </ThemeProvider>

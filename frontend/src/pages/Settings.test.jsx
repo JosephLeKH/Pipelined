@@ -11,6 +11,8 @@ import { describe, it, expect, beforeAll, afterAll, afterEach, vi } from "vitest
 import { AuthProvider } from "../context/AuthContext";
 import { ThemeProvider } from "../context/ThemeContext";
 import Settings from "./Settings";
+import { passthroughHandlers } from "../test/passthroughHandlers";
+import { withTooltipProvider } from "../test/testProviders";
 
 const DEFAULT_STAGES = ["Applied", "Phone Screen", "Onsite", "Offer", "Rejected"];
 
@@ -35,7 +37,8 @@ const server = setupServer(
         default_stages: body.default_stages,
       },
     });
-  })
+  }),
+  ...passthroughHandlers,
 );
 
 beforeAll(() => server.listen({ onUnhandledRequest: "warn" }));
@@ -50,7 +53,7 @@ function makeWrapper() {
     <ThemeProvider>
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={["/settings"]}>
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider>{withTooltipProvider(children)}</AuthProvider>
         </MemoryRouter>
       </QueryClientProvider>
     </ThemeProvider>
@@ -93,7 +96,7 @@ describe("Settings page", () => {
       const panel = screen.getByRole("tabpanel");
 
       expect(panel).toBeInTheDocument();
-      expect(panel.id).toMatch(/^panel-/);
+      expect(panel.id).toBe("settings-panel");
     });
 
     it("should have aria-controls on active tab pointing to the tabpanel id", () => {
