@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Pipelined is a job application tracking platform (FARM stack + Chrome Extension). Users capture applications via a one-click Chrome extension or manual entry, track them in a pipeline dashboard, view interviews on a calendar, and browse a curated job board. Agentic features (Morning Brief, Resume Insights, Application Autopilot) use OpenRouter as the canonical LLM provider.
+Pipelined is a job application tracking platform (FARM stack + Chrome Extension). Users capture applications via a one-click Chrome extension or manual entry, track them in a pipeline dashboard, view interviews on a calendar, and browse a curated job board. Agentic features (Today missions, Morning Brief, Co-pilot, Apply Pack, Mock Interview, Resume Insights, Application Autopilot, Watchlist, Weekly Review) use OpenRouter as the canonical LLM provider.
 
 **Stack:** FastAPI (Python 3.12) · React 18 + Vite · MongoDB Atlas (Motor async) · Chrome Extension MV3 · TailwindCSS · AWS ECS Fargate
 
@@ -69,17 +69,23 @@ Every feature module has exactly three files (`router.py`, `service.py`, `schema
 
 | Module | Path | Purpose |
 |--------|------|---------|
-| `auth` | `backend/auth/` | JWT auth, OAuth, user prefs (timezone, morning brief, autopilot) |
-| `applications` | `backend/applications/` | CRUD, fit scoring, follow-up drafts |
+| `auth` | `backend/auth/` | JWT auth, OAuth, user prefs (timezone, morning brief, autopilot, watchlist, agent profile) |
+| `applications` | `backend/applications/` | CRUD, fit scoring, follow-up drafts, email-events timeline |
+| `apply_pack` | `backend/applications/apply_pack/` | `POST /api/applications/{id}/apply-pack` |
+| `thread_summary` | `backend/applications/thread_summary/` | `POST /api/applications/{id}/thread-summary` |
 | `resume_insights` | `backend/applications/resume_insights/` | `POST /api/applications/{id}/resume-insights` |
-| `interview_prep` | `backend/applications/interview_prep/` | Agent loop (Exa + Gemini), fit score |
-| `brief` | `backend/brief/` | `GET /api/brief/today`, `/history` |
+| `interview_prep` | `backend/applications/interview_prep/` | Agent loop (Exa + Gemini), fit score, mock interview SSE |
+| `brief` | `backend/brief/` | `GET /api/brief/today`, mission snooze/done, `/history` |
+| `copilot` | `backend/copilot/` | `POST /api/copilot/chat` SSE grounded chat |
+| `review` | `backend/review/` | Weekly review aggregator, ghost detection, `GET /api/review/weekly` |
+| `watchlist` | `backend/watchlist/` | Daily career-page scan, match queue (no router — prefs via auth) |
 | `autopilot` | `backend/autopilot/` | Match scorer, nightly scan, pending opportunities API |
-| `ai` | `backend/ai/openrouter_client.py` | OpenRouter `complete_json()` for agent features |
+| `agent` | `backend/agent/` | `GET /api/agent/activity` audit trail |
+| `ai` | `backend/ai/` | OpenRouter client, copilot context builder, agent_log |
 | `notifications` | `backend/notifications/` | Digest, morning brief aggregator + scheduler, in-app notifications |
 | `parsing` | `backend/parsing/` | OpenAI resume parsing, `ai_cache` quota/budget |
 | `jobs` | `backend/jobs/` | Job board API, GitHub sync, APScheduler factory (`sync.py`) |
-| `email_integration` | `backend/email_integration/` | Gmail OAuth, read-only sync, email classifier |
+| `email_integration` | `backend/email_integration/` | Gmail OAuth, read-only sync, classifier, email_events |
 | `cal` | `backend/cal/` | Calendar events |
 
 `HTTPException` is raised only in `router.py`. Services raise domain exceptions (e.g., `DuplicateApplicationError`) that routers map to HTTP status codes.
@@ -118,8 +124,13 @@ Content scripts **never** call the Pipelined API directly. They extract and `sen
 
 - **Extension save:** Content script detects job page → extracts fields → sends to service worker → service worker POSTs to `/api/applications`. For Workday/unstructured pages, page text is sent for OpenAI GPT-4o mini fallback parsing.
 - **GitHub job sync:** APScheduler job `github_sync` (daily, configurable hour UTC, default 3 AM) polls configured GitHub repos, deduplicating by `url_hash`. Feeds job board and Autopilot scan.
-- **Morning Brief:** Scheduler job `morning_brief` runs hourly at `:15` UTC. `send_due_morning_briefs()` generates one brief per user per local date when local hour matches `morning_brief_hour` (default 8). Persists to `morning_briefs` collection; optional SMTP email + `morning_brief_ready` in-app notification.
+- **Morning Brief / Today:** Scheduler job `morning_brief` runs hourly at `:15` UTC. `send_due_morning_briefs()` generates one brief per user per local date when local hour matches `morning_brief_hour` (default 8). `mission_scorer.py` ranks items as missions. Frontend home is `/today` (legacy `/brief` redirects). Persists to `morning_briefs`; optional SMTP email + `morning_brief_ready` in-app notification.
+- **Weekly Review:** Scheduler job `weekly_review` runs hourly at `:30` UTC. `generate_due_weekly_reviews()` creates one review per ISO week. Ghost detection feeds both review metrics and Today ghost missions.
 - **Autopilot scan:** Scheduler job `autopilot_scan` runs daily at 05:00 UTC. Scores listings via OpenRouter, generates cover letter + resume tips, inserts into `pending_opportunities`. User reviews at `/inbox/pending`; approve creates application at stage "To Apply".
+- **Watchlist scan:** Scheduler job `watchlist_scan` runs daily at 06:00 UTC. Fetches user-configured career pages, parses listings, queues matches into `pending_opportunities` with `source: "watchlist"`.
+- **Co-pilot:** `POST /api/copilot/chat` streams grounded replies via OpenRouter. Context from `ai/copilot_context.py`. Suggest-only — `open_app` actions only.
+- **Apply Pack / Mock Interview:** On-demand via `POST /api/applications/{id}/apply-pack` and `POST /api/applications/{id}/mock-interview` (SSE). Cached on application document.
+- **Email Timeline:** Gmail sync classifies messages read-only; writes metadata to `email_events`. `GET /api/applications/{id}/email-events` returns user-scoped timeline.
 - **Resume Insights:** User pastes job description on application → `POST /api/applications/{id}/resume-insights` → OpenRouter JSON response cached on application as `resume_insights`.
 - **Auth:** JWT access tokens (15 min) + refresh tokens (7 days) stored as httpOnly cookies. Extension uses Bearer tokens stored in `chrome.storage.session`.
 
@@ -131,9 +142,11 @@ Content scripts **never** call the Pipelined API directly. They extract and `sen
 | `weekly_digest` | Mondays 08:00 UTC (gated by `weekly_digest_enabled`) | `send_all_digests` |
 | `purge_deleted` | Daily 04:00 UTC | `purge_stale_deleted_applications` |
 | `morning_brief` | Hourly at `:15` UTC | `send_due_morning_briefs` |
+| `weekly_review` | Hourly at `:30` UTC | `generate_due_weekly_reviews` |
 | `generate_notifications` | Hourly at `:00` UTC | `generate_notifications` |
 | `gmail_sync` | Every `GMAIL_SYNC_INTERVAL_HOURS` (default 4) | `sync_all_users` (read-only) |
 | `autopilot_scan` | Daily 05:00 UTC | `autopilot_scan` |
+| `watchlist_scan` | Daily 06:00 UTC | `watchlist_scan` |
 
 ---
 

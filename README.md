@@ -1,6 +1,6 @@
 # Pipelined
 
-Job application tracker with an AI layer on top. **Morning Brief** delivers a daily prioritized action list (follow-ups, interviews, high-fit matches, autopilot finds). **Application Autopilot** scans the job board overnight, scores listings against your resume, and queues cover-letter drafts for your approval — it never submits applications for you. **Resume Insights** compares your resume to a job description and returns keyword gaps and bullet rewrite suggestions without editing your PDF. The **Interview Prep Agent** researches salary bands, interview rounds, and company culture, then tailors a briefing to your resume. A Chrome extension captures job postings from any major job board in one click.
+Job application tracker with an AI layer on top. **Today** (`/today`) is the post-login home — ranked missions from your Morning Brief (follow-ups, ghost apps, interviews, high-fit matches, watchlist finds, autopilot pending) with snooze/done actions and weekly review stats. **Co-pilot** is a slide-over chat grounded in your pipeline data (suggest-only — never sends or applies). **Application Autopilot** and **Watchlist** scan overnight, score listings against your resume, and queue drafts at `/inbox/pending` — they never submit applications for you. **Apply Pack** generates copy-paste cover letters, form answers, LinkedIn notes, and talking points. **Mock Interview** streams a realistic practice session with end-of-session debrief. **Resume Insights** compares your resume to a job description without editing your PDF. The **Interview Prep Agent** researches salary bands, interview rounds, and company culture via Exa + Gemini. A Chrome extension captures job postings from any major job board in one click.
 
 **Stack:** FastAPI · React 18 + Vite · MongoDB Atlas · Chrome Extension MV3 · TailwindCSS
 
@@ -12,10 +12,19 @@ Job application tracker with an AI layer on top. **Morning Brief** delivers a da
 
 ### Agentic (OpenRouter-powered)
 
-- **Morning Brief** — daily action list at your local hour (default 8am): overdue follow-ups, upcoming interviews, high-fit applications, and overnight autopilot matches. Delivered via email (SMTP) and in-app at `/brief`.
-- **Resume Insights** — `POST /api/applications/{id}/resume-insights` compares resume text to a pasted job description; returns keyword gaps, section suggestions, and bullet rewrites. Suggestions only — your PDF is never modified.
-- **Application Autopilot** — nightly scan of curated job listings; high-fit matches (configurable threshold, default 80+) get cover-letter drafts and resume tips queued at `/inbox/pending`. Approve adds a "To Apply" application to your pipeline; you apply externally when ready.
-- **Follow-up drafts** — LLM-generated follow-up text in the detail panel; you copy and send manually. No Gmail auto-send.
+- **Today** — `/today` mission cards ranked by priority with human-readable reasons; snooze/done API; end-of-day progress strip; weekly review section
+- **Morning Brief** — daily action list at your local hour (default 8am): follow-ups, ghosts, interviews, high-fit apps, watchlist finds, autopilot matches. Email (SMTP) + in-app notification → `/today`
+- **Co-pilot** — `POST /api/copilot/chat` SSE chat grounded in pipeline context; 20/hour; `open_app` deep links only
+- **Apply Pack** — `POST /api/applications/{id}/apply-pack` generates cover letter, form answers, LinkedIn note, talking points (5/hour)
+- **Mock Interview** — `POST /api/applications/{id}/mock-interview` SSE session; 10 turns, 3 sessions/day
+- **Resume Insights** — `POST /api/applications/{id}/resume-insights` keyword gaps, section suggestions, bullet rewrites
+- **Application Autopilot** — nightly job board scan; high-fit matches queued at `/inbox/pending`; approve → "To Apply"
+- **Watchlist** — track up to 25 company career pages; daily scan queues matches alongside Autopilot
+- **Weekly Review** — `GET /api/review/weekly` response rate, ghost rate, velocity vs goal, stale apps
+- **Ghost missions** — apps silent longer than your median response time surface on Today
+- **Agent Activity** — `GET /api/agent/activity` audit trail of agent runs
+- **Email Timeline** — `GET /api/applications/{id}/email-events` classified Gmail metadata per application
+- **Follow-up drafts** — LLM-generated follow-up text in the detail panel; you copy and send manually
 
 ### Core
 
@@ -25,6 +34,8 @@ Job application tracker with an AI layer on top. **Morning Brief** delivers a da
 - **Pipeline dashboard** — Kanban board across custom stages with drag-and-drop and follow-up reminders
 - **Interview calendar** — upcoming interviews with per-application prep checklists
 - **Job board** — curated internship/new-grad listings synced daily from GitHub repos
+
+See `docs/AGENTIC_FEATURES.md` for full API reference, scheduler jobs, and troubleshooting.
 
 ---
 
@@ -65,7 +76,8 @@ ALLOWED_ORIGINS=["http://localhost:5173"]
 DEBUG=true
 FRONTEND_URL=http://localhost:5173
 
-# OpenRouter — canonical LLM provider for agent features (Morning Brief prep, Resume Insights, Autopilot, fit scoring, follow-up drafts)
+# OpenRouter — canonical LLM provider for agent features
+# (Today, Resume Insights, Apply Pack, Mock Interview, Autopilot, Co-pilot, fit scoring, follow-up drafts)
 OPENROUTER_API_KEY=sk-or-...
 OPENROUTER_BASE_URL=https://openrouter.ai/api/v1
 OPENROUTER_DEFAULT_MODEL=google/gemini-2.0-flash-001
@@ -88,6 +100,11 @@ SMTP_FROM_EMAIL=noreply@pipelined.app
 # GitHub — enables daily job board sync (feeds Autopilot)
 GITHUB_TOKEN=ghp_...
 GITHUB_REPOS=["SimplifyJobs/Summer2026-Internships"]
+
+# Gmail OAuth — read-only email sync + classification (Email Timeline)
+# GMAIL_CLIENT_ID=...
+# GMAIL_CLIENT_SECRET=...
+# GMAIL_SYNC_INTERVAL_HOURS=4
 ```
 
 ### 3. Start the backend
@@ -129,16 +146,15 @@ cd frontend && npm test
 cd extension && npm install && npm test
 ```
 
-> **Note:** The frontend test suite has ~113 pre-existing failures across 35 files from in-progress design system and component refactoring (CSS class renames, missing provider wrappers). The build passes cleanly — `npm run build` is the reliable health check.
-
 ---
 
 ## Project Structure
 
 ```
-/backend     FastAPI — auth, applications, calendar, jobs, parsing, interview prep,
-             ai/ (OpenRouter client), brief/, autopilot/, notifications/morning_brief
-/frontend    React 18 + Vite — dashboard, /brief, /inbox/pending, detail panel, calendar, job board
+/backend     FastAPI — auth, applications, brief/, copilot/, review/, watchlist/,
+             autopilot/, agent/, email_integration/, ai/ (OpenRouter), notifications/
+/frontend    React 18 + Vite — /today, /dashboard, /inbox/pending, CoPilotPanel, detail panel
 /extension   Chrome MV3 — content scripts, service worker, popup
 /shared      JSON schemas shared across layers
+/docs        AGENTIC_FEATURES.md — agent feature reference
 ```

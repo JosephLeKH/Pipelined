@@ -18,7 +18,7 @@
       "description": "README feature list and env vars. CLAUDE.md module map.",
       "acceptanceCriteria": ["README accurate", "CLAUDE.md module map"],
       "priority": "high",
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
