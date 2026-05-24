@@ -12,7 +12,7 @@ from notifications.notification_service import (
     _generate_stale_app_notifications,
 )
 
-pytestmark = pytest.mark.asyncio(loop_scope="function")
+pytestmark = pytest.mark.asyncio(loop_scope="session")
 
 
 async def test_stale_app_notification_created(test_user):
@@ -47,7 +47,7 @@ async def test_stale_app_notification_created(test_user):
 
 
 async def test_stale_app_notification_skipped_for_archived_app(test_user):
-    """Insert archived app. Assert NO stale_app notification created."""
+    """Insert archived app (service skips archived, not terminal stages). Assert NO stale_app notification."""
     user_id_obj = ObjectId(test_user[0]["id"])
 
     # Create application with old updated_at but archived
@@ -161,27 +161,27 @@ async def test_interview_tomorrow_notification_created(test_user):
     tomorrow_start = datetime.combine(tomorrow, time.min, tzinfo=timezone.utc)
 
     events_col = database.get_collection("calendar_events")
-    result = await events_col.insert_one({
+    await events_col.insert_one({
         "user_id": user_id_obj,
         "company": "Interview Corp",
         "role_title": "Senior Engineer",
         "event_type": "phone_screen",
         "date": tomorrow_start,
     })
-    event_id = str(result.inserted_id)
 
     # Generate notifications
     await _generate_interview_tomorrow_notifications()
 
-    # Assert notification was created
+    # Assert notification was created (action_url points to /calendar, not event id)
     notif_col = database.get_collection("notifications")
     notification = await notif_col.find_one({
         "user_id": user_id_obj,
         "type": "interview_tomorrow",
-        "action_url": {"$regex": event_id},
+        "title": {"$regex": "Interview Corp"},
     })
     assert notification is not None
     assert "Interview tomorrow" in notification["title"]
+    assert notification["action_url"] == "/calendar"
 
 
 async def test_no_notifications_for_fresh_application(test_user):
