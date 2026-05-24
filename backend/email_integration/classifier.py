@@ -2,6 +2,7 @@
 
 import asyncio
 import json
+import re
 
 import structlog
 from openai import APIConnectionError, APITimeoutError, AsyncOpenAI
@@ -65,7 +66,10 @@ async def classify_email(subject: str, body_snippet: str) -> dict | None:
             content = response.choices[0].message.content
             if not content:
                 return None
-            data = json.loads(content.strip())
+
+            # Strip markdown code fences if present
+            raw = re.sub(r'^```(?:json)?\s*|\s*```$', '', content.strip(), flags=re.DOTALL)
+            data = json.loads(raw)
             if not data.get("job_related"):
                 return None
             return data
