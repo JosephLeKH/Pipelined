@@ -1,57 +1,57 @@
 {
   "id": "prd_123",
-  "title": "Weekly Review Agent",
-  "description": "Weekly pipeline review aggregator, scheduler, Today UI, and ghost detection in mission scorer.",
+  "title": "Weekly Review & Ghost Detection Agent",
+  "description": "Weekly pipeline review and smarter ghost detection missions.",
   "userStories": [
     {
       "id": "US-1017",
-      "title": "weekly_review.py aggregator",
-      "description": "Aggregator for response rate, ghost rate, velocity, stale list.",
+      "title": "Weekly search review aggregator",
+      "description": "weekly_review.py stats: response rate, ghost rate, velocity, stale apps.",
       "acceptanceCriteria": [
-        "response_rate, ghost_rate, velocity, stale list computed",
-        "Unit tests pass"
+        "Aggregator",
+        "Tests",
+        "user_id scoped"
       ],
       "priority": "high",
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
       "id": "US-1018",
-      "title": "Scheduler + GET /api/review/weekly + weekly_review_enabled",
-      "description": "APScheduler job, REST endpoint, user preference toggle.",
+      "title": "Weekly review scheduler and API",
+      "description": "Scheduler Sunday UTC. GET /api/review/weekly. Pref weekly_review_enabled.",
       "acceptanceCriteria": [
-        "GET /api/review/weekly returns stored review",
-        "Scheduler job registered",
-        "weekly_review_enabled on user"
+        "Scheduler",
+        "API",
+        "Tests"
       ],
       "priority": "high",
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
       "id": "US-1019",
-      "title": "WeeklyReviewSection on /today page",
-      "description": "Frontend section showing weekly review metrics on Today page.",
+      "title": "WeeklyReviewSection on Today",
+      "description": "Collapsible weekly insights on /today.",
       "acceptanceCriteria": [
-        "Section renders metrics",
-        "Stale apps linked",
-        "Tests pass"
+        "UI section",
+        "Component test"
       ],
       "priority": "medium",
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
       "id": "US-1020",
-      "title": "Ghost detection in mission_scorer",
-      "description": "Ghost missions in brief with median comparison reason.",
+      "title": "Ghost detection mission with median comparison",
+      "description": "mission_scorer ghost reason when exceeds median response days.",
       "acceptanceCriteria": [
-        "ghosts section in brief",
-        "Median comparison reason",
-        "Tests pass"
+        "Ghost reason",
+        "Tests",
+        "On /today"
       ],
       "priority": "medium",
-      "passes": false,
+      "passes": true,
       "notes": ""
     }
   ]

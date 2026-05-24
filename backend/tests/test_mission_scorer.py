@@ -10,6 +10,7 @@ def _sections(**kwargs: list[dict]) -> dict:
         "high_matches": kwargs.get("high_matches", []),
         "pending_approvals": kwargs.get("pending_approvals", []),
         "watchlist_finds": kwargs.get("watchlist_finds", []),
+        "ghosts": kwargs.get("ghosts", []),
     }
 
 
@@ -57,3 +58,27 @@ def test_score_missions_uses_entity_id_for_inbox_items():
     ids = {mission.id for mission in missions}
     assert "pending:507f1f77bcf86cd799439014" in ids
     assert "watchlist_pending" in ids
+
+
+def test_score_missions_ghosts_use_median_comparison_reason():
+    sections = _sections(
+        ghosts=[{
+            "title": "Acme — no response",
+            "body": "21 days waiting; median 7 days",
+            "action_url": "/dashboard?selected=507f1f77bcf86cd799439013",
+            "entity_id": "507f1f77bcf86cd799439013",
+        }],
+        follow_ups=[{
+            "title": "Beta — follow-up overdue",
+            "body": "Generate a draft on demand in the detail panel",
+            "action_url": "/dashboard?selected=507f1f77bcf86cd799439014",
+            "entity_id": "507f1f77bcf86cd799439014",
+        }],
+    )
+
+    missions = score_missions(sections)
+    ghost = next(m for m in missions if m.section == "ghosts")
+
+    assert "median response: 7 days" in ghost.reason
+    assert "21 days" in ghost.reason
+    assert missions[0].section == "follow_ups"

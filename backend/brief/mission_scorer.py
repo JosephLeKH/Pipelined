@@ -6,15 +6,18 @@ from urllib.parse import parse_qs, urlparse
 
 SECTION_BASE_SCORE: dict[str, float] = {
     "follow_ups": 1000.0,
+    "ghosts": 950.0,
     "interviews": 800.0,
     "high_matches": 500.0,
     "pending_approvals": 400.0,
     "watchlist_finds": 450.0,
 }
 
-SECTION_ORDER = ("follow_ups", "interviews", "high_matches", "watchlist_finds", "pending_approvals")
+SECTION_ORDER = ("follow_ups", "ghosts", "interviews", "high_matches", "watchlist_finds", "pending_approvals")
 
 SCORE_PATTERN = re.compile(r"(?:Match|Fit) score (\d+)")
+GHOST_DAYS_PATTERN = re.compile(r"(\d+) days waiting")
+GHOST_MEDIAN_PATTERN = re.compile(r"median (\d+) days")
 
 
 @dataclass(frozen=True)
@@ -59,6 +62,14 @@ def _score_item(section: str, item: dict, index: int) -> tuple[float, str]:
 
     if section == "follow_ups":
         return base - index, "Follow-up is overdue — respond today"
+
+    if section == "ghosts":
+        days_match = GHOST_DAYS_PATTERN.search(body)
+        median_match = GHOST_MEDIAN_PATTERN.search(body)
+        days = int(days_match.group(1)) if days_match else 0
+        median = int(median_match.group(1)) if median_match else 14
+        from review.ghost_detection import ghost_mission_reason  # noqa: PLC0415
+        return base + days - index, ghost_mission_reason(days, median)
 
     if section == "interviews":
         prep_ready = bool(item.get("prep_ready"))

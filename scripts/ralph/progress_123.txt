@@ -31,3 +31,13 @@ Started: Sun May 24 2026
 **Commit:** pending
 
 ---
+
+## US-1020: Ghost detection in mission_scorer ✅ COMPLETE
+
+**Implementation:** morning_brief ghosts section via find_ghost_apps; mission_scorer ranks ghosts with median comparison reason.
+
+**Testing:** `pytest tests/test_mission_scorer.py -v` — 3 passed
+
+**Commit:** pending
+
+---
