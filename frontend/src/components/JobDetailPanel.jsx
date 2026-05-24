@@ -15,6 +15,9 @@ import { formatDate } from "../lib/dateUtils";
 import { useCreateApplication } from "../hooks/useApplications";
 
 const STALE_LABEL = "May be expired";
+const FIT_AFTER_ADD_COPY =
+  "Fit analysis runs after you add this job to your pipeline — we compare your resume to the listing.";
+const ANALYZING_FIT_TOAST = "Analyzing fit…";
 
 function MetaRow({ job }) {
   return (
@@ -95,7 +98,10 @@ function JobDetailPanel({ job, onClose }) {
         stage: "Applied",
       },
       {
-        onSuccess: () => { setSaved(true); toast.success("Saved to pipeline!"); },
+        onSuccess: () => {
+          setSaved(true);
+          toast.success(ANALYZING_FIT_TOAST);
+        },
         onError: () => toast.error("Failed to save. Are you signed in?"),
       }
     );
@@ -152,6 +158,10 @@ function JobDetailPanel({ job, onClose }) {
             </span>
           )}
           {datePosted && <p className="text-xs text-muted-foreground">Posted {datePosted}</p>}
+
+          <div className="rounded-lg border border-brand-200 bg-brand-50 px-3 py-2.5 dark:border-brand-800 dark:bg-brand-900/20">
+            <p className="text-xs leading-relaxed text-brand-800 dark:text-brand-300">{FIT_AFTER_ADD_COPY}</p>
+          </div>
 
           {job.description && (
             <div>

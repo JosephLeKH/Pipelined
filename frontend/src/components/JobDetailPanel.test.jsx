@@ -15,6 +15,7 @@ vi.mock("sonner", () => ({
 }));
 
 import { useCreateApplication } from "../hooks/useApplications";
+import { toast } from "sonner";
 
 const mockMutate = vi.fn();
 
@@ -86,6 +87,13 @@ describe("JobDetailPanel", () => {
     fireEvent.click(screen.getByRole("button", { name: /save to pipeline/i }));
 
     expect(screen.getByRole("button", { name: /saved!/i })).toBeInTheDocument();
+    expect(toast.success).toHaveBeenCalledWith("Analyzing fit…");
+  });
+
+  it("should explain fit analysis runs after adding to pipeline", () => {
+    render(<JobDetailPanel job={JOB_FIXTURE} onClose={vi.fn()} />);
+
+    expect(screen.getByText(/fit analysis runs after you add this job/i)).toBeInTheDocument();
   });
 
   it("should show stale badge when job.is_stale is true", () => {
