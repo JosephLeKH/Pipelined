@@ -1,0 +1,11 @@
+# Ralph Progress Log — prd_110
+Started: Sat May 23 2026
+---
+
+## US-961: Mission priority scoring engine ✅ COMPLETE
+
+**Implementation:** Added backend/brief/mission_scorer.py with score_missions(); BriefResponse now includes missions[] with priority and reason.
+
+**Testing:** `pytest tests/test_mission_scorer.py tests/test_brief_router.py::test_get_brief_today_generates_on_demand -v` — 4 passed
+
+---

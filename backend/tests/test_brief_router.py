@@ -33,6 +33,8 @@ async def test_get_brief_today_generates_on_demand(client, brief_api_user):
     assert "date" in data
     assert "sections" in data
     assert "summary_line" in data
+    assert "missions" in data
+    assert isinstance(data["missions"], list)
 
 
 @pytest.mark.asyncio(loop_scope="session")
