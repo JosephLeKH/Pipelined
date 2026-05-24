@@ -8,6 +8,7 @@ import FollowUpDraftSection from "./FollowUpDraftSection";
 import { DetailPanelNotes } from "./DetailPanelNotes";
 import { DetailPanelTimeline } from "./DetailPanelTimeline";
 import OfferDetailsSection from "./OfferDetailsSection";
+import OfferSummarySection from "./OfferSummarySection";
 import { InterviewPrepAgent } from "./InterviewPrepAgent";
 import ResumeInsightsSection from "./ResumeInsightsSection";
 import {
@@ -55,6 +56,7 @@ export function PanelBody({ application, handleStageChange, handleUpdate, onAddE
           applicationId={application.id}
           briefing={application.interview_prep_briefing}
           generatedAt={application.interview_prep_generated_at}
+          prepStatus={application.interview_prep_status}
         />
         <FollowUpDraftSection application={application} autoExpand={expandFollowUpDraft} />
       </AiPanelGroup>
@@ -62,7 +64,10 @@ export function PanelBody({ application, handleStageChange, handleUpdate, onAddE
       <TagsSection application={application} onUpdate={handleUpdate} />
       <FollowUpSection application={application} onUpdate={handleUpdate} />
       {application.current_stage === "Offer" && (
-        <OfferDetailsSection application={application} onUpdate={handleUpdate} />
+        <>
+          <OfferSummarySection application={application} />
+          <OfferDetailsSection application={application} onUpdate={handleUpdate} />
+        </>
       )}
       <DetailPanelNotes applicationId={application.id} initialValue={application.notes} onDirtyChange={onDirtyChange} />
       <ApplicationPrepSection applicationId={application.id} initialChecklist={application.prep_checklist} />
