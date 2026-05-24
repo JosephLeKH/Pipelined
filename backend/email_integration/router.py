@@ -75,7 +75,7 @@ async def get_status(user: dict = Depends(get_current_user)) -> dict:
 @router.post("/sync", response_model=EmailSyncResult)
 @limiter.limit("3/15minutes")
 async def trigger_sync(
-    request: Request,
+    request: Request,  # noqa: ARG001
     user: dict = Depends(get_verified_user),
 ) -> dict:
     """Trigger a manual Gmail sync for the current user."""

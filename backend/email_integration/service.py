@@ -364,7 +364,7 @@ async def _process_message(
 
         # Only update if new stage is >= existing stage (or existing stage unknown)
         if existing_stage not in STAGE_ORDER or new_stage_order >= existing_stage_order:
-            app_update = ApplicationUpdate(current_stage=stage)
+            app_update = ApplicationUpdate(current_stage=stage)  # type: ignore[call-arg]
             await update_application(user_id, app_id, app_update)
             logger.info(
                 "application_stage_updated_via_email",
@@ -388,7 +388,7 @@ async def _process_message(
         return False, False
 
     try:
-        app_body = ApplicationCreate(
+        app_body = ApplicationCreate(  # type: ignore[call-arg]
             company=company,
             role_title=role_title or None,
             source="email",
