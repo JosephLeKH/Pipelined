@@ -87,3 +87,26 @@ Created comprehensive unit test suite for the email classifier module (`backend/
 **Commit**: 342ad58 - feat: US-889 - Test suite for email classifier module
 
 **Learning**: Testing async code with `pytest.mark.asyncio` and mocking AsyncOpenAI requires careful setup of MagicMock response objects with nested attribute chains. Using side_effect on patched asyncio functions (like wait_for) correctly simulates timeout scenarios without needing to modify the classifier's retry constants. The test suite provides strong regression protection for the classifier's critical paths.
+
+## US-890 - Test suite for email service core functions
+**Status**: ✅ COMPLETED
+
+**Summary**:
+Created comprehensive test suite for email service core functions (`backend/email_integration/service.py`). Tests cover pure-function status reporting, configuration integrity checks, and database-backed application lookup logic with various edge cases.
+
+**Changes**:
+- Created `backend/tests/test_email_service.py` with 6 tests
+- 3 pure-function tests: connection status reporting (connected/disconnected), STAGE_MAP integrity regression guard
+- 3 database tests: invalid user_id handling, no matching application, case-insensitive company lookup
+- Used real MongoDB per project guidelines (no mocking of database)
+- Imported functions directly from service: `_find_existing_app`, `get_connection_status`, `STAGE_MAP`, `STAGE_ORDER`
+
+**Testing**:
+- All 6 tests pass: 100% success rate
+- Pyright type checking: 0 errors
+- Real MongoDB instance used (per CLAUDE.md project rules)
+- Tests verify both edge cases (invalid ObjectId, no matches) and positive cases (case-insensitive lookup)
+
+**Commit**: 268c001 - feat: US-890 - Test suite for email service core functions
+
+**Learning**: Database-backed tests with real MongoDB require careful fixture management. The `test_user` fixture from conftest creates a user with ObjectId, allowing subsequent queries to work correctly. Pure-function tests (status reporting, config validation) are most valuable when they test system invariants (STAGE_MAP coverage of STAGE_ORDER) rather than just return values, catching regressions early.
