@@ -9,3 +9,7 @@ Starting Ralph - Tool: claude - Max iterations: 10
   Ralph Iteration 1 of 10 (claude)
 ===============================================================
 tee: /dev/stderr: Operation not permitted
+
+Ralph: warning — story US-1028 still has passes != true in /Users/josephle/GitHub/Pipelined/scripts/ralph/prd_126.json (next iteration will pick the open story with smallest `priority` number).
+
+Ralph: uncommitted changes detected — creating snapshot commit for iteration 1.
