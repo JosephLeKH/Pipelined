@@ -54,7 +54,15 @@ function EmailTimelineSection({ applicationId }) {
     );
   }
 
-  if (isError || events.length === 0) {
+  if (isError) {
+    return (
+      <section aria-label="Email timeline" className="rounded-lg border border-border p-4">
+        <p className="text-sm text-destructive" role="alert">Could not load email timeline.</p>
+      </section>
+    );
+  }
+
+  if (events.length === 0) {
     return null;
   }
 

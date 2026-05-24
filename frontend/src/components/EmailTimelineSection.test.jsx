@@ -50,3 +50,11 @@ describe("EmailTimelineSection", () => {
     expect(container).toBeEmptyDOMElement();
   });
 });
+
+  it("should show error message when fetch fails", () => {
+    useEmailEvents.mockReturnValue({ data: [], isLoading: false, isError: true });
+
+    render(<EmailTimelineSection applicationId="app1" />, { wrapper });
+
+    expect(screen.getByRole("alert")).toHaveTextContent("Could not load email timeline.");
+  });

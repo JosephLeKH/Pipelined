@@ -25,7 +25,7 @@ function ActivityRow({ entry }) {
 
 function AgentActivitySection({ applicationId }) {
   const [expanded, setExpanded] = useState(false);
-  const { data: entries = [], isLoading } = useAgentActivity({
+  const { data: entries = [], isLoading, isError } = useAgentActivity({
     applicationId,
     limit: 20,
     enabled: expanded,
@@ -55,10 +55,13 @@ function AgentActivitySection({ applicationId }) {
           {isLoading && (
             <p className="text-sm text-muted-foreground">Loading agent log…</p>
           )}
-          {!isLoading && entries.length === 0 && (
+          {!isLoading && isError && (
+            <p className="text-sm text-destructive" role="alert">Could not load agent activity.</p>
+          )}
+          {!isLoading && !isError && entries.length === 0 && (
             <p className="text-sm text-muted-foreground">No agent activity for this application.</p>
           )}
-          {!isLoading && entries.length > 0 && (
+          {!isLoading && !isError && entries.length > 0 && (
             <ul className="list-none space-y-2" data-testid="agent-log-list">
               {entries.map((entry) => (
                 <ActivityRow key={entry.id} entry={entry} />
