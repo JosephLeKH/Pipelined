@@ -2,6 +2,7 @@
 
 import re
 from dataclasses import dataclass
+from urllib.parse import parse_qs, urlparse
 
 SECTION_BASE_SCORE: dict[str, float] = {
     "follow_ups": 1000.0,
@@ -36,8 +37,20 @@ def _parse_score(body: str) -> int | None:
     return int(match.group(1)) if match else None
 
 
-def _mission_id(section: str, index: int) -> str:
-    return f"{section}:{index}"
+def _app_id_from_action_url(action_url: str) -> str | None:
+    parsed = urlparse(action_url)
+    selected = parse_qs(parsed.query).get("selected", [])
+    return selected[0] if selected else None
+
+
+def _mission_id(section: str, item: dict) -> str:
+    entity_id = item.get("entity_id")
+    if entity_id:
+        return str(entity_id)
+    app_id = _app_id_from_action_url(item.get("action_url", ""))
+    if app_id:
+        return app_id
+    return f"{section}:aggregate"
 
 
 def _score_item(section: str, item: dict, index: int) -> tuple[float, str]:
@@ -60,7 +73,6 @@ def _score_item(section: str, item: dict, index: int) -> tuple[float, str]:
     if section == "high_matches":
         fit = _parse_score(body) or 80
         return base + fit - index, f"Strong fit ({fit}%) — worth applying"
-
 
     if section == "watchlist_finds":
         count_match = re.search(r"(\d+) new", body)
@@ -87,7 +99,7 @@ def score_missions(sections: dict) -> list[ScoredMission]:
     missions: list[ScoredMission] = []
     for rank, (score, reason, section, index, item) in enumerate(candidates, start=1):
         missions.append(ScoredMission(
-            id=_mission_id(section, index),
+            id=_mission_id(section, item),
             section=section,
             title=item.get("title", ""),
             body=item.get("body", ""),

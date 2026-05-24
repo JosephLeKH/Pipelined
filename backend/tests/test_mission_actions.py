@@ -89,3 +89,47 @@ async def test_mission_actions_require_auth(client):
     response = await client.post("/api/brief/missions/follow_ups:0/done")
 
     assert response.status_code == 401
+
+
+@pytest.mark.asyncio(loop_scope="session")
+async def test_snooze_survives_brief_regeneration(client, mission_user):
+    uid, cookies = mission_user
+    col = database.get_collection("applications")
+    first = await col.find_one({"user_id": ObjectId(uid), "company": "Acme"})
+    first_id = str(first["_id"])
+
+    await col.insert_one({
+        "user_id": ObjectId(uid),
+        "company": "Beta",
+        "role_title": "Engineer",
+        "archived": False,
+        "follow_up_date": dt.datetime.combine(
+            dt.date.today() - dt.timedelta(days=3),
+            dt.time.min,
+            tzinfo=dt.timezone.utc,
+        ),
+        "updated_at": dt.datetime.now(dt.timezone.utc),
+        "created_at": dt.datetime.now(dt.timezone.utc),
+    })
+
+    brief_resp = await client.get("/api/brief/today", cookies=cookies)
+    assert brief_resp.status_code == 200
+
+    snooze_resp = await client.post(
+        f"/api/brief/missions/{first_id}/snooze",
+        cookies=cookies,
+        json={},
+    )
+    assert snooze_resp.status_code == 200
+
+    await database.get_collection("morning_briefs").delete_many({"user_id": ObjectId(uid)})
+    after_resp = await client.get("/api/brief/today", cookies=cookies)
+    active_ids = [m["id"] for m in after_resp.json()["data"]["missions"]]
+    assert first_id not in active_ids
+
+    state_resp = await client.post(
+        f"/api/brief/missions/{first_id}/snooze",
+        cookies=cookies,
+        json={},
+    )
+    assert first_id in state_resp.json()["data"]["snoozed"]

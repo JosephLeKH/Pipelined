@@ -33,6 +33,7 @@ class BriefItem:
     body: str
     action_url: str
     prep_ready: bool = False
+    entity_id: str | None = None
 
 
 @dataclass
@@ -110,6 +111,7 @@ async def _fetch_follow_ups(uid: ObjectId, today_start: dt.datetime) -> list[Bri
             title=f"{company} — follow-up overdue",
             body="Generate a draft on demand in the detail panel",
             action_url=f"/dashboard?selected={app_id}&action=follow-up",
+            entity_id=app_id,
         ))
     return items
 
@@ -143,11 +145,13 @@ async def _fetch_interviews(uid: ObjectId, today: dt.date, lookahead: dt.date) -
         app_id = event.get("application_id")
         prep_ready = prep_by_app.get(str(app_id), False) if app_id else False
         action_url = f"/dashboard?selected={app_id}" if app_id else "/calendar"
+        entity_id = str(app_id) if app_id else f"event:{event['_id']}"
         items.append(BriefItem(
             title=f"{company} — {role}",
             body="Interview prep ready" if prep_ready else "Review interview details",
             action_url=action_url,
             prep_ready=prep_ready,
+            entity_id=entity_id,
         ))
     return items
 
@@ -175,6 +179,7 @@ async def _fetch_high_matches(uid: ObjectId) -> list[BriefItem]:
             title=f"{company} — {role}",
             body=f"Fit score {score}",
             action_url=f"/dashboard?selected={app_id}",
+            entity_id=app_id,
         ))
     return items
 
@@ -211,6 +216,7 @@ async def _fetch_pending_approvals(uid: ObjectId) -> list[BriefItem]:
             title=f"{company} — {role}",
             body=f"Match score {score}",
             action_url="/inbox/pending",
+            entity_id=f"pending:{doc['_id']}",
         ))
     return items
 
@@ -231,6 +237,7 @@ async def _fetch_watchlist_finds(uid: ObjectId) -> list[BriefItem]:
         title="Watchlist finds ready for review",
         body=f"{count} new {role_word} from your watchlist",
         action_url="/inbox/pending",
+        entity_id="watchlist_pending",
     )]
 
 async def build_morning_brief(user_id: str, local_date: str | None = None) -> MorningBrief:
