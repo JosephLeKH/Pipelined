@@ -9,6 +9,7 @@ import SettingsNotificationsSection from "../components/SettingsNotificationsSec
 import SettingsPipelineSection from "../components/SettingsPipelineSection";
 import SettingsAutopilotSection from "../components/SettingsAutopilotSection";
 import SettingsAgentProfileSection from "../components/SettingsAgentProfileSection";
+import SettingsAgentActivitySection from "../components/SettingsAgentActivitySection";
 import SettingsProfileSection from "../components/SettingsProfileSection";
 import SettingsResumeSection from "../components/SettingsResumeSection";
 import SettingsTemplatesSection from "../components/SettingsTemplatesSection";
@@ -150,7 +151,13 @@ function renderSection(activeSection, user) {
     case "notifications": return <SettingsNotificationsSection />;
     case "integrations": return <SettingsIntegrationsSection />;
     case "autopilot": return <SettingsAutopilotSection />;
-    case "agent": return <SettingsAgentProfileSection />;
+    case "agent":
+      return (
+        <div className="flex flex-col gap-6">
+          <SettingsAgentProfileSection />
+          <SettingsAgentActivitySection />
+        </div>
+      );
     case "resume": return <SettingsResumeSection />;
     case "templates": return <SettingsTemplatesSection />;
     case "sharing": return <SharingSection />;

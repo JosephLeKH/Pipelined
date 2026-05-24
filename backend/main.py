@@ -25,6 +25,7 @@ from auth.verification_router import router as verification_router
 from cal.router import router as calendar_router
 from jobs.router import router as jobs_router
 from activity.router import router as activity_router
+from agent.router import router as agent_router
 from notifications.router import router as notifications_router
 from brief.brief_router import router as brief_router
 from saved_searches.router import router as saved_searches_router
@@ -110,6 +111,7 @@ def _register_routers(app: FastAPI) -> None:
     app.include_router(brief_router)
     app.include_router(saved_searches_router)
     app.include_router(activity_router)
+    app.include_router(agent_router)
     app.include_router(seo_router)
     app.include_router(feedback_router)
     app.include_router(templates_router)
