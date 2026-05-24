@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { useHotkeys } from "../hooks/useHotkeys";
 import { GMAIL_STATUS_KEY } from "../hooks/useGmailStatus";
 
+import AutopilotResumeBanner from "../components/AutopilotResumeBanner";
 import FilterBar from "../components/FilterBar";
 import FollowUpBanner from "../components/FollowUpBanner";
 import InboxSetupBanner from "../components/InboxSetupBanner";
@@ -32,6 +33,7 @@ function DashboardContent({ viewMode, onSetViewMode, isExporting, onExport, filt
       <div className="max-w-7xl mx-auto px-4 sm:px-6 space-y-6">
         <DashboardToolbar viewMode={viewMode} onSetViewMode={onSetViewMode} isExporting={isExporting} onImport={onImportCsv} onExport={onExport} onAdd={onAdd} />
         <OnboardingChecklist onAdd={onAdd} />
+        <AutopilotResumeBanner />
         <InboxSetupBanner />
         <FollowUpBanner followUpsDue={followUpsDue} onView={onViewFollowUps} />
         <section role="region" aria-label="Goal progress and statistics">

@@ -7,6 +7,7 @@ import NavBar from "../components/NavBar";
 import SettingsAccountSection from "../components/SettingsAccountSection";
 import SettingsNotificationsSection from "../components/SettingsNotificationsSection";
 import SettingsPipelineSection from "../components/SettingsPipelineSection";
+import SettingsAutopilotSection from "../components/SettingsAutopilotSection";
 import SettingsProfileSection from "../components/SettingsProfileSection";
 import SettingsResumeSection from "../components/SettingsResumeSection";
 import SettingsTemplatesSection from "../components/SettingsTemplatesSection";
@@ -27,6 +28,7 @@ const NAV_ITEMS = [
   { id: "calendar", label: "Calendar" },
   { id: "notifications", label: "Notifications" },
   { id: "integrations", label: "Integrations" },
+  { id: "autopilot", label: "Autopilot" },
   { id: "resume", label: "Resume & AI" },
   { id: "templates", label: "Templates" },
   { id: "sharing", label: "Sharing" },
@@ -145,6 +147,7 @@ function renderSection(activeSection, user) {
     case "calendar": return <CalendarSection />;
     case "notifications": return <SettingsNotificationsSection />;
     case "integrations": return <SettingsIntegrationsSection />;
+    case "autopilot": return <SettingsAutopilotSection />;
     case "resume": return <SettingsResumeSection />;
     case "templates": return <SettingsTemplatesSection />;
     case "sharing": return <SharingSection />;

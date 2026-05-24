@@ -42,6 +42,14 @@ export const RESUME_ACCEPT = ".pdf";
 export const RESUME_MAX_MB = 2;
 export const AI_SCORE_LIMIT = 10;
 
+// SYNC: backend/auth/constants.py
+export const AUTOPILOT_MIN_SCORE_MIN = 70;
+export const AUTOPILOT_MIN_SCORE_MAX = 95;
+export const AUTOPILOT_MAX_DAILY_MIN = 1;
+export const AUTOPILOT_MAX_DAILY_MAX = 10;
+export const DEFAULT_AUTOPILOT_MIN_MATCH_SCORE = 80;
+export const DEFAULT_AUTOPILOT_MAX_DAILY = 5;
+
 export const REMOTE_STATUS_OPTIONS = ["remote", "hybrid", "onsite", "unknown"];
 
 export const SKELETON_ROW_COUNT = 8;
