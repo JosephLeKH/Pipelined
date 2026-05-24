@@ -411,6 +411,7 @@ async def _process_message(
                 asyncio.create_task(
                     _trigger_interview_prep(user_id, app_id, company, role_title)
                 )
+            asyncio.create_task(_trigger_fit_score(user_id, app_id, company, role_title))
         return True, False
     except DuplicateApplicationError:
         return False, False
@@ -444,6 +445,25 @@ async def _trigger_interview_prep(
                 break
     except Exception:
         logger.exception("interview_prep_auto_trigger_error", app_id=app_id)
+
+
+async def _trigger_fit_score(
+    user_id: str, app_id: str, company: str, role: str
+) -> None:
+    """Compute fit score in background for a newly created application."""
+    log = structlog.get_logger()
+    try:
+        from applications.interview_prep.fit_score import compute_fit_score  # noqa: PLC0415
+
+        resume_text = ""
+        user_doc = await get_collection("users").find_one(
+            {"_id": _to_oid(user_id)}, {"resume_text": 1}
+        )
+        if user_doc:
+            resume_text = user_doc.get("resume_text", "")
+        await compute_fit_score(user_id, app_id, company, role, resume_text)
+    except Exception:
+        log.warning("fit_score_trigger_failed", app_id=app_id)
 
 
 async def sync_emails(user: dict) -> dict:
