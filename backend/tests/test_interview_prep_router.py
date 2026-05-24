@@ -1,6 +1,6 @@
 """HTTP-level tests for the interview prep SSE endpoint and follow-up draft endpoint."""
 
-from unittest.mock import patch
+from unittest.mock import AsyncMock, patch
 
 import pytest
 from bson import ObjectId
@@ -122,3 +122,65 @@ async def test_follow_up_draft_no_api_key(client, test_user):
 
     # Assert
     assert response.status_code == 503
+
+
+async def test_follow_up_draft_logs_agent_run(client, test_user, monkeypatch):
+    from ai.agent_log import AGENT_TYPE_FOLLOWUP, STATUS_SUCCESS
+
+    monkeypatch.setattr("applications.interview_prep.router.agent_llm_configured", lambda: True)
+
+    async def fake_generate(user_id, app_id, app_doc):  # noqa: ARG001
+        return {"subject": "Following up", "body": "Hello there"}
+
+    with patch("applications.interview_prep.router.follow_up_service.generate_follow_up_draft", fake_generate):
+        _, cookies = test_user
+        with as_user(client, cookies):
+            create_resp = await client.post("/api/applications", json={
+                "role_title": "Engineer",
+                "company": "Acme",
+                "source": "manual",
+            })
+            app_id = create_resp.json()["data"]["id"]
+            response = await client.post(f"/api/applications/{app_id}/follow-up-draft")
+
+    assert response.status_code == 200
+    assert response.json()["data"]["subject"] == "Following up"
+
+
+async def test_follow_up_draft_gemini_path_uses_cache_and_logs(test_user, monkeypatch):
+    from ai.agent_log import AGENT_TYPE_FOLLOWUP, STATUS_SUCCESS
+    from applications.interview_prep import service as follow_up_service
+
+    user, _ = test_user
+    user_id = user["id"]
+    app_id = str(ObjectId())
+    app_doc = {
+        "company": "Acme",
+        "role_title": "Engineer",
+        "current_stage": "Applied",
+    }
+
+    monkeypatch.setattr(follow_up_service.settings, "openrouter_api_key", "")
+    monkeypatch.setattr(follow_up_service.settings, "gemini_api_key", "test-key")
+    monkeypatch.setattr(follow_up_service, "agent_llm_configured", lambda: True)
+
+    draft = {"subject": "Hi", "body": "Checking in"}
+    calls = {"gemini": 0, "log": 0}
+
+    async def fake_gemini(user_id_arg, user_message):  # noqa: ARG001
+        calls["gemini"] += 1
+        return draft
+
+    async def fake_log(user_id_arg, agent_type, status, summary, **kwargs):  # noqa: ARG001
+        calls["log"] += 1
+        assert agent_type == AGENT_TYPE_FOLLOWUP
+        assert status == STATUS_SUCCESS
+
+    monkeypatch.setattr(follow_up_service, "_generate_with_gemini", fake_gemini)
+    monkeypatch.setattr(follow_up_service, "log_agent_run", fake_log)
+
+    result = await follow_up_service.generate_follow_up_draft(user_id, app_id, app_doc)
+
+    assert result == draft
+    assert calls["gemini"] == 1
+    assert calls["log"] == 1
