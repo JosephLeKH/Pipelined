@@ -80,7 +80,8 @@ def _build_summary_line(sections: MorningBriefSections, pending_count: int = 0) 
 
 def _sections_to_dict(sections: MorningBriefSections) -> dict:
     return {key: [asdict(item) for item in getattr(sections, key)] for key in (
-        "follow_ups", "interviews", "high_matches", "pending_approvals", "watchlist_finds", "ghosts",
+        "follow_ups", "interviews", "oa_deadlines", "high_matches",
+        "pending_approvals", "watchlist_finds", "ghosts",
     )}
 
 
@@ -88,6 +89,7 @@ def _sections_from_dict(data: dict) -> MorningBriefSections:
     return MorningBriefSections(
         follow_ups=[BriefItem(**item) for item in data.get("follow_ups", [])],
         interviews=[BriefItem(**item) for item in data.get("interviews", [])],
+        oa_deadlines=[BriefItem(**item) for item in data.get("oa_deadlines", [])],
         high_matches=[BriefItem(**item) for item in data.get("high_matches", [])],
         pending_approvals=[BriefItem(**item) for item in data.get("pending_approvals", [])],
         watchlist_finds=[BriefItem(**item) for item in data.get("watchlist_finds", [])],
@@ -276,6 +278,8 @@ async def _fetch_ghosts(uid: ObjectId) -> list[BriefItem]:
 
 async def build_morning_brief(user_id: str, local_date: str | None = None) -> MorningBrief:
     """Assemble morning brief sections for a user."""
+    from notifications.brief_oa_deadlines import fetch_oa_deadlines  # noqa: PLC0415
+
     uid = ObjectId(user_id)
     users_col = get_collection("users")
     user = await users_col.find_one({"_id": uid})
