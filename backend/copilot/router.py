@@ -52,3 +52,24 @@ async def copilot_chat(
         media_type="text/event-stream",
         headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
     )
+
+
+@router.get("/session")
+async def get_copilot_session(
+    user: dict = Depends(get_current_user),
+) -> dict:
+    """Return persisted co-pilot chat messages for the authenticated user."""
+    user_id = str(user["_id"])
+    session = await copilot_service.get_copilot_session(user_id)
+    return {"data": session}
+
+
+@router.post("/session")
+async def save_copilot_session(
+    body: CopilotSessionSaveRequest,
+    user: dict = Depends(get_current_user),
+) -> dict:
+    """Persist co-pilot chat messages for the authenticated user."""
+    user_id = str(user["_id"])
+    session = await copilot_service.save_copilot_session(user_id, body)
+    return {"data": session}
