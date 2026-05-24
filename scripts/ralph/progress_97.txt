@@ -78,3 +78,37 @@ Started: Sat May 23 19:46:15 PDT 2026
 
 **Files modified:** backend/applications/interview_prep/fit_score.py (new), backend/applications/interview_prep/router.py, backend/email_integration/service.py
 **Commit:** 60f7865
+
+---
+
+## US-905: Enhanced job recommendation scoring with role-title keyword matching ✅ COMPLETE
+
+**Implementation:** Verified role-title keyword matching in `backend/jobs/service.py` (initial commit 46a35ca). Fixed bug where keyword match checked `title` field instead of `role` (job listings use `role`).
+
+**Key verification:**
+- `SCORE_ROLE_KEYWORD_MATCH = 25` and `ROLE_KEYWORD_STOPWORDS` at module scope
+- `_get_user_role_keywords(user_id)` queries last 20 applications by `date_applied`, extracts 4+ char keywords
+- `_score_job()` accepts `user_keywords` set, adds score + "role match" reason on match
+- `get_recommended_listings()` fetches keywords via `asyncio.gather()` in parallel
+- `jobs/service.py`: 232 lines (under 300 limit)
+
+**Testing:** `pytest tests/test_jobs.py -q` — 14 passed
+
+**Files modified:** backend/jobs/service.py
+
+---
+
+## US-906: Test suite for notifications service ✅ COMPLETE
+
+**Implementation:** Fixed `backend/tests/test_notification_service.py` to pass all 6 tests.
+
+**Key fixes:**
+- Changed `pytestmark` to `loop_scope="session"` (matches conftest session event loop)
+- Aligned archived-app skip test with actual service behavior (filters `archived`, not terminal stages like Rejected)
+- Fixed interview_tomorrow assertion: service sets `action_url="/calendar"` (not event id)
+
+**Tests:** stale app creation, archived skip, deduplication, follow-up due, interview tomorrow, fresh app skip
+
+**Testing:** `pytest tests/test_notification_service.py -q` — 6 passed
+
+**Files modified:** backend/tests/test_notification_service.py

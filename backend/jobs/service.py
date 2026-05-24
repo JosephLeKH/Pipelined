@@ -170,10 +170,10 @@ def _score_job(
     if doc.get("company_type") in offer_company_types:
         score += SCORE_ATTRIBUTE_MATCH
 
-    # Check if any user keywords appear in the job title
-    job_title = (doc.get("title") or "").lower()
+    # Check if any user keywords appear in the job role title
+    job_role = (doc.get("role") or "").lower()
     for keyword in user_keywords:
-        if keyword in job_title:
+        if keyword in job_role:
             score += SCORE_ROLE_KEYWORD_MATCH
             reasons.append("role match")
             break

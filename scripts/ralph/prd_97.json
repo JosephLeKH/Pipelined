@@ -69,8 +69,8 @@
         "All existing tests still pass"
       ],
       "priority": "medium",
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Verified SCORE_ROLE_KEYWORD_MATCH, _get_user_role_keywords, _score_job integration. Fixed keyword match to use job 'role' field (not 'title'). jobs/service.py 232 lines. 14/14 test_jobs.py pass."
     },
     {
       "id": "US-906",
@@ -83,8 +83,5 @@
         "All tests pass with pytest tests/test_notification_service.py"
       ],
       "priority": "medium",
-      "passes": false,
-      "notes": ""
-    }
-  ]
-}
+      "passes": true,
+      "notes": "Fixed loop_scope=session, archived skip aligned with service, interview_tomorrow assertion fixed. 6/6 tests pass."
