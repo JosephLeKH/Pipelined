@@ -78,7 +78,7 @@ async def approve_pending_opportunity(user_id: str, opportunity_id: str) -> tupl
         role_title=listing.get("role") or "Unknown role",
         company=listing.get("company") or "Unknown company",
         current_stage=AUTOPILOT_APPLICATION_STAGE,
-        source="autopilot",
+        source=doc.get("source", "autopilot"),
         source_url=listing.get("apply_url"),
         location=listing.get("location"),
         remote_status=listing.get("remote_status"),

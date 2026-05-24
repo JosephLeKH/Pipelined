@@ -107,6 +107,11 @@ function PendingOpportunityCard({
             {company} — {role}
           </h2>
           <div className="flex flex-wrap items-center gap-2">
+            {opportunity.source === "watchlist" && (
+              <span className="rounded-full bg-violet-100 px-2 py-0.5 text-xs font-medium text-violet-800 dark:bg-violet-900/30 dark:text-violet-300">
+                Watchlist
+              </span>
+            )}
             <span className="text-xs font-medium text-muted-foreground">{FIT_SCORE_LABEL}</span>
             <FitBadge score={opportunity.match_score} />
             {opportunity.match_reason && (

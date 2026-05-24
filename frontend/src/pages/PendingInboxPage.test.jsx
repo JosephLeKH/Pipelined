@@ -26,6 +26,13 @@ const MOCK_OPPORTUNITY = {
   listing_company: "Acme",
   listing_role: "Backend Engineer",
   listing_apply_url: "https://example.com/jobs/acme",
+  source: "autopilot",
+};
+
+const MOCK_WATCHLIST_OPPORTUNITY = {
+  ...MOCK_OPPORTUNITY,
+  id: "opp2",
+  source: "watchlist",
 };
 
 const server = setupServer(
@@ -89,6 +96,16 @@ describe("PendingInboxPage", () => {
     await userEvent.click(screen.getByRole("button", { name: /cover letter draft/i }));
     expect(screen.getByText("Dear hiring team")).toBeInTheDocument();
     expect(screen.getByText(/suggestions only/i)).toBeInTheDocument();
+  });
+
+  it("should render Watchlist badge on watchlist-sourced cards", async () => {
+    server.use(
+      http.get("/api/autopilot/pending", () => HttpResponse.json({ data: [MOCK_WATCHLIST_OPPORTUNITY] }))
+    );
+
+    render(<PendingInboxPage />, { wrapper: makeWrapper() });
+
+    expect(await screen.findByText("Watchlist")).toBeInTheDocument();
   });
 
   it("should render external apply link with noopener", async () => {

@@ -29,6 +29,7 @@ class PendingOpportunityResponse(BaseModel):
     listing_company: str | None = None
     listing_role: str | None = None
     listing_apply_url: str | None = None
+    source: str = "autopilot"
 
     @classmethod
     def from_doc(cls, doc: dict, listing: dict | None = None) -> "PendingOpportunityResponse":
@@ -47,6 +48,7 @@ class PendingOpportunityResponse(BaseModel):
             listing_company=listing.get("company"),
             listing_role=listing.get("role"),
             listing_apply_url=listing.get("apply_url"),
+            source=doc.get("source", "autopilot"),
         )
 
 

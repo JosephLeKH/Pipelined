@@ -28,6 +28,20 @@ describe("PendingOpportunityCard", () => {
     });
   });
 
+  it("should render Watchlist badge when source is watchlist", () => {
+    render(
+      <PendingOpportunityCard
+        opportunity={{ ...MOCK_OPPORTUNITY, source: "watchlist" }}
+        onApprove={vi.fn()}
+        onDismiss={vi.fn()}
+        isApproving={false}
+        isDismissing={false}
+      />
+    );
+
+    expect(screen.getByText("Watchlist")).toBeInTheDocument();
+  });
+
   it("should render FitBadge for match score without visible reason", () => {
     render(
       <PendingOpportunityCard
