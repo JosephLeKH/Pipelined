@@ -45,7 +45,7 @@
         "No regression to existing sync logic (stage ordering, create/update flows)"
       ],
       "priority": "high",
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {

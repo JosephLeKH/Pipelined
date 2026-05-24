@@ -42,3 +42,26 @@ Added rate limiting to the interview prep SSE endpoint to prevent API quota exha
 **Commit**: f921723 - feat: US-887 - Rate limit the interview prep SSE endpoint
 
 **Learning**: Slowapi rate limiting requires the Request parameter even if unused in the function body. The decorator ordering matters: @router decorators come first, then @limiter.limit. This pattern is consistent across the codebase.
+
+## US-888 - Email message deduplication via processed ID tracking
+**Status**: ✅ COMPLETED
+
+**Summary**:
+Implemented email message deduplication to prevent reprocessing the same Gmail messages across sync cycles. Previously, every 4-hour sync would fetch and classify the same up-to-50 messages, wasting Gemini API quota.
+
+**Changes**:
+- Added `PROCESSED_IDS_LIMIT = 500` module-level constant
+- Before processing loop: fetch user's `gmail_processed_ids` from DB into a set
+- Filter messages to only process those not in `already_processed` set (new_messages list)
+- After processing: persist newly processed message IDs using `$push` with `$slice: -PROCESSED_IDS_LIMIT` to cap array size
+- Use `len(new_messages)` for processed count instead of `len(messages)` (total fetched)
+
+**Testing**:
+- Pyright type checking: 0 errors
+- All 185 existing tests pass (184 passed, 1 pre-existing failure in test_auth.py unrelated to email integration)
+- No email integration tests exist yet (covered in US-889/US-890/US-891)
+- No regression to stage ordering, create/update flows, or existing sync logic
+
+**Commit**: 753b5c1 - feat: US-888 - Email message deduplication via processed ID tracking
+
+**Learning**: Deduplication via a bounded array (capped at 500 items) on the user document is efficient and scales well. The MongoDB `$push` operator with `$slice: -500` automatically maintains a sliding window of recent message IDs. This prevents unbounded growth while preserving enough history to catch most repeated messages within reasonable sync intervals.
