@@ -32,7 +32,6 @@ def oa_deadline_body(days_remaining: int) -> str:
 async def fetch_oa_deadlines(uid: ObjectId, today: dt.date) -> list[BriefItem]:
     """Return applications with OA deadlines within the lookahead window."""
     lookahead_end = today + dt.timedelta(days=OA_DEADLINE_LOOKAHEAD_DAYS)
-    today_start = dt.datetime.combine(today, dt.time.min, tzinfo=dt.timezone.utc)
     lookahead_end_dt = dt.datetime.combine(
         lookahead_end, dt.time.max, tzinfo=dt.timezone.utc,
     )
