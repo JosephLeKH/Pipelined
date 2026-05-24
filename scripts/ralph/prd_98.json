@@ -42,7 +42,7 @@
       ],
       "priority": "medium",
       "passes": true,
-      "notes": "Extended ai_cache with OpenRouter provider, budget/quota wiring in fit_score, follow-up draft, and classifier. 17/17 tests pass (14 test_ai_cache + 3 test_openrouter_quota). Commits 2f10f7c."
+      "notes": "Extended ai_cache with OpenRouter provider, budget/quota wiring in fit_score, follow-up draft, and classifier. 17/17 tests pass (14 test_ai_cache + 3 test_openrouter_quota). Commits 2f10f7c, 78c3438."
     },
     {
       "id": "US-910",
