@@ -63,6 +63,7 @@ export function PanelBody({ application, handleStageChange, handleUpdate, onAddE
           briefing={application.interview_prep_briefing}
           generatedAt={application.interview_prep_generated_at}
           prepStatus={application.interview_prep_status}
+          interviewRound={application.interview_round}
         />
         <FollowUpDraftSection application={application} autoExpand={expandFollowUpDraft} />
       </AiPanelGroup>

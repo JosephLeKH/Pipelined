@@ -12,6 +12,7 @@ import { useState } from "react";
 
 import { useInterviewPrep } from "../hooks/useInterviewPrep";
 import AiSection from "./AiSection";
+import { MockInterviewPanel } from "./MockInterviewPanel";
 import { Button } from "./ui/button";
 
 // ── Primitives ─────────────────────────────────────────────────────────────────
@@ -364,6 +365,7 @@ export function InterviewPrepAgent({
   briefing: appBriefing,
   generatedAt,
   prepStatus = null,
+  interviewRound = null,
 }) {
   const { status, progressSteps, briefing, errorMessage, start, refresh, STATUS } =
     useInterviewPrep(applicationId, appBriefing, prepStatus);
@@ -389,6 +391,7 @@ export function InterviewPrepAgent({
       {status === STATUS.DONE && activeBriefing && (
         <DoneView briefing={activeBriefing} onRefresh={refresh} />
       )}
+      <MockInterviewPanel applicationId={applicationId} interviewRound={interviewRound} />
     </AiSection>
   );
 }
