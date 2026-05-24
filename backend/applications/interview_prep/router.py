@@ -5,12 +5,15 @@ Uses GET (not POST) so the browser EventSource API works without CSRF tokens.
 The CSRF middleware only applies to POST/PATCH/DELETE.
 """
 
+import asyncio
 import json
+import re
 
 import structlog
 from bson import ObjectId
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import StreamingResponse
+from openai import AsyncOpenAI
 
 from auth.dependencies import get_verified_user as get_current_user
 from config import settings
@@ -22,6 +25,10 @@ from .agent import run_agent
 logger = structlog.get_logger()
 
 router = APIRouter(prefix="/api/applications", tags=["interview-prep"])
+
+GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/openai/"
+GEMINI_MODEL = "gemini-2.0-flash"
+FOLLOWUP_TIMEOUT_SECONDS = 10.0
 
 
 async def _get_application(app_id: str, user_id: str) -> dict:
@@ -95,3 +102,65 @@ async def interview_prep_stream(
             "X-Accel-Buffering": "no",
         },
     )
+
+
+@router.post("/{app_id}/follow-up-draft")
+@limiter.limit("5/hour")
+async def generate_follow_up_draft(
+    request: Request,  # noqa: ARG001
+    app_id: str,
+    user: dict = Depends(get_current_user),
+) -> dict:
+    """Generate a professional follow-up email draft for a stale application."""
+    user_id = str(user["_id"])
+    app_doc = await _get_application(app_id, user_id)
+
+    company: str = app_doc.get("company", "")
+    role_title: str = app_doc.get("role_title", app_doc.get("position", ""))
+    current_stage: str = app_doc.get("current_stage", app_doc.get("stage", "Applied"))
+    date_applied = app_doc.get("date_applied")
+    date_applied_str = date_applied.isoformat() if date_applied else "Unknown"
+
+    if not settings.gemini_api_key:
+        raise HTTPException(
+            status_code=503,
+            detail="AI features not configured",
+        )
+
+    try:
+        gemini = AsyncOpenAI(api_key=settings.gemini_api_key, base_url=GEMINI_BASE_URL)
+        system_prompt = (
+            "You are a professional job-search assistant. Write a short, polite follow-up "
+            "email for a job application. Return ONLY valid JSON with keys: subject (string), "
+            "body (string). Body should be 3-4 sentences, professional, and not desperate."
+        )
+        user_message = f"Company: {company}\nRole: {role_title}\nCurrent stage: {current_stage}\nApplied: {date_applied_str}"
+
+        response = await asyncio.wait_for(
+            gemini.chat.completions.create(
+                model=GEMINI_MODEL,
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_message},
+                ],
+                temperature=0.7,
+                max_tokens=300,
+            ),
+            timeout=FOLLOWUP_TIMEOUT_SECONDS,
+        )
+
+        content = response.choices[0].message.content
+        if not content:
+            raise HTTPException(status_code=502, detail="Draft generation failed")
+
+        # Strip markdown code fences if present
+        raw = re.sub(r'^```(?:json)?\s*|\s*```$', '', content.strip(), flags=re.DOTALL)
+        data = json.loads(raw)
+
+        return {"data": {"subject": data.get("subject", ""), "body": data.get("body", "")}}
+    except (asyncio.TimeoutError, json.JSONDecodeError, KeyError, ValueError):
+        logger.exception("follow_up_draft_error", app_id=app_id)
+        raise HTTPException(status_code=502, detail="Draft generation failed")
+    except Exception:
+        logger.exception("follow_up_draft_error", app_id=app_id)
+        raise HTTPException(status_code=502, detail="Draft generation failed")
