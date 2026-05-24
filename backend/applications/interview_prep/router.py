@@ -8,7 +8,7 @@ The CSRF middleware only applies to POST/PATCH/DELETE.
 import asyncio
 import json
 import re
-from datetime import datetime
+from datetime import datetime, timezone
 
 import structlog
 from bson import ObjectId
@@ -234,7 +234,7 @@ async def generate_fit_score(
                 "$set": {
                     "fit_score": score,
                     "fit_score_reason": reason,
-                    "fit_score_at": datetime.utcnow(),
+                    "fit_score_at": datetime.now(timezone.utc),
                 }
             },
         )

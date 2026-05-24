@@ -1,0 +1,90 @@
+{
+  "id": "prd_97",
+  "title": "AI Fit Scoring, FitBadge Integration & Enhanced Job Recommendations",
+  "description": "Complete the agentic scoring loop: add a Gemini-powered fit-score endpoint that populates the existing but empty FitBadge in ApplicationRow; auto-trigger fit scoring when an email creates an application; improve the job recommendation engine with role-title keyword matching; and add test coverage for the notifications service. This brings the product closer to full autopilot: detect → score → prep → follow-up.",
+  "userStories": [
+    {
+      "id": "US-902",
+      "title": "Backend — AI fit score endpoint",
+      "description": "Add a new endpoint `POST /api/applications/{app_id}/fit-score` in `backend/applications/interview_prep/router.py` that uses Gemini to evaluate how well the user's profile/resume matches the applied role.\n\n**Implementation:**\n\n1. Add constants at module scope (alongside existing `FOLLOWUP_TIMEOUT_SECONDS`):\n   ```python\n   FIT_SCORE_TIMEOUT_SECONDS = 10.0\n   ```\n\n2. Add route:\n   ```python\n   @router.post(\"/{app_id}/fit-score\")\n   @limiter.limit(\"10/hour\")\n   async def generate_fit_score(\n       request: Request,  # noqa: ARG001\n       app_id: str,\n       user: dict = Depends(get_current_user),\n   ) -> dict:\n   ```\n\n3. Fetch application using `_get_application(app_id, user['id'])`. Extract `company`, `role_title`.\n\n4. Fetch resume text using `_get_resume_text(user['id'])`. If empty, use `'No resume available'`.\n\n5. If no `settings.gemini_api_key`, raise `HTTPException(status_code=503, detail='AI features not configured')`.\n\n6. Build Gemini call:\n   - System prompt: `'You are a career coach evaluating job application fit. Return ONLY valid JSON with keys: score (integer 0-100), reason (string, 1-2 sentences). Be direct and honest about fit.'`\n   - User message: `f'Role: {role_title} at {company}\\nResume summary:\\n{resume_text[:600]}'`\n   - `temperature=0.3, max_tokens=150`\n   - Wrap in `asyncio.wait_for(..., timeout=FIT_SCORE_TIMEOUT_SECONDS)`\n\n7. Parse JSON, strip markdown fences (same re.sub pattern as follow-up draft). Validate `score` is int 0-100.\n\n8. Persist to DB:\n   ```python\n   await get_collection('applications').update_one(\n       {'_id': ObjectId(app_id), 'user_id': ObjectId(user['id'])},\n       {'$set': {'fit_score': score, 'fit_score_reason': reason, 'fit_score_at': datetime.utcnow()}},\n   )\n   ```\n   Import `datetime` from `datetime` (check if already imported). Import `ObjectId` from `bson` (already present).\n\n9. Return `{'data': {'score': score, 'reason': reason}}`.\n\n10. On timeout or parse error, raise `HTTPException(status_code=502, detail='Fit score generation failed')`.\n\n**Important:** `datetime` may already be imported in the file — check before adding. The `get_collection` import is already present.",
+      "acceptanceCriteria": [
+        "POST /{app_id}/fit-score route added to interview_prep/router.py",
+        "@limiter.limit('10/hour') rate limit applied",
+        "FIT_SCORE_TIMEOUT_SECONDS = 10.0 constant at module scope",
+        "Fetches application with _get_application and resume with _get_resume_text",
+        "Calls Gemini with system+user prompts, temperature=0.3",
+        "Persists fit_score, fit_score_reason, fit_score_at to application document",
+        "Returns {data: {score, reason}} envelope",
+        "Raises 503 when gemini_api_key missing, 502 on AI failure",
+        "All existing tests still pass"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-903",
+      "title": "Frontend — FitBadge integration in DetailPanel",
+      "description": "Hook up the existing `FitBadge` component in `DetailPanelBody.jsx` so it shows a real score and reason, and add a 'Score this application' button to trigger scoring.\n\n**Where:** `frontend/src/components/DetailPanelBody.jsx` — the same file where the follow-up draft section (US-893) was added.\n\n**API function** — add to `frontend/src/api/applications.js`:\n```javascript\nexport async function generateFitScore(appId) {\n  const res = await apiClient.post(`/api/applications/${appId}/fit-score`);\n  return res.data.data; // { score, reason }\n}\n```\n\n**In DetailPanelBody.jsx:**\n\n1. Import `generateFitScore` from the api layer.\n2. Import `Sparkles` from `lucide-react/dist/esm/icons/sparkles`.\n3. Import `FitBadge` from `./FitBadge` if not already imported.\n\n4. Add a `FitScoreSection` inline component (do NOT create a new file — add it inside DetailPanelBody.jsx above the main export):\n   - Props: `application`, `onScoreGenerated`\n   - Show existing `fit_score` if present: `<FitBadge score={application.fit_score} />` with `<p className='text-xs text-muted-foreground mt-1'>{application.fit_score_reason}</p>`\n   - Show 'Score this application' button (`variant='outline' size='sm'`, Sparkles icon) when no score or user wants to regenerate\n   - On click: call `generateFitScore`, loading state, update via `onScoreGenerated(data)`\n   - Error: `toast.error('Could not generate fit score — try again')`\n   - Store generated score in local state (useState) to show immediately without refetch\n\n5. Place `<FitScoreSection>` in the panel body near the existing interview prep / follow-up sections.\n\n**Important constraints:**\n- Direct lucide subpath imports\n- No new component files\n- Use existing Tailwind classes and button variants\n- FitBadge already handles the color coding (green/amber/gray) — just pass `score` prop",
+      "acceptanceCriteria": [
+        "generateFitScore API function added in frontend api layer",
+        "'Score this application' button visible in DetailPanel",
+        "Existing fit_score displayed via FitBadge + reason text when present",
+        "On click: loading state → FitBadge updates with score + reason",
+        "Error handled with toast.error",
+        "Sparkles icon from lucide-react/dist/esm/icons/sparkles",
+        "No new component files created",
+        "Direct lucide subpath imports used"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-904",
+      "title": "Auto-trigger fit score when email creates an application",
+      "description": "In `backend/email_integration/service.py`, after creating a new application from a classified email, auto-trigger fit score generation in the background — similar to how `_trigger_interview_prep` works.\n\n**Implementation:**\n\n1. Add a new background task function at module scope (near `_trigger_interview_prep`):\n   ```python\n   async def _trigger_fit_score(user_id: str, app_id: str, company: str, role: str) -> None:\n       log = structlog.get_logger()\n       try:\n           from applications.interview_prep.router import generate_fit_score  # noqa: PLC0415\n           # Build a minimal fake request/user for the endpoint\n           # Instead: call the Gemini logic directly via a shared helper\n       except Exception:\n           log.warning('fit_score_trigger_failed', app_id=app_id)\n   ```\n\n   **IMPORTANT:** Do NOT import the router function directly (circular import risk). Instead, extract the Gemini fit-score logic into a standalone async function `_compute_fit_score(user_id, app_id, company, role_title)` in a new file `backend/applications/interview_prep/fit_score.py` that both the router and the email service can import.\n\n   Create `backend/applications/interview_prep/fit_score.py`:\n   ```python\n   \"\"\"Standalone fit score computation — called by router and email service.\"\"\"\n   import asyncio\n   import json\n   import re\n   from datetime import datetime\n\n   import structlog\n   from bson import ObjectId\n   from openai import AsyncOpenAI\n\n   from config import settings\n   from database import get_collection\n\n   GEMINI_BASE_URL = 'https://generativelanguage.googleapis.com/v1beta/openai/'\n   GEMINI_MODEL = 'gemini-2.0-flash'\n   FIT_SCORE_TIMEOUT_SECONDS = 10.0\n\n   async def compute_fit_score(user_id: str, app_id: str, company: str, role_title: str, resume_text: str) -> dict | None:\n       \"\"\"Call Gemini to compute fit score. Returns {score, reason} or None on failure.\"\"\"\n       if not settings.gemini_api_key:\n           return None\n       client = AsyncOpenAI(api_key=settings.gemini_api_key, base_url=GEMINI_BASE_URL)\n       system_prompt = 'You are a career coach evaluating job application fit. Return ONLY valid JSON with keys: score (integer 0-100), reason (string, 1-2 sentences). Be direct and honest about fit.'\n       user_msg = f'Role: {role_title} at {company}\\nResume summary:\\n{resume_text[:600]}'\n       try:\n           resp = await asyncio.wait_for(\n               client.chat.completions.create(\n                   model=GEMINI_MODEL,\n                   messages=[{'role': 'system', 'content': system_prompt}, {'role': 'user', 'content': user_msg}],\n                   temperature=0.3,\n                   max_tokens=150,\n               ),\n               timeout=FIT_SCORE_TIMEOUT_SECONDS,\n           )\n           content = re.sub(r'^```(?:json)?\\s*|\\s*```$', '', resp.choices[0].message.content.strip(), flags=re.DOTALL)\n           data = json.loads(content)\n           score = int(data['score'])\n           reason = str(data.get('reason', ''))\n           await get_collection('applications').update_one(\n               {'_id': ObjectId(app_id), 'user_id': ObjectId(user_id)},\n               {'$set': {'fit_score': score, 'fit_score_reason': reason, 'fit_score_at': datetime.utcnow()}},\n           )\n           return {'score': score, 'reason': reason}\n       except Exception:\n           structlog.get_logger().warning('fit_score_failed', app_id=app_id)\n           return None\n   ```\n\n2. In `backend/applications/interview_prep/router.py`, replace the inline Gemini logic in `generate_fit_score` with a call to `compute_fit_score` from `fit_score.py`:\n   ```python\n   from applications.interview_prep.fit_score import compute_fit_score\n   ```\n   This keeps the router thin.\n\n3. In `backend/email_integration/service.py`, add a `_trigger_fit_score` background task:\n   ```python\n   async def _trigger_fit_score(user_id: str, app_id: str, company: str, role: str) -> None:\n       log = structlog.get_logger()\n       try:\n           from applications.interview_prep.fit_score import compute_fit_score  # noqa: PLC0415\n           resume_text = ''\n           user_doc = await get_collection('users').find_one({'_id': ObjectId(user_id)}, {'resume_text': 1})\n           if user_doc:\n               resume_text = user_doc.get('resume_text', '')\n           await compute_fit_score(user_id, app_id, company, role, resume_text)\n       except Exception:\n           log.warning('fit_score_trigger_failed', app_id=app_id)\n   ```\n\n4. Call `asyncio.create_task(_trigger_fit_score(...))` immediately after `asyncio.create_task(_trigger_interview_prep(...))` in the `_process_message` function, but only when a new application is created (not updated).\n\n**File size guard:** Check that `fit_score.py` stays under 80 lines and `service.py` stays under 300 lines after additions.",
+      "acceptanceCriteria": [
+        "New file backend/applications/interview_prep/fit_score.py created with compute_fit_score() function",
+        "Router generate_fit_score endpoint delegates to compute_fit_score (router stays thin)",
+        "_trigger_fit_score async function added to email_integration/service.py",
+        "asyncio.create_task(_trigger_fit_score(...)) called after app creation in _process_message",
+        "fit_score.py under 100 lines, service.py stays under 300 lines",
+        "All existing tests still pass"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-905",
+      "title": "Enhanced job recommendation scoring with role-title keyword matching",
+      "description": "Improve the job recommendation engine in `backend/jobs/service.py` to include role-title keyword matching based on the user's existing applications.\n\n**Current scoring** (in `_score_job`):\n- `SCORE_SAVED_SEARCH_MATCH = 50` — saved search filter match\n- `SCORE_OFFER_PATTERN_MATCH = 30` — remote status matches past offers\n- `SCORE_ATTRIBUTE_MATCH = 20` — company type match\n\n**Add:**\n1. `SCORE_ROLE_KEYWORD_MATCH = 25` constant at module scope.\n\n2. A new helper function `_get_user_role_keywords(user_id: str) -> set[str]`:\n   - Queries `applications` collection for this user's most recent 20 applications (sorted by `date_applied` desc)\n   - Extracts all `role_title` values, splits by space/special chars, lowercases, filters to words >= 4 chars and not in a stopword set (`{'with', 'and', 'the', 'for', 'senior', 'junior', 'lead', 'staff'}`)\n   - Returns the set of keywords\n   - Handle ObjectId conversion: `{'user_id': ObjectId(user_id)}`\n   - Return empty set on any exception\n\n3. In `get_recommended_listings()`, fetch user role keywords once before scoring:\n   ```python\n   user_keywords = await _get_user_role_keywords(str(user_id))\n   ```\n\n4. In `_score_job()`, add a `user_keywords: set[str]` parameter. Check if any keyword appears in `job.get('title', '').lower()`. If yes, add `SCORE_ROLE_KEYWORD_MATCH` to score and append `'role match'` to the reasons list.\n\n5. Update the `_score_job` call in `get_recommended_listings` to pass `user_keywords`.\n\n6. Add `user_id` parameter to `_get_user_role_keywords` — it needs the user's ObjectId-compatible string.\n\n**Important:** Keep `_score_job` pure (no DB calls inside it). All DB calls stay in `get_recommended_listings`. The `_get_user_role_keywords` helper is the only new DB function.\n\n**File size:** Check `jobs/service.py` stays under 300 lines after additions.",
+      "acceptanceCriteria": [
+        "SCORE_ROLE_KEYWORD_MATCH = 25 constant added at module scope",
+        "_get_user_role_keywords(user_id) async helper added — queries user's last 20 applications",
+        "_score_job() accepts user_keywords set and adds SCORE_ROLE_KEYWORD_MATCH when title matches",
+        "get_recommended_listings() fetches keywords once and passes to _score_job",
+        "jobs/service.py stays under 300 lines",
+        "All existing tests still pass"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-906",
+      "title": "Test suite for notifications service",
+      "description": "Create `backend/tests/test_notification_service.py` with tests for the notification generation logic in `backend/notifications/notification_service.py`.\n\nRequired tests:\n\n1. `test_stale_app_notification_created` — Insert a user and an application with `updated_at` set to 20 days ago and a non-terminal stage (e.g., 'Applied'). Call `generate_notifications_for_user(user_id)` (or the equivalent function — check the actual function name in notification_service.py). Assert a notification of type `stale_app` was inserted into the `notifications` collection for this app.\n\n2. `test_stale_app_notification_skipped_for_terminal_stage` — Same setup but stage is 'Rejected'. Assert NO `stale_app` notification created.\n\n3. `test_stale_app_notification_deduplication` — Insert a `stale_app` notification for the app created 3 days ago (within the 7-day dedup window). Call the generation function again. Assert only 1 notification exists (no duplicate).\n\n4. `test_follow_up_due_notification_created` — Insert an application with `follow_up_date` set to yesterday (past due). Call generation. Assert `follow_up_due` notification created.\n\n5. `test_interview_tomorrow_notification_created` — Insert a calendar event with `start_time` set to tomorrow (within 24h). Call generation. Assert `interview_tomorrow` notification created for the linked app.\n\n6. `test_no_notifications_for_fresh_application` — Insert an application updated today with a non-terminal stage. Assert no `stale_app` notification created (not stale yet).\n\n**Setup pattern:**\n- Use real MongoDB (no mocking per project rules)\n- Use `@pytest.mark.asyncio(loop_scope='session')` for all tests\n- Use `create_user` from `auth.service` and `get_collection` from `database` directly for fixture setup\n- For `updated_at` backdating: `datetime.utcnow() - timedelta(days=20)`\n- Import the generation function: check `backend/notifications/notification_service.py` for the actual function name (likely `generate_notifications_for_user` or similar)\n\n**Important:** Read `backend/notifications/notification_service.py` before writing tests to get the exact function signatures and collection names.",
+      "acceptanceCriteria": [
+        "File created at backend/tests/test_notification_service.py",
+        "6 tests covering: stale app creation, terminal stage skip, deduplication, follow-up due, interview tomorrow, fresh app skip",
+        "Uses real MongoDB (no mocking)",
+        "All tests pass with pytest tests/test_notification_service.py"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}
