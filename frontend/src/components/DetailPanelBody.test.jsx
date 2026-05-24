@@ -19,6 +19,8 @@ const APP = {
   notes: "",
   tags: [],
   stage_history: [],
+  fit_score: null,
+  fit_score_reason: null,
 };
 
 const server = setupServer(

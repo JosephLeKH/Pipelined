@@ -22,6 +22,7 @@ from database import get_collection
 from middleware.rate_limit import limiter
 
 from .agent import run_agent
+from .fit_score import compute_fit_score
 
 logger = structlog.get_logger()
 
@@ -193,53 +194,10 @@ async def generate_fit_score(
         )
 
     try:
-        gemini = AsyncOpenAI(api_key=settings.gemini_api_key, base_url=GEMINI_BASE_URL)
-        system_prompt = (
-            "You are a career coach evaluating job application fit. Return ONLY valid JSON "
-            "with keys: score (integer 0-100), reason (string, 1-2 sentences). "
-            "Be direct and honest about fit."
-        )
-        user_message = f"Role: {role_title} at {company}\nResume summary:\n{resume_text[:600]}"
-
-        response = await asyncio.wait_for(
-            gemini.chat.completions.create(
-                model=GEMINI_MODEL,
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_message},
-                ],
-                temperature=0.3,
-                max_tokens=150,
-            ),
-            timeout=FIT_SCORE_TIMEOUT_SECONDS,
-        )
-
-        content = response.choices[0].message.content
-        if not content:
+        result = await compute_fit_score(user_id, app_id, company, role_title, resume_text)
+        if result is None:
             raise HTTPException(status_code=502, detail="Fit score generation failed")
-
-        # Strip markdown code fences if present
-        raw = re.sub(r'^```(?:json)?\s*|\s*```$', '', content.strip(), flags=re.DOTALL)
-        data = json.loads(raw)
-
-        score = int(data["score"])
-        if not (0 <= score <= 100):
-            raise ValueError("Score must be between 0 and 100")
-        reason = str(data.get("reason", ""))
-
-        # Persist to database
-        await get_collection("applications").update_one(
-            {"_id": ObjectId(app_id), "user_id": ObjectId(user_id)},
-            {
-                "$set": {
-                    "fit_score": score,
-                    "fit_score_reason": reason,
-                    "fit_score_at": datetime.now(timezone.utc),
-                }
-            },
-        )
-
-        return {"data": {"score": score, "reason": reason}}
+        return {"data": result}
     except (asyncio.TimeoutError, json.JSONDecodeError, KeyError, ValueError):
         logger.exception("fit_score_error", app_id=app_id)
         raise HTTPException(status_code=502, detail="Fit score generation failed")
