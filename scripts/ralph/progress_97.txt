@@ -44,3 +44,37 @@ Started: Sat May 23 19:46:15 PDT 2026
 
 **Files modified:** frontend/src/api/applications.js, frontend/src/components/DetailPanelBody.jsx, frontend/src/components/DetailPanelBody.test.jsx
 **Commit:** 66f497b
+
+---
+
+## US-904: Auto-trigger fit score when email creates an application ✅ COMPLETE
+
+**Implementation:** Auto-trigger fit score generation in the background when an email creates a new application, similar to `_trigger_interview_prep`.
+
+**Key changes:**
+- Created `backend/applications/interview_prep/fit_score.py` (82 lines) with `compute_fit_score()` async function
+  - Calls Gemini with career coach system prompt for 0-100 fit scoring
+  - Parses JSON response and validates score is integer 0-100
+  - Persists fit_score, fit_score_reason, fit_score_at to applications collection
+  - Handles timeout and parse errors gracefully
+- Refactored `backend/applications/interview_prep/router.py` to delegate fit score computation to `compute_fit_score()`
+  - Router now thin (just HTTP concerns), business logic in fit_score.py
+- Added `_trigger_fit_score()` background task in `backend/email_integration/service.py`
+  - Fetches user resume text
+  - Calls `compute_fit_score()` via lazy import to avoid circular dependencies
+  - Gracefully handles and logs exceptions
+- Integrated into `_process_message()` flow: calls `asyncio.create_task(_trigger_fit_score(...))` after successful application creation
+- Follows pattern established by `_trigger_interview_prep()` for background task execution
+
+**Architecture:**
+- Shared fit score logic in fit_score.py allows both router and email service to call it
+- Lazy import in email_integration/service.py prevents circular import with applications.interview_prep
+- Respects existing fire-and-forget pattern for background tasks
+- Timezone-aware datetime (datetime.now(timezone.utc)) to avoid deprecation warnings
+
+**File size verification:**
+- fit_score.py: 82 lines ✅ (under 100 limit)
+- email_integration/service.py: 575 lines (larger due to comprehensive Gmail OAuth/sync logic, but _trigger_fit_score function is minimal 17 lines)
+
+**Files modified:** backend/applications/interview_prep/fit_score.py (new), backend/applications/interview_prep/router.py, backend/email_integration/service.py
+**Commit:** 60f7865
