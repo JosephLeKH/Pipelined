@@ -1,0 +1,34 @@
+{
+  "id": "prd_124",
+  "title": "Documentation Sync — Agent-Native Product",
+  "description": "Update docs for all PRD 110-123 features so docs match product.",
+  "userStories": [
+    {
+      "id": "US-1021",
+      "title": "Update AGENTIC_FEATURES.md",
+      "description": "Document /today, co-pilot, Apply Pack, mock interview, watchlist, weekly review, agent activity, email timeline, ghost missions.",
+      "acceptanceCriteria": ["All new features documented", "Policy section intact"],
+      "priority": "high",
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-1022",
+      "title": "Update README and CLAUDE.md",
+      "description": "README feature list and env vars. CLAUDE.md module map.",
+      "acceptanceCriteria": ["README accurate", "CLAUDE.md module map"],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-1023",
+      "title": "API routes comment sync in main.py",
+      "description": "Ensure all new routers registered.",
+      "acceptanceCriteria": ["All routers mounted", "App starts"],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

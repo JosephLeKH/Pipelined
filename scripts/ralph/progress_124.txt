@@ -1,0 +1,11 @@
+# Ralph Progress Log — prd_124
+Started: Sun May 24 2026
+---
+
+## US-1021: Update AGENTIC_FEATURES.md ✅ COMPLETE
+
+**Implementation:** Rewrote docs/AGENTIC_FEATURES.md for prd_110–123 features: /today missions, co-pilot, Apply Pack, mock interview, watchlist, weekly review, agent activity, email timeline, ghost missions, security notes. Policy section intact.
+
+**Testing:** `pytest tests/test_brief_router.py tests/test_copilot_router.py tests/test_apply_pack.py tests/test_mock_interview.py tests/test_review_router.py tests/test_agent_isolation.py -q` — 29 passed
+
+---
