@@ -20,6 +20,7 @@ MAX_COMPENSATION_LENGTH = 100
 MAX_LOCATION_LENGTH = 200
 MAX_STAGE_LENGTH = 50
 MAX_PAGE_TEXT_LENGTH = 3200
+MAX_JOB_DESCRIPTION_LENGTH = 8000  # SYNC: frontend/src/lib/constants.js JOB_DESCRIPTION_MAX_LENGTH
 MAX_NOTES_LENGTH = 5000  # SYNC: frontend/src/lib/constants.js NOTES_MAX_LENGTH
 MAX_PREP_CHECKLIST_ITEM_LENGTH = 200  # SYNC: frontend/src/lib/constants.js PREP_CHECKLIST_ITEM_MAX_LENGTH
 MAX_PREP_CHECKLIST_ITEMS = 30
@@ -59,6 +60,7 @@ class ApplicationCreate(BaseModel):
     date_applied: datetime | None = None
     tags: list[str] = Field(default_factory=list, max_length=MAX_TAG_COUNT)
     page_text: str | None = Field(None, max_length=MAX_PAGE_TEXT_LENGTH)
+    job_description: str | None = Field(None, max_length=MAX_JOB_DESCRIPTION_LENGTH)
     custom_fields: dict[str, str | int | bool | list[str]] | None = None
 
 
@@ -112,11 +114,19 @@ class ApplicationUpdate(BaseModel):
     tags: list[str] | None = None
     follow_up_date: datetime | None = Field(None, strict=False)
     notes: str | None = Field(None, max_length=MAX_NOTES_LENGTH)
+    job_description: str | None = Field(None, max_length=MAX_JOB_DESCRIPTION_LENGTH)
     offer_details: OfferDetails | None = None
     deadline: datetime | None = Field(None, strict=False)
     custom_fields: dict[str, str | int | bool | list[str]] | None = None
     documents: dict[str, Document] | None = None  # resume and cover_letter
     prep_checklist: list[PrepChecklistItem] | None = Field(None, max_length=MAX_PREP_CHECKLIST_ITEMS)
+
+
+class ResumeInsights(BaseModel):
+    keyword_gaps: list[str] = Field(default_factory=list)
+    section_suggestions: list[str] = Field(default_factory=list)
+    bullet_rewrites: list[dict[str, str]] = Field(default_factory=list)
+    overall_summary: str | None = None
 
 
 class ApplicationResponse(BaseModel):
@@ -141,6 +151,9 @@ class ApplicationResponse(BaseModel):
     company_domain: str | None = None
     follow_up_date: datetime | None = None
     notes: str | None = None
+    job_description: str | None = None
+    resume_insights: ResumeInsights | None = None
+    resume_insights_at: datetime | None = None
     offer_details: OfferDetails | None = None
     deadline: datetime | None = None
     custom_fields: dict[str, str | int | bool | list[str]] | None = None

@@ -10,6 +10,7 @@ export const MSG = {
 };
 
 export const PAGE_TEXT_MAX_CHARS = 3200;
+export const JOB_DESCRIPTION_MAX_CHARS = 8000;
 export const MAX_RECENT = 5;
 
 export const API_BASE = "https://api.pipelined.app";

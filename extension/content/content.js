@@ -23,6 +23,7 @@ import {
 } from "./banner_helpers.js";
 import { injectContactBanner } from "./contact_banner.js";
 import { MSG, PAGE_TEXT_MAX_CHARS } from "../shared/constants.js";
+import { extractJobDescription } from "./boards/board_utils.js";
 
 const BOARDS = [
   linkedin, greenhouse, lever, ashby, workday,
@@ -112,7 +113,13 @@ async function handleSave(shadow, host, fields, boardId) {
     ? (document.body.innerText ?? "").trim().slice(0, PAGE_TEXT_MAX_CHARS)
     : null;
 
-  const payload = { fields, boardId, pageText, sourceUrl: window.location.href };
+  const payload = {
+    fields,
+    boardId,
+    pageText,
+    jobDescription: extractJobDescription(),
+    sourceUrl: window.location.href,
+  };
 
   const result = await sendToBackground(MSG.SAVE_APPLICATION, payload);
 
@@ -167,6 +174,7 @@ export async function initAutoSave(fields, boardId) {
       pageText: needsPageText
         ? (document.body.innerText ?? "").trim().slice(0, PAGE_TEXT_MAX_CHARS)
         : null,
+      jobDescription: extractJobDescription(),
     };
     const result = await sendToBackground(MSG.SAVE_APPLICATION, payload);
     if (result.status === "success") showBannerAutoSaved(shadow, host);

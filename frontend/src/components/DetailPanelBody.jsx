@@ -9,7 +9,7 @@ import Sparkles from "lucide-react/dist/esm/icons/sparkles";
 import { toast } from "sonner";
 import { differenceInDays } from "date-fns/differenceInDays";
 
-import { STAGE_COLORS, DEFAULT_STAGE_COLOR, MS_PER_DAY, PREP_CHECKLIST_STARTER_SUGGESTIONS } from "../lib/constants";
+import { STAGE_COLORS, DEFAULT_STAGE_COLOR, MS_PER_DAY, PREP_CHECKLIST_STARTER_SUGGESTIONS, JOB_DESCRIPTION_MAX_LENGTH } from "../lib/constants";
 import { useAuth } from "../context/AuthContext";
 import { useUpdateApplication } from "../hooks/useApplications";
 import { generateFollowUpDraft, generateFitScore } from "../api/applications";
@@ -24,6 +24,7 @@ import ResumeFitSection from "./ResumeFitSection";
 import TagInput from "./TagInput";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+import { Textarea } from "./ui/textarea";
 import { formatDate } from "../lib/dateUtils";
 
 function DetailField({ label, value }) {
@@ -294,6 +295,27 @@ function FitScoreSection({ application, onScoreGenerated }) {
   );
 }
 
+function JobDescriptionSection({ application, onUpdate }) {
+  const value = application.job_description ?? "";
+
+  return (
+    <div className="flex flex-col gap-1.5">
+      <label className="text-xs font-medium uppercase text-muted-foreground" htmlFor="job-description">
+        Job Description
+      </label>
+      <Textarea
+        id="job-description"
+        value={value}
+        onChange={(e) => onUpdate({ job_description: e.target.value || null })}
+        maxLength={JOB_DESCRIPTION_MAX_LENGTH}
+        rows={4}
+        placeholder="Paste the job description here for resume tailoring insights…"
+        className="text-sm"
+      />
+    </div>
+  );
+}
+
 function StageSelector({ stageOptions, currentStage, onStageChange }) {
   return (
     <div className="flex flex-col gap-1.5">
@@ -337,6 +359,7 @@ export function PanelBody({ application, handleStageChange, handleUpdate, onAddE
         <DetailField label="Company Type" value={application.company_type} />
       </div>
       <JobPostingLink url={application.source_url} />
+      <JobDescriptionSection application={application} onUpdate={handleUpdate} />
       <StageSelector stageOptions={stageOptions} currentStage={application.current_stage} onStageChange={handleStageChange} />
       <FollowUpDraftSection application={application} />
       <FitScoreSection application={application} onScoreGenerated={(data) => handleUpdate({ fit_score: data.score, fit_score_reason: data.reason })} />

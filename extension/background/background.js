@@ -1,6 +1,6 @@
 /** Service worker: API calls, token management, message routing. */
 
-import { MSG, PAGE_TEXT_MAX_CHARS, MAX_RECENT, API_BASE } from "../shared/constants.js";
+import { MSG, PAGE_TEXT_MAX_CHARS, JOB_DESCRIPTION_MAX_CHARS, MAX_RECENT, API_BASE } from "../shared/constants.js";
 
 const TOKEN_KEY = "pipelined_auth_token";
 
@@ -118,7 +118,7 @@ async function cacheRecentSave(application) {
 }
 
 async function executeSave(payload) {
-  const { fields, boardId, pageText, sourceUrl } = payload;
+  const { fields, boardId, pageText, jobDescription, sourceUrl } = payload;
 
   const body = {
     role_title: fields.role_title,
@@ -133,6 +133,10 @@ async function executeSave(payload) {
 
   if (pageText && (!fields.role_title || !fields.company_name)) {
     body._page_text = pageText.slice(0, PAGE_TEXT_MAX_CHARS);
+  }
+
+  if (jobDescription) {
+    body.job_description = jobDescription.slice(0, JOB_DESCRIPTION_MAX_CHARS);
   }
 
   const response = await fetchWithAuth("/api/applications", {

@@ -1,4 +1,4 @@
-/** Shared utility functions for all job board scrapers. */
+import { JOB_DESCRIPTION_MAX_CHARS } from "../../shared/constants.js";
 
 /**
  * Extracts remote status from text.
@@ -65,4 +65,26 @@ function createBoardExtractor(config) {
   return { BOARD_ID: id, isJobPage, extractFields };
 }
 
-export { getRemoteStatus, createBoardExtractor };
+/**
+ * Best-effort extraction of job description text from common page selectors.
+ * @returns {string|null}
+ */
+function extractJobDescription() {
+  const selectors = [
+    ".job-description",
+    ".jobs-description",
+    ".jobsearch-jobDescriptionText",
+    ".posting-description",
+    "[data-qa='job-description']",
+    "#job-description",
+    ".description",
+  ];
+  for (const sel of selectors) {
+    const el = document.querySelector(sel);
+    const text = el?.innerText?.trim();
+    if (text) return text.slice(0, JOB_DESCRIPTION_MAX_CHARS);
+  }
+  return null;
+}
+
+export { getRemoteStatus, createBoardExtractor, extractJobDescription };
