@@ -5,10 +5,18 @@ from zoneinfo import available_timezones
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 from auth.constants import (
+    AGENT_CAREER_GOALS_MAX_LENGTH,
+    AGENT_COMMUNICATION_STYLES,
+    AGENT_LOCATION_MAX_LENGTH,
+    AGENT_MEMORY_NOTES_MAX_LENGTH,
+    AGENT_PREFERRED_LOCATIONS_MAX,
+    AGENT_TARGET_ROLE_MAX_LENGTH,
+    AGENT_TARGET_ROLES_MAX,
     AUTOPILOT_MAX_DAILY_MAX,
     AUTOPILOT_MAX_DAILY_MIN,
     AUTOPILOT_MIN_SCORE_MAX,
     AUTOPILOT_MIN_SCORE_MIN,
+    DEFAULT_AGENT_COMMUNICATION_STYLE,
     DEFAULT_AUTOPILOT_ENABLED,
     DEFAULT_AUTOPILOT_MAX_DAILY,
     DEFAULT_AUTOPILOT_MIN_MATCH_SCORE,
@@ -27,6 +35,70 @@ DEFAULT_WEEKLY_GOAL = 5
 
 
 REFERRAL_CODE_MAX_LENGTH = 12
+
+
+def _default_agent_profile() -> dict:
+    return {
+        "target_roles": [],
+        "preferred_locations": [],
+        "career_goals": "",
+        "communication_style": DEFAULT_AGENT_COMMUNICATION_STYLE,
+        "memory_notes": "",
+    }
+
+
+def agent_profile_from_doc(doc: dict | None) -> dict:
+    """Normalize agent_profile from a user document."""
+    raw = doc or {}
+    stored = raw.get("agent_profile") or {}
+    return {
+        "target_roles": list(stored.get("target_roles") or [])[:AGENT_TARGET_ROLES_MAX],
+        "preferred_locations": list(stored.get("preferred_locations") or [])[:AGENT_PREFERRED_LOCATIONS_MAX],
+        "career_goals": str(stored.get("career_goals") or "")[:AGENT_CAREER_GOALS_MAX_LENGTH],
+        "communication_style": stored.get("communication_style", DEFAULT_AGENT_COMMUNICATION_STYLE),
+        "memory_notes": str(stored.get("memory_notes") or "")[:AGENT_MEMORY_NOTES_MAX_LENGTH],
+    }
+
+
+class AgentProfileRequest(BaseModel):
+    model_config = ConfigDict(strict=True)
+
+    target_roles: list[str] = Field(default_factory=list, max_length=AGENT_TARGET_ROLES_MAX)
+    preferred_locations: list[str] = Field(
+        default_factory=list, max_length=AGENT_PREFERRED_LOCATIONS_MAX
+    )
+    career_goals: str = Field(default="", max_length=AGENT_CAREER_GOALS_MAX_LENGTH)
+    communication_style: str = Field(default=DEFAULT_AGENT_COMMUNICATION_STYLE)
+    memory_notes: str = Field(default="", max_length=AGENT_MEMORY_NOTES_MAX_LENGTH)
+
+    def model_post_init(self, __context: object) -> None:
+        if self.communication_style not in AGENT_COMMUNICATION_STYLES:
+            raise ValueError(
+                f"communication_style must be one of: {', '.join(sorted(AGENT_COMMUNICATION_STYLES))}"
+            )
+        for role in self.target_roles:
+            if not role or len(role) > AGENT_TARGET_ROLE_MAX_LENGTH:
+                raise ValueError(
+                    f"Each target role must be 1–{AGENT_TARGET_ROLE_MAX_LENGTH} characters."
+                )
+        for location in self.preferred_locations:
+            if not location or len(location) > AGENT_LOCATION_MAX_LENGTH:
+                raise ValueError(
+                    f"Each preferred location must be 1–{AGENT_LOCATION_MAX_LENGTH} characters."
+                )
+
+
+class AgentProfileResponse(BaseModel):
+    target_roles: list[str]
+    preferred_locations: list[str]
+    career_goals: str
+    communication_style: str
+    memory_notes: str
+
+    @classmethod
+    def from_doc(cls, doc: dict | None) -> "AgentProfileResponse":
+        profile = agent_profile_from_doc(doc)
+        return cls(**profile)
 
 
 class RegisterRequest(BaseModel):
@@ -88,6 +160,7 @@ class UserResponse(BaseModel):
     autopilot_enabled: bool = DEFAULT_AUTOPILOT_ENABLED
     autopilot_min_match_score: int = DEFAULT_AUTOPILOT_MIN_MATCH_SCORE
     autopilot_max_daily: int = DEFAULT_AUTOPILOT_MAX_DAILY
+    agent_profile: AgentProfileResponse = Field(default_factory=lambda: AgentProfileResponse(**_default_agent_profile()))
 
     @classmethod
     def from_doc(cls, doc: dict) -> "UserResponse":
@@ -117,6 +190,7 @@ class UserResponse(BaseModel):
                 "autopilot_min_match_score", DEFAULT_AUTOPILOT_MIN_MATCH_SCORE
             ),
             autopilot_max_daily=doc.get("autopilot_max_daily", DEFAULT_AUTOPILOT_MAX_DAILY),
+            agent_profile=AgentProfileResponse.from_doc(doc),
         )
 
 
@@ -182,6 +256,7 @@ class UpdateUserRequest(BaseModel):
     autopilot_max_daily: int | None = Field(
         None, ge=AUTOPILOT_MAX_DAILY_MIN, le=AUTOPILOT_MAX_DAILY_MAX
     )
+    agent_profile: AgentProfileRequest | None = None
 
     def model_post_init(self, __context: object) -> None:
         if self.default_stages is not None:

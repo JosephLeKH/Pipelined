@@ -8,6 +8,7 @@ import SettingsAccountSection from "../components/SettingsAccountSection";
 import SettingsNotificationsSection from "../components/SettingsNotificationsSection";
 import SettingsPipelineSection from "../components/SettingsPipelineSection";
 import SettingsAutopilotSection from "../components/SettingsAutopilotSection";
+import SettingsAgentProfileSection from "../components/SettingsAgentProfileSection";
 import SettingsProfileSection from "../components/SettingsProfileSection";
 import SettingsResumeSection from "../components/SettingsResumeSection";
 import SettingsTemplatesSection from "../components/SettingsTemplatesSection";
@@ -29,6 +30,7 @@ const NAV_ITEMS = [
   { id: "notifications", label: "Notifications" },
   { id: "integrations", label: "Integrations" },
   { id: "autopilot", label: "Autopilot" },
+  { id: "agent", label: "Agent Profile" },
   { id: "resume", label: "Resume & AI" },
   { id: "templates", label: "Templates" },
   { id: "sharing", label: "Sharing" },
@@ -148,6 +150,7 @@ function renderSection(activeSection, user) {
     case "notifications": return <SettingsNotificationsSection />;
     case "integrations": return <SettingsIntegrationsSection />;
     case "autopilot": return <SettingsAutopilotSection />;
+    case "agent": return <SettingsAgentProfileSection />;
     case "resume": return <SettingsResumeSection />;
     case "templates": return <SettingsTemplatesSection />;
     case "sharing": return <SharingSection />;

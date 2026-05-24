@@ -26,6 +26,7 @@ from auth.constants import (
     DEFAULT_STAGES,
     DEFAULT_TIMEZONE,
     DEFAULT_WEEKLY_DIGEST_ENABLED,
+    DEFAULT_GMAIL_INTERVIEW_PREP,
 )
 from auth.schemas import TokenPayload
 from config import settings
@@ -137,6 +138,7 @@ def _build_user_doc(email: str, password: str, display_name: str) -> dict:
         "autopilot_enabled": DEFAULT_AUTOPILOT_ENABLED,
         "autopilot_min_match_score": DEFAULT_AUTOPILOT_MIN_MATCH_SCORE,
         "autopilot_max_daily": DEFAULT_AUTOPILOT_MAX_DAILY,
+        "gmail_interview_prep": DEFAULT_GMAIL_INTERVIEW_PREP,
     }
 
 
@@ -244,6 +246,7 @@ async def update_user_profile(
     autopilot_enabled: bool | None = None,
     autopilot_min_match_score: int | None = None,
     autopilot_max_daily: int | None = None,
+    agent_profile: dict | None = None,
 ) -> dict:
     """Update user profile fields and return the updated document."""
     users = get_collection("users")
@@ -272,6 +275,8 @@ async def update_user_profile(
         update_fields["autopilot_min_match_score"] = autopilot_min_match_score
     if autopilot_max_daily is not None:
         update_fields["autopilot_max_daily"] = autopilot_max_daily
+    if agent_profile is not None:
+        update_fields["agent_profile"] = agent_profile
     if update_fields:
         await users.update_one(
             {"_id": ObjectId(user_id)},

@@ -162,6 +162,7 @@ async def update_me(
         autopilot_enabled=body.autopilot_enabled,
         autopilot_min_match_score=body.autopilot_min_match_score,
         autopilot_max_daily=body.autopilot_max_daily,
+        agent_profile=body.agent_profile.model_dump() if body.agent_profile else None,
     )
     logger.info("user_profile_updated", user_id=str(user["_id"]))
     return {"data": UserResponse.from_doc(updated)}
