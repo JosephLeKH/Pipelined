@@ -103,6 +103,33 @@ CANDIDATE_POOL_LIMIT = 200
 SCORE_SAVED_SEARCH_MATCH = 50
 SCORE_OFFER_PATTERN_MATCH = 30
 SCORE_ATTRIBUTE_MATCH = 20
+SCORE_ROLE_KEYWORD_MATCH = 25
+
+ROLE_KEYWORD_STOPWORDS = {"with", "and", "the", "for", "senior", "junior", "lead", "staff"}
+
+
+async def _get_user_role_keywords(user_id: str) -> set[str]:
+    """Extract keywords from user's recent applications for role matching."""
+    try:
+        apps = get_collection("applications")
+        docs = await apps.find(
+            {"user_id": ObjectId(user_id)},
+            projection={"role_title": 1, "_id": 0},
+        ).sort("date_applied", -1).limit(20).to_list(length=20)
+
+        keywords: set[str] = set()
+        for doc in docs:
+            role_title = (doc.get("role_title") or "").lower()
+            if not role_title:
+                continue
+            # Split by whitespace and special characters, filter by length and stopwords
+            words = [w for w in role_title.replace("-", " ").split() if len(w) >= 4 and w not in ROLE_KEYWORD_STOPWORDS]
+            keywords.update(words)
+
+        return keywords
+    except Exception:
+        logger.warning("role_keywords_extraction_failed", user_id=user_id)
+        return set()
 
 
 def _score_job(
@@ -111,6 +138,7 @@ def _score_job(
     search_filters: list[dict],
     offer_remotes: set[str],
     offer_company_types: set[str],
+    user_keywords: set[str],
 ) -> tuple[int, str]:
     """Return (score, reason) for a single job doc."""
     score = 0
@@ -142,6 +170,14 @@ def _score_job(
     if doc.get("company_type") in offer_company_types:
         score += SCORE_ATTRIBUTE_MATCH
 
+    # Check if any user keywords appear in the job title
+    job_title = (doc.get("title") or "").lower()
+    for keyword in user_keywords:
+        if keyword in job_title:
+            score += SCORE_ROLE_KEYWORD_MATCH
+            reasons.append("role match")
+            break
+
     return score, reasons[0] if reasons else "relevant to your profile"
 
 
@@ -159,7 +195,8 @@ async def get_recommended_listings(user_id: str) -> list[dict]:
         {"user_id": uid_obj, "stage": "offer"},
         projection={"remote_status": 1, "company_type": 1, "_id": 0},
     ).to_list(length=50)
-    saved_searches, offer_apps = await asyncio.gather(saved_searches_coro, offer_apps_coro)
+    keywords_coro = _get_user_role_keywords(user_id)
+    saved_searches, offer_apps, user_keywords = await asyncio.gather(saved_searches_coro, offer_apps_coro, keywords_coro)
 
     search_terms: list[str] = [
         (s.get("query") or "").lower() for s in saved_searches if s.get("query")
@@ -173,7 +210,7 @@ async def get_recommended_listings(user_id: str) -> list[dict]:
 
     scored: list[tuple[int, str, dict]] = []
     for doc in candidates:
-        score, reason = _score_job(doc, search_terms, search_filters, offer_remotes, offer_company_types)
+        score, reason = _score_job(doc, search_terms, search_filters, offer_remotes, offer_company_types, user_keywords)
         scored.append((score, reason, doc))
 
     scored.sort(key=lambda t: t[0], reverse=True)
