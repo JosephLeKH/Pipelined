@@ -71,4 +71,8 @@ export const passthroughHandlers = [
   http.get("/api/calendar/events", () =>
     HttpResponse.json({ data: [], meta: { count: 0 } })
   ),
+
+  http.get("/api/autopilot/pending", () =>
+    HttpResponse.json({ data: [] })
+  ),
 ];

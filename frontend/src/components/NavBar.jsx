@@ -6,6 +6,7 @@ import { Link, useLocation } from "react-router-dom";
 import Activity from "lucide-react/dist/esm/icons/activity";
 import BarChart2 from "lucide-react/dist/esm/icons/bar-chart-2";
 import Briefcase from "lucide-react/dist/esm/icons/briefcase";
+import Inbox from "lucide-react/dist/esm/icons/inbox";
 import CalendarDays from "lucide-react/dist/esm/icons/calendar-days";
 import LayoutDashboard from "lucide-react/dist/esm/icons/layout-dashboard";
 import LogOut from "lucide-react/dist/esm/icons/log-out";
@@ -23,6 +24,7 @@ import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import { resetUser, trackEvent } from "../lib/analytics";
 import { useApplications } from "../hooks/useApplications";
+import { usePendingOpportunities } from "../hooks/usePendingOpportunities";
 import { OFFER_STAGE } from "../lib/constants";
 import {
   DropdownMenu,
@@ -37,6 +39,7 @@ import NotificationBell from "./NotificationBell";
 
 const NAV_LINKS = [
   { to: "/dashboard", label: "Dashboard", Icon: LayoutDashboard },
+  { to: "/inbox/pending", label: "Inbox", Icon: Inbox, badgeKey: "pending" },
   { to: "/brief", label: "Brief", Icon: Sun },
   { to: "/jobs", label: "Job Board", Icon: Briefcase },
   { to: "/calendar", label: "Calendar", Icon: CalendarDays },
@@ -63,15 +66,29 @@ function UserAvatar({ user }) {
   );
 }
 
-function DesktopNavLinks({ navLinks, pathname }) {
+function NavBadge({ count }) {
+  if (!count) return null;
+  return (
+    <span
+      aria-label={`${count} pending`}
+      className="ml-1 inline-flex min-w-[1.25rem] items-center justify-center rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-semibold leading-none text-primary-foreground"
+    >
+      {count > 99 ? "99+" : count}
+    </span>
+  );
+}
+
+function DesktopNavLinks({ navLinks, pathname, badgeCounts }) {
   return (
     <div className="hidden items-center gap-1 md:flex">
-      {navLinks.map(({ to, label, Icon }) => {
+      {navLinks.map(({ to, label, Icon, badgeKey }) => {
         const active = pathname === to;
+        const badge = badgeKey ? badgeCounts[badgeKey] : 0;
         return (
           <Link key={to} to={to} aria-current={active ? "page" : undefined} className={`flex items-center gap-1.5 ${active ? NAV_LINK_ACTIVE : NAV_LINK}`}>
             <Icon className="h-4 w-4" aria-hidden="true" />
             {label}
+            <NavBadge count={badge} />
           </Link>
         );
       })}
@@ -148,16 +165,18 @@ function HamburgerButton({ mobileMenuOpen, setMobileMenuOpen }) {
   );
 }
 
-function MobileMenu({ navLinks, pathname, closeMobileMenu, ThemeIcon, theme, handleCycleTheme, handleLogout }) {
+function MobileMenu({ navLinks, pathname, closeMobileMenu, ThemeIcon, theme, handleCycleTheme, handleLogout, badgeCounts }) {
   return (
     <div data-testid="mobile-nav-menu" className="flex flex-col gap-1 border-t border-border bg-card px-4 py-3 md:hidden">
-      {navLinks.map(({ to, label, Icon }) => {
+      {navLinks.map(({ to, label, Icon, badgeKey }) => {
         const active = pathname === to;
+        const badge = badgeKey ? badgeCounts[badgeKey] : 0;
         return (
           <Link key={to} to={to} onClick={closeMobileMenu} aria-current={active ? "page" : undefined}
             className={`flex items-center gap-2 ${active ? NAV_LINK_ACTIVE : NAV_LINK}`}>
             <Icon className="h-4 w-4" aria-hidden="true" />
             {label}
+            <NavBadge count={badge} />
           </Link>
         );
       })}
@@ -180,7 +199,10 @@ function NavBar() {
   const { theme, cycleTheme } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { data: offersData } = useApplications({ stage: OFFER_STAGE, limit: 1 });
+  const { data: pendingOpportunities } = usePendingOpportunities();
   const hasOffers = (offersData?.data?.length ?? 0) > 0;
+  const pendingCount = pendingOpportunities?.length ?? 0;
+  const badgeCounts = useMemo(() => ({ pending: pendingCount }), [pendingCount]);
   const offersLink = useMemo(() => ({ to: "/offers", label: "Offers", Icon: Trophy }), []);
   const navLinks = useMemo(() => (hasOffers ? [NAV_LINKS[0], offersLink, ...NAV_LINKS.slice(1)] : NAV_LINKS), [hasOffers, offersLink]);
   const handleCycleTheme = useCallback(() => { cycleTheme(); trackEvent("feature_used", { feature: "dark_mode" }); }, [cycleTheme]);
@@ -192,11 +214,11 @@ function NavBar() {
     <nav aria-label="Main navigation" className="bg-card border-b border-border">
       <div className="flex items-center gap-4 px-6 py-3">
         <span className="mr-2 text-foreground font-display font-semibold text-lg tracking-tight">Pipelined</span>
-        <DesktopNavLinks navLinks={navLinks} pathname={pathname} />
+        <DesktopNavLinks navLinks={navLinks} pathname={pathname} badgeCounts={badgeCounts} />
         <DesktopActions user={user} ThemeIcon={ThemeIcon} theme={theme} handleCycleTheme={handleCycleTheme} handleLogout={handleLogout} />
         <HamburgerButton mobileMenuOpen={mobileMenuOpen} setMobileMenuOpen={setMobileMenuOpen} />
       </div>
-      {mobileMenuOpen && <MobileMenu navLinks={navLinks} pathname={pathname} closeMobileMenu={closeMobileMenu} ThemeIcon={ThemeIcon} theme={theme} handleCycleTheme={handleCycleTheme} handleLogout={handleLogout} />}
+      {mobileMenuOpen && <MobileMenu navLinks={navLinks} pathname={pathname} closeMobileMenu={closeMobileMenu} ThemeIcon={ThemeIcon} theme={theme} handleCycleTheme={handleCycleTheme} handleLogout={handleLogout} badgeCounts={badgeCounts} />}
     </nav>
   );
 }
