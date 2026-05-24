@@ -1,0 +1,58 @@
+{
+  "id": "prd_111",
+  "title": "Email Timeline & Offer Intelligence",
+  "description": "Structured email event timeline per application and offer letter parsing. Privacy-safe — no raw email bodies stored.",
+  "userStories": [
+    {
+      "id": "US-966",
+      "title": "Email events collection and write path",
+      "description": "email_events collection: type, timestamp, application_id, extracted fields. Log on every classifier action.",
+      "acceptanceCriteria": [
+        "Events persisted on classify",
+        "No raw email bodies",
+        "user_id on all queries"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-967",
+      "title": "Application email timeline API and UI",
+      "description": "GET /api/applications/{id}/email-events. DetailPanel Email timeline section.",
+      "acceptanceCriteria": [
+        "API endpoint",
+        "Timeline UI in detail panel",
+        "Tests"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-968",
+      "title": "Offer letter parser",
+      "description": "OpenRouter extract offer_details into OfferDetails schema when Offer stage detected.",
+      "acceptanceCriteria": [
+        "offer_details populated from email",
+        "Structured JSON extract",
+        "Tests"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-969",
+      "title": "Offer compare hints in detail panel",
+      "description": "AiSection comp summary and link to OfferComparison when multiple offers.",
+      "acceptanceCriteria": [
+        "Offer summary section",
+        "Link when 2+ offers"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

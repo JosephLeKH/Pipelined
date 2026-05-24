@@ -1,0 +1,11 @@
+# Ralph Progress Log — prd_111
+Started: Sat May 23 2026
+---
+
+## US-966: Email events collection and write path ✅ COMPLETE
+
+**Implementation:** Added email_integration/email_events.py with log_email_event(); _process_message logs to email_events on every classify action (no body, user_id scoped).
+
+**Testing:** `pytest tests/test_email_events.py -v` — 3 passed
+
+---

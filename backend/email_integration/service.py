@@ -20,6 +20,7 @@ from applications.service import update as update_application
 from config import settings
 from database import get_collection
 from email_integration.classifier import GmailTransientError, classify_email
+from email_integration.email_events import log_email_event
 
 logger = structlog.get_logger()
 
@@ -61,6 +62,12 @@ STAGE_ORDER: dict[str, int] = {
 PROCESSED_IDS_LIMIT = 500
 GMAIL_ACTIVITY_LIMIT = 5
 GMAIL_ACTIVITY_COLLECTION = "gmail_activity"
+
+DEFAULT_GMAIL_INTERVIEW_PREP = True
+INTERVIEW_PREP_RETRIGGER_HOURS = 24
+INTERVIEW_PREP_STATUS_GENERATING = "generating"
+INTERVIEW_PREP_STATUS_DONE = "done"
+INTERVIEW_PREP_STATUS_FAILED = "failed"
 
 
 class GmailOAuthError(Exception):
@@ -192,7 +199,7 @@ async def store_gmail_tokens(user_id: str, token_data: dict) -> str:
         "gmail_connected_at": datetime.now(timezone.utc),
         "gmail_auto_track": True,
         "gmail_status_updates": True,
-        "gmail_interview_prep": False,
+        "gmail_interview_prep": DEFAULT_GMAIL_INTERVIEW_PREP,
         "gmail_emails_scanned": 0,
         "gmail_apps_tracked": 0,
     }
@@ -221,7 +228,7 @@ def get_connection_status(user: dict) -> dict:
         "status_updates_count": user.get("gmail_status_updates_count", 0),
         "auto_track": user.get("gmail_auto_track", True),
         "status_updates": user.get("gmail_status_updates", True),
-        "interview_prep": user.get("gmail_interview_prep", False),
+        "interview_prep": user.get("gmail_interview_prep", DEFAULT_GMAIL_INTERVIEW_PREP),
     }
 
 
@@ -296,6 +303,28 @@ def _decode_body(payload: dict) -> str:
     return ""
 
 
+async def _record_email_event(
+    user_id: str,
+    *,
+    event_type: str,
+    application_id: str | None,
+    company: str,
+    role_title: str | None,
+    stage: str,
+    subject: str,
+) -> None:
+    """Persist a privacy-safe email event (no body) for the application timeline."""
+    await log_email_event(
+        user_id,
+        event_type=event_type,
+        application_id=application_id,
+        company=company,
+        role_title=role_title,
+        stage=stage,
+        subject=subject,
+    )
+
+
 async def _find_existing_app(user_id: str, company: str, role_title: str) -> dict | None:
     """Find an existing application by case-insensitive company + role_title match."""
     try:
@@ -357,9 +386,18 @@ async def _process_message(
     existing = await _find_existing_app(user_id, company, role_title)
 
     if existing:
-        if not user.get("gmail_status_updates", True):
-            return False, False
         app_id = str(existing["_id"])
+        if not user.get("gmail_status_updates", True):
+            await _record_email_event(
+                user_id,
+                event_type="email_classified",
+                application_id=app_id,
+                company=company,
+                role_title=role_title,
+                stage=stage,
+                subject=subject,
+            )
+            return False, False
 
         # Check stage ordering to prevent regression (e.g., Offer -> Applied)
         existing_stage = existing.get("current_stage", "Applied")
@@ -387,15 +425,44 @@ async def _process_message(
                 company=company,
                 role_title=role_title,
             )
-            if stage == "Interviewing" and user.get("gmail_interview_prep"):
+            await _record_email_event(
+                user_id,
+                event_type="stage_updated",
+                application_id=app_id,
+                company=company,
+                role_title=role_title,
+                stage=stage,
+                subject=subject,
+            )
+            if stage == "Interviewing" and user.get(
+                "gmail_interview_prep", DEFAULT_GMAIL_INTERVIEW_PREP
+            ):
                 asyncio.create_task(
                     _trigger_interview_prep(user_id, app_id, company, role_title)
                 )
             return False, True
 
+        await _record_email_event(
+            user_id,
+            event_type="email_classified",
+            application_id=app_id,
+            company=company,
+            role_title=role_title,
+            stage=stage,
+            subject=subject,
+        )
         return False, False
 
     if not user.get("gmail_auto_track", True):
+        await _record_email_event(
+            user_id,
+            event_type="email_classified",
+            application_id=None,
+            company=company,
+            role_title=role_title,
+            stage=stage,
+            subject=subject,
+        )
         return False, False
 
     try:
@@ -423,7 +490,18 @@ async def _process_message(
                 company=company,
                 role_title=role_title,
             )
-            if stage == "Interviewing" and user.get("gmail_interview_prep"):
+            await _record_email_event(
+                user_id,
+                event_type="application_tracked",
+                application_id=app_id,
+                company=company,
+                role_title=role_title,
+                stage=stage,
+                subject=subject,
+            )
+            if stage == "Interviewing" and user.get(
+                "gmail_interview_prep", DEFAULT_GMAIL_INTERVIEW_PREP
+            ):
                 asyncio.create_task(
                     _trigger_interview_prep(user_id, app_id, company, role_title)
                 )
@@ -433,10 +511,46 @@ async def _process_message(
         return False, False
 
 
+async def _should_skip_interview_prep_retrigger(user_id: str, app_id: str) -> bool:
+    """Return True when prep was triggered within the dedupe window or is in progress."""
+    apps = get_collection("applications")
+    app = await apps.find_one(
+        {"_id": _to_oid(app_id), "user_id": _to_oid(user_id)},
+        {"interview_prep_status": 1, "interview_prep_triggered_at": 1},
+    )
+    if not app:
+        return True
+    if app.get("interview_prep_status") == INTERVIEW_PREP_STATUS_GENERATING:
+        return True
+    triggered_at = app.get("interview_prep_triggered_at")
+    if triggered_at is None:
+        return False
+    if triggered_at.tzinfo is None:
+        triggered_at = triggered_at.replace(tzinfo=timezone.utc)
+    cutoff = datetime.now(timezone.utc) - timedelta(hours=INTERVIEW_PREP_RETRIGGER_HOURS)
+    return triggered_at >= cutoff
+
+
 async def _trigger_interview_prep(
     user_id: str, app_id: str, company: str, role: str
 ) -> None:
     """Run interview prep agent in background and persist briefing to the application."""
+    if await _should_skip_interview_prep_retrigger(user_id, app_id):
+        logger.info("interview_prep_retrigger_skipped", app_id=app_id, user_id=user_id)
+        return
+
+    apps = get_collection("applications")
+    now = datetime.now(timezone.utc)
+    await apps.update_one(
+        {"_id": _to_oid(app_id), "user_id": _to_oid(user_id)},
+        {
+            "$set": {
+                "interview_prep_status": INTERVIEW_PREP_STATUS_GENERATING,
+                "interview_prep_triggered_at": now,
+            }
+        },
+    )
+
     users = get_collection("users")
     user_doc = await users.find_one({"_id": _to_oid(user_id)}, {"resume_text": 1})
     resume_text = (user_doc or {}).get("resume_text", "")
@@ -449,18 +563,33 @@ async def _trigger_interview_prep(
             exa_api_key=settings.exa_api_key,
         ):
             if event.get("type") == "done":
-                await get_collection("applications").update_one(
-                    {"_id": _to_oid(app_id)},
+                await apps.update_one(
+                    {"_id": _to_oid(app_id), "user_id": _to_oid(user_id)},
                     {
                         "$set": {
                             "interview_prep_briefing": event.get("briefing"),
-                            "interview_prep_generated_at": datetime.now(timezone.utc),
+                            "interview_prep_generated_at": now,
+                            "interview_prep_status": INTERVIEW_PREP_STATUS_DONE,
                         }
                     },
+                )
+                from notifications.notification_service import create_notification  # noqa: PLC0415
+
+                role_label = role or "your role"
+                await create_notification(
+                    _to_oid(user_id),
+                    type="interview_prep_ready",
+                    title=f"Interview prep ready: {company}",
+                    body=f"Your briefing for {role_label} at {company} is ready.",
+                    action_url=f"/dashboard?selected={app_id}",
                 )
                 break
     except Exception:
         logger.exception("interview_prep_auto_trigger_error", app_id=app_id)
+        await apps.update_one(
+            {"_id": _to_oid(app_id), "user_id": _to_oid(user_id)},
+            {"$set": {"interview_prep_status": INTERVIEW_PREP_STATUS_FAILED}},
+        )
 
 
 async def _trigger_fit_score(
