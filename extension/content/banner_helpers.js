@@ -14,33 +14,51 @@ export const BANNER_CSS = `
   position: fixed;
   bottom: 24px;
   right: 24px;
-  background: #1e293b;
-  color: #f8fafc;
-  border-radius: 8px;
+  background: #ffffff;
+  color: #141413;
+  border: 1px solid #e7e5e4;
+  border-radius: 12px;
   padding: 16px 20px;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 14px;
   line-height: 1.4;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 24px rgba(20, 20, 19, 0.08);
   min-width: 280px;
   max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+}
+.pipelined-row {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 .pipelined-text { flex: 1; }
 .pipelined-cta {
-  background: #3b82f6;
+  background: #d97757;
   color: #fff;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 6px 12px;
   font-size: 13px;
+  font-weight: 500;
   cursor: pointer;
   white-space: nowrap;
   flex-shrink: 0;
 }
-.pipelined-cta:hover { background: #2563eb; }
+.pipelined-cta:hover { background: #c4673a; }
+.pipelined-ai-badge {
+  align-self: flex-start;
+  background: #fae4d4;
+  color: #7d4127;
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
 `;
 
 /**
@@ -60,10 +78,13 @@ export function createBannerHost(initialText = "") {
   container.className = "pipelined-banner";
   container.setAttribute("role", "alert");
   container.setAttribute("aria-live", "polite");
+  const row = document.createElement("div");
+  row.className = "pipelined-row";
   const textSpan = document.createElement("span");
   textSpan.className = "pipelined-text";
   textSpan.textContent = initialText;
-  container.appendChild(textSpan);
+  row.appendChild(textSpan);
+  container.appendChild(row);
   shadow.appendChild(container);
   return { host, shadow };
 }
@@ -74,8 +95,18 @@ export function dismiss(host) {
   setTimeout(() => host.remove(), FADE_DURATION_MS);
 }
 
-export function showBannerSuccess(shadow, host) {
+export function showBannerAiEnhanced(shadow) {
+  const container = shadow.querySelector(".pipelined-banner");
+  if (!container || container.querySelector(".pipelined-ai-badge")) return;
+  const badge = document.createElement("span");
+  badge.className = "pipelined-ai-badge";
+  badge.textContent = "Enhanced with AI";
+  container.appendChild(badge);
+}
+
+export function showBannerSuccess(shadow, host, { aiEnhanced = false } = {}) {
   shadow.querySelector(".pipelined-text").textContent = "\u2713 Saved to Pipelined!";
+  if (aiEnhanced) showBannerAiEnhanced(shadow);
   shadow.querySelector("[data-action='save']")?.remove();
   setTimeout(() => dismiss(host), BANNER_SUCCESS_DISMISS_MS);
 }

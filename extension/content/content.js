@@ -18,6 +18,7 @@ import {
   createBannerHost,
   dismiss,
   showBannerSuccess,
+  showBannerAiEnhanced,
   showBannerError,
   showBannerDuplicate,
 } from "./banner_helpers.js";
@@ -73,7 +74,7 @@ function injectBanner(fields, boardId) {
   button.className = "pipelined-cta";
   button.dataset.action = "save";
   button.textContent = "Save to Pipelined \u2192";
-  shadow.querySelector(".pipelined-banner").appendChild(button);
+  shadow.querySelector(".pipelined-row").appendChild(button);
 
   document.body.appendChild(host);
   const timer = setTimeout(() => dismiss(host), BANNER_AUTO_DISMISS_MS);
@@ -124,7 +125,7 @@ async function handleSave(shadow, host, fields, boardId) {
   const result = await sendToBackground(MSG.SAVE_APPLICATION, payload);
 
   if (result.status === "success") {
-    showBannerSuccess(shadow, host);
+    showBannerSuccess(shadow, host, { aiEnhanced: Boolean(result.parseEnhanced) });
   } else if (result.status === "duplicate") {
     showBannerDuplicate(shadow, host, result.existingId);
   } else {
@@ -132,8 +133,9 @@ async function handleSave(shadow, host, fields, boardId) {
   }
 }
 
-function showBannerAutoSaved(shadow, host) {
+function showBannerAutoSaved(shadow, host, parseEnhanced = false) {
   shadow.querySelector(".pipelined-text").textContent = "\u2713 Saved to Pipelined!";
+  if (parseEnhanced) showBannerAiEnhanced(shadow);
   setTimeout(() => dismiss(host), AUTO_SAVE_SUCCESS_DISMISS_MS);
 }
 
@@ -146,11 +148,13 @@ function showBannerAutoSaveFailed(shadow, host, payload) {
     btn.disabled = true;
     btn.textContent = "Saving\u2026";
     const res = await sendToBackground(MSG.SAVE_APPLICATION, payload);
-    if (res.status === "success") showBannerAutoSaved(shadow, host);
+    if (res.status === "success") {
+      showBannerAutoSaved(shadow, host, res.parseEnhanced);
+    }
     else if (res.status === "duplicate") showBannerDuplicate(shadow, host, res.existingId);
     else { btn.disabled = false; btn.textContent = "Retry"; }
   });
-  shadow.querySelector(".pipelined-banner").appendChild(btn);
+  shadow.querySelector(".pipelined-row").appendChild(btn);
 }
 
 export async function initAutoSave(fields, boardId) {
@@ -177,7 +181,7 @@ export async function initAutoSave(fields, boardId) {
       jobDescription: extractJobDescription(),
     };
     const result = await sendToBackground(MSG.SAVE_APPLICATION, payload);
-    if (result.status === "success") showBannerAutoSaved(shadow, host);
+    if (result.status === "success") showBannerAutoSaved(shadow, host, result.parseEnhanced);
     else if (result.status === "duplicate") showBannerDuplicate(shadow, host, result.existingId);
     else showBannerAutoSaveFailed(shadow, host, payload);
   }, AUTO_SAVE_DEBOUNCE_MS);

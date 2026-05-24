@@ -172,8 +172,9 @@ async def create(user_id: str, body: ApplicationCreate) -> dict:
     """Create a new application. Raises DuplicateApplicationError on collision."""
     uid = ObjectId(user_id)
     apps = get_collection("applications")
+    parse_enhanced = False
     if body.source == "extension" and (not body.role_title or not body.company):
-        body = await _apply_openai_fallback(body)
+        body, parse_enhanced = await _apply_openai_fallback(body)
     normalised_company = (body.company or "").lower()
     normalised_role = (body.role_title or "").lower()
     await _check_duplicate(apps, uid, normalised_company, normalised_role)
@@ -185,6 +186,7 @@ async def create(user_id: str, body: ApplicationCreate) -> dict:
     doc = _build_application_doc(uid, body_dict, normalised_company, normalised_role, stages, now, company_domain)
     inserted_id = await _insert_or_raise_duplicate(apps, uid, doc, normalised_company, normalised_role)
     doc["_id"] = inserted_id
+    doc["_parse_enhanced"] = parse_enhanced
     logger.info("application_created", user_id=user_id, app_id=str(inserted_id))
     resume_text = user.get("resume_text", "") if user else ""
     if resume_text:

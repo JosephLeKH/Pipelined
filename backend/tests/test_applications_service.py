@@ -298,9 +298,10 @@ async def test_apply_openai_fallback_fills_role_title_and_company():
 
     with patch("applications.service_ai.parse_with_openai", AsyncMock(return_value=openai_result)):
         # Act
-        result = await _apply_openai_fallback(body)
+        result, enhanced = await _apply_openai_fallback(body)
 
     # Assert
+    assert enhanced is True
     assert result.role_title == "Software Engineer"
     assert result.company == "Acme Corp"
 
@@ -322,9 +323,10 @@ async def test_apply_openai_fallback_returns_body_unchanged_on_parse_failure():
 
     with patch("applications.service_ai.parse_with_openai", AsyncMock(side_effect=Exception("network error"))):
         # Act
-        result = await _apply_openai_fallback(body)
+        result, enhanced = await _apply_openai_fallback(body)
 
     # Assert
+    assert enhanced is False
     assert result is body
 
 

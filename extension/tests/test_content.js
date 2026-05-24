@@ -107,6 +107,7 @@ describe("injectBanner()", () => {
 
     expect(styleEl).not.toBeNull();
     expect(styleEl.textContent).toContain("pipelined-banner");
+    expect(styleEl.textContent).toContain("#ffffff");
   });
 
   it("should inject CSS inline (style element, not link)", () => {

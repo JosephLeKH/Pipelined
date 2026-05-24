@@ -14,20 +14,20 @@ from parsing.openai_client import parse_with_openai
 logger = structlog.get_logger()
 
 
-async def _apply_openai_fallback(body: ApplicationCreate) -> ApplicationCreate:
+async def _apply_openai_fallback(body: ApplicationCreate) -> tuple[ApplicationCreate, bool]:
     """Call OpenAI to fill in missing role_title/company when source is extension.
 
     Returns a (possibly enriched) ApplicationCreate. On failure, returns body unchanged.
     """
     page_text = body.page_text
     if not page_text:
-        return body
+        return body, False
 
     try:
         parsed = await parse_with_openai(page_text)
     except Exception:
         logger.warning("openai_fallback_error", exc_info=True)
-        return body
+        return body, False
 
     updates: dict = {}
     if not body.role_title and parsed.get("role_title"):
@@ -44,8 +44,8 @@ async def _apply_openai_fallback(body: ApplicationCreate) -> ApplicationCreate:
         updates["remote_status"] = parsed["remote_status"]
 
     if not updates:
-        return body
-    return body.model_copy(update=updates)
+        return body, False
+    return body.model_copy(update=updates), True
 
 
 def _derive_company_domain(source_url: str | None, company: str | None) -> str | None:

@@ -165,6 +165,7 @@ class ApplicationResponse(BaseModel):
     fit_score_at: datetime | None = None
     interview_prep_briefing: dict | None = None
     interview_prep_generated_at: datetime | None = None
+    parse_enhanced: bool | None = None
 
     @classmethod
     def from_doc(cls, doc: dict) -> "ApplicationResponse":

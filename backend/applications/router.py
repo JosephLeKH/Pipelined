@@ -74,7 +74,9 @@ async def create_application(
                 "details": {"existing_id": exc.existing_id},
             },
         )
-    return {"data": ApplicationResponse.from_doc(doc)}
+    parse_enhanced = bool(doc.pop("_parse_enhanced", False))
+    response = ApplicationResponse.from_doc(doc)
+    return {"data": response.model_copy(update={"parse_enhanced": parse_enhanced})}
 
 
 def _build_app_list_query(
@@ -157,7 +159,9 @@ async def get_application(
     doc = await app_service.get(user_id, app_id)
     if doc is None:
         raise HTTPException(status_code=404, detail=APP_NOT_FOUND_DETAIL)
-    return {"data": ApplicationResponse.from_doc(doc)}
+    parse_enhanced = bool(doc.pop("_parse_enhanced", False))
+    response = ApplicationResponse.from_doc(doc)
+    return {"data": response.model_copy(update={"parse_enhanced": parse_enhanced})}
 
 
 @router.patch("/{app_id}", status_code=200)
@@ -171,7 +175,9 @@ async def update_application(
     doc = await app_service.update(user_id, app_id, body)
     if doc is None:
         raise HTTPException(status_code=404, detail=APP_NOT_FOUND_DETAIL)
-    return {"data": ApplicationResponse.from_doc(doc)}
+    parse_enhanced = bool(doc.pop("_parse_enhanced", False))
+    response = ApplicationResponse.from_doc(doc)
+    return {"data": response.model_copy(update={"parse_enhanced": parse_enhanced})}
 
 
 @router.delete("/{app_id}", status_code=204)
@@ -197,7 +203,9 @@ async def restore_application(
     doc = await app_service.restore(user_id, app_id)
     if doc is None:
         raise HTTPException(status_code=404, detail=APP_NOT_FOUND_DETAIL)
-    return {"data": ApplicationResponse.from_doc(doc)}
+    parse_enhanced = bool(doc.pop("_parse_enhanced", False))
+    response = ApplicationResponse.from_doc(doc)
+    return {"data": response.model_copy(update={"parse_enhanced": parse_enhanced})}
 
 
 @router.patch("/{app_id}/archive", status_code=200)
@@ -210,7 +218,9 @@ async def archive_application(
     doc = await app_service.archive(user_id, app_id)
     if doc is None:
         raise HTTPException(status_code=404, detail=APP_NOT_FOUND_DETAIL)
-    return {"data": ApplicationResponse.from_doc(doc)}
+    parse_enhanced = bool(doc.pop("_parse_enhanced", False))
+    response = ApplicationResponse.from_doc(doc)
+    return {"data": response.model_copy(update={"parse_enhanced": parse_enhanced})}
 
 
 @router.patch("/{app_id}/unarchive", status_code=200)
@@ -223,7 +233,9 @@ async def unarchive_application(
     doc = await app_service.unarchive(user_id, app_id)
     if doc is None:
         raise HTTPException(status_code=404, detail=APP_NOT_FOUND_DETAIL)
-    return {"data": ApplicationResponse.from_doc(doc)}
+    parse_enhanced = bool(doc.pop("_parse_enhanced", False))
+    response = ApplicationResponse.from_doc(doc)
+    return {"data": response.model_copy(update={"parse_enhanced": parse_enhanced})}
 
 
 def _prep_checklist_response(doc: dict) -> dict:

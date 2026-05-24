@@ -153,7 +153,11 @@ async function executeSave(payload) {
   }
 
   await cacheRecentSave(response.data);
-  return { status: "success", application: response.data };
+  return {
+    status: "success",
+    application: response.data,
+    parseEnhanced: Boolean(response.data?.parse_enhanced),
+  };
 }
 
 async function executeContactSave(payload) {
