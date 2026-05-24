@@ -9,3 +9,35 @@ Started: Sat May 23 2026
 **Testing:** `pytest tests/test_mission_scorer.py tests/test_brief_router.py::test_get_brief_today_generates_on_demand -v` — 4 passed
 
 ---
+
+## US-962: Mission actions API — snooze and done ✅ COMPLETE
+
+**Implementation:** POST /api/brief/missions/{id}/snooze and /done; brief_mission_state collection; missions filtered by snooze/done; mission_progress on today payload.
+
+**Testing:** `pytest tests/test_mission_actions.py -v` — 3 passed
+
+---
+
+## US-963: TodayPage UI — mission cards with why ✅ COMPLETE
+
+**Implementation:** TodayPage at /today with hero top mission, MissionCard (AiSection/designTokens), useMissionActions hook, snooze/done wired to API.
+
+**Testing:** `npm run test -- --run src/pages/TodayPage.test.jsx` — 4 passed
+
+---
+
+## US-964: Nav and post-login default to Today ✅ COMPLETE
+
+**Implementation:** NavBar Today link; /brief → /today redirect; login/register/github/verify redirects to /today; morning_brief_ready action_url /today.
+
+**Testing:** `npm run test -- --run src/components/NotificationBell.test.jsx` — passed; `npm run build` — success
+
+---
+
+## US-965: End-of-day progress strip ✅ COMPLETE
+
+**Implementation:** MissionProgressStrip on TodayPage footer using mission_progress.cleared/total; updates after Done via query invalidation.
+
+**Testing:** Covered in TodayPage.test.jsx progress strip test — passed
+
+---
