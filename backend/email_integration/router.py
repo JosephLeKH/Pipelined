@@ -3,7 +3,7 @@
 import urllib.parse
 
 import structlog
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.responses import RedirectResponse
 
 from auth.dependencies import get_current_user, get_verified_user
@@ -15,6 +15,7 @@ from email_integration.schemas import (
     GmailAuthUrl,
     GmailConnectionStatus,
 )
+from middleware.rate_limit import limiter
 
 logger = structlog.get_logger()
 
@@ -72,7 +73,11 @@ async def get_status(user: dict = Depends(get_current_user)) -> dict:
 
 
 @router.post("/sync", response_model=EmailSyncResult)
-async def trigger_sync(user: dict = Depends(get_verified_user)) -> dict:
+@limiter.limit("3/15minutes")
+async def trigger_sync(
+    request: Request,
+    user: dict = Depends(get_verified_user),
+) -> dict:
     """Trigger a manual Gmail sync for the current user."""
     if not user.get("gmail_access_token"):
         raise HTTPException(
