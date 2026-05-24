@@ -12,7 +12,7 @@ from notifications.notification_service import (
     _generate_stale_app_notifications,
 )
 
-pytestmark = pytest.mark.asyncio(loop_scope="session")
+pytestmark = pytest.mark.asyncio(loop_scope="function")
 
 
 async def test_stale_app_notification_created(test_user):
