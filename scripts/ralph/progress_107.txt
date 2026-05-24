@@ -1,0 +1,43 @@
+# Ralph Progress Log — prd_107
+Started: Sat May 23 2026
+---
+
+## US-948: Morning Brief page visual redesign ✅ COMPLETE
+
+**Implementation:** MorningBriefHero with Sun icon circle; MorningBriefSkeleton (designTokens CARD_BASE + section accent borders); MorningBriefSectionCard with amber/blue/brand left borders and FitBadge on pending/high-match items; dynamic empty message via getBriefEmptyMessage(user.morning_brief_hour).
+
+**Testing:** npm test -- --run MorningBriefPage.test.jsx — 5 passed; npm run build — passed
+
+**Commit:** b044e05
+
+---
+
+## US-949: Brief history panel ✅ COMPLETE
+
+**Implementation:** fetchBriefHistory in api/brief.js; useBriefHistory hook; MorningBriefHistoryPanel collapsible "Previous briefs" on /brief (excludes today).
+
+**Testing:** npm test -- --run MorningBriefHistoryPanel.test.jsx MorningBriefPage.test.jsx — 8 passed
+
+**Commit:** e98304d
+
+---
+
+## US-950: Morning brief hour picker in Settings ✅ COMPLETE
+
+**Implementation:** Hour select (0–23) in SettingsNotificationsSection; backend MORNING_BRIEF_HOUR_MIN/MAX expanded to 0/23; formatBriefHour/getBriefEmptyMessage helpers; removed hardcoded 8:00 AM copy.
+
+**Testing:** npm test -- --run briefConstants.test.jsx SettingsNotificationsSection.test.jsx — 8 passed
+
+**Commit:** a1f7570
+
+---
+
+## US-950: Notification bell mobile + smart actions ✅ COMPLETE
+
+**Implementation:** NotificationBell in mobile NavBar header; stale_app/follow_up_due action_url includes &action=follow-up; TYPE_ICONS fixed (Clock stale, Bell follow-up, CalendarClock interview, Sun brief).
+
+**Testing:** npm test -- --run NotificationBell.test.jsx — 9 passed
+
+**Commit:** 972dd1a
+
+---

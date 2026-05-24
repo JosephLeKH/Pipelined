@@ -1,0 +1,58 @@
+{
+  "id": "prd_107",
+  "title": "Morning Brief & Notifications UX Polish",
+  "description": "Premium daily brief experience, history, timezone hour picker, smarter notifications.",
+  "userStories": [
+    {
+      "id": "US-948",
+      "title": "Morning Brief page visual redesign",
+      "description": "Hero header, colored section cards, skeleton loading, dynamic empty message from morning_brief_hour, FitBadge inline.",
+      "acceptanceCriteria": [
+        "Skeleton loading",
+        "Dynamic hour message",
+        "Section accent colors",
+        "Build passes"
+      ],
+      "priority": "high",
+      "passes": true,
+      "notes": "Commit b044e05"
+    },
+    {
+      "id": "US-949",
+      "title": "Brief history panel",
+      "description": "Wire GET /api/brief/history to Previous briefs collapsible on /brief.",
+      "acceptanceCriteria": [
+        "fetchBriefHistory API",
+        "History UI on brief page"
+      ],
+      "priority": "medium",
+      "passes": true,
+      "notes": "Commit e98304d"
+    },
+    {
+      "id": "US-950",
+      "title": "Morning brief hour picker in Settings",
+      "description": "Expose morning_brief_hour 0-23 in Settings. Remove hardcoded 8am copy.",
+      "acceptanceCriteria": [
+        "Hour picker works",
+        "No hardcoded 8am in frontend"
+      ],
+      "priority": "medium",
+      "passes": true,
+      "notes": "Commit a1f7570"
+    },
+    {
+      "id": "US-951",
+      "title": "Notification bell mobile + smart actions",
+      "description": "Bell on mobile nav. Draft follow-up links on stale/follow_up notifications. Fix icons.",
+      "acceptanceCriteria": [
+        "Mobile bell",
+        "Follow-up action links",
+        "Tests pass"
+      ],
+      "priority": "medium",
+      "passes": true,
+      "notes": "Commit 972dd1a"
+    }
+  ]
+}
