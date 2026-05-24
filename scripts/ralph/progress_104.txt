@@ -11,3 +11,37 @@ Started: Sat May 23 2026
 **Commit:** ca445b3
 
 ---
+
+## US-934: Autopilot security and rate limits ✅ COMPLETE
+
+**Implementation:** get_verified_user on all autopilot routes; AUTOPILOT_ACTION_RATE_LIMIT (30/hour) on approve/dismiss.
+
+**Testing:** pytest tests/test_autopilot.py -v — 4 passed
+
+**Commit:** 0b9fd6c
+
+---
+
+## US-936: Update README with agentic features ✅ COMPLETE
+
+**Implementation:** README features section (Morning Brief, Resume Insights, Autopilot, OpenRouter), env vars (OPENROUTER_*, SMTP), product policy, project structure.
+
+**Commit:** 06f2482
+
+---
+
+## US-937: Update CLAUDE.md with new module map ✅ COMPLETE
+
+**Implementation:** Module map (ai/, brief/, autopilot/, resume_insights/), APScheduler jobs table, product policy, expanded data flows.
+
+**Commit:** 4c84d79
+
+---
+
+## US-938: Create docs/AGENTIC_FEATURES.md ✅ COMPLETE
+
+**Implementation:** Practical guide (189 lines) covering OpenRouter setup, Morning Brief, Resume Insights, Autopilot, follow-up policy, scheduler reference, troubleshooting.
+
+**Commit:** (pending)
+
+---

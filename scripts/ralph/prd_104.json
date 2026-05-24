@@ -26,8 +26,8 @@
         "Existing autopilot tests pass"
       ],
       "priority": "high",
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "get_verified_user on all routes; 30/hour rate limit on approve/dismiss"
     },
     {
       "id": "US-935",
@@ -78,8 +78,5 @@
         "Under 200 lines"
       ],
       "priority": "medium",
-      "passes": false,
-      "notes": ""
-    }
-  ]
-}
+      "passes": true,
+      "notes": "docs/AGENTIC_FEATURES.md created (189 lines); covers all major agentic features."
