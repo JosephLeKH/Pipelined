@@ -1,0 +1,63 @@
+# Ralph Progress Log — prd_118
+Started: Sat May 24 2026
+---
+
+## US-995: SSRF guard on watchlist careers_url ✅ COMPLETE
+
+**Implementation:** Added `auth/url_validation.py`; validate in `WatchlistCompanyRequest`; scan skips blocked URLs with `follow_redirects=False`.
+
+**Testing:** `pytest tests/test_watchlist_auth.py tests/test_watchlist_scan.py -v` — 15 passed
+
+**Commit:** 12d84f0
+
+---
+
+## US-996: get_verified_user on brief endpoints ✅ COMPLETE
+
+**Implementation:** `brief_router.py` uses `get_verified_user` on all routes.
+
+**Testing:** `pytest tests/test_brief_router.py -v` — 4 passed
+
+**Commit:** 13b6f7d
+
+---
+
+## US-997: Stable mission IDs from application IDs ✅ COMPLETE
+
+**Implementation:** `mission_scorer.py` derives ids from `entity_id` or app id in URL; `morning_brief.py` sets entity_id on brief items.
+
+**Testing:** `pytest tests/test_mission_scorer.py tests/test_mission_actions.py -v` — 6 passed
+
+**Commit:** d025361
+
+---
+
+## US-998: Atomic mock interview daily quota ✅ COMPLETE
+
+**Implementation:** Atomic `find_one_and_update` quota check; user local date via timezone.
+
+**Testing:** `pytest tests/test_mock_interview.py -v` — 8 passed
+
+**Commit:** 4677ad8
+
+---
+
+## US-999: Error states for AgentActivity and EmailTimeline ✅ COMPLETE
+
+**Implementation:** Destructive error alerts on `isError` in detail panel sections.
+
+**Testing:** `npm run test -- --run src/components/AgentActivitySection.test.jsx src/components/EmailTimelineSection.test.jsx` — 5 passed
+
+**Commit:** 6e64a46
+
+---
+
+## US-1000: Follow-up draft Gemini path parity ✅ COMPLETE
+
+**Implementation:** Extracted `interview_prep/service.py`; Gemini path gets cache, quota, agent_log; slim router handler.
+
+**Testing:** `pytest tests/test_interview_prep_router.py -v` — 8 passed
+
+**Commit:** 98fad98
+
+---

@@ -1,0 +1,84 @@
+{
+  "id": "prd_118",
+  "title": "QA Hardening \u2014 Security, Mission IDs, Error UX",
+  "description": "Fix P0/P1 findings from agentic PRD 110-117 quality review.",
+  "userStories": [
+    {
+      "id": "US-995",
+      "title": "SSRF guard on watchlist careers_url",
+      "description": "Reject private/link-local/metadata IPs at validation. httpx follow_redirects=False or re-validate redirect host. Tests for blocked URLs.",
+      "acceptanceCriteria": [
+        "Blocked internal URLs",
+        "Scan uses safe fetch",
+        "Tests pass"
+      ],
+      "priority": "high",
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-996",
+      "title": "get_verified_user on brief endpoints",
+      "description": "brief_router.py all routes use get_verified_user not get_current_user.",
+      "acceptanceCriteria": [
+        "All brief routes verified",
+        "Tests updated"
+      ],
+      "priority": "high",
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-997",
+      "title": "Stable mission IDs from application IDs",
+      "description": "mission_scorer uses stable id from action_url app id or item metadata not section:index. Update snooze/done to match.",
+      "acceptanceCriteria": [
+        "Stable mission ids",
+        "Snooze survives regen",
+        "Tests"
+      ],
+      "priority": "high",
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-998",
+      "title": "Atomic mock interview daily quota",
+      "description": "find_one_and_update with $lt limit check. User local date not UTC.",
+      "acceptanceCriteria": [
+        "No TOCTOU bypass",
+        "Local date quota",
+        "Tests"
+      ],
+      "priority": "medium",
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-999",
+      "title": "Error states for AgentActivity and EmailTimeline",
+      "description": "Show destructive error message on isError, not empty/null lie.",
+      "acceptanceCriteria": [
+        "AgentActivity error UI",
+        "EmailTimeline error UI",
+        "Tests"
+      ],
+      "priority": "medium",
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-1000",
+      "title": "Follow-up draft Gemini path parity",
+      "description": "Extract follow-up generation to service.py. Gemini path gets cache, quota, agent_log like OpenRouter.",
+      "acceptanceCriteria": [
+        "Router under 40 lines per handler",
+        "Gemini path logged",
+        "Tests"
+      ],
+      "priority": "medium",
+      "passes": true,
+      "notes": ""
+    }
+  ]
+}
