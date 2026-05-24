@@ -55,3 +55,21 @@ async def test_get_brief_today_requires_auth(client):
     response = await client.get("/api/brief/today")
 
     assert response.status_code == 401
+
+
+@pytest.mark.asyncio(loop_scope="session")
+async def test_get_brief_today_requires_verified_email(client, monkeypatch):
+    from config import settings
+
+    monkeypatch.setattr(settings, "debug", False)
+    resp = await client.post("/api/auth/register", json={
+        "email": "brief_unverified@example.com",
+        "password": "password123",
+        "display_name": "Brief Unverified",
+    })
+    cookies = dict(resp.cookies)
+
+    response = await client.get("/api/brief/today", cookies=cookies)
+
+    assert response.status_code == 403
+    assert response.json()["detail"]["code"] == "EMAIL_NOT_VERIFIED"

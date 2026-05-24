@@ -3,7 +3,7 @@
 import structlog
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 
-from auth.dependencies import get_current_user
+from auth.dependencies import get_verified_user as get_current_user
 from brief.schemas import BriefResponse, SnoozeMissionRequest
 from brief import service as brief_service
 from middleware.rate_limit import get_user_key, limiter
