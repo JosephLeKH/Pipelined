@@ -1,0 +1,76 @@
+{
+  "id": "prd_102",
+  "title": "Application Autopilot \u2014 Backend & Matching Engine",
+  "description": "Background agent finds high-fit jobs (80%+), generates cover letter + resume tailoring tips, queues for user review. Uses existing job board listings + OpenRouter LLM scoring. OUT OF SCOPE: auto-apply, PDF resume edits, scraping beyond existing GitHub sync, Exa/Vectorize.",
+  "userStories": [
+    {
+      "id": "US-924",
+      "title": "Autopilot preferences and pending_opportunities schema",
+      "description": "User fields:\n- autopilot_enabled: bool = False\n- autopilot_min_match_score: int = 80\n- autopilot_max_daily: int = 5\n\nNew collection pending_opportunities:\n```\n{\n  user_id: ObjectId,\n  job_listing_id: ObjectId,\n  match_score: int,\n  match_reason: str,\n  cover_letter: {subject, body},\n  resume_tips: {summary, bullet_suggestions: []},\n  status: 'pending' | 'approved' | 'dismissed',\n  created_at: datetime,\n  reviewed_at: datetime | null\n}\n```\nIndex: (user_id, status), (user_id, job_listing_id) unique for pending.\n\nPATCH /api/auth/me for prefs. Settings UI toggle.",
+      "acceptanceCriteria": [
+        "User autopilot fields in schema",
+        "pending_opportunities indexes in ensure_indexes()",
+        "Settings UI toggle",
+        "All queries include user_id"
+      ],
+      "priority": "high",
+      "passes": true,
+      "notes": "Implemented and tested."
+    },
+    {
+      "id": "US-925",
+      "title": "LLM job match scorer for listings",
+      "description": "backend/autopilot/match_scorer.py score_listing_for_user() via OpenRouter. Optional httpx fetch apply_url for description_snippet cache on job_listings. Quota via ai_cache.",
+      "acceptanceCriteria": [
+        "score_listing_for_user returns score + reason",
+        "Handles missing description",
+        "OpenRouter + quota integration",
+        "Unit tests with mocked LLM"
+      ],
+      "priority": "high",
+      "passes": true,
+      "notes": "Implemented and tested."
+    },
+    {
+      "id": "US-926",
+      "title": "Nightly autopilot scan job",
+      "description": "APScheduler autopilot_scan daily 05:00 UTC. Prefilter via get_recommended_listings, LLM score, cap at autopilot_max_daily, dedup against applications and pending_opportunities.",
+      "acceptanceCriteria": [
+        "Scheduler job registered",
+        "Respects user prefs and daily cap",
+        "Dedup logic",
+        "Logs match count"
+      ],
+      "priority": "high",
+      "passes": true,
+      "notes": "Implemented and tested."
+    },
+    {
+      "id": "US-927",
+      "title": "Cover letter and resume tips generation",
+      "description": "backend/autopilot/prep_generator.py generate_opportunity_prep() \u2014 cover letter JSON + suggest-only resume tips. Stored on pending_opportunities.",
+      "acceptanceCriteria": [
+        "Returns cover_letter + resume_tips",
+        "Suggest-only resume tips",
+        "Uses OpenRouter"
+      ],
+      "priority": "medium",
+      "passes": true,
+      "notes": "Implemented and tested."
+    },
+    {
+      "id": "US-928",
+      "title": "Pending opportunities API",
+      "description": "/api/autopilot: GET /pending, GET /pending/{id}, POST approve (creates To Apply application), POST dismiss. Approve does NOT auto-apply.",
+      "acceptanceCriteria": [
+        "All routes implemented",
+        "Approve creates To Apply application",
+        "user_id scoped",
+        "Integration tests"
+      ],
+      "priority": "medium",
+      "passes": true,
+      "notes": "Implemented and tested."
+    }
+  ]
+}

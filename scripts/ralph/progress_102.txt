@@ -1,0 +1,53 @@
+# Ralph Progress Log — prd_102
+Started: Sat May 23 2026
+---
+
+## US-924: Autopilot preferences and pending_opportunities schema ✅ COMPLETE
+
+**Implementation:** User autopilot fields, pending_opportunities indexes, PATCH /api/auth/me, Settings toggle.
+
+**Testing:** pytest tests/test_auth.py (autopilot prefs) tests/test_database.py (indexes) — passed
+
+**Commit:** ff28fdf
+
+---
+
+## US-925: LLM job match scorer ✅ COMPLETE
+
+**Implementation:** backend/autopilot/match_scorer.py with OpenRouter + ai_cache quota.
+
+**Testing:** pytest tests/test_match_scorer.py -v — 3 passed
+
+**Commit:** 484e93d
+
+---
+
+## US-926: Nightly autopilot scan job ✅ COMPLETE
+
+**Implementation:** autopilot_scan daily 05:00 UTC via APScheduler.
+
+**Testing:** pytest tests/test_autopilot_scan.py tests/test_autopilot_scheduler.py -v — 3 passed
+
+**Commit:** 4192d1c
+
+---
+
+## US-927: Cover letter and resume tips generation ✅ COMPLETE
+
+**Implementation:** backend/autopilot/prep_generator.py suggest-only resume tips.
+
+**Testing:** pytest tests/test_prep_generator.py -v — 1 passed
+
+**Commit:** 21fe75d
+
+---
+
+## US-928: Pending opportunities API ✅ COMPLETE
+
+**Implementation:** /api/autopilot GET pending, approve (To Apply app), dismiss.
+
+**Testing:** pytest tests/test_autopilot.py -v — 4 passed
+
+**Commit:** 2395d54
+
+---
