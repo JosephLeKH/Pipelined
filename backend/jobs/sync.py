@@ -254,6 +254,8 @@ def create_scheduler() -> AsyncIOScheduler:
     from email_integration.batch_sync import sync_all_users  # noqa: PLC0415
     from autopilot.scan import autopilot_scan  # noqa: PLC0415
     from autopilot.constants import AUTOPILOT_SCAN_HOUR_UTC  # noqa: PLC0415
+    from watchlist.scan import watchlist_scan  # noqa: PLC0415
+    from watchlist.constants import WATCHLIST_SCAN_HOUR_UTC  # noqa: PLC0415
 
     scheduler.add_job(
         sync_all_users,
@@ -265,6 +267,12 @@ def create_scheduler() -> AsyncIOScheduler:
         autopilot_scan,
         trigger=CronTrigger(hour=AUTOPILOT_SCAN_HOUR_UTC, timezone="UTC"),
         id="autopilot_scan",
+        replace_existing=True,
+    )
+    scheduler.add_job(
+        watchlist_scan,
+        trigger=CronTrigger(hour=WATCHLIST_SCAN_HOUR_UTC, timezone="UTC"),
+        id="watchlist_scan",
         replace_existing=True,
     )
     return scheduler
