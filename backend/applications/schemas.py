@@ -129,6 +129,18 @@ class ResumeInsights(BaseModel):
     overall_summary: str | None = None
 
 
+class ApplyPackShortAnswer(BaseModel):
+    question: str
+    answer: str
+
+
+class ApplyPack(BaseModel):
+    cover_letter: str
+    short_answers: list[ApplyPackShortAnswer] = Field(default_factory=list)
+    linkedin_note: str = ""
+    talking_points: list[str] = Field(default_factory=list)
+
+
 class ApplicationResponse(BaseModel):
     id: str
     role_title: str | None = None
@@ -154,6 +166,8 @@ class ApplicationResponse(BaseModel):
     job_description: str | None = None
     resume_insights: ResumeInsights | None = None
     resume_insights_at: datetime | None = None
+    apply_pack: ApplyPack | None = None
+    apply_pack_at: datetime | None = None
     offer_details: OfferDetails | None = None
     deadline: datetime | None = None
     custom_fields: dict[str, str | int | bool | list[str]] | None = None
