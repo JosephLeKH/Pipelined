@@ -1,0 +1,57 @@
+{
+  "id": "prd_112",
+  "title": "Interview Prep Auto-Trigger \u2014 Complete the Loop",
+  "description": "Complete Gmail-triggered prep: notification on ready, in-progress UI, default opt-in, dedupe, tests.",
+  "userStories": [
+    {
+      "id": "US-970",
+      "title": "Prep-ready push notification",
+      "description": "After prep persists, create interview_prep_ready notification with deep link.",
+      "acceptanceCriteria": [
+        "Notification on prep complete",
+        "Deep link to application",
+        "Tests"
+      ],
+      "priority": "high",
+      "passes": true,
+      "notes": "Complete"
+    },
+    {
+      "id": "US-971",
+      "title": "Prep in-progress state",
+      "description": "interview_prep_status generating|done|failed. UI shimmer and Researching pill.",
+      "acceptanceCriteria": [
+        "Status field on application",
+        "UI loading state",
+        "Failed state with retry"
+      ],
+      "priority": "high",
+      "passes": true,
+      "notes": "Complete"
+    },
+    {
+      "id": "US-972",
+      "title": "Gmail prep settings UX default-on",
+      "description": "Auto-generate interview prep toggle in Integrations, default true for new users.",
+      "acceptanceCriteria": [
+        "Toggle in integrations",
+        "Default true for new users"
+      ],
+      "priority": "medium",
+      "passes": true,
+      "notes": "Complete"
+    },
+    {
+      "id": "US-973",
+      "title": "Prep trigger dedupe and integration tests",
+      "description": "Skip re-trigger within 24h. Integration test invite to prep to notification.",
+      "acceptanceCriteria": [
+        "24h dedupe",
+        "Integration test passes"
+      ],
+      "priority": "medium",
+      "passes": true,
+      "notes": "Complete"
+    }
+  ]
+}

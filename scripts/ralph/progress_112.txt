@@ -1,0 +1,33 @@
+# Ralph Progress Log — prd_112
+Started: Sat May 23 2026
+---
+
+## US-970: Prep-ready push notification ✅ COMPLETE
+
+**Implementation:** After `_trigger_interview_prep` persists briefing, creates `interview_prep_ready` notification with deep link `/dashboard?selected={app_id}`. Added type to `ALLOWED_NOTIFICATION_TYPES`. NotificationBell renders BookOpen icon and navigates on click.
+
+**Testing:** pytest tests/test_interview_prep_trigger.py::test_interview_prep_ready_notification_created; pytest tests/test_notification_service.py::test_create_notification_accepts_interview_prep_ready; npm test NotificationBell.test.jsx — passed
+
+---
+
+## US-971: Prep in-progress state ✅ COMPLETE
+
+**Implementation:** `interview_prep_status` field (`generating|done|failed`) on applications. Auto-trigger sets generating → done/failed. InterviewPrepAgent shows shimmer when background generating; DetailPanelHeader shows Researching pill; failed state surfaces retry via useInterviewPrep.
+
+**Testing:** pytest tests/test_interview_prep_trigger.py::test_interview_prep_sets_status_generating_then_done; npm test InterviewPrepAgent.test.jsx DetailPanelHeader.test.jsx — passed
+
+---
+
+## US-972: Gmail prep settings UX default-on ✅ COMPLETE
+
+**Implementation:** `DEFAULT_GMAIL_INTERVIEW_PREP = True` in auth constants; new users (email + OAuth) get `gmail_interview_prep: true`. Gmail connect defaults on. `get_connection_status` and schema default true.
+
+**Testing:** pytest tests/test_auth_service.py::test_create_user_defaults_gmail_interview_prep_true; pytest tests/test_email_service.py::test_get_connection_status_interview_prep_default_true — passed
+
+---
+
+## US-973: Prep trigger dedupe and integration tests ✅ COMPLETE
+
+**Implementation:** 24h dedupe via `interview_prep_triggered_at` and `_should_skip_interview_prep_retrigger`; skips when status is generating or triggered within window. Integration test covers invite → prep → notification flow.
+
+**Testing:** pytest tests/test_interview_prep_trigger.py — 5 passed; npm run build — passed
