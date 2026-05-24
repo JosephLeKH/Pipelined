@@ -20,3 +20,15 @@ Status: DONE
 - Button: aria-busy={syncMutation.isPending}, disabled={syncMutation.isPending}, calls syncMutation.mutate() on click
 - onSuccess in the mutation hook already invalidates GMAIL_STATUS_KEY, so last_sync_at refreshes automatically
 - Frontend build passes (✓ built in 3.34s)
+
+## US-873: Log activity event when email auto-creates an application [DONE]
+- Added logger.info call in _process_message after successful create_application
+- Event type: 'application_created_via_email'
+- Includes: user_id, app_id, company, role_title, source='email'
+- Activity is implicitly captured through date_applied field in applications collection
+
+## US-874: Log activity event when email auto-updates application stage [DONE]
+- Added logger.info call in _process_message after successful update_application (within stage ordering guard)
+- Event type: 'application_stage_updated_via_email'
+- Includes: user_id, app_id, company, role_title, from_stage, to_stage, source='email'
+- Activity is implicitly captured through stage_history array appending in applications collection
