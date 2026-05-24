@@ -17,6 +17,14 @@ export const BRIEF_SECTION_ACCENTS = {
   pending_approvals: "border-l-brand-500",
 };
 
+/** Human-readable labels for mission section keys. */
+export const MISSION_SECTION_LABELS = {
+  follow_ups: "Follow-up",
+  interviews: "Interview",
+  high_matches: "High match",
+  pending_approvals: "Autopilot match",
+};
+
 export const BRIEF_UNAVAILABLE_MESSAGE = "Brief not available right now — try again later";
 
 const SCORE_PATTERN = /(?:Match|Fit) score (\d+)/;

@@ -74,7 +74,7 @@ const GmailCallback = lazy(() => import("./pages/GmailCallback"));
 const Pricing = lazy(() => import("./pages/Pricing"));
 const OfferComparison = lazy(() => import("./pages/OfferComparison"));
 const Tags = lazy(() => import("./pages/Tags"));
-const MorningBriefPage = lazy(() => import("./pages/MorningBriefPage"));
+const TodayPage = lazy(() => import("./pages/TodayPage"));
 const PendingInboxPage = lazy(() => import("./pages/PendingInboxPage"));
 
 /** Renders the confirmation page when ?token= is present, otherwise the pending page. */
@@ -179,7 +179,8 @@ function App() {
         <Route path="/settings" element={<ProtectedPage><Settings /></ProtectedPage>} />
         <Route path="/offers" element={<ProtectedPage><OfferComparison /></ProtectedPage>} />
         <Route path="/tags" element={<ProtectedPage><Tags /></ProtectedPage>} />
-        <Route path="/brief" element={<ProtectedPage><MorningBriefPage /></ProtectedPage>} />
+        <Route path="/today" element={<ProtectedPage><TodayPage /></ProtectedPage>} />
+        <Route path="/brief" element={<Navigate to="/today" replace />} />
         <Route path="/inbox/pending" element={<ProtectedPage><PendingInboxPage /></ProtectedPage>} />
         </Routes>
         </ErrorBoundary>
