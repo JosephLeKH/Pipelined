@@ -21,7 +21,7 @@ from ai.openrouter_client import OpenRouterError, agent_llm_configured, complete
 from auth.dependencies import get_verified_user as get_current_user
 from config import settings
 from database import get_collection
-from middleware.rate_limit import limiter
+from middleware.rate_limit import get_user_key, limiter
 from parsing.ai_cache import (
     PROVIDER_OPENROUTER,
     QuotaExceededError,
@@ -33,7 +33,10 @@ from parsing.ai_cache import (
 )
 
 from .agent import run_agent
+from .constants import MOCK_INTERVIEW_RATE_LIMIT
 from .fit_score import compute_fit_score
+from .mock_interview import stream_mock_interview
+from .schemas import MockInterviewRequest
 
 logger = structlog.get_logger()
 
@@ -269,3 +272,36 @@ async def generate_fit_score(
     except Exception:
         logger.exception("fit_score_error", app_id=app_id)
         raise HTTPException(status_code=502, detail="Fit score generation failed")
+
+
+@router.post("/{app_id}/mock-interview")
+@limiter.limit(MOCK_INTERVIEW_RATE_LIMIT, key_func=get_user_key)
+async def mock_interview_stream(
+    request: Request,  # noqa: ARG001
+    app_id: str,
+    body: MockInterviewRequest,
+    user: dict = Depends(get_current_user),
+) -> StreamingResponse:
+    """Stream a mock interview turn or end-of-session debrief as Server-Sent Events."""
+    if not agent_llm_configured():
+        raise HTTPException(status_code=503, detail="AI features not configured")
+
+    user_id = str(user["_id"])
+    app_doc = await _get_application(app_id, user_id)
+    resume_text = await _get_resume_text(user_id)
+
+    async def event_stream():
+        try:
+            async for event in stream_mock_interview(user_id, app_doc, resume_text, body):
+                event_type = event.pop("type")
+                yield f"event: {event_type}\ndata: {json.dumps(event)}\n\n"
+        except Exception as exc:
+            logger.exception("mock_interview_stream_error", app_id=app_id, error=str(exc))
+            payload = json.dumps({"message": "An unexpected error occurred. Please try again."})
+            yield f"event: error\ndata: {payload}\n\n"
+
+    return StreamingResponse(
+        event_stream(),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    )

@@ -1,6 +1,7 @@
 """Pydantic output schemas for the Interview Prep Agent."""
 
 from datetime import datetime
+from typing import Literal
 
 from pydantic import BaseModel, Field
 
@@ -54,3 +55,14 @@ class InterviewBriefing(BaseModel):
     interview_process: InterviewProcess
     company_intel: CompanyIntel
     personalized: PersonalizedNotes
+
+
+class MockInterviewMessage(BaseModel):
+    role: Literal["user", "assistant"]
+    content: str = Field(min_length=1, max_length=4000)
+
+
+class MockInterviewRequest(BaseModel):
+    message: str = Field(default="", max_length=4000)
+    history: list[MockInterviewMessage] = Field(default_factory=list, max_length=20)
+    end_session: bool = False
