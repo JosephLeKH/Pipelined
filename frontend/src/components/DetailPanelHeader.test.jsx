@@ -1,12 +1,16 @@
+import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, vi } from "vitest";
 import { DetailPanelHeader } from "./DetailPanelHeader";
 
 const mockApp = {
   role_title: "Software Engineer",
   company: "Acme Corp",
   company_domain: "acme.com",
+  source: "manual",
+  fit_score: null,
+  ai_analysis: null,
+  interview_prep_briefing: null,
 };
 
 describe("DetailPanelHeader", () => {
@@ -15,6 +19,26 @@ describe("DetailPanelHeader", () => {
 
     expect(screen.getByText("Software Engineer")).toBeInTheDocument();
     expect(screen.getByText("Acme Corp")).toBeInTheDocument();
+  });
+
+  it("should show AI status pills when fit score and prep are present", () => {
+    render(
+      <DetailPanelHeader
+        application={{
+          ...mockApp,
+          ai_analysis: { fit_score: 82 },
+          interview_prep_briefing: { company: "Acme Corp" },
+          source: "email",
+        }}
+        onClose={vi.fn()}
+        onDelete={vi.fn()}
+      />
+    );
+
+    expect(screen.getByLabelText("AI status")).toBeInTheDocument();
+    expect(screen.getByText("Prep ready")).toBeInTheDocument();
+    expect(screen.getByText("Gmail synced")).toBeInTheDocument();
+    expect(screen.getByTestId("fit-badge")).toHaveTextContent("82%");
   });
 
   it("should call onClose when close button is clicked", async () => {
