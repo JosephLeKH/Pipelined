@@ -1,3 +1,23 @@
 # Ralph Progress Log
 Started: Sat May 23 19:46:15 PDT 2026
 ---
+
+## US-902: Backend — AI fit score endpoint ✅ COMPLETE
+
+**Implementation:** Added `POST /api/applications/{app_id}/fit-score` endpoint to `backend/applications/interview_prep/router.py` that evaluates how well a user's profile/resume matches the applied role using Gemini.
+
+**Key changes:**
+- Added `FIT_SCORE_TIMEOUT_SECONDS = 10.0` constant at module scope
+- Implemented `generate_fit_score` endpoint with `@limiter.limit("10/hour")` rate limiting
+- Fetches application and resume using existing helpers (`_get_application`, `_get_resume_text`)
+- Calls Gemini with system prompt for career coach evaluation, temperature 0.3, max_tokens 150
+- Parses JSON response, validates score is integer 0-100
+- Persists fit_score, fit_score_reason, and fit_score_at fields to applications collection
+- Returns {data: {score, reason}} envelope
+- Proper error handling: 503 for missing API key, 502 for AI failures
+- Fixed deprecation warning: uses datetime.now(timezone.utc) instead of datetime.utcnow()
+
+**Testing notes:** Existing test suite has pre-existing event loop scope issues (not related to this change) affecting async test execution across multiple modules.
+
+**Files modified:** backend/applications/interview_prep/router.py
+**Commit:** b5e0332
