@@ -3,6 +3,7 @@
 import Sun from "lucide-react/dist/esm/icons/sun";
 
 import EmptyState from "../components/EmptyState";
+import MorningBriefHistoryPanel from "../components/MorningBriefHistoryPanel";
 import MorningBriefSectionCard from "../components/MorningBriefSectionCard";
 import MorningBriefSkeleton from "../components/MorningBriefSkeleton";
 import NavBar from "../components/NavBar";
@@ -96,7 +97,10 @@ function MorningBriefPage() {
           )}
 
           {!isLoading && !isError && brief && (
-            <MorningBriefContent brief={brief} emptyMessage={emptyMessage} />
+            <>
+              <MorningBriefContent brief={brief} emptyMessage={emptyMessage} />
+              <MorningBriefHistoryPanel />
+            </>
           )}
         </div>
       </main>
