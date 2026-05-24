@@ -38,3 +38,9 @@ export const COPILOT_SUBTITLE = "Grounded in your pipeline — suggestions only.
 export const COPILOT_PLACEHOLDER = "Ask about priorities, follow-ups, or interview prep…";
 export const COPILOT_ERROR_FALLBACK = "Co-pilot unavailable. Please try again.";
 export const COPILOT_RATE_LIMIT_MESSAGE = "Co-pilot rate limit reached. Try again later.";
+
+export const COPILOT_SUGGESTED_PROMPTS = [
+  "What should I prioritize today?",
+  "Which applications need follow-up?",
+  "Where should I prep for interviews?",
+];

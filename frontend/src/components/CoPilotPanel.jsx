@@ -10,6 +10,7 @@ import { useCopilotChat } from "../hooks/useCopilotChat";
 import {
   COPILOT_PLACEHOLDER,
   COPILOT_SUBTITLE,
+  COPILOT_SUGGESTED_PROMPTS,
   COPILOT_TITLE,
 } from "../lib/aiConstants";
 import {
@@ -17,18 +18,30 @@ import {
   BUTTON_PRIMARY,
   CARD_BASE,
   INPUT_BASE,
-  SPINNER_SM,
+  TAG,
 } from "../lib/designTokens";
+
+function TypingIndicator() {
+  return (
+    <div className="flex justify-start" aria-live="polite" aria-label="Co-pilot is typing">
+      <div className="flex items-center gap-1.5 rounded-xl border border-border-default bg-surface-secondary px-3 py-2.5">
+        <span className="h-1.5 w-1.5 animate-pulse-soft rounded-full bg-brand-500 [animation-delay:0ms]" />
+        <span className="h-1.5 w-1.5 animate-pulse-soft rounded-full bg-brand-500 [animation-delay:200ms]" />
+        <span className="h-1.5 w-1.5 animate-pulse-soft rounded-full bg-brand-500 [animation-delay:400ms]" />
+      </div>
+    </div>
+  );
+}
 
 function ChatMessage({ message, onAction }) {
   const isUser = message.role === "user";
   return (
     <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
       <div
-        className={`max-w-[90%] rounded-xl px-3 py-2 text-sm leading-relaxed ${
+        className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed shadow-sm ${
           isUser
-            ? "bg-brand-500 text-white"
-            : "border border-border bg-surface-secondary text-foreground"
+            ? "rounded-br-md bg-brand-500 text-white"
+            : "rounded-bl-md border border-border-default bg-white text-foreground dark:bg-gray-800"
         }`}
       >
         <p className="whitespace-pre-wrap">{message.content}</p>
@@ -47,6 +60,24 @@ function ChatMessage({ message, onAction }) {
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+function SuggestedPrompts({ onSelect, disabled }) {
+  return (
+    <div className="flex flex-wrap gap-2">
+      {COPILOT_SUGGESTED_PROMPTS.map((prompt) => (
+        <button
+          key={prompt}
+          type="button"
+          disabled={disabled}
+          onClick={() => onSelect(prompt)}
+          className={`${TAG} cursor-pointer disabled:cursor-not-allowed disabled:opacity-50`}
+        >
+          {prompt}
+        </button>
+      ))}
     </div>
   );
 }
@@ -80,8 +111,13 @@ function CoPilotPanel({ open, onClose }) {
     await sendMessage(text);
   };
 
+  const handlePromptSelect = async (prompt) => {
+    setDraft("");
+    await sendMessage(prompt);
+  };
+
   return (
-    <div className="fixed inset-0 z-50 flex justify-end">
+    <div className="fixed inset-0 z-50 flex sm:justify-end">
       <button
         type="button"
         aria-label="Close co-pilot"
@@ -90,7 +126,7 @@ function CoPilotPanel({ open, onClose }) {
       />
       <aside
         aria-label="Co-pilot chat"
-        className={`relative flex h-full w-full max-w-md flex-col ${CARD_BASE} shadow-modal`}
+        className={`relative flex h-full w-full flex-col animate-slide-in-right sm:max-w-md ${CARD_BASE} shadow-modal`}
       >
         <header className="flex items-start justify-between border-b border-border px-4 py-3">
           <div className="flex items-start gap-2">
@@ -107,9 +143,12 @@ function CoPilotPanel({ open, onClose }) {
 
         <div ref={listRef} className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
           {messages.length === 0 && (
-            <p className="text-sm text-muted-foreground">
-              Ask what to prioritize today, which applications need follow-up, or where to prep next.
-            </p>
+            <div className="space-y-3">
+              <p className="text-sm text-muted-foreground">
+                Ask what to prioritize today, which applications need follow-up, or where to prep next.
+              </p>
+              <SuggestedPrompts onSelect={handlePromptSelect} disabled={isStreaming} />
+            </div>
           )}
           {messages.map((message, index) => (
             <ChatMessage
@@ -118,12 +157,7 @@ function CoPilotPanel({ open, onClose }) {
               onAction={runAction}
             />
           ))}
-          {isStreaming && (
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <span className={SPINNER_SM} aria-hidden="true" />
-              Thinking…
-            </div>
-          )}
+          {isStreaming && <TypingIndicator />}
         </div>
 
         {errorMessage && (

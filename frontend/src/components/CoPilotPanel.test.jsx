@@ -44,6 +44,36 @@ describe("CoPilotPanel", () => {
     expect(screen.getByText(/suggestions only/i)).toBeInTheDocument();
   });
 
+  it("should render suggested prompt chips when empty", () => {
+    renderPanel();
+
+    expect(screen.getByRole("button", { name: /what should i prioritize today/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /which applications need follow-up/i })).toBeInTheDocument();
+  });
+
+  it("should send message when suggested prompt is clicked", async () => {
+    renderPanel();
+
+    await userEvent.click(screen.getByRole("button", { name: /what should i prioritize today/i }));
+
+    expect(mockSendMessage).toHaveBeenCalledWith("What should I prioritize today?");
+  });
+
+  it("should show typing indicator while streaming", () => {
+    useCopilotChat.mockReturnValue({
+      messages: [],
+      errorMessage: null,
+      sendMessage: mockSendMessage,
+      runAction: mockRunAction,
+      reset: mockReset,
+      isStreaming: true,
+    });
+
+    renderPanel();
+
+    expect(screen.getByLabelText(/co-pilot is typing/i)).toBeInTheDocument();
+  });
+
   it("should send a message on submit", async () => {
     renderPanel();
 
