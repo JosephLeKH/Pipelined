@@ -37,7 +37,7 @@ function MorningBriefSectionCard({ label, items }) {
       <ul>
         {items.map((item, index) => (
           <MorningBriefItem
-            key={`${item.action_url}-${index}`}
+            key={`${label}-${item.title}-${index}`}
             title={item.title}
             body={item.body}
             actionUrl={item.action_url}

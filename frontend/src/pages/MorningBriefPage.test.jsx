@@ -10,7 +10,7 @@ import { describe, it, expect, beforeAll, afterAll, afterEach } from "vitest";
 import { AuthProvider } from "../context/AuthContext";
 import { ThemeProvider } from "../context/ThemeContext";
 import MorningBriefPage from "./MorningBriefPage";
-import { BRIEF_EMPTY_MESSAGE } from "../lib/briefConstants";
+import { BRIEF_UNAVAILABLE_MESSAGE } from "../lib/briefConstants";
 import { passthroughHandlers } from "../test/passthroughHandlers";
 
 const MOCK_BRIEF = {
@@ -83,6 +83,6 @@ describe("MorningBriefPage", () => {
 
     render(<MorningBriefPage />, { wrapper: makeWrapper() });
 
-    expect(await screen.findByText(BRIEF_EMPTY_MESSAGE)).toBeInTheDocument();
+    expect(await screen.findByText(BRIEF_UNAVAILABLE_MESSAGE)).toBeInTheDocument();
   });
 });

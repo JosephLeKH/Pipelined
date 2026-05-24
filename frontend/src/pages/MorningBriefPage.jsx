@@ -6,7 +6,7 @@ import EmptyState from "../components/EmptyState";
 import MorningBriefSectionCard from "../components/MorningBriefSectionCard";
 import NavBar from "../components/NavBar";
 import { useMorningBrief } from "../hooks/useMorningBrief";
-import { BRIEF_EMPTY_MESSAGE, BRIEF_SECTION_ORDER } from "../lib/briefConstants";
+import { BRIEF_EMPTY_MESSAGE, BRIEF_SECTION_ORDER, BRIEF_UNAVAILABLE_MESSAGE } from "../lib/briefConstants";
 
 function MorningBriefLoading() {
   return (
@@ -66,7 +66,7 @@ function MorningBriefPage() {
           {isLoading && <MorningBriefLoading />}
 
           {!isLoading && isError && (
-            <EmptyState icon={Sun} title="Brief not ready" description={BRIEF_EMPTY_MESSAGE} />
+            <EmptyState icon={Sun} title="Brief not ready" description={BRIEF_UNAVAILABLE_MESSAGE} />
           )}
 
           {!isLoading && !isError && brief && <MorningBriefContent brief={brief} />}

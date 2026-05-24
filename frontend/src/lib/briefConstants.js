@@ -8,3 +8,5 @@ export const BRIEF_SECTION_ORDER = [
 ];
 
 export const BRIEF_EMPTY_MESSAGE = "Your brief generates at 8am — check back soon";
+
+export const BRIEF_UNAVAILABLE_MESSAGE = "Brief not available right now — try again later";
