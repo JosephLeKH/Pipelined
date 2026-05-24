@@ -84,6 +84,13 @@ def _build_stats_pipeline(uid: ObjectId, stale_cutoff: datetime, today: datetime
                             "follow_up_date": {"$ne": None, "$lte": today}}},
                 {"$count": "count"},
             ],
+            "first_follow_up_due": [
+                {"$match": {"archived": {"$ne": True}, "deleted": {"$ne": True},
+                            "follow_up_date": {"$ne": None, "$lte": today}}},
+                {"$sort": {"follow_up_date": 1}},
+                {"$limit": 1},
+                {"$project": {"_id": 1}},
+            ],
         }},
     ]
 
@@ -110,6 +117,8 @@ async def compute_stats(user_id: str) -> dict:
     dates = [_extract_date_str(d.get("date_applied")) for d in raw["date_applied_list"]]
     applied_this_week, current_streak = _compute_weekly_stats(dates, weekly_goal)
     follow_ups_due = raw["follow_ups_due"][0]["count"] if raw["follow_ups_due"] else 0
+    first_follow_up = raw["first_follow_up_due"][0] if raw["first_follow_up_due"] else None
+    first_follow_up_due_id = str(first_follow_up["_id"]) if first_follow_up else None
     return {
         "total_applied": total,
         "active_count": active,
@@ -119,6 +128,7 @@ async def compute_stats(user_id: str) -> dict:
         "applied_this_week": applied_this_week,
         "current_streak": current_streak,
         "follow_ups_due": follow_ups_due,
+        "first_follow_up_due_id": first_follow_up_due_id,
         "tag_offer_rates": tag_offer_rates,
     }
 

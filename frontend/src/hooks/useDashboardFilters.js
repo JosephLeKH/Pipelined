@@ -38,7 +38,17 @@ export function useDashboardFilters() {
   const handleSelect = useCallback((app) => update((n) => n.set("selected", app.id)), [update]);
   const handleClosePanel = useCallback(() => update((n) => n.delete("selected")), [update]);
   const handleClearFilters = useCallback(() => update((n) => FILTER_KEYS.forEach((k) => n.delete(k))), [update]);
-  const handleViewFollowUps = useCallback(() => update((n) => n.set("follow_up_due", "true")), [update]);
+  const handleViewFollowUps = useCallback((firstAppId) => {
+    update((n) => {
+      if (firstAppId) {
+        n.set("selected", firstAppId);
+        n.set("section", "follow-up");
+      } else {
+        n.set("follow_up_due", "true");
+      }
+      n.delete("action");
+    });
+  }, [update]);
 
   return { filters, selectedId, includeArchived, handleSelect, handleClosePanel, handleClearFilters, handleViewFollowUps };
 }

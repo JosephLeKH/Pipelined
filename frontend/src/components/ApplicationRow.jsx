@@ -19,6 +19,7 @@ import { RowMenu } from "./ApplicationRowActions";
 import CompanyLogo from "./CompanyLogo";
 import FitBadge from "./FitBadge";
 import { getDisplayFitScore } from "../lib/fitDisplay";
+import { FIT_SCORE_LABEL } from "../lib/aiConstants";
 import { Tooltip, TooltipTrigger, TooltipContent } from "./ui/tooltip";
 import { Checkbox } from "./ui/checkbox";
 
@@ -151,11 +152,22 @@ function ApplicationRow({
                   <Sparkles className="h-3.5 w-3.5 text-primary" aria-hidden="true" />
                 </span>
               </TooltipTrigger>
-              <TooltipContent>Interview prep ready</TooltipContent>
+              <TooltipContent>Interview prep briefing ready — open to review company research and talking points</TooltipContent>
             </Tooltip>
           )}
         </span>
-        <FitBadge score={getDisplayFitScore(application)} />
+        {getDisplayFitScore(application) != null ? (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span tabIndex={0} className="inline-flex cursor-default">
+                <FitBadge score={getDisplayFitScore(application)} />
+              </span>
+            </TooltipTrigger>
+            <TooltipContent>{FIT_SCORE_LABEL} based on your resume and the job description</TooltipContent>
+          </Tooltip>
+        ) : (
+          <FitBadge score={getDisplayFitScore(application)} />
+        )}
         <span className="relative w-4 shrink-0">
           {isStaleIndicator && !archived && (
             <Tooltip>
@@ -182,7 +194,7 @@ function ApplicationRow({
             <TooltipTrigger asChild>
               <Mail className="h-4 w-4 shrink-0 text-primary cursor-default" aria-hidden="true" />
             </TooltipTrigger>
-            <TooltipContent>Auto-tracked from Gmail</TooltipContent>
+            <TooltipContent>Auto-tracked from Gmail — read-only sync, no emails sent on your behalf</TooltipContent>
           </Tooltip>
         ) : (
           <SourceIcon className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />

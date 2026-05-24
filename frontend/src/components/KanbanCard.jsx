@@ -2,12 +2,14 @@
 
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import Sparkles from "lucide-react/dist/esm/icons/sparkles";
 import { formatRelative, isStale, isFollowUpOverdue } from "../lib/dateUtils";
 import { STAGE_COLORS, DEFAULT_STAGE_COLOR } from "../lib/constants";
 import { cn } from "../lib/utils";
 import CompanyLogo from "./CompanyLogo";
 import FitBadge from "./FitBadge";
 import { getDisplayFitScore } from "../lib/fitDisplay";
+import { Tooltip, TooltipTrigger, TooltipContent } from "./ui/tooltip";
 
 function KanbanCard({ application, onSelect }) {
   const {
@@ -72,11 +74,23 @@ function KanbanCard({ application, onSelect }) {
       <p className="mt-0.5 truncate text-sm text-muted-foreground">
         {application.role_title}
       </p>
-      <div className="mt-1 flex items-center justify-between">
+      <div className="mt-1 flex items-center justify-between gap-2">
         <p className="text-xs text-muted-foreground">
           {formatRelative(application.date_applied)}
         </p>
-        <FitBadge score={getDisplayFitScore(application)} />
+        <div className="flex shrink-0 items-center gap-1.5">
+          {application.interview_prep_briefing && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span tabIndex={0} className="inline-flex cursor-default">
+                  <Sparkles className="h-3.5 w-3.5 text-primary" aria-hidden="true" />
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>Interview prep briefing ready — open the card to review</TooltipContent>
+            </Tooltip>
+          )}
+          <FitBadge score={getDisplayFitScore(application)} />
+        </div>
       </div>
     </div>
   );

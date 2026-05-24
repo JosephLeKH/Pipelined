@@ -6,20 +6,16 @@ import { describe, it, expect } from "vitest";
 import FitBadge from "./FitBadge";
 
 describe("FitBadge", () => {
-  it("should show — and gray styling when score is null", () => {
-    render(<FitBadge score={null} />);
-    const badge = screen.getByTestId("fit-badge");
+  it("should render nothing when score is null", () => {
+    const { container } = render(<FitBadge score={null} />);
 
-    expect(badge).toHaveTextContent("—");
-    expect(badge.className).toMatch(/bg-gray/);
+    expect(container).toBeEmptyDOMElement();
   });
 
-  it("should show — and gray styling when score is undefined", () => {
-    render(<FitBadge score={undefined} />);
-    const badge = screen.getByTestId("fit-badge");
+  it("should render nothing when score is undefined", () => {
+    const { container } = render(<FitBadge score={undefined} />);
 
-    expect(badge).toHaveTextContent("—");
-    expect(badge.className).toMatch(/bg-gray/);
+    expect(container).toBeEmptyDOMElement();
   });
 
   it("should show green styling for high fit score (80-100)", () => {
@@ -88,12 +84,5 @@ describe("FitBadge", () => {
     const badge = screen.getByTestId("fit-badge");
 
     expect(badge).toHaveAttribute("aria-label", "Fit score: 72%");
-  });
-
-  it("should have correct aria-label when score is null", () => {
-    render(<FitBadge score={null} />);
-    const badge = screen.getByTestId("fit-badge");
-
-    expect(badge).toHaveAttribute("aria-label", "Fit score: —");
   });
 });

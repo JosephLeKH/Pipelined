@@ -74,7 +74,9 @@ function Dashboard() {
     catch { return "list"; }
   });
   const { handleCsvExport, isLoading: isExporting } = useApplicationExport();
-  const expandFollowUpDraft = searchParams.get("action") === "follow-up";
+  const expandFollowUpDraft =
+    searchParams.get("section") === "follow-up" ||
+    searchParams.get("action") === "follow-up";
   const { filters, selectedId, includeArchived, handleSelect, handleClosePanel, handleClearFilters, handleViewFollowUps } = useDashboardFilters();
   const { data: selectedApp } = useApplication(selectedId);
   const { data: stats } = useApplicationStats();
@@ -97,7 +99,8 @@ function Dashboard() {
         filters={filters} onSelect={handleSelect} onAdd={() => setIsModalOpen(true)} onImportCsv={() => setIsImportOpen(true)}
         shortcutsEnabled={shortcutsEnabled} onClearFilters={handleClearFilters} selectedApp={selectedApp} onClosePanel={handleClosePanel}
         isModalOpen={isModalOpen} isImportOpen={isImportOpen} onCloseModal={() => setIsModalOpen(false)} onCloseImport={() => setIsImportOpen(false)}
-        followUpsDue={stats?.follow_ups_due ?? 0} onViewFollowUps={handleViewFollowUps}
+        followUpsDue={stats?.follow_ups_due ?? 0}
+        onViewFollowUps={() => handleViewFollowUps(stats?.first_follow_up_due_id)}
         expandFollowUpDraft={expandFollowUpDraft}
       />
     </div>

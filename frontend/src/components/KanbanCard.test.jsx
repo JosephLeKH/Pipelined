@@ -6,6 +6,7 @@ import { DndContext } from "@dnd-kit/core";
 import { SortableContext } from "@dnd-kit/sortable";
 
 import KanbanCard from "./KanbanCard";
+import { TooltipProvider } from "./ui/tooltip";
 
 const NOW = new Date("2026-04-09T00:00:00Z");
 const STALE_DATE = new Date(NOW.getTime() - 20 * 86_400_000).toISOString(); // 20 days ago
@@ -33,11 +34,13 @@ vi.setSystemTime(NOW);
 
 function renderCard(application, onSelect = vi.fn()) {
   return render(
+    <TooltipProvider>
     <DndContext>
       <SortableContext items={[application.id]}>
         <KanbanCard application={application} onSelect={onSelect} />
       </SortableContext>
     </DndContext>
+    </TooltipProvider>
   );
 }
 
@@ -106,5 +109,17 @@ describe("KanbanCard", () => {
     renderCard({ ...FRESH_APP, fit_score: 58 });
 
     expect(screen.getByTestId("fit-badge")).toHaveTextContent("58%");
+  });
+
+  it("should not show fit badge when score is unscored", () => {
+    renderCard(FRESH_APP);
+
+    expect(screen.queryByTestId("fit-badge")).not.toBeInTheDocument();
+  });
+
+  it("should show interview prep indicator when briefing exists", () => {
+    const { container } = renderCard({ ...FRESH_APP, interview_prep_briefing: { summary: "Ready" } });
+
+    expect(container.querySelector(".lucide-sparkles")).toBeTruthy();
   });
 });

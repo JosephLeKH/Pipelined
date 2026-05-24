@@ -24,6 +24,7 @@ class StatsResponse(BaseModel):
     applied_this_week: int = 0
     current_streak: int = 0
     follow_ups_due: int = 0
+    first_follow_up_due_id: str | None = None
     tag_offer_rates: list[TagOfferRate] = Field(default_factory=list)
 
 

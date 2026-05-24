@@ -17,7 +17,11 @@ function fitColor(score) {
 }
 
 function FitBadge({ score }) {
-  const label = score === null || score === undefined ? "—" : `${score}%`;
+  if (score === null || score === undefined) {
+    return null;
+  }
+
+  const label = `${score}%`;
   const colorClass = fitColor(score);
 
   return (
