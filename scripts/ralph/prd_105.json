@@ -1,0 +1,60 @@
+{
+  "id": "prd_105",
+  "title": "AI UX Foundation — Design System, Terminology & Shared Components",
+  "description": "Establish consistent AI visual language before polishing individual surfaces. Fixes cross-cutting confusion: fit vs match score, Sparkles overload, split quota displays, and missing shared patterns. All new components use designTokens.js and existing shadcn/ui primitives.",
+  "userStories": [
+    {
+      "id": "US-939",
+      "title": "Standardize AI terminology across the app",
+      "description": "Create frontend/src/lib/aiConstants.js with canonical copy. FIT_SCORE_LABEL everywhere. Replace user-visible Match score. Rename StatsBar Needs follow-up to Stale applications.",
+      "acceptanceCriteria": [
+        "aiConstants.js with shared labels",
+        "No user-visible Match score text",
+        "StatsBar says Stale applications",
+        "Frontend tests updated"
+      ],
+      "priority": "high",
+      "passes": true,
+      "notes": "aiConstants.js; Fit score label; Stale applications in StatsBar"
+    },
+    {
+      "id": "US-940",
+      "title": "Shared AiSection shell component",
+      "description": "Create AiSection.jsx wrapper using CARD_BASE, brand left border, icon circle header. Refactor at least 3 AI sections to use it.",
+      "acceptanceCriteria": [
+        "AiSection.jsx under 80 lines",
+        "Used in 3+ AI sections",
+        "Component test exists"
+      ],
+      "priority": "high",
+      "passes": true,
+      "notes": "AiSection.jsx; ResumeInsights, FollowUpDraft, FitScore sections refactored"
+    },
+    {
+      "id": "US-941",
+      "title": "Unified AI usage indicator in Settings",
+      "description": "Single Settings AI usage dashboard. Remove duplicate quota from Resume section. Shared AI_LIMIT_MESSAGE for 429 toasts.",
+      "acceptanceCriteria": [
+        "One AI usage section",
+        "Duplicate meter removed",
+        "AI_LIMIT_MESSAGE in toasts"
+      ],
+      "priority": "medium",
+      "passes": true,
+      "notes": "SettingsUsageSection AI dashboard; getAiToastError in AI sections"
+    },
+    {
+      "id": "US-942",
+      "title": "AI iconography guide",
+      "description": "AI_ICONS map in aiConstants.js. JobRecommendations uses TrendingUp not Sparkles. InterviewPrep idle uses BookOpen.",
+      "acceptanceCriteria": [
+        "AI_ICONS documented",
+        "Sparkles removed from recommendations",
+        "InterviewPrep uses BookOpen"
+      ],
+      "priority": "medium",
+      "passes": true,
+      "notes": "TrendingUp in JobRecommendations; BookOpen in InterviewPrep idle header"
+    }
+  ]
+}

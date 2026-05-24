@@ -85,3 +85,6 @@
       "priority": "medium",
       "passes": true,
       "notes": "Fixed loop_scope=session, archived skip aligned with service, interview_tomorrow assertion fixed. 6/6 tests pass."
+    }
+  ]
+}

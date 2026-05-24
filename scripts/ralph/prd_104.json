@@ -52,8 +52,8 @@
         "No false auto-send/resume-edit claims"
       ],
       "priority": "medium",
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Commit 06f2482"
     },
     {
       "id": "US-937",
@@ -65,8 +65,8 @@
         "Product policy stated"
       ],
       "priority": "medium",
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Commit 4c84d79"
     },
     {
       "id": "US-938",
@@ -78,8 +78,8 @@
         "Under 200 lines"
       ],
       "priority": "medium",
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Commit 4d63225"
     }
   ]
 }

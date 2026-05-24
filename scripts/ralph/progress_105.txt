@@ -1,0 +1,43 @@
+# Ralph Progress Log — prd_105
+Started: Sat May 23 2026
+---
+
+## US-939: Standardize AI terminology ✅ COMPLETE
+
+**Implementation:** Created aiConstants.js with FIT_SCORE_LABEL, STALE_APPLICATIONS_LABEL, MIN_FIT_SCORE_LABEL. StatsBar → Stale applications; PendingOpportunityCard and autopilot settings use fit terminology.
+
+**Testing:** npm test -- --run StatsBar.test.jsx PendingInboxPage.test.jsx — 8 passed
+
+**Commit:** 62e4a8c
+
+---
+
+## US-940: Shared AiSection shell component ✅ COMPLETE
+
+**Implementation:** AiSection.jsx (32 lines) with CARD_BASE and border-l-4 border-brand-500. Refactored ResumeInsightsSection, FollowUpDraftSection, FitScoreSection in DetailPanelBody.
+
+**Testing:** npm test -- --run AiSection.test.jsx DetailPanelBody.test.jsx — passed
+
+**Commit:** 802273a
+
+---
+
+## US-941: Unified AI usage indicator in Settings ✅ COMPLETE
+
+**Implementation:** Removed AiScoreMeter from SettingsResumeSection; added AI usage dashboard subsection in SettingsUsageSection. AI_LIMIT_MESSAGE via getAiToastError in AI feature toasts and ResumeFitSection inline copy.
+
+**Testing:** npm test -- --run SettingsUsageSection.test.jsx SettingsResumeSection.test.jsx ResumeFitSection.test.jsx — passed
+
+**Commit:** d07515e
+
+---
+
+## US-942: AI iconography guide ✅ COMPLETE
+
+**Implementation:** AI_ICONS map documented in aiConstants.js. JobRecommendations header uses TrendingUp; InterviewPrepAgent idle header uses BookOpen (Sparkles kept on Start Research generative action).
+
+**Testing:** npm test -- --run JobRecommendations.test.jsx — passed; npm run build — passed
+
+**Commit:** c8775d2
+
+---
