@@ -1,0 +1,55 @@
+{
+  "id": "prd_119",
+  "title": "Frontend Test & MSW Hardening",
+  "description": "Fix failing frontend tests from missing MSW handlers for new agentic routes.",
+  "userStories": [
+    {
+      "id": "US-1001",
+      "title": "Shared MSW handlers for agentic APIs",
+      "description": "Handlers for agent/activity, copilot, email-events, apply-pack, mock-interview, brief missions in passthroughHandlers.js.",
+      "acceptanceCriteria": [
+        "Handlers added",
+        "DetailPanel and Dashboard tests pass"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-1002",
+      "title": "Fix Settings and Nav test wrappers",
+      "description": "TooltipProvider + MSW in Settings.test.jsx, NavBar.test.jsx.",
+      "acceptanceCriteria": [
+        "Settings tests pass",
+        "NavBar tests pass"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-1003",
+      "title": "Fix page test failures batch 1",
+      "description": "Analytics, JobBoard, Login tests.",
+      "acceptanceCriteria": [
+        "Analytics pass",
+        "JobBoard pass",
+        "Login pass"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-1004",
+      "title": "Fix page test failures batch 2",
+      "description": "OfferComparison, Pricing, PublicPipeline, Tags, GithubCallback, ApplicationList bulk-delete.",
+      "acceptanceCriteria": [
+        "All listed tests pass"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

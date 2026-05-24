@@ -17,9 +17,30 @@
  *   GET /api/contacts                  — ContactsSection fetches contacts; not under test in most suites
  *   GET /api/applications/stats        — Fallback stats call from widgets rendered outside StatsBar tests
  *   GET /api/calendar/events           — Fallback events call when calendar is a side-rendered widget
+ *   GET /api/agent/activity            — AgentActivitySection in DetailPanel / Settings
+ *   GET /api/applications/:id/email-events — EmailTimelineSection in DetailPanelTimeline
+ *   POST /api/applications/:id/apply-pack    — ApplyPackSection generate stub
+ *   POST /api/applications/:id/mock-interview — MockInterviewPanel generate stub
+ *   POST /api/copilot/chat             — CoPilotPanel stream stub (NavBar side-effect)
+ *   GET /api/brief/today               — Today / morning brief missions
+ *   POST /api/brief/missions/:id/snooze — Mission snooze from TodayPage
+ *   POST /api/brief/missions/:id/done   — Mission complete from TodayPage
  */
 
 import { http, HttpResponse } from "msw";
+
+const EMPTY_BRIEF = {
+  date: "2026-01-01",
+  summary_line: "",
+  sections: {
+    follow_ups: [],
+    interviews: [],
+    high_matches: [],
+    pending_approvals: [],
+  },
+  missions: [],
+  mission_progress: { cleared: 0, total: 0 },
+};
 
 export const passthroughHandlers = [
   // Tag autocomplete — return empty list
@@ -74,5 +95,44 @@ export const passthroughHandlers = [
 
   http.get("/api/autopilot/pending", () =>
     HttpResponse.json({ data: [] })
+  ),
+
+  http.get("/api/agent/activity", () =>
+    HttpResponse.json({ data: [], meta: { limit: 20 } })
+  ),
+
+  http.get("/api/applications/:id/email-events", () =>
+    HttpResponse.json({ data: [] })
+  ),
+
+  http.post("/api/applications/:id/apply-pack", () =>
+    HttpResponse.json({
+      data: {
+        cover_letter: "",
+        form_answers: [],
+        linkedin_note: "",
+        talking_points: [],
+      },
+    })
+  ),
+
+  http.post("/api/applications/:id/mock-interview", () =>
+    HttpResponse.json({ data: { questions: [] } })
+  ),
+
+  http.post("/api/copilot/chat", () =>
+    HttpResponse.json({ data: { message: "" } })
+  ),
+
+  http.get("/api/brief/today", () =>
+    HttpResponse.json({ data: EMPTY_BRIEF })
+  ),
+
+  http.post("/api/brief/missions/:id/snooze", () =>
+    HttpResponse.json({ data: { snoozed: {} } })
+  ),
+
+  http.post("/api/brief/missions/:id/done", () =>
+    HttpResponse.json({ data: { completed: [] } })
   ),
 ];

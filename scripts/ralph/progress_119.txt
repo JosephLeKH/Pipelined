@@ -1,0 +1,11 @@
+# Ralph Progress Log — prd_119
+Started: Sun May 24 2026
+---
+
+## US-1001: Shared MSW handlers for agentic APIs ✅ COMPLETE
+
+**Implementation:** Added passthrough handlers in frontend/src/test/passthroughHandlers.js for agent/activity, email-events, apply-pack, mock-interview, copilot/chat, brief/today, and brief mission snooze/done.
+
+**Testing:** `npm test -- --run src/components/DetailPanel.test.jsx` — 19 passed
+
+---
