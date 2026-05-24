@@ -17,3 +17,11 @@ Started: Sat May 23 2026
 **Testing:** `pytest tests/test_email_events.py -v` — 6 passed; `npm run test -- --run src/components/EmailTimelineSection.test.jsx src/components/DetailPanelTimeline.test.jsx` — 3 passed
 
 ---
+
+## US-968: Offer letter parser ✅ COMPLETE
+
+**Implementation:** email_integration/offer_parser.py with OpenRouter extract_offer_details(); _apply_offer_details_from_email on Offer-stage classify.
+
+**Testing:** `pytest tests/test_offer_parser.py -v` — 3 passed
+
+---

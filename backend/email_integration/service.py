@@ -13,7 +13,7 @@ from bson import ObjectId
 from bson.errors import InvalidId
 
 from applications.interview_prep.agent import run_agent
-from applications.schemas import ApplicationCreate, ApplicationUpdate
+from applications.schemas import ApplicationCreate, ApplicationUpdate, OfferDetails
 from applications.service import DuplicateApplicationError
 from applications.service import create as create_application
 from applications.service import update as update_application
@@ -21,6 +21,7 @@ from config import settings
 from database import get_collection
 from email_integration.classifier import GmailTransientError, classify_email
 from email_integration.email_events import log_email_event
+from email_integration.offer_parser import extract_offer_details
 
 logger = structlog.get_logger()
 
@@ -303,6 +304,35 @@ def _decode_body(payload: dict) -> str:
     return ""
 
 
+async def _apply_offer_details_from_email(
+    user_id: str,
+    app_id: str,
+    subject: str,
+    body: str,
+) -> None:
+    """Extract offer_details from an offer letter email and merge onto the application."""
+    extracted = await extract_offer_details(subject, body)
+    if not extracted:
+        return
+
+    apps = get_collection("applications")
+    existing = await apps.find_one(
+        {"_id": _to_oid(app_id), "user_id": _to_oid(user_id)},
+        {"offer_details": 1},
+    )
+    if not existing:
+        return
+
+    current = OfferDetails.model_validate(existing.get("offer_details") or {})
+    merged = {**current.model_dump(exclude_none=True), **extracted}
+    update = ApplicationUpdate.model_construct(
+        _fields_set={"offer_details"},
+        offer_details=OfferDetails.model_validate(merged),
+    )
+    await update_application(user_id, app_id, update)
+    logger.info("offer_details_extracted_from_email", user_id=user_id, app_id=app_id)
+
+
 async def _record_email_event(
     user_id: str,
     *,
@@ -434,6 +464,8 @@ async def _process_message(
                 stage=stage,
                 subject=subject,
             )
+            if stage == "Offer":
+                await _apply_offer_details_from_email(user_id, app_id, subject, body)
             if stage == "Interviewing" and user.get(
                 "gmail_interview_prep", DEFAULT_GMAIL_INTERVIEW_PREP
             ):
@@ -499,6 +531,8 @@ async def _process_message(
                 stage=stage,
                 subject=subject,
             )
+            if stage == "Offer":
+                await _apply_offer_details_from_email(user_id, app_id, subject, body)
             if stage == "Interviewing" and user.get(
                 "gmail_interview_prep", DEFAULT_GMAIL_INTERVIEW_PREP
             ):
