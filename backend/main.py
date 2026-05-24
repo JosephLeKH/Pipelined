@@ -31,6 +31,7 @@ from sharing.router import router as sharing_router
 from feedback.router import router as feedback_router
 from seo.router import router as seo_router
 from templates.router import router as templates_router
+from autopilot.router import router as autopilot_router
 from jobs.sync import create_scheduler
 from config import settings, validate_production_secrets
 from database import connect, disconnect, ensure_indexes
@@ -110,6 +111,7 @@ def _register_routers(app: FastAPI) -> None:
     app.include_router(feedback_router)
     app.include_router(templates_router)
     app.include_router(email_integration_router)
+    app.include_router(autopilot_router)
 
 
 def create_app(*, testing: bool = False) -> FastAPI:

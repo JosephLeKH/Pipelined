@@ -5,7 +5,7 @@ from typing import Literal
 
 from pydantic import AnyHttpUrl, BaseModel, ConfigDict, Field, field_validator
 
-ValidSource = Literal["extension", "board", "manual", "email"]
+ValidSource = Literal["extension", "board", "manual", "email", "autopilot"]
 ValidCompanyType = Literal["startup", "mid", "enterprise", "gov", "nonprofit", "other"]
 ValidRemoteStatus = Literal["remote", "hybrid", "onsite", "unknown"]
 ValidSortField = Literal["date_applied", "company", "current_stage", "updated_at", "follow_up_date"]
@@ -159,6 +159,7 @@ class ApplicationResponse(BaseModel):
     custom_fields: dict[str, str | int | bool | list[str]] | None = None
     documents: dict[str, Document] | None = None  # resume and cover_letter
     prep_checklist: list[PrepChecklistItem] = Field(default_factory=list)
+    cover_letter_draft: dict[str, str] | None = None
 
     @classmethod
     def from_doc(cls, doc: dict) -> "ApplicationResponse":
