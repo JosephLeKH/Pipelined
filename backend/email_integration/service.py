@@ -59,6 +59,8 @@ STAGE_ORDER: dict[str, int] = {
 }
 
 PROCESSED_IDS_LIMIT = 500
+GMAIL_ACTIVITY_LIMIT = 5
+GMAIL_ACTIVITY_COLLECTION = "gmail_activity"
 
 
 class GmailOAuthError(Exception):
@@ -378,6 +380,13 @@ async def _process_message(
                 to_stage=stage,
                 source="email",
             )
+            await _log_gmail_activity(
+                user_id,
+                "status_updated",
+                application_id=app_id,
+                company=company,
+                role_title=role_title,
+            )
             if stage == "Interviewing" and user.get("gmail_interview_prep"):
                 asyncio.create_task(
                     _trigger_interview_prep(user_id, app_id, company, role_title)
@@ -406,6 +415,13 @@ async def _process_message(
                 company=company,
                 role_title=role_title,
                 source="email",
+            )
+            await _log_gmail_activity(
+                user_id,
+                "application_tracked",
+                application_id=app_id,
+                company=company,
+                role_title=role_title,
             )
             if stage == "Interviewing" and user.get("gmail_interview_prep"):
                 asyncio.create_task(
@@ -465,6 +481,45 @@ async def _trigger_fit_score(
     except Exception:
         log.warning("fit_score_trigger_failed", app_id=app_id)
 
+
+
+async def _log_gmail_activity(
+    user_id: str,
+    event_type: str,
+    *,
+    application_id: str | None = None,
+    company: str | None = None,
+    role_title: str | None = None,
+) -> None:
+    """Persist a privacy-safe Gmail classification event (no email body)."""
+    await get_collection(GMAIL_ACTIVITY_COLLECTION).insert_one({
+        "user_id": _to_oid(user_id),
+        "event_type": event_type,
+        "timestamp": datetime.now(timezone.utc),
+        "application_id": application_id,
+        "company": company,
+        "role_title": role_title or None,
+    })
+
+
+async def get_recent_gmail_activity(user_id: str, limit: int = GMAIL_ACTIVITY_LIMIT) -> list[dict]:
+    """Return the most recent Gmail classification events for the user."""
+    cursor = (
+        get_collection(GMAIL_ACTIVITY_COLLECTION)
+        .find({"user_id": _to_oid(user_id)})
+        .sort("timestamp", -1)
+        .limit(limit)
+    )
+    events = []
+    async for doc in cursor:
+        events.append({
+            "event_type": doc.get("event_type", "unknown"),
+            "timestamp": doc.get("timestamp"),
+            "application_id": doc.get("application_id"),
+            "company": doc.get("company"),
+            "role_title": doc.get("role_title"),
+        })
+    return events
 
 async def sync_emails(user: dict) -> dict:
     """Fetch and process recent job emails. Returns sync result dict."""

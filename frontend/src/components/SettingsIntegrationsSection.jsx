@@ -22,6 +22,7 @@ import {
   AlertDialogTrigger,
 } from "./ui/alert-dialog";
 import { Button, buttonVariants } from "./ui/button";
+import { useGmailActivity } from "../hooks/useGmailActivity";
 import {
   useGmailDisconnectMutation,
   useGmailSettingsMutation,
@@ -77,6 +78,65 @@ function ToggleRow({ label, description, id, checked, onChange, disabled }) {
         />
       </button>
     </div>
+  );
+}
+
+
+
+const EVENT_LABELS = {
+  application_tracked: "Application tracked",
+  status_updated: "Status updated",
+};
+
+function formatActivityTime(iso) {
+  try {
+    return new Date(iso).toLocaleString(undefined, {
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+    });
+  } catch {
+    return "";
+  }
+}
+
+function GmailActivityFeed() {
+  const { data, isLoading } = useGmailActivity();
+
+  if (isLoading) {
+    return <div className="mt-3 h-16 animate-pulse rounded-lg bg-muted/40" />;
+  }
+
+  const events = data?.events ?? [];
+  if (!events.length) {
+    return (
+      <p className="mt-3 text-xs text-muted-foreground">
+        No recent email activity yet. Events appear after the next sync — we never store email bodies.
+      </p>
+    );
+  }
+
+  return (
+    <ul className="mt-3 divide-y divide-border rounded-lg border border-border">
+      {events.map((event, idx) => (
+        <li key={`${event.timestamp}-${idx}`} className="px-3 py-2.5">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-sm font-medium text-foreground">
+                {EVENT_LABELS[event.event_type] ?? event.event_type}
+              </p>
+              <p className="truncate text-xs text-muted-foreground">
+                {[event.company, event.role_title].filter(Boolean).join(" · ") || "Job email classified"}
+              </p>
+            </div>
+            <time className="shrink-0 text-xs text-muted-foreground" dateTime={event.timestamp}>
+              {formatActivityTime(event.timestamp)}
+            </time>
+          </div>
+        </li>
+      ))}
+    </ul>
   );
 }
 
@@ -197,6 +257,11 @@ function ConnectedState({ status, onDisconnect }) {
               <p className="text-xs text-muted-foreground">{label}</p>
             </div>
           ))}
+        </div>
+        <div className="mt-4 border-t border-border pt-4">
+          <h4 className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Recent activity</h4>
+          <p className="text-xs text-muted-foreground">Last 5 classification events — no email content stored.</p>
+          <GmailActivityFeed />
         </div>
         <div className="mt-2.5 flex items-center justify-end gap-2">
           <Button

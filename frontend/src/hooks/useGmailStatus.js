@@ -11,6 +11,7 @@ import {
 import { useAuth } from "../context/AuthContext";
 
 export const GMAIL_STATUS_KEY = ["gmail", "status"];
+const GMAIL_ACTIVITY_KEY = ["gmail", "status", "activity"];
 
 /** Fetch the current Gmail connection status. */
 export function useGmailStatus() {
@@ -37,7 +38,10 @@ export function useGmailSyncMutation() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: triggerGmailSync,
-    onSuccess: () => qc.invalidateQueries({ queryKey: GMAIL_STATUS_KEY }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: GMAIL_STATUS_KEY });
+      qc.invalidateQueries({ queryKey: GMAIL_ACTIVITY_KEY });
+    },
   });
 }
 

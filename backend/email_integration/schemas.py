@@ -32,3 +32,15 @@ class EmailSyncResult(BaseModel):
     emails_processed: int
     apps_created: int
     apps_updated: int
+
+
+class GmailActivityEvent(BaseModel):
+    event_type: str
+    timestamp: datetime
+    application_id: str | None = None
+    company: str | None = None
+    role_title: str | None = None
+
+
+class GmailActivityResponse(BaseModel):
+    events: list[GmailActivityEvent]

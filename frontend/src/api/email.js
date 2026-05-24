@@ -8,6 +8,11 @@ export async function fetchGmailAuthUrl(emailHint = "") {
   return client.get(`/email/auth${params}`);
 }
 
+/** Return recent Gmail classification events (no email bodies). */
+export async function fetchGmailActivity() {
+  return client.get("/email/activity");
+}
+
 /** Return the current Gmail connection status. */
 export async function fetchGmailStatus() {
   return client.get("/email/status");

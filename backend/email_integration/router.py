@@ -12,6 +12,7 @@ from email_integration import service as email_service
 from email_integration.schemas import (
     EmailAutomationSettings,
     EmailSyncResult,
+    GmailActivityResponse,
     GmailAuthUrl,
     GmailConnectionStatus,
 )
@@ -64,6 +65,15 @@ async def gmail_callback(
         f"?gmail_connected=1&email={urllib.parse.quote(gmail_email)}"
     )
     return RedirectResponse(url=success_url)
+
+
+@router.get("/activity", response_model=GmailActivityResponse)
+async def get_activity(user: dict = Depends(get_current_user)) -> dict:
+    """Return recent Gmail classification events — no raw email content."""
+    if not user.get("gmail_access_token"):
+        return {"events": []}
+    events = await email_service.get_recent_gmail_activity(str(user["_id"]))
+    return {"events": events}
 
 
 @router.get("/status", response_model=GmailConnectionStatus)
