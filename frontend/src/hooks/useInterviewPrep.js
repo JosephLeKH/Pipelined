@@ -6,15 +6,20 @@ import { openInterviewPrepStream } from "../api/interviewPrep";
 
 const STATUS = { IDLE: "idle", RUNNING: "running", DONE: "done", ERROR: "error" };
 
-function initialStatus(cachedBriefing) {
-  return cachedBriefing ? STATUS.DONE : STATUS.IDLE;
+function initialStatus(cachedBriefing, serverStatus) {
+  if (cachedBriefing) return STATUS.DONE;
+  if (serverStatus === "generating") return STATUS.RUNNING;
+  if (serverStatus === "failed") return STATUS.ERROR;
+  return STATUS.IDLE;
 }
 
-export function useInterviewPrep(appId, cachedBriefing = null) {
-  const [status, setStatus] = useState(() => initialStatus(cachedBriefing));
+export function useInterviewPrep(appId, cachedBriefing = null, serverStatus = null) {
+  const [status, setStatus] = useState(() => initialStatus(cachedBriefing, serverStatus));
   const [progressSteps, setProgressSteps] = useState([]);
   const [briefing, setBriefing] = useState(cachedBriefing);
-  const [errorMessage, setErrorMessage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(
+    () => (serverStatus === "failed" ? "Interview prep failed. Please try again." : null),
+  );
   const esRef = useRef(null);
 
   useEffect(() => {
@@ -22,11 +27,11 @@ export function useInterviewPrep(appId, cachedBriefing = null) {
       esRef.current.close();
       esRef.current = null;
     }
-    setStatus(initialStatus(cachedBriefing));
+    setStatus(initialStatus(cachedBriefing, serverStatus));
     setProgressSteps([]);
     setBriefing(cachedBriefing);
-    setErrorMessage(null);
-  }, [appId, cachedBriefing]);
+    setErrorMessage(serverStatus === "failed" ? "Interview prep failed. Please try again." : null);
+  }, [appId, cachedBriefing, serverStatus]);
 
   const start = useCallback(() => {
     if (esRef.current) {

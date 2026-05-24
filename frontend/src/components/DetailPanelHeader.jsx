@@ -21,10 +21,12 @@ function HeaderStatusPill({ children, className = BADGE_DEFAULT }) {
 
 function DetailPanelAiStrip({ application }) {
   const fitScore = getDisplayFitScore(application);
+  const prepStatus = application.interview_prep_status;
   const hasPrep = Boolean(application.interview_prep_briefing);
+  const isResearching = prepStatus === "generating";
   const isGmailSynced = application.source === "email";
 
-  if (fitScore == null && !hasPrep && !isGmailSynced) {
+  if (fitScore == null && !hasPrep && !isResearching && !isGmailSynced) {
     return null;
   }
 
@@ -34,6 +36,12 @@ function DetailPanelAiStrip({ application }) {
       aria-label="AI status"
     >
       {fitScore != null && <FitBadge score={fitScore} />}
+      {isResearching && (
+        <HeaderStatusPill className={BADGE_INFO}>
+          <BookOpen className="h-3 w-3 animate-pulse" aria-hidden="true" />
+          Researching
+        </HeaderStatusPill>
+      )}
       {hasPrep && (
         <HeaderStatusPill className={BADGE_SUCCESS}>
           <BookOpen className="h-3 w-3" aria-hidden="true" />

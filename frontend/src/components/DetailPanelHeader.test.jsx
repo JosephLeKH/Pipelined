@@ -58,4 +58,19 @@ describe("DetailPanelHeader", () => {
 
     expect(onDelete).toHaveBeenCalledOnce();
   });
+  it("should show Researching pill when interview prep is generating", () => {
+    render(
+      <DetailPanelHeader
+        application={{
+          ...mockApp,
+          interview_prep_status: "generating",
+        }}
+        onClose={vi.fn()}
+        onDelete={vi.fn()}
+      />
+    );
+
+    expect(screen.getByText("Researching")).toBeInTheDocument();
+  });
+
 });

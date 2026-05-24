@@ -61,4 +61,52 @@ describe("InterviewPrepAgent", () => {
 
     expect(screen.getByRole("button", { name: /start research/i })).toBeInTheDocument();
   });
+  it("should show researching shimmer when prep status is generating", () => {
+    useInterviewPrep.mockReturnValue({
+      status: "running",
+      progressSteps: [],
+      briefing: null,
+      errorMessage: null,
+      start: vi.fn(),
+      refresh: vi.fn(),
+      reset: vi.fn(),
+      STATUS: { IDLE: "idle", RUNNING: "running", DONE: "done", ERROR: "error" },
+    });
+
+    render(
+      <InterviewPrepAgent
+        applicationId="app1"
+        briefing={null}
+        generatedAt={null}
+        prepStatus="generating"
+      />
+    );
+
+    expect(screen.getByText("Researching…")).toBeInTheDocument();
+  });
+
+  it("should show retry when prep status is failed", () => {
+    useInterviewPrep.mockReturnValue({
+      status: "error",
+      progressSteps: [],
+      briefing: null,
+      errorMessage: "Interview prep failed. Please try again.",
+      start: vi.fn(),
+      refresh: vi.fn(),
+      reset: vi.fn(),
+      STATUS: { IDLE: "idle", RUNNING: "running", DONE: "done", ERROR: "error" },
+    });
+
+    render(
+      <InterviewPrepAgent
+        applicationId="app1"
+        briefing={null}
+        generatedAt={null}
+        prepStatus="failed"
+      />
+    );
+
+    expect(screen.getByRole("button", { name: /try again/i })).toBeInTheDocument();
+  });
+
 });
