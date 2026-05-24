@@ -161,3 +161,9 @@ export async function downloadPdfReport() {
   const blob = await response.blob();
   return { blob, retryAfter: null };
 }
+
+/** Generate resume tailoring insights for an application. */
+export async function generateResumeInsights(appId) {
+  const res = await client.post(`/applications/${appId}/resume-insights`);
+  return res.data.data;
+}
