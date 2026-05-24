@@ -2,8 +2,10 @@
 
 import json
 import re
+from datetime import datetime, timezone
 
 import structlog
+from bson import ObjectId
 
 from ai.copilot_context import build_copilot_context
 from ai.openrouter_client import OpenRouterError, agent_llm_configured, stream_chat
@@ -15,9 +17,12 @@ from copilot.constants import (
     COPILOT_TEMPERATURE,
     COPILOT_TIMEOUT_SECONDS,
 )
-from copilot.schemas import CopilotChatRequest
+from copilot.schemas import CopilotChatRequest, CopilotSessionSaveRequest
+from database import get_collection
 
 logger = structlog.get_logger()
+
+COLLECTION_NAME = "copilot_sessions"
 
 _ACTION_PATTERN = re.compile(r'\{"action"\s*:\s*"[^"]+"[^}]*\}', re.DOTALL)
 
