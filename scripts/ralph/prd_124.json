@@ -27,7 +27,7 @@
       "description": "Ensure all new routers registered.",
       "acceptanceCriteria": ["All routers mounted", "App starts"],
       "priority": "medium",
-      "passes": false,
+      "passes": true,
       "notes": ""
     }
   ]

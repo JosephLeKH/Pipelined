@@ -95,10 +95,25 @@ def _get_cors_origins() -> list[str]:
 
 
 def _register_routers(app: FastAPI) -> None:
-    """Attach all feature routers to the application."""
+    """Attach all feature routers to the application.
+
+    Mounted API prefixes (keep in sync with docs/AGENTIC_FEATURES.md):
+      /api/auth          — auth, resume upload, email verification
+      /api/applications  — CRUD, interview-prep, resume-insights, apply-pack,
+                           thread-summary, follow-up-draft, fit-score, mock-interview, email-events
+      /api/applications/{app_id}/documents
+      /api/calendar      /api/jobs           /api/contacts
+      /api/notifications /api/brief          /api/copilot
+      /api/autopilot     /api/review         /api/agent/activity
+      /api/email         /api/activity       /api/saved-searches
+      /api/templates     /api/custom-fields  /api/feedback
+      sharing + seo routes (no /api prefix)
+    """
+    # Auth
     app.include_router(auth_router)
     app.include_router(resume_router)
     app.include_router(verification_router)
+    # Applications + nested agent endpoints (shared /api/applications prefix)
     app.include_router(applications_router)
     app.include_router(interview_prep_router)
     app.include_router(resume_insights_router)
@@ -106,22 +121,25 @@ def _register_routers(app: FastAPI) -> None:
     app.include_router(apply_pack_router)
     app.include_router(custom_fields_router)
     app.include_router(documents_router)
+    # Core features
     app.include_router(calendar_router)
     app.include_router(jobs_router)
     app.include_router(sharing_router)
     app.include_router(contacts_router)
     app.include_router(notifications_router)
+    # Agent-native features
     app.include_router(brief_router)
     app.include_router(saved_searches_router)
     app.include_router(activity_router)
     app.include_router(agent_router)
-    app.include_router(seo_router)
-    app.include_router(feedback_router)
-    app.include_router(templates_router)
-    app.include_router(email_integration_router)
     app.include_router(autopilot_router)
     app.include_router(copilot_router)
     app.include_router(review_router)
+    app.include_router(email_integration_router)
+    # Misc
+    app.include_router(seo_router)
+    app.include_router(feedback_router)
+    app.include_router(templates_router)
 
 
 def create_app(*, testing: bool = False) -> FastAPI:

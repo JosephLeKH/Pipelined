@@ -9,3 +9,15 @@ Started: Sun May 24 2026
 **Testing:** `pytest tests/test_brief_router.py tests/test_copilot_router.py tests/test_apply_pack.py tests/test_mock_interview.py tests/test_review_router.py tests/test_agent_isolation.py -q` — 29 passed
 
 ---
+
+## US-1022: Update README and CLAUDE.md ✅ COMPLETE
+
+**Implementation:** README feature list, env vars, project structure; CLAUDE.md module map (copilot, review, watchlist, apply_pack, agent, thread_summary) and scheduler table (weekly_review, watchlist_scan).
+
+## US-1023: API routes comment sync in main.py ✅ COMPLETE
+
+**Implementation:** Grouped _register_routers docstring listing all API prefixes; verified 25 routers mounted including thread_summary, copilot, review; app imports cleanly.
+
+**Testing:** `python -c "from main import app"` — ok; `pytest tests/test_brief_router.py tests/test_copilot_router.py tests/test_review_router.py -q` — 12 passed
+
+---
