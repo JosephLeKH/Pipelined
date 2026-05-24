@@ -28,7 +28,7 @@ describe("PendingOpportunityCard", () => {
     });
   });
 
-  it("should render FitBadge for match score", () => {
+  it("should render FitBadge for match score without visible reason", () => {
     render(
       <PendingOpportunityCard
         opportunity={MOCK_OPPORTUNITY}
@@ -41,6 +41,25 @@ describe("PendingOpportunityCard", () => {
 
     expect(screen.getByTestId("fit-badge")).toHaveTextContent("88%");
     expect(screen.getByText("Fit score")).toBeInTheDocument();
+    expect(screen.queryByText("Strong Python overlap")).not.toBeInTheDocument();
+  });
+
+  it("should render FitBadge and hide match reason until Why is clicked", async () => {
+    render(
+      <PendingOpportunityCard
+        opportunity={MOCK_OPPORTUNITY}
+        onApprove={vi.fn()}
+        onDismiss={vi.fn()}
+        isApproving={false}
+        isDismissing={false}
+      />
+    );
+
+    expect(screen.getByTestId("fit-badge")).toHaveTextContent("88%");
+    expect(screen.queryByText("Strong Python overlap")).not.toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole("button", { name: /why\?/i }));
+    expect(screen.getByText("Strong Python overlap")).toBeInTheDocument();
   });
 
   it("should expand cover letter and copy to clipboard with success feedback", async () => {

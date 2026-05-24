@@ -90,6 +90,7 @@ function PendingOpportunityCard({
   isApproving,
   isDismissing,
 }) {
+  const [showWhy, setShowWhy] = useState(false);
   const company = opportunity.listing_company ?? "Unknown company";
   const role = opportunity.listing_role ?? "Role";
   const applyUrl = opportunity.listing_apply_url;
@@ -108,8 +109,18 @@ function PendingOpportunityCard({
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-xs font-medium text-muted-foreground">{FIT_SCORE_LABEL}</span>
             <FitBadge score={opportunity.match_score} />
+            {opportunity.match_reason && (
+              <button
+                type="button"
+                onClick={() => setShowWhy((prev) => !prev)}
+                aria-expanded={showWhy}
+                className="text-xs font-medium text-brand-600 hover:underline dark:text-brand-400"
+              >
+                Why?
+              </button>
+            )}
           </div>
-          {opportunity.match_reason && (
+          {showWhy && opportunity.match_reason && (
             <p className="text-sm text-foreground">{opportunity.match_reason}</p>
           )}
         </div>

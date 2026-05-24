@@ -11,7 +11,7 @@ def get_display_fit(application: dict) -> dict | None:
     if ai_score is not None:
         return {
             "score": ai_score,
-            "reason": ai_analysis.get("summary"),
+            "reason": ai_analysis.get("match_reason") or ai_analysis.get("summary"),
             "source": SOURCE_AI_ANALYSIS,
         }
 
@@ -19,7 +19,7 @@ def get_display_fit(application: dict) -> dict | None:
     if top_score is not None:
         return {
             "score": top_score,
-            "reason": application.get("fit_score_reason"),
+            "reason": application.get("match_reason") or application.get("fit_score_reason"),
             "source": SOURCE_FIT_SCORE,
         }
 

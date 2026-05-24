@@ -67,7 +67,7 @@ describe("AiFitSection", () => {
     expect(screen.getByText(/daily ai limit reached/i)).toBeInTheDocument();
   });
 
-  it("should render fit score when ai_analysis has a score", () => {
+  it("should render fit score when ai_analysis has a score", async () => {
     renderSection({
       application: { ...APPLICATION, ai_analysis: ANALYSIS_FIXTURE },
       hasResume: true,
@@ -76,7 +76,8 @@ describe("AiFitSection", () => {
     });
 
     expect(screen.getByTestId("fit-badge")).toHaveTextContent("78");
-    expect(screen.getByText("Strong alignment with the role requirements.")).toBeInTheDocument();
+    expect(screen.queryByText("Strong alignment with the role requirements.")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /why\?/i })).toBeInTheDocument();
     expect(screen.getByText("React")).toBeInTheDocument();
     expect(screen.getByText("GraphQL")).toBeInTheDocument();
   });

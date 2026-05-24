@@ -38,10 +38,24 @@ function FitScoreSkeleton() {
 }
 
 function FitScoreDetails({ detail }) {
+  const [showWhy, setShowWhy] = useState(false);
+
   return (
     <div className="flex flex-col gap-3">
-      <FitBadge score={detail.score} />
-      {detail.reason && (
+      <div className="flex flex-wrap items-center gap-2">
+        <FitBadge score={detail.score} />
+        {detail.reason && (
+          <button
+            type="button"
+            onClick={() => setShowWhy((prev) => !prev)}
+            aria-expanded={showWhy}
+            className="text-xs font-medium text-brand-600 hover:underline dark:text-brand-400"
+          >
+            Why?
+          </button>
+        )}
+      </div>
+      {showWhy && detail.reason && (
         <p className="text-sm text-muted-foreground">{detail.reason}</p>
       )}
       {detail.matchedSkills.length > 0 && (

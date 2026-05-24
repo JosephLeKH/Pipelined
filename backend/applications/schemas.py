@@ -42,6 +42,7 @@ class AiFitAnalysis(BaseModel):
     matched_skills: list[str] = Field(default_factory=list)
     missing_skills: list[str] = Field(default_factory=list)
     summary: str | None = None
+    match_reason: str | None = None
     scored_at: datetime | None = None
 
 

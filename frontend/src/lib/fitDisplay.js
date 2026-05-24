@@ -15,7 +15,7 @@ export function getUnifiedFitDetail(application) {
   if (analysis?.fit_score != null) {
     return {
       score: analysis.fit_score,
-      reason: analysis.summary ?? null,
+      reason: analysis.match_reason ?? analysis.summary ?? null,
       matchedSkills: analysis.matched_skills ?? [],
       missingSkills: analysis.missing_skills ?? [],
       source: "ai_analysis",
@@ -25,7 +25,7 @@ export function getUnifiedFitDetail(application) {
   if (application.fit_score != null) {
     return {
       score: application.fit_score,
-      reason: application.fit_score_reason ?? null,
+      reason: application.match_reason ?? application.fit_score_reason ?? null,
       matchedSkills: [],
       missingSkills: [],
       source: "fit_score",
