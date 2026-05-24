@@ -1,9 +1,33 @@
-## US-910: Unify fit score display across list and detail views
+# Ralph Progress Log — prd_98
+Started: Sat May 23 2026
+---
 
-- Added `backend/applications/fit_display.py` with `get_display_fit()` returning `{score, reason, source}` — prefers `ai_analysis.fit_score`, falls back to top-level `fit_score` / `fit_score_reason`
-- Added `frontend/src/lib/fitDisplay.js` with `getDisplayFitScore()` mirroring the same preference for list/card views
-- Updated `ApplicationRow.jsx` and `KanbanCard.jsx` to use unified score via `getDisplayFitScore()`
-- Added `fit_score` to `LIST_PROJECTION` so list API returns interview-prep scores
-- Updated `service_export.py` PDF export to use `get_display_fit()`
-- Backend: 4/4 tests pass (`tests/test_fit_display.py`)
-- Frontend: 4/4 new fit-score tests pass in ApplicationRow and KanbanCard test files
+## US-907: OpenRouter config and shared client module ✅ COMPLETE
+
+**Implementation:** Added OpenRouter settings to `backend/config.py`, created `backend/ai/openrouter_client.py` with `get_openrouter_client()` and `complete_json()`, and documented `OPENROUTER_API_KEY` in `.env.example`.
+
+**Testing:** `pytest tests/test_openrouter_client.py -v` — 6 passed
+
+**Commit:** 39438ea
+
+---
+
+## US-908: Migrate classifier and fit score to OpenRouter ✅ COMPLETE
+
+**Implementation:** Migrated `classifier.py`, `fit_score.py`, and `generate_follow_up_draft` in `router.py` to prefer OpenRouter when `openrouter_api_key` is set, with legacy Gemini fallback.
+
+**Testing:** `pytest tests/test_openrouter_client.py tests/test_email_classifier.py -v` — 13 passed. Interview prep router HTTP tests have pre-existing asyncio loop-scope failures unrelated to this change.
+
+**Commit:** 6a25b7d
+
+---
+
+## US-909: Extend ai_cache for OpenRouter quota layer ✅ COMPLETE
+
+**Implementation:** Extended `parsing/ai_cache.py` with `PROVIDER_OPENROUTER`, provider-aware cache keys and cost tracking, shared monthly budget. Wired global budget into classifier; per-user quota + cache into fit_score and follow-up draft. Added `complete_json_with_usage()` for token tracking.
+
+**Testing:** `pytest tests/test_openrouter_client.py tests/test_email_classifier.py tests/test_openrouter_quota.py tests/test_ai_cache.py -v` — 30 passed
+
+**Commit:** 2f10f7c
+
+---

@@ -27,8 +27,8 @@
         "Existing tests pass"
       ],
       "priority": "high",
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "classifier, fit_score, follow-up draft migrated. 15/15 unit tests pass; interview_prep_router HTTP tests have pre-existing event loop issues. Commit 6a25b7d."
     },
     {
       "id": "US-909",
@@ -41,8 +41,8 @@
         "Tests for quota exceeded path"
       ],
       "priority": "medium",
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "ai_cache openrouter provider, quota on fit_score/follow-up, budget on classifier. 30/30 tests pass. Commit 2f10f7c."
     },
     {
       "id": "US-910",
