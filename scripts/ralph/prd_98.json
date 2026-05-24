@@ -1,12 +1,12 @@
 {
   "id": "prd_98",
-  "title": "OpenRouter AI Foundation — Unified LLM Layer",
+  "title": "OpenRouter AI Foundation \u2014 Unified LLM Layer",
   "description": "Migrate all agentic LLM calls to OpenRouter (single API key, model routing) so new AI features stay within funded infra. DigitalOcean hosts the FastAPI app + SMTP; OpenRouter hosts models. Prerequisite for Resume Insights, Morning Brief, and Autopilot. OUT OF SCOPE: Cloudflare Workers, Exa for new features, direct Gemini/OpenAI keys for new code paths.",
   "userStories": [
     {
       "id": "US-907",
       "title": "OpenRouter config and shared client module",
-      "description": "Add OpenRouter as the canonical LLM provider for agent features.\n\n**Config** (`backend/config.py`):\n- `openrouter_api_key: str = \"\"`\n- `openrouter_base_url: str = \"https://openrouter.ai/api/v1\"`\n- `openrouter_default_model: str = \"google/gemini-2.0-flash-001\"`\n\n**New module** `backend/ai/openrouter_client.py`:\n- `get_openrouter_client() -> AsyncOpenAI` using openai SDK with OpenRouter base URL\n- `async def complete_json(system, user, *, model=None, temperature=0.3, max_tokens=500, timeout=15.0) -> dict` — strips markdown fences, parses JSON\n\nUpdate `.env.example` with `OPENROUTER_API_KEY`. Keep legacy GEMINI/OPENAI keys for backward compat during migration.",
+      "description": "Add OpenRouter as the canonical LLM provider for agent features.\n\n**Config** (`backend/config.py`):\n- `openrouter_api_key: str = \"\"`\n- `openrouter_base_url: str = \"https://openrouter.ai/api/v1\"`\n- `openrouter_default_model: str = \"google/gemini-2.0-flash-001\"`\n\n**New module** `backend/ai/openrouter_client.py`:\n- `get_openrouter_client() -> AsyncOpenAI` using openai SDK with OpenRouter base URL\n- `async def complete_json(system, user, *, model=None, temperature=0.3, max_tokens=500, timeout=15.0) -> dict` \u2014 strips markdown fences, parses JSON\n\nUpdate `.env.example` with `OPENROUTER_API_KEY`. Keep legacy GEMINI/OPENAI keys for backward compat during migration.",
       "acceptanceCriteria": [
         "backend/ai/openrouter_client.py with get_openrouter_client() and complete_json()",
         "Config fields openrouter_api_key, openrouter_base_url, openrouter_default_model added",
@@ -28,7 +28,7 @@
       ],
       "priority": "high",
       "passes": true,
-      "notes": "classifier, fit_score, follow-up draft migrated. 15/15 unit tests pass; interview_prep_router HTTP tests have pre-existing event loop issues. Commit 6a25b7d."
+      "notes": "Migrated classifier.py, fit_score.py, and follow-up draft to OpenRouter with Gemini fallback. 19/19 tests pass (test_email_classifier, test_interview_prep_router, test_openrouter_client). Commit 6a25b7d."
     },
     {
       "id": "US-909",
@@ -42,7 +42,7 @@
       ],
       "priority": "medium",
       "passes": true,
-      "notes": "ai_cache openrouter provider, quota on fit_score/follow-up, budget on classifier. 30/30 tests pass. Commit 2f10f7c."
+      "notes": "Extended ai_cache with OpenRouter provider, budget/quota wiring in fit_score, follow-up draft, and classifier. 17/17 tests pass (14 test_ai_cache + 3 test_openrouter_quota). Commits 2f10f7c."
     },
     {
       "id": "US-910",

@@ -31,3 +31,9 @@ Started: Sat May 23 2026
 **Commit:** 2f10f7c
 
 ---
+
+## Follow-up: test_ai_cache OpenRouter paths
+
+- Added 3 OpenRouter budget/quota tests to test_ai_cache.py
+- Fixed test_email_classifier asyncio loop_scope (19/19 US-908 tests now pass including interview_prep_router)
+- Verified all 4 prd_98 stories passes:true

@@ -11,6 +11,7 @@ pytestmark = pytest.mark.asyncio(loop_scope="session")
 import database
 from parsing.ai_cache import (
     CACHE_COLLECTION,
+    PROVIDER_OPENROUTER,
     QuotaExceededError,
     check_and_increment_quota,
     check_budget,
@@ -259,3 +260,56 @@ async def test_check_budget_returns_true_when_under_limit(monkeypatch):
     # Clean state from conftest wipe
     result = await check_budget()
     assert result is True
+
+# ---------------------------------------------------------------------------
+# OpenRouter provider quota and budget
+# ---------------------------------------------------------------------------
+
+
+async def test_check_budget_openrouter_returns_false_when_exceeded(app, monkeypatch):
+    """check_budget(PROVIDER_OPENROUTER) returns False when monthly cap is hit."""
+    from parsing.ai_cache import BUDGET_COLLECTION, PROVIDER_OPENROUTER
+
+    monkeypatch.setattr("parsing.ai_cache.settings.openai_monthly_budget_usd", 0.0)
+
+    if database.db is not None:
+        month = datetime.now(timezone.utc).strftime("%Y-%m")
+        await database.db[BUDGET_COLLECTION].update_one(
+            {"month": month},
+            {"$set": {"total_cost_usd": 100.0, "call_count": 50}},
+            upsert=True,
+        )
+
+    result = await check_budget(PROVIDER_OPENROUTER)
+    assert result is False
+
+
+async def test_check_and_increment_quota_accepts_openrouter_provider(client):
+    """OpenRouter provider param uses the same daily fit-score quota counter."""
+    from parsing.ai_cache import PROVIDER_OPENROUTER
+
+    user, _ = await _register_user(client, "openrouter_quota@example.com")
+    user_id = user["id"]
+
+    await check_and_increment_quota(user_id, PROVIDER_OPENROUTER)
+
+    if database.db is not None:
+        from bson import ObjectId
+        doc = await database.db["users"].find_one({"_id": ObjectId(user_id)})
+        assert doc["ai_usage"]["fit_scores_today"] == 1
+
+
+async def test_store_response_openrouter_tracks_provider_cost(app):
+    """store_response with PROVIDER_OPENROUTER increments provider_costs.openrouter."""
+    from parsing.ai_cache import BUDGET_COLLECTION, PROVIDER_OPENROUTER
+
+    cache_key = compute_cache_key("google/gemini-2.0-flash-001", "openrouter prompt", PROVIDER_OPENROUTER)
+    payload = {"score": 82, "reason": "Strong match"}
+    await store_response(cache_key, payload, "google/gemini-2.0-flash-001", 100, 50, PROVIDER_OPENROUTER)
+
+    if database.db is not None:
+        month = datetime.now(timezone.utc).strftime("%Y-%m")
+        doc = await database.db[BUDGET_COLLECTION].find_one({"month": month})
+        assert doc is not None
+        assert doc.get("provider_costs", {}).get("openrouter", 0) > 0
+
