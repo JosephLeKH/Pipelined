@@ -1,12 +1,12 @@
 /** Settings usage section — tier badge, usage meters, and upgrade teaser. */
 
+import { AI_SCORE_LIMIT } from "../lib/constants";
 import { Button } from "./ui/button";
 import { Progress } from "./ui/progress";
 import { Tooltip, TooltipTrigger, TooltipContent } from "./ui/tooltip";
 
 const APP_LIMIT = 100;
 const CONTACT_LIMIT = 50;
-const AI_SCORE_LIMIT = 10;
 
 function UsageMeter({ label, used, max }) {
   const pct = max > 0 ? Math.min(100, Math.round((used / max) * 100)) : 0;
@@ -54,6 +54,13 @@ function SettingsUsageSection({ user }) {
       <div className="flex flex-col gap-5">
         <UsageMeter label="Applications" used={appCount} max={APP_LIMIT} />
         <UsageMeter label="Contacts" used={contactCount} max={CONTACT_LIMIT} />
+      </div>
+
+      <div className="mt-6 border-t border-border pt-5">
+        <h3 className="font-display mb-1 text-base font-semibold text-foreground">AI usage</h3>
+        <p className="mb-4 text-sm text-muted-foreground">
+          Fit scores, resume insights, follow-up drafts, and interview prep share this daily limit. Resets at midnight UTC.
+        </p>
         <UsageMeter label="AI fit scores today" used={aiScores} max={AI_SCORE_LIMIT} />
       </div>
 

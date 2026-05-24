@@ -31,7 +31,7 @@ describe("ResumeFitSection", () => {
   it("should show quota exceeded message when aiScoresRemainingToday is 0 and no score", () => {
     render(<ResumeFitSection analysis={null} aiScoresRemainingToday={0} />);
 
-    expect(screen.getByText(/daily limit reached/i)).toBeInTheDocument();
+    expect(screen.getByText(/daily ai limit reached/i)).toBeInTheDocument();
   });
 
   it("should render fit score when analysis has a score", () => {

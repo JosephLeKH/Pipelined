@@ -61,13 +61,11 @@ describe("SettingsResumeSection", () => {
     expect(screen.getByRole("alert")).toHaveTextContent(/only pdf/i);
   });
 
-  it("should render AI score meter with progressbar", () => {
+  it("should not render AI score meter in resume section", () => {
     useAuth.mockReturnValue({ user: { has_resume: false, ai_scores_today: 5 } });
 
     render(<SettingsResumeSection />);
 
-    const progressbar = screen.getByRole("progressbar", { name: /ai fit scores used today/i });
-    expect(progressbar).toBeInTheDocument();
-    expect(progressbar).toHaveAttribute("aria-valuenow", "5");
+    expect(screen.queryByRole("progressbar", { name: /ai fit scores/i })).not.toBeInTheDocument();
   });
 });

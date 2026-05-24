@@ -1,4 +1,4 @@
-/** Settings Resume & AI section — drag-and-drop upload zone and AI fit score usage meter. */
+/** Settings Resume & AI section — drag-and-drop upload zone. */
 
 import { useCallback, useRef, useState } from "react";
 
@@ -9,7 +9,7 @@ import X from "lucide-react/dist/esm/icons/x";
 
 import { useAuth } from "../context/AuthContext";
 import { useDeleteResume, useUploadResume } from "../hooks/useAuth";
-import { AI_SCORE_LIMIT, RESUME_ACCEPT, RESUME_MAX_MB } from "../lib/constants";
+import { RESUME_ACCEPT, RESUME_MAX_MB } from "../lib/constants";
 import { Button } from "./ui/button";
 
 function formatBytes(bytes) {
@@ -115,32 +115,10 @@ function ResumeDropZone({ isDragOver, setIsDragOver, isUploading, fileInputRef, 
   );
 }
 
-function AiScoreMeter({ aiScores, aiPct }) {
-  return (
-    <div className="rounded-xl bg-card border border-border p-6">
-      <h3 className="font-display mb-1 text-base font-semibold text-foreground">AI fit scoring</h3>
-      <p className="mb-4 text-sm text-muted-foreground">Daily usage resets at midnight UTC.</p>
-      <div className="flex flex-col gap-1.5">
-        <div className="flex items-center justify-between">
-          <span className="text-sm font-medium text-foreground">Fit scores used today</span>
-          <span className="text-sm text-muted-foreground">{aiScores} / {AI_SCORE_LIMIT}</span>
-        </div>
-        <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
-          <div className="h-full rounded-full bg-primary transition-all duration-300" style={{ width: `${aiPct}%` }}
-            role="progressbar" aria-valuenow={aiScores} aria-valuemin={0} aria-valuemax={AI_SCORE_LIMIT}
-            aria-label="AI fit scores used today" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function SettingsResumeSection() {
   const { user, fileInputRef, isDragOver, setIsDragOver, isUploading, isDeleting,
           uploadedFile, resumeError, resumeSuccess, handleDrop, handleInputChange, handleDelete } = useResumeUpload();
   const hasResume = uploadedFile !== null || user?.has_resume;
-  const aiScores = user?.ai_scores_today ?? 0;
-  const aiPct = Math.min(100, Math.round((aiScores / AI_SCORE_LIMIT) * 100));
 
   return (
     <div className="flex flex-col gap-4">
@@ -164,7 +142,6 @@ function SettingsResumeSection() {
             fileInputRef={fileInputRef} onDrop={handleDrop} onInputChange={handleInputChange} />
         )}
       </div>
-      <AiScoreMeter aiScores={aiScores} aiPct={aiPct} />
     </div>
   );
 }

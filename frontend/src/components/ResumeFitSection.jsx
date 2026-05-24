@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 
+import { AI_LIMIT_MESSAGE } from "../lib/aiConstants";
 import FitBadge from "./FitBadge";
 import { trackEvent } from "../lib/analytics";
 
@@ -19,7 +20,7 @@ function ResumeFitSection({ analysis, aiScoresRemainingToday }) {
       <div className="flex flex-col gap-3">
         <span className="text-xs font-medium uppercase text-muted-foreground">Resume Fit</span>
         <p className="text-sm text-amber-600 dark:text-amber-400">
-          Daily limit reached. Resets tomorrow.
+          {AI_LIMIT_MESSAGE}
         </p>
       </div>
     );
