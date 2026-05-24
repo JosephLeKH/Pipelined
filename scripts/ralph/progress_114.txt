@@ -1,0 +1,35 @@
+# Ralph Progress Log — prd_114
+Started: Sat May 23 2026
+---
+
+## US-978: Watchlist CRUD API and settings UI ✅ COMPLETE
+
+**Implementation:** watchlist_companies on user (name, careers_url, max 25). PATCH /api/auth/me. SettingsWatchlistSection in Autopilot settings tab.
+
+**Testing:** `pytest tests/test_watchlist_auth.py -v` — 3 passed; `npm run test -- --run src/components/SettingsWatchlistSection.test.jsx` — 3 passed
+
+---
+
+## US-979: Watchlist scan job ✅ COMPLETE
+
+**Implementation:** backend/watchlist/scan.py daily job at 06:00 UTC in sync.py. httpx fetch, Greenhouse/Lever/HTML parser, url_hash dedupe via jobs.sync.compute_url_hash.
+
+**Testing:** `pytest tests/test_watchlist_scan.py -v` — 3 passed
+
+---
+
+## US-980: Watchlist matches to pending inbox ✅ COMPLETE
+
+**Implementation:** watchlist/matcher.py queues pending_opportunities with source=watchlist. Watchlist badge on PendingOpportunityCard.
+
+**Testing:** `pytest tests/test_watchlist_pending.py -v` — 1 passed; `npm run test -- --run src/components/PendingOpportunityCard.test.jsx src/pages/PendingInboxPage.test.jsx` — 9 passed
+
+---
+
+## US-981: Watchlist finds in Today brief ✅ COMPLETE
+
+**Implementation:** watchlist_finds section in morning brief; mission_scorer ranks with inbox link.
+
+**Testing:** `pytest tests/test_mission_scorer.py tests/test_morning_brief.py::test_build_morning_brief_includes_watchlist_finds -v` — 5 passed; `npm run build` — success
+
+---

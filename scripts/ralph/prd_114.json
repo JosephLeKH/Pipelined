@@ -1,0 +1,55 @@
+{
+  "id": "prd_114",
+  "title": "Company Watchlist Agent",
+  "description": "User watchlist companies, nightly scan, match scoring, pending inbox integration.",
+  "userStories": [
+    {
+      "id": "US-978",
+      "title": "Watchlist CRUD API and settings UI",
+      "description": "watchlist_companies on user. Max 25. Settings section.",
+      "acceptanceCriteria": [
+        "Schema on user",
+        "Settings UI add/remove"
+      ],
+      "priority": "high",
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-979",
+      "title": "Watchlist scan job",
+      "description": "Daily 06:00 UTC scan via httpx. Dedupe url_hash.",
+      "acceptanceCriteria": [
+        "Job in sync.py",
+        "structlog errors"
+      ],
+      "priority": "high",
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-980",
+      "title": "Watchlist matches to pending inbox",
+      "description": "source watchlist on pending_opportunities. Watchlist badge in UI.",
+      "acceptanceCriteria": [
+        "Pending insert with source",
+        "Badge in UI"
+      ],
+      "priority": "medium",
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-981",
+      "title": "Watchlist finds in Today brief",
+      "description": "Brief missions include watchlist count with inbox link.",
+      "acceptanceCriteria": [
+        "Mission type in brief",
+        "Link to inbox"
+      ],
+      "priority": "low",
+      "passes": true,
+      "notes": ""
+    }
+  ]
+}
