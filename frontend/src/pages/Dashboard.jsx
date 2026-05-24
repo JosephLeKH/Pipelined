@@ -32,7 +32,7 @@ function DashboardContent({ viewMode, onSetViewMode, isExporting, onExport, filt
     <main className="flex-1 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 space-y-6">
         <DashboardToolbar viewMode={viewMode} onSetViewMode={onSetViewMode} isExporting={isExporting} onImport={onImportCsv} onExport={onExport} onAdd={onAdd} />
-        <OnboardingChecklist onAdd={onAdd} />
+        <OnboardingChecklist />
         <AutopilotResumeBanner />
         <InboxSetupBanner />
         <FollowUpBanner followUpsDue={followUpsDue} onView={onViewFollowUps} />

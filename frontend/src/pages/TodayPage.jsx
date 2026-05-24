@@ -1,6 +1,6 @@
 /** Mission Control today page — prioritized missions with snooze/done actions. */
 
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 import ArrowRight from "lucide-react/dist/esm/icons/arrow-right";
@@ -26,6 +26,7 @@ import {
   getBriefEmptyMessage,
   MISSION_HERO_PRIORITY,
 } from "../lib/briefConstants";
+import { TODAY_VISITED_KEY } from "../lib/constants";
 import { CARD_BASE, BUTTON_GHOST, BUTTON_SECONDARY } from "../lib/designTokens";
 
 function TodayHeroMission({ mission, onSnooze, onDone, isSnoozing, isCompleting }) {
@@ -170,6 +171,10 @@ function TodayContent({ brief, emptyMessage, onSnooze, onDone, snoozePendingId, 
 }
 
 function TodayPage() {
+  useEffect(() => {
+    localStorage.setItem(TODAY_VISITED_KEY, "true");
+  }, []);
+
   const { user } = useAuth();
   const { data: brief, isLoading, isError } = useMorningBrief();
   const { snooze, done } = useMissionActions();

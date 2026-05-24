@@ -108,6 +108,9 @@ export const VIEW_MODE_STORAGE_KEY = "pipelined_view_mode";
 
 export const ONBOARDING_DISMISSED_KEY = "pipelined_onboarding_dismissed";
 export const ONBOARDING_CONFETTI_DISMISS_MS = 3_000;
+export const COPILOT_TRIED_KEY = "pipelined_copilot_tried";
+export const TODAY_VISITED_KEY = "pipelined_today_visited";
+export const OPEN_COPILOT_EVENT = "pipelined:open-copilot";
 
 export const EVENT_TYPE_OPTIONS = [
   { value: "phone_screen", label: "Phone Screen" },

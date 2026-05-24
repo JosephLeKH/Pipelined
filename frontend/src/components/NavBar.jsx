@@ -1,6 +1,6 @@
 /** Top navigation bar shared across protected pages. */
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
 import Activity from "lucide-react/dist/esm/icons/activity";
@@ -26,7 +26,7 @@ import { useTheme } from "../context/ThemeContext";
 import { resetUser, trackEvent } from "../lib/analytics";
 import { useApplications } from "../hooks/useApplications";
 import { usePendingOpportunities } from "../hooks/usePendingOpportunities";
-import { OFFER_STAGE } from "../lib/constants";
+import { OFFER_STAGE, OPEN_COPILOT_EVENT } from "../lib/constants";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -215,6 +215,12 @@ function NavBar() {
   const handleLogout = useCallback(async () => { resetUser(); await logout(); }, [logout]);
   const closeMobileMenu = useCallback(() => setMobileMenuOpen(false), []);
   const ThemeIcon = THEME_ICONS[theme];
+
+  useEffect(() => {
+    const openCopilot = () => setCopilotOpen(true);
+    window.addEventListener(OPEN_COPILOT_EVENT, openCopilot);
+    return () => window.removeEventListener(OPEN_COPILOT_EVENT, openCopilot);
+  }, []);
 
   return (
     <nav aria-label="Main navigation" className="bg-card border-b border-border">

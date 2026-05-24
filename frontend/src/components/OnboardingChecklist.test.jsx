@@ -1,4 +1,4 @@
-/** Tests for OnboardingChecklist: renders steps, dismiss, step checked when condition met. */
+/** Tests for OnboardingChecklist: agent onboarding steps, dismiss, completion. */
 
 import { render, screen, fireEvent } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
@@ -9,27 +9,23 @@ import { describe, it, expect, beforeAll, afterAll, afterEach, vi } from "vitest
 
 import { AuthProvider } from "../context/AuthContext";
 import OnboardingChecklist from "./OnboardingChecklist";
-
-const DEFAULT_STAGES = ["Applied", "Phone Screen", "Onsite", "Offer", "Rejected"];
+import {
+  COPILOT_TRIED_KEY,
+  ONBOARDING_DISMISSED_KEY,
+  OPEN_COPILOT_EVENT,
+  TODAY_VISITED_KEY,
+} from "../lib/constants";
 
 const server = setupServer(
-  http.get("/api/applications", () =>
-    HttpResponse.json({ data: [], meta: { total: 0, cursor: null } })
-  ),
   http.get("/api/auth/me", () =>
     HttpResponse.json({
       data: {
         id: "u1",
         email: "test@example.com",
         display_name: "Test User",
-        default_stages: DEFAULT_STAGES,
-        has_resume: false,
-        autopilot_enabled: false,
+        agent_profile: {},
       },
     })
-  ),
-  http.get("/api/email/status", () =>
-    HttpResponse.json({ data: { connected: false } })
   )
 );
 
@@ -54,111 +50,78 @@ function Wrapper({ children }) {
 }
 
 describe("OnboardingChecklist", () => {
-  it("should render 3 steps", () => {
-    // Arrange / Act
-    render(<OnboardingChecklist onAdd={vi.fn()} />, { wrapper: Wrapper });
+  it("should render 3 agent onboarding steps", () => {
+    render(<OnboardingChecklist />, { wrapper: Wrapper });
 
-    // Assert
-    expect(screen.getByText("Install the Chrome extension")).toBeInTheDocument();
-    expect(screen.getByText("Add your first application")).toBeInTheDocument();
-    expect(screen.getByText("Customize your pipeline stages")).toBeInTheDocument();
+    expect(screen.getByText("Set agent profile")).toBeInTheDocument();
+    expect(screen.getByText("Try co-pilot")).toBeInTheDocument();
+    expect(screen.getByText("Open Today")).toBeInTheDocument();
   });
 
   it("should hide checklist when dismiss button is clicked", () => {
-    // Arrange
-    render(<OnboardingChecklist onAdd={vi.fn()} />, { wrapper: Wrapper });
-    expect(screen.getByText("Install the Chrome extension")).toBeInTheDocument();
+    render(<OnboardingChecklist />, { wrapper: Wrapper });
+    expect(screen.getByText("Set agent profile")).toBeInTheDocument();
 
-    // Act
     fireEvent.click(screen.getByText("Dismiss"));
 
-    // Assert
-    expect(screen.queryByText("Install the Chrome extension")).not.toBeInTheDocument();
-    expect(localStorage.getItem("pipelined_onboarding_dismissed")).toBe("true");
+    expect(screen.queryByText("Set agent profile")).not.toBeInTheDocument();
+    expect(localStorage.getItem(ONBOARDING_DISMISSED_KEY)).toBe("true");
   });
 
   it("should not render when localStorage dismiss key is set", () => {
-    // Arrange
-    localStorage.setItem("pipelined_onboarding_dismissed", "true");
+    localStorage.setItem(ONBOARDING_DISMISSED_KEY, "true");
 
-    // Act
-    render(<OnboardingChecklist onAdd={vi.fn()} />, { wrapper: Wrapper });
+    render(<OnboardingChecklist />, { wrapper: Wrapper });
 
-    // Assert
-    expect(screen.queryByText("Install the Chrome extension")).not.toBeInTheDocument();
+    expect(screen.queryByText("Set agent profile")).not.toBeInTheDocument();
   });
 
-  it("should show step 2 as checked when there are applications", async () => {
-    // Arrange
+  it("should show agent profile step as checked when profile is configured", async () => {
     server.use(
-      http.get("/api/applications", () =>
+      http.get("/api/auth/me", () =>
         HttpResponse.json({
-          data: [{ id: "app1", company: "Acme", role_title: "SWE", current_stage: "Applied", source: "manual" }],
-          meta: { total: 1, cursor: null },
+          data: {
+            id: "u1",
+            email: "test@example.com",
+            display_name: "Test User",
+            agent_profile: {
+              target_roles: ["Software Engineer"],
+              career_goals: "Staff IC role",
+            },
+          },
         })
       )
     );
 
-    // Act
-    render(<OnboardingChecklist onAdd={vi.fn()} />, { wrapper: Wrapper });
-    const step2Label = await screen.findByText("Add your first application");
+    render(<OnboardingChecklist />, { wrapper: Wrapper });
+    const label = await screen.findByText("Set agent profile");
 
-    // Assert — step 2 label should be muted (done)
-    expect(step2Label).toHaveClass("text-muted-foreground");
+    expect(label).toHaveClass("text-muted-foreground");
   });
 
-  it("should show step 1 as checked when extension app exists", async () => {
-    // Arrange
-    server.use(
-      http.get("/api/applications", () =>
-        HttpResponse.json({
-          data: [{ id: "app1", company: "Acme", role_title: "SWE", current_stage: "Applied", source: "extension" }],
-          meta: { total: 1, cursor: null },
-        })
-      )
-    );
+  it("should mark co-pilot step complete and dispatch open event", () => {
+    const handler = vi.fn();
+    window.addEventListener(OPEN_COPILOT_EVENT, handler);
 
-    // Act
-    render(<OnboardingChecklist onAdd={vi.fn()} />, { wrapper: Wrapper });
-    const step1Label = await screen.findByText("Install the Chrome extension");
+    render(<OnboardingChecklist />, { wrapper: Wrapper });
+    fireEvent.click(screen.getByText("Open co-pilot"));
 
-    // Assert — step 1 label should be muted (done)
-    expect(step1Label).toHaveClass("text-muted-foreground");
+    expect(localStorage.getItem(COPILOT_TRIED_KEY)).toBe("true");
+    expect(handler).toHaveBeenCalledOnce();
+
+    window.removeEventListener(OPEN_COPILOT_EVENT, handler);
   });
 
-  it("should call onAdd when Add Application action is clicked", () => {
-    // Arrange
-    const onAdd = vi.fn();
-    render(<OnboardingChecklist onAdd={onAdd} />, { wrapper: Wrapper });
+  it("should mark Today step complete when Go to Today is clicked", () => {
+    render(<OnboardingChecklist />, { wrapper: Wrapper });
+    fireEvent.click(screen.getByText("Go to Today"));
 
-    // Act
-    fireEvent.click(screen.getByText("Add Application"));
-
-    // Assert
-    expect(onAdd).toHaveBeenCalledOnce();
+    expect(localStorage.getItem(TODAY_VISITED_KEY)).toBe("true");
   });
 
-  it("should not show AI steps before first application is saved", () => {
-    render(<OnboardingChecklist onAdd={vi.fn()} />, { wrapper: Wrapper });
+  it("should link to agent settings for profile step", () => {
+    render(<OnboardingChecklist />, { wrapper: Wrapper });
 
-    expect(screen.queryByText("Upload your resume")).not.toBeInTheDocument();
-    expect(screen.queryByText("Connect your job-search Gmail")).not.toBeInTheDocument();
-  });
-
-  it("should show 3 AI steps after first application is saved", async () => {
-    server.use(
-      http.get("/api/applications", () =>
-        HttpResponse.json({
-          data: [{ id: "app1", company: "Acme", role_title: "SWE", current_stage: "Applied", source: "manual" }],
-          meta: { total: 1, cursor: null },
-        })
-      )
-    );
-
-    render(<OnboardingChecklist onAdd={vi.fn()} />, { wrapper: Wrapper });
-
-    expect(await screen.findByText("Upload your resume")).toBeInTheDocument();
-    expect(screen.getByText("Connect your job-search Gmail")).toBeInTheDocument();
-    expect(screen.getByText("Enable Autopilot")).toBeInTheDocument();
+    expect(screen.getByText("Go to Agent settings")).toBeInTheDocument();
   });
 });
