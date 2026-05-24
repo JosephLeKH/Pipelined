@@ -1,7 +1,7 @@
 /** "Recommended for You" strip on the Job Board page. */
 
 import { useContext } from "react";
-import Sparkles from "lucide-react/dist/esm/icons/sparkles";
+import TrendingUp from "lucide-react/dist/esm/icons/trending-up";
 
 import JobCard from "./JobCard";
 import { useRecommendedJobs } from "../hooks/useJobs";
@@ -36,7 +36,7 @@ export function JobRecommendations({ onSelectJob }) {
   return (
     <section aria-labelledby="recommendations-heading" className="flex flex-col gap-3">
       <h2 id="recommendations-heading" className="flex items-center gap-1.5 font-display text-sm font-semibold text-foreground">
-        <Sparkles className="h-4 w-4 text-primary" aria-hidden="true" />
+        <TrendingUp className="h-4 w-4 text-primary" aria-hidden="true" />
         {SECTION_TITLE}
       </h2>
 

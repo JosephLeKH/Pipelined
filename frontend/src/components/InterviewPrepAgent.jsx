@@ -1,6 +1,7 @@
 /** Interview Prep Agent — intelligence briefing UI with tab navigation. */
 
 import AlertCircle from "lucide-react/dist/esm/icons/alert-circle";
+import BookOpen from "lucide-react/dist/esm/icons/book-open";
 import Building2 from "lucide-react/dist/esm/icons/building-2";
 import CheckCircle2 from "lucide-react/dist/esm/icons/check-circle-2";
 import RefreshCw from "lucide-react/dist/esm/icons/refresh-cw";
@@ -262,7 +263,7 @@ function IdleView({ onStart }) {
     <div className="flex flex-col gap-3 rounded-card border border-accent bg-accent/25 p-4 dark:bg-accent/10">
       <div className="flex items-start gap-3">
         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary/15 dark:bg-primary/20">
-          <Sparkles className="h-4 w-4 text-primary" />
+          <BookOpen className="h-4 w-4 text-primary" />
         </div>
         <div className="flex flex-col gap-0.5">
           <span className="text-sm font-semibold text-foreground">Interview Briefing</span>
