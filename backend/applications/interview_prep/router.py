@@ -9,12 +9,13 @@ import json
 
 import structlog
 from bson import ObjectId
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import StreamingResponse
 
 from auth.dependencies import get_verified_user as get_current_user
 from config import settings
 from database import get_collection
+from middleware.rate_limit import limiter
 
 from .agent import run_agent
 
@@ -48,7 +49,9 @@ async def _get_resume_text(user_id: str) -> str:
 
 
 @router.get("/{app_id}/interview-prep")
+@limiter.limit("3/hour")
 async def interview_prep_stream(
+    request: Request,  # noqa: ARG001
     app_id: str,
     user: dict = Depends(get_current_user),
 ) -> StreamingResponse:
