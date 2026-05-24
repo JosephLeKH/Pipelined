@@ -1,0 +1,57 @@
+{
+  "id": "prd_116",
+  "title": "Mock Interview & Round-Aware Prep",
+  "description": "Interview round detection and mock interview SSE session.",
+  "userStories": [
+    {
+      "id": "US-987",
+      "title": "Interview round detection from email",
+      "description": "Classifier extracts interview_round. Store on application.",
+      "acceptanceCriteria": [
+        "interview_round field",
+        "Classifier updated",
+        "Tests"
+      ],
+      "priority": "high",
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-988",
+      "title": "Round-aware prep prompts",
+      "description": "run_agent adjusts focus by round type.",
+      "acceptanceCriteria": [
+        "Round passed to agent",
+        "Tests"
+      ],
+      "priority": "high",
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-989",
+      "title": "Mock interview SSE session",
+      "description": "POST /api/applications/{id}/mock-interview SSE. Max 10 turns.",
+      "acceptanceCriteria": [
+        "SSE endpoint",
+        "Turn limit",
+        "Tests"
+      ],
+      "priority": "medium",
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-990",
+      "title": "MockInterviewPanel UI",
+      "description": "Chat UI in InterviewPrepAgent with debrief on end.",
+      "acceptanceCriteria": [
+        "Mock interview UI",
+        "Component tests"
+      ],
+      "priority": "medium",
+      "passes": true,
+      "notes": ""
+    }
+  ]
+}

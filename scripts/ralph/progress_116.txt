@@ -1,0 +1,43 @@
+# Ralph Progress Log — prd_116
+Started: Sat May 23 2026
+---
+
+## US-987: Interview round detection from email ✅ COMPLETE
+
+**Implementation:** Classifier extracts interview_round (phone, technical, hm, onsite, final); normalize_interview_round(); stored on application via email sync and ApplicationResponse schema.
+
+**Testing:** `pytest tests/test_email_classifier.py tests/test_email_events.py::test_process_message_logs_email_event_on_stage_update -v` — 11 passed
+
+**Commit:** 5bebcd8
+
+---
+
+## US-988: Round-aware prep prompts ✅ COMPLETE
+
+**Implementation:** run_agent and _build_system_prompt accept interview_round; INTERVIEW_ROUND_FOCUS constants; router and Gmail auto-trigger pass round from application.
+
+**Testing:** `pytest tests/test_interview_prep_agent.py -v` — 4 passed
+
+**Commit:** f2d0b1a
+
+---
+
+## US-989: Mock interview SSE session ✅ COMPLETE
+
+**Implementation:** POST /api/applications/{id}/mock-interview SSE via stream_mock_interview(); OpenRouter streaming; max 10 user turns; 3 sessions/day quota; end_session debrief.
+
+**Testing:** `pytest tests/test_mock_interview.py -v` — 6 passed
+
+**Commit:** 3f03f75
+
+---
+
+## US-990: MockInterviewPanel UI ✅ COMPLETE
+
+**Implementation:** MockInterviewPanel in InterviewPrepAgent with chat bubbles, turn counter, end-session debrief; useMockInterview hook and mockInterview API client.
+
+**Testing:** `npm run test -- --run src/components/MockInterviewPanel.test.jsx src/components/InterviewPrepAgent.test.jsx` — 8 passed; `npm run build` — success
+
+**Commit:** 610c7e4
+
+---
