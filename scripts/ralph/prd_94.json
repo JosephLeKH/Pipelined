@@ -15,8 +15,8 @@
         "Direct import: lucide-react/dist/esm/icons/sparkles"
       ],
       "priority": "high",
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added Sparkles icon import and conditional rendering in ApplicationRow when interview_prep_briefing exists. Icon wrapped in Tooltip with 'Interview prep ready' text. Icon is aria-hidden and text-primary h-3.5 w-3.5."
     },
     {
       "id": "US-879",
@@ -30,8 +30,8 @@
         "No changes to existing prep content"
       ],
       "priority": "high",
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Updated InterviewPrepAgent to accept briefing and generatedAt props. Added conditional rendering of auto-generated notice with Sparkles icon when both props exist. Updated DetailPanelBody to pass these props from application data."
     },
     {
       "id": "US-880",
@@ -45,8 +45,8 @@
         "Renders inside the Connected card below the email info block"
       ],
       "priority": "medium",
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added Sparkles icon import. In ConnectedState, added conditional agent status summary line inside first card when apps_tracked > 0. Text properly pluralized with 'application' or 'applications'."
     },
     {
       "id": "US-881",
@@ -61,8 +61,8 @@
         "No banner shown when apps_tracked === 0 to avoid noise"
       ],
       "priority": "medium",
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "In InboxSetupBanner, when status.connected and apps_tracked > 0, show agent-active chip instead of null. Chip displays Sparkles icon + 'Email agent active · {N} apps tracked' with proper styling and pluralization."
     },
     {
       "id": "US-882",
@@ -74,8 +74,8 @@
         "No other changes"
       ],
       "priority": "low",
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Updated interview_prep ToggleRow description in SettingsIntegrationsSection to 'The prep agent researches the company and role automatically — ready before your first interview.'"
     },
     {
       "id": "US-883",
