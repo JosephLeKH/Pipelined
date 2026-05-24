@@ -39,8 +39,8 @@
         "Frontend build passes"
       ],
       "priority": "medium",
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "ResumeInsightsSection extracted; BRIEF_UNAVAILABLE_MESSAGE; stable list keys; DetailPanelBody 280 lines"
     },
     {
       "id": "US-936",
@@ -52,8 +52,8 @@
         "No false auto-send/resume-edit claims"
       ],
       "priority": "medium",
-      "passes": true,
-      "notes": "README features, env vars, product policy, project structure updated."
+      "passes": false,
+      "notes": ""
     },
     {
       "id": "US-937",
@@ -65,8 +65,8 @@
         "Product policy stated"
       ],
       "priority": "medium",
-      "passes": true,
-      "notes": "Module map, APScheduler table, product policy, data flows added."
+      "passes": false,
+      "notes": ""
     },
     {
       "id": "US-938",
@@ -78,5 +78,8 @@
         "Under 200 lines"
       ],
       "priority": "medium",
-      "passes": true,
-      "notes": "docs/AGENTIC_FEATURES.md created (189 lines); covers all major agentic features."
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}
