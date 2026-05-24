@@ -158,7 +158,7 @@ function HamburgerButton({ mobileMenuOpen, setMobileMenuOpen }) {
       onClick={() => setMobileMenuOpen((prev) => !prev)}
       aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
       aria-expanded={mobileMenuOpen}
-      className="ml-auto md:hidden"
+      className="md:hidden"
     >
       {mobileMenuOpen ? <X className="h-5 w-5" aria-hidden="true" /> : <Menu className="h-5 w-5" aria-hidden="true" />}
     </Button>
@@ -216,7 +216,10 @@ function NavBar() {
         <span className="mr-2 text-foreground font-display font-semibold text-lg tracking-tight">Pipelined</span>
         <DesktopNavLinks navLinks={navLinks} pathname={pathname} badgeCounts={badgeCounts} />
         <DesktopActions user={user} ThemeIcon={ThemeIcon} theme={theme} handleCycleTheme={handleCycleTheme} handleLogout={handleLogout} />
-        <HamburgerButton mobileMenuOpen={mobileMenuOpen} setMobileMenuOpen={setMobileMenuOpen} />
+        <div className="ml-auto flex items-center gap-1 md:hidden">
+          <NotificationBell />
+          <HamburgerButton mobileMenuOpen={mobileMenuOpen} setMobileMenuOpen={setMobileMenuOpen} />
+        </div>
       </div>
       {mobileMenuOpen && <MobileMenu navLinks={navLinks} pathname={pathname} closeMobileMenu={closeMobileMenu} ThemeIcon={ThemeIcon} theme={theme} handleCycleTheme={handleCycleTheme} handleLogout={handleLogout} badgeCounts={badgeCounts} />}
     </nav>

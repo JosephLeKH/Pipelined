@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import Bell from "lucide-react/dist/esm/icons/bell";
-import BriefcaseBusiness from "lucide-react/dist/esm/icons/briefcase-business";
 import CalendarClock from "lucide-react/dist/esm/icons/calendar-clock";
 import Clock from "lucide-react/dist/esm/icons/clock";
 import Sun from "lucide-react/dist/esm/icons/sun";
@@ -14,9 +13,9 @@ import { Button } from "./ui/button";
 
 const MAX_BADGE_COUNT = 99;
 const TYPE_ICONS = {
-  stale_app: BriefcaseBusiness,
+  stale_app: Clock,
   interview_tomorrow: CalendarClock,
-  follow_up_due: Clock,
+  follow_up_due: Bell,
   morning_brief_ready: Sun,
 };
 

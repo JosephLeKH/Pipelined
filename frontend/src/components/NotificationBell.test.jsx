@@ -16,7 +16,7 @@ const MOCK_NOTIFICATIONS = [
     type: "stale_app",
     title: "No update: Acme",
     body: "Your application at Acme hasn't been updated in 14+ days.",
-    action_url: "/dashboard?selected=app1",
+    action_url: "/dashboard?selected=app1&action=follow-up",
     read: false,
     created_at: new Date().toISOString(),
   },
@@ -65,9 +65,11 @@ function makeWrapper(initialPath = "/dashboard") {
 }
 
 let capturedPath = "";
+let capturedSearch = "";
 function LocationCapture() {
   const location = useLocation();
   capturedPath = location.pathname;
+  capturedSearch = location.search;
   return null;
 }
 
@@ -180,5 +182,46 @@ describe("NotificationBell", () => {
     fireEvent.click(await screen.findByText("Your morning brief is ready"));
 
     await waitFor(() => expect(capturedPath).toBe("/brief"));
+  });
+
+  it("should navigate to follow-up section for follow_up_due notification", async () => {
+    server.use(
+      http.get("/api/notifications", () =>
+        HttpResponse.json({
+          data: [{
+            id: "follow1",
+            type: "follow_up_due",
+            title: "Follow-up overdue: Acme",
+            body: "Your follow-up is overdue.",
+            action_url: "/dashboard?selected=app1&action=follow-up",
+            read: false,
+            created_at: new Date().toISOString(),
+          }],
+        })
+      ),
+      http.get("/api/notifications/unread-count", () =>
+        HttpResponse.json({ data: { count: 1 } })
+      ),
+      http.patch("/api/notifications/follow1/read", () =>
+        HttpResponse.json({ data: { ok: true } })
+      ),
+    );
+
+    capturedPath = "";
+    capturedSearch = "";
+    render(
+      <Routes>
+        <Route path="*" element={<><LocationCapture /><NotificationBell /></>} />
+      </Routes>,
+      { wrapper: makeWrapper() },
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /notifications/i }));
+    fireEvent.click(await screen.findByText("Follow-up overdue: Acme"));
+
+    await waitFor(() => {
+      expect(capturedPath).toBe("/dashboard");
+      expect(capturedSearch).toContain("action=follow-up");
+    });
   });
 });

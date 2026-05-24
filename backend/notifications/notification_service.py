@@ -205,7 +205,7 @@ async def _generate_stale_app_notifications() -> None:
                 type="stale_app",
                 title=f"No update: {company}",
                 body=f"Your {role} application at {company} hasn't been updated in 14+ days.",
-                action_url=f"/dashboard?selected={app_id}",
+                action_url=f"/dashboard?selected={app_id}&action=follow-up",
             )
 
 
@@ -262,5 +262,5 @@ async def _generate_follow_up_due_notifications() -> None:
             type="follow_up_due",
             title=f"Follow-up overdue: {company}",
             body=f"Your follow-up for the {role} role at {company} is overdue.",
-            action_url=f"/dashboard?selected={app_id}",
+            action_url=f"/dashboard?selected={app_id}&action=follow-up",
         )
