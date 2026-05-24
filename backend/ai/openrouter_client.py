@@ -116,3 +116,44 @@ async def complete_json_with_usage(
         raise OpenRouterError("OpenRouter response was not a JSON object")
 
     return parsed, input_tokens, output_tokens
+
+
+async def stream_chat(
+    system: str,
+    messages: list[dict[str, str]],
+    *,
+    model: str | None = None,
+    temperature: float = DEFAULT_TEMPERATURE,
+    max_tokens: int = DEFAULT_MAX_TOKENS,
+    timeout: float = DEFAULT_TIMEOUT_SECONDS,
+):
+    """Yield text deltas from an OpenRouter streaming chat completion."""
+    if not settings.openrouter_api_key:
+        raise OpenRouterError("OpenRouter API key is not configured")
+
+    resolved_model = model or settings.openrouter_default_model
+    client = get_openrouter_client()
+    payload_messages = [{"role": "system", "content": system}, *messages]
+
+    try:
+        stream = await asyncio.wait_for(
+            client.chat.completions.create(
+                model=resolved_model,
+                messages=payload_messages,
+                temperature=temperature,
+                max_tokens=max_tokens,
+                stream=True,
+            ),
+            timeout=timeout,
+        )
+    except (asyncio.TimeoutError, APITimeoutError, APIConnectionError, OpenAIError) as exc:
+        logger.warning("openrouter_stream_failed", model=resolved_model, error=str(exc))
+        raise OpenRouterError(str(exc)) from exc
+
+    async for chunk in stream:
+        choice = chunk.choices[0] if chunk.choices else None
+        if not choice or not choice.delta:
+            continue
+        delta = choice.delta.content
+        if delta:
+            yield delta
