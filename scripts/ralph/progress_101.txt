@@ -15,3 +15,11 @@ Started: Sat May 23 2026
 **Implementation:** Follow-up action_url includes `action=follow-up`; Dashboard passes expandFollowUpDraft to DetailPanel; FollowUpDraftSection auto-expands and scrolls into view.
 
 **Testing:** `pytest tests/test_morning_brief.py::test_build_morning_brief_includes_follow_ups -v` — passed; `npm run test -- --run src/components/DetailPanel.test.jsx` — 19 passed
+
+---
+
+## US-922: Audit and guardrail — no auto-send follow-ups ✅ COMPLETE
+
+**Implementation:** Added test_follow_up_policy.py grep guard + runtime assertions; AGENT_ROADMAP.md policy note at top.
+
+**Testing:** `pytest tests/test_follow_up_policy.py -v` — 4 passed

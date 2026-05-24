@@ -42,8 +42,8 @@
         "AGENT_ROADMAP note added"
       ],
       "priority": "medium",
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "test_follow_up_policy.py verifies no Gmail send; AGENT_ROADMAP deferred auto-send note."
     },
     {
       "id": "US-923",

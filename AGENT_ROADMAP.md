@@ -1,5 +1,7 @@
 # Pipelined — Agentic System Roadmap
 
+> **Deferred — user copies drafts manually per product policy.** Follow-up emails are surfaced as drafts in the UI; Gmail API auto-send is not implemented.
+
 The CRUD app is the world model. Agents read from it, act on it, and write back to it.
 Email integration is the nervous system — the event stream that drives most autonomous behavior.
 
