@@ -1,5 +1,7 @@
 """Tests for email_integration.service module."""
 
+from unittest.mock import AsyncMock, MagicMock, patch
+
 import pytest
 from bson import ObjectId
 
@@ -10,6 +12,7 @@ from email_integration.service import (
     STAGE_ORDER,
     _find_existing_app,
     get_connection_status,
+    sync_emails,
 )
 
 
@@ -98,3 +101,100 @@ async def test_find_existing_app_matches_case_insensitively(app):  # noqa: ARG00
     assert result is not None
     assert result["company"] == "Google"
     assert result["role_title"] == "SWE"
+
+
+# ---------------------------------------------------------------------------
+# Email deduplication tests
+# ---------------------------------------------------------------------------
+
+@pytest.mark.asyncio(loop_scope="session")
+async def test_sync_emails_skips_already_processed_ids(app):  # noqa: ARG001
+    """Should skip messages already in gmail_processed_ids and only process new ones."""
+    _ = app
+    # Arrange
+    user = await create_user("dedup1@example.com", "TestPass123!", "Dedup User 1")
+    user_id = ObjectId(user["_id"])
+
+    # Insert user with existing processed IDs
+    users = database.get_collection("users")
+    await users.update_one(
+        {"_id": user_id},
+        {"$set": {"gmail_processed_ids": ["msg1", "msg2"]}},
+    )
+
+    # Mock httpx.AsyncClient
+    mock_list_resp = MagicMock()
+    mock_list_resp.status_code = 200
+    mock_list_resp.json.return_value = {"messages": [{"id": "msg1"}, {"id": "msg3"}]}
+
+    mock_detail_resp = MagicMock()
+    mock_detail_resp.status_code = 404  # skip processing msg3
+
+    mock_client = AsyncMock()
+    mock_client.__aenter__.return_value.get = AsyncMock(
+        side_effect=[mock_list_resp, mock_detail_resp]
+    )
+
+    # Act
+    with patch("httpx.AsyncClient", return_value=mock_client):
+        with patch(
+            "email_integration.service._get_valid_access_token", return_value="tok"
+        ):
+            result = await sync_emails(user)
+
+    # Assert
+    assert result["emails_processed"] == 1  # Only msg3 (msg1 was already processed)
+
+    # Verify msg3 is now in processed IDs
+    updated_user = await users.find_one({"_id": user_id})
+    assert updated_user is not None
+    assert "msg3" in updated_user.get("gmail_processed_ids", [])
+
+
+@pytest.mark.asyncio(loop_scope="session")
+async def test_sync_emails_adds_new_ids_to_processed(app):  # noqa: ARG001
+    """Should persist new message IDs to gmail_processed_ids after sync."""
+    _ = app
+    # Arrange
+    user = await create_user("dedup2@example.com", "TestPass123!", "Dedup User 2")
+    user_id = ObjectId(user["_id"])
+
+    # Insert user with empty processed IDs
+    users = database.get_collection("users")
+    await users.update_one(
+        {"_id": user_id},
+        {"$set": {"gmail_processed_ids": []}},
+    )
+
+    # Mock httpx.AsyncClient
+    mock_list_resp = MagicMock()
+    mock_list_resp.status_code = 200
+    mock_list_resp.json.return_value = {"messages": [{"id": "msg_new1"}, {"id": "msg_new2"}]}
+
+    mock_detail_resp1 = MagicMock()
+    mock_detail_resp1.status_code = 404
+
+    mock_detail_resp2 = MagicMock()
+    mock_detail_resp2.status_code = 404
+
+    mock_client = AsyncMock()
+    mock_client.__aenter__.return_value.get = AsyncMock(
+        side_effect=[mock_list_resp, mock_detail_resp1, mock_detail_resp2]
+    )
+
+    # Act
+    with patch("httpx.AsyncClient", return_value=mock_client):
+        with patch(
+            "email_integration.service._get_valid_access_token", return_value="tok"
+        ):
+            result = await sync_emails(user)
+
+    # Assert
+    assert result["emails_processed"] == 2
+
+    # Verify both IDs are now in processed IDs
+    updated_user = await users.find_one({"_id": user_id})
+    assert updated_user is not None
+    processed_ids = updated_user.get("gmail_processed_ids", [])
+    assert "msg_new1" in processed_ids
+    assert "msg_new2" in processed_ids
