@@ -293,9 +293,10 @@ async def build_morning_brief(user_id: str, local_date: str | None = None) -> Mo
     today_start = dt.datetime.combine(today, dt.time.min, tzinfo=dt.timezone.utc)
     lookahead = today + dt.timedelta(days=INTERVIEW_LOOKAHEAD_DAYS)
 
-    follow_ups, interviews, high_matches, pending_approvals, watchlist_finds, ghosts, pending_count = await asyncio.gather(
+    follow_ups, interviews, oa_deadlines, high_matches, pending_approvals, watchlist_finds, ghosts, pending_count = await asyncio.gather(
         _fetch_follow_ups(uid, today_start),
         _fetch_interviews(uid, today, lookahead),
+        fetch_oa_deadlines(uid, today),
         _fetch_high_matches(uid),
         _fetch_pending_approvals(uid),
         _fetch_watchlist_finds(uid),
@@ -305,6 +306,7 @@ async def build_morning_brief(user_id: str, local_date: str | None = None) -> Mo
     sections = MorningBriefSections(
         follow_ups=follow_ups,
         interviews=interviews,
+        oa_deadlines=oa_deadlines,
         high_matches=high_matches,
         pending_approvals=pending_approvals,
         watchlist_finds=watchlist_finds,
