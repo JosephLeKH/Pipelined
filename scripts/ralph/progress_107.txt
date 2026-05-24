@@ -32,7 +32,7 @@ Started: Sat May 23 2026
 
 ---
 
-## US-950: Notification bell mobile + smart actions ✅ COMPLETE
+## US-951: Notification bell mobile + smart actions ✅ COMPLETE
 
 **Implementation:** NotificationBell in mobile NavBar header; stale_app/follow_up_due action_url includes &action=follow-up; TYPE_ICONS fixed (Clock stale, Bell follow-up, CalendarClock interview, Sun brief).
 
