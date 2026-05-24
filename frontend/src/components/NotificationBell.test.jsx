@@ -4,6 +4,7 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 import { describe, it, expect, beforeAll, afterAll, afterEach } from "vitest";
 
 import NotificationBell from "./NotificationBell";
@@ -50,13 +51,24 @@ beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
-function makeWrapper() {
+function makeWrapper(initialPath = "/dashboard") {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   });
   return function Wrapper({ children }) {
-    return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+    return (
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={[initialPath]}>{children}</MemoryRouter>
+      </QueryClientProvider>
+    );
   };
+}
+
+let capturedPath = "";
+function LocationCapture() {
+  const location = useLocation();
+  capturedPath = location.pathname;
+  return null;
 }
 
 describe("NotificationBell", () => {
@@ -132,5 +144,41 @@ describe("NotificationBell", () => {
     fireEvent.click(screen.getByRole("button", { name: /notifications/i }));
 
     expect(await screen.findByText("No notifications")).toBeDefined();
+  });
+
+  it("should navigate to /brief when morning_brief_ready notification is clicked", async () => {
+    server.use(
+      http.get("/api/notifications", () =>
+        HttpResponse.json({
+          data: [{
+            id: "brief1",
+            type: "morning_brief_ready",
+            title: "Your morning brief is ready",
+            body: "1 follow-up, 1 interview",
+            action_url: "/brief",
+            read: false,
+            created_at: new Date().toISOString(),
+          }],
+        })
+      ),
+      http.get("/api/notifications/unread-count", () =>
+        HttpResponse.json({ data: { count: 1 } })
+      ),
+      http.patch("/api/notifications/brief1/read", () =>
+        HttpResponse.json({ data: { ok: true } })
+      ),
+    );
+
+    render(
+      <Routes>
+        <Route path="*" element={<><LocationCapture /><NotificationBell /></>} />
+      </Routes>,
+      { wrapper: makeWrapper() },
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /notifications/i }));
+    fireEvent.click(await screen.findByText("Your morning brief is ready"));
+
+    await waitFor(() => expect(capturedPath).toBe("/brief"));
   });
 });

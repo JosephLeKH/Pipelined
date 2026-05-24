@@ -63,6 +63,14 @@ STALE_NOTIFICATION_DEDUP_DAYS: int = 7
 STALE_APP_DAYS: int = 14
 NOTIFICATION_LIST_LIMIT: int = 50
 
+ALLOWED_NOTIFICATION_TYPES: frozenset[str] = frozenset({
+    "stale_app",
+    "interview_tomorrow",
+    "follow_up_due",
+    "morning_brief_ready",
+    "saved_search_match",
+})
+
 
 def _now() -> dt.datetime:
     return dt.datetime.now(dt.timezone.utc)
@@ -76,6 +84,8 @@ async def create_notification(
     action_url: str | None = None,
 ) -> str:
     """Insert a new in-app notification and return its string ID."""
+    if type not in ALLOWED_NOTIFICATION_TYPES:
+        raise ValueError(f"Unsupported notification type: {type}")
     col = get_collection("notifications")
     now = _now()
     doc = {

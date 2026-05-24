@@ -55,8 +55,8 @@
         "Backend allows notification type"
       ],
       "priority": "medium",
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "morning_brief_ready Sun icon, navigates to /brief, ALLOWED_NOTIFICATION_TYPES includes type."
     }
   ]
 }

@@ -23,3 +23,11 @@ Started: Sat May 23 2026
 **Implementation:** Added test_follow_up_policy.py grep guard + runtime assertions; AGENT_ROADMAP.md policy note at top.
 
 **Testing:** `pytest tests/test_follow_up_policy.py -v` — 4 passed
+
+---
+
+## US-923: morning_brief_ready in-app notification handling ✅ COMPLETE
+
+**Implementation:** NotificationBell handles morning_brief_ready with Sun icon and navigates to action_url; ALLOWED_NOTIFICATION_TYPES includes morning_brief_ready.
+
+**Testing:** `npm run test -- --run src/components/NotificationBell.test.jsx` — 8 passed

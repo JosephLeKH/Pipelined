@@ -1,11 +1,13 @@
 /** Bell icon with unread badge and dropdown notification panel. */
 
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import Bell from "lucide-react/dist/esm/icons/bell";
 import BriefcaseBusiness from "lucide-react/dist/esm/icons/briefcase-business";
 import CalendarClock from "lucide-react/dist/esm/icons/calendar-clock";
 import Clock from "lucide-react/dist/esm/icons/clock";
+import Sun from "lucide-react/dist/esm/icons/sun";
 
 import { useMarkAllRead, useMarkRead, useNotifications, useUnreadCount } from "../hooks/useNotifications";
 import { Button } from "./ui/button";
@@ -15,15 +17,19 @@ const TYPE_ICONS = {
   stale_app: BriefcaseBusiness,
   interview_tomorrow: CalendarClock,
   follow_up_due: Clock,
+  morning_brief_ready: Sun,
 };
 
-function NotificationItem({ notification }) {
+function NotificationItem({ notification, onNavigate }) {
   const { mutate: markRead } = useMarkRead();
   const Icon = TYPE_ICONS[notification.type] ?? Bell;
 
   function handleClick() {
     if (!notification.read) {
       markRead(notification.id);
+    }
+    if (notification.action_url) {
+      onNavigate(notification.action_url);
     }
   }
 
@@ -61,6 +67,7 @@ function NotificationBell() {
   const [open, setOpen] = useState(false);
   const panelRef = useRef(null);
   const buttonRef = useRef(null);
+  const navigate = useNavigate();
 
   const { data: unreadData } = useUnreadCount();
   const { data: notifications = [] } = useNotifications();
@@ -69,15 +76,17 @@ function NotificationBell() {
   const unreadCount = unreadData?.count ?? 0;
   const badgeLabel = unreadCount > MAX_BADGE_COUNT ? `${MAX_BADGE_COUNT}+` : String(unreadCount);
 
+  function handleNotificationNavigate(actionUrl) {
+    setOpen(false);
+    navigate(actionUrl);
+  }
+
   useEffect(() => {
     if (!open) return;
     function handleClickOutside(e) {
-      if (
-        panelRef.current &&
-        !panelRef.current.contains(e.target) &&
-        buttonRef.current &&
-        !buttonRef.current.contains(e.target)
-      ) {
+      const inPanel = panelRef.current?.contains(e.target);
+      const onButton = buttonRef.current?.contains(e.target);
+      if (!inPanel && !onButton) {
         setOpen(false);
       }
     }
@@ -138,7 +147,7 @@ function NotificationBell() {
           ) : (
             <ul className="max-h-80 overflow-y-auto divide-y divide-border">
               {notifications.map((n) => (
-                <NotificationItem key={n.id} notification={n} />
+                <NotificationItem key={n.id} notification={n} onNavigate={handleNotificationNavigate} />
               ))}
             </ul>
           )}
