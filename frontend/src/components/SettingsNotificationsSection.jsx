@@ -4,7 +4,14 @@ import { useState, useCallback } from "react";
 
 import { useAuth } from "../context/AuthContext";
 import { useUpdateUser } from "../hooks/useAuth";
+import {
+  DEFAULT_MORNING_BRIEF_HOUR,
+  formatBriefHour,
+} from "../lib/briefConstants";
+import { INPUT_BASE, INPUT_LABEL } from "../lib/designTokens";
 import TimezoneSelector from "./TimezoneSelector";
+
+const HOUR_OPTIONS = Array.from({ length: 24 }, (_, hour) => hour);
 
 function ToggleSwitch({ checked, onChange, disabled, label, description, id }) {
   return (
@@ -70,6 +77,9 @@ function SettingsNotificationsSection() {
   const [timezone, setTimezone] = useState(
     () => user?.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone ?? "America/New_York"
   );
+  const [briefHour, setBriefHour] = useState(
+    () => user?.morning_brief_hour ?? DEFAULT_MORNING_BRIEF_HOUR
+  );
   const [values, setValues] = useState(() =>
     Object.fromEntries(TOGGLES.map((t) => [t.field, user?.[t.field] ?? t.defaultVal]))
   );
@@ -102,6 +112,21 @@ function SettingsNotificationsSection() {
     [mutateAsync]
   );
 
+  const handleBriefHourChange = useCallback(
+    async (event) => {
+      const nextHour = Number(event.target.value);
+      setBriefHour(nextHour);
+      setSaveError(null);
+      try {
+        await mutateAsync({ morning_brief_hour: nextHour });
+      } catch {
+        setBriefHour(user?.morning_brief_hour ?? DEFAULT_MORNING_BRIEF_HOUR);
+        setSaveError("Failed to save delivery hour. Please try again.");
+      }
+    },
+    [mutateAsync, user?.morning_brief_hour]
+  );
+
   return (
     <div className="rounded-xl bg-card border border-border p-6">
       <h2 className="mb-1 font-display text-lg font-semibold text-foreground">
@@ -113,12 +138,35 @@ function SettingsNotificationsSection() {
       {saveError && (
         <p role="alert" className="mb-3 text-sm text-destructive">{saveError}</p>
       )}
-      <div className="mb-6">
-        <p className="mb-2 text-sm font-medium text-foreground">Timezone</p>
-        <p className="mb-3 text-sm text-muted-foreground">
-          Your morning brief is delivered at 8:00 AM in this timezone.
-        </p>
-        <TimezoneSelector value={timezone} onChange={handleTimezoneChange} />
+      <div className="mb-6 space-y-6">
+        <div>
+          <p className="mb-2 text-sm font-medium text-foreground">Timezone</p>
+          <p className="mb-3 text-sm text-muted-foreground">
+            Your morning brief uses this timezone for delivery scheduling.
+          </p>
+          <TimezoneSelector value={timezone} onChange={handleTimezoneChange} />
+        </div>
+        <div>
+          <label htmlFor="morning-brief-hour" className={INPUT_LABEL}>
+            Morning brief delivery hour
+          </label>
+          <p className="mb-2 text-sm text-muted-foreground">
+            Currently set to {formatBriefHour(briefHour)} in {timezone}.
+          </p>
+          <select
+            id="morning-brief-hour"
+            value={briefHour}
+            onChange={handleBriefHourChange}
+            disabled={isPending}
+            className={INPUT_BASE}
+          >
+            {HOUR_OPTIONS.map((hour) => (
+              <option key={hour} value={hour}>
+                {formatBriefHour(hour)}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
       <div className="divide-y divide-border">
         {TOGGLES.map((t) => (

@@ -17,6 +17,7 @@ const mockMutateAsync = vi.fn();
 
 const MOCK_USER = {
   timezone: "America/New_York",
+  morning_brief_hour: 8,
   morning_brief_enabled: true,
   morning_brief_email: true,
   morning_brief_in_app: true,
@@ -34,10 +35,32 @@ describe("SettingsNotificationsSection", () => {
     render(<SettingsNotificationsSection />);
 
     expect(screen.getByLabelText("Timezone")).toBeInTheDocument();
+    expect(screen.getByLabelText("Morning brief delivery hour")).toBeInTheDocument();
     expect(screen.getByText("Morning brief")).toBeInTheDocument();
     expect(screen.getByText("Morning brief email")).toBeInTheDocument();
     expect(screen.getByText("Morning brief in-app alert")).toBeInTheDocument();
     expect(screen.getByText("Weekly digest email")).toBeInTheDocument();
+  });
+
+  it("should persist morning brief hour changes", async () => {
+    mockMutateAsync.mockResolvedValue({ ...MOCK_USER, morning_brief_hour: 10 });
+
+    render(<SettingsNotificationsSection />);
+
+    fireEvent.change(screen.getByLabelText("Morning brief delivery hour"), {
+      target: { value: "10" },
+    });
+
+    await waitFor(() => {
+      expect(mockMutateAsync).toHaveBeenCalledWith({ morning_brief_hour: 10 });
+    });
+  });
+
+  it("should not show hardcoded 8am delivery copy", () => {
+    render(<SettingsNotificationsSection />);
+
+    expect(screen.queryByText(/delivered at 8:00 AM/i)).not.toBeInTheDocument();
+    expect(screen.getByText(/currently set to 8am/i)).toBeInTheDocument();
   });
 
   it("should revert toggle state when save fails", async () => {
