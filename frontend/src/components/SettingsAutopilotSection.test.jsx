@@ -36,6 +36,7 @@ describe("SettingsAutopilotSection", () => {
         autopilot_enabled: false,
         autopilot_min_match_score: 80,
         autopilot_max_daily: 5,
+        timezone: "America/New_York",
       },
     });
   });
@@ -57,15 +58,30 @@ describe("SettingsAutopilotSection", () => {
     expect(screen.getByRole("switch")).toBeDisabled();
   });
 
-  it("should save min score and max daily preferences", async () => {
+  it("should show next scan preview", () => {
+    renderSection();
+
+    expect(screen.getByText(/next scan:/i)).toBeInTheDocument();
+    expect(screen.getByText(/america\/new_york/i)).toBeInTheDocument();
+  });
+
+  it("should save all autopilot preferences with one Save button", async () => {
     mockMutateAsync.mockResolvedValue({});
     renderSection();
 
-    await userEvent.click(screen.getByRole("button", { name: /save preferences/i }));
+    await userEvent.click(screen.getByRole("switch"));
+    await userEvent.click(screen.getByRole("button", { name: /^save$/i }));
 
     expect(mockMutateAsync).toHaveBeenCalledWith({
+      autopilot_enabled: true,
       autopilot_min_match_score: 80,
       autopilot_max_daily: 5,
     });
+  });
+
+  it("should label minimum score as Minimum fit score", () => {
+    renderSection();
+
+    expect(screen.getByText(/minimum fit score/i)).toBeInTheDocument();
   });
 });

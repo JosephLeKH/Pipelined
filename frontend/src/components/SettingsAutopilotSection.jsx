@@ -1,11 +1,12 @@
 /** Settings autopilot section — enable toggle, min score, max daily, explainer copy. */
 
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 
 import { useAuth } from "../context/AuthContext";
 import { useUpdateUser } from "../hooks/useAuth";
 import { MIN_FIT_SCORE_LABEL } from "../lib/aiConstants";
+import { formatNextScanPreview } from "../lib/autopilotUtils";
 import {
   AUTOPILOT_MAX_DAILY_MAX,
   AUTOPILOT_MAX_DAILY_MIN,
@@ -14,7 +15,7 @@ import {
   DEFAULT_AUTOPILOT_MAX_DAILY,
   DEFAULT_AUTOPILOT_MIN_MATCH_SCORE,
 } from "../lib/constants";
-import { Button } from "./ui/button";
+import { CARD_BASE, BUTTON_PRIMARY } from "../lib/designTokens";
 
 const AUTOPILOT_EXPLAINER = "We never submit applications for you. Autopilot finds matches overnight and queues them for your review.";
 
@@ -34,8 +35,8 @@ function ToggleSwitch({ checked, onChange, disabled, label, description, id }) {
         aria-labelledby={id}
         disabled={disabled}
         onClick={() => onChange(!checked)}
-        className={`relative mt-0.5 inline-flex h-6 w-10 shrink-0 cursor-pointer items-center rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 ${
-          checked ? "bg-primary" : "bg-muted"
+        className={`relative mt-0.5 inline-flex h-6 w-10 shrink-0 cursor-pointer items-center rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 ${
+          checked ? "bg-brand-500" : "bg-muted"
         }`}
       >
         <span
@@ -51,6 +52,8 @@ function ToggleSwitch({ checked, onChange, disabled, label, description, id }) {
 function SettingsAutopilotSection() {
   const { user } = useAuth();
   const { mutateAsync, isPending } = useUpdateUser();
+  const timezone =
+    user?.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone ?? "America/New_York";
   const [enabled, setEnabled] = useState(() => user?.autopilot_enabled ?? false);
   const [minScore, setMinScore] = useState(
     () => user?.autopilot_min_match_score ?? DEFAULT_AUTOPILOT_MIN_MATCH_SCORE
@@ -61,38 +64,27 @@ function SettingsAutopilotSection() {
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState(null);
 
-  const handleToggle = useCallback(async (next) => {
-    setEnabled(next);
-    setSaved(false);
-    setError(null);
-    try {
-      await mutateAsync({ autopilot_enabled: next });
-      setSaved(true);
-    } catch {
-      setEnabled(!next);
-      setError("Failed to save autopilot setting.");
-    }
-  }, [mutateAsync]);
-
-  const handleSavePrefs = async () => {
+  const handleSave = async () => {
     setSaved(false);
     setError(null);
     try {
       await mutateAsync({
+        autopilot_enabled: enabled,
         autopilot_min_match_score: minScore,
         autopilot_max_daily: maxDaily,
       });
       setSaved(true);
     } catch {
-      setError("Failed to save autopilot preferences.");
+      setError("Failed to save autopilot settings.");
     }
   };
 
   const needsResume = !user?.has_resume;
+  const nextScanPreview = formatNextScanPreview(timezone);
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="rounded-xl bg-card border border-border p-6">
+      <div className={`${CARD_BASE} p-6`}>
         <h2 className="font-display mb-1 text-lg font-semibold text-foreground">Autopilot</h2>
         <p className="mb-5 text-sm text-muted-foreground">{AUTOPILOT_EXPLAINER}</p>
 
@@ -110,17 +102,21 @@ function SettingsAutopilotSection() {
 
         {error && <p role="alert" className="mb-4 text-sm text-destructive">{error}</p>}
         {saved && !error && (
-          <p role="alert" className="mb-4 rounded-lg bg-primary/10 border border-primary/20 px-3 py-3 text-sm text-primary">
+          <p role="status" className="mb-4 rounded-lg border border-brand-200 bg-brand-50 px-3 py-3 text-sm text-brand-800 dark:border-brand-800 dark:bg-brand-900/20 dark:text-brand-300">
             Autopilot settings saved.
           </p>
         )}
+
+        <p className="mb-4 text-sm text-muted-foreground">
+          Next scan: {nextScanPreview} ({timezone})
+        </p>
 
         <ToggleSwitch
           id="autopilot-enabled-label"
           label="Enable autopilot"
           description="Scan job listings overnight and queue high-fit matches for review."
           checked={enabled}
-          onChange={handleToggle}
+          onChange={setEnabled}
           disabled={isPending || needsResume}
         />
 
@@ -138,7 +134,7 @@ function SettingsAutopilotSection() {
             max={AUTOPILOT_MIN_SCORE_MAX}
             value={minScore}
             onChange={(e) => setMinScore(Number(e.target.value))}
-            className="mt-3 w-full accent-primary"
+            className="mt-3 w-full accent-brand-500"
             aria-valuemin={AUTOPILOT_MIN_SCORE_MIN}
             aria-valuemax={AUTOPILOT_MIN_SCORE_MAX}
             aria-valuenow={minScore}
@@ -159,7 +155,7 @@ function SettingsAutopilotSection() {
             max={AUTOPILOT_MAX_DAILY_MAX}
             value={maxDaily}
             onChange={(e) => setMaxDaily(Number(e.target.value))}
-            className="mt-3 w-full accent-primary"
+            className="mt-3 w-full accent-brand-500"
             aria-valuemin={AUTOPILOT_MAX_DAILY_MIN}
             aria-valuemax={AUTOPILOT_MAX_DAILY_MAX}
             aria-valuenow={maxDaily}
@@ -167,9 +163,14 @@ function SettingsAutopilotSection() {
         </div>
 
         <div className="mt-2 flex justify-end">
-          <Button type="button" onClick={handleSavePrefs} disabled={isPending}>
-            Save preferences
-          </Button>
+          <button
+            type="button"
+            onClick={handleSave}
+            disabled={isPending}
+            className={BUTTON_PRIMARY}
+          >
+            Save
+          </button>
         </div>
       </div>
     </div>

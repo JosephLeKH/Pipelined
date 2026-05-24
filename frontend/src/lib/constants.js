@@ -49,6 +49,7 @@ export const AUTOPILOT_MAX_DAILY_MIN = 1;
 export const AUTOPILOT_MAX_DAILY_MAX = 10;
 export const DEFAULT_AUTOPILOT_MIN_MATCH_SCORE = 80;
 export const DEFAULT_AUTOPILOT_MAX_DAILY = 5;
+export const AUTOPILOT_SCAN_HOUR_UTC = 5; // SYNC: backend/autopilot/constants.py
 
 export const REMOTE_STATUS_OPTIONS = ["remote", "hybrid", "onsite", "unknown"];
 
