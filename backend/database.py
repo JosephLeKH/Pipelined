@@ -121,10 +121,14 @@ async def ensure_indexes() -> None:
     ai_budget = get_collection("ai_budget")
     app_templates = get_collection("application_templates")
     undo_stack = get_collection("undo_stack")
+    morning_briefs = get_collection("morning_briefs")
+    morning_brief_on_demand = get_collection("morning_brief_on_demand")
 
     await asyncio.gather(
         _ensure_app_event_listing_indexes(apps, events, listings),
         _ensure_user_support_indexes(users, shares, contacts, notifications, ai_cache, ai_budget, app_templates),
         undo_stack.create_index("expires_at", expireAfterSeconds=0, name="undo_stack_ttl"),
         undo_stack.create_index([("user_id", 1), ("created_at", -1)], name="undo_stack_user_date"),
+        morning_briefs.create_index([("user_id", 1), ("date", 1)], unique=True, name="brief_user_date"),
+        morning_brief_on_demand.create_index([("user_id", 1), ("created_at", -1)], name="brief_on_demand_user_date"),
     )
