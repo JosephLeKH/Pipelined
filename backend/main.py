@@ -12,6 +12,7 @@ from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 
 from applications.interview_prep.router import router as interview_prep_router
+from applications.resume_insights.router import router as resume_insights_router
 from email_integration.router import router as email_integration_router
 from applications.router import router as applications_router
 from contacts.router import router as contacts_router
@@ -24,6 +25,7 @@ from cal.router import router as calendar_router
 from jobs.router import router as jobs_router
 from activity.router import router as activity_router
 from notifications.router import router as notifications_router
+from brief.brief_router import router as brief_router
 from saved_searches.router import router as saved_searches_router
 from sharing.router import router as sharing_router
 from feedback.router import router as feedback_router
@@ -93,6 +95,7 @@ def _register_routers(app: FastAPI) -> None:
     app.include_router(verification_router)
     app.include_router(applications_router)
     app.include_router(interview_prep_router)
+    app.include_router(resume_insights_router)
     app.include_router(custom_fields_router)
     app.include_router(documents_router)
     app.include_router(calendar_router)
@@ -100,6 +103,7 @@ def _register_routers(app: FastAPI) -> None:
     app.include_router(sharing_router)
     app.include_router(contacts_router)
     app.include_router(notifications_router)
+    app.include_router(brief_router)
     app.include_router(saved_searches_router)
     app.include_router(activity_router)
     app.include_router(seo_router)

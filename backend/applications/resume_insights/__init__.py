@@ -1,0 +1,1 @@
+"""Resume insights feature module."""
