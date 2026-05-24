@@ -8,16 +8,22 @@ SECTION_BASE_SCORE: dict[str, float] = {
     "follow_ups": 1000.0,
     "ghosts": 950.0,
     "interviews": 800.0,
+    "oa_deadlines": 850.0,
     "high_matches": 500.0,
     "pending_approvals": 400.0,
     "watchlist_finds": 450.0,
 }
 
-SECTION_ORDER = ("follow_ups", "ghosts", "interviews", "high_matches", "watchlist_finds", "pending_approvals")
+SECTION_ORDER = (
+    "follow_ups", "ghosts", "interviews", "oa_deadlines",
+    "high_matches", "watchlist_finds", "pending_approvals",
+)
 
 SCORE_PATTERN = re.compile(r"(?:Match|Fit) score (\d+)")
 GHOST_DAYS_PATTERN = re.compile(r"(\d+) days waiting")
 GHOST_MEDIAN_PATTERN = re.compile(r"median (\d+) days")
+OA_DUE_IN_PATTERN = re.compile(r"Due in (\d+) days?")
+OA_OVERDUE_PATTERN = re.compile(r"Overdue by (\d+) days?")
 
 
 @dataclass(frozen=True)
