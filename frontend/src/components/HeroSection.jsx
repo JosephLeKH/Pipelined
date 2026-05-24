@@ -9,12 +9,12 @@ export default function HeroSection() {
     <section className="bg-muted py-24">
       <div className="mx-auto max-w-3xl px-6 text-center">
         <h1 className="mb-6 text-4xl font-display font-semibold tracking-tight text-foreground md:text-5xl">
-          Track your job search,{" "}
-          <span className="text-primary">end to end.</span>
+          Your job search co-pilot,{" "}
+          <span className="text-primary">one mission at a time.</span>
         </h1>
         <p className="mx-auto mb-10 max-w-2xl font-sans text-lg leading-relaxed text-muted-foreground">
-          Pipelined keeps every application, interview, and follow-up organized.
-          One-click Chrome extension, AI fit scoring, and a built-in calendar.
+          Start each day on Today with ranked missions, ask the co-pilot for guidance,
+          and copy apply materials — you stay in control of every send and submission.
         </p>
         <Button asChild className="inline-flex items-center">
           <Link to="/register">Get Started Free</Link>

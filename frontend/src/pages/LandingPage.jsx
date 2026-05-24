@@ -4,11 +4,12 @@ import { useEffect, useRef } from "react";
 import { Link, Navigate } from "react-router-dom";
 
 import Bell from "lucide-react/dist/esm/icons/bell";
-import BookOpen from "lucide-react/dist/esm/icons/book-open";
 import BriefcaseIcon from "lucide-react/dist/esm/icons/briefcase";
 import CalendarIcon from "lucide-react/dist/esm/icons/calendar";
+import ClipboardList from "lucide-react/dist/esm/icons/clipboard-list";
+import Eye from "lucide-react/dist/esm/icons/eye";
 import GitBranch from "lucide-react/dist/esm/icons/git-branch";
-import Mail from "lucide-react/dist/esm/icons/mail";
+import Mic from "lucide-react/dist/esm/icons/mic";
 import Radar from "lucide-react/dist/esm/icons/radar";
 import SearchIcon from "lucide-react/dist/esm/icons/search";
 import Sparkles from "lucide-react/dist/esm/icons/sparkles";
@@ -21,16 +22,34 @@ import { Button } from "../components/ui/button";
 
 const FEATURES = [
   {
-    icon: ZapIcon,
-    title: "One-Click Chrome Extension",
+    icon: Sparkles,
+    title: "Co-pilot",
     description:
-      "Capture job details from LinkedIn, Greenhouse, Lever, Ashby, and Workday in one click — no copy-paste.",
+      "Ask grounded questions about priorities, follow-ups, and interview prep — suggestions only, never auto-send.",
   },
   {
     icon: Sun,
-    title: "Morning Brief",
+    title: "Today",
     description:
-      "Start each day with a personalized digest of follow-ups due, interviews ahead, and high-fit matches — you decide what to act on.",
+      "Mission Control ranks what matters most each morning — snooze, complete, and stay focused on one thing at a time.",
+  },
+  {
+    icon: ClipboardList,
+    title: "Apply Pack",
+    description:
+      "Generate cover letters, form answers, LinkedIn notes, and talking points per role — copy and apply externally.",
+  },
+  {
+    icon: Mic,
+    title: "Mock Interview",
+    description:
+      "Practice with a realistic AI interviewer and get a structured debrief when the session ends.",
+  },
+  {
+    icon: Eye,
+    title: "Watchlist",
+    description:
+      "Track target companies and surface new listings from your watchlist in Autopilot matches.",
   },
   {
     icon: Radar,
@@ -39,22 +58,10 @@ const FEATURES = [
       "Nightly scan of curated listings scored against your resume. Review matches and approve before anything enters your pipeline.",
   },
   {
-    icon: Sparkles,
-    title: "Resume Insights",
+    icon: ZapIcon,
+    title: "One-Click Chrome Extension",
     description:
-      "Paste a job description to get keyword gaps, section suggestions, and bullet rewrites — suggest-only, your resume file is never modified.",
-  },
-  {
-    icon: BookOpen,
-    title: "Interview Prep Agent",
-    description:
-      "On-demand company and role research with talking points. You review the briefing before every interview.",
-  },
-  {
-    icon: Mail,
-    title: "Gmail Sync",
-    description:
-      "Read-only inbox sync auto-tracks confirmations and status updates. No emails are sent on your behalf.",
+      "Capture job details from LinkedIn, Greenhouse, Lever, Ashby, and Workday in one click — no copy-paste.",
   },
   {
     icon: BriefcaseIcon,
@@ -84,6 +91,7 @@ const FEATURES = [
 
 const FOOTER_LINKS = {
   Product: [
+    { label: "Today", to: "/today" },
     { label: "Dashboard", to: "/dashboard" },
     { label: "Job Board", to: "/jobs" },
   ],
@@ -159,7 +167,7 @@ function FeaturesSection() {
         Everything you need to land the job
       </h2>
       <p className="mx-auto mb-12 max-w-2xl text-center font-sans text-lg leading-relaxed text-muted-foreground">
-        From the first click to the final offer, Pipelined has every step covered.
+        Agent-native tools for daily focus, plus the full pipeline from first click to final offer.
       </p>
       <div ref={gridRef} className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {FEATURES.map(({ icon: Icon, title, description }) => (
@@ -236,7 +244,7 @@ function LandingFooter() {
 
 function LandingPage() {
   const { user } = useAuth();
-  if (user) return <Navigate to="/dashboard" replace />;
+  if (user) return <Navigate to="/today" replace />;
 
   return (
     <div className="flex min-h-screen flex-col bg-background">

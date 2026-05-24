@@ -29,7 +29,7 @@ function makeWrapper() {
           <AuthProvider>
             <Routes>
               <Route path="/" element={children} />
-              <Route path="/dashboard" element={<div>Dashboard</div>} />
+              <Route path="/today" element={<div>Today</div>} />
             </Routes>
           </AuthProvider>
         </MemoryRouter>
@@ -39,45 +39,32 @@ function makeWrapper() {
 }
 
 describe("LandingPage", () => {
-  it("should render the hero tagline", () => {
+  it("should render the hero tagline with co-pilot messaging", () => {
     render(<LandingPage />, { wrapper: makeWrapper() });
 
-    expect(screen.getByRole("heading", { level: 1 })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(/co-pilot/i);
+    expect(screen.getByText(/Start each day on Today/i)).toBeInTheDocument();
   });
 
-  it("should render Pipeline Dashboard feature highlight", () => {
+  it("should render agent-native feature highlights", () => {
+    render(<LandingPage />, { wrapper: makeWrapper() });
+
+    expect(screen.getByText("Co-pilot")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Today" })).toBeInTheDocument();
+    expect(screen.getByText("Apply Pack")).toBeInTheDocument();
+    expect(screen.getByText("Mock Interview")).toBeInTheDocument();
+    expect(screen.getByText("Watchlist")).toBeInTheDocument();
+    expect(screen.getByText("Autopilot")).toBeInTheDocument();
+  });
+
+  it("should render core product feature highlights", () => {
     render(<LandingPage />, { wrapper: makeWrapper() });
 
     expect(screen.getByText("Pipeline Dashboard")).toBeInTheDocument();
-  });
-
-  it("should render AI feature highlights with assistive copy", () => {
-    render(<LandingPage />, { wrapper: makeWrapper() });
-
-    expect(screen.getByText("Morning Brief")).toBeInTheDocument();
-    expect(screen.getByText("Autopilot")).toBeInTheDocument();
-    expect(screen.getByText("Resume Insights")).toBeInTheDocument();
-    expect(screen.getByText("Interview Prep Agent")).toBeInTheDocument();
-    expect(screen.getByText("Gmail Sync")).toBeInTheDocument();
-    expect(screen.queryByText(/GPT-powered/i)).not.toBeInTheDocument();
-  });
-
-  it("should render One-Click Chrome Extension feature highlight", () => {
-    render(<LandingPage />, { wrapper: makeWrapper() });
-
     expect(screen.getByText("One-Click Chrome Extension")).toBeInTheDocument();
-  });
-
-  it("should render Interview Calendar feature highlight", () => {
-    render(<LandingPage />, { wrapper: makeWrapper() });
-
     expect(screen.getByText("Interview Calendar")).toBeInTheDocument();
-  });
-
-  it("should render Curated Job Board feature highlight", () => {
-    render(<LandingPage />, { wrapper: makeWrapper() });
-
     expect(screen.getByText("Curated Job Board")).toBeInTheDocument();
+    expect(screen.queryByText(/GPT-powered/i)).not.toBeInTheDocument();
   });
 
   it("should render Sign Up CTA links", () => {
@@ -94,7 +81,7 @@ describe("LandingPage", () => {
     expect(loginLinks.length).toBeGreaterThan(0);
   });
 
-  it("should redirect logged-in users to /dashboard", async () => {
+  it("should redirect logged-in users to /today", async () => {
     server.use(
       http.get("/api/auth/me", () => HttpResponse.json({ data: MOCK_USER }))
     );
@@ -102,7 +89,7 @@ describe("LandingPage", () => {
     render(<LandingPage />, { wrapper: makeWrapper() });
 
     await waitFor(() => {
-      expect(screen.getByText("Dashboard")).toBeInTheDocument();
+      expect(screen.getByRole("heading", { name: "Today" })).toBeInTheDocument();
     });
   });
 });
