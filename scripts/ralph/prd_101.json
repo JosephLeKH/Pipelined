@@ -1,0 +1,62 @@
+{
+  "id": "prd_101",
+  "title": "Morning Brief UI & Follow-up Policy",
+  "description": "In-app Morning Brief experience. Follow-ups appear IN the brief as action items with draft links — never auto-sent via Gmail. User copies/sends manually. Builds on prd_100 engine.",
+  "userStories": [
+    {
+      "id": "US-920",
+      "title": "Morning Brief page and dashboard entry point",
+      "description": "New page frontend/src/pages/MorningBriefPage.jsx at route /brief.\n\n- useQuery fetches GET /api/brief/today via hook useMorningBrief()\n- Sections rendered as prioritized cards (follow-ups first, then interviews, matches, approvals)\n- Each item: title, body, CTA link (React Router Link to action_url)\n- Empty state: 'Your brief generates at 8am — check back soon'\n- Add nav link in dashboard header/sidebar: 'Brief' with Sun icon\n\nCompose from components/, no direct api calls in page.",
+      "acceptanceCriteria": [
+        "Route /brief registered",
+        "useMorningBrief hook in hooks/",
+        "Section cards with priority ordering",
+        "Nav entry point added",
+        "Vitest smoke test for page render"
+      ],
+      "priority": "high",
+      "passes": true,
+      "notes": "MorningBriefPage at /brief, useMorningBrief hook, NavBar Brief link with Sun icon, section cards, vitest smoke test."
+    },
+    {
+      "id": "US-921",
+      "title": "Follow-up items in brief with draft links",
+      "description": "Enhance morning_brief follow_ups section:\n- Each item links to /dashboard?selected={app_id}&action=follow-up\n- DetailPanel reads action=follow-up query param and auto-expands FollowUpDraftSection\n\nBrief item text: '{company} — follow-up overdue' with subtext 'Draft ready in detail panel'\n\nDo NOT pre-generate LLM drafts in brief job (too expensive). User clicks through to generate on demand.\n\nExplicit policy comment in morning_brief.py: 'NEVER send email via Gmail API — drafts are user-initiated only.'",
+      "acceptanceCriteria": [
+        "Brief follow-up items link to detail panel",
+        "action=follow-up query expands draft section",
+        "No Gmail send code paths added",
+        "Policy comment in service"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-922",
+      "title": "Audit and guardrail — no auto-send follow-ups",
+      "description": "Verify codebase has zero Gmail send capability for follow-ups.\n\n1. Grep for gmail send, messages.send, send_email in email_integration — document findings\n2. Add test backend/tests/test_follow_up_policy.py asserting sync_emails and notification jobs do NOT call any send function\n3. If AGENT_ROADMAP.md mentions auto-send, add note at top: 'Deferred — user copies drafts manually per product policy'\n\nNo functional Gmail send implementation in this story — guardrails only.",
+      "acceptanceCriteria": [
+        "No Gmail send implementation exists",
+        "test_follow_up_policy.py passes",
+        "AGENT_ROADMAP note added"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-923",
+      "title": "morning_brief_ready in-app notification handling",
+      "description": "Frontend NotificationBell: handle type morning_brief_ready — icon Sun, title 'Your morning brief is ready', action_url /brief.\n\nBackend notification_service: ensure create_notification supports morning_brief_ready type (add to allowed types constant if enum exists).\n\nClicking notification navigates to /brief.",
+      "acceptanceCriteria": [
+        "morning_brief_ready renders in NotificationBell",
+        "Click navigates to /brief",
+        "Backend allows notification type"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

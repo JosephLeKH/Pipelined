@@ -74,6 +74,7 @@ const GmailCallback = lazy(() => import("./pages/GmailCallback"));
 const Pricing = lazy(() => import("./pages/Pricing"));
 const OfferComparison = lazy(() => import("./pages/OfferComparison"));
 const Tags = lazy(() => import("./pages/Tags"));
+const MorningBriefPage = lazy(() => import("./pages/MorningBriefPage"));
 
 /** Renders the confirmation page when ?token= is present, otherwise the pending page. */
 function VerifyEmailRoute() {
@@ -177,6 +178,7 @@ function App() {
         <Route path="/settings" element={<ProtectedPage><Settings /></ProtectedPage>} />
         <Route path="/offers" element={<ProtectedPage><OfferComparison /></ProtectedPage>} />
         <Route path="/tags" element={<ProtectedPage><Tags /></ProtectedPage>} />
+        <Route path="/brief" element={<ProtectedPage><MorningBriefPage /></ProtectedPage>} />
         </Routes>
         </ErrorBoundary>
         </main>

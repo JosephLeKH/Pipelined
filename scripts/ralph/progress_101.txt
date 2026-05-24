@@ -1,0 +1,9 @@
+# Ralph Progress Log — prd_101
+Started: Sat May 23 2026
+---
+
+## US-920: Morning Brief page and dashboard entry point ✅ COMPLETE
+
+**Implementation:** Added MorningBriefPage at `/brief` with useMorningBrief hook, MorningBriefSectionCard component, NavBar Brief link with Sun icon, route in App.jsx.
+
+**Testing:** `npm run test -- --run src/pages/MorningBriefPage.test.jsx` — 2 passed
