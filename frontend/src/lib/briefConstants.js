@@ -13,6 +13,7 @@ export const BRIEF_SECTION_ORDER = [
 export const BRIEF_SECTION_ACCENTS = {
   follow_ups: "border-l-amber-500",
   interviews: "border-l-blue-500",
+  oa_deadlines: "border-l-rose-500",
   high_matches: "border-l-emerald-500",
   pending_approvals: "border-l-brand-500",
 };
@@ -21,6 +22,7 @@ export const BRIEF_SECTION_ACCENTS = {
 export const MISSION_SECTION_LABELS = {
   follow_ups: "Follow-up",
   interviews: "Interview",
+  oa_deadlines: "OA deadline",
   high_matches: "High match",
   pending_approvals: "Autopilot match",
 };
@@ -29,6 +31,7 @@ export const MISSION_SECTION_LABELS = {
 export const MISSION_PRIORITY_PILL_STYLES = {
   follow_ups: "bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-700/50",
   interviews: "bg-blue-50 text-blue-800 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-700/50",
+  oa_deadlines: "bg-rose-50 text-rose-800 border-rose-200 dark:bg-rose-900/30 dark:text-rose-300 dark:border-rose-700/50",
   high_matches: "bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-700/50",
   pending_approvals: "bg-brand-50 text-brand-800 border-brand-200 dark:bg-brand-900/30 dark:text-brand-300 dark:border-brand-800/50",
 };
@@ -57,4 +60,29 @@ export function parseBriefItemScore(body) {
   if (!body) return null;
   const match = body.match(SCORE_PATTERN);
   return match ? Number(match[1]) : null;
+}
+
+const OVERDUE_PATTERN = /^Overdue by (\d+) day/;
+const DUE_TODAY_PATTERN = /^Due today$/;
+const DUE_IN_PATTERN = /^Due in (\d+) day/;
+
+/** Parse OA deadline label and urgency from brief item body. */
+export function parseDeadlineLabel(body) {
+  if (!body) return null;
+  if (DUE_TODAY_PATTERN.test(body)) {
+    return { label: "Due today", tone: "urgent" };
+  }
+  const overdue = body.match(OVERDUE_PATTERN);
+  if (overdue) {
+    const days = Number(overdue[1]);
+    const dayWord = days === 1 ? "day" : "days";
+    return { label: `Overdue ${days} ${dayWord}`, tone: "overdue" };
+  }
+  const dueIn = body.match(DUE_IN_PATTERN);
+  if (dueIn) {
+    const days = Number(dueIn[1]);
+    const dayWord = days === 1 ? "day" : "days";
+    return { label: `Due in ${days} ${dayWord}`, tone: days <= 2 ? "urgent" : "soon" };
+  }
+  return null;
 }

@@ -14,10 +14,27 @@ import { Button } from "./ui/button";
 import {
   BRIEF_SECTION_ACCENTS,
   parseBriefItemScore,
+  parseDeadlineLabel,
 } from "../lib/briefConstants";
-import { BUTTON_GHOST, BUTTON_SECONDARY } from "../lib/designTokens";
+import { BADGE_BASE, BUTTON_GHOST, BUTTON_SECONDARY } from "../lib/designTokens";
 
 const FIT_BADGE_SECTIONS = new Set(["high_matches", "pending_approvals"]);
+
+const DEADLINE_TONE_STYLES = {
+  overdue: "bg-rose-100 text-rose-800 border-rose-200 dark:bg-rose-900/30 dark:text-rose-300 dark:border-rose-700/50",
+  urgent: "bg-amber-100 text-amber-800 border-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-700/50",
+  soon: "bg-surface-secondary text-muted-foreground border-border-default",
+};
+
+function DeadlineBadge({ body }) {
+  const parsed = parseDeadlineLabel(body);
+  if (!parsed) return null;
+  return (
+    <span className={`${BADGE_BASE} border ${DEADLINE_TONE_STYLES[parsed.tone]}`}>
+      {parsed.label}
+    </span>
+  );
+}
 
 function MissionCard({ mission, onSnooze, onDone, isSnoozing, isCompleting }) {
   const accent = BRIEF_SECTION_ACCENTS[mission.section] ?? "border-l-brand-500";
@@ -36,6 +53,7 @@ function MissionCard({ mission, onSnooze, onDone, isSnoozing, isCompleting }) {
       }
     >
       <p className="text-sm text-muted-foreground">{mission.reason}</p>
+      {mission.section === "oa_deadlines" && <DeadlineBadge body={mission.body} />}
       {fitScore != null && <FitBadge score={fitScore} />}
       <div className="flex flex-wrap items-center gap-2 pt-1">
         <Button asChild size="sm">

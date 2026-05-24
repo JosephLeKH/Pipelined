@@ -7,36 +7,53 @@
       "id": "US-1032",
       "title": "Co-pilot session backend",
       "description": "copilot_sessions collection. GET/POST /api/copilot/session. user_id scoped, 7-day TTL index.",
-      "acceptanceCriteria": ["router/service/schemas", "Indexes", "pytest", "No auto-send"],
+      "acceptanceCriteria": [
+        "router/service/schemas",
+        "Indexes",
+        "pytest",
+        "No auto-send"
+      ],
       "priority": "high",
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
       "id": "US-1033",
       "title": "Frontend co-pilot session hydration",
       "description": "useCopilotChat loads session on mount, persists on done, clear on reset.",
-      "acceptanceCriteria": ["api helpers", "Hook update", "MSW handler", "Vitest"],
+      "acceptanceCriteria": [
+        "api helpers",
+        "Hook update",
+        "MSW handler",
+        "Vitest"
+      ],
       "priority": "high",
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
       "id": "US-1034",
       "title": "Watchlist scan parallel fetch",
       "description": "asyncio.gather with WATCHLIST_FETCH_CONCURRENCY=5 in watchlist/scan.py.",
-      "acceptanceCriteria": ["Named constant", "Tests pass", "structlog timing"],
+      "acceptanceCriteria": [
+        "Named constant",
+        "Tests pass",
+        "structlog timing"
+      ],
       "priority": "medium",
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
       "id": "US-1035",
       "title": "Agent activity query index",
       "description": "Compound index agent_type+created_at on agent_runs.",
-      "acceptanceCriteria": ["Index in database.py", "Tests pass"],
+      "acceptanceCriteria": [
+        "Index in database.py",
+        "Tests pass"
+      ],
       "priority": "low",
-      "passes": false,
+      "passes": true,
       "notes": ""
     }
   ]

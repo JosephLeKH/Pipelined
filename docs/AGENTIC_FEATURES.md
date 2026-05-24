@@ -53,6 +53,7 @@ The primary post-login landing page. Combines the Morning Brief with ranked **mi
 | Follow-ups | Highest | Overdue — respond today |
 | Ghosts | Very high | Waiting longer than your median response time |
 | Interviews | High | Upcoming — prep ready or review details |
+| OA deadlines | High | OA/take-home due within 7 days |
 | High matches | Medium | Fit score ≥ 80 |
 | Watchlist finds | Medium | New roles from tracked companies |
 | Pending approvals | Lower | Overnight Autopilot matches |
@@ -91,8 +92,12 @@ Slide-over chat assistant grounded in your pipeline data (profile, applications,
 
 ```
 POST /api/copilot/chat   (SSE stream)
-Rate limit: 20/hour
+GET  /api/copilot/session
+POST /api/copilot/session
+Rate limit: 20/hour (chat only)
 ```
+
+**Session persistence:** Last 20 messages stored in `copilot_sessions` (7-day TTL). Frontend hydrates on panel open and saves after each completed turn.
 
 **Request:** `{ message, history[] }` — prior turns for multi-turn context.
 
@@ -287,6 +292,21 @@ Returns user-scoped timeline for the application. Offer-stage emails trigger `of
 
 ---
 
+## OA Deadline Missions
+
+When Gmail sync classifies an email as **Assessment** (OA stage), `deadline_parser.py` extracts the completion deadline via OpenRouter and sets `application.deadline`.
+
+### In the brief
+
+- Morning Brief includes an `oa_deadlines` section for OA-stage apps due within **7 days** (including overdue)
+- Mission scorer ranks OA deadlines above high matches (base score 850)
+- Today mission cards show a deadline badge: *Due in X days*, *Due today*, or *Overdue*
+- Stable mission IDs use the application ID (`entity_id`)
+
+**Key files:** `backend/email_integration/deadline_parser.py`, `backend/notifications/brief_oa_deadlines.py`, `frontend/src/components/MissionCard.jsx`.
+
+---
+
 ## Morning Brief (legacy reference)
 
 The brief payload powers Today missions. Sections assembled by `backend/notifications/morning_brief.py`:
@@ -294,9 +314,10 @@ The brief payload powers Today missions. Sections assembled by `backend/notifica
 1. **Follow-ups** — overdue applications
 2. **Ghosts** — silent apps exceeding median wait
 3. **Interviews** — today/tomorrow calendar events with prep status
-4. **High matches** — applications with fit score ≥ 80
-5. **Watchlist finds** — new roles from tracked companies
-6. **Pending approvals** — top overnight Autopilot matches
+4. **OA deadlines** — OA/take-home applications due within 7 days (from `application.deadline`)
+5. **High matches** — applications with fit score ≥ 80
+6. **Watchlist finds** — new roles from tracked companies
+7. **Pending approvals** — top overnight Autopilot matches
 
 ### Delivery
 

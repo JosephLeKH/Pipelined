@@ -7,36 +7,54 @@
       "id": "US-1028",
       "title": "OA deadline extraction from email events",
       "description": "When email classifier sets status OA, parse deadline from email_events metadata and PATCH application.deadline.",
-      "acceptanceCriteria": ["Service", "user_id scoped", "pytest tests", "structlog"],
+      "acceptanceCriteria": [
+        "Service",
+        "user_id scoped",
+        "pytest tests",
+        "structlog"
+      ],
       "priority": "high",
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
       "id": "US-1029",
       "title": "Brief oa_deadlines section and mission scorer",
       "description": "Add oa_deadlines section to morning brief for apps with deadline within 7 days. mission_scorer ranks above high_matches.",
-      "acceptanceCriteria": ["Brief section", "Stable mission IDs", "Tests", "Days remaining reason"],
+      "acceptanceCriteria": [
+        "Brief section",
+        "Stable mission IDs",
+        "Tests",
+        "Days remaining reason"
+      ],
       "priority": "high",
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
       "id": "US-1030",
       "title": "Today UI for deadline missions",
       "description": "Mission cards show deadline badge (Due in X days / Overdue).",
-      "acceptanceCriteria": ["Deadline badge", "Component test", "Build green"],
+      "acceptanceCriteria": [
+        "Deadline badge",
+        "Component test",
+        "Build green"
+      ],
       "priority": "medium",
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
       "id": "US-1031",
       "title": "Integration tests and docs",
       "description": "Test deadline apps in GET /api/brief/today missions. Update docs/AGENTIC_FEATURES.md.",
-      "acceptanceCriteria": ["API test", "Docs updated", "Tests pass"],
+      "acceptanceCriteria": [
+        "API test",
+        "Docs updated",
+        "Tests pass"
+      ],
       "priority": "medium",
-      "passes": false,
+      "passes": true,
       "notes": ""
     }
   ]
