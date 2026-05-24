@@ -51,7 +51,7 @@ describe("PublicPipeline", () => {
 
     renderPage();
 
-    expect(document.querySelector(".animate-spin") ?? screen.getByRole("status", { hidden: true }) ?? document.querySelector('[class*="spinner"]') ?? document.querySelector('[class*="animate-spin"]')).toBeTruthy();
+    expect(document.querySelector(".animate-shimmer")).toBeInTheDocument();
   });
 
   it("should show not found state when fetch returns an error", () => {

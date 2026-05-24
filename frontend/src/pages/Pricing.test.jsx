@@ -35,8 +35,8 @@ describe("Pricing page", () => {
     const freeLinks = screen.getAllByRole("link", { name: /get started free/i });
     expect(freeLinks.length).toBeGreaterThanOrEqual(1);
 
-    const proButton = screen.getByRole("button", { name: /upgrade to pro/i });
-    expect(proButton).toBeInTheDocument();
+    const waitlistLink = screen.getByRole("link", { name: /join the waitlist/i });
+    expect(waitlistLink).toBeInTheDocument();
   });
 
   it("should render feature list items for both tiers", () => {

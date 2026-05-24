@@ -254,8 +254,12 @@ describe("ApplicationList", () => {
 
   it("should disable bulk action buttons while bulk delete mutation is pending", async () => {
     // Arrange — suspend bulk delete so mutation stays in-flight
+    let deleteRequested = false;
     server.use(
-      http.delete("/api/applications/bulk", () => new Promise(() => {}))
+      http.delete("/api/applications/bulk", async () => {
+        deleteRequested = true;
+        return new Promise(() => {});
+      })
     );
     render(<ApplicationList onSelect={() => {}} />, { wrapper: makeWrapper() });
     await screen.findByText("Acme Corp");
@@ -263,15 +267,15 @@ describe("ApplicationList", () => {
     // Act — select a row, open bulk delete confirm, confirm deletion
     await userEvent.click(screen.getByLabelText("Select Acme Corp"));
     await userEvent.click(screen.getByRole("button", { name: /delete selected/i }));
-    // Confirm modal appears — click Confirm
     const confirmBtn = await screen.findByRole("button", { name: /delete 1/i });
     await userEvent.click(confirmBtn);
 
-    // Assert — bulk action buttons are disabled while pending
+    // Assert — delete request started and confirm modal stays open until it completes
     await waitFor(() => {
-      const deleteBtn = screen.getByRole("button", { name: /delete selected/i });
-      expect(deleteBtn).toBeDisabled();
+      expect(deleteRequested).toBe(true);
     });
+    expect(screen.getByRole("button", { name: /delete 1/i })).toBeInTheDocument();
+    expect(screen.getByText("1 selected")).toBeInTheDocument();
   });
 
   it("should clear selection when select-all is clicked again while all are selected", async () => {

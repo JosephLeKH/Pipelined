@@ -46,7 +46,7 @@ describe("OfferComparison", () => {
 
     renderPage();
 
-    expect(document.querySelector(".animate-spin")).toBeInTheDocument();
+    expect(document.querySelector(".animate-shimmer")).toBeInTheDocument();
   });
 
   it("should show empty state when no offers", () => {
@@ -87,9 +87,9 @@ describe("OfferComparison", () => {
 
     renderPage();
 
-    expect(screen.getByText("Base Salary")).toBeInTheDocument();
-    expect(screen.getByText("Total Comp")).toBeInTheDocument();
-    expect(screen.getByText("Equity")).toBeInTheDocument();
+    expect(screen.getAllByText("Base Salary").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Total Comp").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Equity").length).toBeGreaterThan(0);
   });
 
   it("should trigger confetti and show winner badge on mark winner", async () => {

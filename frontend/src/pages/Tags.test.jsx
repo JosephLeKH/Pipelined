@@ -39,7 +39,7 @@ describe("Tags", () => {
 
     renderPage();
 
-    expect(document.querySelector(".animate-spin")).toBeInTheDocument();
+    expect(document.querySelector(".animate-shimmer")).toBeInTheDocument();
   });
 
   it("should show fetch error state with retry button when tags load fails", () => {

@@ -23,3 +23,10 @@ Started: Sun May 24 2026
 **Testing:** `npm test -- --run src/pages/Analytics.test.jsx src/pages/JobBoard.test.jsx src/pages/Login.test.jsx src/pages/Dashboard.test.jsx` — 37 passed
 
 ---
+## US-1004: Fix page test failures batch 2 ✅ COMPLETE
+
+**Implementation:** Updated loading shimmer assertions, Pricing waitlist CTA, Login-style /today redirects, OfferComparison duplicate labels, ApplicationList bulk-delete pending assertion.
+
+**Testing:** `npm test -- --run` batch for OfferComparison, Pricing, PublicPipeline, Tags, GithubCallback, ApplicationList — 51 passed
+
+---

@@ -47,7 +47,7 @@ function makeWrapper(code = "valid-code") {
           <AuthProvider>
             <Routes>
               <Route path="/auth/github/callback" element={children} />
-              <Route path="/dashboard" element={<div>Dashboard</div>} />
+              <Route path="/today" element={<div>Today</div>} />
               <Route path="/login" element={<div>Login</div>} />
             </Routes>
           </AuthProvider>
@@ -64,11 +64,11 @@ describe("GithubCallback", () => {
     expect(container.querySelector(".animate-spin")).toBeTruthy();
   });
 
-  it("should redirect to dashboard on successful code exchange", async () => {
+  it("should redirect to today on successful code exchange", async () => {
     render(<GithubCallback />, { wrapper: makeWrapper("valid-code") });
 
     await waitFor(() => {
-      expect(screen.getByText("Dashboard")).toBeInTheDocument();
+      expect(screen.getByText("Today")).toBeInTheDocument();
     });
   });
 

@@ -48,8 +48,8 @@
         "All listed tests pass"
       ],
       "priority": "medium",
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "OfferComparison, Pricing, PublicPipeline, Tags, GithubCallback, ApplicationList bulk-delete; 51/51 pass."
     }
   ]
 }
