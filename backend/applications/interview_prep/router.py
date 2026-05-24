@@ -87,6 +87,7 @@ async def interview_prep_stream(
     app_doc = await _get_application(app_id, user_id)
     company: str = app_doc.get("company", "")
     role: str = app_doc.get("role_title", app_doc.get("position", "Software Engineer"))
+    interview_round: str | None = app_doc.get("interview_round")
     resume_text = await _get_resume_text(user_id)
 
     if not company:
@@ -106,6 +107,7 @@ async def interview_prep_stream(
                 resume_text=resume_text,
                 gemini_api_key=settings.gemini_api_key,
                 exa_api_key=settings.exa_api_key,
+                interview_round=interview_round,
             ):
                 event_type = event.pop("type")
                 if event_type == "done":

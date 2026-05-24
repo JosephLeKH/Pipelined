@@ -12,6 +12,7 @@ from typing import Any
 import structlog
 from openai import AsyncOpenAI
 
+from .constants import INTERVIEW_ROUND_FOCUS
 from .schemas import InterviewBriefing
 from .tools import fetch_page, get_levels_data, search_reddit, web_search
 
@@ -123,7 +124,21 @@ TOOL_DEFS: list[dict[str, Any]] = [
 ]
 
 
-def _build_system_prompt(company: str, role: str, resume_text: str) -> str:
+def _round_focus_section(interview_round: str | None) -> str:
+    if not interview_round:
+        return ""
+    focus = INTERVIEW_ROUND_FOCUS.get(interview_round, "")
+    label = interview_round.replace("_", " ").title()
+    return (
+        f"\n## Upcoming Interview Round\n"
+        f"The candidate has an upcoming **{label}** round. {focus}\n"
+        "Prioritize research and personalized notes relevant to this specific round.\n"
+    )
+
+
+def _build_system_prompt(
+    company: str, role: str, resume_text: str, interview_round: str | None = None
+) -> str:
     resume_section = (
         f"## Candidate Resume\n{resume_text.strip()}"
         if resume_text
@@ -135,7 +150,7 @@ actionable intelligence for a software engineer preparing to interview at a spec
 ## Target
 - **Company:** {company}
 - **Role:** {role}
-
+{_round_focus_section(interview_round)}
 {resume_section}
 
 ## Your Research Goal
@@ -178,6 +193,7 @@ async def run_agent(
     resume_text: str,
     gemini_api_key: str,
     exa_api_key: str,
+    interview_round: str | None = None,
 ) -> AsyncGenerator[ProgressEvent, None]:
     """Run the interview prep agent loop, yielding progress events then the final briefing.
 
@@ -187,14 +203,18 @@ async def run_agent(
       {"type": "error", "message": "..."}
     """
     client = AsyncOpenAI(api_key=gemini_api_key, base_url=_GEMINI_BASE_URL)
-    system_prompt = _build_system_prompt(company, role, resume_text)
+    system_prompt = _build_system_prompt(company, role, resume_text, interview_round)
+
+    round_hint = ""
+    if interview_round:
+        round_hint = f" Tailor the briefing to the upcoming {interview_round} round."
 
     messages: list[dict[str, Any]] = [
         {"role": "system", "content": system_prompt},
         {
             "role": "user",
             "content": (
-                f"Research and prepare a complete interview briefing for {role} at {company}. "
+                f"Research and prepare a complete interview briefing for {role} at {company}.{round_hint} "
                 "Gather compensation data, interview process details, company intelligence, "
                 "and personalize everything based on my resume. Call finish() when ready."
             ),

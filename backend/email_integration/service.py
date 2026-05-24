@@ -613,6 +613,11 @@ async def _trigger_interview_prep(
     users = get_collection("users")
     user_doc = await users.find_one({"_id": _to_oid(user_id)}, {"resume_text": 1})
     resume_text = (user_doc or {}).get("resume_text", "")
+    app = await apps.find_one(
+        {"_id": _to_oid(app_id), "user_id": _to_oid(user_id)},
+        {"interview_round": 1},
+    )
+    interview_round = (app or {}).get("interview_round")
     try:
         async for event in run_agent(
             company=company,
@@ -620,6 +625,7 @@ async def _trigger_interview_prep(
             resume_text=resume_text,
             gemini_api_key=settings.gemini_api_key,
             exa_api_key=settings.exa_api_key,
+            interview_round=interview_round,
         ):
             if event.get("type") == "done":
                 await apps.update_one(
