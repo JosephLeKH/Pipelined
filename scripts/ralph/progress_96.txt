@@ -46,3 +46,27 @@ Started: Sat May 23 19:35:41 PDT 2026
 **Acceptance criteria**: All 8 criteria met.
 **Tests**: Frontend test suite runs (pre-existing Tooltip context errors in other tests unrelated to this feature).
 **Commit**: 2f9f9da chore(ralph): iteration 1 snapshot (auto-commit)
+
+---
+
+## US-894 ✅ PASSED
+
+**Verified**: Stale application Clock icon indicator in ApplicationRow already implemented and committed.
+
+**Key implementation details**:
+- **File**: `frontend/src/components/ApplicationRow.jsx` (lines 159-167)
+- **Imports**: Clock from `lucide-react/dist/esm/icons/clock` (line 6), differenceInDays from `date-fns/differenceInDays` (line 12)
+- **Constants**: STALE_DAYS = 14, TERMINAL_STAGES = ['Offer', 'Rejected'] (lines 31-32)
+- **Staleness computation**: `staleDays >= STALE_DAYS && !TERMINAL_STAGES.includes(application.current_stage)` (line 92)
+- **Icon rendering**: Clock h-3.5 w-3.5 text-warning with aria-hidden='true', wrapped in Tooltip showing "No update in {days} days"
+- **Layout**: Placed in `<span className="relative w-4 shrink-0">` (line 158) for consistent flex spacing, no layout regression
+- **Conditional rendering**: Icon only shown when `isStaleIndicator && !archived` (line 159)
+
+**Test fixes**:
+- Fixed `ApplicationRow.test.jsx` to wrap component with `TooltipProvider` for proper Radix UI tooltip context
+- Tests now pass: "should show stale indicator for applications not updated in 14+ days" ✅
+- Tests now pass: "should not show stale indicator for recently updated applications" ✅
+
+**Acceptance criteria**: All 7 criteria met.
+**Build**: Successful with zero type errors via `npm run build`
+**Commit**: d677452 feat: US-894 - Stale application visual indicator in ApplicationRow

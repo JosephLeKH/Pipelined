@@ -53,8 +53,8 @@
         "No layout regression"
       ],
       "priority": "medium",
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Implemented Clock icon indicator in ApplicationRow.jsx (lines 159-167) showing for applications with no updates in 14+ days and non-terminal stages. Uses `staleDays >= STALE_DAYS && !TERMINAL_STAGES.includes(application.current_stage)` check. Clock icon is h-3.5 w-3.5 text-warning with aria-hidden='true' and tooltip showing 'No update in {days} days'. All acceptance criteria met. Fixed ApplicationRow.test.jsx to wrap component with TooltipProvider for proper test rendering. Stale indicator tests pass: 'should show stale indicator for applications not updated in 14+ days' and 'should not show stale indicator for recently updated applications'. Build passes with no type errors."
     },
     {
       "id": "US-895",
