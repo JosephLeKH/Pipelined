@@ -191,3 +191,26 @@ async def test_send_due_morning_briefs_dedupes_by_local_date(brief_user):
 
     mock_email.assert_not_called()
     mock_notif.assert_not_called()
+
+
+@pytest.mark.asyncio(loop_scope="session")
+async def test_build_morning_brief_includes_watchlist_finds(brief_user):
+    await database.get_collection("pending_opportunities").insert_one({
+        "user_id": ObjectId(brief_user),
+        "job_listing_id": ObjectId(),
+        "match_score": 85,
+        "match_reason": "Watchlist fit",
+        "cover_letter": {"subject": "Hi", "body": "Body"},
+        "resume_tips": {"summary": "Tip", "bullet_suggestions": []},
+        "status": "pending",
+        "source": "watchlist",
+        "created_at": dt.datetime.now(dt.timezone.utc),
+        "reviewed_at": None,
+    })
+
+    brief = await build_morning_brief(brief_user)
+
+    assert len(brief.sections.watchlist_finds) == 1
+    item = brief.sections.watchlist_finds[0]
+    assert item.action_url == "/inbox/pending"
+    assert "1 new role" in item.body

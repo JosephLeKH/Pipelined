@@ -8,9 +8,10 @@ SECTION_BASE_SCORE: dict[str, float] = {
     "interviews": 800.0,
     "high_matches": 500.0,
     "pending_approvals": 400.0,
+    "watchlist_finds": 450.0,
 }
 
-SECTION_ORDER = ("follow_ups", "interviews", "high_matches", "pending_approvals")
+SECTION_ORDER = ("follow_ups", "interviews", "high_matches", "watchlist_finds", "pending_approvals")
 
 SCORE_PATTERN = re.compile(r"(?:Match|Fit) score (\d+)")
 
@@ -59,6 +60,12 @@ def _score_item(section: str, item: dict, index: int) -> tuple[float, str]:
     if section == "high_matches":
         fit = _parse_score(body) or 80
         return base + fit - index, f"Strong fit ({fit}%) — worth applying"
+
+
+    if section == "watchlist_finds":
+        count_match = re.search(r"(\d+) new", body)
+        count = int(count_match.group(1)) if count_match else 1
+        return base + count * 5 - index, f"Watchlist find ({count}) awaiting review"
 
     if section == "pending_approvals":
         match_score = _parse_score(body) or 70

@@ -9,6 +9,7 @@ def _sections(**kwargs: list[dict]) -> dict:
         "interviews": kwargs.get("interviews", []),
         "high_matches": kwargs.get("high_matches", []),
         "pending_approvals": kwargs.get("pending_approvals", []),
+        "watchlist_finds": kwargs.get("watchlist_finds", []),
     }
 
 
@@ -73,3 +74,19 @@ def test_score_missions_sorts_by_computed_score():
     assert missions[0].section == "interviews"
     assert missions[1].section == "pending_approvals"
     assert "Autopilot match (88%)" in missions[1].reason
+
+
+def test_score_missions_includes_watchlist_finds_with_inbox_link():
+    sections = _sections(
+        watchlist_finds=[{
+            "title": "Watchlist finds ready for review",
+            "body": "2 new roles from your watchlist",
+            "action_url": "/inbox/pending",
+        }],
+    )
+
+    missions = score_missions(sections)
+
+    assert missions[0].section == "watchlist_finds"
+    assert missions[0].action_url == "/inbox/pending"
+    assert "Watchlist find (2)" in missions[0].reason

@@ -41,6 +41,7 @@ class MorningBriefSections:
     interviews: list[BriefItem] = field(default_factory=list)
     high_matches: list[BriefItem] = field(default_factory=list)
     pending_approvals: list[BriefItem] = field(default_factory=list)
+    watchlist_finds: list[BriefItem] = field(default_factory=list)
 
 
 @dataclass
@@ -77,7 +78,7 @@ def _build_summary_line(sections: MorningBriefSections, pending_count: int = 0) 
 
 def _sections_to_dict(sections: MorningBriefSections) -> dict:
     return {key: [asdict(item) for item in getattr(sections, key)] for key in (
-        "follow_ups", "interviews", "high_matches", "pending_approvals",
+        "follow_ups", "interviews", "high_matches", "pending_approvals", "watchlist_finds",
     )}
 
 
@@ -87,6 +88,7 @@ def _sections_from_dict(data: dict) -> MorningBriefSections:
         interviews=[BriefItem(**item) for item in data.get("interviews", [])],
         high_matches=[BriefItem(**item) for item in data.get("high_matches", [])],
         pending_approvals=[BriefItem(**item) for item in data.get("pending_approvals", [])],
+        watchlist_finds=[BriefItem(**item) for item in data.get("watchlist_finds", [])],
     )
 
 
@@ -213,6 +215,24 @@ async def _fetch_pending_approvals(uid: ObjectId) -> list[BriefItem]:
     return items
 
 
+
+
+async def _fetch_watchlist_finds(uid: ObjectId) -> list[BriefItem]:
+    pending_col = get_collection("pending_opportunities")
+    count = await pending_col.count_documents({
+        "user_id": uid,
+        "status": "pending",
+        "source": "watchlist",
+    })
+    if count == 0:
+        return []
+    role_word = "role" if count == 1 else "roles"
+    return [BriefItem(
+        title="Watchlist finds ready for review",
+        body=f"{count} new {role_word} from your watchlist",
+        action_url="/inbox/pending",
+    )]
+
 async def build_morning_brief(user_id: str, local_date: str | None = None) -> MorningBrief:
     """Assemble morning brief sections for a user."""
     uid = ObjectId(user_id)
@@ -228,11 +248,12 @@ async def build_morning_brief(user_id: str, local_date: str | None = None) -> Mo
     today_start = dt.datetime.combine(today, dt.time.min, tzinfo=dt.timezone.utc)
     lookahead = today + dt.timedelta(days=INTERVIEW_LOOKAHEAD_DAYS)
 
-    follow_ups, interviews, high_matches, pending_approvals, pending_count = await asyncio.gather(
+    follow_ups, interviews, high_matches, pending_approvals, watchlist_finds, pending_count = await asyncio.gather(
         _fetch_follow_ups(uid, today_start),
         _fetch_interviews(uid, today, lookahead),
         _fetch_high_matches(uid),
         _fetch_pending_approvals(uid),
+        _fetch_watchlist_finds(uid),
         _count_pending_approvals(uid),
     )
     sections = MorningBriefSections(
@@ -240,6 +261,7 @@ async def build_morning_brief(user_id: str, local_date: str | None = None) -> Mo
         interviews=interviews,
         high_matches=high_matches,
         pending_approvals=pending_approvals,
+        watchlist_finds=watchlist_finds,
     )
     return MorningBrief(
         user_id=user_id,
