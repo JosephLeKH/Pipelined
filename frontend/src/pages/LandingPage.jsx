@@ -3,12 +3,16 @@
 import { useEffect, useRef } from "react";
 import { Link, Navigate } from "react-router-dom";
 
-import BarChart2 from "lucide-react/dist/esm/icons/bar-chart-2";
 import Bell from "lucide-react/dist/esm/icons/bell";
+import BookOpen from "lucide-react/dist/esm/icons/book-open";
 import BriefcaseIcon from "lucide-react/dist/esm/icons/briefcase";
 import CalendarIcon from "lucide-react/dist/esm/icons/calendar";
 import GitBranch from "lucide-react/dist/esm/icons/git-branch";
+import Mail from "lucide-react/dist/esm/icons/mail";
+import Radar from "lucide-react/dist/esm/icons/radar";
 import SearchIcon from "lucide-react/dist/esm/icons/search";
+import Sparkles from "lucide-react/dist/esm/icons/sparkles";
+import Sun from "lucide-react/dist/esm/icons/sun";
 import ZapIcon from "lucide-react/dist/esm/icons/zap";
 
 import { useAuth } from "../context/AuthContext";
@@ -23,10 +27,34 @@ const FEATURES = [
       "Capture job details from LinkedIn, Greenhouse, Lever, Ashby, and Workday in one click — no copy-paste.",
   },
   {
-    icon: BarChart2,
-    title: "AI Resume Scoring",
+    icon: Sun,
+    title: "Morning Brief",
     description:
-      "See how well your resume matches each role. GPT-powered fit scores surface the best opportunities.",
+      "Start each day with a personalized digest of follow-ups due, interviews ahead, and high-fit matches — you decide what to act on.",
+  },
+  {
+    icon: Radar,
+    title: "Autopilot",
+    description:
+      "Nightly scan of curated listings scored against your resume. Review matches and approve before anything enters your pipeline.",
+  },
+  {
+    icon: Sparkles,
+    title: "Resume Insights",
+    description:
+      "Paste a job description to get keyword gaps, section suggestions, and bullet rewrites — suggest-only, your resume file is never modified.",
+  },
+  {
+    icon: BookOpen,
+    title: "Interview Prep Agent",
+    description:
+      "On-demand company and role research with talking points. You review the briefing before every interview.",
+  },
+  {
+    icon: Mail,
+    title: "Gmail Sync",
+    description:
+      "Read-only inbox sync auto-tracks confirmations and status updates. No emails are sent on your behalf.",
   },
   {
     icon: BriefcaseIcon,

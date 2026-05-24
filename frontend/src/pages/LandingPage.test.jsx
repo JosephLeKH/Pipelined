@@ -51,6 +51,17 @@ describe("LandingPage", () => {
     expect(screen.getByText("Pipeline Dashboard")).toBeInTheDocument();
   });
 
+  it("should render AI feature highlights with assistive copy", () => {
+    render(<LandingPage />, { wrapper: makeWrapper() });
+
+    expect(screen.getByText("Morning Brief")).toBeInTheDocument();
+    expect(screen.getByText("Autopilot")).toBeInTheDocument();
+    expect(screen.getByText("Resume Insights")).toBeInTheDocument();
+    expect(screen.getByText("Interview Prep Agent")).toBeInTheDocument();
+    expect(screen.getByText("Gmail Sync")).toBeInTheDocument();
+    expect(screen.queryByText(/GPT-powered/i)).not.toBeInTheDocument();
+  });
+
   it("should render One-Click Chrome Extension feature highlight", () => {
     render(<LandingPage />, { wrapper: makeWrapper() });
 
