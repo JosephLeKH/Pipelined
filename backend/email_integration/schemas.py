@@ -19,7 +19,7 @@ class GmailConnectionStatus(BaseModel):
     status_updates_count: int = 0
     auto_track: bool = True
     status_updates: bool = True
-    interview_prep: bool = False
+    interview_prep: bool = True
 
 
 class EmailAutomationSettings(BaseModel):

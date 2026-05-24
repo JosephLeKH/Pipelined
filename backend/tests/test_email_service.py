@@ -198,3 +198,9 @@ async def test_sync_emails_adds_new_ids_to_processed(app):  # noqa: ARG001
     processed_ids = updated_user.get("gmail_processed_ids", [])
     assert "msg_new1" in processed_ids
     assert "msg_new2" in processed_ids
+
+
+def test_get_connection_status_interview_prep_default_true():
+    """Unset gmail_interview_prep should default to True."""
+    result = get_connection_status({})
+    assert result["interview_prep"] is True

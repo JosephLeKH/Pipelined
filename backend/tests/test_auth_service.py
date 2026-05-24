@@ -114,6 +114,12 @@ async def test_create_user_inserts_with_default_stages(app):
     assert "_id" in doc
 
 
+
+async def test_create_user_defaults_gmail_interview_prep_true(app):
+    doc = await create_user("gmail-prep@example.com", "TestPass123!", "Gmail Prep User")
+    assert doc.get("gmail_interview_prep") is True
+
+
 async def test_create_user_stores_hashed_password_not_plaintext(app):
     # Act
     doc = await create_user("hash@example.com", "TestPass123!", "Hash User")

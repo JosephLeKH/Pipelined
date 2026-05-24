@@ -18,6 +18,7 @@ from auth.constants import (
     DEFAULT_STAGES,
     DEFAULT_TIMEZONE,
     DEFAULT_WEEKLY_DIGEST_ENABLED,
+    DEFAULT_GMAIL_INTERVIEW_PREP,
 )
 from config import settings
 from database import get_collection
@@ -93,6 +94,7 @@ async def get_or_create_google_user(
         "autopilot_enabled": DEFAULT_AUTOPILOT_ENABLED,
         "autopilot_min_match_score": DEFAULT_AUTOPILOT_MIN_MATCH_SCORE,
         "autopilot_max_daily": DEFAULT_AUTOPILOT_MAX_DAILY,
+        "gmail_interview_prep": DEFAULT_GMAIL_INTERVIEW_PREP,
         "email_verified": True,
         "created_at": datetime.now(timezone.utc),
     }
@@ -183,6 +185,7 @@ async def _insert_github_user(
         "autopilot_enabled": DEFAULT_AUTOPILOT_ENABLED,
         "autopilot_min_match_score": DEFAULT_AUTOPILOT_MIN_MATCH_SCORE,
         "autopilot_max_daily": DEFAULT_AUTOPILOT_MAX_DAILY,
+        "gmail_interview_prep": DEFAULT_GMAIL_INTERVIEW_PREP,
         "email_verified": True,
         "created_at": datetime.now(timezone.utc),
     }
