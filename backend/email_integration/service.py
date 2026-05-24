@@ -58,6 +58,8 @@ STAGE_ORDER: dict[str, int] = {
     "Rejected": 6,
 }
 
+PROCESSED_IDS_LIMIT = 500
+
 
 class GmailOAuthError(Exception):
     """Raised when Gmail OAuth flow fails."""
@@ -461,18 +463,30 @@ async def sync_emails(user: dict) -> dict:
 
     messages = resp.json().get("messages", [])
 
+    users = get_collection("users")
+    user_fresh = await users.find_one({"_id": user["_id"]}, {"gmail_processed_ids": 1})
+    already_processed: set[str] = set((user_fresh or {}).get("gmail_processed_ids", []))
+
+    new_messages = [m for m in messages if m["id"] not in already_processed]
+
     created = 0
     updated = 0
-    for msg in messages:
+    for msg in new_messages:
         msg_created, msg_updated = await _process_message(user, access_token, msg["id"])
         if msg_created:
             created += 1
         if msg_updated:
             updated += 1
 
-    processed = len(messages)
+    processed = len(new_messages)
 
-    users = get_collection("users")
+    if new_messages:
+        new_ids = [m["id"] for m in new_messages]
+        await users.update_one(
+            {"_id": user["_id"]},
+            {"$push": {"gmail_processed_ids": {"$each": new_ids, "$slice": -PROCESSED_IDS_LIMIT}}},
+        )
+
     await users.update_one(
         {"_id": user["_id"]},
         {
