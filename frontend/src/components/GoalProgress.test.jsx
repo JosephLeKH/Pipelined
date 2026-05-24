@@ -4,6 +4,7 @@ import { render, screen } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { MemoryRouter } from "react-router-dom";
 import { describe, it, expect, beforeAll, afterAll, afterEach, vi } from "vitest";
 
 import GoalProgress from "./GoalProgress";
@@ -41,7 +42,11 @@ function makeWrapper() {
     defaultOptions: { queries: { retry: false } },
   });
   return function Wrapper({ children }) {
-    return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+    return (
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter>{children}</MemoryRouter>
+      </QueryClientProvider>
+    );
   };
 }
 
