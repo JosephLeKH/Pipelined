@@ -10,6 +10,7 @@ ValidCompanyType = Literal["startup", "mid", "enterprise", "gov", "nonprofit", "
 ValidRemoteStatus = Literal["remote", "hybrid", "onsite", "unknown"]
 ValidSortField = Literal["date_applied", "company", "current_stage", "updated_at", "follow_up_date"]
 ValidSortOrder = Literal["asc", "desc"]
+ValidInterviewRound = Literal["phone", "technical", "hm", "onsite", "final"]
 
 DEFAULT_QUERY_LIMIT = 25
 MAX_QUERY_LIMIT = 100
@@ -63,6 +64,7 @@ class ApplicationCreate(BaseModel):
     page_text: str | None = Field(None, max_length=MAX_PAGE_TEXT_LENGTH)
     job_description: str | None = Field(None, max_length=MAX_JOB_DESCRIPTION_LENGTH)
     custom_fields: dict[str, str | int | bool | list[str]] | None = None
+    interview_round: ValidInterviewRound | None = None
 
 
 MAX_OFFER_TEXT_FIELD_LENGTH = 500
@@ -121,6 +123,7 @@ class ApplicationUpdate(BaseModel):
     custom_fields: dict[str, str | int | bool | list[str]] | None = None
     documents: dict[str, Document] | None = None  # resume and cover_letter
     prep_checklist: list[PrepChecklistItem] | None = Field(None, max_length=MAX_PREP_CHECKLIST_ITEMS)
+    interview_round: ValidInterviewRound | None = None
 
 
 class ResumeInsights(BaseModel):
@@ -182,6 +185,7 @@ class ApplicationResponse(BaseModel):
     interview_prep_generated_at: datetime | None = None
     interview_prep_status: str | None = None
     interview_prep_triggered_at: datetime | None = None
+    interview_round: str | None = None
     parse_enhanced: bool | None = None
 
     @classmethod

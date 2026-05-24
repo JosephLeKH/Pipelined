@@ -26,7 +26,7 @@ from applications.service import create as create_application
 from applications.service import update as update_application
 from config import settings
 from database import get_collection
-from email_integration.classifier import GmailTransientError, classify_email
+from email_integration.classifier import GmailTransientError, classify_email, normalize_interview_round
 from email_integration.email_events import log_email_event
 from email_integration.offer_parser import extract_offer_details
 
@@ -381,6 +381,15 @@ async def _find_existing_app(user_id: str, company: str, role_title: str) -> dic
     return await apps.find_one(query)
 
 
+def _application_update_from_classify(stage: str, result: dict) -> ApplicationUpdate:
+    """Build an ApplicationUpdate from classifier output, including interview_round when present."""
+    interview_round = normalize_interview_round(result.get("interview_round"))
+    kwargs: dict = {"current_stage": stage}
+    if interview_round:
+        kwargs["interview_round"] = interview_round
+    return ApplicationUpdate(**kwargs)  # type: ignore[call-arg]
+
+
 async def _process_message(
     user: dict, access_token: str, message_id: str
 ) -> tuple[bool, bool]:
@@ -423,6 +432,7 @@ async def _process_message(
     company: str = result.get("company", "")
     role_title: str = result.get("role_title") or ""
     stage = STAGE_MAP.get(result.get("stage", "Applied"), "Applied")
+    interview_round = normalize_interview_round(result.get("interview_round"))
 
     if not company:
         return False, False
@@ -450,7 +460,7 @@ async def _process_message(
 
         # Only update if new stage is >= existing stage (or existing stage unknown)
         if existing_stage not in STAGE_ORDER or new_stage_order >= existing_stage_order:
-            app_update = ApplicationUpdate(current_stage=stage)  # type: ignore[call-arg]
+            app_update = _application_update_from_classify(stage, result)
             await update_application(user_id, app_id, app_update)
             logger.info(
                 "application_stage_updated_via_email",
@@ -517,6 +527,7 @@ async def _process_message(
             role_title=role_title or None,
             source="email",
             current_stage=stage if stage != "Applied" else None,
+            interview_round=interview_round,
         )
         new_app = await create_application(user_id, app_body)
         if new_app:

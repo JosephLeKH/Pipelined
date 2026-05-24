@@ -18,6 +18,7 @@ CLASSIFY_RESULT = {
     "company": "Acme Corp",
     "role_title": "Software Engineer",
     "stage": "Interview",
+    "interview_round": "technical",
 }
 
 
@@ -107,6 +108,9 @@ async def test_process_message_logs_email_event_on_stage_update(app):  # noqa: A
     assert event["type"] == "stage_updated"
     assert event["stage"] == "Interviewing"
     assert "body" not in event
+
+    updated_app = await apps_col.find_one({"_id": ObjectId(app_id)})
+    assert updated_app["interview_round"] == "technical"
 
 
 async def test_email_events_query_scoped_by_user_id(app):  # noqa: ARG001

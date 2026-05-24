@@ -20,6 +20,8 @@ CLASSIFIER_TIMEOUT_SECONDS = 8.0
 CLASSIFIER_RETRY_ATTEMPTS = 2
 CLASSIFIER_RETRY_BACKOFF_SECONDS = 1.0
 
+VALID_INTERVIEW_ROUNDS = frozenset({"phone", "technical", "hm", "onsite", "final"})
+
 
 class GmailTransientError(Exception):
     """Raised when the email classifier fails transiently after all retries."""
@@ -32,11 +34,22 @@ SYSTEM_PROMPT = (
     "If job-related, extract:\n"
     "- company: the hiring company name (string)\n"
     "- role_title: the job title/position (string, or null if unclear)\n"
-    "- stage: one of 'Applied', 'Assessment', 'Phone Screen', 'Interview', 'Offer', 'Rejected'\n\n"
+    "- stage: one of 'Applied', 'Assessment', 'Phone Screen', 'Interview', 'Offer', 'Rejected'\n"
+    "- interview_round: when stage is 'Phone Screen' or 'Interview', one of "
+    "'phone', 'technical', 'hm', 'onsite', 'final' (or null if unclear)\n\n"
     "Return ONLY valid JSON with no markdown fences. Examples:\n"
     '{"job_related": false}\n'
-    '{"job_related": true, "company": "Google", "role_title": "Software Engineer Intern", "stage": "Interview"}'
+    '{"job_related": true, "company": "Google", "role_title": "Software Engineer Intern", '
+    '"stage": "Interview", "interview_round": "technical"}'
 )
+
+
+def normalize_interview_round(value: str | None) -> str | None:
+    """Return a validated interview_round slug or None."""
+    if not value:
+        return None
+    normalized = value.strip().lower()
+    return normalized if normalized in VALID_INTERVIEW_ROUNDS else None
 
 
 def _parse_classifier_response(content: str) -> dict | None:

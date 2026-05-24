@@ -10,6 +10,7 @@ pytestmark = pytest.mark.asyncio(loop_scope="session")
 from email_integration.classifier import (
     GmailTransientError,
     classify_email,
+    normalize_interview_round,
 )
 
 
@@ -154,3 +155,36 @@ class TestClassifyEmail:
 
                 result = await classify_email("Subject", "Body")
                 assert result is None
+
+
+class TestNormalizeInterviewRound:
+    """Tests for interview_round normalization."""
+
+    def test_normalize_interview_round_valid_values(self):
+        assert normalize_interview_round("technical") == "technical"
+        assert normalize_interview_round("Phone") == "phone"
+        assert normalize_interview_round("FINAL") == "final"
+
+    def test_normalize_interview_round_invalid_returns_none(self):
+        assert normalize_interview_round("behavioral") is None
+        assert normalize_interview_round("") is None
+        assert normalize_interview_round(None) is None
+
+    async def test_classify_email_returns_interview_round(self):
+        with patch("email_integration.classifier.settings") as mock_settings:
+            mock_settings.openrouter_api_key = "or-key"
+            mock_settings.gemini_api_key = ""
+            with patch(
+                "email_integration.classifier.complete_json",
+                new_callable=AsyncMock,
+                return_value={
+                    "job_related": True,
+                    "company": "Acme",
+                    "role_title": "Engineer",
+                    "stage": "Interview",
+                    "interview_round": "hm",
+                },
+            ):
+                result = await classify_email("HM interview", "Meet the hiring manager")
+
+        assert result["interview_round"] == "hm"
