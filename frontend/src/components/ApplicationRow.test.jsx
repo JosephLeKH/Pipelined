@@ -4,6 +4,7 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 import ApplicationRow from "./ApplicationRow";
+import { TooltipProvider } from "./ui/tooltip";
 
 const NOW_ISO = "2026-04-15T00:00:00Z";
 const FRESH_ISO = "2026-04-13T00:00:00Z"; // 2 days ago — not stale
@@ -35,7 +36,11 @@ function renderRow(overrides = {}) {
     hasSelection: false,
     ...overrides,
   };
-  render(<ApplicationRow {...props} />);
+  render(
+    <TooltipProvider>
+      <ApplicationRow {...props} />
+    </TooltipProvider>
+  );
   return props;
 }
 
