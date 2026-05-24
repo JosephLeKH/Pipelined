@@ -1,0 +1,88 @@
+{
+  "id": "prd_96",
+  "title": "Agentic Follow-Up Drafts, Stale Indicators & Remaining Test Coverage",
+  "description": "Extend the agentic system with an AI-powered follow-up email drafting feature for stale applications. Add stale visual indicators to ApplicationRow. Complete test coverage for interview prep router and email deduplication. These stories bring the agentic loop closer to full autopilot: track → follow up → interview prep.",
+  "userStories": [
+    {
+      "id": "US-892",
+      "title": "Backend — follow-up email draft endpoint",
+      "description": "Add a new endpoint `POST /api/applications/{app_id}/follow-up-draft` that uses Gemini to draft a professional follow-up email for a stale application.\n\n**Where to add it**: In `backend/applications/interview_prep/router.py` (same router module, since it's also an AI-powered endpoint for a single application). Alternatively add to a new file `backend/applications/followup/router.py` — but prefer adding to interview_prep/router.py to avoid creating new files.\n\n**Implementation**:\n\n1. Add a new route in `backend/applications/interview_prep/router.py`:\n   ```python\n   @router.post(\"/{app_id}/follow-up-draft\")\n   @limiter.limit(\"5/hour\")\n   async def generate_follow_up_draft(\n       request: Request,  # noqa: ARG001\n       app_id: str,\n       user: dict = Depends(get_current_user),\n   ) -> dict:\n   ```\n\n2. Fetch the application (use the existing `_get_application` helper). Extract `company`, `role_title`, `current_stage`, `date_applied`.\n\n3. If no `settings.gemini_api_key`, raise `HTTPException(status_code=503, detail='AI features not configured')`.\n\n4. Build a prompt and call Gemini via `AsyncOpenAI` with the same pattern used in `classifier.py`:\n   - `GEMINI_BASE_URL = 'https://generativelanguage.googleapis.com/v1beta/openai/'`\n   - `GEMINI_MODEL = 'gemini-2.0-flash'`\n   - System prompt: `'You are a professional job-search assistant. Write a short, polite follow-up email for a job application. Return ONLY valid JSON with keys: subject (string), body (string). Body should be 3-4 sentences, professional, and not desperate.'`\n   - User message: `f'Company: {company}\\nRole: {role_title}\\nCurrent stage: {current_stage}\\nApplied: {date_applied_str}'`\n   - `temperature=0.7, max_tokens=300`\n\n5. Parse JSON response, strip markdown fences with `re.sub` (same pattern as classifier.py). Return `{\"data\": {\"subject\": ..., \"body\": ...}}`.\n\n6. On any exception (timeout, JSON error), raise `HTTPException(status_code=502, detail='Draft generation failed')`.\n\n7. Add `import re` and `import asyncio` if not already in the file. The `AsyncOpenAI` import can be reused from `email_integration/classifier.py`'s pattern — add `from openai import AsyncOpenAI` to the interview_prep/router.py imports.\n\n8. Wrap the Gemini call in `asyncio.wait_for(..., timeout=10.0)`. Add constant `FOLLOWUP_TIMEOUT_SECONDS = 10.0` at module scope.\n\n**Response envelope** (per project API contract):\n```json\n{\"data\": {\"subject\": \"Following up on my application\", \"body\": \"Dear Hiring Team, ...\"}}\n```\n\nIMPORTANT: Do NOT put business logic in the router. But since this is a thin AI call (no DB writes, no domain service), adding it directly in the router file is acceptable per the project's existing pattern for interview prep.",
+      "acceptanceCriteria": [
+        "POST /{app_id}/follow-up-draft route added to interview_prep/router.py",
+        "@limiter.limit('5/hour') rate limit applied",
+        "Fetches application using existing _get_application helper",
+        "Calls Gemini via AsyncOpenAI with system+user prompts",
+        "Returns {data: {subject, body}} in envelope format",
+        "Raises 503 when gemini_api_key missing, 502 on AI failure",
+        "FOLLOWUP_TIMEOUT_SECONDS = 10.0 constant at module scope",
+        "All existing tests still pass"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-893",
+      "title": "Frontend — 'Draft follow-up' button in DetailPanel",
+      "description": "Add a 'Draft follow-up email' button to the application detail panel, visible when the application is stale (no update in 14+ days) and stage is 'Applied' or 'Phone Screen'.\n\n**Where**: Find the detail panel component. Search for `DetailPanel` or `DetailPanelBody` in `frontend/src/components/`. The prep section is likely in `frontend/src/components/DetailPanel.jsx` or similar.\n\n**Implementation**:\n\n1. Add an API function in `frontend/src/api/applications.js` (or wherever email-related API calls live):\n   ```javascript\n   export async function generateFollowUpDraft(appId) {\n     const res = await apiClient.post(`/api/applications/${appId}/follow-up-draft`);\n     return res.data.data;\n   }\n   ```\n\n2. In the detail panel component, determine staleness: `const isStale = application.updated_at && daysSince(application.updated_at) >= 14` where `daysSince` computes days elapsed. Use `date-fns/differenceInDays` (import from `date-fns/differenceInDays`).\n\n3. Show the button only when `isStale && ['Applied', 'Phone Screen'].includes(application.current_stage)`. Position it in the action area below the stage selector or in the notes section.\n\n4. Button label: `'Draft follow-up'` with a `Mail` icon (import from `lucide-react/dist/esm/icons/mail`). Use existing button styling (e.g., `variant='outline' size='sm'`).\n\n5. On click: call `generateFollowUpDraft(application.id)`, show a loading state on the button, then display the result in a collapsible block below the button:\n   - Subject line: `<p className='font-medium text-sm'>{draft.subject}</p>`\n   - Body: `<pre className='text-xs text-muted-foreground whitespace-pre-wrap mt-1'>{draft.body}</pre>`\n   - Copy button: `'Copy'` button that copies `\\`Subject: ${draft.subject}\\n\\n${draft.body}\\`` to clipboard via `navigator.clipboard.writeText`\n\n6. Handle error: if the API call fails, show `toast.error('Could not generate draft — try again')` using `sonner`.\n\n7. Store the draft in local component state (useState) — no need for React Query here since it's a one-off generation per click.\n\n**Important**: Use direct lucide-react subpath imports. Use existing Tailwind classes. Do not create new component files — add to the existing detail panel component.",
+      "acceptanceCriteria": [
+        "generateFollowUpDraft API function added in frontend api layer",
+        "'Draft follow-up' button visible only for stale (14+ days) Applied/Phone Screen applications",
+        "Mail icon from lucide-react/dist/esm/icons/mail",
+        "On click: loading state → displays subject + body in expandable block",
+        "Copy button copies full email to clipboard",
+        "Error handled with toast.error",
+        "Direct lucide subpath imports used",
+        "No new component files created"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-894",
+      "title": "Stale application visual indicator in ApplicationRow",
+      "description": "Add a subtle visual indicator to `frontend/src/components/ApplicationRow.jsx` when an application is stale (no update in 14+ days) and is not in a terminal stage (not 'Offer' or 'Rejected').\n\n**Implementation**:\n\n1. Import `Clock` from `lucide-react/dist/esm/icons/clock`.\n\n2. Compute staleness: `const STALE_DAYS = 14; const isStale = ...` — check `application.updated_at` with `differenceInDays(new Date(), new Date(application.updated_at)) >= STALE_DAYS`. Import `differenceInDays` from `date-fns/differenceInDays`.\n\n3. Define terminal stages: `const TERMINAL_STAGES = ['Offer', 'Rejected']`.\n\n4. Show a `Clock` icon with tooltip when `isStale && !TERMINAL_STAGES.includes(application.current_stage)`:\n   ```jsx\n   <Tooltip>\n     <TooltipTrigger asChild>\n       <Clock className='h-3.5 w-3.5 text-warning' aria-hidden='true' />\n     </TooltipTrigger>\n     <TooltipContent>No update in {days} days</TooltipContent>\n   </Tooltip>\n   ```\n   where `days` is the computed number of days since `updated_at`.\n\n5. Place the icon near the other status indicators (Sparkles badge, email tooltip area — check the existing JSX layout to find the right spot in the info row).\n\n6. Use `STALE_DAYS = 14` as a named constant (not a magic number).\n\n7. Add `date-fns/differenceInDays` import — check if date-fns is already used elsewhere in the file (it might be). If not, import from the date-fns package directly.\n\nIMPORTANT: Do not change the row layout in a way that causes layout shift. The icon should fit in existing flex space.",
+      "acceptanceCriteria": [
+        "Clock icon visible on rows with updated_at >= 14 days ago and non-terminal stage",
+        "Clock icon has Tooltip with 'No update in X days' text",
+        "Clock icon is text-warning h-3.5 w-3.5 aria-hidden='true'",
+        "STALE_DAYS = 14 named constant (not magic number)",
+        "Terminal stages (Offer, Rejected) never show stale indicator",
+        "Direct import: lucide-react/dist/esm/icons/clock",
+        "No layout regression"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-895",
+      "title": "Test suite for interview prep router",
+      "description": "Create `backend/tests/test_interview_prep_router.py` with HTTP-level tests for the interview prep SSE endpoint and follow-up draft endpoint.\n\nRequired tests:\n\n1. `test_interview_prep_stream_unauthenticated` — GET `/api/applications/507f1f77bcf86cd799439011/interview-prep` without auth. Assert 401.\n\n2. `test_interview_prep_stream_app_not_found` — GET `/api/applications/507f1f77bcf86cd799439011/interview-prep` as authenticated user (the app belongs to a different user or doesn't exist). Assert 404.\n\n3. `test_interview_prep_stream_no_api_key` — GET `/api/applications/{test_app_id}/interview-prep` as `test_user`, with `settings.gemini_api_key = ''` patched. Assert 503.\n\n4. `test_interview_prep_stream_no_company` — Create an application with no `company` field (or empty string). Call the endpoint. Assert 422.\n\n5. `test_follow_up_draft_unauthenticated` — POST `/api/applications/{app_id}/follow-up-draft` without auth. Assert 401.\n\n6. `test_follow_up_draft_no_api_key` — POST `/api/applications/{test_app_id}/follow-up-draft` as `test_user`, with `settings.gemini_api_key = ''` patched. Assert 503.\n\nFor tests 3 and 6, patch `settings.gemini_api_key` using `unittest.mock.patch.object`:\n```python\nfrom unittest.mock import patch\nfrom config import settings\n\nwith patch.object(settings, 'gemini_api_key', ''):\n    resp = await client.get(..., cookies=cookies)\n    assert resp.status_code == 503\n```\n\nFor test 4, create an application without a company field directly:\n```python\nfrom database import get_collection\nfrom bson import ObjectId\napp_id = str((await get_collection('applications').insert_one({'user_id': ObjectId(user['id']), 'company': '', 'role_title': 'SWE', 'source': 'manual'})).inserted_id)\n```\n\nUse `test_user` and `test_app_id` fixtures from conftest. Use `as_user(client, cookies)` for authenticated requests.\n\nAll tests use `@pytest.mark.asyncio`.",
+      "acceptanceCriteria": [
+        "File created at backend/tests/test_interview_prep_router.py",
+        "6 tests covering: unauthenticated prep, app not found, no API key prep, no company, unauthenticated draft, no API key draft",
+        "settings.gemini_api_key patched using patch.object",
+        "All tests pass with pytest tests/test_interview_prep_router.py"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-896",
+      "title": "Test for email deduplication (sync_emails skips processed IDs)",
+      "description": "Add tests to `backend/tests/test_email_service.py` (append to the existing file created in US-890) that verify the deduplication behavior added in US-888.\n\nIf `test_email_service.py` does not exist yet (US-890 may not have run), create it. If it exists, append the new tests.\n\nRequired new tests:\n\n1. `test_sync_emails_skips_already_processed_ids` — verify that `sync_emails` skips messages already in `gmail_processed_ids`. Approach:\n   - Insert a user document into the `users` collection with `gmail_access_token='tok'`, `gmail_processed_ids=['msg1', 'msg2']`.\n   - Mock `_get_valid_access_token` to return `'tok'`.\n   - Mock the `httpx.AsyncClient.get` calls to return: first call (message list) returns `{\"messages\": [{\"id\": \"msg1\"}, {\"id\": \"msg3\"}]}` (msg1 already processed, msg3 is new); second call (message detail for msg3) returns a non-200 status to skip processing.\n   - Call `sync_emails(user_doc)` with the inserted user.\n   - Assert the returned `emails_processed == 1` (only msg3, not msg1).\n   - Assert `gmail_processed_ids` in the user document now includes `'msg3'`.\n\n2. `test_sync_emails_adds_new_ids_to_processed` — verify that new message IDs are persisted. Use similar mock setup but return 2 new message IDs (not in already_processed). Assert both appear in `gmail_processed_ids` after sync.\n\nUse `unittest.mock.patch` and `AsyncMock` to mock `httpx.AsyncClient` methods. Import `sync_emails` from `email_integration.service`.\n\nFor the httpx mock:\n```python\nfrom unittest.mock import AsyncMock, MagicMock, patch\n\nmock_list_resp = MagicMock()\nmock_list_resp.status_code = 200\nmock_list_resp.json.return_value = {\"messages\": [{\"id\": \"msg3\"}]}\n\nmock_detail_resp = MagicMock()\nmock_detail_resp.status_code = 404  # skip processing\n\nmock_client = AsyncMock()\nmock_client.__aenter__.return_value.get = AsyncMock(side_effect=[mock_list_resp, mock_detail_resp])\n\nwith patch('httpx.AsyncClient', return_value=mock_client):\n    with patch('email_integration.service._get_valid_access_token', return_value='tok'):\n        result = await sync_emails(user_doc)\n```\n\nAll tests use `@pytest.mark.asyncio`.",
+      "acceptanceCriteria": [
+        "2 new deduplication tests added (append to test_email_service.py or create if missing)",
+        "Tests verify: already-processed IDs are skipped, new IDs persisted to DB",
+        "httpx.AsyncClient mocked with AsyncMock",
+        "All tests pass with pytest tests/test_email_service.py"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}
