@@ -110,3 +110,26 @@ Created comprehensive test suite for email service core functions (`backend/emai
 **Commit**: 268c001 - feat: US-890 - Test suite for email service core functions
 
 **Learning**: Database-backed tests with real MongoDB require careful fixture management. The `test_user` fixture from conftest creates a user with ObjectId, allowing subsequent queries to work correctly. Pure-function tests (status reporting, config validation) are most valuable when they test system invariants (STAGE_MAP coverage of STAGE_ORDER) rather than just return values, catching regressions early.
+
+## US-891 - Test suite for email router endpoints
+**Status**: ✅ COMPLETED
+
+**Summary**:
+Created comprehensive HTTP-level test suite for email integration router endpoints. Tests cover authentication requirements (JWT cookies), Gmail connection checks, and response formats across 5 distinct endpoints using FastAPI test client.
+
+**Changes**:
+- Created `backend/tests/test_email_router.py` with 6 HTTP-level integration tests
+- Tests cover all 5 email endpoints: GET /api/email/status, GET /api/email/auth, POST /api/email/sync, DELETE /api/email/disconnect, PATCH /api/email/settings
+- Used `client` and `test_user` fixtures from conftest with `as_user` and `as_anonymous` context managers for request authentication
+- Tests verify: authentication requirements (401 when unauthenticated), Gmail connection checks (400 with GMAIL_NOT_CONNECTED when no token), and successful response structure
+
+**Testing**:
+- All 6 tests pass: 100% success rate
+- Pyright type checking: 0 errors
+- All 185+ existing backend tests continue to pass
+- Tests use real AsyncClient from httpx, not mocks
+- Fixture-based approach ensures test isolation and proper cleanup
+
+**Commit**: 4c67b88 - feat: US-891 - Test suite for email router endpoints
+
+**Learning**: Email router endpoints return responses directly (dict/Pydantic model) without wrapping in {"data": ...} envelope, unlike the applications router. This asymmetry required examining actual endpoint implementations to determine correct assertion patterns. The test patterns follow conftest conventions: `as_user(client, cookies)` context manager for authenticated requests, proper status code assertion, and direct response.json() access. Tests catch both authentication layer (JWT/cookies) and business logic layer (Gmail connection state) failures.
