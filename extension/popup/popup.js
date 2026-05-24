@@ -129,6 +129,27 @@ function renderSaveItem(s) {
   return item;
 }
 
+export function renderApplyHints(saves) {
+  const section = document.getElementById("apply-hints");
+  const list = document.getElementById("hints-list");
+  if (!section || !list) return;
+
+  const hintsSave = saves.find((s) => Array.isArray(s.talking_points) && s.talking_points.length > 0);
+  if (!hintsSave) {
+    section.classList.add("hidden");
+    list.replaceChildren();
+    return;
+  }
+
+  section.classList.remove("hidden");
+  list.replaceChildren();
+  hintsSave.talking_points.forEach((point) => {
+    const item = document.createElement("li");
+    item.textContent = point;
+    list.appendChild(item);
+  });
+}
+
 export function renderSaves(saves) {
   const list = document.getElementById("saves-list");
   const emptyState = document.getElementById("empty-state");
@@ -216,6 +237,7 @@ export async function init() {
     console.error("[popup] Failed to read recent_saves:", err);
   }
   renderSaves(recent_saves);
+  renderApplyHints(recent_saves);
   show("authenticated");
   await renderAutoSaveToggle();
 }

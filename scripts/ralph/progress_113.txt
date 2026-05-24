@@ -9,3 +9,11 @@ Started: Sat May 23 2026
 **Testing:** `pytest tests/test_apply_pack.py -v` — 5 passed
 
 ---
+
+## US-975: ApplyPackSection in detail panel ✅ COMPLETE
+
+**Implementation:** ApplyPackSection.jsx with AiSection, Generate CTA, copy buttons per field, getAiToastError for 429; wired into DetailPanelBody.
+
+**Testing:** `npm run test -- --run src/components/ApplyPackSection.test.jsx src/components/DetailPanelBody.test.jsx` — 4 passed; `npm run build` — ok
+
+---

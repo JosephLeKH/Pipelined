@@ -109,8 +109,16 @@ async function fetchWithAuth(path, options = {}, _retried = false) {
 
 async function cacheRecentSave(application) {
   try {
+    const entry = {
+      id: application.id,
+      company: application.company ?? "",
+      role_title: application.role_title ?? "",
+      stage: application.current_stage ?? application.stage ?? "Applied",
+      date_applied: application.date_applied,
+      talking_points: application.apply_pack?.talking_points ?? application.talking_points ?? [],
+    };
     const { recent_saves = [] } = await chrome.storage.local.get("recent_saves");
-    const updated = [application, ...recent_saves].slice(0, MAX_RECENT);
+    const updated = [entry, ...recent_saves.filter((s) => s.id !== entry.id)].slice(0, MAX_RECENT);
     await chrome.storage.local.set({ recent_saves: updated });
   } catch (err) {
     console.error("[background] Failed to cache recent save in local storage:", err);

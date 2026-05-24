@@ -19,6 +19,11 @@ const POPUP_HTML = `
       <button id="open-dashboard" class="btn btn-primary">Sign in to Pipelined</button>
     </div>
     <div id="authenticated" class="state hidden">
+      <div id="apply-hints" class="apply-hints hidden">
+        <h2 class="hints-heading">Apply hints</h2>
+        <p class="hints-note">Read-only — copy from dashboard to apply.</p>
+        <ul id="hints-list" class="hints-list"></ul>
+      </div>
       <ul id="saves-list"></ul>
       <div id="auto-save-row" class="auto-save-row hidden">
         <span class="auto-save-label">Auto-save</span>
@@ -55,7 +60,7 @@ let init;
 let escapeHtml;
 let relativeTime;
 let signOut;
-let renderAutoSaveToggle;
+let renderApplyHints;
 
 beforeAll(async () => {
   setupDOM();
@@ -69,6 +74,7 @@ beforeAll(async () => {
   relativeTime = mod.relativeTime;
   signOut = mod.signOut;
   renderAutoSaveToggle = mod.renderAutoSaveToggle;
+  renderApplyHints = mod.renderApplyHints;
 });
 
 beforeEach(() => {
@@ -207,6 +213,50 @@ describe("renderSaves()", () => {
     expect(link).not.toBeNull();
     expect(link.href).toContain("highlight=abc123");
     expect(link.href).toContain("/dashboard");
+  });
+});
+
+// ── renderApplyHints() ───────────────────────────────────────────────────────
+
+describe("renderApplyHints()", () => {
+  it("should show talking points from the most recent save with hints", () => {
+    renderApplyHints([
+      { id: "1", company: "Acme", talking_points: [] },
+      { id: "2", company: "Beta", talking_points: ["5 years Python", "Led API migration"] },
+    ]);
+
+    const section = document.getElementById("apply-hints");
+    expect(section.classList.contains("hidden")).toBe(false);
+    const items = document.querySelectorAll("#hints-list li");
+    expect(items).toHaveLength(2);
+    expect(items[0].textContent).toBe("5 years Python");
+  });
+
+  it("should hide hints section when no save has talking points", () => {
+    renderApplyHints([{ id: "1", company: "Acme", talking_points: [] }]);
+
+    expect(document.getElementById("apply-hints").classList.contains("hidden")).toBe(true);
+    expect(document.querySelectorAll("#hints-list li")).toHaveLength(0);
+  });
+
+  it("should render hints during init when storage includes talking points", async () => {
+    chrome.runtime.sendMessage.mockResolvedValue({ authenticated: true, display_name: "" });
+    chrome.storage.local.get.mockResolvedValue({
+      recent_saves: [{
+        company: "Meta",
+        role_title: "SWE",
+        stage: "applied",
+        id: "1",
+        talking_points: ["Highlight distributed systems work"],
+      }],
+    });
+
+    await init();
+
+    expect(document.getElementById("apply-hints").classList.contains("hidden")).toBe(false);
+    expect(document.querySelector("#hints-list li").textContent).toBe(
+      "Highlight distributed systems work"
+    );
   });
 });
 

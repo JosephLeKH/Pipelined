@@ -1,3 +1,5 @@
+/** Shared utility functions for all job board scrapers. */
+
 import { JOB_DESCRIPTION_MAX_CHARS } from "../../shared/constants.js";
 
 /**

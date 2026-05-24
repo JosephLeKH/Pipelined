@@ -111,4 +111,34 @@ describe("handleSave() queue recovery", () => {
 
     console.error.mockRestore();
   });
+
+  it("should cache talking points from apply_pack on successful save", async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      status: 201,
+      json: () => Promise.resolve({
+        data: {
+          id: "app123",
+          company: "Stripe",
+          role_title: "SWE",
+          current_stage: "Applied",
+          apply_pack: { talking_points: ["Payments experience", "Python backend"] },
+        },
+      }),
+    });
+
+    const result = await handleSave({ ...BASE_PAYLOAD });
+
+    expect(result.status).toBe("success");
+    expect(chrome.storage.local.set).toHaveBeenCalledWith({
+      recent_saves: [{
+        id: "app123",
+        company: "Stripe",
+        role_title: "SWE",
+        stage: "Applied",
+        date_applied: undefined,
+        talking_points: ["Payments experience", "Python backend"],
+      }],
+    });
+  });
 });
