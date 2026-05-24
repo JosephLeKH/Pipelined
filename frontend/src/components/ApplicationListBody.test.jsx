@@ -22,6 +22,7 @@ vi.mock("react-window", () => ({
 }));
 
 import { ApplicationListBody } from "./ApplicationListBody";
+import { withTooltipProvider } from "../test/testProviders";
 
 const MOCK_ME = {
   id: "user1",
@@ -48,7 +49,7 @@ function renderApp(node) {
     <ThemeProvider>
       <QueryClientProvider client={qc}>
         <AuthProvider>
-          <MemoryRouter>{node}</MemoryRouter>
+          <MemoryRouter>{withTooltipProvider(node)}</MemoryRouter>
         </AuthProvider>
       </QueryClientProvider>
     </ThemeProvider>

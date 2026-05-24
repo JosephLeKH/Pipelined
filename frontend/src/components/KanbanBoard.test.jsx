@@ -10,6 +10,7 @@ import { describe, it, expect, beforeAll, afterAll, afterEach } from "vitest";
 import { AuthProvider } from "../context/AuthContext";
 import KanbanBoard from "./KanbanBoard";
 import { passthroughHandlers } from "../test/passthroughHandlers";
+import { withTooltipProvider } from "../test/testProviders";
 
 const STAGES = ["Applied", "Phone Screen", "Offer"];
 
@@ -71,7 +72,7 @@ function makeWrapper() {
   return ({ children }) => (
     <QueryClientProvider client={queryClient}>
       <MemoryRouter>
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>{withTooltipProvider(children)}</AuthProvider>
       </MemoryRouter>
     </QueryClientProvider>
   );

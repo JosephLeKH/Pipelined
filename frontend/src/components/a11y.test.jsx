@@ -9,6 +9,7 @@ import { SortableContext } from "@dnd-kit/sortable";
 import KanbanCard from "./KanbanCard";
 import CsvImportModal from "./CsvImportModal";
 import MergeDialog from "./MergeDialog";
+import { withTooltipProvider } from "../test/testProviders";
 
 expect.extend(toHaveNoViolations);
 
@@ -37,11 +38,13 @@ vi.mock("../hooks/useApplications", () => ({
 describe("WCAG 2.1 AA — KanbanCard", () => {
   it("should have no axe violations", async () => {
     const { container } = render(
-      <DndContext>
-        <SortableContext items={[APP.id]}>
-          <KanbanCard application={APP} onSelect={vi.fn()} />
-        </SortableContext>
-      </DndContext>
+      withTooltipProvider(
+        <DndContext>
+          <SortableContext items={[APP.id]}>
+            <KanbanCard application={APP} onSelect={vi.fn()} />
+          </SortableContext>
+        </DndContext>
+      )
     );
 
     const results = await axe(container, { runOnly: { type: "tag", values: ["wcag2a", "wcag2aa"] } });
@@ -52,11 +55,13 @@ describe("WCAG 2.1 AA — KanbanCard", () => {
   it("should call onSelect with Enter key", () => {
     const onSelect = vi.fn();
     render(
-      <DndContext>
-        <SortableContext items={[APP.id]}>
-          <KanbanCard application={APP} onSelect={onSelect} />
-        </SortableContext>
-      </DndContext>
+      withTooltipProvider(
+        <DndContext>
+          <SortableContext items={[APP.id]}>
+            <KanbanCard application={APP} onSelect={onSelect} />
+          </SortableContext>
+        </DndContext>
+      )
     );
 
     fireEvent.keyDown(screen.getByTestId("kanban-card"), { key: "Enter" });
@@ -67,11 +72,13 @@ describe("WCAG 2.1 AA — KanbanCard", () => {
   it("should call onSelect with Space key", () => {
     const onSelect = vi.fn();
     render(
-      <DndContext>
-        <SortableContext items={[APP.id]}>
-          <KanbanCard application={APP} onSelect={onSelect} />
-        </SortableContext>
-      </DndContext>
+      withTooltipProvider(
+        <DndContext>
+          <SortableContext items={[APP.id]}>
+            <KanbanCard application={APP} onSelect={onSelect} />
+          </SortableContext>
+        </DndContext>
+      )
     );
 
     fireEvent.keyDown(screen.getByTestId("kanban-card"), { key: " " });

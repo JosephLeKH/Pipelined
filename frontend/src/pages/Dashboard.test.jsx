@@ -11,6 +11,7 @@ import { describe, it, expect, beforeAll, afterAll, afterEach } from "vitest";
 import { AuthProvider } from "../context/AuthContext";
 import { ThemeProvider } from "../context/ThemeContext";
 import Dashboard from "./Dashboard";
+import { withTooltipProvider } from "../test/testProviders";
 
 const APP = {
   id: "app1",
@@ -58,7 +59,7 @@ function makeWrapper(initialEntries = ["/dashboard"]) {
     <ThemeProvider>
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={initialEntries}>
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider>{withTooltipProvider(children)}</AuthProvider>
         </MemoryRouter>
       </QueryClientProvider>
     </ThemeProvider>
