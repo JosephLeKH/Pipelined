@@ -19,6 +19,7 @@ import Trophy from "lucide-react/dist/esm/icons/trophy";
 import Monitor from "lucide-react/dist/esm/icons/monitor";
 import X from "lucide-react/dist/esm/icons/x";
 import User from "lucide-react/dist/esm/icons/user";
+import Bot from "lucide-react/dist/esm/icons/bot";
 
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
@@ -36,6 +37,7 @@ import {
 } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
 import NotificationBell from "./NotificationBell";
+import CoPilotPanel from "./CoPilotPanel";
 
 const NAV_LINKS = [
   { to: "/dashboard", label: "Dashboard", Icon: LayoutDashboard },
@@ -137,9 +139,12 @@ function UserMenu({ user, handleLogout }) {
   );
 }
 
-function DesktopActions({ user, ThemeIcon, theme, handleCycleTheme, handleLogout }) {
+function DesktopActions({ user, ThemeIcon, theme, handleCycleTheme, handleLogout, onOpenCopilot }) {
   return (
     <div className="ml-auto hidden items-center gap-2 md:flex">
+      <Button type="button" variant="ghost" size="icon" onClick={onOpenCopilot} aria-label="Open co-pilot">
+        <Bot className="h-4 w-4" aria-hidden="true" />
+      </Button>
       <NotificationBell />
       <Button type="button" variant="ghost" size="icon" onClick={handleCycleTheme} aria-label={THEME_LABELS[theme]}>
         <ThemeIcon className="h-4 w-4" aria-hidden="true" />
@@ -198,6 +203,7 @@ function NavBar() {
   const { user, logout } = useAuth();
   const { theme, cycleTheme } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [copilotOpen, setCopilotOpen] = useState(false);
   const { data: offersData } = useApplications({ stage: OFFER_STAGE, limit: 1 });
   const { data: pendingOpportunities } = usePendingOpportunities();
   const hasOffers = (offersData?.data?.length ?? 0) > 0;
@@ -215,12 +221,16 @@ function NavBar() {
       <div className="flex items-center gap-4 px-6 py-3">
         <span className="mr-2 text-foreground font-display font-semibold text-lg tracking-tight">Pipelined</span>
         <DesktopNavLinks navLinks={navLinks} pathname={pathname} badgeCounts={badgeCounts} />
-        <DesktopActions user={user} ThemeIcon={ThemeIcon} theme={theme} handleCycleTheme={handleCycleTheme} handleLogout={handleLogout} />
+        <DesktopActions user={user} ThemeIcon={ThemeIcon} theme={theme} handleCycleTheme={handleCycleTheme} handleLogout={handleLogout} onOpenCopilot={() => setCopilotOpen(true)} />
         <div className="ml-auto flex items-center gap-1 md:hidden">
+          <Button type="button" variant="ghost" size="icon" onClick={() => setCopilotOpen(true)} aria-label="Open co-pilot">
+            <Bot className="h-4 w-4" aria-hidden="true" />
+          </Button>
           <NotificationBell />
           <HamburgerButton mobileMenuOpen={mobileMenuOpen} setMobileMenuOpen={setMobileMenuOpen} />
         </div>
       </div>
+      <CoPilotPanel open={copilotOpen} onClose={() => setCopilotOpen(false)} />
       {mobileMenuOpen && <MobileMenu navLinks={navLinks} pathname={pathname} closeMobileMenu={closeMobileMenu} ThemeIcon={ThemeIcon} theme={theme} handleCycleTheme={handleCycleTheme} handleLogout={handleLogout} badgeCounts={badgeCounts} />}
     </nav>
   );

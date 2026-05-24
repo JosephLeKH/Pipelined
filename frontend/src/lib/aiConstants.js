@@ -32,3 +32,9 @@ export function isAiLimitError(error) {
 export function getAiToastError(error, fallback) {
   return isAiLimitError(error) ? AI_LIMIT_MESSAGE : fallback;
 }
+
+export const COPILOT_TITLE = "Co-pilot";
+export const COPILOT_SUBTITLE = "Grounded in your pipeline — suggestions only.";
+export const COPILOT_PLACEHOLDER = "Ask about priorities, follow-ups, or interview prep…";
+export const COPILOT_ERROR_FALLBACK = "Co-pilot unavailable. Please try again.";
+export const COPILOT_RATE_LIMIT_MESSAGE = "Co-pilot rate limit reached. Try again later.";
