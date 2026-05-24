@@ -1,0 +1,34 @@
+# Ralph Progress Log — prd_100
+Started: Sat May 23 2026
+---
+
+## US-915: User timezone and morning brief preferences ✅ COMPLETE
+
+Added morning brief preference fields to user schema with defaults, PATCH /api/auth/me support, legacy digest_enabled→weekly_digest_enabled migration on read, and SettingsNotificationsSection timezone selector + toggles.
+
+**Files:** backend/auth/*, frontend SettingsNotificationsSection.*
+
+## US-916: Morning brief aggregator service ✅ COMPLETE
+
+Implemented build_morning_brief, generate_and_store_brief, MorningBrief dataclass/sections, morning_briefs collection with unique (user_id, date) index, unit tests for section assembly.
+
+**Files:** backend/notifications/morning_brief.py, backend/database.py, backend/tests/test_morning_brief.py
+
+## US-917: Timezone-aware daily scheduler job ✅ COMPLETE
+
+Added send_due_morning_briefs hourly at :15 UTC, timezone-aware 8am logic, morning_brief_ready notification, weekly digest gated on weekly_digest_enabled.
+
+**Files:** backend/notifications/morning_brief_scheduler.py, backend/jobs/sync.py, backend/notifications/digest.py, backend/tests/test_digest.py
+
+## US-918: Morning brief email template ✅ COMPLETE
+
+format_morning_brief_email plain text via SMTP with subject 'Your Pipelined morning brief — {summary}', frontend route links only.
+
+**Files:** backend/notifications/morning_brief_email.py, backend/tests/test_morning_brief_email.py
+
+## US-919: GET /api/brief/today endpoint ✅ COMPLETE
+
+brief_router GET /today (on-demand gen, 3/hour limit) and /history?days=7, registered in main.py.
+
+**Files:** backend/brief/*, backend/tests/test_brief_router.py
+
