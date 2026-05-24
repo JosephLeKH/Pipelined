@@ -1,0 +1,13 @@
+# Ralph Progress Log — prd_123
+Started: Sun May 24 2026
+---
+
+## US-1017: weekly_review.py aggregator ✅ COMPLETE
+
+**Implementation:** Added backend/review/ghost_detection.py and weekly_review.py with response_rate, ghost_rate, velocity, and stale_applications aggregation.
+
+**Testing:** `pytest tests/test_weekly_review.py -v` — 5 passed
+
+**Commit:** pending
+
+---

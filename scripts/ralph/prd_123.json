@@ -1,0 +1,58 @@
+{
+  "id": "prd_123",
+  "title": "Weekly Review Agent",
+  "description": "Weekly pipeline review aggregator, scheduler, Today UI, and ghost detection in mission scorer.",
+  "userStories": [
+    {
+      "id": "US-1017",
+      "title": "weekly_review.py aggregator",
+      "description": "Aggregator for response rate, ghost rate, velocity, stale list.",
+      "acceptanceCriteria": [
+        "response_rate, ghost_rate, velocity, stale list computed",
+        "Unit tests pass"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-1018",
+      "title": "Scheduler + GET /api/review/weekly + weekly_review_enabled",
+      "description": "APScheduler job, REST endpoint, user preference toggle.",
+      "acceptanceCriteria": [
+        "GET /api/review/weekly returns stored review",
+        "Scheduler job registered",
+        "weekly_review_enabled on user"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-1019",
+      "title": "WeeklyReviewSection on /today page",
+      "description": "Frontend section showing weekly review metrics on Today page.",
+      "acceptanceCriteria": [
+        "Section renders metrics",
+        "Stale apps linked",
+        "Tests pass"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-1020",
+      "title": "Ghost detection in mission_scorer",
+      "description": "Ghost missions in brief with median comparison reason.",
+      "acceptanceCriteria": [
+        "ghosts section in brief",
+        "Median comparison reason",
+        "Tests pass"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}
