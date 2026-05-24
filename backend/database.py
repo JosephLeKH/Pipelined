@@ -5,6 +5,7 @@ import asyncio
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorCollection, AsyncIOMotorDatabase
 
 from config import settings
+from copilot.constants import COPILOT_SESSION_TTL_SECONDS
 
 MAX_POOL_SIZE = 50
 SERVER_SELECTION_TIMEOUT_MS = 5000
@@ -126,6 +127,7 @@ async def ensure_indexes() -> None:
     pending_opportunities = get_collection("pending_opportunities")
     agent_runs = get_collection("agent_runs")
     weekly_reviews = get_collection("weekly_reviews")
+    copilot_sessions = get_collection("copilot_sessions")
 
     await asyncio.gather(
         _ensure_app_event_listing_indexes(apps, events, listings),
@@ -145,6 +147,16 @@ async def ensure_indexes() -> None:
         agent_runs.create_index(
             [("user_id", 1), ("application_id", 1), ("created_at", -1)],
             name="agent_runs_user_app_date",
+        ),
+        agent_runs.create_index(
+            [("agent_type", 1), ("created_at", -1)],
+            name="agent_runs_type_date",
+        ),
+        copilot_sessions.create_index("user_id", unique=True, name="copilot_session_user"),
+        copilot_sessions.create_index(
+            "updated_at",
+            expireAfterSeconds=COPILOT_SESSION_TTL_SECONDS,
+            name="copilot_session_ttl",
         ),
         weekly_reviews.create_index(
             [("user_id", 1), ("week_start", 1)], unique=True, name="weekly_review_user_week",

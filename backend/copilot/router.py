@@ -9,7 +9,7 @@ from fastapi.responses import StreamingResponse
 from ai.openrouter_client import agent_llm_configured
 from auth.dependencies import get_verified_user as get_current_user
 from copilot.constants import COPILOT_RATE_LIMIT
-from copilot.schemas import CopilotChatRequest
+from copilot.schemas import CopilotChatRequest, CopilotSessionSaveRequest
 from copilot import service as copilot_service
 from middleware.rate_limit import get_user_key, limiter
 
