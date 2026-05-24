@@ -65,3 +65,25 @@ Implemented email message deduplication to prevent reprocessing the same Gmail m
 **Commit**: 753b5c1 - feat: US-888 - Email message deduplication via processed ID tracking
 
 **Learning**: Deduplication via a bounded array (capped at 500 items) on the user document is efficient and scales well. The MongoDB `$push` operator with `$slice: -500` automatically maintains a sliding window of recent message IDs. This prevents unbounded growth while preserving enough history to catch most repeated messages within reasonable sync intervals.
+
+## US-889 - Test suite for email classifier module
+**Status**: ✅ COMPLETED
+
+**Summary**:
+Created comprehensive unit test suite for the email classifier module (`backend/email_integration/classifier.py`). The test file covers all critical paths: missing API key, successful job classification, non-job emails, markdown fence stripping, timeout/retry behavior, and JSON parse errors.
+
+**Changes**:
+- Created `backend/tests/test_email_classifier.py` with 6 AsyncIO-based unit tests
+- All tests use `unittest.mock.AsyncMock` and `patch` to mock the AsyncOpenAI client
+- Tests cover: no API key, job-related response, non-job-related response, markdown fence stripping, transient timeout errors, and JSON parsing errors
+- Removed unused `json` import to pass Pyright linting
+
+**Testing**:
+- All 6 tests pass: 100% success rate
+- Pyright type checking: 0 errors
+- No real API calls made (all Gemini/OpenAI interactions fully mocked)
+- Tests verify both happy paths and error handling paths
+
+**Commit**: 342ad58 - feat: US-889 - Test suite for email classifier module
+
+**Learning**: Testing async code with `pytest.mark.asyncio` and mocking AsyncOpenAI requires careful setup of MagicMock response objects with nested attribute chains. Using side_effect on patched asyncio functions (like wait_for) correctly simulates timeout scenarios without needing to modify the classifier's retry constants. The test suite provides strong regression protection for the classifier's critical paths.

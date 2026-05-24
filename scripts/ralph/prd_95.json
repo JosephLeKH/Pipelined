@@ -60,7 +60,7 @@
         "No real API calls made"
       ],
       "priority": "medium",
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
