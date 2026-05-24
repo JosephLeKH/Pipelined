@@ -1,3 +1,35 @@
-# Ralph Progress Log
-Started: Sun May 24 14:30:57 PDT 2026
+# Ralph Progress Log — prd_126
+Started: Sun May 24 2026
+---
+
+## US-1028: OA deadline extraction from email events ✅ COMPLETE
+
+**Implementation:** `email_integration/deadline_parser.py` (OpenRouter extract_oa_deadline); `_apply_oa_deadline_from_email` hooked in `service.py` when classifier sets stage OA.
+
+**Testing:** `pytest tests/test_deadline_parser.py -v` — 4 passed
+
+---
+
+## US-1029: Brief oa_deadlines section and mission scorer ✅ COMPLETE
+
+**Implementation:** `notifications/brief_oa_deadlines.py` fetch section; `morning_brief.py` oa_deadlines section; `mission_scorer.py` base score 850 (above high_matches), days-remaining reason.
+
+**Testing:** `pytest tests/test_mission_scorer.py tests/test_brief_oa_deadlines.py -v` — 8 passed
+
+---
+
+## US-1030: Today UI for deadline missions ✅ COMPLETE
+
+**Implementation:** `MissionCard.jsx` DeadlineBadge; `briefConstants.js` parseDeadlineLabel + section accents/labels.
+
+**Testing:** `npm test -- --run src/components/MissionCard.test.jsx src/lib/briefConstants.test.js` — 7 passed; `npm run build` — green
+
+---
+
+## US-1031: Integration tests and docs ✅ COMPLETE
+
+**Implementation:** `test_brief_router.py::test_get_brief_today_includes_oa_deadline_missions`; `docs/AGENTIC_FEATURES.md` OA Deadline Missions section + mission priority table.
+
+**Testing:** `pytest tests/test_brief_router.py::test_get_brief_today_includes_oa_deadline_missions -v` — 1 passed
+
 ---
