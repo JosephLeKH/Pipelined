@@ -84,7 +84,8 @@ describe("PendingInboxPage", () => {
     render(<PendingInboxPage />, { wrapper: makeWrapper() });
 
     expect(await screen.findByText("Acme — Backend Engineer")).toBeInTheDocument();
-    expect(screen.getByText(/fit score 92/i)).toBeInTheDocument();
+    expect(screen.getByTestId("fit-badge")).toHaveTextContent("92%");
+    await userEvent.click(screen.getByRole("button", { name: /cover letter draft/i }));
     expect(screen.getByText("Dear hiring team")).toBeInTheDocument();
     expect(screen.getByText(/suggestions only/i)).toBeInTheDocument();
   });

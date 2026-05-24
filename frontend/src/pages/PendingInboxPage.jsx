@@ -86,7 +86,11 @@ function PendingInboxPage() {
             <EmptyState
               icon={Inbox}
               title="Inbox empty"
-              description="New matches will appear here after the nightly scan."
+              description="Enable autopilot in settings to queue overnight matches for review. We never submit applications for you."
+              actionButton={{
+                label: "Autopilot settings",
+                onClick: () => navigate("/settings?section=autopilot"),
+              }}
             />
           )}
 
