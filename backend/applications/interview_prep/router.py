@@ -37,7 +37,11 @@ async def _get_application(app_id: str, user_id: str) -> dict:
 
 
 async def _get_resume_text(user_id: str) -> str:
-    doc = await get_collection("users").find_one({"_id": user_id}, {"resume_text": 1})
+    try:
+        oid = ObjectId(user_id)
+    except Exception:
+        return ""
+    doc = await get_collection("users").find_one({"_id": oid}, {"resume_text": 1})
     if not doc:
         return ""
     return doc.get("resume_text", "")

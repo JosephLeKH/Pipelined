@@ -1,0 +1,95 @@
+{
+  "id": "prd_95",
+  "title": "Gmail Integration — Bug Fixes, Rate Limiting & Test Coverage",
+  "description": "Three confirmed bugs plus missing test coverage for the email integration and interview prep modules. Priority 1: fix the resume-text ObjectId bug (prep always runs without user context), add email message deduplication, and rate-limit the interview-prep SSE endpoint. Priority 2: establish baseline test coverage so regressions are catchable.",
+  "userStories": [
+    {
+      "id": "US-886",
+      "title": "Fix _get_resume_text ObjectId bug in interview_prep/router.py",
+      "description": "In `backend/applications/interview_prep/router.py` at `_get_resume_text` (line ~39), the function queries MongoDB with `{\"_id\": user_id}` where `user_id` is a plain string (e.g. `'507f1f77bcf86cd799439011'`). MongoDB stores `_id` as an ObjectId, so this query always returns None and resume_text is always empty string — meaning the interview prep agent never sees the user's resume.\n\nFix: Import `ObjectId` from `bson` at the top of the file (it's already used in `_get_application`). In `_get_resume_text`, convert user_id to ObjectId before querying: `{\"_id\": ObjectId(user_id)}`. Wrap in a try/except for invalid IDs and return `\"\"` on failure.\n\nCheck that `bson` import already exists in the file (it does — ObjectId is imported for `_get_application`). Just fix the query inside `_get_resume_text`.",
+      "acceptanceCriteria": [
+        "bson.ObjectId already imported in router.py — confirm and reuse",
+        "_get_resume_text converts user_id string to ObjectId before find_one query",
+        "Handles invalid ObjectId gracefully (return empty string)",
+        "No other changes to the function or file"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-887",
+      "title": "Rate limit the interview prep SSE endpoint",
+      "description": "In `backend/applications/interview_prep/router.py`, the GET `/{app_id}/interview-prep` endpoint has no rate limit. Each request spawns a multi-step Gemini agent loop (up to 12 iterations) and can run for 30+ seconds. A single user hammering this endpoint could exhaust the Gemini API quota.\n\nFix:\n1. Add `from fastapi import Request` to the imports (it's not there yet — check carefully and add if missing).\n2. Import the limiter: `from middleware.rate_limit import limiter`.\n3. Add `@limiter.limit(\"3/hour\")` decorator above the `@router.get` decorator on `interview_prep_stream`.\n4. Add `request: Request` as the first parameter of `interview_prep_stream` (before `app_id`). Since it's used only by slowapi, add `# noqa: ARG001` comment.\n\nPattern to follow: look at `backend/email_integration/router.py` `trigger_sync` (lines 75-81) for the exact decorator+parameter pattern.\n\nIMPORTANT: The `@limiter.limit` decorator must come AFTER `@router.get` in the decorator stack (innermost = closest to the function). So the order is:\n```python\n@router.get(\"/{app_id}/interview-prep\")\n@limiter.limit(\"3/hour\")\nasync def interview_prep_stream(\n    request: Request,  # noqa: ARG001\n    app_id: str,\n    ...\n```",
+      "acceptanceCriteria": [
+        "limiter imported from middleware.rate_limit",
+        "@limiter.limit('3/hour') decorator added, ordered after @router.get",
+        "request: Request is first parameter with # noqa: ARG001",
+        "Function signature and body otherwise unchanged",
+        "Other endpoints in the file not modified"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-888",
+      "title": "Email message deduplication via processed ID tracking",
+      "description": "In `backend/email_integration/service.py`, `sync_emails` fetches up to 50 messages matching a Gmail query (last 30 days) and processes ALL of them every sync cycle (every 4 hours). This means the same emails are classified by Gemini on every sync — wasting API quota and potentially causing issues.\n\nFix: Track which Gmail message IDs have already been processed per user, and skip them on subsequent syncs.\n\n**Implementation plan:**\n\n1. Add a module-level constant: `PROCESSED_IDS_LIMIT = 500`\n\n2. In `sync_emails`, before the processing loop, retrieve the user's already-processed message IDs from the user document:\n   ```python\n   users = get_collection(\"users\")\n   user_fresh = await users.find_one({\"_id\": user[\"_id\"]}, {\"gmail_processed_ids\": 1})\n   already_processed: set[str] = set((user_fresh or {}).get(\"gmail_processed_ids\", []))\n   ```\n\n3. Filter `messages` to only unprocessed ones:\n   ```python\n   new_messages = [m for m in messages if m[\"id\"] not in already_processed]\n   ```\n\n4. After the loop, persist the newly processed IDs using `$push` with `$slice` to cap the array:\n   ```python\n   if new_messages:\n       new_ids = [m[\"id\"] for m in new_messages]\n       await users.update_one(\n           {\"_id\": user[\"_id\"]},\n           {\"$push\": {\"gmail_processed_ids\": {\"$each\": new_ids, \"$slice\": -PROCESSED_IDS_LIMIT}}},\n       )\n   ```\n\n5. Use `new_messages` (not `messages`) for both the processing loop AND the `processed` count.\n\n6. The existing `$inc` / `$set` update at the end of sync_emails should use `processed = len(new_messages)` (count of newly processed, not total fetched).\n\nNote: `already_processed` lookup must happen BEFORE the processing loop. The `$push` update happens AFTER. The existing `users.update_one` at the end (setting `gmail_last_sync_at` and incrementing counters) can remain as-is — just make sure `processed` references `len(new_messages)` not `len(messages)`.",
+      "acceptanceCriteria": [
+        "PROCESSED_IDS_LIMIT = 500 constant added at module scope",
+        "Before processing loop: fetch user's gmail_processed_ids from DB into a set",
+        "Only messages not in already_processed are processed (new_messages list)",
+        "After loop: push new_ids to gmail_processed_ids with $slice: -PROCESSED_IDS_LIMIT",
+        "processed variable set to len(new_messages) not len(messages)",
+        "No regression to existing sync logic (stage ordering, create/update flows)"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-889",
+      "title": "Test suite for email classifier module",
+      "description": "Create `backend/tests/test_email_classifier.py` with unit tests for `backend/email_integration/classifier.py`.\n\nThe `classify_email` function calls the OpenAI-compatible Gemini API via `AsyncOpenAI`. Mock the Gemini client using `unittest.mock.AsyncMock` and `patch`.\n\nRequired tests:\n\n1. `test_classify_email_returns_none_when_no_api_key` — patch `settings.gemini_api_key` to empty string, call `classify_email('Subject', 'body')`, assert returns `None`.\n\n2. `test_classify_email_job_related_returns_data` — mock `AsyncOpenAI` so `chat.completions.create` returns a response with content `'{\"job_related\": true, \"company\": \"Google\", \"role_title\": \"SWE\", \"stage\": \"Applied\"}'`. Assert the return value equals `{\"job_related\": True, \"company\": \"Google\", \"role_title\": \"SWE\", \"stage\": \"Applied\"}`.\n\n3. `test_classify_email_not_job_related_returns_none` — mock response content is `'{\"job_related\": false}'`. Assert returns `None`.\n\n4. `test_classify_email_strips_markdown_fences` — mock response content is `` '```json\\n{\"job_related\": true, \"company\": \"Acme\", \"role_title\": null, \"stage\": \"Applied\"}\\n```' ``. Assert returns a dict with `company == \"Acme\"`.\n\n5. `test_classify_email_raises_transient_error_on_timeout` — mock `asyncio.wait_for` to raise `asyncio.TimeoutError` on every attempt. Assert `classify_email` raises `GmailTransientError` after all retries.\n\n6. `test_classify_email_returns_none_on_json_error` — mock response content is `'not valid json'`. Assert returns `None` (no exception).\n\nUse `pytest.mark.asyncio` for async tests. The mock setup for AsyncOpenAI:\n```python\nfrom unittest.mock import AsyncMock, MagicMock, patch\n\nmock_response = MagicMock()\nmock_response.choices[0].message.content = '...'\n\nwith patch('email_integration.classifier.AsyncOpenAI') as MockClient:\n    instance = MockClient.return_value\n    instance.chat.completions.create = AsyncMock(return_value=mock_response)\n    ...\n```\n\nFor the timeout test, patch `asyncio.wait_for` to raise `asyncio.TimeoutError` on every call:\n```python\nwith patch('asyncio.wait_for', side_effect=asyncio.TimeoutError):\n    ...\n```\n\nSet `CLASSIFIER_RETRY_ATTEMPTS = 0` by patching or importing and overriding for the timeout test to keep it fast, or just let it retry (only 2 retries).",
+      "acceptanceCriteria": [
+        "File created at backend/tests/test_email_classifier.py",
+        "6 tests covering: no API key, job-related, not job-related, markdown fences, timeout retries, JSON parse error",
+        "Uses AsyncMock to mock AsyncOpenAI client",
+        "All tests pass with pytest tests/test_email_classifier.py",
+        "No real API calls made"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-890",
+      "title": "Test suite for email service core functions",
+      "description": "Create `backend/tests/test_email_service.py` with tests for the pure/DB-facing functions in `backend/email_integration/service.py`.\n\nRequired tests:\n\n1. `test_get_connection_status_connected` — build a user dict with `gmail_access_token='tok'`, `gmail_email='a@b.com'`, `gmail_apps_tracked=5`. Call `get_connection_status(user)`. Assert `connected=True`, `email='a@b.com'`, `apps_tracked=5`.\n\n2. `test_get_connection_status_disconnected` — user dict with no `gmail_access_token`. Assert `connected=False`, `email=None`.\n\n3. `test_stage_map_covers_all_classifier_stages` — assert all keys of `STAGE_MAP` map to values present in `STAGE_ORDER`. This is a regression guard for the stage ordering logic.\n\n4. `test_find_existing_app_returns_none_for_invalid_user_id` — call `_find_existing_app('not-an-objectid', 'Google', 'SWE')` directly with `pytest.mark.asyncio`. Assert returns `None` (no exception).\n\n5. `test_find_existing_app_no_match` — using the `client` and `test_user` fixtures (from conftest), create a user, then call `_find_existing_app(user_id, 'NonexistentCo', 'SWE')`. Assert returns `None`.\n\n6. `test_find_existing_app_matches_case_insensitively` — insert an application document directly into the `applications` collection with `company='Google'` and `user_id=ObjectId(user_id)`. Call `_find_existing_app(user_id, 'google', 'SWE')`. Assert returns the doc (or None if role_title doesn't match — adjust to match the exact doc).\n\nFor tests 4-6, import `_find_existing_app` directly:\n```python\nfrom email_integration.service import _find_existing_app, get_connection_status, STAGE_MAP, STAGE_ORDER\n```\n\nFor DB tests (5-6), use the `test_user` fixture from conftest and real MongoDB (per project rules). Use `database.get_collection('applications').insert_one(...)` directly for setup.\n\nAll async tests use `@pytest.mark.asyncio`.",
+      "acceptanceCriteria": [
+        "File created at backend/tests/test_email_service.py",
+        "6 tests covering: connected status, disconnected status, STAGE_MAP integrity, invalid user_id, no-match lookup, case-insensitive match",
+        "No mocking of MongoDB (real DB per project rules)",
+        "All tests pass with pytest tests/test_email_service.py"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-891",
+      "title": "Test suite for email router endpoints",
+      "description": "Create `backend/tests/test_email_router.py` with HTTP-level tests for the email integration endpoints via the test client.\n\nRequired tests:\n\n1. `test_get_status_unauthenticated` — GET `/api/email/status` without auth cookies. Assert 401.\n\n2. `test_get_status_authenticated_no_gmail` — GET `/api/email/status` as `test_user` (no Gmail token set). Assert 200, response `data.connected == false`.\n\n3. `test_sync_requires_gmail_connected` — POST `/api/email/sync` as `test_user` (no Gmail token). Assert 400, error code `GMAIL_NOT_CONNECTED`.\n\n4. `test_get_auth_url_requires_verified_user` — GET `/api/email/auth` as `test_user` (verified). Should return 200 with `data.auth_url` containing `accounts.google.com` (stub, since Google client ID may be blank in test env). If `google_client_id` is not set in test config, assert 200 but auth_url may be incomplete — just assert the key exists. If it raises an exception due to missing config, assert 422 or handle gracefully.\n\n5. `test_disconnect_requires_authentication` — DELETE `/api/email/disconnect` without auth. Assert 401.\n\n6. `test_update_settings_requires_gmail_connected` — PATCH `/api/email/settings` as `test_user` with `{\"auto_track\": false}`. Assert 400 with code `GMAIL_NOT_CONNECTED`.\n\nUse the `client` and `test_user` fixtures from conftest. Use `as_user(client, cookies)` context manager for authenticated requests.\n\nFor test 4, if settings.google_client_id is empty in test, the URL may be malformed but the endpoint should still return 200. Adjust assertion accordingly:\n```python\nresp = await client.get('/api/email/auth', cookies=cookies)\nassert resp.status_code in (200, 422)  # 422 if client_id missing\n```",
+      "acceptanceCriteria": [
+        "File created at backend/tests/test_email_router.py",
+        "6 tests covering auth requirements, Gmail connection checks, settings update",
+        "Uses as_user context manager from conftest for authenticated requests",
+        "All tests pass with pytest tests/test_email_router.py"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}
