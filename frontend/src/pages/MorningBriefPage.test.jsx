@@ -19,7 +19,7 @@ const MOCK_BRIEF = {
   sections: {
     follow_ups: [{
       title: "Acme — follow-up overdue",
-      body: "Draft ready in detail panel",
+      body: "Generate a draft on demand in the detail panel",
       action_url: "/dashboard?selected=app1&action=follow-up",
     }],
     interviews: [],

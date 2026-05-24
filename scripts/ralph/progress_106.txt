@@ -1,0 +1,45 @@
+# Ralph Progress Log — prd_106
+Started: Sat May 23 2026
+---
+
+## US-943: Consolidate fit score into single AI Fit section ✅ COMPLETE
+
+**Implementation:** Merged FitScoreSection + ResumeFitSection into AiFitSection.jsx. Unified getUnifiedFitDetail in fitDisplay.js. Background scoring skeleton with polling. DetailPanelBody slimmed to 73 lines via DetailPanelSections extraction.
+
+**Testing:** npm test -- --run AiFitSection.test.jsx DetailPanelBody.test.jsx — passed
+
+**Commit:** 863cb71
+
+---
+
+## US-944: Load cached interview prep briefing on open ✅ COMPLETE
+
+**Implementation:** useInterviewPrep initializes DONE state from cachedBriefing. InterviewPrepAgent wrapped in AiSection; Refresh triggers SSE via refresh(). Added interview_prep_briefing fields to ApplicationResponse schema.
+
+**Testing:** npm test -- --run InterviewPrepAgent.test.jsx — passed
+
+---
+
+## US-945: DetailPanelHeader AI status strip ✅ COMPLETE
+
+**Implementation:** Compact FitBadge, prep-ready pill, Gmail-synced pill in header with min-height strip to prevent mobile layout shift.
+
+**Testing:** npm test -- --run DetailPanelHeader.test.jsx — passed
+
+---
+
+## US-946: AI section ordering and collapsible groups ✅ COMPLETE
+
+**Implementation:** AiPanelGroup collapsible wrapper. Order: Fit → Resume Insights → Interview Prep → Follow-up draft. Prep checklist renamed to Interview task checklist. Lucide chevrons in AiPanelGroup.
+
+**Testing:** npm test -- --run AiPanelGroup.test.jsx — passed
+
+---
+
+## US-947: Follow-up draft UX improvements ✅ COMPLETE
+
+**Implementation:** Deep link auto-generates draft on mount. Regenerate button. Honest on-demand copy in FollowUpDraftSection and morning brief body text.
+
+**Testing:** npm test -- --run MorningBriefPage.test.jsx — passed; npm run build — passed
+
+---

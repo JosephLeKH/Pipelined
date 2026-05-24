@@ -1,0 +1,71 @@
+{
+  "id": "prd_106",
+  "title": "Detail Panel — AI Command Center UX",
+  "description": "Fix dual fit-score confusion, surface cached interview prep, improve visual hierarchy in the detail panel.",
+  "userStories": [
+    {
+      "id": "US-943",
+      "title": "Consolidate fit score into single AI Fit section",
+      "description": "Merge FitScoreSection and ResumeFitSection into AiFitSection.jsx. One badge, loading skeleton for background scoring, single Analyze fit CTA.",
+      "acceptanceCriteria": [
+        "Single AiFitSection",
+        "Loading state for background scoring",
+        "DetailPanelBody under 300 lines"
+      ],
+      "priority": "high",
+      "passes": true,
+      "notes": "AiFitSection.jsx; fitDisplay helpers; ResumeFitSection removed"
+    },
+    {
+      "id": "US-944",
+      "title": "Load cached interview prep briefing on open",
+      "description": "InterviewPrepAgent mounts in Done state when interview_prep_briefing cached. Refresh still works via SSE.",
+      "acceptanceCriteria": [
+        "Cached briefing shows immediately",
+        "Start Research only when no cache",
+        "Tests updated"
+      ],
+      "priority": "high",
+      "passes": true,
+      "notes": "useInterviewPrep cached init; Refresh via SSE; schema fields added"
+    },
+    {
+      "id": "US-945",
+      "title": "DetailPanelHeader AI status strip",
+      "description": "Compact fit badge, prep ready pill, gmail pill in header.",
+      "acceptanceCriteria": [
+        "Header shows AI status pills",
+        "No mobile layout shift"
+      ],
+      "priority": "medium",
+      "passes": true,
+      "notes": "FitBadge + prep-ready + Gmail synced pills in header"
+    },
+    {
+      "id": "US-946",
+      "title": "AI section ordering and collapsible groups",
+      "description": "Reorder AI blocks. AiPanelGroup collapsible. Rename prep checklist. Lucide chevrons not unicode.",
+      "acceptanceCriteria": [
+        "Correct section order",
+        "Collapsible group",
+        "Prep checklist renamed"
+      ],
+      "priority": "medium",
+      "passes": true,
+      "notes": "AiPanelGroup; Interview task checklist label; DetailPanelSections extract"
+    },
+    {
+      "id": "US-947",
+      "title": "Follow-up draft UX improvements",
+      "description": "Deep link auto-generate or clear CTA. Regenerate button. Honest brief copy about on-demand drafts.",
+      "acceptanceCriteria": [
+        "Deep link improved",
+        "Regenerate works",
+        "Brief copy updated"
+      ],
+      "priority": "medium",
+      "passes": true,
+      "notes": "Auto-generate on deep link; Regenerate button; morning brief copy"
+    }
+  ]
+}
