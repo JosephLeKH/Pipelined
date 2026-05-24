@@ -1,0 +1,32 @@
+# PRD 121 — Frontend Test Green Progress
+
+## Initial state (2026-05-24)
+- Test files failed: 23
+- Tests failed: 59
+- Tests passed: 847
+- Total tests: 906
+
+## After US-1009 (GoalProgress + StatsBar MSW)
+- GoalProgress: added MemoryRouter wrapper (Link requires router context)
+- StatsBar: already passing (5/5)
+- Failures remaining: ~56
+
+## After US-1010 (ManualAddForm + Dialog migration)
+- ManualAddForm: Radix Dialog overlay/Escape/Cancel/focus patterns
+- ManualAddFormCategoryRow: Radix Select combobox interactions
+- DetailPanel.optimistic: QueryClient + section mocks
+- NewEventForm, CsvImportModal, UpgradePlanModal, SettingsAccountSection: Dialog patterns
+
+## After US-1011 (ContactForm + ShortcutHelp batch)
+- ContactForm: Radix Select for relationship field
+- ShortcutHelp: Dialog title/close button updates
+- DashboardToolbar, ContactCard, AuthLayout, FeedbackWidget: TooltipProvider/MemoryRouter
+- FitBadge, KanbanCard, CalendarGrid, ApplicationTimeline, NotesEditor: assertion updates
+
+## Final state (2026-05-24)
+- Test files failed: 0
+- Tests failed: 0
+- Tests passed: 905
+- Total tests: 905
+- npm run build: PASS
+- Shared fixes: testProviders.jsx helpers, setup.js Radix JSDOM polyfills (pointer capture, scrollIntoView)

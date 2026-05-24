@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { NewEventFormFields } from "./NewEventFormFields";
 
 const BASE_PROPS = {
@@ -27,11 +28,13 @@ describe("NewEventFormFields", () => {
     expect(screen.getByLabelText(/^date$/i)).toHaveValue("2026-05-01");
   });
 
-  it("should call setEventType when event type changes", () => {
+  it("should call setEventType when event type changes", async () => {
     const setEventType = vi.fn();
+    const user = userEvent.setup();
 
     render(<NewEventFormFields {...BASE_PROPS} setEventType={setEventType} />);
-    fireEvent.change(screen.getByLabelText(/event type/i), { target: { value: "technical" } });
+    await user.click(screen.getByRole("combobox", { name: /event type/i }));
+    await user.click(screen.getByRole("option", { name: /technical/i }));
 
     expect(setEventType).toHaveBeenCalledWith("technical");
   });

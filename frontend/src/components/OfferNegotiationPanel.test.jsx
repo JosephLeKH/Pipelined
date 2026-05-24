@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { OfferNegotiationPanel } from "./OfferNegotiationPanel";
 
 vi.mock("sonner", () => ({
@@ -67,13 +68,14 @@ describe("OfferNegotiationPanel", () => {
     });
   });
 
-  it("should update script when different template is selected", () => {
+  it("should update script when different template is selected", async () => {
+    const user = userEvent.setup();
     renderPanel();
 
-    const select = screen.getByRole("combobox", { name: /template/i });
-    fireEvent.change(select, { target: { value: "equity_ask" } });
+    await user.click(screen.getByRole("combobox", { name: /template/i }));
+    await user.click(screen.getByRole("option", { name: /equity/i }));
 
     const textarea = screen.getByRole("textbox", { name: /negotiation script/i });
-    expect(textarea.value).toContain("equity");
+    expect(textarea.value.toLowerCase()).toContain("equity");
   });
 });

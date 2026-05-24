@@ -1,0 +1,55 @@
+{
+  "id": "prd_121",
+  "title": "Frontend Test Green — Remaining Failures",
+  "description": "Drive frontend suite toward green: fix remaining ~59 failures and MSW gaps.",
+  "userStories": [
+    {
+      "id": "US-1009",
+      "title": "Fix GoalProgress and StatsBar MSW failures",
+      "description": "Add handlers for stats/goals endpoints. Fix GoalProgress.test.jsx and related dashboard stats tests.",
+      "acceptanceCriteria": [
+        "GoalProgress tests pass",
+        "Stats-related MSW complete"
+      ],
+      "priority": "high",
+      "passes": true,
+      "notes": "GoalProgress MemoryRouter; StatsBar already green"
+    },
+    {
+      "id": "US-1010",
+      "title": "Fix ManualAddForm and Dialog migration tests",
+      "description": "Update ManualAddForm.test.jsx and DetailPanel for current Dialog/Radix patterns.",
+      "acceptanceCriteria": [
+        "ManualAddForm tests pass",
+        "DetailPanel modal tests pass"
+      ],
+      "priority": "high",
+      "passes": true,
+      "notes": "Radix Dialog/Select test patterns for ManualAddForm, DetailPanel, modals"
+    },
+    {
+      "id": "US-1011",
+      "title": "Fix ContactForm ShortcutHelp batch",
+      "description": "ContactForm, ShortcutHelp, and remaining component test failures from npm test output.",
+      "acceptanceCriteria": [
+        "ContactForm tests pass",
+        "ShortcutHelp tests pass"
+      ],
+      "priority": "medium",
+      "passes": true,
+      "notes": "ContactForm Select, ShortcutHelp Dialog, TooltipProvider batch"
+    },
+    {
+      "id": "US-1012",
+      "title": "Document test count and fail under 20",
+      "description": "Run full npm test -- --run. Fix any easy wins until failures under 20 or zero. Log in progress_121.txt.",
+      "acceptanceCriteria": [
+        "Failures under 20",
+        "progress log with counts"
+      ],
+      "priority": "medium",
+      "passes": true,
+      "notes": "905/905 pass; progress_121.txt logged; setup.js Radix polyfills"
+    }
+  ]
+}

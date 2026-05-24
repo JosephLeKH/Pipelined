@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import TemplateBar from "./TemplateBar";
 
 vi.mock("../hooks/useTemplates", () => ({
@@ -32,22 +33,26 @@ describe("TemplateBar", () => {
     expect(screen.getByRole("alert")).toHaveTextContent("Failed to load templates.");
   });
 
-  it("should render template dropdown when templates are available", () => {
+  it("should render template dropdown when templates are available", async () => {
     useTemplates.mockReturnValue({ data: TEMPLATES_FIXTURE, isLoading: false, error: null });
+    const user = userEvent.setup();
 
     render(<TemplateBar onApply={vi.fn()} fields={{}} />);
 
     expect(screen.getByRole("combobox", { name: /use template/i })).toBeInTheDocument();
-    expect(screen.getByText("Engineering")).toBeInTheDocument();
-    expect(screen.getByText("Product")).toBeInTheDocument();
+    await user.click(screen.getByRole("combobox", { name: /use template/i }));
+    expect(screen.getByRole("option", { name: "Engineering" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "Product" })).toBeInTheDocument();
   });
 
-  it("should call onApply with the selected template when one is chosen", () => {
+  it("should call onApply with the selected template when one is chosen", async () => {
     useTemplates.mockReturnValue({ data: TEMPLATES_FIXTURE, isLoading: false, error: null });
     const onApply = vi.fn();
+    const user = userEvent.setup();
 
     render(<TemplateBar onApply={onApply} fields={{}} />);
-    fireEvent.change(screen.getByRole("combobox", { name: /use template/i }), { target: { value: "t1" } });
+    await user.click(screen.getByRole("combobox", { name: /use template/i }));
+    await user.click(screen.getByRole("option", { name: "Engineering" }));
 
     expect(onApply).toHaveBeenCalledWith(TEMPLATES_FIXTURE[0]);
   });

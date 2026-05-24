@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import TimezoneSelector from "./TimezoneSelector";
 
 describe("TimezoneSelector", () => {
@@ -12,16 +13,16 @@ describe("TimezoneSelector", () => {
   it("should display the passed value as selected", () => {
     render(<TimezoneSelector value="America/New_York" onChange={vi.fn()} />);
 
-    expect(screen.getByRole("combobox", { name: "Timezone" })).toHaveValue("America/New_York");
+    expect(screen.getByRole("combobox", { name: "Timezone" })).toHaveTextContent(/new york/i);
   });
 
-  it("should call onChange when a new timezone is selected", () => {
+  it("should call onChange when a new timezone is selected", async () => {
+    const user = userEvent.setup();
     const onChange = vi.fn();
 
     render(<TimezoneSelector value="America/New_York" onChange={onChange} />);
-    fireEvent.change(screen.getByRole("combobox", { name: "Timezone" }), {
-      target: { value: "Europe/London" },
-    });
+    await user.click(screen.getByRole("combobox", { name: "Timezone" }));
+    await user.click(screen.getByRole("option", { name: /europe\/london/i }));
 
     expect(onChange).toHaveBeenCalledWith("Europe/London");
   });

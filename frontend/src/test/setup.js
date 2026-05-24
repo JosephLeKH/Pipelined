@@ -38,6 +38,20 @@ if (!window.matchMedia) {
   });
 }
 
+// Radix Select/Dialog use pointer capture APIs missing from JSDOM.
+if (!Element.prototype.hasPointerCapture) {
+  Element.prototype.hasPointerCapture = () => false;
+}
+if (!Element.prototype.setPointerCapture) {
+  Element.prototype.setPointerCapture = () => {};
+}
+if (!Element.prototype.releasePointerCapture) {
+  Element.prototype.releasePointerCapture = () => {};
+}
+if (!Element.prototype.scrollIntoView) {
+  Element.prototype.scrollIntoView = () => {};
+}
+
 // Ensure localStorage is available with all standard methods in jsdom.
 const localStorageStore = new Map();
 const localStorageMock = {
