@@ -1,11 +1,14 @@
 """Daily watchlist scan — fetch career pages, upsert listings, queue matches."""
 
+from datetime import datetime, timezone
+
 import httpx
 import structlog
 from auth.schemas import watchlist_companies_from_doc
 from auth.url_validation import validate_public_http_url
 from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorCollection
+from pymongo import ReturnDocument
 
 from database import get_collection
 from jobs.sync import compute_url_hash
@@ -22,12 +25,9 @@ async def _upsert_listing(
     user_id: ObjectId,
 ) -> ObjectId | None:
     """Upsert a listing by url_hash; return listing id when newly inserted."""
-    from datetime import datetime, timezone
-
     now = datetime.now(timezone.utc)
     url_hash = compute_url_hash(listing["apply_url"])
-    existing = await col.find_one({"url_hash": url_hash}, projection={"_id": 1})
-    await col.update_one(
+    existing = await col.find_one_and_update(
         {"url_hash": url_hash},
         {
             "$set": {
@@ -37,19 +37,21 @@ async def _upsert_listing(
                 "apply_url": listing["apply_url"],
                 "url_hash": url_hash,
                 "is_stale": False,
-                "watchlist_user_id": user_id,
             },
             "$setOnInsert": {
                 "ingested_at": now,
                 "date_posted": now,
+                "watchlist_user_id": user_id,
             },
         },
         upsert=True,
+        return_document=ReturnDocument.BEFORE,
+        projection={"_id": 1},
     )
     if existing is not None:
         return None
-    doc = await col.find_one({"url_hash": url_hash}, projection={"_id": 1})
-    return doc["_id"] if doc else None
+    inserted = await col.find_one({"url_hash": url_hash}, projection={"_id": 1})
+    return inserted["_id"] if inserted else None
 
 
 async def _fetch_company_listings(

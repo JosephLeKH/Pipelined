@@ -130,4 +130,40 @@ async def test_watchlist_scan_upserts_with_url_hash_dedupe(app, test_user):
     listings = await database.get_collection("job_listings").find({"url_hash": url_hash}).to_list(length=5)
     assert len(listings) == 1
     assert listings[0]["role"] == "Backend Engineer"
-    assert listings[0]["watchlist_user_id"] == uid
+    assert "watchlist_user_id" not in listings[0]
+
+
+@pytest.mark.asyncio(loop_scope="session")
+async def test_watchlist_scan_sets_watchlist_user_id_on_insert(app, test_user):
+    user, _ = test_user
+    uid = ObjectId(user["id"])
+    apply_url = "https://boards.greenhouse.io/acme/jobs/456"
+    url_hash = compute_url_hash(apply_url)
+
+    await database.get_collection("users").update_one(
+        {"_id": uid},
+        {"$set": {
+            "watchlist_companies": [
+                {"name": "Acme", "careers_url": "https://boards.greenhouse.io/acme"},
+            ],
+        }},
+    )
+
+    payload = [{
+        "id": 456,
+        "title": "Platform Engineer",
+        "absolute_url": apply_url,
+        "location": {"name": "Remote"},
+    }]
+
+    with patch("watchlist.scan.fetch_api_listings", new_callable=AsyncMock) as mock_fetch:
+        mock_fetch.return_value = parse_greenhouse_jobs(
+            payload,
+            "Acme",
+            "https://boards.greenhouse.io/acme",
+        )
+        await watchlist_scan()
+
+    listing = await database.get_collection("job_listings").find_one({"url_hash": url_hash})
+    assert listing is not None
+    assert listing["watchlist_user_id"] == uid
