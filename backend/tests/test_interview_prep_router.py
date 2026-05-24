@@ -11,14 +11,19 @@ from tests.conftest import as_anonymous, as_user
 
 pytestmark = pytest.mark.asyncio(loop_scope="session")
 
+# Valid ObjectId shape; app need not exist for unauthenticated 401 checks.
+_UNAUTH_APP_ID = "507f1f77bcf86cd799439011"
+
 
 # Interview prep stream endpoint tests
 
-async def test_interview_prep_stream_unauthenticated(client, test_app_id):
+async def test_interview_prep_stream_unauthenticated(client):
     """GET /api/applications/{app_id}/interview-prep without auth returns 401."""
     # Act
     with as_anonymous(client):
-        response = await client.get(f"/api/applications/{test_app_id}/interview-prep")
+        response = await client.get(
+            f"/api/applications/{_UNAUTH_APP_ID}/interview-prep"
+        )
 
     # Assert
     assert response.status_code == 401
@@ -83,11 +88,13 @@ async def test_interview_prep_stream_no_company(client, test_user):
 
 # Follow-up draft endpoint tests
 
-async def test_follow_up_draft_unauthenticated(client, test_app_id):
+async def test_follow_up_draft_unauthenticated(client):
     """POST /api/applications/{app_id}/follow-up-draft without auth returns 401."""
     # Act
     with as_anonymous(client):
-        response = await client.post(f"/api/applications/{test_app_id}/follow-up-draft")
+        response = await client.post(
+            f"/api/applications/{_UNAUTH_APP_ID}/follow-up-draft"
+        )
 
     # Assert
     assert response.status_code == 401
