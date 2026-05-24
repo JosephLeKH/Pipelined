@@ -17,3 +17,19 @@ Started: Sat May 23 2026
 **Testing:** `npm run test -- --run src/components/ApplyPackSection.test.jsx src/components/DetailPanelBody.test.jsx` — 4 passed; `npm run build` — ok
 
 ---
+
+## US-976: Autopilot approve includes apply pack hints ✅ COMPLETE
+
+**Implementation:** Autopilot prep generates talking_points; PendingOpportunityCard displays them with apply pack hint; approve seeds application.apply_pack for detail panel.
+
+**Testing:** `npm run test -- --run src/components/PendingOpportunityCard.test.jsx src/pages/PendingInboxPage.test.jsx` — 6 passed; `pytest tests/test_autopilot.py tests/test_prep_generator.py -v` — 5 passed
+
+---
+
+## US-977: Extension apply hints stub ✅ COMPLETE
+
+**Implementation:** Popup apply-hints section reads talking_points from chrome.storage.local recent_saves; background normalizes apply_pack.talking_points on save. Read-only — no auto-fill.
+
+**Testing:** `cd extension && npm test` — 251 passed
+
+---
