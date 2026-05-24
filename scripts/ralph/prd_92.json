@@ -68,8 +68,8 @@
         "No visible banner flash on dashboard load when Gmail is already connected"
       ],
       "priority": "high",
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Updated InboxSetupBanner to destructure isLoading from useGmailStatus(). Early return checks isLoading and prevents flash. Also added aria-live, aria-atomic, and aria-label accessibility attributes. Shows agent-active chip when connected with apps_tracked > 0."
     },
     {
       "id": "US-867",
@@ -108,8 +108,8 @@
         "Other hooks in useGmailStatus.js (mutations) are unaffected"
       ],
       "priority": "medium",
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added useAuth hook import and call in useGmailStatus. Added enabled: !!user to useQuery config to prevent 401 requests for unauthenticated users."
     }
   ]
 }
