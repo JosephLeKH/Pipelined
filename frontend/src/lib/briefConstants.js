@@ -25,6 +25,16 @@ export const MISSION_SECTION_LABELS = {
   pending_approvals: "Autopilot match",
 };
 
+/** Priority pill styles keyed by mission section — clay brand palette accents. */
+export const MISSION_PRIORITY_PILL_STYLES = {
+  follow_ups: "bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-700/50",
+  interviews: "bg-blue-50 text-blue-800 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-700/50",
+  high_matches: "bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-700/50",
+  pending_approvals: "bg-brand-50 text-brand-800 border-brand-200 dark:bg-brand-900/30 dark:text-brand-300 dark:border-brand-800/50",
+};
+
+export const MISSION_HERO_PRIORITY = 1;
+
 export const BRIEF_UNAVAILABLE_MESSAGE = "Brief not available right now — try again later";
 
 const SCORE_PATTERN = /(?:Match|Fit) score (\d+)/;

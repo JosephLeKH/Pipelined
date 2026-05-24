@@ -1,0 +1,55 @@
+{
+  "id": "prd_120",
+  "title": "UI/UX Polish Wave 2 — Agent Surfaces",
+  "description": "Premium polish on Today, CoPilot, ApplyPack, MockInterview, Agent settings using designTokens.",
+  "userStories": [
+    {
+      "id": "US-1005",
+      "title": "Today page premium polish",
+      "description": "Mission card hierarchy, #1 hero, priority pills, empty state, subtle animation.",
+      "acceptanceCriteria": [
+        "Visual hierarchy",
+        "Empty state",
+        "Build passes"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-1006",
+      "title": "CoPilotPanel chat UX",
+      "description": "Typing indicator, prompt chips, message bubbles, mobile full-screen.",
+      "acceptanceCriteria": [
+        "Streaming UX",
+        "Mobile responsive"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-1007",
+      "title": "ApplyPack and MockInterview visual pass",
+      "description": "AiSection spacing, copy toast, debrief card accent.",
+      "acceptanceCriteria": [
+        "Design system consistent"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-1008",
+      "title": "Settings agent surfaces unified tab",
+      "description": "Agent Profile + Activity + Watchlist under one Agent tab.",
+      "acceptanceCriteria": [
+        "Single Agent tab",
+        "Tests pass"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

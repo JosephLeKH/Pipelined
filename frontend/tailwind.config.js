@@ -111,9 +111,19 @@ export default {
           from: { transform: "translateX(100%)" },
           to: { transform: "translateX(0)" },
         },
+        fadeInUp: {
+          from: { opacity: "0", transform: "translateY(8px)" },
+          to: { opacity: "1", transform: "translateY(0)" },
+        },
+        pulseSoft: {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0.5" },
+        },
       },
       animation: {
         "slide-in-right": "slideInRight 0.25s ease-out",
+        "fade-in-up": "fadeInUp 0.4s ease-out forwards",
+        "pulse-soft": "pulseSoft 1.4s ease-in-out infinite",
       },
       borderRadius: {
         lg: "var(--radius)",

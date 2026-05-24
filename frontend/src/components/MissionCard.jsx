@@ -9,19 +9,18 @@ import Target from "lucide-react/dist/esm/icons/target";
 
 import AiSection from "./AiSection";
 import FitBadge from "./FitBadge";
+import MissionPriorityPill from "./MissionPriorityPill";
 import { Button } from "./ui/button";
 import {
   BRIEF_SECTION_ACCENTS,
-  MISSION_SECTION_LABELS,
   parseBriefItemScore,
 } from "../lib/briefConstants";
-import { BADGE_DEFAULT, BUTTON_GHOST, BUTTON_SECONDARY } from "../lib/designTokens";
+import { BUTTON_GHOST, BUTTON_SECONDARY } from "../lib/designTokens";
 
 const FIT_BADGE_SECTIONS = new Set(["high_matches", "pending_approvals"]);
 
 function MissionCard({ mission, onSnooze, onDone, isSnoozing, isCompleting }) {
   const accent = BRIEF_SECTION_ACCENTS[mission.section] ?? "border-l-brand-500";
-  const sectionLabel = MISSION_SECTION_LABELS[mission.section] ?? "Mission";
   const fitScore = FIT_BADGE_SECTIONS.has(mission.section)
     ? parseBriefItemScore(mission.body)
     : null;
@@ -33,9 +32,7 @@ function MissionCard({ mission, onSnooze, onDone, isSnoozing, isCompleting }) {
       icon={Target}
       className={accent}
       headerExtra={
-        <span className={BADGE_DEFAULT}>
-          #{mission.priority} · {sectionLabel}
-        </span>
+        <MissionPriorityPill priority={mission.priority} section={mission.section} />
       }
     >
       <p className="text-sm text-muted-foreground">{mission.reason}</p>

@@ -90,7 +90,7 @@ describe("TodayPage", () => {
   it("should render hero with top mission and reason", async () => {
     render(<TodayPage />, { wrapper: makeWrapper() });
 
-    expect(await screen.findByText("Top priority")).toBeInTheDocument();
+    expect(await screen.findByText(/Mission #1/i)).toBeInTheDocument();
     expect(screen.getAllByText("Acme — follow-up overdue").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Follow-up is overdue — respond today").length).toBeGreaterThan(0);
   });
