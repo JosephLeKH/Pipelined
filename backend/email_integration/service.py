@@ -12,6 +12,13 @@ import structlog
 from bson import ObjectId
 from bson.errors import InvalidId
 
+from ai.agent_log import (
+    AGENT_TYPE_CLASSIFY,
+    AGENT_TYPE_PREP,
+    STATUS_FAILED,
+    STATUS_SUCCESS,
+    log_agent_run,
+)
 from applications.interview_prep.agent import run_agent
 from applications.schemas import ApplicationCreate, ApplicationUpdate, OfferDetails
 from applications.service import DuplicateApplicationError
@@ -406,6 +413,13 @@ async def _process_message(
     if not result:
         return False, False
 
+    await log_agent_run(
+        user_id,
+        AGENT_TYPE_CLASSIFY,
+        STATUS_SUCCESS,
+        f"Classified email: {result.get('company', 'Unknown')} — {result.get('stage', 'Applied')}",
+    )
+
     company: str = result.get("company", "")
     role_title: str = result.get("role_title") or ""
     stage = STAGE_MAP.get(result.get("stage", "Applied"), "Applied")
@@ -607,6 +621,13 @@ async def _trigger_interview_prep(
                         }
                     },
                 )
+                await log_agent_run(
+                    user_id,
+                    AGENT_TYPE_PREP,
+                    STATUS_SUCCESS,
+                    f"Interview prep ready for {company}",
+                    application_id=app_id,
+                )
                 from notifications.notification_service import create_notification  # noqa: PLC0415
 
                 role_label = role or "your role"
@@ -623,6 +644,13 @@ async def _trigger_interview_prep(
         await apps.update_one(
             {"_id": _to_oid(app_id), "user_id": _to_oid(user_id)},
             {"$set": {"interview_prep_status": INTERVIEW_PREP_STATUS_FAILED}},
+        )
+        await log_agent_run(
+            user_id,
+            AGENT_TYPE_PREP,
+            STATUS_FAILED,
+            f"Interview prep failed for {company}",
+            application_id=app_id,
         )
 
 

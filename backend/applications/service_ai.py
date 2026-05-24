@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 import structlog
 from bson import ObjectId
 
+from ai.agent_log import AGENT_TYPE_FIT, STATUS_FAILED, STATUS_SUCCESS, log_agent_run
 from applications.schemas import ApplicationCreate
 from database import get_collection
 from parsing.ai_cache import QuotaExceededError
@@ -82,12 +83,16 @@ async def _score_and_update(
         return
     except Exception:
         logger.error("fit_score_scoring_failed", app_id=app_id, user_id=user_id, exc_info=True)
+        await log_agent_run(
+            user_id, AGENT_TYPE_FIT, STATUS_FAILED, "Fit score failed", application_id=app_id
+        )
         return
     if result.get("fit_score") is None:
         return
     try:
         apps = get_collection("applications")
-        ai_analysis = {**result, "scored_at": datetime.now(timezone.utc)}
+        match_reason = result.get("summary") or ""
+        ai_analysis = {**result, "match_reason": match_reason, "scored_at": datetime.now(timezone.utc)}
         update_result = await apps.update_one(
             {"_id": ObjectId(app_id), "user_id": ObjectId(user_id)},
             {"$set": {"ai_analysis": ai_analysis}},
@@ -96,5 +101,12 @@ async def _score_and_update(
             logger.warning("fit_score_user_mismatch", app_id=app_id, user_id=user_id)
             return
         logger.info("fit_score_saved", app_id=app_id, fit_score=result["fit_score"])
+        await log_agent_run(
+            user_id,
+            AGENT_TYPE_FIT,
+            STATUS_SUCCESS,
+            f"Fit score {result['fit_score']}: {match_reason[:120]}",
+            application_id=app_id,
+        )
     except Exception:
         logger.error("fit_score_persist_failed", app_id=app_id, user_id=user_id, exc_info=True)

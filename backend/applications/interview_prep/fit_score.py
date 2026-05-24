@@ -9,6 +9,7 @@ import structlog
 from bson import ObjectId
 from openai import AsyncOpenAI
 
+from ai.agent_log import AGENT_TYPE_FIT, STATUS_FAILED, STATUS_SUCCESS, log_agent_run
 from ai.openrouter_client import OpenRouterError, complete_json_with_usage
 from config import settings
 from database import get_collection
@@ -113,16 +114,28 @@ async def compute_fit_score(
 
     if result is None:
         log.warning("fit_score_failed", app_id=app_id)
+        await log_agent_run(
+            user_id, AGENT_TYPE_FIT, STATUS_FAILED, "Fit score generation failed", application_id=app_id
+        )
         return None
 
+    reason = result.get("reason", "")
     await get_collection("applications").update_one(
         {"_id": ObjectId(app_id), "user_id": ObjectId(user_id)},
         {
             "$set": {
                 "fit_score": result["score"],
-                "fit_score_reason": result["reason"],
+                "fit_score_reason": reason,
+                "match_reason": reason,
                 "fit_score_at": datetime.now(timezone.utc),
             }
         },
+    )
+    await log_agent_run(
+        user_id,
+        AGENT_TYPE_FIT,
+        STATUS_SUCCESS,
+        f"Fit score {result['score']}: {reason[:120]}",
+        application_id=app_id,
     )
     return result

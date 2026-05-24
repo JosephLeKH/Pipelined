@@ -16,6 +16,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import StreamingResponse
 from openai import AsyncOpenAI
 
+from ai.agent_log import AGENT_TYPE_PREP, STATUS_FAILED, STATUS_SUCCESS, log_agent_run
 from ai.openrouter_client import OpenRouterError, agent_llm_configured, complete_json_with_usage
 from auth.dependencies import get_verified_user as get_current_user
 from config import settings
@@ -107,9 +108,32 @@ async def interview_prep_stream(
                 exa_api_key=settings.exa_api_key,
             ):
                 event_type = event.pop("type")
+                if event_type == "done":
+                    await log_agent_run(
+                        user_id,
+                        AGENT_TYPE_PREP,
+                        STATUS_SUCCESS,
+                        f"Interview prep ready for {company}",
+                        application_id=app_id,
+                    )
+                elif event_type == "error":
+                    await log_agent_run(
+                        user_id,
+                        AGENT_TYPE_PREP,
+                        STATUS_FAILED,
+                        f"Interview prep failed for {company}",
+                        application_id=app_id,
+                    )
                 yield f"event: {event_type}\ndata: {json.dumps(event)}\n\n"
         except Exception as e:
             logger.exception("interview_prep_stream_error", app_id=app_id, error=str(e))
+            await log_agent_run(
+                user_id,
+                AGENT_TYPE_PREP,
+                STATUS_FAILED,
+                f"Interview prep failed for {company}",
+                application_id=app_id,
+            )
             payload = json.dumps({"message": "An unexpected error occurred. Please try again."})
             yield f"event: error\ndata: {payload}\n\n"
 

@@ -124,6 +124,7 @@ async def ensure_indexes() -> None:
     morning_briefs = get_collection("morning_briefs")
     morning_brief_on_demand = get_collection("morning_brief_on_demand")
     pending_opportunities = get_collection("pending_opportunities")
+    agent_runs = get_collection("agent_runs")
 
     await asyncio.gather(
         _ensure_app_event_listing_indexes(apps, events, listings),
@@ -138,5 +139,10 @@ async def ensure_indexes() -> None:
             unique=True,
             partialFilterExpression={"status": "pending"},
             name="pending_user_listing_unique",
+        ),
+        agent_runs.create_index([("user_id", 1), ("created_at", -1)], name="agent_runs_user_date"),
+        agent_runs.create_index(
+            [("user_id", 1), ("application_id", 1), ("created_at", -1)],
+            name="agent_runs_user_app_date",
         ),
     )

@@ -5,6 +5,7 @@ from zoneinfo import ZoneInfo
 
 import structlog
 
+from ai.agent_log import AGENT_TYPE_BRIEF, STATUS_SUCCESS, log_agent_run
 from auth.constants import DEFAULT_MORNING_BRIEF_HOUR, DEFAULT_MORNING_BRIEF_IN_APP, DEFAULT_TIMEZONE
 from database import get_collection
 from notifications.morning_brief import (
@@ -53,4 +54,6 @@ async def send_due_morning_briefs(now_utc: dt.datetime | None = None) -> None:
                 body=stored.get("summary_line", "View your daily action list."),
                 action_url="/today",
             )
+        summary = stored.get("summary_line", "Morning brief generated")
+        await log_agent_run(user_id, AGENT_TYPE_BRIEF, STATUS_SUCCESS, summary)
         logger.info("morning_brief_delivered", user_id=user_id, date=local_date)
