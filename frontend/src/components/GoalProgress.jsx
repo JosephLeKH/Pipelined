@@ -7,12 +7,16 @@ import { toast } from "sonner";
 import { cn } from "../lib/utils";
 
 import Flame from "lucide-react/dist/esm/icons/flame";
+import Target from "lucide-react/dist/esm/icons/target";
 
 import { useApplicationStats } from "../hooks/useApplications";
 import { useAuth } from "../context/AuthContext";
 
 const RING_RADIUS = 36;
 const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
+const INLINE_RING_RADIUS = 20;
+const INLINE_RING_CIRCUMFERENCE = 2 * Math.PI * INLINE_RING_RADIUS;
+const INLINE_RING_SIZE = INLINE_RING_RADIUS * 2 + 6;
 const DEFAULT_WEEKLY_GOAL = 5;
 const MINI_BAR_WIDTH_PX = 96;
 const MINI_BAR_HEIGHT_PX = 4;
@@ -141,6 +145,68 @@ function GoalProgressExpanded({ appliedThisWeek, weeklyGoal, currentStreak, pct,
   );
 }
 
+function GoalProgressInline({ appliedThisWeek, weeklyGoal, currentStreak, pct, reducedMotion, isLoading }) {
+  if (isLoading) {
+    return (
+      <div className="flex items-center gap-3 p-4" aria-hidden="true">
+        <div className="h-12 w-12 animate-pulse rounded-full bg-surface-2" />
+        <div className="flex flex-col gap-1">
+          <div className="h-7 w-16 animate-pulse rounded bg-surface-2" />
+          <div className="h-4 w-20 animate-pulse rounded bg-surface-2" />
+        </div>
+      </div>
+    );
+  }
+
+  const inlineDashOffset = INLINE_RING_CIRCUMFERENCE * (1 - pct);
+  const center = INLINE_RING_SIZE / 2;
+
+  return (
+    <div className="flex items-center gap-3 p-4" aria-label={`Weekly goal: ${appliedThisWeek} of ${weeklyGoal}`}>
+      <svg
+        width={INLINE_RING_SIZE}
+        height={INLINE_RING_SIZE}
+        viewBox={`0 0 ${INLINE_RING_SIZE} ${INLINE_RING_SIZE}`}
+        className="shrink-0"
+        aria-hidden="true"
+      >
+        <circle cx={center} cy={center} r={INLINE_RING_RADIUS} fill="none" strokeWidth={4} className="stroke-surface-2" />
+        <circle
+          cx={center}
+          cy={center}
+          r={INLINE_RING_RADIUS}
+          fill="none"
+          strokeWidth={4}
+          strokeLinecap="round"
+          strokeDasharray={INLINE_RING_CIRCUMFERENCE}
+          strokeDashoffset={inlineDashOffset}
+          transform={`rotate(-90 ${center} ${center})`}
+          className={cn(ringColor(pct), !reducedMotion && "[transition:stroke-dashoffset_0.4s_ease]")}
+        />
+      </svg>
+      <div className="flex min-w-0 flex-col gap-1">
+        <span className="text-2xl font-semibold leading-none text-text-1">
+          {appliedThisWeek}
+          <span className="text-text-3">/{weeklyGoal}</span>
+        </span>
+        <Link
+          to="/settings?section=pipeline"
+          className="inline-flex items-center gap-1.5 text-sm text-text-3 hover:text-text-1 motion-reduce:transition-none transition-colors duration-hover ease-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 focus-visible:outline-offset-2 dark:focus-visible:outline-1"
+        >
+          <Target className="h-4 w-4 shrink-0" aria-hidden="true" />
+          Weekly goal
+        </Link>
+        {currentStreak > 0 && (
+          <span className="inline-flex items-center gap-1 text-xs font-medium text-brand-600 dark:text-brand-300">
+            <Flame className="h-3.5 w-3.5" aria-hidden="true" />
+            {currentStreak}w streak
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function GoalProgress({ variant = "expanded" }) {
   const { data: stats, isLoading } = useApplicationStats();
   const { user } = useAuth();
@@ -166,6 +232,19 @@ function GoalProgress({ variant = "expanded" }) {
         appliedThisWeek={appliedThisWeek}
         weeklyGoal={weeklyGoal}
         pct={pct}
+        isLoading={isLoading}
+      />
+    );
+  }
+
+  if (variant === "inline") {
+    return (
+      <GoalProgressInline
+        appliedThisWeek={appliedThisWeek}
+        weeklyGoal={weeklyGoal}
+        currentStreak={currentStreak}
+        pct={pct}
+        reducedMotion={reducedMotion}
         isLoading={isLoading}
       />
     );

@@ -74,14 +74,14 @@ function useCountUp(target) {
   return current;
 }
 
-function MetricCard({ metricKey, label, stats, isLoading, Icon }) {
+function MetricCell({ metricKey, label, stats, isLoading, Icon }) {
   const rawValue = stats ? getRawValue(metricKey, stats) : null;
   const counted = useCountUp(rawValue);
   const displayValue = stats ? formatCounted(metricKey, counted, stats) : "N/A";
 
   if (isLoading) {
     return (
-      <div className="flex flex-col gap-1 rounded-lg border border-border-1 p-4" aria-label={`${label}: loading`}>
+      <div className="flex flex-col gap-1 p-4" aria-label={`${label}: loading`}>
         <div className="h-7 w-16 animate-pulse rounded bg-surface-2" />
         <div className="h-4 w-24 animate-pulse rounded bg-surface-2" />
       </div>
@@ -89,9 +89,9 @@ function MetricCard({ metricKey, label, stats, isLoading, Icon }) {
   }
 
   return (
-    <div className="flex flex-col gap-1 rounded-lg border border-border-1 p-4" aria-label={`${label}: ${displayValue}`}>
-      <span className="text-2xl font-semibold text-text-1">{displayValue}</span>
-      <span className="flex items-center gap-1.5 text-sm text-text-3">
+    <div className="flex flex-col gap-1 p-4" aria-label={`${label}: ${displayValue}`}>
+      <span className="text-2xl font-semibold leading-none text-text-1">{displayValue}</span>
+      <span className="mt-1 flex items-center gap-1.5 text-sm text-text-3">
         <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
         {label}
       </span>
@@ -166,18 +166,21 @@ function StatsBar({ filtersActive = false }) {
       </div>
 
       {expanded && (
-        <div className="flex flex-col gap-4 motion-reduce:transition-none">
-          <GoalProgress variant="expanded" />
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
+        <div className="overflow-hidden rounded-lg border border-border-1 motion-reduce:transition-none">
+          <div className="grid grid-cols-1 gap-px bg-border-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
+            <div className="bg-surface-0">
+              <GoalProgress variant="inline" />
+            </div>
             {METRIC_CONFIG.map(({ key, label, Icon }) => (
-              <MetricCard
-                key={key}
-                metricKey={key}
-                label={label}
-                stats={stats ?? null}
-                isLoading={isLoading}
-                Icon={Icon}
-              />
+              <div key={key} className="bg-surface-0">
+                <MetricCell
+                  metricKey={key}
+                  label={label}
+                  stats={stats ?? null}
+                  isLoading={isLoading}
+                  Icon={Icon}
+                />
+              </div>
             ))}
           </div>
         </div>
