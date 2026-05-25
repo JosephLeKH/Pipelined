@@ -42,9 +42,9 @@ export function useCopilotChat() {
 
     (async () => {
       try {
-        const { data } = await getCopilotSession();
-        if (!cancelled && data?.messages?.length) {
-          setMessages(fromSessionMessages(data.messages));
+        const session = await getCopilotSession();
+        if (!cancelled && session?.messages?.length) {
+          setMessages(fromSessionMessages(session.messages));
         }
       } catch {
         // Session hydration is best-effort.

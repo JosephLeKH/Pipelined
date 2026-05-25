@@ -7,6 +7,7 @@ def _sections(**kwargs: list[dict]) -> dict:
     return {
         "follow_ups": kwargs.get("follow_ups", []),
         "interviews": kwargs.get("interviews", []),
+        "oa_deadlines": kwargs.get("oa_deadlines", []),
         "high_matches": kwargs.get("high_matches", []),
         "pending_approvals": kwargs.get("pending_approvals", []),
         "watchlist_finds": kwargs.get("watchlist_finds", []),
@@ -82,3 +83,43 @@ def test_score_missions_ghosts_use_median_comparison_reason():
     assert "median response: 7 days" in ghost.reason
     assert "21 days" in ghost.reason
     assert missions[0].section == "follow_ups"
+
+
+def test_score_missions_ranks_oa_deadlines_above_high_matches():
+    sections = _sections(
+        oa_deadlines=[{
+            "title": "Gamma — Engineer",
+            "body": "Due in 2 days",
+            "action_url": "/dashboard?selected=507f1f77bcf86cd799439015",
+            "entity_id": "507f1f77bcf86cd799439015",
+        }],
+        high_matches=[{
+            "title": "Beta — Engineer",
+            "body": "Fit score 95",
+            "action_url": "/dashboard?selected=507f1f77bcf86cd799439012",
+            "entity_id": "507f1f77bcf86cd799439012",
+        }],
+    )
+
+    missions = score_missions(sections)
+    oa = next(m for m in missions if m.section == "oa_deadlines")
+    high = next(m for m in missions if m.section == "high_matches")
+
+    assert oa.priority < high.priority
+    assert oa.id == "507f1f77bcf86cd799439015"
+    assert "OA due in 2 days" in oa.reason
+
+
+def test_score_missions_oa_overdue_reason():
+    sections = _sections(
+        oa_deadlines=[{
+            "title": "Delta — SWE",
+            "body": "Overdue by 1 day",
+            "action_url": "/dashboard?selected=507f1f77bcf86cd799439016",
+            "entity_id": "507f1f77bcf86cd799439016",
+        }],
+    )
+
+    missions = score_missions(sections)
+
+    assert missions[0].reason == "OA overdue by 1 days — complete ASAP"

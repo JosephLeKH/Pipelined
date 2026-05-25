@@ -11,11 +11,11 @@ from auth.service import create_user
 from email_integration.deadline_parser import extract_oa_deadline, normalize_deadline
 from email_integration.service import _apply_oa_deadline_from_email, _process_message
 
-pytestmark = pytest.mark.asyncio(loop_scope="session")
 
 MOCK_DEADLINE = datetime(2026, 5, 30, 23, 59, tzinfo=timezone.utc)
 
 
+@pytest.mark.asyncio(loop_scope="session")
 async def test_extract_oa_deadline_returns_parsed_datetime(monkeypatch):
     """OpenRouter extract should return a timezone-aware datetime."""
     monkeypatch.setattr("email_integration.deadline_parser.settings.openrouter_api_key", "or-key")
@@ -48,6 +48,7 @@ def test_normalize_deadline_parses_date_only():
     assert result.minute == 59
 
 
+@pytest.mark.asyncio(loop_scope="session")
 async def test_apply_oa_deadline_sets_application_deadline(app):  # noqa: ARG001
     """OA extract should persist deadline on the application document."""
     user = await create_user("oa@example.com", "TestPass123!", "OA User")
@@ -80,6 +81,7 @@ async def test_apply_oa_deadline_sets_application_deadline(app):  # noqa: ARG001
     assert stored == MOCK_DEADLINE
 
 
+@pytest.mark.asyncio(loop_scope="session")
 async def test_process_message_extracts_deadline_on_oa_stage(app):  # noqa: ARG001
     """OA-stage email classification should trigger deadline extraction."""
     user = await create_user("oa-proc@example.com", "TestPass123!", "OA Proc")

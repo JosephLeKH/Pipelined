@@ -2,7 +2,7 @@
 
 import { describe, it, expect } from "vitest";
 
-import { formatBriefHour, getBriefEmptyMessage, parseBriefItemScore } from "./briefConstants";
+import { formatBriefHour, getBriefEmptyMessage, parseBriefItemScore, parseDeadlineLabel } from "./briefConstants";
 
 describe("briefConstants", () => {
   it("should format morning hours for display", () => {
@@ -20,5 +20,24 @@ describe("briefConstants", () => {
     expect(parseBriefItemScore("Match score 91")).toBe(91);
     expect(parseBriefItemScore("Fit score 82")).toBe(82);
     expect(parseBriefItemScore("Draft ready")).toBeNull();
+  });
+
+  it("should parse deadline labels from OA brief item body", () => {
+    expect(parseDeadlineLabel("Due in 3 days")).toEqual({
+      label: "Due in 3 days",
+      tone: "soon",
+    });
+    expect(parseDeadlineLabel("Due in 1 day")).toEqual({
+      label: "Due in 1 day",
+      tone: "urgent",
+    });
+    expect(parseDeadlineLabel("Due today")).toEqual({
+      label: "Due today",
+      tone: "urgent",
+    });
+    expect(parseDeadlineLabel("Overdue by 2 days")).toEqual({
+      label: "Overdue 2 days",
+      tone: "overdue",
+    });
   });
 });

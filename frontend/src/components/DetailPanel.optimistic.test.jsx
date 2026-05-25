@@ -34,6 +34,7 @@ vi.mock("./ResumeInsightsSection", () => ({ default: () => null }));
 vi.mock("./OfferDetailsSection", () => ({ default: () => null }));
 vi.mock("./OfferSummarySection", () => ({ default: () => null }));
 vi.mock("./FollowUpDraftSection", () => ({ default: () => null }));
+vi.mock("./ThreadSummarySection", () => ({ default: () => null }));
 
 import { useUpdateApplication, useDeleteApplication, useRestoreApplication } from "../hooks/useApplications";
 import DetailPanel from "./DetailPanel";

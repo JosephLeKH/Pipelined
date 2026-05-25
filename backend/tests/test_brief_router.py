@@ -1,8 +1,12 @@
 """Tests for GET /api/brief/today and /history."""
 
+import datetime as dt
+
 import pytest
 import pytest_asyncio
+from bson import ObjectId
 
+import database
 from tests.conftest import verify_user_by_id
 
 REGISTER_PAYLOAD = {
@@ -73,3 +77,36 @@ async def test_get_brief_today_requires_verified_email(client, monkeypatch):
 
     assert response.status_code == 403
     assert response.json()["detail"]["code"] == "EMAIL_NOT_VERIFIED"
+
+
+@pytest.mark.asyncio(loop_scope="session")
+async def test_get_brief_today_includes_oa_deadline_missions(client, brief_api_user):
+    user_id, cookies = brief_api_user
+
+    today = dt.date.today()
+    deadline = dt.datetime.combine(
+        today + dt.timedelta(days=2), dt.time(23, 59), tzinfo=dt.timezone.utc,
+    )
+    app_result = await database.get_collection("applications").insert_one({
+        "user_id": ObjectId(user_id),
+        "company": "DeadlineCo",
+        "role_title": "Engineer",
+        "current_stage": "OA",
+        "archived": False,
+        "deleted": False,
+        "deadline": deadline,
+    })
+    app_id = str(app_result.inserted_id)
+
+    response = await client.get("/api/brief/today", cookies=cookies)
+
+    assert response.status_code == 200
+    data = response.json()["data"]
+    oa_section = data["sections"].get("oa_deadlines", [])
+    assert len(oa_section) >= 1
+    assert any("DeadlineCo" in item["title"] for item in oa_section)
+
+    oa_missions = [m for m in data["missions"] if m["section"] == "oa_deadlines"]
+    assert len(oa_missions) >= 1
+    assert oa_missions[0]["id"] == app_id
+    assert "OA due in" in oa_missions[0]["reason"]
