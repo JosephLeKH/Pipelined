@@ -43,8 +43,9 @@ const TOP_COMPANIES = [
 ];
 
 const FUNNEL_DATA = [
-  { stage: "Applied", entered_count: 20, exited_to_next_count: 10, conversion_rate: 0.5, avg_days_in_stage: 7.2 },
-  { stage: "Offer", entered_count: 5, exited_to_next_count: 2, conversion_rate: 0.4, avg_days_in_stage: null },
+  { stage: "Applied", entered_count: 20, exited_to_next_count: 10, conversion_rate: 0.5, avg_days_in_stage: 7.2, dropped_count: 10 },
+  { stage: "Phone Screen", entered_count: 10, exited_to_next_count: 5, conversion_rate: 0.5, avg_days_in_stage: 5.0, dropped_count: 5 },
+  { stage: "Offer", entered_count: 5, exited_to_next_count: 2, conversion_rate: 0.4, avg_days_in_stage: null, dropped_count: 3 },
 ];
 
 const TAG_DATA = [
@@ -86,11 +87,6 @@ describe("AnalyticsMainCharts", () => {
     expect(screen.getByText("Applications per Week")).toBeInTheDocument();
   });
 
-  it("should render Stage Funnel heading", () => {
-    render(<AnalyticsMainCharts analytics={ANALYTICS} />);
-    expect(screen.getByText("Stage Funnel")).toBeInTheDocument();
-  });
-
   it("should render Response Rate by Month heading", () => {
     render(<AnalyticsMainCharts analytics={ANALYTICS} />);
     expect(screen.getByText("Response Rate by Month")).toBeInTheDocument();
@@ -117,6 +113,11 @@ describe("AnalyticsMainCharts", () => {
 });
 
 describe("AnalyticsFunnelSection", () => {
+  it("should render Pipeline funnel heading", () => {
+    render(<AnalyticsFunnelSection funnelData={FUNNEL_DATA} />);
+    expect(screen.getByText("Pipeline funnel")).toBeInTheDocument();
+  });
+
   it("should render Conversion Rates by Stage heading", () => {
     render(<AnalyticsFunnelSection funnelData={FUNNEL_DATA} />);
     expect(screen.getByText("Conversion Rates by Stage")).toBeInTheDocument();

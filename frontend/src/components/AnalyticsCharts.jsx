@@ -9,6 +9,8 @@ import { YAxis } from "recharts/es6/cartesian/YAxis";
 import { Tooltip } from "recharts/es6/component/Tooltip";
 import { ResponsiveContainer } from "recharts/es6/component/ResponsiveContainer";
 
+import { PipelineFunnel } from "./PipelineFunnel";
+
 const CHART_COLORS = {
   series1: "#8C1515",
   series2: "#3B82F6",
@@ -120,21 +122,6 @@ function WeeklyApplicationsChart({ data }) {
   );
 }
 
-function StageFunnelChart({ data }) {
-  return (
-    <ChartCard title="Stage Funnel" description="Distribution of applications across pipeline stages">
-      <ChartContainer data={data} valueKey="count" ariaLabel="Bar chart: Stage Funnel">
-        <BarChart data={data} layout="vertical">
-          <XAxis type="number" allowDecimals={false} {...axisProps()} />
-          <YAxis type="category" dataKey="stage" {...axisProps({ width: 90 })} />
-          <Tooltip content={<CustomTooltip />} />
-          <Bar dataKey="count" name="Applications" fill={CHART_COLORS.series2} radius={BAR_RADIUS_RIGHT} />
-        </BarChart>
-      </ChartContainer>
-    </ChartCard>
-  );
-}
-
 function ResponseRateChart({ data }) {
   return (
     <ChartCard title="Response Rate by Month" description="Percentage of applications that received a response">
@@ -181,7 +168,6 @@ function AnalyticsMainCharts({ analytics }) {
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
       <WeeklyApplicationsChart data={analytics.applications_by_week} />
-      <StageFunnelChart data={analytics.stage_funnel} />
       <ResponseRateChart data={analytics.response_rate_by_month} />
       <TopCompaniesChart data={analytics.top_companies} />
     </div>
@@ -264,26 +250,11 @@ function ConversionRatesTable({ data }) {
   );
 }
 
-function FunnelBarChart({ data }) {
-  return (
-    <ChartCard title="Stage Conversion Funnel" description="Applications entering each stage">
-      <ChartContainer data={data} valueKey="entered_count" ariaLabel="Bar chart: Stage Conversion Funnel">
-        <BarChart data={data} layout="vertical">
-          <XAxis type="number" allowDecimals={false} {...axisProps()} />
-          <YAxis type="category" dataKey="stage" {...axisProps({ width: 110 })} />
-          <Tooltip content={<CustomTooltip />} />
-          <Bar dataKey="entered_count" name="Applications Entered" fill={CHART_COLORS.series5} radius={BAR_RADIUS_RIGHT} />
-        </BarChart>
-      </ChartContainer>
-    </ChartCard>
-  );
-}
-
 function AnalyticsFunnelSection({ funnelData }) {
   if (!funnelData.length) return null;
   return (
     <>
-      <FunnelBarChart data={funnelData} />
+      <PipelineFunnel funnelData={funnelData} />
       <ConversionRatesTable data={funnelData} />
     </>
   );

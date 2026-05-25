@@ -183,8 +183,8 @@ function Analytics() {
             <div className="flex flex-col gap-6">
               <AnalyticsKpiGrid analytics={analytics} stats={stats} />
               <AnalyticsMainCharts analytics={analytics} />
-              {tagOfferRates.length > 0 && <AnalyticsTagsTable tagOfferRates={tagOfferRates} />}
               <AnalyticsFunnelSection funnelData={funnelData} />
+              {tagOfferRates.length > 0 && <AnalyticsTagsTable tagOfferRates={tagOfferRates} />}
             </div>
           </ErrorBoundary>
         )}

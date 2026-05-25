@@ -139,7 +139,7 @@ describe("Analytics", () => {
     renderAnalytics();
 
     expect(await screen.findByText("Applications per Week")).toBeInTheDocument();
-    expect(screen.getByText("Stage Funnel")).toBeInTheDocument();
+    expect(screen.queryByText("Stage Funnel")).not.toBeInTheDocument();
     expect(screen.getByText("Response Rate by Month")).toBeInTheDocument();
     expect(screen.getByText("Top 10 Companies Applied To")).toBeInTheDocument();
   });
@@ -175,10 +175,17 @@ describe("Analytics", () => {
     expect(screen.getByText("Last 30 days").className).toMatch(/bg-primary/);
   });
 
-  it("should render the funnel chart section heading", async () => {
+  it("should render the pipeline funnel section heading", async () => {
     renderAnalytics();
 
-    expect(await screen.findByText("Stage Conversion Funnel")).toBeInTheDocument();
+    expect(await screen.findByText("Pipeline funnel")).toBeInTheDocument();
+  });
+
+  it("should render drop-off between funnel stages", async () => {
+    renderAnalytics();
+
+    // Applied 10 → Phone Screen 7: −30% drop-off (3 lost)
+    expect(await screen.findByText(/−30% drop-off \(3 lost\)/)).toBeInTheDocument();
   });
 
   it("should render the conversion rates table heading", async () => {
@@ -193,8 +200,8 @@ describe("Analytics", () => {
     await screen.findByText("Conversion Rates by Stage");
 
     expect(screen.getAllByText("Applied").length).toBeGreaterThanOrEqual(1);
-    expect(screen.getByText("Phone Screen")).toBeInTheDocument();
-    expect(screen.getByText("Offer")).toBeInTheDocument();
+    expect(screen.getAllByText("Phone Screen").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText("Offer").length).toBeGreaterThanOrEqual(1);
   });
 
   it("should color-code high conversion rate in brand color", async () => {
