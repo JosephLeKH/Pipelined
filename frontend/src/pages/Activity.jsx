@@ -9,6 +9,7 @@ import ArrowRight from "lucide-react/dist/esm/icons/arrow-right";
 import CalendarDays from "lucide-react/dist/esm/icons/calendar-days";
 
 import { useActivityFeed } from "../hooks/useActivity";
+import EmptyState from "../components/EmptyState";
 import { Button } from "../components/ui/button";
 
 const DATE_LABEL_TODAY = "Today";
@@ -198,15 +199,17 @@ function ActivityTimeline({ isLoading, entries, onEntryClick }) {
 
   if (entries.length === 0) {
     return (
-      <div className="rounded-xl bg-card border border-border px-6 py-16 text-center">
-        <Activity className="mx-auto mb-3 h-10 w-10 text-muted-foreground/40" aria-hidden="true" />
-        <p className="text-sm font-medium text-foreground">No activity yet</p>
-        <p className="mt-1 text-xs text-muted-foreground">
-          Actions will appear here as you apply, move stages, and schedule interviews.
-        </p>
-        <Button asChild variant="outline" size="sm" className="mt-4">
-          <Link to="/dashboard">Go to dashboard</Link>
-        </Button>
+      <div className="rounded-xl border border-border-1 bg-surface-0">
+        <EmptyState
+          icon={Activity}
+          title="No activity yet"
+          description="Actions will appear here as you apply, move stages, and schedule interviews."
+          action={
+            <Button asChild variant="outline" size="sm">
+              <Link to="/dashboard">Go to dashboard</Link>
+            </Button>
+          }
+        />
       </div>
     );
   }

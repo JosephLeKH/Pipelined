@@ -7,7 +7,12 @@ vi.mock("./ApiErrorMessage", () => ({
 }));
 
 vi.mock("./EmptyState", () => ({
-  default: ({ title }) => <div data-testid="empty-state">{title}</div>,
+  default: ({ title, action }) => (
+    <div data-testid="empty-state">
+      {title}
+      {action}
+    </div>
+  ),
 }));
 
 vi.mock("./SkeletonRow", () => ({
