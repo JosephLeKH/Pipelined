@@ -73,7 +73,7 @@ function FilterBar() {
         {filterSummary}
       </span>
       {includeArchived && <ArchivedBanner />}
-      <div className="flex h-7 flex-nowrap items-center gap-1 overflow-x-auto md:flex-wrap md:overflow-visible">
+      <div className="flex min-h-7 flex-nowrap items-center gap-y-2 gap-x-1 overflow-x-auto md:flex-wrap md:overflow-visible">
         <MultiSelectFilterDropdown
           label="Stage"
           paramKey="stage"

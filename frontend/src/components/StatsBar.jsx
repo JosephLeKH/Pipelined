@@ -142,9 +142,9 @@ function StatsBar({ filtersActive = false }) {
 
   return (
     <div className="flex flex-col gap-3" data-testid="stats-bar">
-      <div className="flex items-center gap-3 py-1">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2 py-1">
         <CollapsedSummary stats={stats ?? null} isLoading={isLoading} />
-        <span className="hidden shrink-0 text-text-3 md:inline" aria-hidden="true">
+        <span className="hidden shrink-0 text-text-3 lg:inline" aria-hidden="true">
           |
         </span>
         <div className="min-w-0 shrink">
