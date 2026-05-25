@@ -1,6 +1,7 @@
 /** Side panel showing application details, inline notes, stage selector, and stage history. */
 
-import { useRef, useMemo } from "react";
+import { useRef, useMemo, useEffect } from "react";
+import { toast } from "sonner";
 
 import { useDetailPanelState } from "../hooks/useDetailPanelState";
 import { useDetailPanelKeyboard } from "../hooks/useDetailPanelKeyboard";
@@ -8,8 +9,8 @@ import { useSidebarCollapsed } from "../hooks/useSidebarCollapsed";
 import { DetailPanelHeader } from "./DetailPanelHeader";
 import { Button } from "./ui/button";
 import { PanelBody } from "./DetailPanelBody";
-import UndoToast from "./UndoToast";
 import { usePanelDrag } from "../hooks/usePanelDrag";
+import { showUndoToast } from "../lib/showUndoToast";
 import {
   DETAIL_PANEL_WIDTH_PX,
   DRAWER_ANIMATION_MS,
@@ -49,7 +50,6 @@ function PanelContent({
   isOpen,
   panelDragHandlers,
   actions,
-  undoPendingId,
   showDiscardDialog,
   expandFollowUpDraft,
 }) {
@@ -82,9 +82,6 @@ function PanelContent({
       )}
       {showDiscardDialog && (
         <DiscardDialog onDiscard={actions.onConfirmDiscard} onCancel={actions.onCancelDiscard} />
-      )}
-      {undoPendingId && (
-        <UndoToast message="Application deleted." onUndo={actions.onUndoDelete} onDismiss={actions.onUndoDismiss} />
       )}
     </>
   );
@@ -150,6 +147,15 @@ function DetailPanel({ application, onClose, onAddEvent, expandFollowUpDraft = f
     ? { transform: `translateY(${dragOffset}px)`, transition: "none" }
     : { transitionDuration: `${DRAWER_ANIMATION_MS}ms` };
 
+  useEffect(() => {
+    if (!undoPendingId) return undefined;
+    const toastId = showUndoToast("Application deleted.", {
+      onUndo: handleUndoDelete,
+      onDismiss: handleUndoDismiss,
+    });
+    return () => toast.dismiss(toastId);
+  }, [undoPendingId, handleUndoDelete, handleUndoDismiss]);
+
   return (
     <div
       ref={overlayRef}
@@ -187,7 +193,6 @@ function DetailPanel({ application, onClose, onAddEvent, expandFollowUpDraft = f
           isOpen={isOpen}
           panelDragHandlers={panelDragHandlers}
           actions={actions}
-          undoPendingId={undoPendingId}
           showDiscardDialog={showDiscardDialog}
           expandFollowUpDraft={expandFollowUpDraft}
         />

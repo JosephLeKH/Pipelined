@@ -2,6 +2,11 @@
 
 import { useState, useEffect } from "react";
 
+import WifiOff from "lucide-react/dist/esm/icons/wifi-off";
+
+const BANNER_FOCUS_RING =
+  "focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2";
+
 function OfflineBanner() {
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
 
@@ -25,9 +30,10 @@ function OfflineBanner() {
       role="status"
       aria-live="polite"
       data-testid="offline-banner"
-      className="fixed inset-x-0 top-0 z-50 bg-destructive px-4 py-2 text-center text-sm font-medium text-destructive-foreground"
+      className="flex h-9 items-center gap-3 border-b border-brand-800 bg-brand-700 px-4 text-xs text-white"
     >
-      You are offline — changes may not save
+      <WifiOff size={14} aria-hidden="true" className="shrink-0" />
+      <span>You are offline — changes may not save</span>
     </div>
   );
 }

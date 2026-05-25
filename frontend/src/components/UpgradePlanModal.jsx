@@ -5,12 +5,14 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 
-import Zap from "lucide-react/dist/esm/icons/zap";
+import Sparkles from "lucide-react/dist/esm/icons/sparkles";
 
 import { Button } from "./ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogTitle,
 } from "./ui/dialog";
 
 export const TIER_LIMIT_EXCEEDED_EVENT = "pipelined:tier_limit_exceeded";
@@ -48,32 +50,40 @@ function UpgradePlanModal() {
     ? (RESOURCE_LABELS[limitDetails.limit_name] ?? limitDetails.limit_name)
     : null;
 
+  const showUsage =
+    resourceLabel &&
+    limitDetails?.current_usage != null &&
+    limitDetails?.max_allowed != null;
+
   return (
     <Dialog open={visible} onOpenChange={(open) => { if (!open) handleDismiss(); }}>
-      <DialogContent className="sm:max-w-md">
-        <div className="flex flex-col items-center gap-4 py-4 text-center">
-          <Zap className="h-8 w-8 text-primary" />
+      <DialogContent className="max-w-[480px] gap-0 p-6">
+        <div className="flex flex-col items-center gap-3 py-2 text-center">
+          <Sparkles className="h-8 w-8 text-brand-600 dark:text-brand-400" aria-hidden="true" />
 
-          <div>
-            <h2 className="mb-2 text-lg font-semibold text-foreground">
-              You&apos;ve reached a free plan limit
-            </h2>
-            {resourceLabel && limitDetails?.current_usage != null && limitDetails?.max_allowed != null && (
-              <p className="mb-1 text-sm font-medium text-muted-foreground">
-                {resourceLabel}: {limitDetails.current_usage} / {limitDetails.max_allowed}
-              </p>
-            )}
-            <p className="text-sm text-muted-foreground">
-              Upgrade to Pro for unlimited access to all features.
+          <DialogTitle className="text-base font-semibold text-text-1">
+            Pipelined Pro
+          </DialogTitle>
+
+          {showUsage && (
+            <p className="text-sm font-medium text-text-2">
+              {resourceLabel}: {limitDetails.current_usage} / {limitDetails.max_allowed}
             </p>
-          </div>
+          )}
 
-          <div className="flex w-full flex-col gap-3">
-            <Button type="button" onClick={handleUpgrade} autoFocus className="w-full">
-              Upgrade to Pro
+          <DialogDescription className="max-w-sm text-sm text-text-2">
+            Unlock unlimited co-pilot, mock interviews, autopilot, resume insights, and
+            priority support.
+          </DialogDescription>
+
+          <p className="text-sm text-text-3">$5/mo · cancel anytime</p>
+
+          <div className="mt-3 flex w-full justify-center gap-2">
+            <Button type="button" variant="ghost" size="sm" onClick={handleDismiss}>
+              Maybe later
             </Button>
-            <Button type="button" variant="outline" onClick={handleDismiss} className="w-full">
-              Got it
+            <Button type="button" size="sm" onClick={handleUpgrade} autoFocus>
+              Upgrade
             </Button>
           </div>
         </div>

@@ -1,10 +1,7 @@
 /** Displays a structured API error from React Query in a user-readable format. */
 
-import AlertCircle from "lucide-react/dist/esm/icons/alert-circle";
-
-import { Button } from "./ui/button";
-
 const FALLBACK_ERROR_MESSAGE = "An unexpected error occurred. Please try again.";
+const DEFAULT_TITLE = "Something went wrong";
 
 function extractMessage(error) {
   if (!error) return FALLBACK_ERROR_MESSAGE;
@@ -12,26 +9,27 @@ function extractMessage(error) {
   return FALLBACK_ERROR_MESSAGE;
 }
 
-function ApiErrorMessage({ error, onRetry }) {
-  const message = extractMessage(error);
+function ApiErrorMessage({ error, title, detail, onRetry }) {
+  const resolvedDetail = detail ?? extractMessage(error);
+  const resolvedTitle = title ?? DEFAULT_TITLE;
 
   return (
-    <div
-      role="alert"
-      className="flex flex-col items-center gap-3 rounded-lg border border-destructive/30 bg-destructive/5 px-6 py-8 text-center"
-    >
-      <AlertCircle className="h-6 w-6 text-destructive" aria-hidden="true" />
-      <p className="text-sm font-medium text-destructive">{message}</p>
+    <div className="flex flex-col gap-2">
+      <div
+        role="alert"
+        className="rounded-md border border-brand-100 bg-brand-50 px-3 py-2 text-sm text-brand-900 dark:border-brand-800 dark:bg-brand-900/30 dark:text-brand-100"
+      >
+        <span className="font-medium">{resolvedTitle}</span>
+        <span className="text-brand-700 dark:text-brand-200"> · {resolvedDetail}</span>
+      </div>
       {onRetry && (
-        <Button
+        <button
           type="button"
-          variant="outline"
-          size="sm"
           onClick={onRetry}
-          className="border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
+          className="self-start text-xs text-brand-600 hover:text-brand-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 focus-visible:outline-offset-2 dark:focus-visible:outline-1"
         >
           Retry
-        </Button>
+        </button>
       )}
     </div>
   );

@@ -1,9 +1,47 @@
 /** React error boundary: catches unhandled render errors and shows a fallback UI. */
 
 import { Component } from "react";
+import { Link } from "react-router-dom";
 
-import RefreshCw from "lucide-react/dist/esm/icons/refresh-cw";
+import AlertCircle from "lucide-react/dist/esm/icons/alert-circle";
 import { Button } from "./ui/button";
+
+const FOCUS_RING =
+  "focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 focus-visible:outline-offset-2 dark:focus-visible:outline-1";
+
+export function ErrorFallbackUI({ onRefresh }) {
+  const handleRefresh = onRefresh ?? (() => window.location.reload());
+
+  return (
+    <div
+      role="alert"
+      className="mx-auto flex max-w-md flex-col items-center gap-3 px-6 py-16 text-center"
+    >
+      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-brand-50">
+        <AlertCircle aria-hidden="true" className="h-6 w-6 text-brand-700" />
+      </div>
+      <h2 className="text-lg font-semibold text-text-1">Something went wrong</h2>
+      <p className="text-sm text-text-2">
+        We&apos;ve logged the error. Try refreshing — if it keeps happening, email{" "}
+        <a
+          href="mailto:joseph@vimes.io"
+          className={`text-brand-600 hover:text-brand-700 ${FOCUS_RING} rounded-sm`}
+        >
+          joseph@vimes.io
+        </a>
+        .
+      </p>
+      <div className="mt-2 flex gap-2">
+        <Button type="button" variant="secondary" size="sm" onClick={handleRefresh} className={FOCUS_RING}>
+          Refresh
+        </Button>
+        <Button variant="default" size="sm" asChild className={FOCUS_RING}>
+          <Link to="/dashboard">Go to dashboard</Link>
+        </Button>
+      </div>
+    </div>
+  );
+}
 
 class ErrorBoundary extends Component {
   constructor(props) {
@@ -28,21 +66,7 @@ class ErrorBoundary extends Component {
     if (this.state.hasError) {
       if (this.props.fallback) return this.props.fallback;
 
-      return (
-        <div
-          role="alert"
-          className="flex flex-col items-center gap-4 py-16 text-center"
-        >
-          <p className="text-lg font-semibold text-foreground">Something went wrong</p>
-          <p className="text-sm text-muted-foreground">
-            {this.state.error?.message || "An unexpected error occurred."}
-          </p>
-          <Button type="button" onClick={this.handleReset} className="flex items-center gap-2">
-            <RefreshCw className="h-4 w-4" aria-hidden="true" />
-            Try again
-          </Button>
-        </div>
-      );
+      return <ErrorFallbackUI onRefresh={this.handleReset} />;
     }
 
     return this.props.children;

@@ -20,8 +20,11 @@ vi.mock("react-window", () => ({
     </div>
   ),
 }));
+vi.mock("sonner", () => ({ toast: { dismiss: vi.fn() } }));
+vi.mock("../lib/showUndoToast", () => ({ showUndoToast: vi.fn(() => "toast-1") }));
 
 import { ApplicationListBody } from "./ApplicationListBody";
+import { showUndoToast } from "../lib/showUndoToast";
 import { withTooltipProvider } from "../test/testProviders";
 
 const MOCK_ME = {
@@ -131,20 +134,24 @@ describe("ApplicationListBody", () => {
     expect(screen.queryByRole("toolbar", { name: /bulk actions/i })).not.toBeInTheDocument();
   });
 
-  it("should render UndoToast with delete message when undoAction type is delete", () => {
+  it("should show undo toast via sonner when undoAction type is delete", () => {
     const props = makeProps({ undoAction: { type: "delete", id: "app1" } });
     renderApp(<ApplicationListBody {...props} />);
 
-    expect(screen.getByTestId("undo-toast")).toBeInTheDocument();
-    expect(screen.getByText("Application deleted.")).toBeInTheDocument();
+    expect(showUndoToast).toHaveBeenCalledWith(
+      "Application deleted.",
+      expect.objectContaining({ onUndo: expect.any(Function), onDismiss: expect.any(Function) }),
+    );
   });
 
-  it("should render UndoToast with archive message when undoAction type is archive", () => {
+  it("should show undo toast via sonner when undoAction type is archive", () => {
     const props = makeProps({ undoAction: { type: "archive", id: "app1" } });
     renderApp(<ApplicationListBody {...props} />);
 
-    expect(screen.getByTestId("undo-toast")).toBeInTheDocument();
-    expect(screen.getByText("Application archived.")).toBeInTheDocument();
+    expect(showUndoToast).toHaveBeenCalledWith(
+      "Application archived.",
+      expect.objectContaining({ onUndo: expect.any(Function), onDismiss: expect.any(Function) }),
+    );
   });
 
   it("should render BulkDeleteConfirmModal when bulkDeletePending is true", () => {

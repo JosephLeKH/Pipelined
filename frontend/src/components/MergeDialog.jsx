@@ -11,6 +11,7 @@ import { RadioGroupItem } from "./ui/radio-group";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -34,7 +35,7 @@ function isEmpty(value) {
 }
 
 function displayValue(value) {
-  if (isEmpty(value)) return <span className="italic text-muted-foreground">—</span>;
+  if (isEmpty(value)) return <span className="italic text-text-3">—</span>;
   if (Array.isArray(value)) return value.join(", ");
   return value;
 }
@@ -75,18 +76,23 @@ export default function MergeDialog({ apps, onConfirm, onCancel, isPending = fal
   return (
     <Dialog open onOpenChange={(open) => { if (!open) onCancel(); }}>
       <DialogContent className="gap-0 p-0 sm:max-w-2xl">
-        <DialogHeader className="border-b border-border px-6 py-4">
-          <DialogTitle>Merge duplicate applications</DialogTitle>
+        <DialogHeader className="border-b border-border-1 px-6 py-4">
+          <DialogTitle className="text-base font-semibold text-text-1">
+            Merge duplicate applications
+          </DialogTitle>
+          <DialogDescription className="mt-1 text-sm text-text-2">
+            Choose which values to keep. The duplicate application will be permanently deleted.
+          </DialogDescription>
         </DialogHeader>
 
-        <Alert className="mx-6 mt-4 flex items-start gap-2.5 border-amber-200 bg-amber-50 py-3 dark:border-amber-700 dark:bg-amber-900/30">
-          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" aria-hidden="true" />
-          <AlertDescription className="text-amber-800 dark:text-amber-300">
-            Merging will combine these applications into one. The duplicate will be permanently deleted. This cannot be undone.
+        <Alert className="mx-6 mt-4 flex items-start gap-2.5 border-brand-100 bg-brand-50 py-3 dark:border-brand-800 dark:bg-brand-900/30">
+          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-brand-700 dark:text-brand-300" aria-hidden="true" />
+          <AlertDescription className="text-brand-900 dark:text-brand-100">
+            This action cannot be undone.
           </AlertDescription>
         </Alert>
 
-        <div className="grid grid-cols-[120px_1fr_1fr] gap-2 border-b border-border bg-muted px-6 py-2 text-xs font-medium text-muted-foreground">
+        <div className="grid grid-cols-[120px_1fr_1fr] gap-2 border-b border-border-1 bg-surface-1 px-6 py-2 text-xs font-medium text-text-2">
           <div>Field</div>
           <div className="truncate">{appA.company || appA.role_title || "App A"}</div>
           <div className="truncate">{appB.company || appB.role_title || "App B"}</div>
@@ -94,8 +100,8 @@ export default function MergeDialog({ apps, onConfirm, onCancel, isPending = fal
 
         <div className="max-h-80 overflow-y-auto">
           {MERGE_FIELDS.map(({ key, label }) => (
-            <div key={key} className="grid grid-cols-[120px_1fr_1fr] gap-2 border-b border-border px-6 py-2 text-sm">
-              <span className="font-medium text-muted-foreground">{label}</span>
+            <div key={key} className="grid grid-cols-[120px_1fr_1fr] gap-2 border-b border-border-1 px-6 py-2 text-sm">
+              <span className="font-medium text-text-2">{label}</span>
               <label className="flex cursor-pointer items-start gap-2">
                 <RadioGroupItem
                   value="a"
@@ -104,7 +110,7 @@ export default function MergeDialog({ apps, onConfirm, onCancel, isPending = fal
                   onChange={() => handleChange(key, "a")}
                   className="mt-0.5 shrink-0"
                 />
-                <span className="text-foreground">{displayValue(appA[key])}</span>
+                <span className="text-text-1">{displayValue(appA[key])}</span>
               </label>
               <label className="flex cursor-pointer items-start gap-2">
                 <RadioGroupItem
@@ -114,32 +120,39 @@ export default function MergeDialog({ apps, onConfirm, onCancel, isPending = fal
                   onChange={() => handleChange(key, "b")}
                   className="mt-0.5 shrink-0"
                 />
-                <span className="text-foreground">{displayValue(appB[key])}</span>
+                <span className="text-text-1">{displayValue(appB[key])}</span>
               </label>
             </div>
           ))}
         </div>
 
-        <div className="border-t border-border bg-muted px-6 py-3">
-          <p className="mb-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">Preview</p>
-          <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-foreground">
+        <div className="border-t border-border-1 bg-surface-1 px-6 py-3">
+          <p className="mb-1 text-xs font-medium uppercase tracking-wide text-text-2">Preview</p>
+          <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-text-1">
             {MERGE_FIELDS.map(({ key, label }) => {
               const val = selections[key] === "a" ? appA[key] : appB[key];
               return (
                 <span key={key}>
                   <span className="font-medium">{label}:</span>{" "}
-                  {isEmpty(val) ? <span className="italic text-muted-foreground">—</span> : displayValue(val)}
+                  {isEmpty(val) ? <span className="italic text-text-3">—</span> : displayValue(val)}
                 </span>
               );
             })}
           </div>
         </div>
 
-        <DialogFooter className="border-t border-border px-6 py-4">
-          <Button type="button" variant="outline" onClick={onCancel} disabled={isPending} autoFocus>
+        <DialogFooter className="mt-0 border-t border-border-1 px-6 py-4">
+          <Button type="button" variant="ghost" size="sm" onClick={onCancel} disabled={isPending} autoFocus>
             Cancel
           </Button>
-          <Button type="button" onClick={handleConfirm} disabled={isPending} className="flex items-center gap-1.5">
+          <Button
+            type="button"
+            variant="destructive"
+            size="sm"
+            onClick={handleConfirm}
+            disabled={isPending}
+            className="flex items-center gap-1.5"
+          >
             {isPending && <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />}
             Merge
           </Button>

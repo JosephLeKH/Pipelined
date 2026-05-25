@@ -28,7 +28,7 @@ vi.mock("./DetailPanelHeader", () => ({
 }));
 vi.mock("./DetailPanelNotes", () => ({ DetailPanelNotes: () => null }));
 vi.mock("./DetailPanelTimeline", () => ({ DetailPanelTimeline: () => null }));
-vi.mock("./UndoToast", () => ({ default: () => null }));
+vi.mock("../lib/showUndoToast", () => ({ showUndoToast: vi.fn(() => "toast-1") }));
 vi.mock("./AgentActivitySection", () => ({ default: () => null }));
 vi.mock("./ApplyPackSection", () => ({ default: () => null }));
 vi.mock("./InterviewPrepAgent", () => ({ InterviewPrepAgent: () => null }));

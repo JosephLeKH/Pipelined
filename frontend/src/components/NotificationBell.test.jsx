@@ -81,11 +81,24 @@ describe("NotificationBell", () => {
     expect(button).toBeDefined();
   });
 
-  it("should show unread badge when unread count > 0", async () => {
+  it("should show unread dot when unread count is between 1 and 9", async () => {
     render(<NotificationBell />, { wrapper: makeWrapper() });
 
-    const badge = await screen.findByText("1");
-    expect(badge).toBeDefined();
+    const button = await screen.findByRole("button", { name: /notifications, 1 unread/i });
+    expect(button).toBeDefined();
+    expect(screen.queryByText("9+")).toBeNull();
+  });
+
+  it("should show 9+ pill when unread count exceeds 9", async () => {
+    server.use(
+      http.get("/api/notifications/unread-count", () =>
+        HttpResponse.json({ data: { count: 12 } })
+      ),
+    );
+
+    render(<NotificationBell />, { wrapper: makeWrapper() });
+
+    expect(await screen.findByText("9+")).toBeDefined();
   });
 
   it("should open panel on bell click", async () => {
@@ -145,7 +158,7 @@ describe("NotificationBell", () => {
 
     fireEvent.click(screen.getByRole("button", { name: /notifications/i }));
 
-    expect(await screen.findByText("No notifications")).toBeDefined();
+    expect(await screen.findByText("You're caught up.")).toBeDefined();
   });
 
   it("should navigate to /today when morning_brief_ready notification is clicked", async () => {

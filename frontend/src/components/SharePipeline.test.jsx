@@ -12,6 +12,10 @@ vi.mock("../lib/analytics", () => ({
   trackEvent: vi.fn(),
 }));
 
+vi.mock("sonner", () => ({
+  toast: { success: vi.fn() },
+}));
+
 import { useMyShare, useCreateShare, useRevokeShare } from "../hooks/useSharing";
 
 const mockCreateMutate = vi.fn();
@@ -61,7 +65,7 @@ describe("SharePipeline", () => {
 
     render(<SharePipeline />);
 
-    expect(screen.getByText(/pipeline\/abc123/i)).toBeInTheDocument();
+    expect(screen.getByLabelText("Share link URL").value).toMatch(/\/pipeline\/abc123/);
   });
 
   it("should call revokeShare when Revoke link is clicked", () => {
@@ -73,12 +77,23 @@ describe("SharePipeline", () => {
     expect(mockRevokeMutate).toHaveBeenCalledOnce();
   });
 
-  it("should show Copied! after Copy link is clicked", async () => {
+  it("should show copied state after copy button is clicked", async () => {
     useMyShare.mockReturnValue({ data: SHARE_FIXTURE, isLoading: false });
 
     render(<SharePipeline />);
     fireEvent.click(screen.getByRole("button", { name: /copy share link/i }));
 
-    expect(await screen.findByText("Copied!")).toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: /link copied/i })).toBeInTheDocument();
+  });
+
+  it("should render Open public page link when share exists", () => {
+    useMyShare.mockReturnValue({ data: SHARE_FIXTURE, isLoading: false });
+
+    render(<SharePipeline />);
+
+    expect(screen.getByRole("link", { name: /open public page/i })).toHaveAttribute(
+      "href",
+      expect.stringContaining("/pipeline/abc123"),
+    );
   });
 });

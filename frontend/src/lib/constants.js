@@ -151,6 +151,10 @@ export const AUTOPILOT_RESUME_BANNER_DISMISSED_KEY = "pipelined_autopilot_resume
 export const FOLLOW_UP_BANNER_DISMISSED_KEY = "pipelined_follow_up_banner_dismissed";
 export const CHROME_EXTENSION_URL = "https://chromewebstore.google.com/detail/pipelined";
 export const EXTENSION_STEP_CLICKED_KEY = "pipelined_extension_step_clicked";
+/** Dismissed banners reappear after this many days (PRD-10). */
+export const BANNER_DISMISS_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+/** Undo toasts stay longer than default toasts so users can revert delete/archive. */
+export const UNDO_TOAST_DURATION_MS = 10000;
 export const COPILOT_TRIED_KEY = "pipelined_copilot_tried";
 export const TODAY_VISITED_KEY = "pipelined_today_visited";
 export const MORNING_BRIEF_EXPANDED_KEY = "pipelined_brief_expanded_by_date";

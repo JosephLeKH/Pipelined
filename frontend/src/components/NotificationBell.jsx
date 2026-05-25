@@ -6,13 +6,19 @@ import { useNavigate } from "react-router-dom";
 import Bell from "lucide-react/dist/esm/icons/bell";
 import BookOpen from "lucide-react/dist/esm/icons/book-open";
 import CalendarClock from "lucide-react/dist/esm/icons/calendar-clock";
+import Check from "lucide-react/dist/esm/icons/check";
 import Clock from "lucide-react/dist/esm/icons/clock";
 import Sun from "lucide-react/dist/esm/icons/sun";
 
+import { formatSavedAgo } from "../lib/dateUtils";
 import { useMarkAllRead, useMarkRead, useNotifications, useUnreadCount } from "../hooks/useNotifications";
 import { Button } from "./ui/button";
 
-const MAX_BADGE_COUNT = 99;
+const UNREAD_PILL_THRESHOLD = 9;
+const NOTIFICATION_PANEL_WIDTH_PX = 360;
+const NOTIFICATION_PANEL_MAX_HEIGHT_PX = 480;
+const NOTIFICATION_ROW_HEIGHT_PX = 56;
+
 const TYPE_ICONS = {
   stale_app: Clock,
   interview_tomorrow: CalendarClock,
@@ -21,9 +27,41 @@ const TYPE_ICONS = {
   interview_prep_ready: BookOpen,
 };
 
+const TYPE_ICON_COLORS = {
+  stale_app: "text-text-3",
+  interview_tomorrow: "text-status-info",
+  follow_up_due: "text-brand-600",
+  morning_brief_ready: "text-status-warn",
+  interview_prep_ready: "text-status-violet",
+};
+
+function UnreadIndicator({ unreadCount }) {
+  if (unreadCount <= 0) return null;
+
+  if (unreadCount > UNREAD_PILL_THRESHOLD) {
+    return (
+      <span
+        aria-hidden="true"
+        className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-brand-600 px-1 text-[10px] font-semibold leading-none text-white"
+      >
+        9+
+      </span>
+    );
+  }
+
+  return (
+    <span
+      aria-hidden="true"
+      className="absolute right-[3px] top-[3px] h-1.5 w-1.5 rounded-full bg-brand-600"
+    />
+  );
+}
+
 function NotificationItem({ notification, onNavigate }) {
   const { mutate: markRead } = useMarkRead();
   const Icon = TYPE_ICONS[notification.type] ?? Bell;
+  const iconColor = TYPE_ICON_COLORS[notification.type] ?? "text-text-3";
+  const timeLabel = formatSavedAgo(new Date(notification.created_at));
 
   function handleClick() {
     if (!notification.read) {
@@ -35,32 +73,42 @@ function NotificationItem({ notification, onNavigate }) {
   }
 
   return (
-    <li className={notification.read ? "opacity-60" : ""}>
-      <Button
+    <li>
+      <button
         type="button"
-        variant="ghost"
         onClick={handleClick}
-        className="flex w-full items-start gap-3 px-4 py-3 text-left h-auto rounded-none justify-start focus-visible:ring-inset"
+        className="flex h-14 w-full items-center gap-3 border-b border-border-1 bg-surface-0 px-4 text-left hover:bg-surface-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 focus-visible:outline-offset-[-2px] dark:focus-visible:outline-1"
+        style={{ minHeight: `${NOTIFICATION_ROW_HEIGHT_PX}px` }}
       >
-        <Icon
-          className={`mt-0.5 h-4 w-4 shrink-0 ${
-            notification.read ? "text-muted-foreground" : "text-foreground"
-          }`}
-          aria-hidden="true"
-        />
+        <Icon className={`h-4 w-4 shrink-0 ${iconColor}`} aria-hidden="true" />
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-medium text-foreground">
-            {notification.title}
-          </p>
-          <p className="mt-0.5 text-xs text-muted-foreground line-clamp-2">
-            {notification.body}
-          </p>
+          <p className="truncate text-sm font-medium text-text-1">{notification.title}</p>
+          <p className="mt-0.5 truncate text-xs text-text-2">{notification.body}</p>
         </div>
-        {!notification.read && (
-          <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-primary" aria-label="Unread" />
-        )}
-      </Button>
+        <div className="flex shrink-0 items-center gap-2">
+          {timeLabel ? (
+            <span className="whitespace-nowrap text-xs text-text-3">{timeLabel}</span>
+          ) : null}
+          {!notification.read ? (
+            <span
+              className="h-1.5 w-1.5 shrink-0 rounded-full bg-brand-600"
+              aria-label="Unread"
+            />
+          ) : (
+            <span className="h-1.5 w-1.5 shrink-0" aria-hidden="true" />
+          )}
+        </div>
+      </button>
     </li>
+  );
+}
+
+function NotificationEmptyState() {
+  return (
+    <div className="flex flex-col items-center gap-2 px-4 py-8 text-center">
+      <Check className="h-5 w-5 text-text-3" aria-hidden="true" />
+      <p className="text-sm text-text-2">You&apos;re caught up.</p>
+    </div>
   );
 }
 
@@ -75,7 +123,6 @@ function NotificationBell() {
   const { mutate: markAllRead } = useMarkAllRead();
 
   const unreadCount = unreadData?.count ?? 0;
-  const badgeLabel = unreadCount > MAX_BADGE_COUNT ? `${MAX_BADGE_COUNT}+` : String(unreadCount);
 
   function handleNotificationNavigate(actionUrl) {
     setOpen(false);
@@ -106,35 +153,30 @@ function NotificationBell() {
         aria-haspopup="true"
         aria-expanded={open}
         onClick={() => setOpen((prev) => !prev)}
-        className="relative text-muted-foreground hover:bg-muted hover:text-foreground"
+        className="relative h-8 w-8 text-text-2 hover:bg-surface-2 hover:text-text-1"
       >
         <Bell className="h-4 w-4" aria-hidden="true" />
-        {unreadCount > 0 && (
-          <span
-            aria-hidden="true"
-            className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[9px] font-semibold text-destructive-foreground"
-          >
-            {badgeLabel}
-          </span>
-        )}
+        <UnreadIndicator unreadCount={unreadCount} />
       </Button>
 
       {open && (
         <div
           ref={panelRef}
           data-testid="notification-panel"
-          className="absolute right-0 top-full z-50 mt-2 w-80 overflow-hidden rounded-lg border border-border-2 bg-surface-0 shadow-modal"
+          className="absolute right-0 top-full z-50 mt-2 overflow-hidden rounded-lg border border-border-1 bg-surface-0 shadow-[var(--shadow-popover)] motion-reduce:animate-none animate-in fade-in-0 slide-in-from-top-2 duration-[180ms]"
+          style={{
+            width: `${NOTIFICATION_PANEL_WIDTH_PX}px`,
+            maxHeight: `${NOTIFICATION_PANEL_MAX_HEIGHT_PX}px`,
+          }}
         >
-          <div className="flex items-center justify-between border-b border-border px-4 py-2.5">
-            <h3 className=" text-sm font-semibold text-foreground">
-              Notifications
-            </h3>
+          <div className="flex items-center justify-between border-b border-border-1 px-4 py-2.5">
+            <h3 className="text-sm font-semibold text-text-1">Notifications</h3>
             {unreadCount > 0 && (
               <Button
                 type="button"
                 variant="link"
                 onClick={() => markAllRead()}
-                className="h-auto p-0 text-xs"
+                className="h-auto p-0 text-xs text-brand-600"
               >
                 Mark all read
               </Button>
@@ -142,13 +184,18 @@ function NotificationBell() {
           </div>
 
           {notifications.length === 0 ? (
-            <p className="px-4 py-6 text-center text-sm text-muted-foreground">
-              No notifications
-            </p>
+            <NotificationEmptyState />
           ) : (
-            <ul className="max-h-80 overflow-y-auto divide-y divide-border">
+            <ul
+              className="overflow-y-auto"
+              style={{ maxHeight: `${NOTIFICATION_PANEL_MAX_HEIGHT_PX - 44}px` }}
+            >
               {notifications.map((n) => (
-                <NotificationItem key={n.id} notification={n} onNavigate={handleNotificationNavigate} />
+                <NotificationItem
+                  key={n.id}
+                  notification={n}
+                  onNavigate={handleNotificationNavigate}
+                />
               ))}
             </ul>
           )}
