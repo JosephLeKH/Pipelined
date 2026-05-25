@@ -16,7 +16,6 @@ Exempt paths (handled by auth or browser-initiated flows):
 """
 
 import secrets
-from http.cookies import SimpleCookie
 
 import structlog
 from starlette.types import ASGIApp, Receive, Scope, Send
@@ -55,12 +54,19 @@ def _get_header(headers: list[tuple[bytes, bytes]], name: bytes) -> str | None:
 
 
 def _get_cookie(headers: list[tuple[bytes, bytes]], cookie_name: str) -> str | None:
-    """Extract a cookie value from any ASGI Cookie header."""
+    """Extract a cookie value from any ASGI Cookie header.
+
+    Uses a lenient split-by-semicolon parser rather than stdlib SimpleCookie,
+    which silently drops cookies after malformed ones (e.g. Google g_state).
+    """
+    prefix = f"{cookie_name}="
     for key, value in headers:
-        if key.lower() == b"cookie":
-            sc = SimpleCookie(value.decode("latin-1"))
-            if cookie_name in sc:
-                return sc[cookie_name].value
+        if key.lower() != b"cookie":
+            continue
+        for piece in value.decode("latin-1").split(";"):
+            piece = piece.strip()
+            if piece.startswith(prefix):
+                return piece[len(prefix):]
     return None
 
 
