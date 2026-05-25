@@ -1,4 +1,4 @@
-/** Landing page: Linear-inspired marketing surface with numbered product sections. */
+/** Landing page: agentic, AI-native positioning with Stanford Cardinal Red accent. */
 
 import { Navigate } from "react-router-dom";
 
@@ -6,6 +6,10 @@ import { useAuth } from "../context/AuthContext";
 import HeroSection from "../components/HeroSection";
 import MarketingNav from "../components/marketing/MarketingNav";
 import MarketingFooter from "../components/marketing/MarketingFooter";
+import TrustBand from "../components/marketing/TrustBand";
+import AutopilotFlow from "../components/marketing/AutopilotFlow";
+import FeatureBento from "../components/marketing/FeatureBento";
+import MetricsBar from "../components/marketing/MetricsBar";
 import NumberedSection from "../components/marketing/NumberedSection";
 import LandingChangelog from "../components/marketing/LandingChangelog";
 import TestimonialGrid from "../components/marketing/TestimonialGrid";
@@ -21,9 +25,13 @@ function LandingPage() {
       <MarketingNav />
       <main>
         <HeroSection />
+        <TrustBand />
+        <AutopilotFlow />
+        <FeatureBento />
         {LANDING_SECTIONS.map((section) => (
           <NumberedSection key={section.id} {...section} />
         ))}
+        <MetricsBar />
         <LandingChangelog />
         <TestimonialGrid />
         <FinalCTA />

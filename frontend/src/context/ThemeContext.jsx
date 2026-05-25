@@ -20,7 +20,7 @@ function computeIsDark(theme) {
 export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState(() => {
     const stored = localStorage.getItem(STORAGE_KEY);
-    return THEMES.includes(stored) ? stored : "system";
+    return THEMES.includes(stored) ? stored : "light";
   });
 
   useEffect(() => {

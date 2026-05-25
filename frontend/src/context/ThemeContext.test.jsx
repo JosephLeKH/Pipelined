@@ -53,9 +53,9 @@ describe("ThemeContext", () => {
     vi.restoreAllMocks();
   });
 
-  it("should default to system theme when no localStorage value is set", () => {
+  it("should default to light theme when no localStorage value is set", () => {
     renderWithProvider();
-    expect(screen.getByTestId("theme-value").textContent).toBe("system");
+    expect(screen.getByTestId("theme-value").textContent).toBe("light");
   });
 
   it("should restore theme from localStorage on mount", () => {
@@ -75,23 +75,20 @@ describe("ThemeContext", () => {
   });
 
   it("should persist theme to localStorage when cycleTheme is called", async () => {
-    renderWithProvider(); // starts at 'system'
-
-    await userEvent.click(screen.getByRole("button", { name: /cycle/i }));
-    expect(localStorage.getItem(STORAGE_KEY)).toBe("light");
+    renderWithProvider(); // starts at 'light'
 
     await userEvent.click(screen.getByRole("button", { name: /cycle/i }));
     expect(localStorage.getItem(STORAGE_KEY)).toBe("dark");
 
     await userEvent.click(screen.getByRole("button", { name: /cycle/i }));
     expect(localStorage.getItem(STORAGE_KEY)).toBe("system");
-  });
-
-  it("should cycle theme: system → light → dark → system", async () => {
-    renderWithProvider();
-    expect(screen.getByTestId("theme-value").textContent).toBe("system");
 
     await userEvent.click(screen.getByRole("button", { name: /cycle/i }));
+    expect(localStorage.getItem(STORAGE_KEY)).toBe("light");
+  });
+
+  it("should cycle theme: light → dark → system → light", async () => {
+    renderWithProvider();
     expect(screen.getByTestId("theme-value").textContent).toBe("light");
 
     await userEvent.click(screen.getByRole("button", { name: /cycle/i }));
@@ -99,6 +96,9 @@ describe("ThemeContext", () => {
 
     await userEvent.click(screen.getByRole("button", { name: /cycle/i }));
     expect(screen.getByTestId("theme-value").textContent).toBe("system");
+
+    await userEvent.click(screen.getByRole("button", { name: /cycle/i }));
+    expect(screen.getByTestId("theme-value").textContent).toBe("light");
   });
 
   it("should apply dark class when system preference is dark and theme is system", () => {
@@ -109,7 +109,7 @@ describe("ThemeContext", () => {
       removeEventListener: vi.fn(),
     }));
 
-    renderWithProvider(); // theme = system, system = dark
+    renderWithProvider("system"); // explicit system, system = dark
     expect(document.documentElement.classList.contains("dark")).toBe(true);
   });
 });
