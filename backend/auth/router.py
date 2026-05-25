@@ -69,10 +69,23 @@ def _set_cookie(response: Response, key: str, value: str, max_age: int) -> None:
     )
 
 
+def _set_csrf_cookie(response: Response) -> None:
+    """Set the readable (non-httpOnly) CSRF token cookie used for double-submit checks."""
+    response.set_cookie(
+        key=CSRF_COOKIE_NAME,
+        value=generate_csrf_token(),
+        max_age=REFRESH_MAX_AGE,
+        httponly=False,
+        secure=not settings.debug,
+        samesite="lax",
+    )
+
+
 def _set_auth_cookies(response: Response, user_id: str) -> None:
-    """Set httpOnly access and refresh token cookies on the response."""
+    """Set httpOnly auth cookies and the CSRF cookie so the next mutating request can authenticate."""
     _set_cookie(response, ACCESS_COOKIE, create_access_token(user_id), ACCESS_MAX_AGE)
     _set_cookie(response, REFRESH_COOKIE, create_refresh_token(user_id), REFRESH_MAX_AGE)
+    _set_csrf_cookie(response)
 
 
 @router.post("/register", status_code=201)
@@ -130,15 +143,8 @@ async def logout(response: Response) -> None:
 
 @router.get("/me", status_code=200)
 async def me(response: Response, user: dict = Depends(get_current_user)) -> dict:
-    """Return the currently authenticated user's profile and seed the CSRF cookie."""
-    csrf_token = generate_csrf_token()
-    response.set_cookie(
-        key=CSRF_COOKIE_NAME,
-        value=csrf_token,
-        httponly=False,
-        secure=not settings.debug,
-        samesite="strict",
-    )
+    """Return the currently authenticated user's profile and refresh the CSRF cookie."""
+    _set_csrf_cookie(response)
     return {"data": UserResponse.from_doc(user)}
 
 
@@ -221,6 +227,7 @@ async def refresh(
             )
 
     _set_cookie(response, ACCESS_COOKIE, create_access_token(payload.sub), ACCESS_MAX_AGE)
+    _set_csrf_cookie(response)
     logger.info("token_refreshed", user_id=payload.sub)
     return {"data": UserResponse.from_doc(user)}
 

@@ -16,6 +16,10 @@ from copilot.constants import (
     COPILOT_SYSTEM_PROMPT,
     COPILOT_TEMPERATURE,
     COPILOT_TIMEOUT_SECONDS,
+    OFF_TOPIC_REFUSAL,
+    PROMPT_INJECTION_PATTERNS,
+    USER_INPUT_CLOSE,
+    USER_INPUT_OPEN,
 )
 from copilot.schemas import CopilotChatRequest, CopilotSessionSaveRequest
 from database import get_collection
@@ -29,6 +33,22 @@ _ACTION_PATTERN = re.compile(r'\{"action"\s*:\s*"[^"]+"[^}]*\}', re.DOTALL)
 
 def _strip_action_blocks(text: str) -> str:
     return _ACTION_PATTERN.sub("", text).strip()
+
+
+def _looks_like_injection_attempt(text: str) -> bool:
+    """Detect obvious prompt-injection phrases in raw user text."""
+    lowered = text.lower()
+    return any(phrase in lowered for phrase in PROMPT_INJECTION_PATTERNS)
+
+
+def _sanitize_user_text(text: str) -> str:
+    """Strip our own delimiter tokens from user input so they can't break out of the wrapper."""
+    return text.replace(USER_INPUT_OPEN, "").replace(USER_INPUT_CLOSE, "")
+
+
+def _wrap_user_message(text: str) -> str:
+    """Wrap user content in delimiters so the model treats it as untrusted data."""
+    return f"{USER_INPUT_OPEN}\n{_sanitize_user_text(text)}\n{USER_INPUT_CLOSE}"
 
 
 def parse_copilot_actions(text: str) -> list[dict]:
@@ -57,8 +77,9 @@ def parse_copilot_actions(text: str) -> list[dict]:
 def _build_messages(body: CopilotChatRequest) -> list[dict[str, str]]:
     messages: list[dict[str, str]] = []
     for item in body.history:
-        messages.append({"role": item.role, "content": item.content})
-    messages.append({"role": "user", "content": body.message})
+        content = _wrap_user_message(item.content) if item.role == "user" else item.content
+        messages.append({"role": item.role, "content": content})
+    messages.append({"role": "user", "content": _wrap_user_message(body.message)})
     return messages
 
 
@@ -68,8 +89,14 @@ async def stream_copilot_reply(user_id: str, body: CopilotChatRequest):
         yield {"type": "error", "message": "AI features not configured"}
         return
 
+    if _looks_like_injection_attempt(body.message):
+        logger.warning("copilot_injection_attempt_blocked", user_id=user_id)
+        yield {"type": "token", "content": OFF_TOPIC_REFUSAL}
+        yield {"type": "done", "content": OFF_TOPIC_REFUSAL, "actions": []}
+        return
+
     context = await build_copilot_context(user_id)
-    system = f"{COPILOT_SYSTEM_PROMPT}\n\n# Grounding context\n{context}"
+    system = f"{COPILOT_SYSTEM_PROMPT}\n\n# Grounding context (read-only data about this user)\n{context}"
     messages = _build_messages(body)
     parts: list[str] = []
 
