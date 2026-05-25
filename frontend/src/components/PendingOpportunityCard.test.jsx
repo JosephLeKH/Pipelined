@@ -42,7 +42,7 @@ describe("PendingOpportunityCard", () => {
     expect(screen.getByText("Watchlist")).toBeInTheDocument();
   });
 
-  it("should render FitBadge for match score without visible reason", () => {
+  it("should render FitBadge for match score with match reason quote", () => {
     render(
       <PendingOpportunityCard
         opportunity={MOCK_OPPORTUNITY}
@@ -54,14 +54,20 @@ describe("PendingOpportunityCard", () => {
     );
 
     expect(screen.getByTestId("fit-badge")).toHaveTextContent("88%");
-    expect(screen.getByText("Fit score")).toBeInTheDocument();
-    expect(screen.queryByText("Strong Python overlap")).not.toBeInTheDocument();
+    expect(screen.getByText(/suggested by autopilot/i)).toBeInTheDocument();
+    expect(screen.getByText(/Strong Python overlap/)).toBeInTheDocument();
   });
 
-  it("should render FitBadge and hide match reason until Why is clicked", async () => {
+  it("should reveal full match reason when Why is clicked", async () => {
+    const longReason =
+      "Strong Python overlap with a long explanation that exceeds the preview limit and keeps going. Additional detail about backend systems.";
+
     render(
       <PendingOpportunityCard
-        opportunity={MOCK_OPPORTUNITY}
+        opportunity={{
+          ...MOCK_OPPORTUNITY,
+          match_reason: longReason,
+        }}
         onApprove={vi.fn()}
         onDismiss={vi.fn()}
         isApproving={false}
@@ -70,10 +76,10 @@ describe("PendingOpportunityCard", () => {
     );
 
     expect(screen.getByTestId("fit-badge")).toHaveTextContent("88%");
-    expect(screen.queryByText("Strong Python overlap")).not.toBeInTheDocument();
+    expect(screen.queryByText(/Additional detail about backend systems/)).not.toBeInTheDocument();
 
     await userEvent.click(screen.getByRole("button", { name: /why\?/i }));
-    expect(screen.getByText("Strong Python overlap")).toBeInTheDocument();
+    expect(screen.getByText(longReason)).toBeInTheDocument();
   });
 
   it("should expand cover letter and copy to clipboard with success feedback", async () => {
@@ -89,7 +95,7 @@ describe("PendingOpportunityCard", () => {
 
     expect(screen.queryByText("Dear hiring team")).not.toBeInTheDocument();
 
-    await userEvent.click(screen.getByRole("button", { name: /cover letter draft/i }));
+    await userEvent.click(screen.getByRole("button", { name: /view ai-drafted cover letter/i }));
     expect(screen.getByText("Dear hiring team")).toBeInTheDocument();
 
     await userEvent.click(screen.getByRole("button", { name: /copy cover letter/i }));

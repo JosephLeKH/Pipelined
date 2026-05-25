@@ -91,10 +91,12 @@ describe("PendingInboxPage", () => {
   it("should render pending opportunity cards with fit score and cover letter", async () => {
     render(<PendingInboxPage />, { wrapper: makeWrapper() });
 
-    expect(await screen.findByText("Acme — Backend Engineer")).toBeInTheDocument();
+    expect(await screen.findByLabelText("Acme — Backend Engineer")).toBeInTheDocument();
     expect(screen.getByTestId("fit-badge")).toHaveTextContent("92%");
-    await userEvent.click(screen.getByRole("button", { name: /cover letter draft/i }));
+    await userEvent.click(screen.getByRole("button", { name: /view ai-drafted cover letter/i }));
     expect(screen.getByText("Dear hiring team")).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole("button", { name: /view resume tips/i }));
     expect(screen.getByText(/suggestions only/i)).toBeInTheDocument();
   });
 
@@ -111,7 +113,7 @@ describe("PendingInboxPage", () => {
   it("should render external apply link with noopener", async () => {
     render(<PendingInboxPage />, { wrapper: makeWrapper() });
 
-    const link = await screen.findByRole("link", { name: /view job/i });
+    const link = await screen.findByRole("link", { name: /open job for acme/i });
     expect(link).toHaveAttribute("href", "https://example.com/jobs/acme");
     expect(link).toHaveAttribute("target", "_blank");
     expect(link).toHaveAttribute("rel", "noopener noreferrer");
@@ -128,12 +130,13 @@ describe("PendingInboxPage", () => {
     );
 
     render(<PendingInboxPage />, { wrapper: makeWrapper() });
-    await screen.findByText("Acme — Backend Engineer");
+    await screen.findByLabelText("Acme — Backend Engineer");
 
-    await userEvent.click(screen.getByRole("button", { name: /dismiss acme/i }));
+    await userEvent.click(screen.getByRole("button", { name: /reject acme/i }));
 
     await waitFor(() => {
-      expect(screen.getByText("Inbox empty")).toBeInTheDocument();
+      expect(screen.getByText("No pending matches")).toBeInTheDocument();
+      expect(screen.getByText(/check back tomorrow at 5 am utc/i)).toBeInTheDocument();
     });
   });
 });

@@ -1,7 +1,7 @@
 /** Pending approval inbox — review autopilot matches before adding to pipeline. */
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 import Inbox from "lucide-react/dist/esm/icons/inbox";
@@ -15,11 +15,13 @@ import {
 } from "../hooks/usePendingOpportunities";
 
 const APPROVE_TOAST = "Added to pipeline — apply when ready";
+const EMPTY_DESCRIPTION =
+  "Autopilot hasn't found any new matches. Check back tomorrow at 5 AM UTC.";
 
 function PendingInboxLoading() {
   return (
     <div className="flex min-h-[40vh] items-center justify-center" aria-hidden="true">
-      <div className="h-6 w-6 animate-spin rounded-full border-2 border-border border-t-primary" />
+      <div className="h-6 w-6 animate-spin rounded-full border-2 border-border-1 border-t-brand-600 motion-reduce:animate-none" />
     </div>
   );
 }
@@ -56,57 +58,67 @@ function PendingInboxPage() {
   };
 
   const items = opportunities ?? [];
+  const reviewCount = items.length;
 
   return (
     <main className="flex-1 px-4 py-8 sm:px-6">
-        <div className="mx-auto max-w-2xl space-y-6">
-          <header>
-            <h1 className=" text-2xl font-semibold text-foreground">
-              Pending approvals
+      <div className="mx-auto max-w-2xl space-y-6">
+        <header className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h1 className="text-2xl font-semibold text-text-1">
+              Pending opportunities
+              {reviewCount > 0 && (
+                <span className="font-normal text-text-2">{` · ${reviewCount} to review`}</span>
+              )}
             </h1>
-            <p className="mt-1 text-sm text-muted-foreground">
+            <p className="mt-1 text-sm text-text-2">
               Review overnight matches. We never submit applications for you.
             </p>
-          </header>
-
-          {isLoading && <PendingInboxLoading />}
-
-          {!isLoading && isError && (
-            <EmptyState
-              icon={Inbox}
-              title="Could not load inbox"
-              description="Please refresh and try again."
-            />
+          </div>
+          {reviewCount > 0 && (
+            <Link
+              to="/settings?section=autopilot"
+              className="text-sm font-medium text-brand-600 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 focus-visible:outline-offset-2 dark:text-brand-400"
+            >
+              Pause autopilot
+            </Link>
           )}
+        </header>
 
-          {!isLoading && !isError && items.length === 0 && (
-            <EmptyState
-              icon={Inbox}
-              title="Inbox empty"
-              description="Enable autopilot in settings to queue overnight matches for review. We never submit applications for you."
-              actionButton={{
-                label: "Autopilot settings",
-                onClick: () => navigate("/settings?section=autopilot"),
-              }}
-            />
-          )}
+        {isLoading && <PendingInboxLoading />}
 
-          {!isLoading && !isError && items.length > 0 && (
-            <div className="flex flex-col gap-4">
-              {items.map((opp) => (
-                <PendingOpportunityCard
-                  key={opp.id}
-                  opportunity={opp}
-                  onApprove={handleApprove}
-                  onDismiss={handleDismiss}
-                  isApproving={isApproving && activeId === opp.id}
-                  isDismissing={isDismissing && activeId === opp.id}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-      </main>
+        {!isLoading && isError && (
+          <EmptyState
+            icon={Inbox}
+            title="Could not load inbox"
+            description="Please refresh and try again."
+          />
+        )}
+
+        {!isLoading && !isError && items.length === 0 && (
+          <EmptyState
+            icon={Inbox}
+            title="No pending matches"
+            description={EMPTY_DESCRIPTION}
+          />
+        )}
+
+        {!isLoading && !isError && items.length > 0 && (
+          <div className="flex flex-col gap-4">
+            {items.map((opp) => (
+              <PendingOpportunityCard
+                key={opp.id}
+                opportunity={opp}
+                onApprove={handleApprove}
+                onDismiss={handleDismiss}
+                isApproving={isApproving && activeId === opp.id}
+                isDismissing={isDismissing && activeId === opp.id}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    </main>
   );
 }
 
