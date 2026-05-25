@@ -8,9 +8,11 @@ import Sun from "lucide-react/dist/esm/icons/sun";
 import MissionCard from "../components/MissionCard";
 import MissionProgressStrip from "../components/MissionProgressStrip";
 import MorningBriefHistoryPanel from "../components/MorningBriefHistoryPanel";
+import WeeklyGoalSection from "../components/WeeklyGoalSection";
 import WeeklyReviewSection from "../components/WeeklyReviewSection";
 import MorningBriefSkeleton from "../components/MorningBriefSkeleton";
 import { useAuth } from "../context/AuthContext";
+import { useApplicationStats } from "../hooks/useApplications";
 import { useMissionActions } from "../hooks/useMissionActions";
 import { useMorningBrief } from "../hooks/useMorningBrief";
 import { useWeeklyReview } from "../hooks/useWeeklyReview";
@@ -113,6 +115,7 @@ function TodayPage() {
 
   const { user } = useAuth();
   const { data: brief, isLoading, isError } = useMorningBrief();
+  const { data: stats } = useApplicationStats();
   const weeklyReviewEnabled = user?.weekly_review_enabled !== false;
   const { data: weeklyReview, isLoading: isReviewLoading } = useWeeklyReview({
     enabled: weeklyReviewEnabled,
@@ -122,6 +125,9 @@ function TodayPage() {
   const emptyMessage = getBriefEmptyMessage(briefHour);
   const missions = brief?.missions ?? [];
   const progress = brief?.mission_progress ?? { cleared: 0, total: 0 };
+  const weeklyGoal = user?.weekly_goal ?? 0;
+  const appliedThisWeek = stats?.applied_this_week ?? 0;
+  const timezone = user?.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
 
   const handleSnooze = useCallback(
     (missionId) => snooze.mutate(missionId),
@@ -156,6 +162,12 @@ function TodayPage() {
               user={user}
               briefDate={brief.date}
               missionCount={missions.length}
+            />
+            <WeeklyGoalSection
+              compact
+              appliedThisWeek={appliedThisWeek}
+              weeklyGoal={weeklyGoal}
+              timezone={timezone}
             />
             <TodayMissionsList
               missions={missions}

@@ -95,6 +95,7 @@ describe("TodayPage", () => {
     render(<TodayPage />, { wrapper: makeWrapper() });
 
     expect(await screen.findByRole("heading", { level: 1, name: /Good morning, Test\./i })).toBeInTheDocument();
+    expect(screen.getByText("0 / 5 applications this week")).toBeInTheDocument();
     expect(screen.getByText("Acme — follow-up overdue")).toBeInTheDocument();
     expect(screen.getByText("Follow-up is overdue — respond today")).toBeInTheDocument();
     expect(screen.getByText("Saturday, May 23 · 1 mission")).toBeInTheDocument();

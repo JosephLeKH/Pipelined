@@ -78,9 +78,23 @@ function MissionCard({
   };
 
   const handleRowKeyDown = (event) => {
-    if (event.key === "Enter") {
+    if (completed || busy) return;
+    if (event.target.closest("button, a, [role='menu']")) return;
+
+    const key = event.key.toLowerCase();
+    if (key === "enter") {
       event.preventDefault();
       navigate(mission.action_url);
+      return;
+    }
+    if (key === "c") {
+      event.preventDefault();
+      onDone(mission.id);
+      return;
+    }
+    if (key === "s") {
+      event.preventDefault();
+      onSnooze(mission.id);
     }
   };
 

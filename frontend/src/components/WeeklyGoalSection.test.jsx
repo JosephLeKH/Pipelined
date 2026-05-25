@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import WeeklyGoalSection from "./WeeklyGoalSection";
 
 describe("WeeklyGoalSection", () => {
@@ -61,5 +62,27 @@ describe("WeeklyGoalSection", () => {
 
     await screen.findByRole("alert");
     expect(screen.getByRole("alert")).toHaveTextContent("Failed to save goal.");
+  });
+
+  it("should render compact progress bar on Today", () => {
+    render(
+      <WeeklyGoalSection compact appliedThisWeek={5} weeklyGoal={10} timezone="America/Los_Angeles" />,
+    );
+
+    expect(screen.getByText("5 / 10 applications this week")).toBeInTheDocument();
+    expect(screen.getByRole("progressbar")).toBeInTheDocument();
+  });
+
+  it("should show Set goal link in compact mode when goal is zero", () => {
+    render(
+      <MemoryRouter>
+        <WeeklyGoalSection compact appliedThisWeek={0} weeklyGoal={0} />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByRole("link", { name: "Set goal" })).toHaveAttribute(
+      "href",
+      "/settings?section=pipeline",
+    );
   });
 });

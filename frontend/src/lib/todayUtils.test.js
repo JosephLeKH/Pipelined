@@ -3,8 +3,10 @@
 import { describe, it, expect } from "vitest";
 
 import {
+  formatDaysLeftInWeek,
   formatTodayDateRow,
   formatTodayGreeting,
+  getDaysLeftInWeek,
   getFirstName,
   getTimeOfDay,
 } from "./todayUtils";
@@ -37,5 +39,12 @@ describe("todayUtils", () => {
   it("should format date row with mission count", () => {
     const row = formatTodayDateRow("2026-05-23", 5, "America/Los_Angeles");
     expect(row).toMatch(/Saturday, May 23 · 5 missions/);
+  });
+
+  it("should count days left until Sunday in user timezone", () => {
+    expect(getDaysLeftInWeek(new Date("2026-05-23T12:00:00"), "America/Los_Angeles")).toBe(1);
+    expect(formatDaysLeftInWeek(new Date("2026-05-23T12:00:00"), "America/Los_Angeles")).toBe(
+      "1 day left",
+    );
   });
 });

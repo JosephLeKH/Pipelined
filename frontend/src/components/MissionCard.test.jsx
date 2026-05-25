@@ -72,4 +72,30 @@ describe("MissionCard", () => {
 
     expect(screen.getByText("Urgent")).toBeInTheDocument();
   });
+
+  it("should trigger complete on keyboard c when row is focused", async () => {
+    const user = userEvent.setup();
+    const onDone = vi.fn();
+
+    renderCard(BASE_MISSION, { onDone });
+
+    const row = screen.getByRole("button", { name: BASE_MISSION.title });
+    row.focus();
+    await user.keyboard("c");
+
+    expect(onDone).toHaveBeenCalledWith(BASE_MISSION.id);
+  });
+
+  it("should trigger snooze on keyboard s when row is focused", async () => {
+    const user = userEvent.setup();
+    const onSnooze = vi.fn();
+
+    renderCard(BASE_MISSION, { onSnooze });
+
+    const row = screen.getByRole("button", { name: BASE_MISSION.title });
+    row.focus();
+    await user.keyboard("s");
+
+    expect(onSnooze).toHaveBeenCalledWith(BASE_MISSION.id);
+  });
 });

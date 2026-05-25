@@ -38,3 +38,22 @@ export function formatTodayDateRow(briefDate, missionCount, timezone) {
   const missionLabel = missionCount === 1 ? "1 mission" : `${missionCount} missions`;
   return `${weekday}, ${monthDay} · ${missionLabel}`;
 }
+
+/** Days remaining until end of calendar week (Sunday) in the user's timezone. */
+export function getDaysLeftInWeek(now = new Date(), timezone) {
+  const tz = timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const weekday = new Intl.DateTimeFormat(LOCALE, { weekday: "short", timeZone: tz })
+    .formatToParts(now)
+    .find((part) => part.type === "weekday")?.value;
+  const dayIndex = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].indexOf(weekday ?? "Sun");
+  if (dayIndex < 0) return 0;
+  return dayIndex === 0 ? 0 : 7 - dayIndex;
+}
+
+/** Label for days left copy, e.g. "2 days left". */
+export function formatDaysLeftInWeek(now = new Date(), timezone) {
+  const daysLeft = getDaysLeftInWeek(now, timezone);
+  if (daysLeft === 0) return "Last day of the week";
+  if (daysLeft === 1) return "1 day left";
+  return `${daysLeft} days left`;
+}
