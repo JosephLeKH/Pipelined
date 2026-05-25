@@ -1,6 +1,6 @@
 /** Job board page: curated marketplace with rich cards and slide-in detail panel. */
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 import Bookmark from "lucide-react/dist/esm/icons/bookmark";
 import XIcon from "lucide-react/dist/esm/icons/x";
@@ -30,12 +30,26 @@ function JobBoard() {
     return () => { document.title = DEFAULT_TITLE; };
   }, []);
 
+  const focusFirstJobRow = useCallback(() => {
+    document.querySelector('[data-testid="job-list"] [data-testid="job-row"]')?.focus();
+  }, []);
+
   return (
     <main className="flex flex-col gap-6 px-4 py-8 sm:px-6">
       <div className="flex flex-col gap-3">
-        <h1 className=" text-2xl font-semibold text-foreground">Job Board</h1>
-        <div className="flex items-center gap-3">
-          <div className="flex-1"><JobSearchInput /></div>
+        <div className="flex items-baseline justify-between gap-4">
+          <h1 className="text-2xl font-semibold text-text-1">
+            Job board
+            {!isLoading && total > 0 && (
+              <span className="ml-2 text-base font-normal text-text-3">
+                · {total.toLocaleString()} job{total !== 1 ? "s" : ""}
+              </span>
+            )}
+          </h1>
+        </div>
+        <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:gap-3">
+          <JobSearchInput onEnterKey={focusFirstJobRow} />
+          <JobFilters />
           {hasActiveFilters && (
             <div className="relative shrink-0">
               <Button type="button" variant="outline" aria-label="Save this search" onClick={() => setSavePopoverOpen((v) => !v)} className="flex items-center gap-1.5">
@@ -46,7 +60,6 @@ function JobBoard() {
             </div>
           )}
         </div>
-        <JobFilters />
         <div className="relative lg:hidden">
           <Button type="button" variant="ghost" size="sm" className="flex items-center gap-1.5" onClick={() => setSavedOpen(true)}>Saved searches</Button>
           {savedCount > 0 && (
@@ -75,7 +88,7 @@ function JobBoard() {
         </aside>
         <div className="flex min-w-0 flex-1 flex-col gap-6">
           {!hasActiveFilters && <JobRecommendations onSelectJob={setSelectedJob} />}
-          <JobBoardContent isLoading={isLoading} error={error} jobs={jobs} total={total} hasFilters={hasActiveFilters} hasMore={hasMore} onClearFilters={handleClearFilters} onLoadMore={handleLoadMore} onSelectJob={setSelectedJob} refetch={refetch} />
+          <JobBoardContent isLoading={isLoading} error={error} jobs={jobs} total={total} hasFilters={hasActiveFilters} hasMore={hasMore} onClearFilters={handleClearFilters} onLoadMore={handleLoadMore} onSelectJob={setSelectedJob} refetch={refetch} selectedJobId={selectedJob?.id ?? null} />
         </div>
       </div>
       {selectedJob && <JobDetailPanel job={selectedJob} onClose={() => setSelectedJob(null)} />}

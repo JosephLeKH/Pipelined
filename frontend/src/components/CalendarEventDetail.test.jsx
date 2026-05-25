@@ -1,4 +1,4 @@
-/** Tests for CalendarEventDetail — prep notes render, checklist add, toggle mutation. */
+/** Tests for CalendarEventDetail — 480px drawer, prep checklist, application link. */
 
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -11,6 +11,11 @@ import { describe, it, expect, vi, beforeAll, afterAll, afterEach } from "vitest
 import { AuthProvider } from "../context/AuthContext";
 import CalendarEventDetail from "./CalendarEventDetail";
 import { passthroughHandlers } from "../test/passthroughHandlers";
+import {
+  CALENDAR_EVENT_DRAWER_WIDTH_PX,
+  CALENDAR_EVENT_PREP_ITEMS,
+  DRAWER_ANIMATION_MS,
+} from "../lib/constants";
 
 const PATCH_HANDLER = vi.fn();
 
@@ -39,17 +44,18 @@ const server = setupServer(
         title: "Technical Interview",
         company: "Acme Corp",
         role_title: "Software Engineer",
-        prep_notes: body.prep_data?.notes ?? "Initial notes",
-        prep_checklist: body.prep_data?.checklist ?? [],
-        prep_data: body.prep_data ?? { notes: "Initial notes", checklist: [], questions: [] },
+        prep_checklist: body.prep_checklist ?? [],
       },
     });
   }),
-  ...passthroughHandlers,
+  ...passthroughHandlers
 );
 
 beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
-afterEach(() => { server.resetHandlers(); PATCH_HANDLER.mockClear(); });
+afterEach(() => {
+  server.resetHandlers();
+  PATCH_HANDLER.mockClear();
+});
 afterAll(() => server.close());
 
 const BASE_EVENT = {
@@ -61,14 +67,11 @@ const BASE_EVENT = {
   title: "Technical Interview",
   company: "Acme Corp",
   role_title: "Software Engineer",
-  prep_data: {
-    notes: "Initial notes",
-    checklist: [
-      { id: "item-1", text: "Research company culture", checked: false },
-      { id: "item-2", text: "Review system design", checked: true },
-    ],
-    questions: [],
-  },
+  prep_checklist: [
+    { id: "review-jd", text: "Review job description", checked: false },
+    { id: "review-brief", text: "Re-read your interview prep brief", checked: true },
+    { id: "prepare-questions", text: "Prepare 3 questions to ask", checked: false },
+  ],
 };
 
 function makeWrapper() {
@@ -85,108 +88,61 @@ function makeWrapper() {
 }
 
 describe("CalendarEventDetail", () => {
-  it("should render prep notes and checklist items", async () => {
-    // Arrange / Act
-    const user = userEvent.setup();
-    render(
-      <CalendarEventDetail event={BASE_EVENT} onClose={vi.fn()} />,
-      { wrapper: makeWrapper() }
-    );
+  it("should render the drawer at 480px width with slide transition", () => {
+    render(<CalendarEventDetail event={BASE_EVENT} onClose={vi.fn()} />, { wrapper: makeWrapper() });
 
-    // Open the collapsible prep section
-    await user.click(screen.getByRole("button", { name: /interview prep/i }));
-
-    // Assert — notes textarea shows saved value
-    const notesTextarea = screen.getByRole("textbox", { name: /prep notes/i });
-    expect(notesTextarea).toHaveValue("Initial notes");
-
-    // Assert — checklist items render
-    expect(screen.getByText("Research company culture")).toBeInTheDocument();
-    expect(screen.getByText("Review system design")).toBeInTheDocument();
-
-    // Assert — checked item has line-through styling class
-    const checkedItem = screen.getByText("Review system design");
-    expect(checkedItem).toHaveClass("line-through");
+    const panel = screen.getByTestId("calendar-event-detail");
+    expect(panel).toHaveStyle({ width: `${CALENDAR_EVENT_DRAWER_WIDTH_PX}px` });
+    expect(panel.style.transitionDuration).toBe(`${DRAWER_ANIMATION_MS}ms`);
+    expect(panel).toHaveClass("motion-safe-drawer");
   });
 
-  it("should add a new checklist item when user types and presses Enter", async () => {
-    // Arrange
-    const user = userEvent.setup();
-    render(
-      <CalendarEventDetail
-        event={{ ...BASE_EVENT, prep_data: { notes: "", checklist: [], questions: [] } }}
-        onClose={vi.fn()}
-      />,
-      { wrapper: makeWrapper() }
-    );
+  it("should render default prep checklist items with checked state", () => {
+    render(<CalendarEventDetail event={BASE_EVENT} onClose={vi.fn()} />, { wrapper: makeWrapper() });
 
-    // Open the collapsible prep section
-    await user.click(screen.getByRole("button", { name: /interview prep/i }));
-
-    // Act
-    const input = screen.getByRole("textbox", { name: /new checklist item/i });
-    await user.type(input, "Prepare STAR stories");
-    await user.keyboard("{Enter}");
-
-    // Assert — item appears in the list
-    expect(await screen.findByText("Prepare STAR stories")).toBeInTheDocument();
-
-    // Assert — PATCH was called with the new checklist in prep_data
-    await waitFor(() => {
-      expect(PATCH_HANDLER).toHaveBeenCalledWith(
-        expect.objectContaining({
-          prep_data: expect.objectContaining({
-            checklist: expect.arrayContaining([
-              expect.objectContaining({ text: "Prepare STAR stories", checked: false }),
-            ]),
-          }),
-        })
-      );
+    CALENDAR_EVENT_PREP_ITEMS.forEach((item) => {
+      expect(screen.getByText(item.text)).toBeInTheDocument();
     });
+    expect(screen.getByText("Re-read your interview prep brief")).toHaveClass("line-through");
   });
 
   it("should call PATCH mutation when a checklist item is toggled", async () => {
-    // Arrange
     const user = userEvent.setup();
-    render(
-      <CalendarEventDetail event={BASE_EVENT} onClose={vi.fn()} />,
-      { wrapper: makeWrapper() }
-    );
+    render(<CalendarEventDetail event={BASE_EVENT} onClose={vi.fn()} />, { wrapper: makeWrapper() });
 
-    // Open the collapsible prep section
-    await user.click(screen.getByRole("button", { name: /interview prep/i }));
+    await user.click(screen.getByRole("checkbox", { name: /review job description/i }));
 
-    // Act — toggle the unchecked first item
-    const checkbox = screen.getByRole("checkbox", { name: /research company culture/i });
-    await user.click(checkbox);
-
-    // Assert — PATCH was called with prep_data containing the toggled item (now checked: true)
     await waitFor(() => {
       expect(PATCH_HANDLER).toHaveBeenCalledWith(
         expect.objectContaining({
-          prep_data: expect.objectContaining({
-            checklist: expect.arrayContaining([
-              expect.objectContaining({ id: "item-1", text: "Research company culture", checked: true }),
-            ]),
-          }),
+          prep_checklist: expect.arrayContaining([
+            expect.objectContaining({ id: "review-jd", text: "Review job description", checked: true }),
+          ]),
         })
       );
     });
   });
 
+  it("should render linked application and open application action", () => {
+    render(<CalendarEventDetail event={BASE_EVENT} onClose={vi.fn()} />, { wrapper: makeWrapper() });
+
+    expect(screen.getByRole("link", { name: /acme corp — software engineer/i })).toHaveAttribute(
+      "href",
+      "/dashboard?selected=app1"
+    );
+    expect(screen.getByRole("link", { name: /open application/i })).toHaveAttribute(
+      "href",
+      "/dashboard?selected=app1"
+    );
+  });
+
   it("should call onClose when the close button is clicked", async () => {
-    // Arrange
     const onClose = vi.fn();
     const user = userEvent.setup();
-    render(
-      <CalendarEventDetail event={BASE_EVENT} onClose={onClose} />,
-      { wrapper: makeWrapper() }
-    );
+    render(<CalendarEventDetail event={BASE_EVENT} onClose={onClose} />, { wrapper: makeWrapper() });
 
-    // Act
     await user.click(screen.getByRole("button", { name: /close event details/i }));
 
-    // Assert
     expect(onClose).toHaveBeenCalledOnce();
   });
 });

@@ -15,8 +15,18 @@ function buildSavedSearchParams(savedSearch) {
   if (f.experience_level) next.set("experience_level", f.experience_level);
   if (f.remote_status) next.set("remote_status", f.remote_status);
   if (f.company_type) next.set("company_type", f.company_type);
+  if (f.date_from) next.set("date_from", f.date_from);
   if (f.min_salary != null) next.set("salary_min", String(f.min_salary));
   return next;
+}
+
+function sortJobs(jobs, sort) {
+  if (sort !== "oldest") return jobs;
+  return [...jobs].sort((a, b) => {
+    const da = a.date_posted ? new Date(a.date_posted).getTime() : 0;
+    const db = b.date_posted ? new Date(b.date_posted).getTime() : 0;
+    return da - db;
+  });
 }
 
 export function useJobBoardState() {
@@ -32,9 +42,13 @@ export function useJobBoardState() {
   const companyType = searchParams.get("company_type") ?? undefined;
   const salaryMin = searchParams.get("salary_min") ? Number(searchParams.get("salary_min")) : undefined;
   const salaryMax = searchParams.get("salary_max") ? Number(searchParams.get("salary_max")) : undefined;
+  const dateFrom = searchParams.get("date_from") ?? undefined;
+  const sort = searchParams.get("sort") ?? "best_match";
 
-  const hasActiveFilters = Boolean(q || roleType || experienceLevel || remoteStatus || companyType || salaryMin || salaryMax);
-  const filterKey = [q, roleType, experienceLevel, remoteStatus, companyType, salaryMin, salaryMax].join("|||");
+  const hasActiveFilters = Boolean(
+    q || roleType || experienceLevel || remoteStatus || companyType || salaryMin || salaryMax || dateFrom || sort !== "best_match"
+  );
+  const filterKey = [q, roleType, experienceLevel, remoteStatus, companyType, salaryMin, salaryMax, dateFrom, sort].join("|||");
 
   useEffect(() => { setPerPage(DEFAULT_PER_PAGE); }, [filterKey, setPerPage]);
 
@@ -47,11 +61,13 @@ export function useJobBoardState() {
     if (companyType) f.company_type = companyType;
     if (salaryMin !== undefined) f.salary_min = salaryMin;
     if (salaryMax !== undefined) f.salary_max = salaryMax;
+    if (dateFrom) f.date_from = dateFrom;
     return f;
-  }, [q, roleType, experienceLevel, remoteStatus, companyType, salaryMin, salaryMax, perPage]);
+  }, [q, roleType, experienceLevel, remoteStatus, companyType, salaryMin, salaryMax, dateFrom, perPage]);
 
   const { data: envelope, isLoading, error, refetch } = useJobs(filters);
-  const jobs = envelope?.data ?? [];
+  const rawJobs = envelope?.data ?? [];
+  const jobs = useMemo(() => sortJobs(rawJobs, sort), [rawJobs, sort]);
   const total = envelope?.meta?.total ?? 0;
   const hasMore = !isLoading && jobs.length < total;
 

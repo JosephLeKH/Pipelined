@@ -1,53 +1,22 @@
-/** "Recommended for You" strip on the Job Board page. */
+/** "Recommended for you" tile grid on the Job Board page. */
 
 import { useContext } from "react";
-import TrendingUp from "lucide-react/dist/esm/icons/trending-up";
 import RefreshCw from "lucide-react/dist/esm/icons/refresh-cw";
 
 import JobCard from "./JobCard";
-import FitBadge from "./FitBadge";
 import { useRecommendedJobs } from "../hooks/useJobs";
 import { AuthContext } from "../context/AuthContext";
-import { FIT_SCORE_LABEL } from "../lib/aiConstants";
 import { BUTTON_SECONDARY } from "../lib/designTokens";
 
-const SECTION_TITLE = "Recommended for You";
-const SECTION_SUBTITLE = "Ranked by your resume keywords";
-
-function ReasonBadge({ reason }) {
-  return (
-    <span className="inline-block rounded-full bg-brand-50 px-2 py-0.5 text-xs font-medium text-brand-700 dark:bg-brand-900/30 dark:text-brand-300">
-      {reason}
-    </span>
-  );
-}
-
-function RecommendationCard({ job, onSelect }) {
-  const hasSignal = typeof job.score === "number" && job.score > 0;
-  return (
-    <div className="flex flex-col gap-1">
-      <JobCard job={job} onSelect={onSelect} />
-      <div className="flex flex-wrap items-center gap-2 px-1">
-        {hasSignal ? (
-          <>
-            <span className="text-xs text-muted-foreground">{FIT_SCORE_LABEL}</span>
-            <FitBadge score={job.score} />
-            {job.reason && <ReasonBadge reason={job.reason} />}
-          </>
-        ) : (
-          <span className="text-xs text-muted-foreground">
-            Save a search or log an offer to personalize fit
-          </span>
-        )}
-      </div>
-    </div>
-  );
-}
+const SECTION_TITLE = "Recommended for you";
+const SECTION_SUBTITLE = "based on your resume";
+const RECOMMENDATION_LIMIT = 3;
+const SKELETON_COUNT = 3;
 
 function RecommendationsError({ onRetry }) {
   return (
-    <div className="rounded-xl border border-border-1 bg-surface-1/50 px-4 py-6 text-center">
-      <p className="text-sm text-muted-foreground">Could not load recommendations.</p>
+    <div className="rounded-lg border border-border-1 bg-surface-1/50 px-4 py-6 text-center">
+      <p className="text-sm text-text-3">Could not load recommendations.</p>
       <button
         type="button"
         onClick={onRetry}
@@ -57,6 +26,27 @@ function RecommendationsError({ onRetry }) {
         Try again
       </button>
     </div>
+  );
+}
+
+function RecommendationSkeleton() {
+  return (
+    <div
+      className="h-40 animate-pulse rounded-lg border border-border-1 bg-surface-1/50"
+      aria-hidden="true"
+      data-testid="recommendation-skeleton"
+    />
+  );
+}
+
+function SectionHeader() {
+  return (
+    <header className="flex items-baseline gap-2">
+      <h2 id="recommendations-heading" className="text-sm font-semibold text-text-1">
+        {SECTION_TITLE}
+      </h2>
+      <p className="text-xs text-text-3">{SECTION_SUBTITLE}</p>
+    </header>
   );
 }
 
@@ -70,13 +60,7 @@ export function JobRecommendations({ onSelectJob }) {
   if (isError) {
     return (
       <section aria-labelledby="recommendations-heading" className="flex flex-col gap-3">
-        <header>
-          <h2 id="recommendations-heading" className="flex items-center gap-1.5 text-sm font-semibold text-foreground">
-            <TrendingUp className="h-4 w-4 text-brand-500" aria-hidden="true" />
-            {SECTION_TITLE}
-          </h2>
-          <p className="mt-0.5 text-xs text-muted-foreground">{SECTION_SUBTITLE}</p>
-        </header>
+        <SectionHeader />
         <RecommendationsError onRetry={() => refetch()} />
       </section>
     );
@@ -84,29 +68,19 @@ export function JobRecommendations({ onSelectJob }) {
 
   if (!isLoading && (!jobs || jobs.length === 0)) return null;
 
+  const visibleJobs = jobs?.slice(0, RECOMMENDATION_LIMIT) ?? [];
+
   return (
     <section aria-labelledby="recommendations-heading" className="flex flex-col gap-3">
-      <header>
-        <h2 id="recommendations-heading" className="flex items-center gap-1.5 text-sm font-semibold text-foreground">
-          <TrendingUp className="h-4 w-4 text-brand-500" aria-hidden="true" />
-          {SECTION_TITLE}
-        </h2>
-        <p className="mt-0.5 text-xs text-muted-foreground">{SECTION_SUBTITLE}</p>
-      </header>
+      <SectionHeader />
 
-      {isLoading ? (
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="h-48 animate-pulse rounded-xl bg-muted" aria-hidden="true" />
-          ))}
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {jobs.map((job) => (
-            <RecommendationCard key={job.id} job={job} onSelect={onSelectJob} />
-          ))}
-        </div>
-      )}
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {isLoading
+          ? Array.from({ length: SKELETON_COUNT }, (_, i) => <RecommendationSkeleton key={i} />)
+          : visibleJobs.map((job) => (
+              <JobCard key={job.id} job={job} onSelect={onSelectJob} />
+            ))}
+      </div>
     </section>
   );
 }

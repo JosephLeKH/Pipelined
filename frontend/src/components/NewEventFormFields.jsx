@@ -1,45 +1,79 @@
-/** Event type, date, time, notes fields and error message for NewEventForm. */
+/** Event type, date, time, notes fields and error message for NewEventForm (PRD-06 §7.4). */
 
 import { EVENT_TYPE_OPTIONS } from "../lib/constants";
 import { Input } from "./ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { Textarea } from "./ui/textarea";
 
-export function NewEventFormFields({ eventType, setEventType, date, setDate, time, setTime, notes, setNotes, formError }) {
+const FIELD_LABEL = "text-xs font-medium uppercase tracking-wide text-text-3";
+
+export function NewEventFormFields({
+  eventType,
+  setEventType,
+  date,
+  setDate,
+  time,
+  setTime,
+  notes,
+  setNotes,
+  formError,
+}) {
   return (
     <>
       <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-medium uppercase text-muted-foreground" htmlFor="event-type">
-          Event Type
+        <label className={FIELD_LABEL} htmlFor="event-type">
+          Type
         </label>
         <Select value={eventType} onValueChange={setEventType}>
-          <SelectTrigger id="event-type">
+          <SelectTrigger id="event-type" aria-label="Event type">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            {EVENT_TYPE_OPTIONS.map((t) => (
-              <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
+            {EVENT_TYPE_OPTIONS.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
       </div>
-      <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-medium uppercase text-muted-foreground" htmlFor="event-date">Date</label>
-        <Input id="event-date" type="date" value={date} onChange={(e) => setDate(e.target.value)} required aria-describedby={formError ? 'event-form-error' : undefined} />
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="flex flex-col gap-1.5">
+          <label className={FIELD_LABEL} htmlFor="event-date">
+            Date
+          </label>
+          <Input
+            id="event-date"
+            type="date"
+            value={date}
+            onChange={(event) => setDate(event.target.value)}
+            required
+            aria-describedby={formError ? "event-form-error" : undefined}
+          />
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <label className={FIELD_LABEL} htmlFor="event-time">
+            Time
+          </label>
+          <Input
+            id="event-time"
+            type="time"
+            value={time}
+            onChange={(event) => setTime(event.target.value)}
+          />
+        </div>
       </div>
       <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-medium uppercase text-muted-foreground" htmlFor="event-time">
-          Time{" "}<span className="font-normal normal-case text-muted-foreground">(optional)</span>
+        <label className={FIELD_LABEL} htmlFor="event-notes">
+          Notes
         </label>
-        <Input id="event-time" type="time" value={time} onChange={(e) => setTime(e.target.value)} />
+        <Textarea id="event-notes" value={notes} onChange={(event) => setNotes(event.target.value)} rows={3} />
       </div>
-      <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-medium uppercase text-muted-foreground" htmlFor="event-notes">
-          Notes{" "}<span className="font-normal normal-case text-muted-foreground">(optional)</span>
-        </label>
-        <Textarea id="event-notes" value={notes} onChange={(e) => setNotes(e.target.value)} />
-      </div>
-      {formError && <p id="event-form-error" role="alert" className="text-sm text-destructive">{formError}</p>}
+      {formError && (
+        <p id="event-form-error" role="alert" className="text-sm text-brand-700 dark:text-brand-400">
+          {formError}
+        </p>
+      )}
     </>
   );
 }

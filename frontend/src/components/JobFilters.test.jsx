@@ -1,52 +1,49 @@
-import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { describe, it, expect } from "vitest";
+import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { JobFilters } from "./JobFilters";
+import { withTooltipProvider } from "../test/testProviders";
 
 function renderWithRouter(initialSearch = "") {
   return render(
     <MemoryRouter initialEntries={[`/jobs${initialSearch}`]}>
-      <JobFilters />
+      {withTooltipProvider(<JobFilters />)}
     </MemoryRouter>
   );
 }
 
 describe("JobFilters", () => {
-  it("should render Role filter group label", () => {
+  it("should render inline filter dropdown labels", () => {
     renderWithRouter();
 
-    expect(screen.getByText(/role:/i)).toBeInTheDocument();
+    expect(screen.getByText(/remote:/i)).toBeInTheDocument();
+    expect(screen.getByText(/type:/i)).toBeInTheDocument();
+    expect(screen.getByText(/level:/i)).toBeInTheDocument();
+    expect(screen.getByText(/posted:/i)).toBeInTheDocument();
+    expect(screen.getByText(/sort:/i)).toBeInTheDocument();
   });
 
-  it("should render Experience filter group label", () => {
+  it("should show Any as default remote filter value", () => {
     renderWithRouter();
 
-    expect(screen.getByText(/experience:/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /remote: any/i })).toBeInTheDocument();
   });
 
-  it("should render filter chips for all role type options", () => {
+  it("should show selected remote filter in trigger label", () => {
+    renderWithRouter("?remote_status=remote");
+
+    expect(screen.getByRole("button", { name: /remote: remote/i })).toBeInTheDocument();
+  });
+
+  it("should show Best match as default sort", () => {
     renderWithRouter();
 
-    expect(screen.getByRole("button", { name: /full time/i })).toBeInTheDocument();
-    expect(screen.getAllByRole("button", { name: /internship/i }).length).toBeGreaterThan(0);
+    expect(screen.getByRole("button", { name: /sort: best match/i })).toBeInTheDocument();
   });
 
-  it("should mark chip as active when its value matches the current search param", () => {
-    renderWithRouter("?role_type=full_time");
+  it("should render filter region for accessibility", () => {
+    renderWithRouter();
 
-    const fullTimeBtn = screen.getByRole("button", { name: /full time/i });
-    expect(fullTimeBtn).toHaveClass("bg-primary");
-  });
-
-  it("should clear param when clicking an already-active chip", () => {
-    renderWithRouter("?role_type=full_time");
-
-    const fullTimeBtn = screen.getByRole("button", { name: /full time/i });
-
-    expect(fullTimeBtn).toHaveClass("bg-primary");
-
-    fireEvent.click(fullTimeBtn);
-
-    expect(fullTimeBtn).not.toHaveClass("bg-primary");
+    expect(screen.getByRole("region", { name: /job filters/i })).toBeInTheDocument();
   });
 });

@@ -1,50 +1,65 @@
-/** Job board filter bar: horizontal scrollable filter chips. */
+/** Job board inline filter row — Linear-style single-select dropdowns (PRD-06 §5). */
 
 import { useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 
-import { cn } from "../lib/utils";
-import { Button } from "./ui/button";
+import {
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from "./ui/dropdown-menu";
+import { SingleSelectFilterDropdown } from "./FilterBarDropdown";
 import {
   ROLE_TYPE_OPTIONS,
   EXPERIENCE_LEVEL_OPTIONS,
   REMOTE_STATUS_OPTIONS,
+  JOB_POSTED_FILTER_OPTIONS,
+  JOB_SORT_OPTIONS,
 } from "../lib/constants";
+import { DATE_PRESET_DAYS, isoDateDaysAgo } from "../hooks/useFilterBarParams";
 
-const FILTER_GROUPS = [
-  { label: "Role", paramKey: "role_type", options: ROLE_TYPE_OPTIONS },
-  { label: "Experience", paramKey: "experience_level", options: EXPERIENCE_LEVEL_OPTIONS },
-  { label: "Remote", paramKey: "remote_status", options: REMOTE_STATUS_OPTIONS },
-];
+const REMOTE_FILTER_OPTIONS = REMOTE_STATUS_OPTIONS.filter((o) => o !== "unknown");
 
-function FilterChip({ label, active, onClick }) {
-  return (
-    <Button
-      type="button"
-      variant="ghost"
-      onClick={onClick}
-      className={cn(
-        "shrink-0 rounded-full px-3 py-1.5 text-xs font-medium capitalize h-auto",
-        active
-          ? "bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground"
-          : "bg-muted text-muted-foreground hover:bg-muted/70"
-      )}
-    >
-      {label.replace(/_/g, " ")}
-    </Button>
-  );
+function formatOptionLabel(value) {
+  return value.replace(/_/g, " ");
+}
+
+function detectPostedPreset(dateFrom) {
+  if (!dateFrom) return "any";
+  for (const [id, days] of Object.entries(DATE_PRESET_DAYS)) {
+    if (dateFrom === isoDateDaysAgo(days)) return id;
+  }
+  return "any";
+}
+
+function postedLabel(presetId) {
+  return JOB_POSTED_FILTER_OPTIONS.find((o) => o.id === presetId)?.label ?? "Any";
+}
+
+function sortLabel(sortId) {
+  return JOB_SORT_OPTIONS.find((o) => o.id === sortId)?.label ?? "Best match";
 }
 
 export function JobFilters() {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const toggleFilter = useCallback(
-    (paramKey, value) => {
+  const setParam = useCallback(
+    (key, value) => {
       const next = new URLSearchParams(searchParams);
-      if (searchParams.get(paramKey) === value) {
-        next.delete(paramKey);
-      } else {
-        next.set(paramKey, value);
+      if (!value || value === "any") next.delete(key);
+      else next.set(key, value);
+      next.set("page", "1");
+      setSearchParams(next, { replace: true });
+    },
+    [searchParams, setSearchParams]
+  );
+
+  const applyPostedPreset = useCallback(
+    (presetId) => {
+      const next = new URLSearchParams(searchParams);
+      next.delete("date_from");
+      if (presetId !== "any") {
+        next.set("date_from", isoDateDaysAgo(DATE_PRESET_DAYS[presetId]));
       }
       next.set("page", "1");
       setSearchParams(next, { replace: true });
@@ -52,24 +67,95 @@ export function JobFilters() {
     [searchParams, setSearchParams]
   );
 
+  const remoteStatus = searchParams.get("remote_status") ?? "";
+  const roleType = searchParams.get("role_type") ?? "";
+  const experienceLevel = searchParams.get("experience_level") ?? "";
+  const dateFrom = searchParams.get("date_from") ?? "";
+  const sort = searchParams.get("sort") ?? "best_match";
+  const postedPreset = detectPostedPreset(dateFrom);
+
   return (
     <div
-      className="flex gap-4 overflow-x-auto pb-1"
-      aria-label="Filter chips"
+      role="region"
+      aria-label="Job filters"
+      className="flex h-7 shrink-0 flex-nowrap items-center gap-1 overflow-x-auto md:overflow-visible"
     >
-      {FILTER_GROUPS.map(({ label: groupLabel, paramKey, options }) => (
-        <div key={paramKey} className="flex shrink-0 items-center gap-1.5">
-          <span className="shrink-0 text-xs font-medium text-muted-foreground">{groupLabel}:</span>
-          {options.map((opt) => (
-            <FilterChip
-              key={opt}
-              label={opt}
-              active={searchParams.get(paramKey) === opt}
-              onClick={() => toggleFilter(paramKey, opt)}
-            />
-          ))}
-        </div>
-      ))}
+      <SingleSelectFilterDropdown
+        label="Remote"
+        displayValue={remoteStatus ? formatOptionLabel(remoteStatus) : "Any"}
+      >
+        <DropdownMenuLabel>Remote</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onSelect={() => setParam("remote_status", null)}>Any</DropdownMenuItem>
+        {REMOTE_FILTER_OPTIONS.map((opt) => (
+          <DropdownMenuItem key={opt} onSelect={() => setParam("remote_status", opt)}>
+            {formatOptionLabel(opt)}
+            {remoteStatus === opt && (
+              <span className="ml-auto text-[10px] text-brand-600">●</span>
+            )}
+          </DropdownMenuItem>
+        ))}
+      </SingleSelectFilterDropdown>
+
+      <SingleSelectFilterDropdown
+        label="Type"
+        displayValue={roleType ? formatOptionLabel(roleType) : "Any"}
+      >
+        <DropdownMenuLabel>Type</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onSelect={() => setParam("role_type", null)}>Any</DropdownMenuItem>
+        {ROLE_TYPE_OPTIONS.map((opt) => (
+          <DropdownMenuItem key={opt} onSelect={() => setParam("role_type", opt)}>
+            {formatOptionLabel(opt)}
+            {roleType === opt && (
+              <span className="ml-auto text-[10px] text-brand-600">●</span>
+            )}
+          </DropdownMenuItem>
+        ))}
+      </SingleSelectFilterDropdown>
+
+      <SingleSelectFilterDropdown
+        label="Level"
+        displayValue={experienceLevel ? formatOptionLabel(experienceLevel) : "Any"}
+      >
+        <DropdownMenuLabel>Level</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onSelect={() => setParam("experience_level", null)}>Any</DropdownMenuItem>
+        {EXPERIENCE_LEVEL_OPTIONS.map((opt) => (
+          <DropdownMenuItem key={opt} onSelect={() => setParam("experience_level", opt)}>
+            {formatOptionLabel(opt)}
+            {experienceLevel === opt && (
+              <span className="ml-auto text-[10px] text-brand-600">●</span>
+            )}
+          </DropdownMenuItem>
+        ))}
+      </SingleSelectFilterDropdown>
+
+      <SingleSelectFilterDropdown label="Posted" displayValue={postedLabel(postedPreset)}>
+        <DropdownMenuLabel>Posted</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        {JOB_POSTED_FILTER_OPTIONS.map(({ id, label }) => (
+          <DropdownMenuItem key={id} onSelect={() => applyPostedPreset(id)}>
+            {label}
+            {postedPreset === id && (
+              <span className="ml-auto text-[10px] text-brand-600">●</span>
+            )}
+          </DropdownMenuItem>
+        ))}
+      </SingleSelectFilterDropdown>
+
+      <SingleSelectFilterDropdown label="Sort" displayValue={sortLabel(sort)}>
+        <DropdownMenuLabel>Sort</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        {JOB_SORT_OPTIONS.map(({ id, label }) => (
+          <DropdownMenuItem key={id} onSelect={() => setParam("sort", id === "best_match" ? null : id)}>
+            {label}
+            {sort === id && (
+              <span className="ml-auto text-[10px] text-brand-600">●</span>
+            )}
+          </DropdownMenuItem>
+        ))}
+      </SingleSelectFilterDropdown>
     </div>
   );
 }

@@ -1,19 +1,18 @@
-/** Skeleton placeholder for a calendar day cell — animated shimmer matching DayCell layout. */
+/** Skeleton placeholder for a calendar day cell — 96px min-height matching PRD-06 §7.1. */
 
 const SHIMMER = "shimmer-bg animate-shimmer";
 
 function SkeletonCalendarCell() {
   return (
     <div
-      className="min-h-[80px] border border-border p-1.5"
+      className="min-h-24 border border-border-1 p-2"
       data-testid="skeleton-calendar-cell"
       aria-hidden="true"
     >
-      {/* Day number placeholder */}
-      <span className={`inline-flex h-6 w-6 rounded-full ${SHIMMER}`} />
-      {/* Event chip placeholder */}
-      <div className="mt-1 flex flex-col gap-0.5">
-        <span className={`h-4 w-full rounded ${SHIMMER}`} />
+      <span className={`inline-block h-3 w-4 rounded ${SHIMMER}`} />
+      <div className="mt-auto flex gap-1 pt-2">
+        <span className={`h-1.5 w-1.5 rounded-full ${SHIMMER}`} />
+        <span className={`h-1.5 w-1.5 rounded-full ${SHIMMER}`} />
       </div>
     </div>
   );

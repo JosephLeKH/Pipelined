@@ -34,6 +34,22 @@ export const STALE_APPLICATION_DAYS = 14;
 
 export const SEARCH_DEBOUNCE_MS = 300;
 
+/** Job board search debounce — PRD-06 §5. */
+export const JOB_SEARCH_DEBOUNCE_MS = 200;
+
+export const JOB_POSTED_FILTER_OPTIONS = [
+  { id: "any", label: "Any" },
+  { id: "7d", label: "7d" },
+  { id: "30d", label: "30d" },
+  { id: "90d", label: "90d" },
+];
+
+export const JOB_SORT_OPTIONS = [
+  { id: "best_match", label: "Best match" },
+  { id: "newest", label: "Newest" },
+  { id: "oldest", label: "Oldest" },
+];
+
 export const COPY_RESET_MS = 2_000;
 
 export const DROPDOWN_CLOSE_DELAY_MS = 150;
@@ -155,6 +171,28 @@ export const DETAIL_PANEL_WIDTH_PX = 520;
 export const MANUAL_ADD_FORM_WIDTH_PX = 520;
 export const MANUAL_ADD_VISIBLE_STAGES = 4;
 export const COPILOT_DRAWER_WIDTH_PX = 480;
+export const CALENDAR_EVENT_DRAWER_WIDTH_PX = 480;
+export const CALENDAR_EVENT_MODAL_WIDTH_PX = 480;
+export const CALENDAR_EVENT_DOT_MAX = 3;
+export const CALENDAR_DEFAULT_DURATION_MIN = 30;
+export const CALENDAR_UPCOMING_WINDOW_DAYS = 7;
+
+/** Default prep checklist items for calendar event detail drawer (PRD-06 §7.3). */
+export const CALENDAR_EVENT_PREP_ITEMS = [
+  { id: "review-jd", text: "Review job description" },
+  { id: "review-brief", text: "Re-read your interview prep brief" },
+  { id: "prepare-questions", text: "Prepare 3 questions to ask" },
+];
+
+/** Location label shown in calendar event detail by event type. */
+export const EVENT_TYPE_LOCATION_LABELS = {
+  phone_screen: "Phone",
+  technical: "Video call",
+  onsite: "Onsite",
+  behavioral: "Video call",
+  offer: "Remote",
+  other: "TBD",
+};
 
 /** Source options for ManualAddForm segmented control (PRD-04 §10.1). */
 export const MANUAL_ADD_SOURCE_OPTIONS = [
