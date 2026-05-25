@@ -311,9 +311,10 @@ async def test_apply_openai_fallback_returns_body_unchanged_when_no_page_text():
     body = ApplicationCreate(role_title=None, company=None, source="extension", page_text=None)
 
     # Act
-    result = await _apply_openai_fallback(body)
+    result, enhanced = await _apply_openai_fallback(body)
 
     # Assert
+    assert enhanced is False
     assert result is body
 
 

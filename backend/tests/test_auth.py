@@ -603,8 +603,13 @@ async def test_unverified_user_blocked_from_applications(client):
     reg = await client.post("/api/auth/register", json=REGISTER_PAYLOAD)
     cookies = dict(reg.cookies)
 
-    # Act — unverified user tries to list applications
-    response = await client.get("/api/applications", cookies=cookies)
+    # Patch debug=False so get_verified_user enforces the email check
+    from unittest.mock import patch
+    with patch("auth.dependencies.settings") as mock_settings:
+        mock_settings.debug = False
+
+        # Act — unverified user tries to list applications
+        response = await client.get("/api/applications", cookies=cookies)
 
     # Assert
     assert response.status_code == 403
