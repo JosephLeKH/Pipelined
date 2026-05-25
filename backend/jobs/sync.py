@@ -25,6 +25,7 @@ GITHUB_API_BASE: str = "https://api.github.com"
 
 _LINK_NEXT_RE: re.Pattern = re.compile(r'<([^>]+)>;\s*rel="next"')
 _MD_LINK_RE: re.Pattern = re.compile(r'\[([^\]]*)\]\(([^)]+)\)')
+_HTML_HREF_RE: re.Pattern = re.compile(r'<a[^>]+href=["\']([^"\']+)["\']', re.IGNORECASE)
 _TABLE_SEP_RE: re.Pattern = re.compile(r'^\|[\s|:-]+\|$')
 
 
@@ -78,14 +79,23 @@ async def _fetch_readme_content(client: httpx.AsyncClient, spec: str) -> str:
 
 
 def _extract_md_url(text: str) -> str | None:
-    """Return the URL from the first markdown link `[label](url)` in text."""
-    match = _MD_LINK_RE.search(text)
-    return match.group(2) if match else None
+    """Return the first URL in text, supporting `[label](url)` or `<a href="url">`.
+
+    SimplifyJobs-style READMEs use markdown links; vanshb03-style READMEs render
+    Apply badges as HTML anchors. We accept either.
+    """
+    md = _MD_LINK_RE.search(text)
+    if md:
+        return md.group(2)
+    html = _HTML_HREF_RE.search(text)
+    return html.group(1) if html else None
 
 
 def _strip_md_links(text: str) -> str:
-    """Replace markdown links with their display text."""
-    return _MD_LINK_RE.sub(lambda m: m.group(1), text).strip()
+    """Replace markdown links with their display text and strip bold/italic markers."""
+    stripped = _MD_LINK_RE.sub(lambda m: m.group(1), text)
+    stripped = stripped.replace("**", "").replace("__", "")
+    return stripped.strip()
 
 
 def _process_table_row(headers: list[str], cells: list[str]) -> dict | None:
