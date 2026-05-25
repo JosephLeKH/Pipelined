@@ -34,6 +34,22 @@ export const STALE_APPLICATION_DAYS = 14;
 
 export const SEARCH_DEBOUNCE_MS = 300;
 
+/** Job board search debounce — PRD-06 §5. */
+export const JOB_SEARCH_DEBOUNCE_MS = 200;
+
+export const JOB_POSTED_FILTER_OPTIONS = [
+  { id: "any", label: "Any" },
+  { id: "7d", label: "7d" },
+  { id: "30d", label: "30d" },
+  { id: "90d", label: "90d" },
+];
+
+export const JOB_SORT_OPTIONS = [
+  { id: "best_match", label: "Best match" },
+  { id: "newest", label: "Newest" },
+  { id: "oldest", label: "Oldest" },
+];
+
 export const COPY_RESET_MS = 2_000;
 
 export const DROPDOWN_CLOSE_DELAY_MS = 150;
