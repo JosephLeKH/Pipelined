@@ -15,7 +15,7 @@
       ],
       "priority": "high",
       "passes": true,
-      "notes": ""
+      "notes": "deadline_parser.py + email service hook, 4 pytest tests pass."
     },
     {
       "id": "US-1029",
@@ -29,7 +29,7 @@
       ],
       "priority": "high",
       "passes": true,
-      "notes": ""
+      "notes": "brief_oa_deadlines.py + mission_scorer 850 base, 8 pytest tests pass."
     },
     {
       "id": "US-1030",
@@ -42,7 +42,7 @@
       ],
       "priority": "medium",
       "passes": true,
-      "notes": ""
+      "notes": "MissionCard DeadlineBadge + 7 vitest tests, build green."
     },
     {
       "id": "US-1031",
@@ -55,7 +55,7 @@
       ],
       "priority": "medium",
       "passes": true,
-      "notes": ""
+      "notes": "test_brief_router OA mission test + AGENTIC_FEATURES.md updated."
     }
   ]
 }

@@ -1,0 +1,68 @@
+{
+  "id": "prd_129",
+  "title": "Stale App Follow-Up Agent + Offer Deadline Intelligence",
+  "description": "Close the agentic loop: auto-draft follow-up emails for stale applications, surface them as Today missions, show agent-generated chips in the UI, and extract offer acceptance deadlines from emails.",
+  "userStories": [
+    {
+      "id": "US-1044",
+      "title": "Auto-generate follow-up draft for stale applications",
+      "description": "In `backend/jobs/sync.py`, add a new APScheduler job `stale_followup` that runs daily at 07:00 UTC. In a new file `backend/applications/service_stale.py`, implement `auto_draft_stale_followups(user_id: str) -> int` that: (1) queries applications where `current_stage` is in ['Applied', 'OA', 'Phone Screen'] and `updated_at` < (now - 14 days) and `follow_up_draft` is None and `deleted != True` and `archived != True` (always include `user_id` in filter); (2) for each such app, calls `generate_follow_up_draft(user_id, str(app['_id']), app_doc)` from `applications.interview_prep.service`; (3) on success, saves the draft to the app doc via `apps.update_one` setting `follow_up_draft` and `follow_up_draft_generated_at`; (4) calls `create_notification(user_id_oid, type='follow_up_due', title='Follow-up draft ready', body=f'We drafted a follow-up for {company}', action_url=f'/dashboard?selected={app_id}')`. Use `asyncio.gather` for parallel processing. Add a named constant `STALE_APP_DAYS = 14` at module scope. Write 4 pytest tests: (a) function returns 0 when no stale apps; (b) skips apps that already have `follow_up_draft`; (c) skips apps in stages beyond Phone Screen; (d) calls generate_follow_up_draft and saves draft for qualifying app. Import `auto_draft_stale_followups` in `jobs/sync.py` and register the scheduler job.",
+      "acceptanceCriteria": [
+        "APScheduler job `stale_followup` registered at 07:00 UTC daily",
+        "`service_stale.py` with `auto_draft_stale_followups` and `STALE_APP_DAYS = 14`",
+        "All queries include user_id filter",
+        "Skips apps with existing `follow_up_draft`",
+        "Creates `follow_up_due` notification on success",
+        "4 pytest tests pass"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-1045",
+      "title": "Today missions for follow-up drafts ready",
+      "description": "In `backend/brief/morning_brief.py` (or wherever the missions list is assembled), add a new section `follow_up_drafts_ready`. Query applications where `follow_up_draft` is not None and `follow_up_draft_generated_at` exists and stage in ['Applied', 'OA', 'Phone Screen'] and `deleted != True`, scoped by `user_id`. For each, emit a mission dict: `{type: 'follow_up_draft_ready', app_id: str, company: str, role_title: str, mission_id: f'follow_up_{app_id}', title: f'Follow-up ready for {company}', reason: 'Draft follow-up email generated — copy and send when ready', score: 600}`. In `backend/brief/mission_scorer.py`, add the `follow_up_draft_ready` type with base score 600 (higher than ghost missions at ~300, lower than OA deadlines at ~850). Write 2 pytest tests: (a) mission appears when app has `follow_up_draft` in qualifying stage; (b) mission absent when `follow_up_draft` is None.",
+      "acceptanceCriteria": [
+        "`follow_up_draft_ready` missions emitted for apps with draft in qualifying stages",
+        "Stable `mission_id` prefix `follow_up_{app_id}`",
+        "Score 600 in mission_scorer",
+        "Always user_id scoped",
+        "2 pytest tests pass"
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-1046",
+      "title": "FollowUpDraftSection shows auto-generated chip",
+      "description": "In `frontend/src/components/FollowUpDraftSection.jsx`, when `application.follow_up_draft_generated_at` is truthy and `application.follow_up_draft` exists, show a small chip above the draft text area: a Sparkles icon (import from 'lucide-react/dist/esm/icons/sparkles', h-3 w-3 text-primary aria-hidden='true') + text 'Auto-drafted by agent' in `text-xs text-muted-foreground`. Use `flex items-center gap-1`. This mirrors the pattern in `InterviewPrepAgent` (which shows 'Auto-generated when interview invite detected'). Do NOT change the existing draft display or button behavior. Also add a `follow_up_draft_generated_at` prop usage — the component likely receives the full `application` object, so just access `application.follow_up_draft_generated_at`. Write 1 Vitest test: chip renders when both `follow_up_draft` and `follow_up_draft_generated_at` exist on the application prop; chip absent when `follow_up_draft_generated_at` is falsy.",
+      "acceptanceCriteria": [
+        "Sparkles chip with 'Auto-drafted by agent' shows when both fields truthy",
+        "Chip absent when follow_up_draft_generated_at is falsy",
+        "Sparkles icon aria-hidden='true', h-3 w-3 text-primary",
+        "No change to existing draft display or button",
+        "1 Vitest test passes"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-1047",
+      "title": "Offer acceptance deadline extraction from email",
+      "description": "In `backend/email_integration/service.py`, find the function `_apply_offer_details_from_email`. Add a regex to extract offer response deadlines from the email body. Add a named constant at module scope: `OFFER_DEADLINE_PATTERNS = [r'(?:respond|reply|accept|decision).*?by\\s+(\\w+ \\d{1,2},?\\s+\\d{4})', r'deadline[:\\s]+(\\w+ \\d{1,2},?\\s+\\d{4})', r'(\\d{1,2}/\\d{1,2}/\\d{4})']`. Use `re.search` with `re.IGNORECASE`. If a date string is found, parse it with `dateutil.parser.parse` (it is already available in the backend virtualenv) with `dayfirst=False`. If parsed successfully and the date is in the future, save it as `offer_deadline` (a UTC datetime) on the application doc via `update_one`. Also add `offer_deadline: datetime | None = None` to `ApplicationRead` in `backend/applications/schemas.py` so the frontend receives it. Then in `backend/brief/morning_brief.py`, add an `offer_deadlines` section: for apps where `current_stage == 'Offer'` and `offer_deadline` is within 3 days from now, emit a mission with `type: 'offer_deadline'`, `score: 950`, `mission_id: f'offer_deadline_{app_id}'`, `title: f'Offer deadline: {company}'`, `reason: 'Respond to offer before deadline'`. Write 2 pytest tests: (a) deadline extracted from email containing 'please respond by June 15, 2026'; (b) no deadline saved when no date pattern matches.",
+      "acceptanceCriteria": [
+        "OFFER_DEADLINE_PATTERNS constant defined at module scope",
+        "`offer_deadline` saved as UTC datetime when pattern matches and date is future",
+        "`offer_deadline` field in ApplicationRead schema",
+        "`offer_deadline` missions with score 950 emitted when deadline within 3 days",
+        "2 pytest tests pass"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

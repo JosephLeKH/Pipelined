@@ -26,10 +26,16 @@ from applications.service import create as create_application
 from applications.service import update as update_application
 from config import settings
 from database import get_collection
-from email_integration.classifier import GmailTransientError, classify_email, normalize_interview_round
+from email_integration.classifier import (
+    LABEL_RECRUITER_OUTREACH,
+    GmailTransientError,
+    classify_email,
+    normalize_interview_round,
+)
 from email_integration.deadline_parser import extract_oa_deadline
 from email_integration.email_events import log_email_event
 from email_integration.offer_parser import extract_offer_details
+from email_integration.recruiter_outreach import create_recruiter_lead
 
 logger = structlog.get_logger()
 
@@ -454,10 +460,17 @@ async def _process_message(
         user_id,
         AGENT_TYPE_CLASSIFY,
         STATUS_SUCCESS,
-        f"Classified email: {result.get('company', 'Unknown')} — {result.get('stage', 'Applied')}",
+        f"Classified email: {result.get('company', 'Unknown')} — {result.get('stage', result.get('label', 'Applied'))}",
     )
 
-    company: str = result.get("company", "")
+    if result.get("label") == LABEL_RECRUITER_OUTREACH:
+        company: str = result.get("company", "")
+        if company:
+            await create_recruiter_lead(user_id, company, result.get("role_title"), subject)
+            logger.info("recruiter_outreach_lead_created", user_id=user_id, company=company)
+        return False, False
+
+    company = result.get("company", "")
     role_title: str = result.get("role_title") or ""
     stage = STAGE_MAP.get(result.get("stage", "Applied"), "Applied")
     interview_round = normalize_interview_round(result.get("interview_round"))

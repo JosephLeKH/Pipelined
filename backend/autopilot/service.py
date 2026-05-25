@@ -6,15 +6,21 @@ import structlog
 from applications.schemas import ApplicationCreate
 from applications.service import DuplicateApplicationError, create as create_application
 from autopilot.constants import (
+    ADDED_TO_WATCHLIST_STATUS,
     APPROVED_STATUS,
     AUTOPILOT_APPLICATION_STAGE,
     DISMISSED_STATUS,
     PENDING_STATUS,
 )
-from autopilot.schemas import PendingOpportunityResponse
+from autopilot.schemas import PendingOpportunityResponse, RecruiterLeadResponse
 from bson import ObjectId
 from bson.errors import InvalidId
 from database import get_collection
+from email_integration.recruiter_outreach import (
+    get_recruiter_lead,
+    list_recruiter_leads,
+    set_lead_status,
+)
 
 logger = structlog.get_logger()
 
@@ -133,3 +139,69 @@ async def dismiss_pending_opportunity(user_id: str, opportunity_id: str) -> None
         {"$set": {"status": DISMISSED_STATUS, "reviewed_at": now}},
     )
     logger.info("autopilot_opportunity_dismissed", user_id=user_id, opportunity_id=opportunity_id)
+
+
+class RecruiterLeadNotFoundError(Exception):
+    """Raised when a recruiter lead is not found for this user."""
+
+
+class RecruiterLeadInvalidStateError(Exception):
+    """Raised when action on a recruiter lead is not permitted."""
+
+
+async def list_pending_recruiter_leads(user_id: str) -> list[RecruiterLeadResponse]:
+    """Return pending recruiter leads for the user."""
+    docs = await list_recruiter_leads(user_id)
+    return [RecruiterLeadResponse.from_doc(doc) for doc in docs]
+
+
+async def add_recruiter_lead_to_watchlist(user_id: str, lead_id: str) -> tuple[str, str]:
+    """Mark lead added_to_watchlist and append company to user watchlist_companies."""
+    lead = await get_recruiter_lead(user_id, lead_id)
+    if lead is None:
+        raise RecruiterLeadNotFoundError
+
+    if lead["status"] != PENDING_STATUS:
+        raise RecruiterLeadInvalidStateError
+
+    success = await set_lead_status(user_id, lead_id, ADDED_TO_WATCHLIST_STATUS)
+    if not success:
+        raise RecruiterLeadInvalidStateError
+
+    company: str = lead["company"]
+    await _upsert_watchlist_company(user_id, company)
+    logger.info("recruiter_lead_added_to_watchlist", user_id=user_id, lead_id=lead_id, company=company)
+    return lead_id, company
+
+
+async def _upsert_watchlist_company(user_id: str, company: str) -> None:
+    """Add company to user watchlist_companies if not already present (case-insensitive)."""
+    users = get_collection("users")
+    user = await users.find_one({"_id": ObjectId(user_id)}, {"watchlist_companies": 1})
+    if not user:
+        return
+
+    companies: list[dict] = user.get("watchlist_companies") or []
+    existing_names = {c["name"].lower() for c in companies if isinstance(c, dict) and "name" in c}
+    if company.lower() not in existing_names:
+        companies.append({"name": company, "careers_url": ""})
+        await users.update_one(
+            {"_id": ObjectId(user_id)},
+            {"$set": {"watchlist_companies": companies}},
+        )
+
+
+async def dismiss_recruiter_lead(user_id: str, lead_id: str) -> None:
+    """Dismiss a recruiter lead."""
+    lead = await get_recruiter_lead(user_id, lead_id)
+    if lead is None:
+        raise RecruiterLeadNotFoundError
+
+    if lead["status"] != PENDING_STATUS:
+        raise RecruiterLeadInvalidStateError
+
+    success = await set_lead_status(user_id, lead_id, DISMISSED_STATUS)
+    if not success:
+        raise RecruiterLeadInvalidStateError
+
+    logger.info("recruiter_lead_dismissed", user_id=user_id, lead_id=lead_id)

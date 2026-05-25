@@ -1,0 +1,43 @@
+{
+  "id": "prd_128",
+  "title": "Recruiter Outreach & Interview Prep OpenRouter",
+  "description": "Watchlist trigger from recruiter emails and migrate interview prep off Exa/Gemini direct.",
+  "userStories": [
+    {
+      "id": "US-1036",
+      "title": "Recruiter outreach watchlist suggestion",
+      "description": "When classifier detects unsolicited recruiter outreach, surface pending inbox item with Add to watchlist action.",
+      "acceptanceCriteria": ["Classifier label", "Pending item", "Tests", "user_id scoped"],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-1037",
+      "title": "Interview prep OpenRouter migration",
+      "description": "Route interview prep agent through openrouter_client; remove direct Exa/Gemini when OpenRouter configured.",
+      "acceptanceCriteria": ["OpenRouter path", "Fallback documented", "Tests"],
+      "priority": "high",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-1038",
+      "title": "Today recruiter mission section",
+      "description": "recruiter_outreach brief section for new recruiter leads with stable mission IDs.",
+      "acceptanceCriteria": ["Brief section", "mission_scorer", "Tests"],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-1039",
+      "title": "Docs and integration test",
+      "description": "Update AGENTIC_FEATURES.md; API test for recruiter pending flow.",
+      "acceptanceCriteria": ["Docs", "pytest", "Build green"],
+      "priority": "medium",
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

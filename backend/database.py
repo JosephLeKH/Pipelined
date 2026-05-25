@@ -125,6 +125,7 @@ async def ensure_indexes() -> None:
     morning_briefs = get_collection("morning_briefs")
     morning_brief_on_demand = get_collection("morning_brief_on_demand")
     pending_opportunities = get_collection("pending_opportunities")
+    recruiter_leads = get_collection("recruiter_leads")
     agent_runs = get_collection("agent_runs")
     weekly_reviews = get_collection("weekly_reviews")
     copilot_sessions = get_collection("copilot_sessions")
@@ -160,5 +161,13 @@ async def ensure_indexes() -> None:
         ),
         weekly_reviews.create_index(
             [("user_id", 1), ("week_start", 1)], unique=True, name="weekly_review_user_week",
+        ),
+        recruiter_leads.create_index([("user_id", 1), ("status", 1)], name="recruiter_leads_user_status"),
+        recruiter_leads.create_index([("user_id", 1), ("created_at", -1)], name="recruiter_leads_user_date"),
+        recruiter_leads.create_index(
+            [("user_id", 1), ("company", 1)],
+            unique=True,
+            partialFilterExpression={"status": "pending"},
+            name="recruiter_leads_user_company_unique",
         ),
     )

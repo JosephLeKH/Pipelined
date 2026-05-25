@@ -211,6 +211,22 @@ PURGE_DELETED_HOUR_UTC: int = 4
 NOTIFICATION_GEN_MINUTE: int = 0
 MORNING_BRIEF_MINUTE_UTC: int = 15
 WEEKLY_REVIEW_MINUTE_UTC: int = 30
+STALE_FOLLOWUP_HOUR_UTC: int = 7
+
+
+async def _stale_followup_job() -> None:
+    """Scheduled job: auto-draft follow-ups for all users' stale applications."""
+    from applications.service_stale import auto_draft_stale_followups  # noqa: PLC0415
+    logger.info("stale_followup_scan_started")
+    users_col = get_collection("users")
+    total = 0
+    async for user in users_col.find({}, {"_id": 1}):
+        try:
+            count = await auto_draft_stale_followups(str(user["_id"]))
+            total += count
+        except Exception:
+            logger.exception("stale_followup_user_failed", user_id=str(user["_id"]))
+    logger.info("stale_followup_scan_completed", total=total)
 
 
 def create_scheduler() -> AsyncIOScheduler:
@@ -281,6 +297,12 @@ def create_scheduler() -> AsyncIOScheduler:
         watchlist_scan,
         trigger=CronTrigger(hour=WATCHLIST_SCAN_HOUR_UTC, timezone="UTC"),
         id="watchlist_scan",
+        replace_existing=True,
+    )
+    scheduler.add_job(
+        _stale_followup_job,
+        trigger=CronTrigger(hour=STALE_FOLLOWUP_HOUR_UTC, timezone="UTC"),
+        id="stale_followup",
         replace_existing=True,
     )
     return scheduler

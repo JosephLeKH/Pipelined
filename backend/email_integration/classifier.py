@@ -21,6 +21,7 @@ CLASSIFIER_RETRY_ATTEMPTS = 2
 CLASSIFIER_RETRY_BACKOFF_SECONDS = 1.0
 
 VALID_INTERVIEW_ROUNDS = frozenset({"phone", "technical", "hm", "onsite", "final"})
+LABEL_RECRUITER_OUTREACH = "recruiter_outreach"
 
 
 class GmailTransientError(Exception):
@@ -28,19 +29,22 @@ class GmailTransientError(Exception):
 
 SYSTEM_PROMPT = (
     "You are a job application email classifier.\n\n"
-    "Analyze the email subject and body snippet. Determine if it is a job-application "
-    "related email (application confirmations, interview invites, rejection notices, "
-    "offer letters, online assessments, phone screen requests).\n\n"
-    "If job-related, extract:\n"
-    "- company: the hiring company name (string)\n"
-    "- role_title: the job title/position (string, or null if unclear)\n"
-    "- stage: one of 'Applied', 'Assessment', 'Phone Screen', 'Interview', 'Offer', 'Rejected'\n"
-    "- interview_round: when stage is 'Phone Screen' or 'Interview', one of "
-    "'phone', 'technical', 'hm', 'onsite', 'final' (or null if unclear)\n\n"
+    "Analyze the email subject and body snippet. Determine if it is job-related.\n\n"
+    "Job-related emails fall into two categories:\n\n"
+    "1. APPLICATION LIFECYCLE: emails about a job you applied to (confirmations, interview "
+    "invites, rejection notices, offer letters, online assessments, phone screen requests).\n"
+    "   Return: {job_related: true, company, role_title, "
+    "stage: one of 'Applied'/'Assessment'/'Phone Screen'/'Interview'/'Offer'/'Rejected', "
+    "interview_round (when stage is Phone Screen or Interview: "
+    "'phone'/'technical'/'hm'/'onsite'/'final' or null)}\n\n"
+    "2. RECRUITER OUTREACH: unsolicited emails from a recruiter proactively contacting you "
+    "about a role (cold outreach, 'I found your profile', 'exciting opportunity at ...').\n"
+    "   Return: {job_related: true, label: 'recruiter_outreach', company, role_title or null}\n\n"
     "Return ONLY valid JSON with no markdown fences. Examples:\n"
     '{"job_related": false}\n'
-    '{"job_related": true, "company": "Google", "role_title": "Software Engineer Intern", '
-    '"stage": "Interview", "interview_round": "technical"}'
+    '{"job_related": true, "company": "Google", "role_title": "SWE Intern", '
+    '"stage": "Interview", "interview_round": "technical"}\n'
+    '{"job_related": true, "label": "recruiter_outreach", "company": "Meta", "role_title": "Senior SWE"}'
 )
 
 

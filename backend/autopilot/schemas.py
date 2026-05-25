@@ -55,3 +55,34 @@ class PendingOpportunityResponse(BaseModel):
 class ApproveResponse(BaseModel):
     opportunity_id: str
     application_id: str
+
+
+class RecruiterLeadResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    company: str
+    role_title: str | None = None
+    status: str
+    subject: str
+    source: str = "recruiter_outreach"
+    action_type: str = "add_to_watchlist"
+    created_at: datetime
+    reviewed_at: datetime | None = None
+
+    @classmethod
+    def from_doc(cls, doc: dict) -> "RecruiterLeadResponse":
+        return cls(
+            id=str(doc["_id"]),
+            company=doc["company"],
+            role_title=doc.get("role_title"),
+            status=doc["status"],
+            subject=doc.get("subject", ""),
+            created_at=doc["created_at"],
+            reviewed_at=doc.get("reviewed_at"),
+        )
+
+
+class AddToWatchlistResponse(BaseModel):
+    lead_id: str
+    company: str
