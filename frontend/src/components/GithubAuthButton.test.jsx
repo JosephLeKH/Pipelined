@@ -42,26 +42,16 @@ describe("GithubAuthButton", () => {
     expect(screen.getByText("Sign up with GitHub")).toBeInTheDocument();
   });
 
-  it("should redirect to GitHub on click", async () => {
+  it("should link to GitHub OAuth authorize URL", async () => {
     vi.stubEnv("VITE_GITHUB_CLIENT_ID", "test-client-id");
     vi.resetModules();
 
     const { default: GithubAuthButton } = await import("./GithubAuthButton");
 
-    const hrefSetter = vi.fn();
-    Object.defineProperty(window, "location", {
-      writable: true,
-      value: { ...window.location, set href(val) { hrefSetter(val); } },
-    });
-
     render(<GithubAuthButton />);
-    screen.getByTestId("github-auth-button").click();
+    const link = screen.getByTestId("github-auth-button");
 
-    expect(hrefSetter).toHaveBeenCalledWith(
-      expect.stringContaining("github.com/login/oauth/authorize")
-    );
-    expect(hrefSetter).toHaveBeenCalledWith(
-      expect.stringContaining("client_id=test-client-id")
-    );
+    expect(link).toHaveAttribute("href", expect.stringContaining("github.com/login/oauth/authorize"));
+    expect(link).toHaveAttribute("href", expect.stringContaining("client_id=test-client-id"));
   });
 });

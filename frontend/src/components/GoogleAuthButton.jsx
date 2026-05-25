@@ -10,7 +10,7 @@ const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID ?? "";
 
 function GoogleIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+    <svg width="16" height="16" viewBox="0 0 18 18" aria-hidden="true" className="shrink-0">
       <path
         fill="#4285F4"
         d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 0 0 2.38-5.88c0-.57-.05-.66-.15-1.18z"
@@ -65,8 +65,9 @@ function GoogleAuthButton({ label = "Continue with Google", onSuccess, onError }
     <Button
       type="button"
       variant="outline"
+      size="lg"
       onClick={handleClick}
-      className="w-full gap-3 shadow-sm"
+      className="h-9 w-full gap-3 border-border-2 bg-surface-0 text-text-1 hover:bg-surface-1"
       data-testid="google-auth-button"
     >
       <GoogleIcon />
