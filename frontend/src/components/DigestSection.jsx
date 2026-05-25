@@ -1,15 +1,13 @@
-/** Weekly digest email toggle section. */
+/** Weekly digest email toggle — Linear-style surface card with Cardinal switch. */
 
 function DigestSection({ digestEnabled, isDigestPending, onDigestToggle }) {
   return (
-    <section className="rounded-xl bg-card border border-border p-6">
-      <h2 className="mb-1 text-base font-semibold text-foreground">
-        Weekly digest email
-      </h2>
-      <p className="mb-4 text-sm text-muted-foreground">
+    <section className="rounded-lg border border-border-1 bg-surface-1 p-4">
+      <h2 className="text-sm font-semibold text-text-1">Weekly digest email</h2>
+      <p className="mt-1 text-xs text-text-3">
         Receive a weekly summary of your job search activity every Monday morning.
       </p>
-      <div className="flex cursor-pointer items-center gap-3">
+      <div className="mt-4 flex cursor-pointer items-center gap-3">
         <button
           type="button"
           role="switch"
@@ -17,13 +15,26 @@ function DigestSection({ digestEnabled, isDigestPending, onDigestToggle }) {
           aria-label="Weekly digest email"
           disabled={isDigestPending}
           onClick={() => onDigestToggle(!digestEnabled)}
-          className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 ${digestEnabled ? "bg-primary" : "bg-muted-foreground/30"}`}
+          className={[
+            "relative inline-flex h-6 w-11 shrink-0 items-center rounded-full",
+            "transition-colors motion-safe:duration-hover",
+            "focus:outline-none focus-visible:outline focus-visible:outline-2",
+            "focus-visible:outline-brand-600 focus-visible:outline-offset-2",
+            "dark:focus-visible:outline-1",
+            "disabled:cursor-not-allowed disabled:opacity-60",
+            digestEnabled ? "bg-brand-600" : "bg-surface-3",
+          ].join(" ")}
         >
           <span
-            className={`inline-block h-4 w-4 transform rounded-full bg-white dark:bg-gray-100 shadow transition-transform ${digestEnabled ? "translate-x-6" : "translate-x-1"}`}
+            className={[
+              "inline-block h-4 w-4 rounded-full bg-white shadow",
+              "motion-safe:transition-transform motion-safe:duration-hover",
+              "motion-reduce:transition-none",
+              digestEnabled ? "translate-x-6" : "translate-x-1",
+            ].join(" ")}
           />
         </button>
-        <span className="text-sm text-foreground">
+        <span className="text-sm text-text-2">
           {digestEnabled ? "Enabled" : "Disabled"}
         </span>
       </div>

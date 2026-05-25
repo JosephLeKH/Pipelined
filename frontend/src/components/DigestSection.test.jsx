@@ -35,4 +35,13 @@ describe("DigestSection", () => {
 
     expect(screen.getByRole("switch")).toBeDisabled();
   });
+
+  it("should use redesign surface and brand tokens", () => {
+    const { container } = render(
+      <DigestSection digestEnabled={true} isDigestPending={false} onDigestToggle={vi.fn()} />,
+    );
+
+    expect(container.querySelector("section")).toHaveClass("bg-surface-1", "border-border-1");
+    expect(screen.getByRole("switch")).toHaveClass("bg-brand-600");
+  });
 });

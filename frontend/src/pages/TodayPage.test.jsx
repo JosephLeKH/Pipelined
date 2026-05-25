@@ -276,4 +276,32 @@ describe("TodayPage", () => {
     await screen.findByRole("heading", { level: 1 });
     expect(screen.queryByText(/read your sunday review/i)).not.toBeInTheDocument();
   });
+
+  it("should show mission-row skeleton while brief is loading", () => {
+    server.use(
+      http.get("/api/brief/today", async () => {
+        await new Promise(() => {});
+        return HttpResponse.json({ data: MOCK_BRIEF });
+      }),
+    );
+
+    render(<TodayPage />, { wrapper: makeWrapper() });
+
+    expect(screen.getByTestId("morning-brief-skeleton")).toBeInTheDocument();
+    expect(screen.getByTestId("skeleton-weekly-goal")).toBeInTheDocument();
+  });
+
+  it("should render semantic tokens in dark theme", async () => {
+    document.documentElement.classList.add("dark");
+
+    render(<TodayPage />, { wrapper: makeWrapper() });
+
+    const heading = await screen.findByRole("heading", { level: 1 });
+    expect(heading).toHaveClass("text-text-1");
+
+    const weeklyGoal = screen.getByLabelText(/weekly application goal/i);
+    expect(weeklyGoal).toHaveClass("bg-surface-1", "border-border-1");
+
+    document.documentElement.classList.remove("dark");
+  });
 });
