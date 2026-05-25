@@ -2,7 +2,7 @@
 
 - Branch: redesign/prd-07-analytics-offers-tags-activity
 - Iterations: 7
-- Final commit: 30d234e
+- Final commit: 2e9e663
 - Linear sources cited:
   - https://linear.app/method — sparse accent on analytics surfaces; dot indicators on dense lists
   - https://windframe.dev/styles/linear — popover shadow, 8px bar radius, 40px row density, dark-mode text tokens
