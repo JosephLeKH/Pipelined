@@ -38,7 +38,7 @@ describe("TagInput", () => {
     expect(screen.getByPlaceholderText("Add a tag…")).toBeInTheDocument();
   });
 
-  it("should render existing tags as chips", () => {
+  it("should render existing tags as 24px token pills with color dots", () => {
     // Arrange / Act
     render(<TagInput value={["referral", "startup"]} onChange={() => {}} />, {
       wrapper: makeWrapper(),
@@ -47,6 +47,9 @@ describe("TagInput", () => {
     // Assert
     expect(screen.getByText("referral")).toBeInTheDocument();
     expect(screen.getByText("startup")).toBeInTheDocument();
+    const token = screen.getByText("referral").closest("span");
+    expect(token).toHaveClass("h-6", "bg-surface-1", "border-border-1", "rounded-md");
+    expect(token?.querySelector('[aria-hidden="true"]')).toBeTruthy();
   });
 
   it("should call onChange with new tag when user types and presses Enter", async () => {

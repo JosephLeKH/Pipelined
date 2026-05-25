@@ -1,5 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { MemoryRouter } from "react-router-dom";
 import Tags from "./Tags";
 
 vi.mock("../hooks/useApplications", () => ({
@@ -9,6 +11,8 @@ vi.mock("../hooks/useApplications", () => ({
 }));
 
 import { useTags, useRenameTag, useDeleteTag } from "../hooks/useApplications";
+import { TAG_COLOR_SWATCHES } from "../lib/constants";
+import { defaultTagColor } from "../lib/tagUtils";
 
 const MOCK_TAGS = [
   { name: "frontend", count: 5 },
@@ -20,12 +24,17 @@ const mockRename = vi.fn();
 const mockDelete = vi.fn();
 
 function renderPage() {
-  return render(<Tags />);
+  return render(
+    <MemoryRouter>
+      <Tags />
+    </MemoryRouter>,
+  );
 }
 
 describe("Tags", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    localStorage.clear();
     useRenameTag.mockReturnValue({ mutate: mockRename, error: null });
     useDeleteTag.mockReturnValue({ mutate: mockDelete, error: null, isPending: false });
   });
@@ -75,46 +84,65 @@ describe("Tags", () => {
     expect(screen.getByText("No tags yet")).toBeInTheDocument();
   });
 
-  it("should render tags table with name, count, and action buttons", () => {
+  it("should render 40px tag rows with color dot and application count", () => {
     useTags.mockReturnValue({ data: { tags: MOCK_TAGS }, isLoading: false, error: null, refetch: mockRefetch });
 
     renderPage();
 
-    expect(screen.getByText("frontend")).toBeInTheDocument();
-    expect(screen.getByText("backend")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /rename tag frontend/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /delete tag frontend/i })).toBeInTheDocument();
+    const rows = screen.getAllByTestId("tag-list-row");
+    expect(rows).toHaveLength(2);
+    rows.forEach((row) => expect(row).toHaveClass("h-10"));
+
+    const frontendRow = screen.getByText("#frontend").closest('[data-testid="tag-list-row"]');
+    expect(screen.getByText("5 applications")).toBeInTheDocument();
+
+    const dot = frontendRow?.querySelector('[aria-hidden="true"]');
+    expect(dot).toHaveStyle({ backgroundColor: defaultTagColor("frontend") });
+    expect(TAG_COLOR_SWATCHES).toContain(defaultTagColor("frontend"));
   });
 
-  it("should show inline editor when rename button is clicked", () => {
+  it("should open row menu with edit and delete actions", async () => {
     useTags.mockReturnValue({ data: { tags: MOCK_TAGS }, isLoading: false, error: null, refetch: mockRefetch });
 
     renderPage();
 
-    fireEvent.click(screen.getByRole("button", { name: /rename tag frontend/i }));
+    await userEvent.click(screen.getByRole("button", { name: /actions for tag frontend/i }));
+    expect(screen.getByRole("menuitem", { name: /edit name/i })).toBeInTheDocument();
+    expect(screen.getByRole("menuitem", { name: /delete/i })).toBeInTheDocument();
+  });
+
+  it("should show inline editor when edit name is selected", async () => {
+    useTags.mockReturnValue({ data: { tags: MOCK_TAGS }, isLoading: false, error: null, refetch: mockRefetch });
+
+    renderPage();
+
+    await userEvent.click(screen.getByRole("button", { name: /actions for tag frontend/i }));
+    await userEvent.click(screen.getByRole("menuitem", { name: /edit name/i }));
 
     const input = screen.getByRole("textbox");
     expect(input).toBeInTheDocument();
     expect(input.value).toBe("frontend");
   });
 
-  it("should open delete confirm modal when delete button is clicked", () => {
+  it("should open delete confirm modal when delete is selected", async () => {
     useTags.mockReturnValue({ data: { tags: MOCK_TAGS }, isLoading: false, error: null, refetch: mockRefetch });
 
     renderPage();
 
-    fireEvent.click(screen.getByRole("button", { name: /delete tag frontend/i }));
+    await userEvent.click(screen.getByRole("button", { name: /actions for tag frontend/i }));
+    await userEvent.click(screen.getByRole("menuitem", { name: /^delete$/i }));
 
     expect(screen.getByRole("dialog")).toBeInTheDocument();
     expect(screen.getByText(/delete tag/i)).toBeInTheDocument();
   });
 
-  it("should call deleteTag mutation when modal confirm is clicked", () => {
+  it("should call deleteTag mutation when modal confirm is clicked", async () => {
     useTags.mockReturnValue({ data: { tags: MOCK_TAGS }, isLoading: false, error: null, refetch: mockRefetch });
 
     renderPage();
 
-    fireEvent.click(screen.getByRole("button", { name: /delete tag frontend/i }));
+    await userEvent.click(screen.getByRole("button", { name: /actions for tag frontend/i }));
+    await userEvent.click(screen.getByRole("menuitem", { name: /^delete$/i }));
     fireEvent.click(screen.getByRole("button", { name: /^delete$/i }));
 
     expect(mockDelete).toHaveBeenCalledWith("frontend", expect.any(Object));

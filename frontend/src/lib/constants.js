@@ -194,6 +194,18 @@ export const COMPANY_LOGO_FALLBACK_COLORS = [
   "bg-teal-500",
 ];
 
+/** PRD-07 §5 — tag dot swatches (6 presets only). */
+export const TAG_COLOR_SWATCHES = [
+  "#8C1515",
+  "#3B82F6",
+  "#8B5CF6",
+  "#F59E0B",
+  "#175E54",
+  "#71717A",
+];
+
+export const TAG_COLORS_STORAGE_KEY = "pipelined_tag_colors";
+
 export const LIST_OFFSET_PX = 280;
 
 export const MD_BREAKPOINT_PX = 768;

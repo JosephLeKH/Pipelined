@@ -5,8 +5,10 @@ import { useEffect, useRef, useState } from "react";
 import XIcon from "lucide-react/dist/esm/icons/x";
 
 import { useTags } from "../hooks/useApplications";
+import TagDot from "./TagDot";
 import { Button } from "./ui/button";
 import { DROPDOWN_CLOSE_DELAY_MS } from "../lib/constants";
+import { getTagColor } from "../lib/tagUtils";
 
 const PREDEFINED_TAGS = [
   "referral",
@@ -23,6 +25,30 @@ const PREDEFINED_TAGS = [
 
 const MAX_SUGGESTIONS = 8;
 
+function TagToken({ tag, onRemove }) {
+  const color = getTagColor(tag);
+
+  return (
+    <span className="group inline-flex h-6 items-center gap-1.5 rounded-md border border-border-1 bg-surface-1 px-2 text-xs font-medium text-text-1">
+      <TagDot color={color} />
+      {tag}
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        aria-label={`Remove tag ${tag}`}
+        onClick={(e) => {
+          e.stopPropagation();
+          onRemove(tag);
+        }}
+        className="h-4 w-4 rounded p-0 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 motion-safe:transition-opacity motion-reduce:transition-none focus-visible:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 focus-visible:outline-offset-1 dark:focus-visible:outline-1"
+      >
+        <XIcon className="h-2.5 w-2.5" aria-hidden="true" />
+      </Button>
+    </span>
+  );
+}
+
 function TagInput({ value = [], onChange, placeholder = "Add a tag…", id }) {
   const [inputValue, setInputValue] = useState("");
   const [open, setOpen] = useState(false);
@@ -33,14 +59,12 @@ function TagInput({ value = [], onChange, placeholder = "Add a tag…", id }) {
   const { data: tagsData } = useTags();
   const userTags = tagsData?.tags?.map((t) => t.name) ?? [];
 
-  const allSuggestions = [
-    ...new Set([...PREDEFINED_TAGS, ...userTags]),
-  ].filter((t) => !value.includes(t));
+  const allSuggestions = [...new Set([...PREDEFINED_TAGS, ...userTags])].filter(
+    (t) => !value.includes(t),
+  );
 
   const filtered = inputValue.trim()
-    ? allSuggestions.filter((t) =>
-        t.toLowerCase().includes(inputValue.trim().toLowerCase())
-      )
+    ? allSuggestions.filter((t) => t.toLowerCase().includes(inputValue.trim().toLowerCase()))
     : allSuggestions;
 
   const suggestions = filtered.slice(0, MAX_SUGGESTIONS);
@@ -93,26 +117,11 @@ function TagInput({ value = [], onChange, placeholder = "Add a tag…", id }) {
   return (
     <div className="relative">
       <div
-        className="flex min-h-[38px] flex-wrap gap-1.5 rounded-md border border-input bg-transparent px-2.5 py-1.5 text-sm shadow-sm transition-colors cursor-text w-full"
+        className="flex min-h-[38px] w-full flex-wrap gap-1.5 rounded-md border border-border-1 bg-surface-0 px-2 py-1.5 text-sm motion-safe:transition-colors motion-reduce:transition-none cursor-text focus-within:border-border-2"
         onClick={() => inputRef.current?.focus()}
       >
         {value.map((tag) => (
-          <span
-            key={tag}
-            className="flex items-center gap-1 rounded-full bg-primary/15 px-2 py-0.5 text-xs font-medium text-primary"
-          >
-            {tag}
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              aria-label={`Remove tag ${tag}`}
-              onClick={(e) => { e.stopPropagation(); removeTag(tag); }}
-              className="h-4 w-4 rounded-full p-0 hover:bg-primary/25"
-            >
-              <XIcon className="h-2.5 w-2.5" aria-hidden="true" />
-            </Button>
-          </span>
+          <TagToken key={tag} tag={tag} onRemove={removeTag} />
         ))}
         <input
           ref={inputRef}
@@ -128,7 +137,7 @@ function TagInput({ value = [], onChange, placeholder = "Add a tag…", id }) {
           onBlur={() => setTimeout(() => setOpen(false), DROPDOWN_CLOSE_DELAY_MS)}
           onKeyDown={handleKeyDown}
           placeholder={value.length === 0 ? placeholder : ""}
-          className="min-w-[120px] flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
+          className="min-w-[120px] flex-1 bg-transparent text-sm text-text-1 placeholder:text-text-3 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 focus-visible:outline-offset-1 dark:focus-visible:outline-1"
           aria-label="Add tag"
           aria-autocomplete="list"
           aria-expanded={open && suggestions.length > 0}
@@ -141,20 +150,22 @@ function TagInput({ value = [], onChange, placeholder = "Add a tag…", id }) {
         <ul
           ref={listRef}
           role="listbox"
-          className="absolute z-50 mt-1 max-h-48 w-full overflow-y-auto rounded-md border border-border bg-card py-1 shadow-lg"
+          className="absolute z-50 mt-1 max-h-48 w-full overflow-y-auto rounded-md border border-border-1 bg-surface-0 py-1 shadow-popover"
         >
           {suggestions.map((tag, i) => (
             <li
               key={tag}
               role="option"
               aria-selected={i === activeIndex}
-              onMouseDown={(e) => { e.preventDefault(); addTag(tag); }}
-              className={`cursor-pointer px-3 py-1.5 text-sm transition-colors ${
-                i === activeIndex
-                  ? "bg-primary/10 text-primary"
-                  : "text-foreground hover:bg-muted"
+              onMouseDown={(e) => {
+                e.preventDefault();
+                addTag(tag);
+              }}
+              className={`flex cursor-pointer items-center gap-2 px-3 py-1.5 text-sm motion-safe:transition-colors motion-reduce:transition-none ${
+                i === activeIndex ? "bg-surface-1 text-text-1" : "text-text-1 hover:bg-surface-1"
               }`}
             >
+              <TagDot color={getTagColor(tag)} />
               {tag}
             </li>
           ))}
