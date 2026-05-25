@@ -3,27 +3,32 @@ import { cva } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const badgeVariants = cva(
-  "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+  "inline-flex items-center gap-1.5 rounded-sm text-label font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 focus-visible:outline-offset-2 dark:focus-visible:outline-1",
   {
     variants: {
       variant: {
-        default:
-          "border-transparent bg-primary text-primary-foreground hover:bg-primary/80",
+        solid:
+          "border border-transparent bg-brand-600 text-white",
+        soft:
+          "border border-transparent bg-brand-100 text-brand-900",
+        dot:
+          "border-0 bg-transparent px-0 py-0 text-text-2 before:inline-block before:h-1.5 before:w-1.5 before:shrink-0 before:rounded-full before:bg-status-neutral before:content-['']",
+        outline:
+          "border border-border-1 bg-transparent text-text-1",
         secondary:
-          "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
+          "border border-transparent bg-surface-2 text-text-1",
         destructive:
-          "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
-        outline: "text-foreground",
+          "border border-transparent bg-brand-50 text-brand-700",
         success:
-          "border-transparent bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400",
+          "border border-transparent bg-surface-2 text-status-success before:inline-block before:h-1.5 before:w-1.5 before:shrink-0 before:rounded-full before:bg-status-success before:content-['']",
         warning:
-          "border-transparent bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400",
+          "border border-transparent bg-surface-2 text-status-warn before:inline-block before:h-1.5 before:w-1.5 before:shrink-0 before:rounded-full before:bg-status-warn before:content-['']",
         info:
-          "border-transparent bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
+          "border border-transparent bg-surface-2 text-status-info before:inline-block before:h-1.5 before:w-1.5 before:shrink-0 before:rounded-full before:bg-status-info before:content-['']",
       },
     },
     defaultVariants: {
-      variant: "default",
+      variant: "soft",
     },
   }
 );

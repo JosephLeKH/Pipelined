@@ -102,7 +102,7 @@ function LoadingState() {
 function NotFoundState() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-4">
-      <h1 className="font-display text-2xl font-bold text-foreground">Link not found</h1>
+      <h1 className=" text-2xl font-bold text-foreground">Link not found</h1>
       <p className="text-muted-foreground">This timeline link has expired or been revoked.</p>
       <Link to="/" className="text-primary hover:underline">Go to Pipelined →</Link>
     </div>
@@ -114,7 +114,7 @@ function TimelineHeader({ timeline }) {
     <header className="border-b border-border bg-card px-6 py-4">
       <div className="mx-auto flex max-w-2xl items-center justify-between">
         <div>
-          <h1 className="font-display text-xl font-bold text-foreground">{timeline.display_name}'s Job Search</h1>
+          <h1 className=" text-xl font-bold text-foreground">{timeline.display_name}'s Job Search</h1>
           <p className="text-sm text-muted-foreground">Read-only timeline view</p>
         </div>
         <Link
@@ -131,7 +131,7 @@ function TimelineHeader({ timeline }) {
 function ApplicationsTimeline({ timeline }) {
   return (
     <>
-      <h2 className="mb-6 font-display text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+      <h2 className="mb-6 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
         Applications ({timeline.applications.length})
       </h2>
 

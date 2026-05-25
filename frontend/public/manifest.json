@@ -4,7 +4,7 @@
   "description": "Track every job application from click to offer.",
   "start_url": "/",
   "display": "standalone",
-  "theme_color": "#6366F1",
+  "theme_color": "#8C1515",
   "background_color": "#0F172A",
   "icons": [
     {

@@ -85,7 +85,7 @@ function MetricCard({ metricKey, label, stats, isLoading, Icon }) {
 
   return (
     <Card className="flex flex-col gap-1 p-4" aria-label={`${label}: ${displayValue}`}>
-      <span className="font-display text-2xl font-semibold text-foreground">{displayValue}</span>
+      <span className=" text-2xl font-semibold text-foreground">{displayValue}</span>
       <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
         <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
         {label}

@@ -64,7 +64,7 @@ function ChangePasswordCard() {
 
   return (
     <div className="rounded-xl bg-card border border-border p-6">
-      <h2 className="mb-1 text-lg font-semibold font-display text-foreground">Change password</h2>
+      <h2 className="mb-1 text-lg font-semibold text-foreground">Change password</h2>
       <p className="mb-5 text-sm text-muted-foreground">
         Update your account password. Choose a strong password you don&apos;t use elsewhere.
       </p>
@@ -127,7 +127,7 @@ function DangerZone() {
         <div className="flex items-start gap-3">
           <TriangleAlert className="mt-0.5 h-5 w-5 shrink-0 text-destructive" aria-hidden="true" />
           <div className="flex-1">
-            <h2 className="text-lg font-semibold font-display text-destructive">Danger zone</h2>
+            <h2 className="text-lg font-semibold text-destructive">Danger zone</h2>
             <p className="mt-1 text-sm text-destructive">
               Permanently delete your account and all associated data — applications, calendar events,
               contacts, and resume. This cannot be undone.

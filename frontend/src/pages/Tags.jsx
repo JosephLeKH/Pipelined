@@ -65,7 +65,7 @@ function DeleteConfirmModal({ tag, count, onConfirm, onCancel, isPending }) {
       className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center p-4"
     >
       <div className="w-full max-w-sm rounded-2xl bg-card border border-border shadow-lg p-6 mx-auto relative">
-        <h3 id="delete-tag-heading" className="font-display text-lg font-semibold text-foreground">
+        <h3 id="delete-tag-heading" className=" text-lg font-semibold text-foreground">
           Delete tag
         </h3>
         <p className="mt-2 text-sm text-muted-foreground">
@@ -218,7 +218,7 @@ function Tags() {
       <main className="flex-1 px-4 sm:px-6 py-8">
         <div className="mb-6 flex items-end justify-between gap-4">
           <div>
-            <h1 className="font-display text-2xl font-semibold text-foreground">Tags</h1>
+            <h1 className=" text-2xl font-semibold text-foreground">Tags</h1>
             <p className="mt-1 text-sm text-muted-foreground">Manage tags across all your applications.</p>
           </div>
           <div className="flex gap-1.5 shrink-0" role="group" aria-label="Sort tags">

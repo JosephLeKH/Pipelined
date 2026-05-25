@@ -14,7 +14,7 @@ import { useCalendarEvents } from "../hooks/useCalendar";
 function CalendarContent({ month, year, events, eventsLoading, eventsError, eventsRefetch, selectedEvent, newEventForm, onMonthChange, onEventClick, onDayClick, onCloseEventDetail, onCloseForm }) {
   return (
     <main className="flex-1 px-4 sm:px-6 py-6">
-      <h1 className="mb-6 font-display text-2xl font-semibold text-foreground">Calendar</h1>
+      <h1 className="mb-6 text-2xl font-semibold text-foreground">Calendar</h1>
       {eventsError && <ApiErrorMessage error={eventsError} onRetry={eventsRefetch} />}
       <CalendarGrid
         month={month}

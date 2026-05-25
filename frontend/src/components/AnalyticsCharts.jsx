@@ -53,7 +53,7 @@ function ChartCard({ title, description, children }) {
   return (
     <div className="rounded-xl bg-card border border-border p-6">
       <div className="mb-4">
-        <h2 className="font-display text-sm font-medium text-foreground">{title}</h2>
+        <h2 className=" text-sm font-medium text-foreground">{title}</h2>
         {description && (
           <p className="mt-0.5 text-xs text-muted-foreground">{description}</p>
         )}

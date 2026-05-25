@@ -11,7 +11,7 @@ export default function SettingsReportSection() {
 
   return (
     <div className="rounded-xl bg-card border border-border p-6">
-      <h2 className="mb-1 font-display text-lg font-semibold text-foreground">Reports</h2>
+      <h2 className="mb-1 text-lg font-semibold text-foreground">Reports</h2>
       <p className="mb-5 text-sm text-muted-foreground">
         Export a PDF summary of your pipeline including stats, stage funnel, and application history.
       </p>

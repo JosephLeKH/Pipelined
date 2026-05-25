@@ -11,7 +11,7 @@ import { Input } from "../components/ui/input";
 function EmailInput({ email, onChange }) {
   return (
     <div className="mb-5">
-      <label htmlFor="email" className="block text-sm font-medium text-foreground mb-1.5 font-display">Email</label>
+      <label htmlFor="email" className="block text-sm font-medium text-foreground mb-1.5">Email</label>
       <Input
         id="email"
         type="email"
@@ -78,7 +78,7 @@ function ForgotPassword() {
 
   return (
     <AuthLayout>
-      <h1 className="font-display text-xl font-semibold text-foreground">Forgot password?</h1>
+      <h1 className=" text-xl font-semibold text-foreground">Forgot password?</h1>
       <p className="mt-1 mb-6 text-sm text-muted-foreground">
         Enter your email and we&apos;ll send you a reset link.
       </p>

@@ -130,7 +130,7 @@ function SettingsTemplatesSection() {
 
   return (
     <div className="rounded-xl bg-card border border-border p-6">
-      <h2 className="mb-1 font-display text-lg font-semibold text-foreground">Templates</h2>
+      <h2 className="mb-1 text-lg font-semibold text-foreground">Templates</h2>
       <p className="mb-5 text-sm text-muted-foreground">
         Saved templates prefill fields in the Add Application form. Up to 10 templates.
       </p>

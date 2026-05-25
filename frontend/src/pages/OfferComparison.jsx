@@ -66,7 +66,7 @@ function EmptyState() {
       <NavBar />
       <div className="flex min-h-[60vh] flex-col items-center justify-center gap-3 text-muted-foreground">
         <Trophy className="mb-2 h-10 w-10 text-muted-foreground/40" aria-hidden="true" />
-        <p className="text-sm font-medium font-display text-foreground">No offers yet</p>
+        <p className="text-sm font-medium text-foreground">No offers yet</p>
         <p className="text-xs font-sans text-muted-foreground">
           Move an application to the Offer stage to compare packages here.
         </p>
@@ -77,7 +77,7 @@ function EmptyState() {
 
 function OfferComparisonHeader() {
   return (
-    <h1 className="font-display text-2xl font-bold text-foreground">
+    <h1 className=" text-2xl font-bold text-foreground">
       Offer Comparison
     </h1>
   );

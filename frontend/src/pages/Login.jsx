@@ -16,7 +16,7 @@ function Login() {
 
   return (
     <AuthLayout>
-      <h1 className="font-display text-3xl font-bold tracking-tight text-foreground">Welcome back</h1>
+      <h1 className=" text-3xl font-bold tracking-tight text-foreground">Welcome back</h1>
       <p className="mt-2 mb-8 text-sm text-muted-foreground">Sign in to your account to continue.</p>
 
       <div className="space-y-3">

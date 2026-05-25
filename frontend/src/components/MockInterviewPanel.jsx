@@ -18,7 +18,7 @@ function ChatBubble({ message }) {
         className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed shadow-sm ${
           isUser
             ? "rounded-br-md bg-brand-500 text-white"
-            : "rounded-bl-md border border-border-default bg-white text-foreground dark:bg-gray-800"
+            : "rounded-bl-md border border-border-1 bg-white text-foreground dark:bg-gray-800"
         }`}
       >
         <p className="whitespace-pre-wrap">{message.content}</p>
@@ -30,7 +30,7 @@ function ChatBubble({ message }) {
 function TypingIndicator() {
   return (
     <div className="flex justify-start" aria-live="polite" aria-label="Interviewer is typing">
-      <div className="flex items-center gap-1.5 rounded-xl border border-border-default bg-surface-secondary px-3 py-2.5">
+      <div className="flex items-center gap-1.5 rounded-xl border border-border-1 bg-surface-1 px-3 py-2.5">
         <span className="h-1.5 w-1.5 animate-pulse-soft rounded-full bg-brand-500 [animation-delay:0ms]" />
         <span className="h-1.5 w-1.5 animate-pulse-soft rounded-full bg-brand-500 [animation-delay:200ms]" />
         <span className="h-1.5 w-1.5 animate-pulse-soft rounded-full bg-brand-500 [animation-delay:400ms]" />
@@ -123,7 +123,7 @@ export function MockInterviewPanel({ applicationId, interviewRound = null }) {
       )}
 
       {status !== STATUS.DEBRIEF && (
-        <form onSubmit={handleSubmit} className="flex flex-col gap-2 border-t border-border-default pt-3">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-2 border-t border-border-1 pt-3">
           <div className="flex gap-2">
             <input
               type="text"

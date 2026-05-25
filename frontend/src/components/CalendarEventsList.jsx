@@ -19,7 +19,7 @@ function CalendarEventsList({ applicationId, onAddEvent }) {
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center justify-between">
-        <h3 className="text-xs font-medium font-display uppercase text-muted-foreground">Interviews & Events</h3>
+        <h3 className="text-xs font-medium uppercase text-muted-foreground">Interviews & Events</h3>
         <Button
           type="button"
           variant="ghost"

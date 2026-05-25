@@ -40,7 +40,7 @@ function CoverLetterSection({ coverLetter }) {
   }
 
   return (
-    <div className="rounded-lg border border-border-default bg-surface-secondary/50 p-3">
+    <div className="rounded-lg border border-border-1 bg-surface-1/50 p-3">
       <button
         type="button"
         onClick={() => setIsExpanded((prev) => !prev)}
@@ -55,7 +55,7 @@ function CoverLetterSection({ coverLetter }) {
         )}
       </button>
       {isExpanded && (
-        <div className="mt-3 flex flex-col gap-2 border-t border-border-default pt-3">
+        <div className="mt-3 flex flex-col gap-2 border-t border-border-1 pt-3">
           {coverLetter.subject && (
             <p className="text-sm font-medium text-muted-foreground">
               Subject: {coverLetter.subject}
@@ -103,7 +103,7 @@ function PendingOpportunityCard({
     >
       <header className="mb-4 flex flex-wrap items-start justify-between gap-3">
         <div className="flex flex-col gap-2">
-          <h2 className="font-display text-lg font-semibold text-foreground">
+          <h2 className=" text-lg font-semibold text-foreground">
             {company} — {role}
           </h2>
           <div className="flex flex-wrap items-center gap-2">

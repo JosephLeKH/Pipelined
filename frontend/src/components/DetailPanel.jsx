@@ -15,7 +15,7 @@ function DiscardDialog({ onDiscard, onCancel }) {
     <div className="absolute inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center p-4" role="alertdialog" aria-modal="true" aria-labelledby="discard-dialog-title">
       <div className="bg-card rounded-2xl border border-border shadow-lg w-full max-w-sm mx-auto relative">
         <div className="p-6">
-          <h3 id="discard-dialog-title" className="font-display text-base font-semibold text-foreground">Discard unsaved notes?</h3>
+          <h3 id="discard-dialog-title" className=" text-base font-semibold text-foreground">Discard unsaved notes?</h3>
           <p className="mt-1 text-sm text-muted-foreground">Your changes will be lost.</p>
           <div className="mt-4 flex justify-end gap-2">
             <Button type="button" variant="outline" size="sm" onClick={onCancel}>Cancel</Button>

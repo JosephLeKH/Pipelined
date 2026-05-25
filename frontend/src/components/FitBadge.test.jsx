@@ -23,14 +23,14 @@ describe("FitBadge", () => {
     const badge = screen.getByTestId("fit-badge");
 
     expect(badge).toHaveTextContent("85%");
-    expect(badge.className).toMatch(/bg-green/);
+    expect(badge.className).toMatch(/text-status-success/);
   });
 
   it("should show green styling for score exactly at 80", () => {
     render(<FitBadge score={80} />);
     const badge = screen.getByTestId("fit-badge");
 
-    expect(badge.className).toMatch(/bg-green/);
+    expect(badge.className).toMatch(/text-status-success/);
   });
 
   it("should show yellow styling for medium fit score (50-79)", () => {
@@ -38,14 +38,14 @@ describe("FitBadge", () => {
     const badge = screen.getByTestId("fit-badge");
 
     expect(badge).toHaveTextContent("65%");
-    expect(badge.className).toMatch(/bg-amber/);
+    expect(badge.className).toMatch(/text-status-warn/);
   });
 
   it("should show yellow styling for score exactly at 50", () => {
     render(<FitBadge score={50} />);
     const badge = screen.getByTestId("fit-badge");
 
-    expect(badge.className).toMatch(/bg-amber/);
+    expect(badge.className).toMatch(/text-status-warn/);
   });
 
   it("should show orange styling for low-medium fit score (30-49)", () => {
@@ -53,14 +53,14 @@ describe("FitBadge", () => {
     const badge = screen.getByTestId("fit-badge");
 
     expect(badge).toHaveTextContent("40%");
-    expect(badge.className).toMatch(/bg-orange/);
+    expect(badge.className).toMatch(/text-status-orange/);
   });
 
   it("should show orange styling for score exactly at 30", () => {
     render(<FitBadge score={30} />);
     const badge = screen.getByTestId("fit-badge");
 
-    expect(badge.className).toMatch(/bg-orange/);
+    expect(badge.className).toMatch(/text-status-orange/);
   });
 
   it("should show red styling for low fit score (0-29)", () => {
@@ -68,7 +68,7 @@ describe("FitBadge", () => {
     const badge = screen.getByTestId("fit-badge");
 
     expect(badge).toHaveTextContent("15%");
-    expect(badge.className).toMatch(/destructive/);
+    expect(badge.className).toMatch(/text-brand-700/);
   });
 
   it("should show red styling for score of 0", () => {
@@ -76,7 +76,7 @@ describe("FitBadge", () => {
     const badge = screen.getByTestId("fit-badge");
 
     expect(badge).toHaveTextContent("0%");
-    expect(badge.className).toMatch(/destructive/);
+    expect(badge.className).toMatch(/text-brand-700/);
   });
 
   it("should have correct aria-label for a numeric score", () => {

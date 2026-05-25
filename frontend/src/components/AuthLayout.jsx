@@ -32,7 +32,7 @@ function BrandPanel() {
 
       <Link
         to="/"
-        className="relative z-10 inline-flex items-center gap-2 font-display text-2xl font-bold text-white no-underline"
+        className="relative z-10 inline-flex items-center gap-2 text-2xl font-bold text-white no-underline"
       >
         <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/15 backdrop-blur-sm">
           <Sparkles className="h-5 w-5" />
@@ -41,7 +41,7 @@ function BrandPanel() {
       </Link>
 
       <div className="relative z-10 max-w-md">
-        <h2 className="font-display text-4xl font-bold leading-tight tracking-tight">
+        <h2 className=" text-4xl font-bold leading-tight tracking-tight">
           Track every application.
           <br />
           <span className="text-white/80">Land every interview.</span>
@@ -58,7 +58,7 @@ function BrandPanel() {
                 <Icon className="h-4 w-4" />
               </span>
               <div>
-                <p className="font-display text-sm font-semibold">{title}</p>
+                <p className=" text-sm font-semibold">{title}</p>
                 <p className="mt-0.5 text-sm text-white/70">{body}</p>
               </div>
             </li>
@@ -81,7 +81,7 @@ function AuthLayout({ children }) {
         <div className="w-full max-w-md">
           <Link
             to="/"
-            className="mb-10 inline-flex items-center gap-2 font-display text-xl font-bold text-foreground no-underline lg:hidden"
+            className="mb-10 inline-flex items-center gap-2 text-xl font-bold text-foreground no-underline lg:hidden"
           >
             <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
               <Sparkles className="h-4 w-4" />

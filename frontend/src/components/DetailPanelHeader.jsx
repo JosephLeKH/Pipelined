@@ -64,7 +64,7 @@ export function DetailPanelHeader({ application, onClose, onDelete }) {
       <div className="flex min-w-0 items-start gap-3">
         <CompanyLogo company_domain={application.company_domain ?? null} company={application.company ?? ""} size={32} />
         <div className="min-w-0">
-          <h2 id="detail-panel-heading" className="truncate text-lg font-semibold font-display text-foreground">
+          <h2 id="detail-panel-heading" className="truncate text-lg font-semibold text-foreground">
             {application.role_title}
           </h2>
           <p className="truncate text-sm text-muted-foreground">{application.company}</p>

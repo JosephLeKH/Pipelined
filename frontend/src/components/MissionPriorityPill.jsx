@@ -9,7 +9,7 @@ import { BADGE_BASE } from "../lib/designTokens";
 function MissionPriorityPill({ priority, section }) {
   const sectionLabel = MISSION_SECTION_LABELS[section] ?? "Mission";
   const colorClass = MISSION_PRIORITY_PILL_STYLES[section]
-    ?? "bg-surface-secondary text-muted-foreground border-border-default";
+    ?? "bg-surface-1 text-muted-foreground border-border-1";
 
   return (
     <span className={`${BADGE_BASE} border ${colorClass}`}>

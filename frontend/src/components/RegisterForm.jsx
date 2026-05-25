@@ -43,11 +43,11 @@ export function RegisterForm({ displayName, setDisplayName, email, setEmail, pas
   return (
     <form onSubmit={onSubmit} noValidate>
       <div className="mb-4">
-        <Label htmlFor="display-name" className="mb-1.5 block font-display text-sm font-medium">Name</Label>
+        <Label htmlFor="display-name" className="mb-1.5 block text-sm font-medium">Name</Label>
         <Input id="display-name" type="text" autoComplete="name" value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="Jane Smith" />
       </div>
       <div className="mb-4">
-        <Label htmlFor="email" className="mb-1.5 block font-display text-sm font-medium">Email</Label>
+        <Label htmlFor="email" className="mb-1.5 block text-sm font-medium">Email</Label>
         <Input
           id="email"
           type="email"
@@ -62,7 +62,7 @@ export function RegisterForm({ displayName, setDisplayName, email, setEmail, pas
         {emailError && <p id="email-error" role="alert" className="mt-1 text-xs text-destructive">{emailError}</p>}
       </div>
       <div className="mb-5">
-        <Label htmlFor="password" className="mb-1.5 block font-display text-sm font-medium">Password</Label>
+        <Label htmlFor="password" className="mb-1.5 block text-sm font-medium">Password</Label>
         <Input id="password" type="password" autoComplete="new-password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Min. 8 characters" />
         <PasswordStrengthList password={password} />
       </div>

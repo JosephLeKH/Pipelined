@@ -1,57 +1,100 @@
-/* animations.css — purposeful micro-interaction system.
-   All animations wrapped in prefers-reduced-motion for accessibility.
-   Users who prefer reduced motion see no animation; content is always visible. */
+/* animations.css — motion tokens aligned with Linear-inspired system (PRD-00). */
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fadeIn,
+  .animate-slideInRight,
+  .animate-slideInUp,
+  .animate-slideUp,
+  .animate-scaleIn,
+  .animate-shimmer,
+  .animate-pulse-dot,
+  .scroll-reveal {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .scroll-reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
 
 @media (prefers-reduced-motion: no-preference) {
   @keyframes fadeIn {
     from { opacity: 0; }
-    to   { opacity: 1; }
+    to { opacity: 1; }
   }
 
   @keyframes slideInRight {
-    from { transform: translateX(6px); opacity: 0; }
-    to   { transform: translateX(0);   opacity: 1; }
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
   }
 
-  @keyframes slideInUp {
-    from { transform: translateY(6px); opacity: 0; }
-    to   { transform: translateY(0);   opacity: 1; }
+  @keyframes slideUp {
+    from { transform: translateY(8px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
   }
 
   @keyframes scaleIn {
     from { transform: scale(0.97); opacity: 0; }
-    to   { transform: scale(1);    opacity: 1; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  @keyframes pulseSoft {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
   }
 
   @keyframes shimmer {
     from { background-position: -200% 0; }
-    to   { background-position:  200% 0; }
+    to { background-position: 200% 0; }
   }
 
   @keyframes pulse-dot {
-    0%,  100% { transform: scale(1);   opacity: 1;   }
-    50%       { transform: scale(1.3); opacity: 0.7; }
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.3); opacity: 0.7; }
   }
 
-  .animate-fadeIn      { animation: fadeIn      300ms ease-out    both; }
-  .animate-slideInRight{ animation: slideInRight 250ms ease-out   both; }
-  .animate-slideInUp   { animation: slideInUp   250ms ease-out    both; }
-  .animate-scaleIn     { animation: scaleIn     150ms ease-out    both; }
-  .animate-shimmer     { animation: shimmer     1.5s  linear  infinite; }
+  .animate-fadeIn {
+    animation: fadeIn var(--motion-modal) ease-out both;
+  }
 
-  /* Shimmer background — uses surface-tertiary (#e8e6dc) per design system.
-     Defined here (not Tailwind utilities) so the gradient lives in CSS, not JSX. */
+  .animate-slideInRight {
+    animation: slideInRight var(--motion-drawer) cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  }
+
+  .animate-slideInUp,
+  .animate-slideUp {
+    animation: slideUp var(--motion-toast) ease-out both;
+  }
+
+  .animate-scaleIn {
+    animation: scaleIn 150ms ease-out both;
+  }
+
+  .animate-shimmer {
+    animation: shimmer 1.4s linear infinite;
+  }
+
+  .animate-pulse-soft,
+  .animate-pulseSoft {
+    animation: pulseSoft 1.4s ease-in-out infinite;
+  }
+
   .shimmer-bg {
-    background: linear-gradient(to right, var(--color-shimmer-base) 0%, var(--color-shimmer-highlight) 50%, var(--color-shimmer-base) 100%);
+    background: linear-gradient(
+      to right,
+      var(--shimmer-base) 0%,
+      var(--shimmer-highlight) 50%,
+      var(--shimmer-base) 100%
+    );
     background-size: 200% 100%;
   }
-  .dark .shimmer-bg {
-    background: linear-gradient(to right, var(--color-shimmer-dark-base) 0%, var(--color-shimmer-dark-highlight) 50%, var(--color-shimmer-dark-base) 100%);
-    background-size: 200% 100%;
-  }
-  .animate-pulse-dot   { animation: pulse-dot   2s    ease     infinite; }
 
-  /* Scroll-reveal — start hidden, transition in when .in-view is added via IntersectionObserver */
+  .animate-pulse-dot {
+    animation: pulse-dot 2s ease infinite;
+  }
+
   .scroll-reveal {
     opacity: 0;
     transform: translateY(1rem);

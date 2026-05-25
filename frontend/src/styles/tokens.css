@@ -1,0 +1,140 @@
+/** Design token CSS variables — single source of truth (PRD-00). */
+
+:root {
+  /* Brand — Stanford Cardinal Red */
+  --brand-50: #FDF2F2;
+  --brand-100: #FAE0E0;
+  --brand-200: #F4BFBF;
+  --brand-500: #B81E1E;
+  --brand-600: #8C1515;
+  --brand-700: #820000;
+  --brand-800: #6E0F0F;
+  --brand-900: #4F0A0A;
+
+  /* Surfaces — light */
+  --surface-0: #FFFFFF;
+  --surface-1: #FAFAFA;
+  --surface-2: #F4F4F5;
+  --surface-3: #EFEFF0;
+
+  /* Text — light */
+  --text-1: #2E2D29;
+  --text-2: #53565A;
+  --text-3: #8E8F94;
+  --text-4: #B4B5B9;
+
+  /* Borders — light */
+  --border-1: rgba(0, 0, 0, 0.06);
+  --border-2: rgba(0, 0, 0, 0.1);
+  --border-3: rgba(0, 0, 0, 0.16);
+
+  /* Status dots */
+  --status-neutral: #71717A;
+  --status-info: #3B82F6;
+  --status-violet: #8B5CF6;
+  --status-warn: #F59E0B;
+  --status-orange: #F97316;
+  --status-success: #175E54;
+  --status-muted: #71717A;
+
+  /* Spacing */
+  --space-0-5: 2px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* Radius */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+
+  /* Shadows */
+  --shadow-popover: 0 1px 2px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-modal: 0 20px 60px rgba(0, 0, 0, 0.18);
+
+  /* Motion */
+  --motion-hover-bg: 120ms ease-out;
+  --motion-hover-text: 100ms ease-out;
+  --motion-drawer: 220ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  --motion-modal: 180ms ease-out;
+  --motion-skeleton: 1.4s ease-in-out infinite;
+  --motion-toast: 200ms ease-out;
+
+  /* Shimmer skeleton */
+  --shimmer-base: var(--surface-2);
+  --shimmer-highlight: var(--surface-0);
+
+  /* shadcn bridge — HSL components for hsl(var(--token)) */
+  --background: 0 0% 100%;
+  --foreground: 30 3% 17%;
+  --card: 0 0% 100%;
+  --card-foreground: 30 3% 17%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 30 3% 17%;
+  --primary: 0 73% 32%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 240 5% 96%;
+  --secondary-foreground: 30 3% 17%;
+  --muted: 240 5% 96%;
+  --muted-foreground: 240 2% 35%;
+  --accent: 240 5% 96%;
+  --accent-foreground: 30 3% 17%;
+  --destructive: 0 73% 32%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 0 0% 0% / 0.06;
+  --input: 0 0% 0% / 0.06;
+  --ring: 0 73% 32%;
+  --radius: 6px;
+
+  /* Chart palette */
+  --chart-1: 0 73% 32%;
+  --chart-2: 217 91% 60%;
+  --chart-3: 160 84% 24%;
+  --chart-4: 240 2% 35%;
+  --chart-5: 240 5% 84%;
+}
+
+.dark {
+  --surface-0: #08090A;
+  --surface-1: #0F1011;
+  --surface-2: #1A1B1E;
+  --surface-3: #212226;
+
+  --text-1: #F4F4F5;
+  --text-2: #A1A1AA;
+  --text-3: #71717A;
+  --text-4: #52525B;
+
+  --border-1: rgba(255, 255, 255, 0.06);
+  --border-2: rgba(255, 255, 255, 0.1);
+  --border-3: rgba(255, 255, 255, 0.16);
+
+  --shimmer-base: var(--surface-2);
+  --shimmer-highlight: var(--surface-3);
+
+  --background: 240 6% 4%;
+  --foreground: 240 5% 96%;
+  --card: 240 6% 4%;
+  --card-foreground: 240 5% 96%;
+  --popover: 240 4% 6%;
+  --popover-foreground: 240 5% 96%;
+  --primary: 0 73% 32%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 240 4% 11%;
+  --secondary-foreground: 240 5% 96%;
+  --muted: 240 4% 11%;
+  --muted-foreground: 240 5% 65%;
+  --accent: 240 4% 11%;
+  --accent-foreground: 240 5% 96%;
+  --destructive: 0 73% 32%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 0 0% 100% / 0.06;
+  --input: 0 0% 100% / 0.06;
+  --ring: 0 73% 32%;
+}

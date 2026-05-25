@@ -23,7 +23,7 @@ const FIT_BADGE_SECTIONS = new Set(["high_matches", "pending_approvals"]);
 const DEADLINE_TONE_STYLES = {
   overdue: "bg-rose-100 text-rose-800 border-rose-200 dark:bg-rose-900/30 dark:text-rose-300 dark:border-rose-700/50",
   urgent: "bg-amber-100 text-amber-800 border-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-700/50",
-  soon: "bg-surface-secondary text-muted-foreground border-border-default",
+  soon: "bg-surface-1 text-muted-foreground border-border-1",
 };
 
 function DeadlineBadge({ body }) {

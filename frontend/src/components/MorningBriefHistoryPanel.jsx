@@ -30,16 +30,16 @@ function MorningBriefHistoryPanel() {
         variant="ghost"
         onClick={() => setOpen((prev) => !prev)}
         aria-expanded={open}
-        className="flex h-auto w-full items-center justify-between rounded-none px-4 py-3.5 text-left hover:bg-surface-secondary/60"
+        className="flex h-auto w-full items-center justify-between rounded-none px-4 py-3.5 text-left hover:bg-surface-1/60"
       >
-        <span className="font-display text-sm font-semibold text-foreground">
+        <span className=" text-sm font-semibold text-foreground">
           Previous briefs
         </span>
         <ToggleIcon className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
       </Button>
 
       {open && (
-        <ul className="divide-y divide-border-default border-t border-border-default">
+        <ul className="divide-y divide-border-1 border-t border-border-1">
           {pastBriefs.map((brief) => (
             <li key={brief.date} className="px-4 py-3">
               <p className="text-sm font-medium text-foreground">{brief.date}</p>

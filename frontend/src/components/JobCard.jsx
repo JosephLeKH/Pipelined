@@ -41,7 +41,7 @@ function JobCard({ job, onSelect }) {
           company={job.company ?? ""}
           size={32}
         />
-        <span className="flex-1 truncate font-display font-medium text-foreground text-sm">
+        <span className="flex-1 truncate font-medium text-foreground text-sm">
           {job.company ?? "Unknown Company"}
         </span>
         {dateLabel && (
@@ -50,7 +50,7 @@ function JobCard({ job, onSelect }) {
       </div>
 
       {/* Role title */}
-      <h3 className="pr-2 text-base font-semibold font-display leading-snug text-foreground">
+      <h3 className="pr-2 text-base font-semibold leading-snug text-foreground">
         {job.role ?? "Untitled Role"}
       </h3>
 

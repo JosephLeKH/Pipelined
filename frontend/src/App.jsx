@@ -76,6 +76,7 @@ const OfferComparison = lazy(() => import("./pages/OfferComparison"));
 const Tags = lazy(() => import("./pages/Tags"));
 const TodayPage = lazy(() => import("./pages/TodayPage"));
 const PendingInboxPage = lazy(() => import("./pages/PendingInboxPage"));
+const DesignSystemPreview = lazy(() => import("./pages/DesignSystemPreview"));
 
 /** Renders the confirmation page when ?token= is present, otherwise the pending page. */
 function VerifyEmailRoute() {
@@ -182,6 +183,7 @@ function App() {
         <Route path="/today" element={<ProtectedPage><TodayPage /></ProtectedPage>} />
         <Route path="/brief" element={<Navigate to="/today" replace />} />
         <Route path="/inbox/pending" element={<ProtectedPage><PendingInboxPage /></ProtectedPage>} />
+        <Route path="/design-system" element={<PageWrapper><DesignSystemPreview /></PageWrapper>} />
         </Routes>
         </ErrorBoundary>
         </main>

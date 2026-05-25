@@ -36,7 +36,7 @@ function JobBoard() {
       <NavBar />
       <main className="flex flex-col gap-6 px-4 py-8 sm:px-6">
       <div className="flex flex-col gap-3">
-        <h1 className="font-display text-2xl font-semibold text-foreground">Job Board</h1>
+        <h1 className=" text-2xl font-semibold text-foreground">Job Board</h1>
         <div className="flex items-center gap-3">
           <div className="flex-1"><JobSearchInput /></div>
           {hasActiveFilters && (

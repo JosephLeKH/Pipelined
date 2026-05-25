@@ -326,7 +326,7 @@ function SettingsIntegrationsSection() {
     return (
       <div className="flex flex-col gap-2">
         <div className="mb-2">
-          <h2 className="text-lg font-semibold font-display text-foreground">Integrations</h2>
+          <h2 className="text-lg font-semibold text-foreground">Integrations</h2>
         </div>
         <div className="h-40 animate-pulse rounded-xl bg-muted/40" />
       </div>
@@ -338,7 +338,7 @@ function SettingsIntegrationsSection() {
   return (
     <div className="flex flex-col gap-2">
       <div className="mb-2">
-        <h2 className="text-lg font-semibold font-display text-foreground">Integrations</h2>
+        <h2 className="text-lg font-semibold text-foreground">Integrations</h2>
         <p className="text-sm text-muted-foreground">
           Pipelined works with your job-search inbox to track applications automatically.
         </p>

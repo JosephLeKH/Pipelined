@@ -2,7 +2,7 @@
 
 export const STAGE_COLORS = {
   Applied: { bg: "bg-brand-100 dark:bg-brand-900/30", text: "text-brand-800 dark:text-brand-300", dot: "bg-brand-500 dark:bg-brand-400", border: "border-brand-500 dark:border-brand-400", activeBg: "bg-brand-500 dark:bg-brand-400" },
-  "Phone Screen": { bg: "bg-blue-100 dark:bg-blue-900/30", text: "text-blue-800 dark:text-blue-300", dot: "bg-accent-blue dark:bg-blue-400", border: "border-accent-blue dark:border-blue-400", activeBg: "bg-accent-blue dark:bg-blue-400" },
+  "Phone Screen": { bg: "bg-blue-100 dark:bg-blue-900/30", text: "text-blue-800 dark:text-blue-300", dot: "bg-status-info dark:bg-blue-400", border: "border-status-info dark:border-blue-400", activeBg: "bg-status-info dark:bg-blue-400" },
   Onsite: { bg: "bg-amber-100 dark:bg-amber-900/30", text: "text-amber-800 dark:text-amber-300", dot: "bg-amber-500 dark:bg-amber-400", border: "border-amber-500 dark:border-amber-400", activeBg: "bg-amber-500 dark:bg-amber-400" },
   Offer: { bg: "bg-emerald-100 dark:bg-emerald-900/30", text: "text-emerald-800 dark:text-emerald-300", dot: "bg-emerald-500 dark:bg-emerald-400", border: "border-emerald-500 dark:border-emerald-400", activeBg: "bg-emerald-500 dark:bg-emerald-400" },
   Rejected: { bg: "bg-rose-100 dark:bg-rose-900/30", text: "text-rose-800 dark:text-rose-300", dot: "bg-rose-500 dark:bg-rose-400", border: "border-rose-500 dark:border-rose-400", activeBg: "bg-rose-500 dark:bg-rose-400" },
@@ -58,15 +58,15 @@ export const SKELETON_ROW_COUNT = 8;
 export const COMPANY_TYPE_OPTIONS = ["startup", "mid", "enterprise", "gov", "nonprofit", "other"];
 
 export const EVENT_TYPE_COLORS = {
-  phone_screen: { bg: "bg-blue-50 dark:bg-blue-900/20", text: "text-accent-blue dark:text-blue-300", dot: "bg-accent-blue dark:bg-blue-400", border: "border-blue-200 dark:border-blue-700/50" },
+  phone_screen: { bg: "bg-blue-50 dark:bg-blue-900/20", text: "text-status-info dark:text-blue-300", dot: "bg-status-info dark:bg-blue-400", border: "border-blue-200 dark:border-blue-700/50" },
   technical: { bg: "bg-brand-50 dark:bg-brand-900/20", text: "text-brand-600 dark:text-brand-300", dot: "bg-brand-500 dark:bg-brand-400", border: "border-brand-200 dark:border-brand-700/50" },
   onsite: { bg: "bg-amber-50 dark:bg-amber-900/20", text: "text-amber-700 dark:text-amber-300", dot: "bg-amber-500 dark:bg-amber-400", border: "border-amber-200 dark:border-amber-700/50" },
   behavioral: { bg: "bg-sky-50 dark:bg-sky-900/20", text: "text-sky-700 dark:text-sky-300", dot: "bg-sky-500 dark:bg-sky-400", border: "border-sky-200 dark:border-sky-700/50" },
   offer: { bg: "bg-emerald-50 dark:bg-emerald-900/20", text: "text-emerald-700 dark:text-emerald-300", dot: "bg-emerald-500 dark:bg-emerald-400", border: "border-emerald-200 dark:border-emerald-700/50" },
-  other: { bg: "bg-surface-secondary", text: "text-gray-600 dark:text-gray-400", dot: "bg-gray-400 dark:bg-gray-300", border: "border-border-default" },
+  other: { bg: "bg-surface-1", text: "text-text-2", dot: "bg-status-neutral", border: "border-border-1" },
 };
 
-export const DEFAULT_EVENT_COLOR = { bg: "bg-surface-secondary", text: "text-gray-600 dark:text-gray-400", dot: "bg-gray-400 dark:bg-gray-300", border: "border-border-default" };
+export const DEFAULT_EVENT_COLOR = { bg: "bg-surface-1", text: "text-text-2", dot: "bg-status-neutral", border: "border-border-1" };
 
 export const CALENDAR_STALE_TIME_MS = 60_000;
 
@@ -128,7 +128,7 @@ export const RELATIONSHIP_OPTIONS = ["recruiter", "referral", "mentor", "peer", 
 export const RELATIONSHIP_COLORS = {
   recruiter: { bg: "bg-brand-100 dark:bg-brand-900/30", text: "text-brand-700 dark:text-brand-300" },
   referral: { bg: "bg-emerald-100 dark:bg-emerald-900/30", text: "text-emerald-700 dark:text-emerald-300" },
-  mentor: { bg: "bg-blue-100 dark:bg-blue-900/30", text: "text-accent-blue dark:text-blue-300" },
+  mentor: { bg: "bg-blue-100 dark:bg-blue-900/30", text: "text-status-info dark:text-blue-300" },
   peer: { bg: "bg-sky-100 dark:bg-sky-900/30", text: "text-sky-700 dark:text-sky-300" },
   hiring_manager: { bg: "bg-amber-100 dark:bg-amber-900/30", text: "text-amber-700 dark:text-amber-300" },
   other: { bg: "bg-gray-100 dark:bg-gray-800", text: "text-gray-700 dark:text-gray-300" },
@@ -139,10 +139,10 @@ export const CLEARBIT_LOGO_BASE_URL = "https://logo.clearbit.com";
 export const COMPANY_LOGO_FALLBACK_COLORS = [
   "bg-brand-500",
   "bg-emerald-500",
-  "bg-accent-blue",
+  "bg-status-info",
   "bg-rose-500",
   "bg-amber-500",
-  "bg-accent-green",
+  "bg-status-success",
   "bg-pink-500",
   "bg-teal-500",
 ];

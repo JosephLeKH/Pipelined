@@ -107,7 +107,7 @@ function DayCell({ date, isCurrentMonth, events, onDayClick, onEventClick }) {
 function CalendarHeader({ month, year, onPrev, onNext, onToday }) {
   return (
     <div className="flex items-center justify-between px-4 py-3">
-      <h2 className="font-display text-xl font-semibold text-foreground">
+      <h2 className=" text-xl font-semibold text-foreground">
         {MONTH_NAMES[month - 1]} {year}
       </h2>
       <div className="flex items-center gap-2">
@@ -225,7 +225,7 @@ function CalendarGrid({ month, year, onMonthChange, onEventClick, onDayClick }) 
       <CalendarHeader month={month} year={year} onPrev={handlePrev} onNext={handleNext} onToday={handleToday} />
       <div className="grid grid-cols-7 border-t border-border">
         {WEEK_DAYS.map((d, i) => (
-          <div key={d} className="border-b border-border py-2 text-center text-xs font-display font-medium uppercase text-muted-foreground">
+          <div key={d} className="border-b border-border py-2 text-center text-xs font-medium uppercase text-muted-foreground">
             <abbr title={WEEK_DAYS_FULL[i]}>{d}</abbr>
           </div>
         ))}

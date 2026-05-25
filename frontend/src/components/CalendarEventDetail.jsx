@@ -20,7 +20,7 @@ function EventHeader({ event, colors, eventTypeLabel, timeDisplay, onClose }) {
         <div className="flex items-center gap-2">
           <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${colors.bg} ${colors.text}`}>{eventTypeLabel}</span>
         </div>
-        <h2 className="font-display text-lg font-semibold text-foreground">{event.title || eventTypeLabel}</h2>
+        <h2 className=" text-lg font-semibold text-foreground">{event.title || eventTypeLabel}</h2>
         <p className="text-sm text-muted-foreground">
           {formatDate(typeof event.date === "string" ? event.date.slice(0, 10) : event.date)}
           {timeDisplay && ` · ${timeDisplay}`}

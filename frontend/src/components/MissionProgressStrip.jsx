@@ -20,7 +20,7 @@ function MissionProgressStrip({ cleared = 0, total = 0 }) {
         <span className="text-muted-foreground">{percent}%</span>
       </div>
       <div
-        className="mt-2 h-2 overflow-hidden rounded-full bg-surface-secondary"
+        className="mt-2 h-2 overflow-hidden rounded-full bg-surface-1"
         role="progressbar"
         aria-valuenow={cleared}
         aria-valuemin={0}

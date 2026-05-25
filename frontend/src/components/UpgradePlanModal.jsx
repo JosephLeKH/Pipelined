@@ -55,7 +55,7 @@ function UpgradePlanModal() {
           <Zap className="h-8 w-8 text-primary" />
 
           <div>
-            <h2 className="mb-2 font-display text-lg font-semibold text-foreground">
+            <h2 className="mb-2 text-lg font-semibold text-foreground">
               You&apos;ve reached a free plan limit
             </h2>
             {resourceLabel && limitDetails?.current_usage != null && limitDetails?.max_allowed != null && (

@@ -21,7 +21,7 @@ function AiPanelGroup({ children, defaultOpen = true }) {
         aria-expanded={open}
         className="flex w-full items-center justify-between gap-2 px-4 py-3 text-left transition-colors hover:bg-muted/40"
       >
-        <span className="flex items-center gap-2 font-display text-sm font-semibold text-foreground">
+        <span className="flex items-center gap-2 text-sm font-semibold text-foreground">
           <Sparkles className="h-4 w-4 text-brand-500" aria-hidden="true" />
           {AI_PANEL_LABEL}
         </span>

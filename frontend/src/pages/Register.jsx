@@ -16,7 +16,7 @@ function Register() {
 
   return (
     <AuthLayout>
-      <h1 className="font-display text-3xl font-bold tracking-tight text-foreground">Create your account</h1>
+      <h1 className=" text-3xl font-bold tracking-tight text-foreground">Create your account</h1>
       <p className="mt-2 mb-8 text-sm text-muted-foreground">Start tracking your job search in under a minute.</p>
 
       <div className="space-y-3">

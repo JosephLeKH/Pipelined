@@ -43,7 +43,7 @@ function TagInput({ id, label, helper, values, onChange, placeholder }) {
         {values.map((tag) => (
           <span
             key={tag}
-            className="inline-flex items-center gap-1 rounded-full bg-surface-secondary px-2.5 py-1 text-xs text-foreground"
+            className="inline-flex items-center gap-1 rounded-full bg-surface-1 px-2.5 py-1 text-xs text-foreground"
           >
             {tag}
             <button
@@ -116,11 +116,11 @@ function SettingsAgentProfileSection() {
 
   return (
     <div className={`${CARD_BASE} p-6`}>
-      <h2 className="mb-1 font-display text-lg font-semibold text-foreground">Agent Profile</h2>
+      <h2 className="mb-1 text-lg font-semibold text-foreground">Agent Profile</h2>
       <p className="mb-5 text-sm text-muted-foreground">
         Teach the co-pilot about your goals so answers stay grounded in your pipeline.
       </p>
-      <p className="mb-5 rounded-lg border border-border bg-surface-secondary px-3 py-2 text-sm text-muted-foreground">
+      <p className="mb-5 rounded-lg border border-border bg-surface-1 px-3 py-2 text-sm text-muted-foreground">
         {COPILOT_POLICY_NOTE}
       </p>
 

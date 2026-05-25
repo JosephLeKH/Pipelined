@@ -1,13 +1,21 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
+const INPUT_FOCUS =
+  "focus-visible:outline focus-visible:outline-1 focus-visible:outline-brand-600 focus-visible:border-border-3";
+
 function Input({ className, type, ...props }) {
   return (
     <input
       type={type}
       data-slot="input"
       className={cn(
-        "flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
+        "flex h-8 w-full rounded-md border border-border-1 bg-transparent px-3 py-1 text-sm text-text-1 shadow-none",
+        "transition-[border-color,outline] duration-hover ease-out",
+        "file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-text-1",
+        "placeholder:text-text-3",
+        INPUT_FOCUS,
+        "disabled:cursor-not-allowed disabled:opacity-50",
         className
       )}
       {...props}

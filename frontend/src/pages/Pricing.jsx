@@ -75,7 +75,7 @@ function FreeTierCard() {
   return (
     <div className="rounded-2xl border border-border bg-card p-8">
       <div className="mb-6">
-        <h2 className="mb-1 font-display text-xl font-bold text-foreground">Free</h2>
+        <h2 className="mb-1 text-xl font-bold text-foreground">Free</h2>
         <div className="flex items-end gap-1">
           <span className="text-4xl font-extrabold text-foreground">$0</span>
           <span className="mb-1 text-muted-foreground">/ month</span>
@@ -109,7 +109,7 @@ function ProTierCard() {
       </div>
 
       <div className="mb-6">
-        <h2 className="mb-1 font-display text-xl font-bold text-foreground">Pro</h2>
+        <h2 className="mb-1 text-xl font-bold text-foreground">Pro</h2>
         <div className="flex items-end gap-1">
           <span className="text-4xl font-extrabold text-foreground">$9</span>
           <span className="mb-1 text-muted-foreground">/ month</span>
@@ -146,7 +146,7 @@ function Pricing() {
 
       <main className="mx-auto max-w-5xl px-6 py-16">
         <div className="mb-12 text-center">
-          <h1 className="mb-3 font-display text-4xl font-extrabold text-foreground">
+          <h1 className="mb-3 text-4xl font-extrabold text-foreground">
             Simple, transparent pricing
           </h1>
           <p className="text-lg text-muted-foreground">
@@ -160,7 +160,7 @@ function Pricing() {
         </div>
 
         <section className="mt-12 mx-auto max-w-2xl">
-          <h2 className="mb-6 text-center font-display text-xl font-semibold text-foreground">
+          <h2 className="mb-6 text-center text-xl font-semibold text-foreground">
             Frequently Asked Questions
           </h2>
           <div className="flex flex-col gap-3">

@@ -126,7 +126,7 @@ function NotificationBell() {
           className="absolute right-0 top-full z-50 mt-2 w-80 overflow-hidden rounded-card border border-border bg-card shadow-card"
         >
           <div className="flex items-center justify-between border-b border-border px-4 py-2.5">
-            <h3 className="font-display text-sm font-semibold text-foreground">
+            <h3 className=" text-sm font-semibold text-foreground">
               Notifications
             </h3>
             {unreadCount > 0 && (

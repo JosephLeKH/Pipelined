@@ -37,7 +37,7 @@ function ResumeSection({ hasResume, isUploading, isDeleting, onResumeUpload, onR
 
   return (
     <section className="rounded-xl bg-card border border-border p-6">
-      <h2 className="mb-1 font-display text-base font-semibold text-foreground">
+      <h2 className="mb-1 text-base font-semibold text-foreground">
         Resume
       </h2>
       <p className="mb-4 text-sm text-muted-foreground">
