@@ -97,7 +97,7 @@ function ResumeDropZone({ isDragOver, setIsDragOver, isUploading, fileInputRef, 
             ? "border-primary bg-primary/10"
             : "border-border hover:border-primary"
         }`}
-        aria-label="Upload resume — drag and drop or click to browse"
+        aria-label="Upload resume: drag and drop or click to browse"
       >
         {isUploading
           ? <Loader2 className="h-8 w-8 animate-spin text-primary" aria-hidden="true" />

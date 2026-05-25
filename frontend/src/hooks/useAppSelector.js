@@ -10,7 +10,7 @@ export function useAppSelector({ applicationId, apps, onApplicationChange }) {
     if (applicationId && apps.length > 0 && !initializedRef.current) {
       const found = apps.find((a) => a.id === applicationId);
       if (found) {
-        setAppSearch(`${found.company} — ${found.role_title}`);
+        setAppSearch(`${found.company} · ${found.role_title}`);
         initializedRef.current = true;
       }
     }
@@ -34,7 +34,7 @@ export function useAppSelector({ applicationId, apps, onApplicationChange }) {
     (e) => {
       const selected = apps.find((a) => a.id === e.target.value);
       onApplicationChange(e.target.value);
-      if (selected) setAppSearch(`${selected.company} — ${selected.role_title}`);
+      if (selected) setAppSearch(`${selected.company} · ${selected.role_title}`);
     },
     [apps, onApplicationChange]
   );
@@ -43,7 +43,7 @@ export function useAppSelector({ applicationId, apps, onApplicationChange }) {
     (value) => {
       const selected = apps.find((a) => a.id === value);
       onApplicationChange(value);
-      if (selected) setAppSearch(`${selected.company} — ${selected.role_title}`);
+      if (selected) setAppSearch(`${selected.company} · ${selected.role_title}`);
     },
     [apps, onApplicationChange]
   );

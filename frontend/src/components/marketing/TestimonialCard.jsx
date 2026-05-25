@@ -12,7 +12,7 @@ export default function TestimonialCard({ quote, name, school }) {
         &ldquo;{quote}&rdquo;
       </blockquote>
       <figcaption className="mt-4">
-        <p className="text-[13px] font-semibold text-text-1">— {name}</p>
+        <p className="text-[13px] font-semibold text-text-1">{name}</p>
         <p className="text-xs text-text-3">{school}</p>
       </figcaption>
     </figure>

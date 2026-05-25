@@ -83,7 +83,7 @@ describe("JobRow", () => {
       }),
       expect.any(Object)
     );
-    expect(toast.success).toHaveBeenCalledWith("Tracking Beta Inc — Frontend Engineer");
+    expect(toast.success).toHaveBeenCalledWith("Tracking Beta Inc · Frontend Engineer");
   });
 
   it("should show stale badge when is_stale is true", () => {

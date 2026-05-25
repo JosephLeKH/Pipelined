@@ -27,7 +27,7 @@ export function CsvImportPreviewTable({ parsed, mapping }) {
             <tr key={index} className="border-b border-border-1">
               {visibleFields.map((field) => (
                 <td key={field.key} className="max-w-[10rem] truncate py-2 pr-4 text-text-2">
-                  {row[field.key] || "—"}
+                  {row[field.key] || "N/A"}
                 </td>
               ))}
             </tr>

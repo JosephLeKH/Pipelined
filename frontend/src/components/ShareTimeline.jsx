@@ -103,7 +103,7 @@ function NoShare({ onCreate, isCreating }) {
   return (
     <div className="flex flex-col gap-3">
       <p className="text-sm text-text-2">
-        Anyone with the link can view a read-only timeline — stages, dates, and outcomes only.
+        Anyone with the link can view a read-only timeline: stages, dates, and outcomes only.
       </p>
       <Button
         type="button"

@@ -95,7 +95,7 @@ function ApplicationRow({
   const followUpOverdue = isFollowUpOverdue(application.follow_up_date);
   const dateApplied = formatDate(application.date_applied);
   const archived = Boolean(application.archived);
-  const checkboxVisible = hasSelection ? "opacity-100" : "opacity-0 group-hover:opacity-100";
+  const checkboxVisible = "opacity-100";
 
   const staleDays = application.updated_at
     ? differenceInDays(new Date(), new Date(application.updated_at))
@@ -141,10 +141,10 @@ function ApplicationRow({
                   role="img"
                   className="block h-2 w-2 animate-pulse cursor-default rounded-full bg-amber-400 motion-reduce:animate-none dark:bg-amber-500"
                   data-testid="stale-indicator"
-                  aria-label="Stale application — no updates in 14+ days"
+                  aria-label="Stale application: no updates in 14+ days"
                 />
               </TooltipTrigger>
-              <TooltipContent>No updates in 14 days — consider following up</TooltipContent>
+              <TooltipContent>No updates in 14 days. Consider following up.</TooltipContent>
             </Tooltip>
           )}
         </span>
@@ -168,7 +168,7 @@ function ApplicationRow({
                   <Sparkles className="h-4 w-4 text-brand-600" aria-hidden="true" />
                 </span>
               </TooltipTrigger>
-              <TooltipContent>Interview prep briefing ready — open to review company research and talking points</TooltipContent>
+              <TooltipContent>Interview prep briefing ready. Open to review company research and talking points.</TooltipContent>
             </Tooltip>
           )}
         </span>
@@ -211,6 +211,7 @@ function ApplicationRow({
         <span className="w-20 shrink-0 text-xs text-text-3">{dateApplied}</span>
         <RowQuickActions
           archived={archived}
+          stage={application.current_stage}
           onArchive={() => onArchive(application.id)}
           onFollowUp={() => onSetFollowUp?.(application.id)}
         />

@@ -15,7 +15,7 @@ import {
 import { ICON_BUTTON } from "../lib/designTokens";
 
 export function DetailPanelHeader({ application, onClose, onDelete }) {
-  const title = `${application.company} — ${application.role_title}`;
+  const title = `${application.company} · ${application.role_title}`;
 
   return (
     <div className="flex h-14 shrink-0 items-center gap-3 border-b border-border-1 px-4">

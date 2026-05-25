@@ -184,7 +184,7 @@ function KanbanBoard({ filters = DEFAULT_FILTERS, onSelect, onAddStage }) {
         handleMobileTouchStart={handleMobileTouchStart}
         handleMobileTouchEnd={handleMobileTouchEnd}
       />
-      <div className="hidden gap-3 overflow-x-auto pb-4 md:flex" data-testid="kanban-desktop">
+      <div className="hidden min-w-0 gap-3 overflow-x-auto pb-4 md:flex" data-testid="kanban-desktop">
         {stages.map((stage) => (
           <KanbanColumn
             key={stage}

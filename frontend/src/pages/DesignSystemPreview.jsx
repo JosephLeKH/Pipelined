@@ -57,8 +57,8 @@ export default function DesignSystemPreview() {
         <PrimitiveSection title="Typography">
           <p className="text-display-lg text-text-1">Display LG</p>
           <p className="text-heading-1 text-text-1">Heading 1</p>
-          <p className="text-body text-text-2">Body — 13px Inter at 1.45 line-height.</p>
-          <p className="text-mono text-text-3">mono — JetBrains Mono 12px</p>
+          <p className="text-body text-text-2">Body: 13px Inter at 1.45 line-height.</p>
+          <p className="text-mono text-text-3">Mono: JetBrains Mono 12px</p>
         </PrimitiveSection>
 
         <PrimitiveSection title="Buttons">
@@ -112,7 +112,7 @@ export default function DesignSystemPreview() {
             <TooltipTrigger asChild>
               <Button variant="ghost">Hover tooltip</Button>
             </TooltipTrigger>
-            <TooltipContent>Tooltip label — 11px</TooltipContent>
+            <TooltipContent>Tooltip label: 11px</TooltipContent>
           </Tooltip>
         </PrimitiveSection>
 

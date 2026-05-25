@@ -33,7 +33,7 @@ function OfflineBanner() {
       className="flex h-9 items-center gap-3 border-b border-brand-800 bg-brand-700 px-4 text-xs text-white"
     >
       <WifiOff size={14} aria-hidden="true" className="shrink-0" />
-      <span>You are offline — changes may not save</span>
+      <span>You are offline. Changes may not save.</span>
     </div>
   );
 }

@@ -270,7 +270,7 @@ function IdleView({ onStart }) {
         <div className="flex flex-col gap-0.5">
           <span className="text-sm font-semibold text-foreground">Interview Briefing</span>
           <span className="text-xs text-muted-foreground leading-relaxed">
-            Researches salary bands, interview rounds, and company culture — personalized to your resume.
+            Researches salary bands, interview rounds, and company culture. Personalized to your resume.
           </span>
         </div>
       </div>

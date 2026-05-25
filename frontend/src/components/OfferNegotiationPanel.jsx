@@ -18,7 +18,7 @@ function TotalCompBreakdown({ offer }) {
   const annualSigning = vestingYears > 0 ? Math.round(signing / vestingYears) : 0;
   const total = base + equity + annualSigning;
 
-  const fmt = (n) => n > 0 ? `$${n.toLocaleString()}` : "—";
+  const fmt = (n) => n > 0 ? `$${n.toLocaleString()}` : "N/A";
 
   return (
     <div className="rounded-xl bg-card border border-border p-4 flex flex-col gap-2">
@@ -31,7 +31,7 @@ function TotalCompBreakdown({ offer }) {
         <span className="text-muted-foreground">Signing (amortized)</span>
         <span className="font-medium text-foreground text-right">{fmt(annualSigning)}</span>
         <span className="border-t border-border pt-1 font-semibold text-foreground">Est. Annual Total</span>
-        <span className="border-t border-border pt-1 font-semibold text-primary text-right">{total > 0 ? fmt(total) : "—"}</span>
+        <span className="border-t border-border pt-1 font-semibold text-primary text-right">{total > 0 ? fmt(total) : "N/A"}</span>
       </div>
     </div>
   );
@@ -68,7 +68,7 @@ export function OfferNegotiationPanel({ apps }) {
               <SelectContent>
                 {apps.map((app) => (
                   <SelectItem key={app.id} value={app.id}>
-                    {app.company ?? "Unknown"} — {app.role_title ?? ""}
+                    {app.company ?? "Unknown"} · {app.role_title ?? ""}
                   </SelectItem>
                 ))}
               </SelectContent>

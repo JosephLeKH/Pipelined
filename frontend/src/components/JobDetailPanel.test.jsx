@@ -40,7 +40,7 @@ describe("JobDetailPanel", () => {
   it("should render the company — role title in the header", () => {
     render(<JobDetailPanel job={JOB_FIXTURE} onClose={vi.fn()} />);
 
-    expect(screen.getByRole("heading", { name: "Acme Corp — Software Engineer" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Acme Corp · Software Engineer" })).toBeInTheDocument();
   });
 
   it("should render the drawer at 520px width with slide transition", () => {
@@ -92,7 +92,7 @@ describe("JobDetailPanel", () => {
     fireEvent.click(screen.getByRole("button", { name: /^track$/i }));
 
     expect(screen.getByRole("button", { name: /^tracking$/i })).toBeDisabled();
-    expect(toast.success).toHaveBeenCalledWith("Tracking Acme Corp — Software Engineer");
+    expect(toast.success).toHaveBeenCalledWith("Tracking Acme Corp · Software Engineer");
   });
 
   it("should create application at To Apply stage with board source", () => {

@@ -34,7 +34,7 @@ function SettingsAgentActivitySection() {
         Agent activity
       </h2>
       <p className="mb-5 text-sm text-muted-foreground">
-        Recent AI agent runs — fit scoring, interview prep, autopilot, email classification, and morning briefs.
+        Recent AI agent runs: fit scoring, interview prep, autopilot, email classification, and morning briefs.
       </p>
 
       {isLoading && (

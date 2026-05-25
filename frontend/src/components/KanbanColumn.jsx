@@ -72,7 +72,7 @@ export function KanbanColumn({ stage, applications, onSelect, onAddStage }) {
 
   return (
     <div
-      className="flex min-w-[280px] flex-1 flex-col"
+      className="flex min-w-[260px] flex-1 flex-col"
       data-testid={`kanban-column-${stage}`}
       aria-label={`${stage} column`}
     >

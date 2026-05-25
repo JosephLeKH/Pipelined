@@ -16,7 +16,7 @@ import { SUCCESS_BANNER } from "../lib/designTokens";
 import AiSection from "./AiSection";
 import { Button } from "./ui/button";
 
-const APPLY_PACK_DISCLAIMER = "Copy and paste manually — we never auto-submit applications.";
+const APPLY_PACK_DISCLAIMER = "Copy and paste manually. We never auto-submit applications.";
 
 function CopyFieldButton({ text, label }) {
   const [copied, setCopied] = useState(false);
@@ -78,7 +78,7 @@ function ApplyPackSection({ application, onPackGenerated }) {
       setLocalPack(result);
       onPackGenerated(result);
     } catch (error) {
-      toast.error(getAiToastError(error, "Could not generate apply pack — try again"));
+      toast.error(getAiToastError(error, "Could not generate apply pack. Try again."));
     } finally {
       setIsLoading(false);
     }

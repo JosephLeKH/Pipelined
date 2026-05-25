@@ -190,12 +190,12 @@ function PublicTimeline() {
   useEffect(() => {
     if (!data) return;
     const timeline = data?.data ?? data;
-    const title = `${timeline.display_name}'s Timeline — Pipelined`;
+    const title = `${timeline.display_name}'s Timeline | Pipelined`;
     document.title = title;
     const ogTitle = document.querySelector('meta[property="og:title"]');
     if (ogTitle) ogTitle.setAttribute("content", title);
 
-    const descContent = `${timeline.display_name}'s job search timeline — tracked with Pipelined`;
+    const descContent = `${timeline.display_name}'s job search timeline, tracked with Pipelined`;
     let descMeta = document.querySelector('meta[name="description"]');
     if (!descMeta) {
       descMeta = document.createElement("meta");
@@ -213,7 +213,7 @@ function PublicTimeline() {
     ogDescMeta.content = descContent;
 
     return () => {
-      document.title = "Pipelined — Job Application Tracker for Students & Engineers";
+      document.title = "Pipelined | Job Application Tracker for Students & Engineers";
       const cleanDescMeta = document.querySelector('meta[name="description"]');
       if (cleanDescMeta) cleanDescMeta.content = "";
       const cleanOgDescMeta = document.querySelector('meta[property="og:description"]');

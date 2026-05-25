@@ -70,7 +70,7 @@ describe("todayUtils", () => {
     localStorage.removeItem(COMPLETED_MISSIONS_BY_DATE_KEY);
     const mission = {
       id: "follow_ups:0",
-      title: "Acme — follow-up overdue",
+      title: "Acme · follow-up overdue",
       action_url: "/dashboard?selected=app1",
     };
 

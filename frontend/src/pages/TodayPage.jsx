@@ -15,7 +15,7 @@ import WeeklyReviewSection, { WeeklyReviewTeaser } from "../components/WeeklyRev
 import { useAuth } from "../context/AuthContext";
 import { useApplicationStats } from "../hooks/useApplications";
 import { useMissionActions } from "../hooks/useMissionActions";
-import { useMorningBrief } from "../hooks/useMorningBrief";
+import { useMorningBrief, useGenerateBrief } from "../hooks/useMorningBrief";
 import { useWeeklyReview } from "../hooks/useWeeklyReview";
 import {
   BRIEF_UNAVAILABLE_MESSAGE,
@@ -68,6 +68,7 @@ function TodayPage() {
     enabled: weeklyReviewEnabled,
   });
   const { snooze, done } = useMissionActions();
+  const generateBrief = useGenerateBrief();
   const briefHour = user?.morning_brief_hour ?? DEFAULT_MORNING_BRIEF_HOUR;
   const emptyMessage = getBriefEmptyMessage(briefHour);
   const missions = brief?.missions ?? [];
@@ -135,6 +136,8 @@ function TodayPage() {
               briefHour={briefHour}
               emptyMessage={emptyMessage}
               forceOpen={forceBriefOpen}
+              onGenerateBrief={() => generateBrief.mutate()}
+              isGenerating={generateBrief.isPending}
             />
             <MissionProgressStrip cleared={progress.cleared} total={progress.total} />
             {weeklyReviewEnabled && isSunday && !weeklyReviewOpen && (

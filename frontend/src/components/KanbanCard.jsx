@@ -17,7 +17,7 @@ function KanbanCardFooter({ stale, followUpOverdue }) {
       {stale && (
         <>
           <Clock className="h-3.5 w-3.5 text-warning" data-testid="stale-indicator" aria-hidden="true" />
-          <span className="sr-only">Stale application — no updates in 14+ days</span>
+          <span className="sr-only">Stale application: no updates in 14+ days</span>
         </>
       )}
       {followUpOverdue && (

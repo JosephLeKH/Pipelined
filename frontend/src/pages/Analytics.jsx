@@ -60,7 +60,7 @@ function computeKpiMetrics(analytics, stats) {
     avgResponse: {
       value: stats?.avg_days_to_first_response != null
         ? `${stats.avg_days_to_first_response.toFixed(1)} days`
-        : "—",
+        : "N/A",
       delta: null,
     },
   };

@@ -19,7 +19,7 @@ const COMMUNICATION_STYLES = [
 ];
 
 const COPILOT_POLICY_NOTE =
-  "The co-pilot suggests only — it never sends emails or submits applications for you.";
+  "The co-pilot suggests only. It never sends emails or submits applications for you.";
 
 function TagInput({ id, label, helper, values, onChange, placeholder }) {
   const [draft, setDraft] = useState("");

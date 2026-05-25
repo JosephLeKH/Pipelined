@@ -20,7 +20,7 @@ const ROW_FOCUS =
   "focus:outline-none focus-visible:border-l-2 focus-visible:border-l-brand-600 dark:focus-visible:border-l-brand-500";
 
 function formatPostedCompact(isoString) {
-  if (!isoString) return "—";
+  if (!isoString) return "N/A";
   const date = new Date(isoString);
   const now = new Date();
   const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -72,7 +72,7 @@ function JobRow({ job, style, onSelect, isSelected = false, isFocused = false, i
           source_url: job.apply_url || undefined,
         },
         {
-          onSuccess: () => toast.success(`Tracking ${company} — ${role}`),
+          onSuccess: () => toast.success(`Tracking ${company} · ${role}`),
           onError: () => toast.error("Failed to track job. Are you signed in?"),
         }
       );
@@ -120,7 +120,7 @@ function JobRow({ job, style, onSelect, isSelected = false, isFocused = false, i
       </span>
 
       <span className="hidden w-20 shrink-0 truncate text-xs text-text-3 sm:block">
-        {job.location ?? "—"}
+        {job.location ?? "N/A"}
       </span>
 
       {remote ? (

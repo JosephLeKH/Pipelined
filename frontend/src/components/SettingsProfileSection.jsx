@@ -93,7 +93,7 @@ function SettingsProfileSection() {
       <SettingsSectionDivider />
 
       <SettingsFieldBlock label="Email" help="Used for sign-in and notifications.">
-        <p className="text-sm text-text-1">{user?.email ?? "—"}</p>
+        <p className="text-sm text-text-1">{user?.email ?? "N/A"}</p>
       </SettingsFieldBlock>
 
       <SettingsSectionDivider />

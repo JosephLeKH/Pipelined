@@ -104,7 +104,7 @@ function JobDetailPanel({ job, onClose }) {
   const createMutation = useCreateApplication();
   const company = job.company ?? "";
   const role = job.role ?? "Untitled Role";
-  const title = company ? `${company} — ${role}` : role;
+  const title = company ? `${company} · ${role}` : role;
   const posted = formatPostedCompact(job.date_posted);
   const fitScore = job.score ?? job.fit_score ?? null;
 
@@ -121,7 +121,7 @@ function JobDetailPanel({ job, onClose }) {
       {
         onSuccess: () => {
           setTracked(true);
-          toast.success(`Tracking ${company} — ${role}`);
+          toast.success(`Tracking ${company} · ${role}`);
         },
         onError: () => toast.error("Failed to track job. Are you signed in?"),
       }

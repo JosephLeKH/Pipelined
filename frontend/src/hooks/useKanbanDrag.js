@@ -35,7 +35,7 @@ export function useKanbanDrag({ applications, stages, queryKey }) {
       }),
       onError: () => {
         queryClient.setQueryData(queryKey, previousData);
-        toast.error("Move failed — reverted");
+        toast.error("Move failed. Reverted.");
       },
     });
   };

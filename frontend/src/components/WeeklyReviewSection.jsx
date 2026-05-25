@@ -120,7 +120,7 @@ function WeeklyReviewSection({ review, isLoading }) {
                   ].join(" ")}
                 >
                   <span className="text-text-1">
-                    {app.company} — {app.role_title}
+                    {app.company} · {app.role_title}
                   </span>
                   <span className="text-xs text-text-3">{app.days_since_update}d idle</span>
                 </Link>

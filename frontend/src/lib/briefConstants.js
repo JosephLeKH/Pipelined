@@ -61,7 +61,7 @@ export const MISSION_URGENCY_LABELS = {
   medium: "Medium",
 };
 
-export const BRIEF_UNAVAILABLE_MESSAGE = "Brief not available right now — try again later";
+export const BRIEF_UNAVAILABLE_MESSAGE = "Brief not available right now. Try again later.";
 
 const SCORE_PATTERN = /(?:Match|Fit) score (\d+)/;
 
@@ -75,7 +75,7 @@ export function formatBriefHour(hour) {
 
 /** Empty-state copy using the user's configured brief delivery hour. */
 export function getBriefEmptyMessage(hour) {
-  return `Your brief generates at ${formatBriefHour(hour)} — check back soon`;
+  return `Your brief generates at ${formatBriefHour(hour)}. Check back soon, or generate one now.`;
 }
 
 /** Extract fit/match score from brief item body when present. */

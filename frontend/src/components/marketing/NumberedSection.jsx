@@ -27,7 +27,7 @@ export default function NumberedSection({
   const textBlock = (
     <div className={`flex flex-col gap-4 ${textOrder}`}>
       <p className="text-xs font-medium uppercase tracking-[0.08em] text-brand-700">
-        {number} — {eyebrow}
+        {number}. {eyebrow}
       </p>
       <h2 className="text-display-lg text-text-1 md:text-[2.5rem]">{headline}</h2>
       <p className="max-w-[640px] text-lg leading-[1.55] text-text-2">{subhead}</p>

@@ -29,12 +29,12 @@ const FAQ_ITEMS = [
   {
     question: "Can I cancel anytime?",
     answer:
-      "Yes. Pro is month-to-month — cancel from Settings and you keep access through the end of your billing period.",
+      "Yes. Pro is month-to-month. Cancel from Settings and you keep access through the end of your billing period.",
   },
   {
     question: "Do you store my resume?",
     answer:
-      "Your résumé file stays in your account for parsing and Apply Pack. We never modify the stored PDF — suggestions are copy-only.",
+      "Your résumé file stays in your account for parsing and Apply Pack. We never modify the stored PDF. Suggestions are copy-only.",
   },
   {
     question: "How is my data used?",
@@ -44,12 +44,12 @@ const FAQ_ITEMS = [
   {
     question: "What boards work with the extension?",
     answer:
-      "LinkedIn, Greenhouse, Lever, Workday, and six more boards — the extension parses structured fields and falls back to AI on unstructured pages.",
+      "LinkedIn, Greenhouse, Lever, Workday, and six more boards. The extension parses structured fields and falls back to AI on unstructured pages.",
   },
   {
     question: "Is the Stanford branding affiliated?",
     answer:
-      "No — Pipelined is built by a Stanford CS student but is not affiliated with or endorsed by Stanford University. Cardinal Red is used as a personal brand homage.",
+      "No. Pipelined is built by a Stanford CS student but is not affiliated with or endorsed by Stanford University. Cardinal Red is used as a personal brand homage.",
   },
 ];
 
@@ -79,9 +79,9 @@ function PricingFaq() {
 
 function Pricing() {
   useEffect(() => {
-    document.title = "Pricing — Pipelined";
+    document.title = "Pricing | Pipelined";
     return () => {
-      document.title = "Pipelined — Job Application Tracker for Students & Engineers";
+      document.title = "Pipelined | Job Application Tracker for Students & Engineers";
     };
   }, []);
 

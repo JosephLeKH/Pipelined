@@ -33,7 +33,7 @@ describe("OfflineBanner", () => {
 
     expect(screen.getByTestId("offline-banner")).toBeInTheDocument();
     expect(screen.getByTestId("offline-banner")).toHaveTextContent(
-      "You are offline — changes may not save"
+      "You are offline. Changes may not save."
     );
   });
 

@@ -23,7 +23,7 @@ const TOTAL_STEPS = 2;
 
 const NEVER_DO_ITEMS = [
   "Read personal or non-job emails",
-  "Store email content — only structured job data",
+  "Store email content: only structured job data",
   "Send emails without your explicit approval",
 ];
 
@@ -53,7 +53,7 @@ function StepOne({ onNext, onCancel }) {
           Use a job-search inbox
         </DialogTitle>
         <DialogDescription className="mt-1 text-sm text-text-2">
-          Pipelined works best with a dedicated Gmail account for your job search — not your personal inbox.
+          Pipelined works best with a dedicated Gmail account for your job search, not your personal inbox.
         </DialogDescription>
       </DialogHeader>
       <div className="rounded-lg border border-border-1 bg-surface-1 px-4 py-3">

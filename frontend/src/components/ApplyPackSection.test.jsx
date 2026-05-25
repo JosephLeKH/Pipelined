@@ -19,7 +19,7 @@ import { generateApplyPack } from "../api/applications";
 const MOCK_PACK = {
   cover_letter: "Dear hiring team,\n\nI am excited to apply.",
   short_answers: [{ question: "Why this company?", answer: "Mission alignment." }],
-  linkedin_note: "Hi — would love to connect about the SWE role.",
+  linkedin_note: "Hi. Would love to connect about the SWE role.",
   talking_points: ["5 years Python", "Led API migration"],
 };
 

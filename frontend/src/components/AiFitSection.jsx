@@ -143,7 +143,7 @@ function AiFitSection({ application, hasResume, aiScoresRemainingToday, onScoreG
       onScoreGenerated({ fit_score: result.score, fit_score_reason: result.reason });
       queryClient.invalidateQueries({ queryKey: KEYS.detail(application.id) });
     } catch (error) {
-      toast.error(getAiToastError(error, "Could not analyze fit — try again"));
+      toast.error(getAiToastError(error, "Could not analyze fit. Try again."));
     } finally {
       setIsLoading(false);
     }

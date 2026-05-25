@@ -49,11 +49,11 @@ function TopBarUserMenu({ user }) {
           <UserAvatar user={user} />
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56">
+      <DropdownMenuContent align="end" className="w-64" sideOffset={8}>
         <DropdownMenuLabel className="font-normal">
-          <p className="text-sm font-medium">{user?.display_name ?? user?.email ?? "Account"}</p>
+          <p className="truncate text-sm font-medium">{user?.display_name ?? user?.email ?? "Account"}</p>
           {user?.email && user?.display_name && (
-            <p className="text-xs text-text-3">{user.email}</p>
+            <p className="truncate text-xs text-text-3">{user.email}</p>
           )}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />

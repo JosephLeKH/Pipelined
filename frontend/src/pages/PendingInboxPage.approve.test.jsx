@@ -93,12 +93,12 @@ describe("PendingInboxPage approve flow", () => {
   it("should redirect to dashboard detail and show toast after approve", async () => {
     render(<PendingInboxPage />, { wrapper: makeWrapper() });
 
-    await screen.findByLabelText("Beta Corp — Engineer");
+    await screen.findByLabelText("Beta Corp · Engineer");
     await userEvent.click(screen.getByRole("button", { name: /approve beta corp/i }));
 
     await waitFor(() => {
       expect(screen.getByTestId("location")).toHaveTextContent("/dashboard?selected=app99");
     });
-    expect(toast.success).toHaveBeenCalledWith("Added to pipeline — apply when ready");
+    expect(toast.success).toHaveBeenCalledWith("Added to pipeline. Apply when ready.");
   });
 });

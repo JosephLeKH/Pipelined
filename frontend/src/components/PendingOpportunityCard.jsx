@@ -18,7 +18,7 @@ import { Button } from "./ui/button";
 
 const CARD_CLASS =
   "rounded-lg border border-border-1 bg-surface-0 p-4 dark:bg-surface-0 dark:border-border-1";
-const RESUME_TIPS_DISCLAIMER = "Suggestions only — review and edit before applying.";
+const RESUME_TIPS_DISCLAIMER = "Suggestions only. Review and edit before applying.";
 const APPLY_PACK_HINT = "After approving, open Apply pack in the application detail to copy materials.";
 const MATCH_REASON_MAX = 120;
 
@@ -153,7 +153,7 @@ function PendingOpportunityCard({
   const quote = truncateQuote(opportunity.match_reason);
 
   return (
-    <article aria-label={`${company} — ${role}`} className={CARD_CLASS}>
+    <article aria-label={`${company} · ${role}`} className={CARD_CLASS}>
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
@@ -223,7 +223,7 @@ function PendingOpportunityCard({
           size="sm"
           onClick={() => onApprove(opportunity.id)}
           disabled={isBusy}
-          aria-label={`Approve ${company} — ${role}`}
+          aria-label={`Approve ${company} · ${role}`}
         >
           {isApproving ? (
             "Adding…"
@@ -240,7 +240,7 @@ function PendingOpportunityCard({
           size="sm"
           onClick={() => onDismiss(opportunity.id)}
           disabled={isBusy}
-          aria-label={`Reject ${company} — ${role}`}
+          aria-label={`Reject ${company} · ${role}`}
         >
           {isDismissing ? "Rejecting…" : "Reject"}
         </Button>
@@ -250,7 +250,7 @@ function PendingOpportunityCard({
               href={applyUrl}
               target="_blank"
               rel="noopener noreferrer"
-              aria-label={`Open job for ${company} — ${role}`}
+              aria-label={`Open job for ${company} · ${role}`}
             >
               Open job
               <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />

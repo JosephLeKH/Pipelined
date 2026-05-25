@@ -129,7 +129,7 @@ function DangerZone() {
           <div className="flex-1">
             <h2 className="text-lg font-semibold text-destructive">Danger zone</h2>
             <p className="mt-1 text-sm text-destructive">
-              Permanently delete your account and all associated data — applications, calendar events,
+              Permanently delete your account and all associated data: applications, calendar events,
               contacts, and resume. This cannot be undone.
             </p>
             <Button type="button" variant="outline" onClick={() => setShowModal(true)}

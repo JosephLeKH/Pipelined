@@ -10,7 +10,7 @@ import MissionCard from "./MissionCard";
 const BASE_MISSION = {
   id: "507f1f77bcf86cd799439011",
   section: "oa_deadlines",
-  title: "Acme — Backend Engineer",
+  title: "Acme · Backend Engineer",
   body: "Due in 2 days",
   action_url: "/dashboard?selected=507f1f77bcf86cd799439011",
   priority: 2,
@@ -54,7 +54,7 @@ describe("MissionCard", () => {
       ...BASE_MISSION,
       section: "follow_ups",
       body: "Generate a draft on demand in the detail panel",
-      reason: "Follow-up is overdue — respond today",
+      reason: "Follow-up is overdue. Respond today",
     });
 
     expect(screen.queryByText("Due in 2 days")).not.toBeInTheDocument();

@@ -71,7 +71,7 @@ describe("StatsBar", () => {
     expect(await screen.findByLabelText(/avg days to response: 5.3/i)).toBeInTheDocument();
   });
 
-  it("should display — for avg_days_to_first_response when null", async () => {
+  it("should display N/A for avg_days_to_first_response when null", async () => {
     // Arrange
     server.use(
       http.get("/api/applications/stats", () =>
@@ -82,10 +82,10 @@ describe("StatsBar", () => {
     // Act
     render(<StatsBar />, { wrapper: makeWrapper() });
 
-    // Assert — total_applied loads and avg days shows dash
+    // Assert — total_applied loads and avg days shows N/A
     expect(await screen.findByText("42")).toBeInTheDocument();
-    const dashes = screen.getAllByText("—");
-    expect(dashes.length).toBeGreaterThanOrEqual(1);
+    const naTexts = screen.getAllByText("N/A");
+    expect(naTexts.length).toBeGreaterThanOrEqual(1);
   });
 
   it("should render metric cards with aria-label describing each metric", async () => {

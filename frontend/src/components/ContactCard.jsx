@@ -40,11 +40,11 @@ function ContactCard({ contact, applicationId }) {
                 <TooltipTrigger asChild>
                   <span
                     className="inline-block h-2 w-2 shrink-0 rounded-full bg-warning/80"
-                    aria-label="Stale contact — no activity in 14+ days"
+                    aria-label="Stale contact: no activity in 14+ days"
                     role="img"
                   />
                 </TooltipTrigger>
-                <TooltipContent>Stale — no contact in 14+ days</TooltipContent>
+                <TooltipContent>Stale: no contact in 14+ days</TooltipContent>
               </Tooltip>
             )}
             <span className="truncate text-sm font-medium text-foreground">

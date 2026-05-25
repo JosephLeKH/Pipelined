@@ -30,34 +30,50 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
+import { Tooltip, TooltipTrigger, TooltipContent } from "./ui/tooltip";
 
-export function RowQuickActions({ archived, onArchive, onFollowUp }) {
+const TERMINAL_STAGES = new Set(["Offer", "Rejected", "Withdrawn"]);
+
+export function RowQuickActions({ archived, stage, onArchive, onFollowUp }) {
   if (archived) return null;
+  const isTerminal = TERMINAL_STAGES.has(stage);
   return (
     <div
       className="hidden items-center gap-1 motion-reduce:transition-none md:group-hover:flex"
       onClick={(e) => e.stopPropagation()}
     >
-      <Button
-        type="button"
-        variant="ghost"
-        size="sm"
-        aria-label="Set follow-up"
-        onClick={onFollowUp}
-        className="h-6 px-2 text-xs text-text-2 hover:text-text-1"
-      >
-        Set follow-up
-      </Button>
-      <Button
-        type="button"
-        variant="ghost"
-        size="sm"
-        aria-label="Archive application"
-        onClick={onArchive}
-        className="h-6 px-2 text-xs text-text-2 hover:text-text-1"
-      >
-        Archive
-      </Button>
+      {!isTerminal && (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              aria-label="Set follow-up"
+              onClick={onFollowUp}
+              className="h-6 px-2 text-xs text-text-2 hover:text-text-1"
+            >
+              Set follow-up
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Remind me to check on this application</TooltipContent>
+        </Tooltip>
+      )}
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            aria-label="Archive application"
+            onClick={onArchive}
+            className="h-6 px-2 text-xs text-text-2 hover:text-text-1"
+          >
+            Archive
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>Hide from active view. You can restore it from the Archive filter.</TooltipContent>
+      </Tooltip>
     </div>
   );
 }

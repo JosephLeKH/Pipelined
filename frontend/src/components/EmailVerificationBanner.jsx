@@ -67,7 +67,7 @@ function EmailVerificationBanner() {
       <AlertTriangle size={14} aria-hidden="true" className="shrink-0 text-brand-700 dark:text-brand-300" />
       <span className="min-w-0 truncate">
         {resendSent
-          ? "Verification email sent — check your inbox."
+          ? "Verification email sent. Check your inbox."
           : "Please verify your email to continue."}
       </span>
       {!resendSent && (

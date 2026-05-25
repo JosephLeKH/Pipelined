@@ -51,7 +51,7 @@ function EditableCellDisplay({ value, fieldType, onEdit, saving }) {
         onClick={onEdit}
         className="h-auto min-h-7 justify-end p-0 text-right text-sm font-medium text-text-1 hover:bg-transparent hover:underline focus-visible:ring-2 focus-visible:ring-brand-700 dark:focus-visible:ring-1"
       >
-        {display ?? <span className="italic text-text-3">—</span>}
+        {display ?? <span className="italic text-text-3">N/A</span>}
       </Button>
       {saving && <SavePulseDot />}
     </span>

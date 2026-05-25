@@ -35,7 +35,7 @@ function isEmpty(value) {
 }
 
 function displayValue(value) {
-  if (isEmpty(value)) return <span className="italic text-text-3">—</span>;
+  if (isEmpty(value)) return <span className="italic text-text-3">N/A</span>;
   if (Array.isArray(value)) return value.join(", ");
   return value;
 }
@@ -134,7 +134,7 @@ export default function MergeDialog({ apps, onConfirm, onCancel, isPending = fal
               return (
                 <span key={key}>
                   <span className="font-medium">{label}:</span>{" "}
-                  {isEmpty(val) ? <span className="italic text-text-3">—</span> : displayValue(val)}
+                  {isEmpty(val) ? <span className="italic text-text-3">N/A</span> : displayValue(val)}
                 </span>
               );
             })}

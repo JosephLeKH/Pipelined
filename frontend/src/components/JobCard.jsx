@@ -22,7 +22,7 @@ function formatMetaLine(job) {
   if (job.experience_level) {
     parts.push(job.experience_level.replace(/_/g, " "));
   }
-  return parts.length > 0 ? parts.join(" · ") : "—";
+  return parts.length > 0 ? parts.join(" · ") : "N/A";
 }
 
 function JobCard({ job, score, onSelect }) {
@@ -45,7 +45,7 @@ function JobCard({ job, score, onSelect }) {
           source_url: job.apply_url || undefined,
         },
         {
-          onSuccess: () => toast.success(`Tracking ${company} — ${role}`),
+          onSuccess: () => toast.success(`Tracking ${company} · ${role}`),
           onError: () => toast.error("Failed to track job. Are you signed in?"),
         }
       );

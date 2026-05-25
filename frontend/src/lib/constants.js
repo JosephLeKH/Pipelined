@@ -316,7 +316,7 @@ const INCOMPLETE_OFFER_MSG =
 export const NEGOTIATION_TEMPLATES = [
   {
     id: "counter_salary",
-    label: "Counter — Higher Base",
+    label: "Counter: Higher Base",
     build: (app) => {
       const role = app.role_title;
       const company = app.company;
@@ -328,7 +328,7 @@ export const NEGOTIATION_TEMPLATES = [
   },
   {
     id: "equity_ask",
-    label: "Counter — More Equity",
+    label: "Counter: More Equity",
     build: (app) => {
       const role = app.role_title;
       const company = app.company;
@@ -338,7 +338,7 @@ export const NEGOTIATION_TEMPLATES = [
   },
   {
     id: "signing_bonus",
-    label: "Ask — Signing Bonus",
+    label: "Ask: Signing Bonus",
     build: (app) => {
       const company = app.company;
       const role = app.role_title;
@@ -348,12 +348,12 @@ export const NEGOTIATION_TEMPLATES = [
   },
   {
     id: "remote_flexibility",
-    label: "Ask — Remote Flexibility",
+    label: "Ask: Remote Flexibility",
     build: (app) => {
       const company = app.company;
       const role = app.role_title;
       if (!role || !company) return INCOMPLETE_OFFER_MSG;
-      return `Hi [Hiring Manager],\n\nThank you for the offer for ${role} at ${company}. I'm very excited to join the team.\n\nI wanted to discuss the remote/hybrid policy. I work most effectively with some flexibility in location and was wondering if we could explore a [X days remote] arrangement. I'm confident this won't impact my availability or output — I'm happy to come in whenever collaboration is needed.\n\nThank you for considering this. I'm eager to find an arrangement that works for everyone.\n\nBest regards,\n[Your Name]`;
+      return `Hi [Hiring Manager],\n\nThank you for the offer for ${role} at ${company}. I'm very excited to join the team.\n\nI wanted to discuss the remote/hybrid policy. I work most effectively with some flexibility in location and was wondering if we could explore a [X days remote] arrangement. I'm confident this won't impact my availability or output. I'm happy to come in whenever collaboration is needed.\n\nThank you for considering this. I'm eager to find an arrangement that works for everyone.\n\nBest regards,\n[Your Name]`;
     },
   },
 ];

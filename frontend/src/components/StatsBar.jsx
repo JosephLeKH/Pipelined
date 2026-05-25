@@ -38,10 +38,10 @@ function getRawValue(key, stats) {
 }
 
 function formatCounted(key, current, stats) {
-  if (!stats) return "—";
+  if (!stats) return "N/A";
   if (key === "response_rate") return `${(current * 100).toFixed(1)}%`;
   if (key === "avg_days_to_first_response") {
-    return stats.avg_days_to_first_response != null ? current.toFixed(1) : "—";
+    return stats.avg_days_to_first_response != null ? current.toFixed(1) : "N/A";
   }
   return String(Math.round(current));
 }
@@ -77,7 +77,7 @@ function useCountUp(target) {
 function MetricCard({ metricKey, label, stats, isLoading, Icon }) {
   const rawValue = stats ? getRawValue(metricKey, stats) : null;
   const counted = useCountUp(rawValue);
-  const displayValue = stats ? formatCounted(metricKey, counted, stats) : "—";
+  const displayValue = stats ? formatCounted(metricKey, counted, stats) : "N/A";
 
   if (isLoading) {
     return (
@@ -115,7 +115,7 @@ function CollapsedSummary({ stats, isLoading }) {
     >
       {COLLAPSED_SUMMARY.map(({ key, label }, index) => {
         const value = stats ? getRawValue(key, stats) : null;
-        const display = typeof value === "number" ? String(value) : "—";
+        const display = typeof value === "number" ? String(value) : "N/A";
         return (
           <span key={key} className="shrink-0">
             {index > 0 && <span className="text-text-3"> · </span>}
@@ -168,7 +168,7 @@ function StatsBar({ filtersActive = false }) {
       {expanded && (
         <div className="flex flex-col gap-4 motion-reduce:transition-none">
           <GoalProgress variant="expanded" />
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
             {METRIC_CONFIG.map(({ key, label, Icon }) => (
               <MetricCard
                 key={key}

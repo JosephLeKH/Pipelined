@@ -18,7 +18,7 @@ const MOCK_BRIEF = {
   summary_line: "1 follow-up",
   sections: {
     follow_ups: [{
-      title: "Beta Corp — follow-up",
+      title: "Beta Corp · follow-up",
       body: "Overdue by 2 days",
       action_url: "/dashboard?selected=app2",
     }],
@@ -29,11 +29,11 @@ const MOCK_BRIEF = {
   missions: [{
     id: "follow_ups:0",
     section: "follow_ups",
-    title: "Acme — follow-up overdue",
+    title: "Acme · follow-up overdue",
     body: "Generate a draft on demand in the detail panel",
     action_url: "/dashboard?selected=app1&action=follow-up",
     priority: 1,
-    reason: "Follow-up is overdue — respond today",
+    reason: "Follow-up is overdue. Respond today",
     prep_ready: false,
   }],
   mission_progress: { cleared: 0, total: 1 },
@@ -123,8 +123,8 @@ describe("TodayPage", () => {
 
     expect(await screen.findByRole("heading", { level: 1, name: /Good morning, Test\./i })).toBeInTheDocument();
     expect(screen.getByText("0 / 5 applications this week")).toBeInTheDocument();
-    expect(screen.getByText("Acme — follow-up overdue")).toBeInTheDocument();
-    expect(screen.getByText("Follow-up is overdue — respond today")).toBeInTheDocument();
+    expect(screen.getByText("Acme · follow-up overdue")).toBeInTheDocument();
+    expect(screen.getByText("Follow-up is overdue. Respond today")).toBeInTheDocument();
     expect(screen.getByText("Saturday, May 23 · 1 mission")).toBeInTheDocument();
   });
 
@@ -162,7 +162,7 @@ describe("TodayPage", () => {
     await vi.advanceTimersByTimeAsync(300);
 
     expect(await screen.findByRole("button", { name: /completed \(1\)/i })).toBeInTheDocument();
-    expect(screen.queryByText("Acme — follow-up overdue")).not.toBeInTheDocument();
+    expect(screen.queryByText("Acme · follow-up overdue")).not.toBeInTheDocument();
   });
 
   it("should show mission progress strip", async () => {
@@ -204,7 +204,7 @@ describe("TodayPage", () => {
 
     await user.click(await screen.findByRole("button", { name: /tap to read your morning brief/i }));
 
-    expect(await screen.findByText("Beta Corp — follow-up")).toBeInTheDocument();
+    expect(await screen.findByText("Beta Corp · follow-up")).toBeInTheDocument();
     expect(screen.getByText("1 follow-up")).toBeInTheDocument();
   });
 
@@ -226,7 +226,7 @@ describe("TodayPage", () => {
 
     render(<TodayPage />, { wrapper: BriefOpenWrapper });
 
-    expect(await screen.findByText("Beta Corp — follow-up")).toBeInTheDocument();
+    expect(await screen.findByText("Beta Corp · follow-up")).toBeInTheDocument();
   });
 
   it("should show onboarding checklist when steps are incomplete", async () => {

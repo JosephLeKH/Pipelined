@@ -126,7 +126,7 @@ describe("CalendarEventDetail", () => {
   it("should render linked application and open application action", () => {
     render(<CalendarEventDetail event={BASE_EVENT} onClose={vi.fn()} />, { wrapper: makeWrapper() });
 
-    expect(screen.getByRole("link", { name: /acme corp — software engineer/i })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /acme corp · software engineer/i })).toHaveAttribute(
       "href",
       "/dashboard?selected=app1"
     );

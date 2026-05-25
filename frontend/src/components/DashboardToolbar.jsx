@@ -61,14 +61,16 @@ export function DashboardToolbar({
       : `${applicationCount} application${applicationCount === 1 ? "" : "s"}`;
 
   return (
-    <div className="sticky top-11 z-20 flex h-14 shrink-0 items-center gap-3 border-b border-border-1 bg-surface-0/90 px-4 backdrop-blur motion-reduce:backdrop-blur-none">
-      <h1 className="text-base font-semibold text-text-1">Dashboard</h1>
-      {countLabel != null && (
-        <span className="text-xs text-text-3">{countLabel}</span>
-      )}
-      <div className="ml-auto flex items-center gap-1.5">
+    <div className="sticky top-11 z-20 flex min-h-14 shrink-0 flex-col gap-3 border-b border-border-1 bg-surface-0/90 px-4 py-2 backdrop-blur motion-reduce:backdrop-blur-none sm:flex-row sm:items-center sm:py-0">
+      <div className="flex flex-col items-start gap-1 sm:flex-row sm:items-center sm:gap-3">
+        <h1 className="text-base font-semibold text-text-1">Dashboard</h1>
+        {countLabel != null && (
+          <span className="text-xs text-text-3">{countLabel}</span>
+        )}
+      </div>
+      <div className="ml-auto flex flex-wrap items-center justify-end gap-1.5">
         <ViewToggle viewMode={viewMode} onChange={onSetViewMode} />
-        <Button type="button" variant="secondary" size="sm" onClick={onImport}>
+        <Button type="button" variant="secondary" size="sm" onClick={onImport} className="whitespace-nowrap">
           Import CSV
         </Button>
         <Button
@@ -77,15 +79,16 @@ export function DashboardToolbar({
           size="sm"
           onClick={onExport}
           disabled={isExporting}
-          className="inline-flex items-center gap-1.5"
+          className="inline-flex items-center gap-1.5 whitespace-nowrap"
         >
           {isExporting && <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />}
           Export
         </Button>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button type="button" variant="default" size="sm" onClick={onAdd} aria-keyshortcuts="a">
-              + Add application
+            <Button type="button" variant="default" size="sm" onClick={onAdd} aria-keyshortcuts="a" className="whitespace-nowrap">
+              + Add
+              <span className="hidden sm:inline"> application</span>
               <kbd className="ml-1 hidden rounded bg-white/20 px-1 py-0.5 text-[10px] sm:inline">
                 A
               </kbd>

@@ -35,7 +35,7 @@ function RelationshipSuggestionHint({ suggestion }) {
   return (
     <p className="text-xs text-primary">
       Suggestion: <span className="font-medium">{suggested_type.replace("_", " ")}</span>
-      {" "}({Math.round(confidence * 100)}% confidence) — {reason}
+      {" "}({Math.round(confidence * 100)}% confidence): {reason}
     </p>
   );
 }

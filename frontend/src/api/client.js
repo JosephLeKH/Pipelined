@@ -12,7 +12,7 @@ function getCookie(name) {
   try {
     return decodeURIComponent(match.split("=")[1]);
   } catch {
-    console.warn(`[getCookie] Failed to decode cookie "${name}" — malformed percent-encoding`);
+    console.warn(`[getCookie] Failed to decode cookie "${name}": malformed percent-encoding`);
     return null;
   }
 }

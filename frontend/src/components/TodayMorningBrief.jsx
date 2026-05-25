@@ -22,7 +22,7 @@ function BriefSectionHeading({ children }) {
   );
 }
 
-function TodayMorningBriefContent({ brief, emptyMessage }) {
+function TodayMorningBriefContent({ brief, emptyMessage, onGenerateBrief, isGenerating }) {
   const sections = brief?.sections ?? {};
   const hasItems = BRIEF_SECTION_ORDER.some(({ key }) => sections[key]?.length > 0);
 
@@ -32,6 +32,17 @@ function TodayMorningBriefContent({ brief, emptyMessage }) {
         <Sun className="mx-auto mb-2 h-6 w-6 text-text-3" aria-hidden="true" />
         <p className="text-sm font-medium text-text-1">All caught up</p>
         <p className="mt-1 text-xs text-text-3">{brief?.summary_line ?? emptyMessage}</p>
+        {onGenerateBrief && (
+          <Button
+            onClick={onGenerateBrief}
+            disabled={isGenerating}
+            variant="primary"
+            size="sm"
+            className="mt-3"
+          >
+            {isGenerating ? "Generating..." : "Generate brief"}
+          </Button>
+        )}
       </div>
     );
   }
@@ -53,7 +64,7 @@ function TodayMorningBriefContent({ brief, emptyMessage }) {
   );
 }
 
-function TodayMorningBrief({ brief, briefHour, emptyMessage, forceOpen }) {
+function TodayMorningBrief({ brief, briefHour, emptyMessage, forceOpen, onGenerateBrief, isGenerating }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [historyOpen, setHistoryOpen] = useState(false);
   const { data: historyData } = useBriefHistory(HISTORY_DAYS);
@@ -140,7 +151,12 @@ function TodayMorningBrief({ brief, briefHour, emptyMessage, forceOpen }) {
             <ToggleIcon className="h-4 w-4 shrink-0" aria-hidden="true" />
             <span>Morning brief · {timeLabel}</span>
           </button>
-          <TodayMorningBriefContent brief={brief} emptyMessage={emptyMessage} />
+          <TodayMorningBriefContent
+            brief={brief}
+            emptyMessage={emptyMessage}
+            onGenerateBrief={onGenerateBrief}
+            isGenerating={isGenerating}
+          />
         </div>
       )}
 

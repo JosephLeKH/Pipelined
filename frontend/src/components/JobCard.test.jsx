@@ -90,7 +90,7 @@ describe("JobCard", () => {
       }),
       expect.any(Object)
     );
-    expect(toast.success).toHaveBeenCalledWith("Tracking Anthropic — Forward Deployed Engineer");
+    expect(toast.success).toHaveBeenCalledWith("Tracking Anthropic · Forward Deployed Engineer");
   });
 
   it("should render fallback text when role and company are null", () => {
@@ -98,6 +98,6 @@ describe("JobCard", () => {
 
     expect(screen.getByText("Untitled Role")).toBeInTheDocument();
     expect(screen.getByText("Unknown Company")).toBeInTheDocument();
-    expect(screen.getByText("—")).toBeInTheDocument();
+    expect(screen.getByText("N/A")).toBeInTheDocument();
   });
 });

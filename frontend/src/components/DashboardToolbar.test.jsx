@@ -80,8 +80,8 @@ describe("DashboardToolbar", () => {
   it("should render sticky sub-header below top bar offset", () => {
     renderToolbar({ ...DEFAULT_PROPS, applicationCount: 12 });
 
-    const bar = screen.getByRole("heading", { name: /dashboard/i }).parentElement;
-    expect(bar).toHaveClass("sticky", "top-11", "h-14");
+    const bar = screen.getByRole("heading", { name: /dashboard/i }).closest("div[class*='sticky']");
+    expect(bar).toHaveClass("sticky", "top-11");
     expect(screen.getByText("12 applications")).toBeInTheDocument();
   });
 });

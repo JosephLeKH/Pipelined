@@ -53,7 +53,7 @@ function AppSelector({ apps, applicationId, onApplicationChange }) {
           ) : (
             filteredApps.map((app) => (
               <SelectItem key={app.id} value={app.id}>
-                {app.company} — {app.role_title}
+                {app.company} · {app.role_title}
               </SelectItem>
             ))
           )}

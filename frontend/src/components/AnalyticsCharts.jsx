@@ -212,13 +212,13 @@ function ConversionRatesRow({ row, isLast }) {
       <td className="py-2 pr-4 text-text-1">{row.stage}</td>
       <td className="py-2 text-right text-text-1">{row.entered_count}</td>
       <td className="py-2 text-right text-text-3">
-        {isLast ? "—" : row.exited_to_next_count}
+        {isLast ? "N/A" : row.exited_to_next_count}
       </td>
       <td className={`py-2 text-right ${isLast ? "text-text-3/50" : rateColorClass(row.conversion_rate)}`}>
-        {isLast ? "—" : `${Math.round(row.conversion_rate * 100)}%`}
+        {isLast ? "N/A" : `${Math.round(row.conversion_rate * 100)}%`}
       </td>
       <td className={`py-2 text-right ${avgDaysColorClass(row.avg_days_in_stage)}`}>
-        {row.avg_days_in_stage != null ? `${row.avg_days_in_stage.toFixed(1)}d` : "—"}
+        {row.avg_days_in_stage != null ? `${row.avg_days_in_stage.toFixed(1)}d` : "N/A"}
       </td>
     </tr>
   );

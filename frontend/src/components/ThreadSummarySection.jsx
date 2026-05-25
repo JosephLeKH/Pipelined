@@ -31,7 +31,7 @@ function ThreadSummarySection({ application, onSummaryGenerated }) {
       setLocalSummary(result);
       onSummaryGenerated?.(result);
     } catch (error) {
-      toast.error(getAiToastError(error, "Could not generate summary — try again"));
+      toast.error(getAiToastError(error, "Could not generate summary. Try again."));
     } finally {
       setIsLoading(false);
     }
@@ -59,7 +59,7 @@ function ThreadSummarySection({ application, onSummaryGenerated }) {
   return (
     <AiSection title="Thread summary" icon={MessageSquare} id="thread-summary">
       <p className="text-xs text-muted-foreground">
-        Summarized from email metadata only — nothing is sent automatically.
+        Summarized from email metadata only. Nothing is sent automatically.
       </p>
       <Button
         type="button"

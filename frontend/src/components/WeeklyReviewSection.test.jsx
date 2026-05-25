@@ -44,7 +44,7 @@ describe("WeeklyReviewSection", () => {
   it("should link stale applications to the dashboard", () => {
     renderSection({ review: MOCK_REVIEW, isLoading: false });
 
-    const link = screen.getByRole("link", { name: /Acme — Engineer/i });
+    const link = screen.getByRole("link", { name: /Acme · Engineer/i });
     expect(link).toHaveAttribute("href", "/dashboard?selected=507f1f77bcf86cd799439011");
   });
 

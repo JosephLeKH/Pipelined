@@ -17,7 +17,7 @@ describe("DetailPanelHeader", () => {
   it("should render inline company and role title", () => {
     render(<DetailPanelHeader application={mockApp} onClose={vi.fn()} onDelete={vi.fn()} />);
 
-    expect(screen.getByRole("heading", { name: "Acme Corp — Software Engineer" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Acme Corp · Software Engineer" })).toBeInTheDocument();
   });
 
   it("should call onClose when close button is clicked", async () => {

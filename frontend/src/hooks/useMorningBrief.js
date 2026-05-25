@@ -1,6 +1,6 @@
 /** React Query hook for today's morning brief. */
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { fetchTodayBrief } from "../api/brief";
 
@@ -13,5 +13,17 @@ export function useMorningBrief() {
     queryKey: MORNING_BRIEF_KEYS.today,
     queryFn: fetchTodayBrief,
     staleTime: 60_000,
+  });
+}
+
+export function useGenerateBrief() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: fetchTodayBrief,
+    onSuccess: () => {
+      // Invalidate and refetch the brief data
+      queryClient.invalidateQueries({ queryKey: MORNING_BRIEF_KEYS.today });
+    },
   });
 }

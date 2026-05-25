@@ -71,7 +71,7 @@ describe("DetailPanel", () => {
     render(<DetailPanel application={APP} onClose={() => {}} />, { wrapper: makeWrapper() });
 
     // Assert
-    expect(screen.getByRole("heading", { name: "Acme Corp — Software Engineer" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Acme Corp · Software Engineer" })).toBeInTheDocument();
   });
 
   it("should display location, remote_status, compensation, and company_type fields", () => {
@@ -261,7 +261,7 @@ describe("DetailPanel", () => {
   it("should trap focus: Tab from last focusable element wraps to first", async () => {
     // Arrange
     render(<DetailPanel application={APP} onClose={() => {}} />, { wrapper: makeWrapper() });
-    await screen.findByRole("heading", { name: "Acme Corp — Software Engineer" });
+    await screen.findByRole("heading", { name: "Acme Corp · Software Engineer" });
 
     const dialog = screen.getByRole("dialog");
     const FOCUSABLE = 'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled])';
@@ -279,7 +279,7 @@ describe("DetailPanel", () => {
   it("should trap focus: Shift+Tab from first focusable element wraps to last", async () => {
     // Arrange
     render(<DetailPanel application={APP} onClose={() => {}} />, { wrapper: makeWrapper() });
-    await screen.findByRole("heading", { name: "Acme Corp — Software Engineer" });
+    await screen.findByRole("heading", { name: "Acme Corp · Software Engineer" });
 
     const dialog = screen.getByRole("dialog");
     const FOCUSABLE = 'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled])';

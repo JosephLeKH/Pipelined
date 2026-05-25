@@ -91,7 +91,7 @@ describe("PendingInboxPage", () => {
   it("should render pending opportunity cards with fit score and cover letter", async () => {
     render(<PendingInboxPage />, { wrapper: makeWrapper() });
 
-    expect(await screen.findByLabelText("Acme — Backend Engineer")).toBeInTheDocument();
+    expect(await screen.findByLabelText("Acme · Backend Engineer")).toBeInTheDocument();
     expect(screen.getByTestId("fit-badge")).toHaveTextContent("92%");
     await userEvent.click(screen.getByRole("button", { name: /view ai-drafted cover letter/i }));
     expect(screen.getByText("Dear hiring team")).toBeInTheDocument();
@@ -130,7 +130,7 @@ describe("PendingInboxPage", () => {
     );
 
     render(<PendingInboxPage />, { wrapper: makeWrapper() });
-    await screen.findByLabelText("Acme — Backend Engineer");
+    await screen.findByLabelText("Acme · Backend Engineer");
 
     await userEvent.click(screen.getByRole("button", { name: /reject acme/i }));
 

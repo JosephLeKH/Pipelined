@@ -22,7 +22,7 @@ export function ErrorFallbackUI({ onRefresh }) {
       </div>
       <h2 className="text-lg font-semibold text-text-1">Something went wrong</h2>
       <p className="text-sm text-text-2">
-        We&apos;ve logged the error. Try refreshing — if it keeps happening, email{" "}
+        We&apos;ve logged the error. Try refreshing. If it keeps happening, email{" "}
         <a
           href="mailto:joseph@vimes.io"
           className={`text-brand-600 hover:text-brand-700 ${FOCUS_RING} rounded-sm`}

@@ -13,7 +13,7 @@ describe("briefConstants", () => {
   });
 
   it("should build empty message from configured hour", () => {
-    expect(getBriefEmptyMessage(10)).toBe("Your brief generates at 10am — check back soon");
+    expect(getBriefEmptyMessage(10)).toBe("Your brief generates at 10am. Check back soon, or generate one now.");
   });
 
   it("should parse match and fit scores from brief item body", () => {

@@ -34,7 +34,7 @@ function FollowUpDraftSection({ application, autoExpand = false }) {
       setDraft(result);
       setIsExpanded(true);
     } catch (error) {
-      toast.error(getAiToastError(error, "Could not generate draft — try again"));
+      toast.error(getAiToastError(error, "Could not generate draft. Try again."));
     } finally {
       setIsLoading(false);
     }
@@ -76,7 +76,7 @@ function FollowUpDraftSection({ application, autoExpand = false }) {
           <p className="text-xs text-muted-foreground">
             {autoExpand
               ? "Generating your follow-up draft…"
-              : "Drafts are generated on demand — nothing is pre-written."}
+              : "Drafts are generated on demand. Nothing is pre-written."}
           </p>
         )}
         {!draft && (

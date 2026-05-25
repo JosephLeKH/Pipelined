@@ -13,7 +13,7 @@ function OfferCompareRow({ field, app, offerDetails, onSave, isTotalRow = false 
           Total Y1
         </span>
         <span className="text-base font-semibold text-text-1">
-          {total > 0 ? formatUSD(total) : "—"}
+          {total > 0 ? formatUSD(total) : "N/A"}
         </span>
       </div>
     );

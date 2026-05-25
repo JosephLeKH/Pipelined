@@ -69,7 +69,7 @@ export function useCsvImportWizard(onClose) {
     }
     if (nextFile.size > CSV_IMPORT_MAX_BYTES) {
       setLocalError(
-        `${CSV_IMPORT_MAX_MB} MB max — this file is ${(nextFile.size / 1024 / 1024).toFixed(1)} MB.`
+        `${CSV_IMPORT_MAX_MB} MB max. This file is ${(nextFile.size / 1024 / 1024).toFixed(1)} MB.`
       );
       setFile(null);
       return;

@@ -213,7 +213,7 @@ describe("ApplicationList", () => {
     const staleIndicator = screen.getByTestId("stale-indicator");
     expect(staleIndicator).toHaveAttribute(
       "aria-label",
-      "Stale application — no updates in 14+ days"
+      "Stale application: no updates in 14+ days"
     );
   });
 

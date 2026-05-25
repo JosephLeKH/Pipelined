@@ -114,7 +114,7 @@ function Dashboard() {
   useEffect(() => {
     if (searchParams.get("gmail_connected") === "1") {
       queryClient.invalidateQueries({ queryKey: GMAIL_STATUS_KEY });
-      toast.success("Gmail connected — syncing your emails now.");
+      toast.success("Gmail connected. Syncing your emails now.");
       setSearchParams((prev) => { prev.delete("gmail_connected"); prev.delete("email"); return prev; }, { replace: true });
     }
   }, [searchParams, setSearchParams, queryClient]);

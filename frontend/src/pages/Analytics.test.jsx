@@ -270,8 +270,8 @@ describe("Analytics", () => {
 
     await screen.findByText("Conversion Rates by Stage");
 
-    // Last stage (Offer) should show — for rate
-    const dashes = screen.getAllByText("—");
-    expect(dashes.length).toBeGreaterThanOrEqual(1);
+    // Last stage (Offer) should show N/A for rate
+    const naTexts = screen.getAllByText("N/A");
+    expect(naTexts.length).toBeGreaterThanOrEqual(1);
   });
 });

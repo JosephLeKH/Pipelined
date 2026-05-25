@@ -40,7 +40,7 @@ function formatEventTypeLabel(eventType) {
 }
 
 function formatEventLocation(event) {
-  const base = EVENT_TYPE_LOCATION_LABELS[event.event_type] ?? "—";
+  const base = EVENT_TYPE_LOCATION_LABELS[event.event_type] ?? "N/A";
   if (event.event_type === "phone_screen" && event.notes?.trim()) {
     return `${base} (${event.notes.trim()})`;
   }
@@ -96,7 +96,7 @@ function DrawerHeader({ title, schedule, onClose }) {
 
 function ApplicationLink({ applicationId, company, roleTitle }) {
   if (!applicationId || (!company && !roleTitle)) return null;
-  const label = [company, roleTitle].filter(Boolean).join(" — ");
+  const label = [company, roleTitle].filter(Boolean).join(" · ");
   return (
     <div className="border-b border-border-1 px-4 py-3">
       <span className="text-xs font-medium uppercase tracking-wide text-text-3">Application</span>

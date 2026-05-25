@@ -27,7 +27,7 @@ function ResumeInsightsSection({ application, onUpdate, onInsightsGenerated }) {
       setLocalInsights(result);
       onInsightsGenerated(result);
     } catch (error) {
-      toast.error(getAiToastError(error, "Could not generate insights — try again"));
+      toast.error(getAiToastError(error, "Could not generate insights. Try again."));
     } finally {
       setIsLoading(false);
     }
@@ -37,7 +37,7 @@ function ResumeInsightsSection({ application, onUpdate, onInsightsGenerated }) {
     <AiSection title="Resume Insights" icon={Sparkles} id="resume-insights">
       <div className="flex items-start gap-2 rounded border border-border bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
         <Info className="h-3.5 w-3.5 shrink-0 mt-0.5" aria-hidden="true" />
-        <p>Suggestions only — we never edit your resume file.</p>
+        <p>Suggestions only. We never edit your resume file.</p>
       </div>
       <div className="flex flex-col gap-1.5">
         <label className="text-xs font-medium text-muted-foreground" htmlFor="job-description">

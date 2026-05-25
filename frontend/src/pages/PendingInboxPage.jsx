@@ -14,7 +14,7 @@ import {
   useDismissPendingOpportunity,
 } from "../hooks/usePendingOpportunities";
 
-const APPROVE_TOAST = "Added to pipeline — apply when ready";
+const APPROVE_TOAST = "Added to pipeline. Apply when ready.";
 const EMPTY_DESCRIPTION =
   "Autopilot hasn't found any new matches. Check back tomorrow at 5 AM UTC.";
 

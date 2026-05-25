@@ -112,7 +112,7 @@ function GmailActivityFeed() {
   if (!events.length) {
     return (
       <p className="mt-3 text-xs text-muted-foreground">
-        No recent email activity yet. Events appear after the next sync — we never store email bodies.
+        No recent email activity yet. Events appear after the next sync. We never store email bodies.
       </p>
     );
   }
@@ -231,7 +231,7 @@ function ConnectedState({ status, onDisconnect }) {
           <ToggleRow
             id="toggle-interview-prep"
             label="Auto-generate interview prep"
-            description="The prep agent researches the company and role automatically — ready before your first interview."
+            description="The prep agent researches the company and role automatically. Ready before your first interview."
             checked={status.interview_prep}
             onChange={handleToggle("interview_prep")}
             disabled={settingsMutation.isPending}
@@ -253,14 +253,14 @@ function ConnectedState({ status, onDisconnect }) {
             { label: "Status updates", value: status.status_updates_count ?? 0 },
           ].map(({ label, value }) => (
             <div key={label} className="rounded-lg border border-border bg-muted/40 p-3 text-center">
-              <p className="text-lg font-semibold text-foreground">{value === 0 ? "—" : value}</p>
+              <p className="text-lg font-semibold text-foreground">{value === 0 ? "N/A" : value}</p>
               <p className="text-xs text-muted-foreground">{label}</p>
             </div>
           ))}
         </div>
         <div className="mt-4 border-t border-border pt-4">
           <h4 className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Recent activity</h4>
-          <p className="text-xs text-muted-foreground">Last 5 classification events — no email content stored.</p>
+          <p className="text-xs text-muted-foreground">Last 5 classification events: no email content stored.</p>
           <GmailActivityFeed />
         </div>
         <div className="mt-2.5 flex items-center justify-end gap-2">

@@ -16,8 +16,8 @@ import { useJobBoardState } from "../hooks/useJobBoardState";
 import { useSavedSearches } from "../hooks/useSavedSearches";
 import { Button } from "../components/ui/button";
 
-const PAGE_TITLE = "Job Board — Pipelined";
-const DEFAULT_TITLE = "Pipelined — Job Application Tracker for Students & Engineers";
+const PAGE_TITLE = "Job Board | Pipelined";
+const DEFAULT_TITLE = "Pipelined | Job Application Tracker for Students & Engineers";
 
 function JobBoard() {
   const { filters, hasActiveFilters, jobs, total, isLoading, error, refetch, hasMore, savePopoverOpen, setSavePopoverOpen, selectedJob, setSelectedJob, handleLoadMore, handleClearFilters, handleApplySavedSearch } = useJobBoardState();
