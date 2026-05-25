@@ -181,6 +181,25 @@ def compute_url_hash(apply_url: str) -> str:
     return hashlib.sha256(normalized.encode()).hexdigest()
 
 
+def _derive_listing_fields(spec: str, listing: dict) -> None:
+    """Populate role_type / experience_level / remote_status from repo + row text.
+
+    The SimplifyJobs/vanshb03 READMEs don't include structured filter fields, so we
+    infer them: 'Internships'-named repos and roles containing 'intern' are tagged
+    role_type=internship; everything else defaults to full_time / entry. Remote is
+    detected by the literal word 'remote' in the location text (case-insensitive).
+    Mutates `listing` in place.
+    """
+    spec_lower = spec.lower()
+    role_lower = listing.get("role", "").lower()
+    loc_lower = listing.get("location", "").lower()
+
+    is_internship = "internship" in spec_lower or "intern" in role_lower
+    listing["role_type"] = "internship" if is_internship else "full_time"
+    listing["experience_level"] = "internship" if is_internship else "entry"
+    listing["remote_status"] = "remote" if "remote" in loc_lower else "onsite"
+
+
 async def _upsert_listing(col: AsyncIOMotorCollection, listing: dict) -> None:
     """Upsert a listing by url_hash; sets ingested_at and date_posted on first insert."""
     now = datetime.now(timezone.utc)
@@ -193,6 +212,9 @@ async def _upsert_listing(col: AsyncIOMotorCollection, listing: dict) -> None:
                 "role": listing["role"],
                 "location": listing["location"],
                 "apply_url": listing["apply_url"],
+                "role_type": listing.get("role_type"),
+                "experience_level": listing.get("experience_level"),
+                "remote_status": listing.get("remote_status"),
                 "url_hash": url_hash,
                 "is_stale": False,
             },
@@ -223,6 +245,7 @@ async def _sync_repo(client: httpx.AsyncClient, repo: str, col: AsyncIOMotorColl
         listings = parse_internship_table(content)
         logger.info("repo_parsed", repo=repo, listing_count=len(listings))
         for listing in listings:
+            _derive_listing_fields(repo, listing)
             await _upsert_listing(col, listing)
     except (httpx.HTTPError, json.JSONDecodeError, KeyError):
         logger.exception("repo_sync_failed", repo=repo)

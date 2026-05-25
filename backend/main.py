@@ -74,9 +74,15 @@ async def _seed_job_listings_if_empty() -> None:
     try:
         col = get_collection("job_listings")
         count = await col.estimated_document_count()
-        dirty_doc = await col.find_one({"location": {"$regex": "<"}}, projection={"_id": 1}) if count else None
-        if count == 0 or dirty_doc is not None:
-            logger.info("seeding_job_listings_on_startup", count=count, has_dirty=dirty_doc is not None)
+        needs_resync = False
+        if count:
+            dirty_doc = await col.find_one(
+                {"$or": [{"location": {"$regex": "<"}}, {"role_type": {"$exists": False}}]},
+                projection={"_id": 1},
+            )
+            needs_resync = dirty_doc is not None
+        if count == 0 or needs_resync:
+            logger.info("seeding_job_listings_on_startup", count=count, needs_resync=needs_resync)
             await sync_github_repos()
     except Exception:
         logger.exception("seed_job_listings_failed")

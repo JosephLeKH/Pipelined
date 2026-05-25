@@ -9,14 +9,12 @@ import {
   ROLE_TYPE_OPTIONS,
   EXPERIENCE_LEVEL_OPTIONS,
   REMOTE_STATUS_OPTIONS,
-  COMPANY_TYPE_OPTIONS,
 } from "../lib/constants";
 
 const FILTER_GROUPS = [
   { label: "Role", paramKey: "role_type", options: ROLE_TYPE_OPTIONS },
   { label: "Experience", paramKey: "experience_level", options: EXPERIENCE_LEVEL_OPTIONS },
   { label: "Remote", paramKey: "remote_status", options: REMOTE_STATUS_OPTIONS },
-  { label: "Company", paramKey: "company_type", options: COMPANY_TYPE_OPTIONS },
 ];
 
 function FilterChip({ label, active, onClick }) {
