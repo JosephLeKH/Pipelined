@@ -56,12 +56,12 @@ function JobCard({ job, onSelect }) {
 
       {/* Tags row */}
       <div className="flex flex-wrap gap-1.5">
-        {job.location && (
-          <span className={TAG_PILL}>
-            <MapPin className="h-3 w-3 shrink-0" aria-hidden="true" />
-            {job.location}
+        {job.location && job.location.split(" · ").map((loc, i) => (
+          <span key={`${loc}-${i}`} className={TAG_PILL}>
+            {i === 0 && <MapPin className="h-3 w-3 shrink-0" aria-hidden="true" />}
+            {loc}
           </span>
-        )}
+        ))}
         {job.remote_status && <span className={TAG_PILL}>{job.remote_status}</span>}
         {job.experience_level && <span className={TAG_PILL}>{job.experience_level}</span>}
         {job.company_type && <span className={TAG_PILL}>{job.company_type}</span>}
