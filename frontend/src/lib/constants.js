@@ -8,6 +8,12 @@ const D = {
   warn: "#F59E0B",
   orange: "#F97316",
   success: "#175E54",
+  cardinal: "#8C1515",
+  pink: "#EC4899",
+  teal: "#14B8A6",
+  lime: "#84CC16",
+  indigo: "#6366F1",
+  slate: "#475569",
 };
 
 /** @param {string} hex @param {string} bg @param {string} text @param {string} [border] */
@@ -28,14 +34,20 @@ export const STAGE_COLORS = {
 
 export const DEFAULT_STAGE_COLOR = sc(D.neutral, "bg-surface-1 dark:bg-surface-2", "text-text-2 dark:text-text-2", "border-border-1");
 
-/** PRD-00 §3.4 — six dot colors for the pipeline stage color picker. */
+/** Dot color presets for the pipeline stage color picker. */
 export const STAGE_COLOR_PICKER_OPTIONS = [
   { key: "neutral", hex: D.neutral, label: "Neutral" },
+  { key: "slate", hex: D.slate, label: "Slate" },
   { key: "info", hex: D.info, label: "Blue" },
+  { key: "indigo", hex: D.indigo, label: "Indigo" },
   { key: "violet", hex: D.violet, label: "Violet" },
-  { key: "warn", hex: D.warn, label: "Amber" },
+  { key: "pink", hex: D.pink, label: "Pink" },
+  { key: "cardinal", hex: D.cardinal, label: "Cardinal" },
   { key: "orange", hex: D.orange, label: "Orange" },
+  { key: "warn", hex: D.warn, label: "Amber" },
+  { key: "lime", hex: D.lime, label: "Lime" },
   { key: "success", hex: D.success, label: "Green" },
+  { key: "teal", hex: D.teal, label: "Teal" },
 ];
 
 /** Terminal stages that cannot be removed from the pipeline editor. */
