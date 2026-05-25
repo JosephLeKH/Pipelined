@@ -95,7 +95,9 @@ function JobDetailPanel({ job, onClose }) {
         role_title: job.role ?? "",
         company: job.company ?? "",
         location: job.location ?? "",
-        stage: "Applied",
+        current_stage: "Applied",
+        source: "board",
+        source_url: job.apply_url || undefined,
       },
       {
         onSuccess: () => {
