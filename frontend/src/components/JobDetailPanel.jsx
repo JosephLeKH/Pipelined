@@ -1,18 +1,20 @@
-/** Slide-in 520px detail drawer for a job listing on the job board (PRD-06 §6). */
+/** Compact centered dialog for a job listing on the job board. */
 
 import { useState, useCallback } from "react";
 import { toast } from "sonner";
 
-import ArrowRight from "lucide-react/dist/esm/icons/arrow-right";
+import CheckCircle from "lucide-react/dist/esm/icons/check-circle";
 import ExternalLink from "lucide-react/dist/esm/icons/external-link";
+import MapPin from "lucide-react/dist/esm/icons/map-pin";
+import Briefcase from "lucide-react/dist/esm/icons/briefcase";
+import Wifi from "lucide-react/dist/esm/icons/wifi";
 import X from "lucide-react/dist/esm/icons/x";
 
+import CompanyLogo from "./CompanyLogo";
 import FitBadge from "./FitBadge";
-import { DetailSectionTitle } from "./DetailPanelSections";
 import { Button } from "./ui/button";
 import { useCreateApplication } from "../hooks/useApplications";
-import { DETAIL_PANEL_WIDTH_PX, DRAWER_ANIMATION_MS, MS_PER_DAY } from "../lib/constants";
-import { BUTTON_PRIMARY, BUTTON_SECONDARY } from "../lib/designTokens";
+import { MS_PER_DAY } from "../lib/constants";
 import { formatDateShort } from "../lib/dateUtils";
 
 const STALE_LABEL = "May be expired";
@@ -30,72 +32,17 @@ function formatPostedCompact(isoString) {
   return formatDateShort(isoString);
 }
 
-function PanelHeader({ title, applyUrl, tracked, isPending, onClose, onTrack }) {
-  return (
-    <div className="flex h-14 shrink-0 items-center gap-2 border-b border-border-1 px-4">
-      <h2 id="job-detail-heading" className="min-w-0 flex-1 truncate text-sm font-semibold text-text-1">
-        {title}
-      </h2>
-      <Button
-        type="button"
-        size="sm"
-        disabled={tracked || isPending}
-        onClick={onTrack}
-        className={`${BUTTON_PRIMARY} h-8 shrink-0 gap-1 px-3 dark:focus-visible:outline-1`}
-      >
-        {tracked ? "Tracking" : "Track"}
-        {!tracked && <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />}
-      </Button>
-      {applyUrl && (
-        <Button asChild size="sm" variant="outline" className={`${BUTTON_SECONDARY} h-8 shrink-0 gap-1 px-3`}>
-          <a href={applyUrl} target="_blank" rel="noopener noreferrer">
-            Open job
-            <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
-          </a>
-        </Button>
-      )}
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        onClick={onClose}
-        aria-label="Close"
-        className="h-7 w-7 shrink-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 focus-visible:outline-offset-2 dark:focus-visible:outline-1"
-      >
-        <X className="h-4 w-4" aria-hidden="true" />
-      </Button>
-    </div>
-  );
+function titleCase(value) {
+  if (!value) return null;
+  return value.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-function MetaLine({ posted, fitScore }) {
-  const showFit = typeof fitScore === "number" && fitScore > 0;
-
+function MetaPill({ icon: Icon, children }) {
   return (
-    <div className="flex flex-wrap items-center gap-2 border-b border-border-1 px-4 py-3 text-xs text-text-3">
-      <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-brand-600 dark:bg-brand-500" aria-hidden="true" />
-      {posted && <span>Posted {posted}</span>}
-      {posted && showFit && <span aria-hidden="true">·</span>}
-      {showFit && <FitBadge score={fitScore} />}
-    </div>
-  );
-}
-
-function RequirementsList({ requirements }) {
-  const items = Array.isArray(requirements) ? requirements : [requirements];
-
-  return (
-    <section>
-      <DetailSectionTitle>Requirements</DetailSectionTitle>
-      <ul className="flex flex-col gap-1.5 text-sm text-text-1">
-        {items.map((req, index) => (
-          <li key={index} className="flex items-start gap-2">
-            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-text-3" aria-hidden="true" />
-            {req}
-          </li>
-        ))}
-      </ul>
-    </section>
+    <span className="inline-flex items-center gap-1.5 rounded-md border border-border-1 bg-surface-1 px-2 py-1 text-xs text-text-2">
+      <Icon className="h-3 w-3 text-text-3" aria-hidden="true" />
+      {children}
+    </span>
   );
 }
 
@@ -104,77 +51,152 @@ function JobDetailPanel({ job, onClose }) {
   const createMutation = useCreateApplication();
   const company = job.company ?? "";
   const role = job.role ?? "Untitled Role";
-  const title = company ? `${company} · ${role}` : role;
   const posted = formatPostedCompact(job.date_posted);
   const fitScore = job.score ?? job.fit_score ?? null;
+  const showFit = typeof fitScore === "number" && fitScore > 0;
+  const remoteLabel = job.remote_status && job.remote_status !== "unknown"
+    ? titleCase(job.remote_status)
+    : null;
+  const levelLabel = titleCase(job.experience_level);
 
-  const handleTrack = useCallback(() => {
-    createMutation.mutate(
-      {
-        role_title: role,
-        company,
-        location: job.location ?? "",
-        current_stage: "To Apply",
-        source: "board",
-        source_url: job.apply_url || undefined,
-      },
-      {
-        onSuccess: () => {
-          setTracked(true);
-          toast.success(`Tracking ${company} · ${role}`);
-        },
-        onError: () => toast.error("Failed to track job. Are you signed in?"),
+  const markApplied = useCallback(
+    (onComplete) => {
+      if (tracked) {
+        onComplete?.();
+        return;
       }
-    );
-  }, [company, createMutation, job.apply_url, job.location, role]);
+      createMutation.mutate(
+        {
+          role_title: role,
+          company,
+          location: job.location ?? "",
+          current_stage: "Applied",
+          source: "board",
+          source_url: job.apply_url || undefined,
+        },
+        {
+          onSuccess: () => {
+            setTracked(true);
+            toast.success(`Marked applied: ${company} · ${role}`);
+            onComplete?.();
+          },
+          onError: () => toast.error("Could not mark applied. Are you signed in?"),
+        }
+      );
+    },
+    [company, createMutation, job.apply_url, job.location, role, tracked]
+  );
+
+  const handleMarkApplied = useCallback(() => markApplied(), [markApplied]);
+
+  const handleOpenSite = useCallback(() => {
+    if (job.apply_url) {
+      window.open(job.apply_url, "_blank", "noopener,noreferrer");
+    }
+    markApplied();
+  }, [job.apply_url, markApplied]);
+
+  const handleBackdropClick = useCallback(
+    (event) => {
+      if (event.target === event.currentTarget) onClose();
+    },
+    [onClose]
+  );
 
   return (
     <div
-      className="fixed inset-x-0 bottom-0 top-11 z-40 flex justify-end transition-opacity motion-reduce:transition-none"
       role="dialog"
       aria-modal="true"
       aria-labelledby="job-detail-heading"
-      style={{ transitionDuration: `${DRAWER_ANIMATION_MS}ms` }}
+      onClick={handleBackdropClick}
+      onKeyDown={(e) => {
+        if (e.key === "Escape") onClose();
+      }}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-[2px] motion-safe:animate-in motion-safe:fade-in-0"
     >
-      <Button
-        type="button"
-        variant="ghost"
-        className="absolute inset-0 h-full w-full rounded-none bg-black/30 backdrop-blur-sm hover:bg-black/30 motion-reduce:backdrop-blur-none"
-        onClick={onClose}
-        aria-label="Close detail panel"
-        tabIndex={-1}
-      />
       <div
         data-testid="job-detail-panel"
-        className="relative flex h-full flex-col overflow-y-auto border-l border-border-1 bg-surface-0 shadow-modal motion-safe-drawer animate-slide-in-right dark:bg-surface-0"
-        style={{ width: DETAIL_PANEL_WIDTH_PX, maxWidth: "100%", transitionDuration: `${DRAWER_ANIMATION_MS}ms` }}
+        className="relative flex w-full max-w-md flex-col gap-4 rounded-xl border border-border-1 bg-surface-0 p-5 shadow-modal motion-safe:animate-in motion-safe:zoom-in-95 motion-safe:slide-in-from-bottom-2 dark:bg-surface-0"
       >
-        <PanelHeader
-          title={title}
-          applyUrl={job.apply_url}
-          tracked={tracked}
-          isPending={createMutation.isPending}
-          onClose={onClose}
-          onTrack={handleTrack}
-        />
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close"
+          className="absolute right-3 top-3 inline-flex h-7 w-7 items-center justify-center rounded-md text-text-3 hover:bg-surface-1 hover:text-text-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 focus-visible:outline-offset-2 dark:focus-visible:outline-1"
+        >
+          <X className="h-4 w-4" aria-hidden="true" />
+        </button>
 
-        <MetaLine posted={posted} fitScore={fitScore} />
+        <div className="flex items-start gap-3 pr-8">
+          <CompanyLogo company={company} company_domain={job.company_domain} size={40} />
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-medium text-text-3">{company || "Unknown"}</p>
+            <h2 id="job-detail-heading" className="mt-0.5 break-words text-base font-semibold text-text-1">
+              {role}
+            </h2>
+          </div>
+        </div>
 
-        <div className="flex flex-1 flex-col gap-4 px-4 py-4">
-          {job.is_stale && (
-            <span className="self-start rounded-full bg-amber-100 px-2.5 py-1 text-xs font-medium text-amber-800 dark:bg-amber-900/40 dark:text-amber-300">
-              {STALE_LABEL}
-            </span>
+        <div className="flex flex-wrap gap-1.5">
+          {job.location && <MetaPill icon={MapPin}>{job.location}</MetaPill>}
+          {remoteLabel && <MetaPill icon={Wifi}>{remoteLabel}</MetaPill>}
+          {levelLabel && <MetaPill icon={Briefcase}>{levelLabel}</MetaPill>}
+          {job.salary_range && <MetaPill icon={Briefcase}>{job.salary_range}</MetaPill>}
+        </div>
+
+        {(posted || showFit || job.is_stale) && (
+          <div className="flex flex-wrap items-center gap-2 text-xs text-text-3">
+            {posted && <span>Posted {posted}</span>}
+            {posted && (showFit || job.is_stale) && <span aria-hidden="true">·</span>}
+            {showFit && <FitBadge score={fitScore} />}
+            {job.is_stale && (
+              <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-medium text-amber-800 dark:bg-amber-900/40 dark:text-amber-300">
+                {STALE_LABEL}
+              </span>
+            )}
+          </div>
+        )}
+
+        {job.description && (
+          <p className="line-clamp-6 whitespace-pre-wrap text-sm leading-relaxed text-text-2">
+            {job.description}
+          </p>
+        )}
+
+        <p className="text-xs italic text-text-3">
+          Full details are on the company site. Mark as applied once you have submitted.
+        </p>
+
+        <div className="flex flex-wrap gap-2">
+          {job.apply_url && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleOpenSite}
+              disabled={createMutation.isPending}
+              className="flex-1 gap-1.5"
+            >
+              Open site
+              <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
+            </Button>
           )}
-
-          {job.description && (
-            <section>
-              <DetailSectionTitle>About the role</DetailSectionTitle>
-              <p className="whitespace-pre-wrap text-sm leading-relaxed text-text-2">{job.description}</p>
-            </section>
-          )}
-
-          {job.requirements && <RequirementsList requirements={job.requirements} />}
+          <Button
+            type="button"
+            size="sm"
+            onClick={handleMarkApplied}
+            disabled={tracked || createMutation.isPending}
+            className="flex-1 gap-1.5"
+          >
+            {tracked ? (
+              <>
+                <CheckCircle className="h-3.5 w-3.5" aria-hidden="true" />
+                Applied
+              </>
+            ) : (
+              "Mark applied"
+            )}
+          </Button>
         </div>
       </div>
     </div>
