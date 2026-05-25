@@ -154,7 +154,6 @@ function App() {
         <Route path="/verify-email" element={<PageWrapper><VerifyEmailRoute /></PageWrapper>} />
         <Route path="/auth/github/callback" element={<GithubCallback />} />
         <Route path="/auth/gmail/callback" element={<GmailCallback />} />
-        <Route path="/jobs" element={<PageWrapper><JobBoard /></PageWrapper>} />
         <Route path="/pipeline/:slug" element={<PageWrapper><PublicPipeline /></PageWrapper>} />
         <Route path="/shared/timeline/:slug" element={<PageWrapper><PublicTimeline /></PageWrapper>} />
         <Route path="/pricing" element={<PageWrapper><Pricing /></PageWrapper>} />
@@ -168,6 +167,7 @@ function App() {
           <Route path="/tags" element={<Tags />} />
           <Route path="/today" element={<TodayPage />} />
           <Route path="/inbox/pending" element={<PendingInboxPage />} />
+          <Route path="/jobs" element={<JobBoard />} />
         </Route>
         <Route path="/brief" element={<Navigate to="/today?brief=open" replace />} />
         </Routes>
