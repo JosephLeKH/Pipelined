@@ -3,8 +3,6 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import OfferComparison from "./OfferComparison";
 
-vi.mock("canvas-confetti");
-
 vi.mock("../hooks/useApplications", () => ({
   useApplications: vi.fn(),
   useUpdateApplication: vi.fn(() => ({ mutate: vi.fn() })),
@@ -19,7 +17,13 @@ const makeApp = (overrides = {}) => ({
   company: "Acme Corp",
   role_title: "Software Engineer",
   current_stage: "Offer",
-  offer_details: { base_salary: 120000, total_comp: 150000, equity: "0.5%" },
+  offer_details: {
+    base_salary: 120000,
+    equity_annual_value: 30000,
+    signing_bonus: 10000,
+    total_comp: 160000,
+    equity: "0.5%",
+  },
   ...overrides,
 });
 
@@ -58,7 +62,7 @@ describe("OfferComparison", () => {
     expect(screen.getByText(/no offers yet/i)).toBeInTheDocument();
   });
 
-  it("should render table with offer applications", () => {
+  it("should render card grid with offer applications", () => {
     useApplications.mockReturnValue({
       isLoading: false,
       data: { data: [makeApp()] },
@@ -68,12 +72,12 @@ describe("OfferComparison", () => {
 
     renderPage();
 
-    expect(screen.getByRole("table")).toBeInTheDocument();
+    expect(screen.getByRole("list", { name: /offer comparison cards/i })).toBeInTheDocument();
     expect(screen.getByText("Acme Corp")).toBeInTheDocument();
     expect(screen.getByText("Software Engineer")).toBeInTheDocument();
   });
 
-  it("should show all OFFER_FIELDS as row labels", () => {
+  it("should show PRD compare field labels on cards", () => {
     useApplications.mockReturnValue({
       isLoading: false,
       data: { data: [makeApp()] },
@@ -83,27 +87,38 @@ describe("OfferComparison", () => {
 
     renderPage();
 
-    expect(screen.getAllByText("Base Salary").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("Total Comp").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("Equity").length).toBeGreaterThan(0);
+    expect(screen.getByText("Base salary")).toBeInTheDocument();
+    expect(screen.getByText("Equity / yr")).toBeInTheDocument();
+    expect(screen.getByText("Sign-on")).toBeInTheDocument();
+    expect(screen.getByText("Total Y1")).toBeInTheDocument();
   });
 
-  it("should trigger confetti and show winner badge on mark winner", async () => {
-    const confetti = (await import("canvas-confetti")).default;
+  it("should highlight best Total Y1 with Cardinal border and Best badge", () => {
     useApplications.mockReturnValue({
       isLoading: false,
-      data: { data: [makeApp()] },
+      data: {
+        data: [
+          makeApp({
+            id: "app1",
+            company: "Anthropic",
+            offer_details: { base_salary: 200000, equity_annual_value: 80000, signing_bonus: 30000 },
+          }),
+          makeApp({
+            id: "app2",
+            company: "Linear",
+            offer_details: { base_salary: 175000, equity_annual_value: 120000, signing_bonus: 20000 },
+          }),
+        ],
+      },
       error: null,
       refetch: mockRefetch,
     });
 
     renderPage();
 
-    const markBtn = screen.getByRole("button", { name: /mark winner/i });
-    fireEvent.click(markBtn);
-
-    expect(confetti).toHaveBeenCalled();
-    expect(screen.getByText(/winner!/i)).toBeInTheDocument();
+    const bestCard = screen.getByRole("article", { name: /linear offer, best total y1/i });
+    expect(bestCard).toHaveClass("border-brand-700");
+    expect(screen.getByText("Best")).toBeInTheDocument();
   });
 
   it("should call updateApp when editing a cell", () => {
@@ -118,23 +133,39 @@ describe("OfferComparison", () => {
 
     renderPage();
 
-    const editBtns = screen.getAllByRole("button", { name: /^—$|0\.5%|^$120,000$|^$150,000$/ });
-    // click the equity cell (shows "0.5%")
-    const equityCell = screen.getByRole("button", { name: "0.5%" });
-    fireEvent.click(equityCell);
+    const signOnCell = screen.getByRole("button", { name: "$10,000" });
+    fireEvent.click(signOnCell);
 
     const input = screen.getByRole("textbox");
-    fireEvent.change(input, { target: { value: "1%" } });
-    fireEvent.blur(input, { target: { value: "1%" } });
+    fireEvent.change(input, { target: { value: "15000" } });
+    fireEvent.blur(input, { target: { value: "15000" } });
 
     expect(mutate).toHaveBeenCalledWith(
       expect.objectContaining({
         id: "app1",
         body: expect.objectContaining({
-          offer_details: expect.objectContaining({ equity: "1%" }),
+          offer_details: expect.objectContaining({ signing_bonus: 15000 }),
         }),
       })
     );
+  });
+
+  it("should show save pulse after editing a cell", () => {
+    useApplications.mockReturnValue({
+      isLoading: false,
+      data: { data: [makeApp()] },
+      error: null,
+      refetch: mockRefetch,
+    });
+
+    renderPage();
+
+    fireEvent.click(screen.getByRole("button", { name: "$10,000" }));
+    const input = screen.getByRole("textbox");
+    fireEvent.change(input, { target: { value: "15000" } });
+    fireEvent.blur(input);
+
+    expect(screen.getByTestId("offer-cell-save-pulse")).toBeInTheDocument();
   });
 
   it("should show retry button when offer loading fails", () => {
