@@ -77,7 +77,7 @@ function AuthLayout({ children }) {
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
       <BrandPanel />
-      <div className="flex items-center justify-center bg-background px-6 py-12 lg:px-12">
+      <div className="flex items-center justify-center bg-background text-foreground px-6 py-12 lg:px-12">
         <div className="w-full max-w-md">
           <Link
             to="/"
