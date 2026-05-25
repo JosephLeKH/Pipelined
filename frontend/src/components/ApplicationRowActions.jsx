@@ -31,9 +31,43 @@ import {
   SelectValue,
 } from "./ui/select";
 
+export function RowQuickActions({ archived, onArchive, onFollowUp }) {
+  if (archived) return null;
+  return (
+    <div
+      className="hidden items-center gap-1 motion-reduce:transition-none md:group-hover:flex"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <Button
+        type="button"
+        variant="ghost"
+        size="sm"
+        aria-label="Set follow-up"
+        onClick={onFollowUp}
+        className="h-6 px-2 text-xs text-text-2 hover:text-text-1"
+      >
+        Set follow-up
+      </Button>
+      <Button
+        type="button"
+        variant="ghost"
+        size="sm"
+        aria-label="Archive application"
+        onClick={onArchive}
+        className="h-6 px-2 text-xs text-text-2 hover:text-text-1"
+      >
+        Archive
+      </Button>
+    </div>
+  );
+}
+
 export function RowMenu({ application, onArchive, onUnarchive, onDelete }) {
   return (
-    <div className="relative shrink-0" onClick={(e) => e.stopPropagation()}>
+    <div
+      className="relative w-7 shrink-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 motion-reduce:transition-none transition-opacity duration-[120ms]"
+      onClick={(e) => e.stopPropagation()}
+    >
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
@@ -41,7 +75,7 @@ export function RowMenu({ application, onArchive, onUnarchive, onDelete }) {
             variant="ghost"
             size="icon"
             aria-label="Application actions"
-            className="h-7 w-7 rounded text-muted-foreground"
+            className="h-7 w-7 rounded text-text-3 hover:text-text-1 focus-visible:ring-2 focus-visible:ring-brand-600"
           >
             <MoreHorizontal className="h-4 w-4" aria-hidden="true" />
           </Button>

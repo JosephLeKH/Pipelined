@@ -180,6 +180,10 @@ export const COMPANY_LOGO_FALLBACK_COLORS = [
 
 export const LIST_OFFSET_PX = 280;
 
+export const MD_BREAKPOINT_PX = 768;
+export const APPLICATION_ROW_HEIGHT_DESKTOP = 40;
+export const APPLICATION_ROW_HEIGHT_MOBILE = 56;
+
 export const SWIPE_THRESHOLD_PX = 80;
 export const SWIPE_MAX_MS = 300;
 export const SWIPE_H_TO_V_RATIO = 2;

@@ -1,33 +1,57 @@
 /** Main list body: modals, bulk action bar, virtualized rows. */
 
-import { memo } from "react";
+import { memo, useState, useEffect } from "react";
 import { FixedSizeList } from "react-window";
 import ApplicationRow from "./ApplicationRow";
 import { ApplicationListHeader } from "./ApplicationListHeader";
 import { BulkActionBar, BulkDeleteConfirmModal } from "./ApplicationRowActions";
 import MergeDialog from "./MergeDialog";
 import UndoToast from "./UndoToast";
-import { LIST_OFFSET_PX } from "../lib/constants";
+import {
+  APPLICATION_ROW_HEIGHT_DESKTOP,
+  APPLICATION_ROW_HEIGHT_MOBILE,
+  LIST_OFFSET_PX,
+  MD_BREAKPOINT_PX,
+} from "../lib/constants";
+
+function useApplicationRowHeight() {
+  const [height, setHeight] = useState(() =>
+    window.innerWidth >= MD_BREAKPOINT_PX ? APPLICATION_ROW_HEIGHT_DESKTOP : APPLICATION_ROW_HEIGHT_MOBILE
+  );
+  useEffect(() => {
+    const mq = window.matchMedia(`(min-width: ${MD_BREAKPOINT_PX}px)`);
+    const update = () => setHeight(mq.matches ? APPLICATION_ROW_HEIGHT_DESKTOP : APPLICATION_ROW_HEIGHT_MOBILE);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+  return height;
+}
 
 const Row = memo(function Row({ index, style, data }) {
-  const { applications, onSelect, onArchive, onUnarchive, onDelete, selectedIds, onToggle, hasSelection, focusedIdx } = data;
+  const {
+    applications, onSelect, onArchive, onUnarchive, onDelete, selectedIds, onToggle,
+    hasSelection, focusedIdx, selectedId,
+  } = data;
+  const app = applications[index];
   return (
     <ApplicationRow
-      application={applications[index]}
+      application={app}
       onSelect={onSelect}
       style={style}
       onArchive={onArchive}
       onUnarchive={onUnarchive}
       onDelete={onDelete}
-      checked={selectedIds.has(applications[index].id)}
+      checked={selectedIds.has(app.id)}
       onToggle={onToggle}
       hasSelection={hasSelection}
       isFocused={focusedIdx === index}
+      isSelected={selectedId === app.id}
     />
   );
 });
 
-export function ApplicationListBody({ d, rowActions, bulkActions, onSelect }) {
+export function ApplicationListBody({ d, rowActions, bulkActions, onSelect, selectedId = "" }) {
   const {
     applications, isFetching, isLoading, sortBy, sortOrder, selectedIds, focusedIdx, windowHeight, listRef,
     bulkDeletePending, setBulkDeletePending, mergeDialogOpen, setMergeDialogOpen,
@@ -41,7 +65,11 @@ export function ApplicationListBody({ d, rowActions, bulkActions, onSelect }) {
   const undoMessage = undoAction?.type === "bulk_delete"
     ? `Deleted ${undoAction.count} application${undoAction.count === 1 ? "" : "s"}.`
     : undoAction?.type === "delete" ? "Application deleted." : "Application archived.";
-  const rowData = { applications, onSelect, onArchive: handleArchive, onUnarchive: handleUnarchive, onDelete: handleDelete, selectedIds, onToggle: handleToggle, hasSelection, focusedIdx };
+  const rowData = {
+    applications, onSelect, onArchive: handleArchive, onUnarchive: handleUnarchive,
+    onDelete: handleDelete, selectedIds, onToggle: handleToggle, hasSelection, focusedIdx, selectedId,
+  };
+  const rowHeight = useApplicationRowHeight();
   return (
     <>
       {bulkDeletePending && <BulkDeleteConfirmModal count={selectedIds.size} onConfirm={handleBulkDeleteConfirm} onCancel={() => setBulkDeletePending(false)} />}
@@ -64,7 +92,7 @@ export function ApplicationListBody({ d, rowActions, bulkActions, onSelect }) {
         <div className="relative flex flex-col">
           {isFetching && !isLoading && <div className="absolute inset-x-0 top-0 h-0.5 animate-pulse bg-primary" aria-hidden="true" data-testid="fetch-progress-bar" />}
           <ApplicationListHeader sortBy={sortBy} sortOrder={sortOrder} onSort={handleSort} allSelected={allSelected} onSelectAll={handleSelectAll} />
-          <FixedSizeList ref={listRef} height={Math.max(300, windowHeight - LIST_OFFSET_PX)} itemCount={applications.length} itemSize={64} width="100%" itemData={rowData}>{Row}</FixedSizeList>
+          <FixedSizeList ref={listRef} height={Math.max(300, windowHeight - LIST_OFFSET_PX)} itemCount={applications.length} itemSize={rowHeight} width="100%" itemData={rowData}>{Row}</FixedSizeList>
         </div>
       </div>
     </>

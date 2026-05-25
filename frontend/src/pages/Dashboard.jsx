@@ -26,7 +26,7 @@ import { useDashboardFilters } from "../hooks/useDashboardFilters";
 import { VIEW_MODE_STORAGE_KEY, OPEN_IMPORT_CSV_EVENT } from "../lib/constants";
 import { trackEvent } from "../lib/analytics";
 
-function DashboardContent({ viewMode, onSetViewMode, isExporting, onExport, filters, onSelect, onAdd, onImportCsv, shortcutsEnabled, onClearFilters, selectedApp, onClosePanel, isModalOpen, isImportOpen, onCloseModal, onCloseImport, followUpsDue, onViewFollowUps, expandFollowUpDraft }) {
+function DashboardContent({ viewMode, onSetViewMode, isExporting, onExport, filters, onSelect, onAdd, onImportCsv, shortcutsEnabled, onClearFilters, selectedApp, selectedId, onClosePanel, isModalOpen, isImportOpen, onCloseModal, onCloseImport, followUpsDue, onViewFollowUps, expandFollowUpDraft }) {
   return (
     <main className="flex-1 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 space-y-6">
@@ -44,7 +44,7 @@ function DashboardContent({ viewMode, onSetViewMode, isExporting, onExport, filt
           {viewMode === "kanban" ? (
             <KanbanBoard filters={filters} onSelect={onSelect} />
           ) : (
-            <ApplicationList filters={filters} onSelect={onSelect} onAdd={onAdd} onImportCsv={onImportCsv} shortcutsEnabled={shortcutsEnabled} onClearFilters={onClearFilters} />
+            <ApplicationList filters={filters} onSelect={onSelect} onAdd={onAdd} onImportCsv={onImportCsv} shortcutsEnabled={shortcutsEnabled} onClearFilters={onClearFilters} selectedId={selectedId} />
           )}
         </section>
         <DetailPanel application={selectedApp ?? null} onClose={onClosePanel} expandFollowUpDraft={expandFollowUpDraft} />
@@ -101,7 +101,7 @@ function Dashboard() {
       <DashboardContent
         viewMode={viewMode} onSetViewMode={handleSetViewMode} isExporting={isExporting} onExport={handleExport}
         filters={filters} onSelect={handleSelect} onAdd={() => setIsModalOpen(true)} onImportCsv={() => setIsImportOpen(true)}
-        shortcutsEnabled={shortcutsEnabled} onClearFilters={handleClearFilters} selectedApp={selectedApp} onClosePanel={handleClosePanel}
+        shortcutsEnabled={shortcutsEnabled} onClearFilters={handleClearFilters} selectedApp={selectedApp} selectedId={selectedId} onClosePanel={handleClosePanel}
         isModalOpen={isModalOpen} isImportOpen={isImportOpen} onCloseModal={() => setIsModalOpen(false)} onCloseImport={() => setIsImportOpen(false)}
         followUpsDue={stats?.follow_ups_due ?? 0}
         onViewFollowUps={() => handleViewFollowUps(stats?.first_follow_up_due_id)}
