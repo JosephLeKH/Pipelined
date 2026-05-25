@@ -27,6 +27,9 @@ _LINK_NEXT_RE: re.Pattern = re.compile(r'<([^>]+)>;\s*rel="next"')
 _MD_LINK_RE: re.Pattern = re.compile(r'\[([^\]]*)\]\(([^)]+)\)')
 _HTML_HREF_RE: re.Pattern = re.compile(r'<a[^>]+href=["\']([^"\']+)["\']', re.IGNORECASE)
 _TABLE_SEP_RE: re.Pattern = re.compile(r'^\|[\s|:-]+\|$')
+_DETAILS_RE: re.Pattern = re.compile(r'<details[^>]*>.*?<summary[^>]*>.*?</summary>(.*?)</details>', re.IGNORECASE | re.DOTALL)
+_BR_RE: re.Pattern = re.compile(r'</?br\s*/?>', re.IGNORECASE)
+_HTML_TAG_RE: re.Pattern = re.compile(r'<[^>]+>')
 
 
 def _parse_next_link(link_header: str) -> str | None:
@@ -98,6 +101,20 @@ def _strip_md_links(text: str) -> str:
     return stripped.strip()
 
 
+def _clean_location(text: str) -> str:
+    """Flatten <details><summary>N locations</summary>city1</br>city2</details> markup.
+
+    vanshb03 READMEs wrap multi-city rows in a collapsible block; render-mode tables
+    show '8 locations' with a foldout. We just want the comma-joined city list.
+    """
+    detail = _DETAILS_RE.search(text)
+    inner = detail.group(1) if detail else text
+    parts = [p.strip() for p in _BR_RE.split(inner) if p.strip()]
+    cleaned = " · ".join(parts) if parts else inner
+    cleaned = _HTML_TAG_RE.sub("", cleaned)
+    return _strip_md_links(cleaned)
+
+
 def _process_table_row(headers: list[str], cells: list[str]) -> dict | None:
     """Extract a listing from table row cells; return None if the row should be skipped."""
     if not cells or not cells[0] or cells[0].startswith("↳"):
@@ -106,7 +123,7 @@ def _process_table_row(headers: list[str], cells: list[str]) -> dict | None:
     row = dict(zip(headers, cells))
     company = _strip_md_links(row.get("company", ""))
     role = _strip_md_links(row.get("role", ""))
-    location = _strip_md_links(row.get("location", ""))
+    location = _clean_location(row.get("location", ""))
 
     apply_cell = row.get("application/link", row.get("apply", ""))
     if not apply_cell or "\U0001f512" in apply_cell:

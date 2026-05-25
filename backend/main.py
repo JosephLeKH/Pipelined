@@ -64,15 +64,19 @@ async def _rate_limit_handler(request: Request, exc: RateLimitExceeded) -> JSONR
 
 
 async def _seed_job_listings_if_empty() -> None:
-    """Run GitHub sync once on boot if job_listings is empty (e.g. first deploy).
+    """Run GitHub sync on boot if the collection is empty or contains pre-cleanup HTML.
 
     Why: the scheduled job only fires once daily at GITHUB_SYNC_HOUR_UTC, so a fresh
-    deploy shows an empty board until the next tick. Runs as a fire-and-forget task.
+    deploy shows an empty board until the next tick. The dirty-doc check also
+    re-syncs once after parser upgrades so old rows (e.g. raw <details>/</br> in
+    location) get rewritten via the url_hash upsert. Runs as a fire-and-forget task.
     """
     try:
-        count = await get_collection("job_listings").estimated_document_count()
-        if count == 0:
-            logger.info("seeding_job_listings_on_startup")
+        col = get_collection("job_listings")
+        count = await col.estimated_document_count()
+        dirty_doc = await col.find_one({"location": {"$regex": "<"}}, projection={"_id": 1}) if count else None
+        if count == 0 or dirty_doc is not None:
+            logger.info("seeding_job_listings_on_startup", count=count, has_dirty=dirty_doc is not None)
             await sync_github_repos()
     except Exception:
         logger.exception("seed_job_listings_failed")
