@@ -1,5 +1,7 @@
 /** Greeting and date formatting helpers for the Today page. */
 
+import { MORNING_BRIEF_EXPANDED_KEY } from "./constants";
+
 const LOCALE = "en-US";
 
 /** Time-of-day bucket for greeting copy: morning / afternoon / evening. */
@@ -56,4 +58,28 @@ export function formatDaysLeftInWeek(now = new Date(), timezone) {
   if (daysLeft === 0) return "Last day of the week";
   if (daysLeft === 1) return "1 day left";
   return `${daysLeft} days left`;
+}
+
+function readBriefExpandedMap() {
+  try {
+    const raw = localStorage.getItem(MORNING_BRIEF_EXPANDED_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
+
+/** Whether the morning brief is expanded for a given brief date (defaults collapsed). */
+export function getBriefExpandedForDate(briefDate) {
+  if (!briefDate) return false;
+  const map = readBriefExpandedMap();
+  return map[briefDate] === true;
+}
+
+/** Persist morning brief expanded state keyed by brief date. */
+export function setBriefExpandedForDate(briefDate, expanded) {
+  if (!briefDate) return;
+  const map = readBriefExpandedMap();
+  map[briefDate] = expanded;
+  localStorage.setItem(MORNING_BRIEF_EXPANDED_KEY, JSON.stringify(map));
 }

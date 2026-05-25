@@ -1,10 +1,10 @@
-/** Tests for MorningBriefHistoryPanel collapsible history list. */
+/** Tests for MorningBriefHistoryPanel right drawer. */
 
 import { render, screen, fireEvent } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { describe, it, expect, beforeAll, afterAll, afterEach } from "vitest";
+import { describe, it, expect, beforeAll, afterAll, afterEach, vi } from "vitest";
 
 import MorningBriefHistoryPanel from "./MorningBriefHistoryPanel";
 
@@ -37,20 +37,28 @@ function makeWrapper() {
 }
 
 describe("MorningBriefHistoryPanel", () => {
-  it("should render collapsible previous briefs header", async () => {
-    render(<MorningBriefHistoryPanel />, { wrapper: makeWrapper() });
+  it("should render drawer with past brief summaries when open", async () => {
+    render(
+      <MorningBriefHistoryPanel open onClose={() => {}} />,
+      { wrapper: makeWrapper() },
+    );
 
-    expect(await screen.findByRole("button", { name: /previous briefs/i })).toBeInTheDocument();
-  });
-
-  it("should expand to show past brief summaries", async () => {
-    render(<MorningBriefHistoryPanel />, { wrapper: makeWrapper() });
-
-    fireEvent.click(await screen.findByRole("button", { name: /previous briefs/i }));
-
-    expect(await screen.findByText("2026-05-22")).toBeInTheDocument();
+    expect(await screen.findByRole("dialog", { name: /previous briefs/i })).toBeInTheDocument();
+    expect(screen.getByText("2026-05-22")).toBeInTheDocument();
     expect(screen.getByText("2 interviews")).toBeInTheDocument();
     expect(screen.queryByText("2026-05-23")).not.toBeInTheDocument();
+  });
+
+  it("should call onClose when close button is clicked", async () => {
+    const onClose = vi.fn();
+    render(
+      <MorningBriefHistoryPanel open onClose={onClose} />,
+      { wrapper: makeWrapper() },
+    );
+
+    await screen.findByRole("dialog", { name: /previous briefs/i });
+    fireEvent.click(screen.getByRole("button", { name: /^Close$/i }));
+    expect(onClose).toHaveBeenCalled();
   });
 
   it("should hide panel when only today exists in history", async () => {
@@ -63,8 +71,13 @@ describe("MorningBriefHistoryPanel", () => {
       )
     );
 
-    render(<MorningBriefHistoryPanel />, { wrapper: makeWrapper() });
+    const { container } = render(
+      <MorningBriefHistoryPanel open onClose={() => {}} />,
+      { wrapper: makeWrapper() },
+    );
 
-    expect(screen.queryByRole("button", { name: /previous briefs/i })).not.toBeInTheDocument();
+    await vi.waitFor(() => {
+      expect(container.firstChild).toBeNull();
+    });
   });
 });

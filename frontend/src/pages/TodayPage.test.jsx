@@ -16,7 +16,16 @@ import { passthroughHandlers } from "../test/passthroughHandlers";
 const MOCK_BRIEF = {
   date: "2026-05-23",
   summary_line: "1 follow-up",
-  sections: { follow_ups: [], interviews: [], high_matches: [], pending_approvals: [] },
+  sections: {
+    follow_ups: [{
+      title: "Beta Corp — follow-up",
+      body: "Overdue by 2 days",
+      action_url: "/dashboard?selected=app2",
+    }],
+    interviews: [],
+    high_matches: [],
+    pending_approvals: [],
+  },
   missions: [{
     id: "follow_ups:0",
     section: "follow_ups",
@@ -146,5 +155,44 @@ describe("TodayPage", () => {
 
     expect(await screen.findByText("You're caught up.")).toBeInTheDocument();
     expect(screen.getByText(/No missions ranked for today/i)).toBeInTheDocument();
+  });
+
+  it("should show collapsible morning brief section", async () => {
+    render(<TodayPage />, { wrapper: makeWrapper() });
+
+    expect(await screen.findByRole("button", { name: /tap to read your morning brief/i }))
+      .toBeInTheDocument();
+    expect(screen.getByText(/Morning brief · 9am/i)).toBeInTheDocument();
+  });
+
+  it("should expand morning brief when tapped", async () => {
+    const user = userEvent.setup();
+    render(<TodayPage />, { wrapper: makeWrapper() });
+
+    await user.click(await screen.findByRole("button", { name: /tap to read your morning brief/i }));
+
+    expect(await screen.findByText("Beta Corp — follow-up")).toBeInTheDocument();
+    expect(screen.getByText("1 follow-up")).toBeInTheDocument();
+  });
+
+  it("should auto-expand morning brief when brief=open query param is set", async () => {
+    function BriefOpenWrapper({ children }) {
+      const queryClient = new QueryClient({
+        defaultOptions: { queries: { retry: false } },
+      });
+      return (
+        <ThemeProvider>
+          <AuthProvider>
+            <QueryClientProvider client={queryClient}>
+              <MemoryRouter initialEntries={["/today?brief=open"]}>{children}</MemoryRouter>
+            </QueryClientProvider>
+          </AuthProvider>
+        </ThemeProvider>
+      );
+    }
+
+    render(<TodayPage />, { wrapper: BriefOpenWrapper });
+
+    expect(await screen.findByText("Beta Corp — follow-up")).toBeInTheDocument();
   });
 });

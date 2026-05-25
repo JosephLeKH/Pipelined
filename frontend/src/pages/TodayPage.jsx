@@ -1,16 +1,17 @@
 /** Mission Control today page — prioritized missions with snooze/done actions. */
 
 import { useCallback, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 
 import Check from "lucide-react/dist/esm/icons/check";
 import Sun from "lucide-react/dist/esm/icons/sun";
 
 import MissionCard from "../components/MissionCard";
 import MissionProgressStrip from "../components/MissionProgressStrip";
-import MorningBriefHistoryPanel from "../components/MorningBriefHistoryPanel";
+import MorningBriefSkeleton from "../components/MorningBriefSkeleton";
+import TodayMorningBrief from "../components/TodayMorningBrief";
 import WeeklyGoalSection from "../components/WeeklyGoalSection";
 import WeeklyReviewSection from "../components/WeeklyReviewSection";
-import MorningBriefSkeleton from "../components/MorningBriefSkeleton";
 import { useAuth } from "../context/AuthContext";
 import { useApplicationStats } from "../hooks/useApplications";
 import { useMissionActions } from "../hooks/useMissionActions";
@@ -113,6 +114,9 @@ function TodayPage() {
     localStorage.setItem(TODAY_VISITED_KEY, "true");
   }, []);
 
+  const [searchParams] = useSearchParams();
+  const forceBriefOpen = searchParams.get("brief") === "open";
+
   const { user } = useAuth();
   const { data: brief, isLoading, isError } = useMorningBrief();
   const { data: stats } = useApplicationStats();
@@ -179,11 +183,16 @@ function TodayPage() {
             {!missions.length && emptyMessage && (
               <p className="text-center text-sm text-text-3">{emptyMessage}</p>
             )}
+            <TodayMorningBrief
+              brief={brief}
+              briefHour={briefHour}
+              emptyMessage={emptyMessage}
+              forceOpen={forceBriefOpen}
+            />
             <MissionProgressStrip cleared={progress.cleared} total={progress.total} />
             {weeklyReviewEnabled && (
               <WeeklyReviewSection review={weeklyReview} isLoading={isReviewLoading} />
             )}
-            <MorningBriefHistoryPanel />
           </>
         )}
       </div>

@@ -1,15 +1,18 @@
 /** Unit tests for Today page greeting and date helpers. */
 
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 
 import {
   formatDaysLeftInWeek,
   formatTodayDateRow,
   formatTodayGreeting,
+  getBriefExpandedForDate,
   getDaysLeftInWeek,
   getFirstName,
   getTimeOfDay,
+  setBriefExpandedForDate,
 } from "./todayUtils";
+import { MORNING_BRIEF_EXPANDED_KEY } from "./constants";
 
 describe("todayUtils", () => {
   it("should return morning before noon", () => {
@@ -46,5 +49,13 @@ describe("todayUtils", () => {
     expect(formatDaysLeftInWeek(new Date("2026-05-23T12:00:00"), "America/Los_Angeles")).toBe(
       "1 day left",
     );
+  });
+
+  it("should persist brief expanded state per date", () => {
+    localStorage.removeItem(MORNING_BRIEF_EXPANDED_KEY);
+    expect(getBriefExpandedForDate("2026-05-23")).toBe(false);
+    setBriefExpandedForDate("2026-05-23", true);
+    expect(getBriefExpandedForDate("2026-05-23")).toBe(true);
+    expect(getBriefExpandedForDate("2026-05-24")).toBe(false);
   });
 });
