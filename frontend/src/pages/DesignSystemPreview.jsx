@@ -3,6 +3,7 @@ import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Badge } from "../components/ui/badge";
 import { Checkbox } from "../components/ui/checkbox";
+import { Switch } from "../components/ui/switch";
 import {
   Select,
   SelectContent,
@@ -81,6 +82,8 @@ export default function DesignSystemPreview() {
             </SelectContent>
           </Select>
           <Checkbox aria-label="Sample checkbox" />
+          <Switch checked aria-label="Switch on" />
+          <Switch checked={false} aria-label="Switch off" />
         </PrimitiveSection>
 
         <PrimitiveSection title="Badges">
