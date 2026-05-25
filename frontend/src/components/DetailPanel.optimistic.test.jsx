@@ -1,8 +1,8 @@
 /** Smoke tests for DetailPanel optimistic stage change. */
 
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { MemoryRouter } from "react-router-dom";
 
 vi.mock("../hooks/useApplications", () => ({
   useUpdateApplication: vi.fn(),
@@ -11,7 +11,9 @@ vi.mock("../hooks/useApplications", () => ({
   useTags: () => ({ data: { tags: [] } }),
 }));
 vi.mock("../context/AuthContext", () => ({
-  useAuth: () => ({ user: { default_stages: ["Applied", "Interview", "Offer"], has_resume: false, ai_scores_remaining_today: 5 } }),
+  useAuth: () => ({
+    user: { default_stages: ["Applied", "Interview", "Offer"], has_resume: false, ai_scores_remaining_today: 5 },
+  }),
 }));
 vi.mock("../lib/analytics", () => ({ trackEvent: vi.fn() }));
 vi.mock("./ContactsSection", () => ({ default: () => null }));
@@ -66,24 +68,29 @@ function renderPanel(application = APP) {
   );
 }
 
-describe("DetailPanel optimistic stage change", () => {
-  beforeEach(() => { vi.clearAllMocks(); });
+async function selectStage(name) {
+  await userEvent.click(screen.getByRole("button", { name: /stage/i }));
+  await userEvent.click(screen.getByRole("menuitem", { name: new RegExp(`^${name}$`, "i") }));
+}
 
-  it("should render stage pills for each stage option", () => {
+describe("DetailPanel optimistic stage change", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("should render stage dropdown with the current stage", () => {
     setup();
     renderPanel();
 
-    expect(screen.getByRole("button", { name: "Applied" })).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Interview" })).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Offer" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: /stage/i })).toHaveTextContent("Applied");
   });
 
-  it("should call updateApp when a stage pill is clicked", () => {
+  it("should call updateApp when a different stage is selected", async () => {
     const mutate = vi.fn();
     setup(mutate);
     renderPanel();
 
-    fireEvent.click(screen.getByRole("button", { name: "Interview" }));
+    await selectStage("Interview");
 
     expect(mutate).toHaveBeenCalledWith(
       { id: "app1", body: { current_stage: "Interview" } },
@@ -91,15 +98,13 @@ describe("DetailPanel optimistic stage change", () => {
     );
   });
 
-  it("should not call updateApp when the same stage is clicked", () => {
+  it("should call updateApp when the same stage is selected again", async () => {
     const mutate = vi.fn();
     setup(mutate);
     renderPanel();
 
-    // Click the already-active stage — should still call mutate (UI optimistically updates)
-    fireEvent.click(screen.getByRole("button", { name: "Applied" }));
+    await selectStage("Applied");
 
-    // Mutation is called but with same stage — backend ignores it
     expect(mutate).toHaveBeenCalled();
   });
 });

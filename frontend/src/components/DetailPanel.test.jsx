@@ -1,6 +1,6 @@
 /** Tests for DetailPanel — field display, notes blur, stage change, close on Escape/click-outside. */
 
-import { render, screen, fireEvent, waitFor, within } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
@@ -148,12 +148,11 @@ describe("DetailPanel", () => {
     );
     render(<DetailPanel application={APP} onClose={() => {}} />, { wrapper: makeWrapper() });
 
-    // Wait for auth to load so stage pill buttons are populated
-    const stageGroup = screen.getByRole("group", { name: /stage/i });
-    await waitFor(() => expect(within(stageGroup).getAllByRole("button").length).toBeGreaterThan(1));
+    await waitFor(() => expect(screen.getByRole("button", { name: /stage/i })).toBeInTheDocument());
 
-    // Act
-    await userEvent.click(within(stageGroup).getByRole("button", { name: "Phone Screen" }));
+    // Act — open stage dropdown and pick a new stage
+    await userEvent.click(screen.getByRole("button", { name: /stage/i }));
+    await userEvent.click(screen.getByRole("menuitem", { name: /phone screen/i }));
 
     // Assert
     await waitFor(() => expect(patchBody).toEqual({ current_stage: "Phone Screen" }));
@@ -328,16 +327,16 @@ describe("DetailPanel", () => {
     );
     render(<DetailPanel application={APP} onClose={() => {}} />, { wrapper: makeWrapper() });
 
-    const stageGroup = screen.getByRole("group", { name: /stage/i });
-    await waitFor(() => expect(within(stageGroup).getAllByRole("button").length).toBeGreaterThan(1));
+    const stageTrigger = await screen.findByRole("button", { name: /stage/i });
+    await waitFor(() => expect(stageTrigger).toHaveTextContent("Applied"));
 
-    // Act — click a different stage; optimistic update fires then rolls back on error
-    await userEvent.click(within(stageGroup).getByRole("button", { name: "Offer" }));
+    // Act — pick a different stage; optimistic update fires then rolls back on error
+    await userEvent.click(stageTrigger);
+    await userEvent.click(screen.getByRole("menuitem", { name: /^offer$/i }));
 
-    // Assert — after server error, original stage is restored
+    // Assert — after server error, original stage is restored on the trigger
     await waitFor(() => {
-      const activeStage = within(stageGroup).getByRole("button", { name: "Applied", pressed: true });
-      expect(activeStage).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /stage/i })).toHaveTextContent("Applied");
     });
   });
 });

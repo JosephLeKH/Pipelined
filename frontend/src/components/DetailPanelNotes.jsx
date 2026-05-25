@@ -1,7 +1,13 @@
-/** Thin wrapper rendering the notes editor for a given application. */
+/** Notes section wrapper with Linear-style section title. */
 
 import NotesEditor from "./NotesEditor";
+import { DetailSectionTitle } from "./DetailPanelSections";
 
 export function DetailPanelNotes({ applicationId, initialValue, onDirtyChange }) {
-  return <NotesEditor applicationId={applicationId} initialValue={initialValue} onDirtyChange={onDirtyChange} />;
+  return (
+    <section aria-label="Notes">
+      <DetailSectionTitle>Notes</DetailSectionTitle>
+      <NotesEditor applicationId={applicationId} initialValue={initialValue} onDirtyChange={onDirtyChange} />
+    </section>
+  );
 }

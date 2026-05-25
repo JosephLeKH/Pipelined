@@ -12,11 +12,8 @@ import Gift from "lucide-react/dist/esm/icons/gift";
 import CalendarDays from "lucide-react/dist/esm/icons/calendar-days";
 
 import { useApplicationEvents } from "../hooks/useCalendar";
-import {
-  STAGE_COLORS,
-  DEFAULT_STAGE_COLOR,
-} from "../lib/constants";
-import { formatDate } from "../lib/dateUtils";
+import { STAGE_COLORS, DEFAULT_STAGE_COLOR } from "../lib/constants";
+import { formatDateShort } from "../lib/dateUtils";
 import { Button } from "./ui/button";
 
 const EVENT_ICONS = {
@@ -28,13 +25,12 @@ const EVENT_ICONS = {
   other: CalendarDays,
 };
 
-
 function buildTimeline(stageHistory, events) {
   const stageNodes = (stageHistory ?? []).map((entry, i, arr) => ({
     kind: "stage",
     sortKey: new Date(entry.transitioned_at).getTime(),
     date: entry.transitioned_at,
-    label: i === 0 ? entry.stage : `${arr[i - 1].stage} \u2192 ${entry.stage}`,
+    label: i === 0 ? entry.stage : `${arr[i - 1].stage} → ${entry.stage}`,
     stage: entry.stage,
   }));
 
@@ -49,33 +45,53 @@ function buildTimeline(stageHistory, events) {
   return [...stageNodes, ...eventNodes].sort((a, b) => a.sortKey - b.sortKey);
 }
 
-function StageTimelineNode({ node }) {
-  const colors = STAGE_COLORS[node.stage] ?? DEFAULT_STAGE_COLOR;
+function TimelineDot({ color, showLine }) {
   return (
-    <li className="flex items-start gap-3 pb-3" data-testid="timeline-stage-node">
+    <div className="relative flex w-3 shrink-0 flex-col items-center">
       <span
-        className={`mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full ${colors.dot}`}
+        className="relative z-10 mt-1 h-1.5 w-1.5 shrink-0 rounded-full"
+        style={{ backgroundColor: color }}
         aria-hidden="true"
       />
-      <div>
-        <p className="text-sm font-medium text-foreground">{node.label}</p>
-        <p className="text-xs text-muted-foreground">{formatDate(node.date)}</p>
+      {showLine && (
+        <span className="absolute top-3 h-[calc(100%-4px)] w-px bg-border-1" aria-hidden="true" />
+      )}
+    </div>
+  );
+}
+
+function StageTimelineNode({ node, showLine }) {
+  const colors = STAGE_COLORS[node.stage] ?? DEFAULT_STAGE_COLOR;
+  return (
+    <li className="flex min-h-[2rem] gap-3" data-testid="timeline-stage-node">
+      <TimelineDot color={colors.dotColor} showLine={showLine} />
+      <div className="min-w-0 pb-3">
+        <p className="text-xs text-text-1">
+          <span className="font-medium">{node.label}</span>
+          <span className="text-text-3"> · </span>
+          <span className="text-text-3">{formatDateShort(node.date)}</span>
+        </p>
       </div>
     </li>
   );
 }
 
-function EventTimelineNode({ node }) {
+function EventTimelineNode({ node, showLine }) {
   const Icon = EVENT_ICONS[node.eventType] ?? CalendarDays;
   return (
-    <li className="flex items-start gap-3 pb-3" data-testid="timeline-event-node">
-      <Icon
-        className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground"
-        aria-hidden="true"
-      />
-      <div>
-        <p className="text-sm font-medium capitalize text-foreground">{node.title}</p>
-        <p className="text-xs text-muted-foreground">{formatDate(node.date)}</p>
+    <li className="flex min-h-[2rem] gap-3" data-testid="timeline-event-node">
+      <div className="relative flex w-3 shrink-0 flex-col items-center">
+        <Icon className="relative z-10 mt-0.5 h-3.5 w-3.5 shrink-0 text-text-3" aria-hidden="true" />
+        {showLine && (
+          <span className="absolute top-4 h-[calc(100%-8px)] w-px bg-border-1" aria-hidden="true" />
+        )}
+      </div>
+      <div className="min-w-0 pb-3">
+        <p className="text-xs capitalize text-text-1">
+          <span className="font-medium">{node.title}</span>
+          <span className="text-text-3"> · </span>
+          <span className="text-text-3">{formatDateShort(node.date)}</span>
+        </p>
       </div>
     </li>
   );
@@ -93,29 +109,34 @@ function ApplicationTimeline({ stageHistory, applicationId }) {
         type="button"
         variant="ghost"
         onClick={() => setIsExpanded((prev) => !prev)}
-        className="h-auto p-0 gap-1 text-xs font-medium uppercase text-muted-foreground hover:bg-transparent hover:text-foreground"
+        className="h-auto gap-1 p-0 text-xs font-medium uppercase text-text-3 hover:bg-transparent hover:text-text-1 motion-reduce:transition-none transition-colors duration-hover ease-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 focus-visible:outline-offset-2 dark:focus-visible:outline-1"
         aria-expanded={isExpanded}
         aria-controls={`timeline-panel-${applicationId}`}
-        aria-label="Toggle timeline"
+        aria-label="Toggle timeline entries"
       >
-        {isExpanded
-          ? <ChevronDown className="h-3.5 w-3.5" aria-hidden="true" />
-          : <ChevronRight className="h-3.5 w-3.5" aria-hidden="true" />}
-        Timeline
+        {isExpanded ? (
+          <ChevronDown className="h-3.5 w-3.5" aria-hidden="true" />
+        ) : (
+          <ChevronRight className="h-3.5 w-3.5" aria-hidden="true" />
+        )}
+        Activity
       </Button>
       {isExpanded && (
         <div id={`timeline-panel-${applicationId}`}>
           {nodes.length === 0 ? (
-            <p className="text-xs text-muted-foreground" data-testid="timeline-empty" role="status">
+            <p className="text-xs text-text-3" data-testid="timeline-empty" role="status">
               No activity yet
             </p>
           ) : (
             <ol className="flex flex-col" data-testid="timeline" aria-live="polite" aria-label="Application timeline">
-              {nodes.map((node, i) =>
-                node.kind === "stage"
-                  ? <StageTimelineNode key={`s-${i}`} node={node} />
-                  : <EventTimelineNode key={`e-${i}`} node={node} />
-              )}
+              {nodes.map((node, i) => {
+                const showLine = i < nodes.length - 1;
+                return node.kind === "stage" ? (
+                  <StageTimelineNode key={`s-${i}`} node={node} showLine={showLine} />
+                ) : (
+                  <EventTimelineNode key={`e-${i}`} node={node} showLine={showLine} />
+                );
+              })}
             </ol>
           )}
         </div>

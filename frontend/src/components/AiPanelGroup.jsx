@@ -3,39 +3,33 @@
 import { useState } from "react";
 
 import ChevronDown from "lucide-react/dist/esm/icons/chevron-down";
-import ChevronUp from "lucide-react/dist/esm/icons/chevron-up";
+import ChevronRight from "lucide-react/dist/esm/icons/chevron-right";
 import Sparkles from "lucide-react/dist/esm/icons/sparkles";
 
-import { CARD_BASE } from "../lib/designTokens";
+const AI_PANEL_LABEL = "AI";
 
-const AI_PANEL_LABEL = "AI insights";
-
-function AiPanelGroup({ children, defaultOpen = true }) {
+function AiPanelGroup({ children, defaultOpen = false }) {
   const [open, setOpen] = useState(defaultOpen);
 
   return (
-    <section aria-label={AI_PANEL_LABEL} className={`${CARD_BASE} overflow-hidden`}>
+    <section aria-label={AI_PANEL_LABEL} className="border-t border-border-1 pt-4">
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
         aria-expanded={open}
-        className="flex w-full items-center justify-between gap-2 px-4 py-3 text-left transition-colors hover:bg-muted/40"
+        className="flex w-full items-center gap-1.5 pb-2 text-left motion-reduce:transition-none transition-colors duration-hover ease-out hover:text-text-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 focus-visible:outline-offset-2 dark:focus-visible:outline-1"
       >
-        <span className="flex items-center gap-2 text-sm font-semibold text-foreground">
-          <Sparkles className="h-4 w-4 text-brand-500" aria-hidden="true" />
+        {open ? (
+          <ChevronDown className="h-3.5 w-3.5 shrink-0 text-text-3" aria-hidden="true" />
+        ) : (
+          <ChevronRight className="h-3.5 w-3.5 shrink-0 text-text-3" aria-hidden="true" />
+        )}
+        <span className="flex items-center gap-2 text-sm font-semibold tracking-[-0.01em] text-text-1">
+          <Sparkles className="h-4 w-4 text-brand-600" aria-hidden="true" />
           {AI_PANEL_LABEL}
         </span>
-        {open ? (
-          <ChevronUp className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-        ) : (
-          <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-        )}
       </button>
-      {open && (
-        <div className="flex flex-col gap-4 border-t border-border px-4 py-4">
-          {children}
-        </div>
-      )}
+      {open && <div className="flex flex-col gap-4 pb-2">{children}</div>}
     </section>
   );
 }
