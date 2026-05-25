@@ -5,6 +5,7 @@
 
 import { jest, describe, it, expect, beforeAll, beforeEach } from "@jest/globals";
 import { JSDOM } from "jsdom";
+import { APP_DASHBOARD_URL } from "../shared/constants.js";
 
 const POPUP_HTML = `
   <header class="header">
@@ -119,7 +120,7 @@ describe("renderSaves()", () => {
     const empty = document.querySelector(".empty");
 
     expect(empty).not.toBeNull();
-    expect(empty.textContent).toBe("No saved applications yet.");
+    expect(empty.textContent).toBe("Nothing saved yet.");
   });
 
   it("should render one save-item per entry", () => {
@@ -186,7 +187,7 @@ describe("renderSaves()", () => {
     const badge = document.querySelector(".stage-badge");
 
     expect(badge).not.toBeNull();
-    expect(badge.textContent).toBe("Applied");
+    expect(badge.textContent).toBe("Apd");
   });
 
   it("should render phone-screen stage badge with correct label", () => {
@@ -194,7 +195,7 @@ describe("renderSaves()", () => {
 
     const badge = document.querySelector(".stage-badge");
 
-    expect(badge.textContent).toBe("Phone Screen");
+    expect(badge.textContent).toBe("Phn");
   });
 
   it("should render offer stage badge with correct label", () => {
@@ -202,7 +203,7 @@ describe("renderSaves()", () => {
 
     const badge = document.querySelector(".stage-badge");
 
-    expect(badge.textContent).toBe("Offer");
+    expect(badge.textContent).toBe("Ofr");
   });
 
   it("should render open-in-dashboard link with correct href", () => {
@@ -348,7 +349,7 @@ describe("openDashboard()", () => {
     openDashboard();
 
     expect(chrome.tabs.create).toHaveBeenCalledWith({
-      url: "https://app.pipelined.app/dashboard",
+      url: APP_DASHBOARD_URL,
     });
   });
 });
@@ -388,13 +389,13 @@ describe("relativeTime()", () => {
   it("should return 'N days ago' for dates a few days in the past", () => {
     const threeDaysAgo = new Date(Date.now() - 3 * 86400000).toISOString();
 
-    expect(relativeTime(threeDaysAgo)).toBe("3 days ago");
+    expect(relativeTime(threeDaysAgo)).toBe("3d ago");
   });
 
   it("should return '1 day ago' for exactly one day ago", () => {
     const oneDayAgo = new Date(Date.now() - 86400000).toISOString();
 
-    expect(relativeTime(oneDayAgo)).toBe("1 day ago");
+    expect(relativeTime(oneDayAgo)).toBe("1d ago");
   });
 });
 

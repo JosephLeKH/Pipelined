@@ -1,29 +1,23 @@
 /** Popup: show last 5 saves with stage badges, link to dashboard, auth status. */
 
 import { MSG, MAX_RECENT, APP_DASHBOARD_URL, MS_PER_DAY, MS_PER_HOUR, MS_PER_MINUTE } from "../shared/constants.js";
-
-// Stage badge colors (hex values match the frontend stage constants)
-const STAGE_COLORS = {
-  applied: { bg: "#dbeafe", text: "#1d4ed8", bar: "#3b82f6", label: "Applied" },
-  "phone screen": { bg: "#ede9fe", text: "#6d28d9", bar: "#8b5cf6", label: "Phone Screen" },
-  onsite: { bg: "#ffedd5", text: "#c2410c", bar: "#f97316", label: "Onsite" },
-  offer: { bg: "#dcfce7", text: "#15803d", bar: "#22c55e", label: "Offer" },
-  rejected: { bg: "#fee2e2", text: "#b91c1c", bar: "#ef4444", label: "Rejected" },
-};
-
-const DEFAULT_STAGE_COLOR = { bg: "#f1f5f9", text: "#475569", bar: "#94a3b8", label: "Applied" };
+import { stageAbbrev, stageDotColor } from "../shared/STAGE_ABBREV.js";
+import { closeUserMenu, setupUserMenu } from "./popup_menu.js";
 
 const FIT_HIGH_MIN = 80;
 const FIT_MED_MIN = 50;
 const FIT_LOW_MIN = 30;
 
 const FIT_COLORS = {
-  high: { bg: "#dcfce7", text: "#15803d" },
-  med: { bg: "#fef9c3", text: "#a16207" },
-  low: { bg: "#ffedd5", text: "#c2410c" },
-  critical: { bg: "#fee2e2", text: "#b91c1c" },
+  high: { bg: "var(--surface-2)", text: "var(--status-success)" },
+  med: { bg: "var(--surface-2)", text: "var(--status-warn)" },
+  low: { bg: "var(--surface-2)", text: "var(--status-orange)" },
+  critical: { bg: "var(--surface-2)", text: "var(--status-muted)" },
 };
 
+/**
+ * @param {number} score
+ */
 function fitBadgeColors(score) {
   if (score >= FIT_HIGH_MIN) return FIT_COLORS.high;
   if (score >= FIT_MED_MIN) return FIT_COLORS.med;
@@ -31,10 +25,7 @@ function fitBadgeColors(score) {
   return FIT_COLORS.critical;
 }
 
-
 /**
- * Escape a string for safe insertion into innerHTML.
- * Prefer textContent over innerHTML wherever possible.
  * @param {string} str
  * @returns {string}
  */
@@ -48,7 +39,6 @@ export function escapeHtml(str) {
 }
 
 /**
- * Returns a human-readable relative time string for an ISO date string.
  * @param {string|null} isoDate
  * @returns {string}
  */
@@ -59,36 +49,42 @@ export function relativeTime(isoDate) {
   if (diff < MS_PER_HOUR) return `${Math.floor(diff / MS_PER_MINUTE)}m ago`;
   if (diff < MS_PER_DAY) return `${Math.floor(diff / MS_PER_HOUR)}h ago`;
   const days = Math.floor(diff / MS_PER_DAY);
-  return days === 1 ? "1 day ago" : `${days} days ago`;
+  return days === 1 ? "1d ago" : `${days}d ago`;
 }
 
+/**
+ * @param {string} id
+ */
 export function show(id) {
   const loading = document.getElementById("loading");
   const unauthenticated = document.getElementById("unauthenticated");
   const authenticated = document.getElementById("authenticated");
+  const footer = document.getElementById("footer");
   const target = document.getElementById(id);
   if (loading) loading.classList.add("hidden");
   if (unauthenticated) unauthenticated.classList.add("hidden");
   if (authenticated) authenticated.classList.add("hidden");
   if (target) target.classList.remove("hidden");
+  if (footer) footer.classList.toggle("hidden", id === "unauthenticated");
 }
 
 function renderEmptyState(list, emptyState) {
   if (emptyState) {
     emptyState.classList.remove("hidden");
     if (list) list.classList.add("hidden");
-  } else {
-    // Legacy fallback for test environment (POPUP_HTML fixture without #empty-state)
-    if (!list) return;
-    const empty = document.createElement("li");
-    empty.className = "empty";
-    empty.textContent = "No saved applications yet.";
-    list.appendChild(empty);
+    return;
   }
+  if (!list) return;
+  const empty = document.createElement("li");
+  empty.className = "empty";
+  empty.textContent = "Nothing saved yet.";
+  list.appendChild(empty);
 }
 
+/**
+ * @param {number} score
+ */
 function buildFitBadge(score) {
-  if (score == null) return null;
   const colors = fitBadgeColors(score);
   const badge = document.createElement("span");
   badge.className = "fit-badge";
@@ -99,25 +95,13 @@ function buildFitBadge(score) {
   return badge;
 }
 
-function buildCardBody(s, stageStyle) {
-  const company = document.createElement("span");
-  company.className = "company";
-  company.textContent = s.company || "";
-
-  const role = document.createElement("span");
-  role.className = "role";
-  role.textContent = s.role_title || "";
-
-  const info = document.createElement("div");
-  info.className = "card-info";
-  info.appendChild(company);
-  info.appendChild(role);
-
+/**
+ * @param {object} s
+ */
+function buildCardMeta(s) {
   const badge = document.createElement("span");
   badge.className = "stage-badge";
-  badge.textContent = stageStyle.label;
-  badge.style.background = stageStyle.bg;
-  badge.style.color = stageStyle.text;
+  badge.textContent = stageAbbrev(s.stage);
 
   const time = document.createElement("span");
   time.className = "save-time";
@@ -126,41 +110,51 @@ function buildCardBody(s, stageStyle) {
   const meta = document.createElement("div");
   meta.className = "card-meta";
   meta.appendChild(badge);
-  const fitBadge = buildFitBadge(s.fit_score);
-  if (fitBadge) meta.appendChild(fitBadge);
+  if (s.fit_score != null) meta.appendChild(buildFitBadge(s.fit_score));
   meta.appendChild(time);
-
-  const body = document.createElement("div");
-  body.className = "card-body";
-  body.appendChild(info);
-  body.appendChild(meta);
-  return body;
+  return meta;
 }
 
+/**
+ * @param {object} s
+ */
 function renderSaveItem(s) {
-  const stageKey = (s.stage || "").toLowerCase();
-  const stageStyle = STAGE_COLORS[stageKey] || DEFAULT_STAGE_COLOR;
+  const dot = document.createElement("span");
+  dot.className = "card-dot";
+  dot.style.background = stageDotColor(s.stage);
 
-  const bar = document.createElement("div");
-  bar.className = "card-bar";
-  bar.style.background = stageStyle.bar;
+  const company = document.createElement("div");
+  company.className = "company";
+  company.textContent = s.company || "";
 
-  // Overlay link — covers full card, opens dashboard with highlight param
+  const role = document.createElement("div");
+  role.className = "role";
+  role.textContent = s.role_title || "";
+
+  const info = document.createElement("div");
+  info.className = "card-info";
+  info.appendChild(company);
+  info.appendChild(role);
+
   const link = document.createElement("a");
   link.className = "open-link";
   link.href = `${APP_DASHBOARD_URL}?highlight=${encodeURIComponent(s.id || "")}`;
   link.target = "_blank";
   link.rel = "noopener noreferrer";
-  link.dataset.appId = s.id || "";
+  link.setAttribute("aria-label", `Open ${s.company || "application"} application`);
+  link.appendChild(dot);
+  link.appendChild(info);
+  link.appendChild(buildCardMeta(s));
 
   const item = document.createElement("li");
   item.className = "save-item";
-  item.appendChild(bar);
-  item.appendChild(buildCardBody(s, stageStyle));
   item.appendChild(link);
   return item;
 }
 
+/**
+ * @param {object[]} saves
+ */
 export function renderApplyHints(saves) {
   const section = document.getElementById("apply-hints");
   const list = document.getElementById("hints-list");
@@ -182,6 +176,9 @@ export function renderApplyHints(saves) {
   });
 }
 
+/**
+ * @param {object[]} saves
+ */
 export function renderSaves(saves) {
   const list = document.getElementById("saves-list");
   const emptyState = document.getElementById("empty-state");
@@ -194,6 +191,7 @@ export function renderSaves(saves) {
   if (emptyState) emptyState.classList.add("hidden");
   if (!list) return;
   list.classList.remove("hidden");
+  list.replaceChildren();
   saves.slice(0, MAX_RECENT).forEach((s) => list.appendChild(renderSaveItem(s)));
 }
 
@@ -212,6 +210,7 @@ export async function signOut() {
   } catch (err) {
     console.error("[popup] Failed to remove display_name from local storage:", err);
   }
+  closeUserMenu();
   show("unauthenticated");
 }
 
@@ -222,7 +221,10 @@ export async function renderAutoSaveToggle() {
   try {
     const result = await chrome.storage.local.get("auto_save");
     auto_save = result.auto_save ?? false;
-  } catch (err) { console.error("[popup] Failed to read auto_save:", err); return; }
+  } catch (err) {
+    console.error("[popup] Failed to read auto_save:", err);
+    return;
+  }
   const btn = document.getElementById("auto-save-toggle");
   if (!btn) return;
   btn.setAttribute("aria-pressed", String(auto_save));
@@ -255,11 +257,7 @@ export async function init() {
     if (userNameEl) userNameEl.textContent = authStatus.display_name;
   }
 
-  const signOutBtn = document.getElementById("sign-out");
-  if (signOutBtn) {
-    signOutBtn.classList.remove("hidden");
-    signOutBtn.addEventListener("click", signOut);
-  }
+  setupUserMenu(signOut);
 
   let recent_saves = [];
   try {
@@ -276,6 +274,8 @@ export async function init() {
 
 const openDashboardBtn = document.getElementById("open-dashboard");
 if (openDashboardBtn) openDashboardBtn.addEventListener("click", openDashboard);
+const openDashboardGhostBtn = document.getElementById("open-dashboard-ghost");
+if (openDashboardGhostBtn) openDashboardGhostBtn.addEventListener("click", openDashboard);
 const openDashboardAuthBtn = document.getElementById("open-dashboard-auth");
 if (openDashboardAuthBtn) openDashboardAuthBtn.addEventListener("click", openDashboard);
 

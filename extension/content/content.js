@@ -18,7 +18,6 @@ import {
   createBannerHost,
   dismiss,
   showBannerSuccess,
-  showBannerAiEnhanced,
   showBannerError,
   showBannerDuplicate,
 } from "./banner_helpers.js";
@@ -32,7 +31,6 @@ const BOARDS = [
 ];
 
 const AUTO_SAVE_DEBOUNCE_MS = 2000;
-const AUTO_SAVE_SUCCESS_DISMISS_MS = 3000;
 
 const savedUrls = new Set();
 
@@ -125,7 +123,10 @@ async function handleSave(shadow, host, fields, boardId) {
   const result = await sendToBackground(MSG.SAVE_APPLICATION, payload);
 
   if (result.status === "success") {
-    showBannerSuccess(shadow, host, { aiEnhanced: Boolean(result.parseEnhanced) });
+    showBannerSuccess(shadow, host, {
+      aiEnhanced: Boolean(result.parseEnhanced),
+      application: result.application || null,
+    });
   } else if (result.status === "duplicate") {
     showBannerDuplicate(shadow, host, result.existingId);
   } else {
@@ -133,10 +134,8 @@ async function handleSave(shadow, host, fields, boardId) {
   }
 }
 
-function showBannerAutoSaved(shadow, host, parseEnhanced = false) {
-  shadow.querySelector(".pipelined-text").textContent = "\u2713 Saved to Pipelined!";
-  if (parseEnhanced) showBannerAiEnhanced(shadow);
-  setTimeout(() => dismiss(host), AUTO_SAVE_SUCCESS_DISMISS_MS);
+function showBannerAutoSaved(shadow, host, application, parseEnhanced = false) {
+  showBannerSuccess(shadow, host, { aiEnhanced: parseEnhanced, application });
 }
 
 function showBannerAutoSaveFailed(shadow, host, payload) {
@@ -149,7 +148,7 @@ function showBannerAutoSaveFailed(shadow, host, payload) {
     btn.textContent = "Saving\u2026";
     const res = await sendToBackground(MSG.SAVE_APPLICATION, payload);
     if (res.status === "success") {
-      showBannerAutoSaved(shadow, host, res.parseEnhanced);
+      showBannerAutoSaved(shadow, host, res.application || null, res.parseEnhanced);
     }
     else if (res.status === "duplicate") showBannerDuplicate(shadow, host, res.existingId);
     else { btn.disabled = false; btn.textContent = "Retry"; }
@@ -181,7 +180,9 @@ export async function initAutoSave(fields, boardId) {
       jobDescription: extractJobDescription(),
     };
     const result = await sendToBackground(MSG.SAVE_APPLICATION, payload);
-    if (result.status === "success") showBannerAutoSaved(shadow, host, result.parseEnhanced);
+    if (result.status === "success") {
+      showBannerAutoSaved(shadow, host, result.application || null, result.parseEnhanced);
+    }
     else if (result.status === "duplicate") showBannerDuplicate(shadow, host, result.existingId);
     else showBannerAutoSaveFailed(shadow, host, payload);
   }, AUTO_SAVE_DEBOUNCE_MS);

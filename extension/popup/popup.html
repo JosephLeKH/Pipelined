@@ -8,14 +8,26 @@
   </head>
   <body>
     <header class="header">
-      <span class="logo">Pipelined</span>
-      <span id="user-name" class="user-name"></span>
-      <button id="sign-out" class="btn-sign-out hidden">Sign out</button>
+      <div class="logo-wrap">
+        <svg class="logo-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="6" x2="6" y1="3" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/>
+        </svg>
+        <span class="logo">Pipelined</span>
+      </div>
+      <div id="user-menu" class="user-menu hidden">
+        <button id="user-menu-trigger" class="user-menu-trigger" type="button" aria-haspopup="true" aria-expanded="false">
+          <span id="user-name" class="user-name"></span>
+          <svg class="user-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div id="user-dropdown" class="user-dropdown hidden" role="menu">
+          <button id="sign-out" class="user-dropdown-item" type="button" role="menuitem">Sign out</button>
+        </div>
+      </div>
     </header>
 
     <div id="auto-save-row" class="auto-save-row hidden">
       <span class="auto-save-label">Auto-save</span>
-      <button id="auto-save-toggle" class="auto-save-btn" aria-pressed="false">OFF</button>
+      <button id="auto-save-toggle" class="auto-save-btn" type="button" aria-pressed="false">OFF</button>
     </div>
 
     <main id="app">
@@ -24,12 +36,13 @@
       <div id="unauthenticated" class="state hidden">
         <div class="unauth-content">
           <svg class="unauth-icon" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <rect width="20" height="14" x="2" y="7" rx="2" ry="2"/>
-            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+            <path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/>
           </svg>
           <h2 class="unauth-heading">Sign in to start tracking</h2>
-          <p class="unauth-desc">Track applications across 10 job boards</p>
-          <button id="open-dashboard" class="btn btn-primary">Sign In</button>
+          <p class="unauth-desc">Track applications across 10 job boards.</p>
+          <button id="open-dashboard" class="btn btn-primary" type="button">Sign in</button>
+          <div class="unauth-divider">or</div>
+          <button id="open-dashboard-ghost" class="unauth-ghost-link" type="button">Open Dashboard &rarr;</button>
         </div>
       </div>
 
@@ -41,21 +54,20 @@
         </div>
         <ul id="saves-list"></ul>
         <div id="empty-state" class="empty-state hidden">
-          <svg class="empty-icon" xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <rect width="20" height="14" x="2" y="7" rx="2" ry="2"/>
-            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+          <svg class="empty-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/>
           </svg>
-          <p class="empty-heading">No applications saved yet</p>
-          <p class="empty-desc">Visit a job posting to get started</p>
+          <p class="empty-heading">Nothing saved yet</p>
+          <p class="empty-desc">Visit a job posting to start tracking.</p>
         </div>
       </div>
     </main>
 
-    <footer class="footer">
-      <button id="open-dashboard-auth" class="footer-link">Open Dashboard &rarr;</button>
-      <span class="version">v1.0.0</span>
+    <footer id="footer" class="footer">
+      <button id="open-dashboard-auth" class="footer-link" type="button">Open Dashboard &rarr;</button>
+      <span class="version">v1.1.0</span>
     </footer>
 
-    <script src="popup.js"></script>
+    <script type="module" src="popup.js"></script>
   </body>
 </html>
