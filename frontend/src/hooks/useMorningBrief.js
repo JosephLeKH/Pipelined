@@ -1,6 +1,7 @@
 /** React Query hook for today's morning brief. */
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 import { fetchTodayBrief, generateTodayBrief } from "../api/brief";
 
@@ -23,6 +24,14 @@ export function useGenerateBrief() {
     mutationFn: generateTodayBrief,
     onSuccess: (brief) => {
       queryClient.setQueryData(MORNING_BRIEF_KEYS.today, brief);
+      toast.success("Morning brief refreshed");
+    },
+    onError: (err) => {
+      const message =
+        err?.response?.data?.detail?.message ??
+        err?.message ??
+        "Could not refresh the brief. Try again in a bit.";
+      toast.error(message);
     },
   });
 }
