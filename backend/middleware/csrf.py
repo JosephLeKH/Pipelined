@@ -55,13 +55,21 @@ def _get_header(headers: list[tuple[bytes, bytes]], name: bytes) -> str | None:
 
 
 def _get_cookie(headers: list[tuple[bytes, bytes]], cookie_name: str) -> str | None:
-    """Extract a cookie value from raw ASGI Cookie headers."""
+    """Extract a cookie value from any ASGI Cookie header."""
     for key, value in headers:
         if key.lower() == b"cookie":
             sc = SimpleCookie(value.decode("latin-1"))
             if cookie_name in sc:
                 return sc[cookie_name].value
     return None
+
+
+def _raw_cookie_header(headers: list[tuple[bytes, bytes]]) -> str:
+    """Return the raw Cookie header value (or empty string if not present) for diagnostics."""
+    for key, value in headers:
+        if key.lower() == b"cookie":
+            return value.decode("latin-1", errors="replace")
+    return ""
 
 
 _CSRF_ERROR_BODY = b'{"error":{"code":"CSRF_TOKEN_MISMATCH","message":"CSRF token mismatch."}}'
@@ -87,6 +95,8 @@ class CSRFMiddleware:
             header_token = _get_header(headers, b"x-csrf-token")
 
             if not cookie_token or not header_token or not secrets.compare_digest(cookie_token, header_token):
+                raw_cookie = _raw_cookie_header(headers)
+                cookie_names = sorted({c.split("=", 1)[0].strip() for c in raw_cookie.split(";") if "=" in c})
                 logger.warning(
                     "csrf_check_failed",
                     path=path,
@@ -94,6 +104,9 @@ class CSRFMiddleware:
                     has_header=bool(header_token),
                     cookie_prefix=cookie_token[:8] if cookie_token else None,
                     header_prefix=header_token[:8] if header_token else None,
+                    cookie_header_present=bool(raw_cookie),
+                    cookie_header_length=len(raw_cookie),
+                    cookie_names_received=cookie_names,
                     matched=bool(cookie_token and header_token and cookie_token == header_token),
                 )
                 await send({
