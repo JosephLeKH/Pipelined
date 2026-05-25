@@ -148,6 +148,17 @@ describe("Dashboard", () => {
     expect(screen.getByRole("dialog", { name: /add application/i })).toBeInTheDocument();
   });
 
+  it("should open ManualAddForm modal when pressing a keyboard shortcut", async () => {
+    // Arrange
+    render(<Dashboard />, { wrapper: makeWrapper() });
+
+    // Act
+    await userEvent.keyboard("a");
+
+    // Assert
+    expect(await screen.findByRole("dialog", { name: /add application/i })).toBeInTheDocument();
+  });
+
   it("should render StatsBar metrics after stats load", async () => {
     // Arrange / Act
     render(<Dashboard />, { wrapper: makeWrapper() });

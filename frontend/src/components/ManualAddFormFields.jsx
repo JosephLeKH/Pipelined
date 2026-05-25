@@ -1,61 +1,78 @@
-/** All form fields for ManualAddForm — rendered inside the <form> element. */
+/** All form fields for ManualAddForm — PRD-04 §10.1 single-column layout. */
 
 import { Input } from "./ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { DuplicateWarning } from "./DuplicateWarning";
 import FormField from "./FormField";
-import TagInput from "./TagInput";
-import TemplateBar from "./TemplateBar";
 import { ManualAddFormDateRow } from "./ManualAddFormDateRow";
-import { ManualAddFormCategoryRow } from "./ManualAddFormCategoryRow";
+import { ManualAddFormStagePicker } from "./ManualAddFormStagePicker";
+import { ManualAddFormSourcePicker } from "./ManualAddFormSourcePicker";
+import { ManualAddFormCollapsibleField } from "./ManualAddFormCollapsibleField";
 
 const GENERIC_ERROR_MSG = "Something went wrong. Please try again.";
 
 export function ManualAddFormFields({ hook }) {
-  const { roleTitle, setRoleTitle, company, setCompany, sourceUrl, setSourceUrl,
-          dateApplied, setDateApplied, compensation, setCompensation,
-          location, setLocation, stage, setStage, stageOptions,
-          remoteStatus, setRemoteStatus, companyType, setCompanyType,
-          tags, setTags, fieldErrors, applyTemplate,
-          isDuplicate, existingId, mutationError } = hook;
+  const {
+    company, setCompany, roleTitle, setRoleTitle, sourceUrl, setSourceUrl,
+    dateApplied, setDateApplied, stage, setStage, stageOptions,
+    source, setSource, jobDescription, setJobDescription, notes, setNotes,
+    fieldErrors, isDuplicate, existingId, mutationError,
+  } = hook;
+
   return (
     <>
-      <TemplateBar
-        onApply={applyTemplate}
-        fields={{ remote_status: remoteStatus || null, company_type: companyType || null, role_type: null, source: null, tags, compensation: compensation || null }}
-      />
       {isDuplicate && <DuplicateWarning existingId={existingId} />}
-      <FormField label="Role Title *" htmlFor="role-title" error={fieldErrors.roleTitle}>
-        <Input id="role-title" type="text" value={roleTitle} onChange={(e) => setRoleTitle(e.target.value)} aria-required="true" />
-      </FormField>
       <FormField label="Company *" htmlFor="company" error={fieldErrors.company}>
-        <Input id="company" type="text" value={company} onChange={(e) => setCompany(e.target.value)} aria-required="true" />
+        <Input
+          id="company"
+          type="text"
+          value={company}
+          onChange={(e) => setCompany(e.target.value)}
+          aria-required="true"
+        />
       </FormField>
+      <FormField label="Role title *" htmlFor="role-title" error={fieldErrors.roleTitle}>
+        <Input
+          id="role-title"
+          type="text"
+          value={roleTitle}
+          onChange={(e) => setRoleTitle(e.target.value)}
+          aria-required="true"
+        />
+      </FormField>
+      <ManualAddFormStagePicker
+        stageOptions={stageOptions}
+        stage={stage}
+        setStage={setStage}
+      />
+      <ManualAddFormDateRow dateApplied={dateApplied} setDateApplied={setDateApplied} />
+      <ManualAddFormSourcePicker source={source} setSource={setSource} />
       <FormField label="Job URL" htmlFor="source-url">
-        <Input id="source-url" type="url" value={sourceUrl} onChange={(e) => setSourceUrl(e.target.value)} />
+        <Input
+          id="source-url"
+          type="url"
+          value={sourceUrl}
+          onChange={(e) => setSourceUrl(e.target.value)}
+        />
       </FormField>
-      <ManualAddFormDateRow dateApplied={dateApplied} setDateApplied={setDateApplied} compensation={compensation} setCompensation={setCompensation} />
-      <FormField label="Location" htmlFor="location">
-        <Input id="location" type="text" value={location} onChange={(e) => setLocation(e.target.value)} />
-      </FormField>
-      {stageOptions.length > 0 && (
-        <FormField label="Initial Stage" htmlFor="initial-stage">
-          <Select value={stage || undefined} onValueChange={setStage}>
-            <SelectTrigger id="initial-stage">
-              <SelectValue placeholder={`Default (${stageOptions[0]})`} />
-            </SelectTrigger>
-            <SelectContent>
-              {stageOptions.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-            </SelectContent>
-          </Select>
-        </FormField>
-      )}
-      <ManualAddFormCategoryRow remoteStatus={remoteStatus} setRemoteStatus={setRemoteStatus} companyType={companyType} setCompanyType={setCompanyType} />
-      <FormField label="Tags" htmlFor="tags">
-        <TagInput id="tags" value={tags} onChange={setTags} />
-      </FormField>
+      <ManualAddFormCollapsibleField
+        label="Job description"
+        htmlFor="job-description"
+        value={jobDescription}
+        onChange={setJobDescription}
+        placeholder="Paste the job description…"
+      />
+      <ManualAddFormCollapsibleField
+        label="Notes"
+        htmlFor="notes"
+        value={notes}
+        onChange={setNotes}
+        placeholder="Optional notes…"
+      />
       {mutationError && !isDuplicate && (
-        <p role="alert" className="rounded border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+        <p
+          role="alert"
+          className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive"
+        >
           {mutationError.message ?? GENERIC_ERROR_MSG}
         </p>
       )}

@@ -143,7 +143,17 @@ export const DRAWER_ANIMATION_MS = 220;
 export const SIDEBAR_TOOLTIP_DELAY_MS = 400;
 export const TOP_BAR_HEIGHT_PX = 44;
 export const DETAIL_PANEL_WIDTH_PX = 520;
+export const MANUAL_ADD_FORM_WIDTH_PX = 520;
+export const MANUAL_ADD_VISIBLE_STAGES = 4;
 export const COPILOT_DRAWER_WIDTH_PX = 480;
+
+/** Source options for ManualAddForm segmented control (PRD-04 §10.1). */
+export const MANUAL_ADD_SOURCE_OPTIONS = [
+  { value: "manual", label: "Manual" },
+  { value: "extension", label: "Extension" },
+  { value: "email", label: "Email" },
+  { value: "board", label: "Board" },
+];
 
 export const EVENT_TYPE_OPTIONS = [
   { value: "phone_screen", label: "Phone Screen" },

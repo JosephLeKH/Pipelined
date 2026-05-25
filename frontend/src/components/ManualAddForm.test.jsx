@@ -63,8 +63,7 @@ describe("ManualAddForm", () => {
     // Assert
     expect(screen.getByRole("textbox", { name: /role title/i })).toBeInTheDocument();
     expect(screen.getByRole("textbox", { name: /company/i })).toBeInTheDocument();
-    expect(screen.getByRole("combobox", { name: /remote status/i })).toBeInTheDocument();
-    expect(screen.getByRole("combobox", { name: /company type/i })).toBeInTheDocument();
+    expect(screen.getByRole("radiogroup", { name: /source/i })).toBeInTheDocument();
   });
 
   it("should default date_applied input to today", () => {
@@ -226,6 +225,35 @@ describe("ManualAddForm", () => {
     // Assert
     await screen.findByRole("alert");
     expect(screen.getByRole("alert")).toHaveTextContent(/internal server error/i);
+  });
+
+  it("should submit with cmd+enter keyboard shortcut", async () => {
+    // Arrange
+    let requestBody = null;
+    server.use(
+      http.post("/api/applications", async ({ request }) => {
+        requestBody = await request.json();
+        return HttpResponse.json({ data: CREATED_APP }, { status: 201 });
+      })
+    );
+    render(<ManualAddForm isOpen onClose={() => {}} />, { wrapper: makeWrapper() });
+
+    // Act
+    await userEvent.type(screen.getByRole("textbox", { name: /role title/i }), "Software Engineer");
+    await userEvent.type(screen.getByRole("textbox", { name: /company/i }), "Acme Corp");
+    fireEvent.keyDown(document.getElementById("manual-add-form"), { key: "Enter", metaKey: true });
+
+    // Assert
+    await waitFor(() => expect(requestBody).not.toBeNull());
+    expect(requestBody.role_title).toBe("Software Engineer");
+    expect(requestBody.company).toBe("Acme Corp");
+  });
+
+  it("should render at 520px modal width", () => {
+    render(<ManualAddForm isOpen onClose={() => {}} />, { wrapper: makeWrapper() });
+
+    const dialog = screen.getByRole("dialog");
+    expect(dialog).toHaveStyle({ maxWidth: "520px" });
   });
 
   it("should move focus into the dialog when modal opens", async () => {
