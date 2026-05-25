@@ -43,6 +43,17 @@ const ANALYTICS_EMPTY = {
   top_companies: [],
 };
 
+const STATS_DATA = {
+  total_applied: 10,
+  active_count: 8,
+  response_rate: 0.25,
+  avg_days_to_first_response: 4.2,
+  stale_count: 1,
+  applied_this_week: 3,
+  current_streak: 2,
+  tag_offer_rates: [],
+};
+
 const server = setupServer(
   http.get("/api/auth/me", () =>
     HttpResponse.json({
@@ -54,8 +65,11 @@ const server = setupServer(
   ),
   http.get("/api/applications/funnel", () =>
     HttpResponse.json({ data: FUNNEL_DATA }),
+  ),
+  http.get("/api/applications/stats", () =>
+    HttpResponse.json({ data: STATS_DATA })
+  ),
   ...passthroughHandlers,
-  )
 );
 
 beforeAll(() => server.listen({ onUnhandledRequest: "warn" }));
@@ -93,6 +107,32 @@ describe("Analytics", () => {
     expect(screen.getByText("Last 90 days")).toBeInTheDocument();
     expect(screen.getByText("Last 180 days")).toBeInTheDocument();
     expect(screen.getByText("All time")).toBeInTheDocument();
+  });
+
+  it("should render KPI tiles with metrics from analytics and stats", async () => {
+    renderAnalytics();
+
+    await screen.findByText("Applications per Week");
+
+    expect(screen.getByText("Interviews")).toBeInTheDocument();
+    expect(screen.getByText("Reply rate")).toBeInTheDocument();
+    expect(screen.getByText("Avg response")).toBeInTheDocument();
+    expect(screen.getByText("25.0%")).toBeInTheDocument();
+    expect(screen.getByText("4.2 days")).toBeInTheDocument();
+
+    const kpiGrid = screen.getByText("Interviews").closest(".grid");
+    expect(kpiGrid).toHaveTextContent("Applied");
+    expect(kpiGrid).toHaveTextContent("10");
+    expect(kpiGrid).toHaveTextContent("2");
+  });
+
+  it("should show positive delta in success color when applied trend improves", async () => {
+    renderAnalytics();
+
+    // weeks: W01=3, W02=5 → recent 5 vs prior 3 → +67%
+    const delta = await screen.findByText(/67%/);
+    expect(delta).toHaveClass("text-status-success");
+    expect(delta.textContent).toMatch(/↑/);
   });
 
   it("should render chart section headings when data has enough entries", async () => {
@@ -152,7 +192,7 @@ describe("Analytics", () => {
 
     await screen.findByText("Conversion Rates by Stage");
 
-    expect(screen.getByText("Applied")).toBeInTheDocument();
+    expect(screen.getAllByText("Applied").length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText("Phone Screen")).toBeInTheDocument();
     expect(screen.getByText("Offer")).toBeInTheDocument();
   });
