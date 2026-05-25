@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { toast } from "sonner";
 import SettingsReferralSection from "./SettingsReferralSection";
 
 vi.mock("sonner", () => ({
@@ -10,8 +11,7 @@ vi.mock("../lib/analytics", () => ({
   trackEvent: vi.fn(),
 }));
 
-const USER_WITH_CODE = { referral_code: "REF123", referral_count: 1 };
-const USER_SUPER = { referral_code: "REF999", referral_count: 5 };
+const USER_WITH_CODE = { referral_code: "REF123", referral_count: 2 };
 const USER_NO_CODE = { referral_code: null, referral_count: 0 };
 
 describe("SettingsReferralSection", () => {
@@ -45,15 +45,21 @@ describe("SettingsReferralSection", () => {
     expect(await screen.findByText("Copied")).toBeInTheDocument();
   });
 
-  it("should show Super Referrer badge when referral count is 3 or more", () => {
-    render(<SettingsReferralSection user={USER_SUPER} />);
-
-    expect(screen.getByText("Super Referrer")).toBeInTheDocument();
-  });
-
-  it("should not show Super Referrer badge when referral count is below threshold", () => {
+  it("should toast success when referral link is copied", async () => {
     render(<SettingsReferralSection user={USER_WITH_CODE} />);
 
-    expect(screen.queryByText("Super Referrer")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /copy referral link/i }));
+
+    await waitFor(() => {
+      expect(toast.success).toHaveBeenCalledWith("Referral link copied!");
+    });
+  });
+
+  it("should show referral stats with earned months", () => {
+    render(<SettingsReferralSection user={USER_WITH_CODE} />);
+
+    const stats = screen.getByText(/months free/i).closest("p");
+    expect(stats).toHaveTextContent(/2 friends/);
+    expect(stats).toHaveTextContent(/Earned 2 months free/);
   });
 });

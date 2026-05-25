@@ -11,11 +11,15 @@ function renderSection(user) {
   );
 }
 
+function barFill(bar) {
+  return bar.querySelector("div:not([role])");
+}
+
 describe("SettingsUsageSection", () => {
-  it("should render Usage & Plan heading", () => {
+  it("should render Plan & usage heading", () => {
     renderSection({});
 
-    expect(screen.getByText("Usage & Plan")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Plan & usage" })).toBeInTheDocument();
   });
 
   it("should render progressbar for Applications with correct aria-valuenow", () => {
@@ -37,7 +41,7 @@ describe("SettingsUsageSection", () => {
   it("should render unified AI usage section", () => {
     renderSection({ ai_scores_today: 3 });
 
-    expect(screen.getByRole("heading", { name: "AI usage" })).toBeInTheDocument();
+    expect(screen.getByText("AI usage")).toBeInTheDocument();
     expect(screen.getByText(/share this daily limit/i)).toBeInTheDocument();
   });
 
@@ -54,5 +58,27 @@ describe("SettingsUsageSection", () => {
 
     const bars = screen.getAllByRole("progressbar");
     bars.forEach((bar) => expect(bar).toHaveAttribute("aria-valuenow", "0"));
+  });
+
+  it("should use warn fill color when usage is at or above 80 percent", () => {
+    renderSection({ application_count: 80, contact_count: 0, ai_scores_today: 0 });
+
+    const fill = barFill(screen.getByRole("progressbar", { name: "Applications" }));
+    expect(fill).toHaveClass("bg-status-warn");
+  });
+
+  it("should use brand-700 fill and Upgrade CTA when usage reaches limit", () => {
+    renderSection({ application_count: 100, contact_count: 0, ai_scores_today: 0 });
+
+    const fill = barFill(screen.getByRole("progressbar", { name: "Applications" }));
+    expect(fill).toHaveClass("bg-brand-700");
+    expect(screen.getByRole("button", { name: "Upgrade" })).toBeInTheDocument();
+  });
+
+  it("should use brand-600 fill below 80 percent usage", () => {
+    renderSection({ application_count: 10, contact_count: 0, ai_scores_today: 0 });
+
+    const fill = barFill(screen.getByRole("progressbar", { name: "Applications" }));
+    expect(fill).toHaveClass("bg-brand-600");
   });
 });
