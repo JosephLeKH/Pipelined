@@ -7,13 +7,17 @@ vi.mock("../hooks/useJobs", () => ({
   useRecommendedJobs: vi.fn(),
 }));
 
+vi.mock("../hooks/useApplications", () => ({
+  useCreateApplication: vi.fn(() => ({ mutate: vi.fn(), isPending: false })),
+}));
+
 vi.mock("../context/AuthContext", async () => {
   const { createContext } = await import("react");
   return { AuthContext: createContext({ user: { id: "u1", email: "test@example.com" } }) };
 });
 
-vi.mock("./JobCard", () => ({
-  default: ({ job }) => <div data-testid="job-card">{job.role ?? job.title}</div>,
+vi.mock("sonner", () => ({
+  toast: { success: vi.fn(), error: vi.fn() },
 }));
 
 import { useRecommendedJobs } from "../hooks/useJobs";
@@ -22,9 +26,20 @@ const MOCK_JOB = {
   id: "j1",
   role: "Senior Engineer",
   company: "Acme",
+  location: "SF",
+  remote_status: "remote",
+  experience_level: "intern",
   score: 78,
-  reason: "Matches your skills",
+  apply_url: "https://acme.example.com",
 };
+
+function makeJobs(count) {
+  return Array.from({ length: count }, (_, i) => ({
+    ...MOCK_JOB,
+    id: `j${i + 1}`,
+    role: `Role ${i + 1}`,
+  }));
+}
 
 function renderComponent(onSelectJob = vi.fn()) {
   return render(<JobRecommendations onSelectJob={onSelectJob} />);
@@ -40,10 +55,9 @@ describe("JobRecommendations", () => {
 
     renderComponent();
 
-    expect(screen.getByText("Recommended for You")).toBeInTheDocument();
-    expect(screen.getByText("Ranked by your resume keywords")).toBeInTheDocument();
-    const skeletons = document.querySelectorAll(".animate-pulse");
-    expect(skeletons.length).toBeGreaterThan(0);
+    expect(screen.getByText("Recommended for you")).toBeInTheDocument();
+    expect(screen.getByText("based on your resume")).toBeInTheDocument();
+    expect(screen.getAllByTestId("recommendation-skeleton")).toHaveLength(3);
   });
 
   it("should show error message with retry when recommendations endpoint fails", async () => {
@@ -65,9 +79,9 @@ describe("JobRecommendations", () => {
     expect(container).toBeEmptyDOMElement();
   });
 
-  it("should render recommendation cards with reason tag and score badge", () => {
+  it("should render up to three recommendation tiles with fit score", () => {
     useRecommendedJobs.mockReturnValue({
-      data: [MOCK_JOB],
+      data: makeJobs(5),
       isLoading: false,
       isError: false,
       refetch: vi.fn(),
@@ -75,9 +89,21 @@ describe("JobRecommendations", () => {
 
     renderComponent();
 
-    expect(screen.getByText("Recommended for You")).toBeInTheDocument();
-    expect(screen.getByTestId("job-card")).toBeInTheDocument();
-    expect(screen.getByText("Matches your skills")).toBeInTheDocument();
-    expect(screen.getByTestId("fit-badge")).toHaveTextContent("78%");
+    expect(screen.getByText("Recommended for you")).toBeInTheDocument();
+    expect(screen.getAllByTestId("job-card")).toHaveLength(3);
+    expect(screen.getAllByTestId("fit-badge")[0]).toHaveTextContent("78%");
+  });
+
+  it("should render fewer than three tiles when results are limited", () => {
+    useRecommendedJobs.mockReturnValue({
+      data: makeJobs(2),
+      isLoading: false,
+      isError: false,
+      refetch: vi.fn(),
+    });
+
+    renderComponent();
+
+    expect(screen.getAllByTestId("job-card")).toHaveLength(2);
   });
 });
