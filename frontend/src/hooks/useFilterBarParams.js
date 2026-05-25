@@ -5,7 +5,7 @@ import { useSearchParams } from "react-router-dom";
 import { trackEvent } from "../lib/analytics";
 import { SEARCH_DEBOUNCE_MS } from "../lib/constants";
 
-const DATE_PRESET_DAYS = {
+export const DATE_PRESET_DAYS = {
   "7d": 7,
   "30d": 30,
   "90d": 90,
