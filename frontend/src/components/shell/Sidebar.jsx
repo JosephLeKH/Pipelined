@@ -64,7 +64,7 @@ function Sidebar({ collapsed, onOpenCopilot, mobile = false }) {
       aria-label="Main navigation"
       data-collapsed={collapsed}
       className={cn(
-        "h-screen shrink-0 flex-col border-r border-border-1 bg-surface-1",
+        "h-full shrink-0 flex-col border-r border-border-1 bg-surface-1",
         mobile ? "flex w-full" : "hidden motion-safe-sidebar md:flex",
         !mobile && (collapsed ? "w-14" : "w-60"),
       )}

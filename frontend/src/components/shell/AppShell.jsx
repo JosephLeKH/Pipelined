@@ -49,9 +49,9 @@ function AppShell() {
 
   return (
     <>
-      <EmailVerificationBanner />
-      <OfflineBanner />
-      <div className="flex min-h-screen flex-col bg-surface-0">
+      <div className="flex h-dvh flex-col bg-surface-0">
+        <EmailVerificationBanner />
+        <OfflineBanner />
         <div className="flex min-h-0 flex-1">
           <Sidebar collapsed={collapsed} onOpenCopilot={openCopilot} />
           <div className="flex min-w-0 flex-1 flex-col">
