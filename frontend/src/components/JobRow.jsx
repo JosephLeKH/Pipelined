@@ -20,7 +20,7 @@ function JobRow({ job, style }) {
   return (
     <div
       style={style}
-      className="flex items-center gap-4 border-b border-border px-4 hover:bg-muted transition-colors"
+      className="flex min-h-[var(--row-height)] items-center gap-4 border-b border-border px-4 motion-reduce:transition-none transition-colors hover:bg-muted"
       role="row"
       data-testid="job-row"
     >

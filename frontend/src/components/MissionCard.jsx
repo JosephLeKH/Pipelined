@@ -55,7 +55,7 @@ function MissionCard({ mission, onSnooze, onDone, isSnoozing, isCompleting }) {
       <p className="text-sm text-muted-foreground">{mission.reason}</p>
       {mission.section === "oa_deadlines" && <DeadlineBadge body={mission.body} />}
       {fitScore != null && <FitBadge score={fitScore} />}
-      <div className="flex flex-wrap items-center gap-2 pt-1">
+      <div className="flex min-h-[var(--row-height)] flex-wrap items-center gap-2 pt-1">
         <Button asChild size="sm">
           <Link to={mission.action_url} className="inline-flex items-center gap-1.5">
             Open
