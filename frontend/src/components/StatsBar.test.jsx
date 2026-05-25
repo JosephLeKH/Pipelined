@@ -5,10 +5,16 @@ import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter } from "react-router-dom";
-import { describe, it, expect, beforeAll, afterAll, afterEach } from "vitest";
+import { describe, it, expect, beforeAll, afterAll, afterEach, vi } from "vitest";
 
 import StatsBar from "./StatsBar";
 import { passthroughHandlers } from "../test/passthroughHandlers";
+
+vi.mock("../context/AuthContext", () => ({
+  useAuth: () => ({ user: { weekly_goal: 5 } }),
+}));
+
+vi.mock("sonner", () => ({ toast: { success: vi.fn() } }));
 
 const STATS = {
   total_applied: 42,
@@ -16,6 +22,8 @@ const STATS = {
   response_rate: 0.25,
   avg_days_to_first_response: 5.3,
   stale_count: 7,
+  applied_this_week: 2,
+  current_streak: 0,
 };
 
 const server = setupServer(
@@ -55,11 +63,12 @@ describe("StatsBar", () => {
     // Arrange / Act
     render(<StatsBar />, { wrapper: makeWrapper() });
 
-    // Assert
-    expect(await screen.findByText("42")).toBeInTheDocument();
-    expect(await screen.findByText("30")).toBeInTheDocument();
-    expect(await screen.findByText("25.0%")).toBeInTheDocument();
-    expect(await screen.findByText("5.3")).toBeInTheDocument();
+    // Assert — collapsed summary and expanded metric cards
+    const summary = await screen.findByTestId("stats-collapsed-summary");
+    expect(summary).toHaveTextContent("42 applications");
+    expect(summary).toHaveTextContent("30 active");
+    expect(await screen.findByLabelText(/response rate: 25.0%/i)).toBeInTheDocument();
+    expect(await screen.findByLabelText(/avg days to response: 5.3/i)).toBeInTheDocument();
   });
 
   it("should display — for avg_days_to_first_response when null", async () => {
@@ -99,5 +108,38 @@ describe("StatsBar", () => {
     // Assert
     expect(await screen.findByText("7")).toBeInTheDocument();
     expect(await screen.findByLabelText(/stale applications: 7/i)).toBeInTheDocument();
+  });
+
+  it("should show collapsed summary line with expand caret by default when filters active", async () => {
+    render(<StatsBar filtersActive />, { wrapper: makeWrapper() });
+
+    expect(await screen.findByText(/42/)).toBeInTheDocument();
+    expect(screen.getByText(/applications/)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /expand statistics/i })).toBeInTheDocument();
+    expect(screen.queryByLabelText(/response rate/i)).not.toBeInTheDocument();
+  });
+
+  it("should expand metric grid when caret is clicked", async () => {
+    const user = (await import("@testing-library/user-event")).default.setup();
+    render(<StatsBar filtersActive />, { wrapper: makeWrapper() });
+
+    await screen.findByText(/42/);
+    await user.click(screen.getByRole("button", { name: /expand statistics/i }));
+
+    expect(await screen.findByLabelText(/response rate/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /collapse statistics/i })).toBeInTheDocument();
+  });
+
+  it("should show compact goal progress in summary row", async () => {
+    server.use(
+      http.get("/api/applications/stats", () =>
+        HttpResponse.json({ data: { ...STATS, applied_this_week: 3, current_streak: 0 } })
+      )
+    );
+
+    render(<StatsBar />, { wrapper: makeWrapper() });
+
+    expect(await screen.findByText(/goal:/i)).toBeInTheDocument();
+    expect(await screen.findByText(/3\/5 this week/i)).toBeInTheDocument();
   });
 });

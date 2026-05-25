@@ -11,8 +11,8 @@ import AutopilotResumeBanner from "../components/AutopilotResumeBanner";
 import FilterBar from "../components/FilterBar";
 import FollowUpBanner from "../components/FollowUpBanner";
 import InboxSetupBanner from "../components/InboxSetupBanner";
-import GoalProgress from "../components/GoalProgress";
 import StatsBar from "../components/StatsBar";
+import { useFilterBarParams } from "../hooks/useFilterBarParams";
 import ApplicationList from "../components/ApplicationList";
 import KanbanBoard from "../components/KanbanBoard";
 import CsvImportModal from "../components/CsvImportModal";
@@ -48,6 +48,7 @@ function DashboardContent({
   followUpsDue,
   onViewFollowUps,
   expandFollowUpDraft,
+  filtersActive,
 }) {
   return (
     <div className="flex min-h-0 flex-1 flex-col">
@@ -69,8 +70,7 @@ function DashboardContent({
       <FilterBar />
       <div className="flex flex-col gap-4 px-4 pb-6">
         <section role="region" aria-label="Goal progress and statistics">
-          <GoalProgress />
-          <StatsBar />
+          <StatsBar filtersActive={filtersActive} />
         </section>
         <section role="region" aria-label="Application board">
           {viewMode === "kanban" ? (
@@ -127,6 +127,7 @@ function Dashboard() {
     searchParams.get("section") === "follow-up" ||
     searchParams.get("action") === "follow-up";
   const { filters, selectedId, includeArchived, handleSelect, handleClosePanel, handleClearFilters, handleViewFollowUps } = useDashboardFilters();
+  const { activeFilterCount } = useFilterBarParams();
   const { data: selectedApp } = useApplication(selectedId);
   const { data: stats } = useApplicationStats();
   const handleExport = useCallback(async () => {
@@ -154,6 +155,7 @@ function Dashboard() {
         followUpsDue={stats?.follow_ups_due ?? 0}
         onViewFollowUps={() => handleViewFollowUps(stats?.first_follow_up_due_id)}
         expandFollowUpDraft={expandFollowUpDraft}
+        filtersActive={activeFilterCount > 0}
       />
     </>
   );

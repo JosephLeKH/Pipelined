@@ -1,5 +1,4 @@
-/** Displays 5 key pipeline metrics with colored left-border accent cards.
- *  Numbers count up from 0 on first load using requestAnimationFrame. */
+/** Pipeline metrics — collapsed single-line summary or expanded metric grid with goal. */
 
 import { useEffect, useRef, useState } from "react";
 
@@ -8,11 +7,13 @@ import Activity from "lucide-react/dist/esm/icons/activity";
 import CheckCircle from "lucide-react/dist/esm/icons/check-circle";
 import Clock from "lucide-react/dist/esm/icons/clock";
 import Bell from "lucide-react/dist/esm/icons/bell";
+import ChevronDown from "lucide-react/dist/esm/icons/chevron-down";
+import ChevronUp from "lucide-react/dist/esm/icons/chevron-up";
 
 import { useApplicationStats } from "../hooks/useApplications";
 import { STALE_APPLICATIONS_LABEL } from "../lib/aiConstants";
 import ApiErrorMessage from "./ApiErrorMessage";
-import { Card } from "./ui/card";
+import GoalProgress from "./GoalProgress";
 
 const COUNT_UP_DURATION_MS = 400;
 
@@ -22,6 +23,12 @@ const METRIC_CONFIG = [
   { key: "response_rate", label: "Response Rate", Icon: CheckCircle },
   { key: "avg_days_to_first_response", label: "Avg Days to Response", Icon: Clock },
   { key: "stale_count", label: STALE_APPLICATIONS_LABEL, Icon: Bell },
+];
+
+const COLLAPSED_SUMMARY = [
+  { key: "total_applied", label: "applications" },
+  { key: "active_count", label: "active" },
+  { key: "stale_count", label: "ghosted" },
 ];
 
 function getRawValue(key, stats) {
@@ -39,8 +46,6 @@ function formatCounted(key, current, stats) {
   return String(Math.round(current));
 }
 
-/** Counts from 0 to target over COUNT_UP_DURATION_MS on initial mount only — not on refetch.
- *  Skips animation if the user prefers reduced motion (also skips in test environments). */
 function useCountUp(target) {
   const [current, setCurrent] = useState(0);
   const hasAnimated = useRef(false);
@@ -58,7 +63,7 @@ function useCountUp(target) {
     const start = performance.now();
     function tick(now) {
       const t = Math.min((now - start) / COUNT_UP_DURATION_MS, 1);
-      const eased = 1 - (1 - t) ** 3; // ease-out cubic
+      const eased = 1 - (1 - t) ** 3;
       setCurrent(target * eased);
       if (t < 1) requestAnimationFrame(tick);
       else setCurrent(target);
@@ -76,41 +81,107 @@ function MetricCard({ metricKey, label, stats, isLoading, Icon }) {
 
   if (isLoading) {
     return (
-      <Card className="flex flex-col gap-1 p-4" aria-label={`${label}: loading`}>
-        <div className="h-7 w-16 animate-pulse rounded bg-muted" />
-        <div className="h-4 w-24 animate-pulse rounded bg-muted" />
-      </Card>
+      <div className="flex flex-col gap-1 rounded-lg border border-border-1 p-4" aria-label={`${label}: loading`}>
+        <div className="h-7 w-16 animate-pulse rounded bg-surface-2" />
+        <div className="h-4 w-24 animate-pulse rounded bg-surface-2" />
+      </div>
     );
   }
 
   return (
-    <Card className="flex flex-col gap-1 p-4" aria-label={`${label}: ${displayValue}`}>
-      <span className=" text-2xl font-semibold text-foreground">{displayValue}</span>
-      <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
+    <div className="flex flex-col gap-1 rounded-lg border border-border-1 p-4" aria-label={`${label}: ${displayValue}`}>
+      <span className="text-2xl font-semibold text-text-1">{displayValue}</span>
+      <span className="flex items-center gap-1.5 text-sm text-text-3">
         <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
         {label}
       </span>
-    </Card>
+    </div>
   );
 }
 
-function StatsBar() {
+function CollapsedSummary({ stats, isLoading }) {
+  if (isLoading) {
+    return (
+      <div className="flex min-w-0 flex-1 items-center gap-2" aria-hidden="true">
+        <div className="h-3.5 w-48 animate-pulse rounded bg-surface-2" />
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className="flex min-w-0 flex-1 flex-wrap items-center gap-x-0 text-[13px] sm:flex-nowrap"
+      data-testid="stats-collapsed-summary"
+    >
+      {COLLAPSED_SUMMARY.map(({ key, label }, index) => {
+        const value = stats ? getRawValue(key, stats) : null;
+        const display = typeof value === "number" ? String(value) : "—";
+        return (
+          <span key={key} className="shrink-0">
+            {index > 0 && <span className="text-text-3"> · </span>}
+            <span className="font-medium text-text-1">{display}</span>
+            <span className="text-text-3"> {label}</span>
+          </span>
+        );
+      })}
+    </div>
+  );
+}
+
+function StatsBar({ filtersActive = false }) {
   const { data: stats, isLoading, error, refetch } = useApplicationStats();
+  const [expanded, setExpanded] = useState(!filtersActive);
+
+  useEffect(() => {
+    setExpanded(!filtersActive);
+  }, [filtersActive]);
 
   if (error) return <ApiErrorMessage error={error} onRetry={refetch} />;
 
+  const toggleLabel = expanded ? "Collapse statistics" : "Expand statistics";
+
   return (
-    <div className="grid grid-cols-2 gap-5 md:grid-cols-3 lg:grid-cols-5">
-      {METRIC_CONFIG.map(({ key, label, Icon }) => (
-        <MetricCard
-          key={key}
-          metricKey={key}
-          label={label}
-          stats={stats ?? null}
-          isLoading={isLoading}
-          Icon={Icon}
-        />
-      ))}
+    <div className="flex flex-col gap-3" data-testid="stats-bar">
+      <div className="flex items-center gap-3 py-1">
+        <CollapsedSummary stats={stats ?? null} isLoading={isLoading} />
+        <span className="hidden shrink-0 text-text-3 md:inline" aria-hidden="true">
+          |
+        </span>
+        <div className="min-w-0 shrink">
+          <GoalProgress variant="compact" />
+        </div>
+        <button
+          type="button"
+          onClick={() => setExpanded((prev) => !prev)}
+          aria-expanded={expanded}
+          aria-label={toggleLabel}
+          className="ml-auto inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-text-3 hover:bg-surface-1 hover:text-text-1 motion-reduce:transition-none transition-colors duration-hover ease-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 focus-visible:outline-offset-2 dark:focus-visible:outline-1"
+        >
+          {expanded ? (
+            <ChevronUp className="h-4 w-4" aria-hidden="true" />
+          ) : (
+            <ChevronDown className="h-4 w-4" aria-hidden="true" />
+          )}
+        </button>
+      </div>
+
+      {expanded && (
+        <div className="flex flex-col gap-4 motion-reduce:transition-none">
+          <GoalProgress variant="expanded" />
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5">
+            {METRIC_CONFIG.map(({ key, label, Icon }) => (
+              <MetricCard
+                key={key}
+                metricKey={key}
+                label={label}
+                stats={stats ?? null}
+                isLoading={isLoading}
+                Icon={Icon}
+              />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

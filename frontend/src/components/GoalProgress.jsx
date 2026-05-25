@@ -1,4 +1,4 @@
-/** Circular progress ring showing weekly application goal and streak count. */
+/** Weekly application goal — compact inline bar or expanded ring card. */
 
 import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
@@ -14,46 +14,72 @@ import { useAuth } from "../context/AuthContext";
 const RING_RADIUS = 36;
 const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
 const DEFAULT_WEEKLY_GOAL = 5;
+const MINI_BAR_WIDTH_PX = 96;
+const MINI_BAR_HEIGHT_PX = 4;
 
 function ringColor(pct) {
-  if (pct >= 1) return "stroke-primary";
-  if (pct > 0) return "stroke-primary";
-  return "stroke-muted-foreground/30";
+  if (pct >= 1) return "stroke-brand-600";
+  if (pct > 0) return "stroke-brand-600";
+  return "stroke-border-2";
 }
 
-function GoalProgress() {
-  const { data: stats, isLoading } = useApplicationStats();
-  const { user } = useAuth();
-  const goalReachedRef = useRef(false);
+function GoalMiniBar({ pct }) {
+  return (
+    <div
+      className="shrink-0 overflow-hidden rounded-sm bg-surface-2"
+      style={{ width: MINI_BAR_WIDTH_PX, height: MINI_BAR_HEIGHT_PX }}
+      aria-hidden="true"
+    >
+      <div
+        className="h-full rounded-sm bg-brand-600 motion-reduce:transition-none transition-[width] duration-hover ease-out"
+        style={{ width: `${Math.round(pct * 100)}%` }}
+      />
+    </div>
+  );
+}
 
-  const weeklyGoal = user?.weekly_goal ?? DEFAULT_WEEKLY_GOAL;
-  const appliedThisWeek = stats?.applied_this_week ?? 0;
-  const currentStreak = stats?.current_streak ?? 0;
-  const pct = weeklyGoal > 0 ? Math.min(appliedThisWeek / weeklyGoal, 1) : 0;
-  const dashOffset = RING_CIRCUMFERENCE * (1 - pct);
-  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-  useEffect(() => {
-    if (!isLoading && appliedThisWeek >= weeklyGoal && weeklyGoal > 0 && !goalReachedRef.current) {
-      goalReachedRef.current = true;
-      toast.success(`Goal reached! ${appliedThisWeek} applications this week.`);
-    }
-  }, [appliedThisWeek, weeklyGoal, isLoading]);
-
+function GoalProgressCompact({ appliedThisWeek, weeklyGoal, pct, isLoading }) {
   if (isLoading) {
     return (
-      <div className="flex items-center gap-4 p-4 rounded-xl bg-card border border-border" aria-hidden="true">
-        <div className="h-20 w-20 shimmer-bg animate-shimmer rounded-full" />
+      <div className="flex items-center gap-2" aria-hidden="true">
+        <div className="h-3.5 w-28 animate-pulse rounded bg-surface-2" />
+        <div className="h-1 w-24 animate-pulse rounded bg-surface-2" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex min-w-0 items-center gap-2" aria-label="Weekly goal progress">
+      <span className="shrink-0 text-[13px] text-text-3">Goal:</span>
+      <span className="shrink-0 text-[13px] font-medium text-text-1">
+        {appliedThisWeek}/{weeklyGoal} this week
+      </span>
+      <GoalMiniBar pct={pct} />
+    </div>
+  );
+}
+
+function GoalProgressExpanded({ appliedThisWeek, weeklyGoal, currentStreak, pct, dashOffset, reducedMotion, isLoading }) {
+  if (isLoading) {
+    return (
+      <div
+        className="flex items-center gap-4 rounded-lg border border-border-1 p-4"
+        aria-hidden="true"
+      >
+        <div className="h-20 w-20 animate-pulse rounded-full bg-surface-2" />
         <div className="flex flex-col gap-2">
-          <div className="h-4 w-32 shimmer-bg animate-shimmer rounded" />
-          <div className="h-3 w-20 shimmer-bg animate-shimmer rounded" />
+          <div className="h-4 w-32 animate-pulse rounded bg-surface-2" />
+          <div className="h-3 w-20 animate-pulse rounded bg-surface-2" />
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex items-center gap-4 p-4 rounded-xl bg-card border border-border" aria-label="Weekly goal progress">
+    <div
+      className="flex items-center gap-4 rounded-lg border border-border-1 p-4"
+      aria-label="Weekly goal progress"
+    >
       <svg
         width={RING_RADIUS * 2 + 8}
         height={RING_RADIUS * 2 + 8}
@@ -66,7 +92,7 @@ function GoalProgress() {
           r={RING_RADIUS}
           fill="none"
           strokeWidth={6}
-          className="stroke-muted"
+          className="stroke-surface-2"
         />
         <circle
           cx={RING_RADIUS + 4}
@@ -85,7 +111,7 @@ function GoalProgress() {
           y={RING_RADIUS + 4}
           textAnchor="middle"
           dominantBaseline="central"
-          className="fill-foreground"
+          className="fill-text-1"
           fontSize={13}
           fontWeight={600}
         >
@@ -94,24 +120,67 @@ function GoalProgress() {
       </svg>
 
       <div className="flex flex-col">
-        <span className="text-sm font-medium text-foreground">
+        <span className="text-sm font-medium text-text-1">
           {appliedThisWeek} / {weeklyGoal} this week
         </span>
-        <span className="text-xs text-muted-foreground">Weekly goal</span>
+        <span className="text-xs text-text-3">Weekly goal</span>
         <Link
           to="/settings?section=pipeline"
-          className="mt-0.5 text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground transition-colors"
+          className="mt-0.5 text-xs text-text-3 underline underline-offset-2 hover:text-text-1 motion-reduce:transition-none transition-colors duration-hover ease-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 focus-visible:outline-offset-2 dark:focus-visible:outline-1"
         >
           Edit goal
         </Link>
         {currentStreak > 0 && (
-          <span className="mt-1 flex items-center gap-1 text-xs font-medium text-primary">
+          <span className="mt-1 flex items-center gap-1 text-xs font-medium text-brand-600">
             <Flame className="h-3.5 w-3.5" aria-hidden="true" />
             {currentStreak} week streak
           </span>
         )}
       </div>
     </div>
+  );
+}
+
+function GoalProgress({ variant = "expanded" }) {
+  const { data: stats, isLoading } = useApplicationStats();
+  const { user } = useAuth();
+  const goalReachedRef = useRef(false);
+
+  const weeklyGoal = user?.weekly_goal ?? DEFAULT_WEEKLY_GOAL;
+  const appliedThisWeek = stats?.applied_this_week ?? 0;
+  const currentStreak = stats?.current_streak ?? 0;
+  const pct = weeklyGoal > 0 ? Math.min(appliedThisWeek / weeklyGoal, 1) : 0;
+  const dashOffset = RING_CIRCUMFERENCE * (1 - pct);
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  useEffect(() => {
+    if (!isLoading && appliedThisWeek >= weeklyGoal && weeklyGoal > 0 && !goalReachedRef.current) {
+      goalReachedRef.current = true;
+      toast.success(`Goal reached! ${appliedThisWeek} applications this week.`);
+    }
+  }, [appliedThisWeek, weeklyGoal, isLoading]);
+
+  if (variant === "compact") {
+    return (
+      <GoalProgressCompact
+        appliedThisWeek={appliedThisWeek}
+        weeklyGoal={weeklyGoal}
+        pct={pct}
+        isLoading={isLoading}
+      />
+    );
+  }
+
+  return (
+    <GoalProgressExpanded
+      appliedThisWeek={appliedThisWeek}
+      weeklyGoal={weeklyGoal}
+      currentStreak={currentStreak}
+      pct={pct}
+      dashOffset={dashOffset}
+      reducedMotion={reducedMotion}
+      isLoading={isLoading}
+    />
   );
 }
 

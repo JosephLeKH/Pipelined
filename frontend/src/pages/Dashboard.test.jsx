@@ -152,8 +152,9 @@ describe("Dashboard", () => {
     // Arrange / Act
     render(<Dashboard />, { wrapper: makeWrapper() });
 
-    // Assert — one of the metric labels
-    expect(await screen.findByText("Total Applied")).toBeInTheDocument();
-    expect(await screen.findByText("5")).toBeInTheDocument();
+    // Assert — collapsed summary and expanded metric grid
+    const summary = await screen.findByTestId("stats-collapsed-summary");
+    expect(summary).toHaveTextContent("applications");
+    expect(await screen.findByLabelText(/total applied/i)).toBeInTheDocument();
   });
 });

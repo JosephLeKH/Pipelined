@@ -85,4 +85,11 @@ describe("GoalProgress", () => {
     await screen.findByText(/1 \/ 5 this week/i);
     expect(screen.queryByText(/week streak/i)).toBeNull();
   });
+
+  it("should render compact variant with mini goal bar", async () => {
+    render(<GoalProgress variant="compact" />, { wrapper: makeWrapper() });
+
+    expect(await screen.findByText(/goal:/i)).toBeInTheDocument();
+    expect(await screen.findByText(/3\/5 this week/i)).toBeInTheDocument();
+  });
 });
