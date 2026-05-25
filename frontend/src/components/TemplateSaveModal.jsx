@@ -8,6 +8,7 @@ import { Button } from "./ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -49,9 +50,14 @@ function TemplateSaveModal({ isOpen, onClose, fields }) {
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
-      <DialogContent className="sm:max-w-sm">
+      <DialogContent className="max-w-sm">
         <DialogHeader>
-          <DialogTitle>Save as template</DialogTitle>
+          <DialogTitle className="text-base font-semibold text-text-1">
+            Save as template
+          </DialogTitle>
+          <DialogDescription className="mt-1 text-sm text-text-2">
+            Saves remote status, company type, role type, tags, and compensation.
+          </DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-2">
           <Label htmlFor="template-name-input">Template name</Label>
@@ -66,15 +72,14 @@ function TemplateSaveModal({ isOpen, onClose, fields }) {
             placeholder="e.g. Remote SWE"
           />
           {error && (
-            <p role="alert" className="text-xs text-destructive">{error}</p>
+            <p role="alert" className="text-xs text-brand-700">{error}</p>
           )}
-          <p className="text-xs text-muted-foreground">
-            Saves: remote status, company type, role type, tags, and compensation.
-          </p>
         </div>
-        <DialogFooter>
-          <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
-          <Button type="button" onClick={handleSave} disabled={isPending}>
+        <DialogFooter className="mt-5 flex justify-end gap-2">
+          <Button type="button" variant="ghost" size="sm" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button type="button" size="sm" onClick={handleSave} disabled={isPending}>
             {isPending ? "Saving…" : "Save template"}
           </Button>
         </DialogFooter>
