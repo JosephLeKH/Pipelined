@@ -57,48 +57,40 @@ describe("RegisterForm — email validation", () => {
 });
 
 describe("RegisterForm — password strength indicator", () => {
-  it("should not show strength list when password is empty", () => {
+  it("should not show strength meter when password is empty", () => {
     renderForm({ password: "" });
 
-    expect(screen.queryByRole("list", { name: /password requirements/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("meter")).not.toBeInTheDocument();
   });
 
-  it("should show requirements list when password is non-empty", () => {
+  it("should show strength meter when password is non-empty", () => {
     renderForm({ password: "a" });
 
-    expect(screen.getByRole("list", { name: /password requirements/i })).toBeInTheDocument();
+    expect(screen.getByRole("meter", { name: /password strength/i })).toBeInTheDocument();
   });
 
-  it("should show length requirement as unmet when password is short", () => {
+  it("should show Weak label for minimal password", () => {
     renderForm({ password: "abc" });
 
-    const items = screen.getAllByRole("listitem");
-    const lengthItem = items.find((el) => el.textContent.includes("characters"));
-    expect(lengthItem).toHaveClass("text-muted-foreground");
+    expect(screen.getByText("Weak")).toBeInTheDocument();
   });
 
-  it("should show length requirement as met when password is 8+ chars", () => {
+  it("should show Fair label when length requirement is met", () => {
     renderForm({ password: "abcdefgh" });
 
-    const items = screen.getAllByRole("listitem");
-    const lengthItem = items.find((el) => el.textContent.includes("characters"));
-    expect(lengthItem).toHaveClass("text-primary");
+    expect(screen.getByText("Fair")).toBeInTheDocument();
   });
 
-  it("should show uppercase requirement as met when password has uppercase", () => {
-    renderForm({ password: "Abcdefgh1" });
+  it("should show Good label when length and uppercase are met", () => {
+    renderForm({ password: "Abcdefgh" });
 
-    const items = screen.getAllByRole("listitem");
-    const uppercaseItem = items.find((el) => el.textContent.includes("uppercase"));
-    expect(uppercaseItem).toHaveClass("text-primary");
+    expect(screen.getByText("Good")).toBeInTheDocument();
   });
 
-  it("should show number requirement as met when password has a digit", () => {
+  it("should show Strong label when all requirements are met", () => {
     renderForm({ password: "Abcdefg1" });
 
-    const items = screen.getAllByRole("listitem");
-    const numberItem = items.find((el) => el.textContent.includes("number"));
-    expect(numberItem).toHaveClass("text-primary");
+    expect(screen.getByText("Strong")).toBeInTheDocument();
   });
 });
 

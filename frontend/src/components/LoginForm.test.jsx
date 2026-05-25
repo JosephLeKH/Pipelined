@@ -109,25 +109,25 @@ describe("LoginForm — submit button state", () => {
   it("should disable submit when email is invalid", () => {
     renderForm({ email: "bad", password: VALID_PASSWORD });
 
-    expect(screen.getByRole("button", { name: /sign in/i })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /log in/i })).toBeDisabled();
   });
 
   it("should disable submit when password is too short", () => {
     renderForm({ email: VALID_EMAIL, password: "short" });
 
-    expect(screen.getByRole("button", { name: /sign in/i })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /log in/i })).toBeDisabled();
   });
 
   it("should enable submit when email is valid and password meets length", () => {
     renderForm({ email: VALID_EMAIL, password: VALID_PASSWORD });
 
-    expect(screen.getByRole("button", { name: /sign in/i })).not.toBeDisabled();
+    expect(screen.getByRole("button", { name: /log in/i })).not.toBeDisabled();
   });
 
   it("should disable submit while isPending even with valid inputs", () => {
     renderForm({ email: VALID_EMAIL, password: VALID_PASSWORD, isPending: true });
 
-    expect(screen.getByRole("button", { name: /signing in/i })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /logging in/i })).toBeDisabled();
   });
 });
 
@@ -136,7 +136,7 @@ describe("LoginForm — submission behavior", () => {
     const onSubmit = vi.fn((e) => e.preventDefault());
     renderForm({ email: VALID_EMAIL, password: VALID_PASSWORD, onSubmit });
 
-    await userEvent.click(screen.getByRole("button", { name: /sign in/i }));
+    await userEvent.click(screen.getByRole("button", { name: /log in/i }));
 
     expect(onSubmit).toHaveBeenCalledOnce();
   });
@@ -145,7 +145,7 @@ describe("LoginForm — submission behavior", () => {
     const onSubmit = vi.fn((e) => e.preventDefault());
     renderForm({ email: "bad", password: VALID_PASSWORD, onSubmit });
 
-    await userEvent.click(screen.getByRole("button", { name: /sign in/i }));
+    await userEvent.click(screen.getByRole("button", { name: /log in/i }));
 
     expect(onSubmit).not.toHaveBeenCalled();
   });
@@ -153,7 +153,7 @@ describe("LoginForm — submission behavior", () => {
   it("should show validation errors on submit attempt with invalid inputs", () => {
     renderForm({ email: "bad", password: "" });
 
-    fireEvent.submit(screen.getByRole("button", { name: /sign in/i }).closest("form"));
+    fireEvent.submit(screen.getByRole("button", { name: /log in/i }).closest("form"));
 
     expect(screen.getByText(/valid email/i)).toBeInTheDocument();
     expect(screen.getByText(/at least/i)).toBeInTheDocument();

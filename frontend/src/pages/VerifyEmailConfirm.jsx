@@ -3,11 +3,12 @@
 import { useEffect, useRef } from "react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 
-import CheckCircle from "lucide-react/dist/esm/icons/check-circle";
-import XCircle from "lucide-react/dist/esm/icons/x-circle";
+import Check from "lucide-react/dist/esm/icons/check";
 import Loader from "lucide-react/dist/esm/icons/loader";
+import X from "lucide-react/dist/esm/icons/x";
 import { useVerifyEmail } from "../hooks/useAuth";
 import AuthLayout from "../components/AuthLayout";
+import { AUTH_HEADLINE, AUTH_SUBHEAD } from "../lib/authFormStyles";
 import { Button } from "../components/ui/button";
 
 const REDIRECT_DELAY_MS = 2000;
@@ -15,39 +16,44 @@ const REDIRECT_DELAY_MS = 2000;
 function VerifyingState() {
   return (
     <>
-      <Loader className="mb-5 h-12 w-12 animate-spin text-primary" />
-      <h1 className=" text-2xl font-bold text-foreground">Verifying your email…</h1>
-      <p className="mt-2 text-sm text-muted-foreground">Just a moment.</p>
+      <Loader className="mb-6 h-6 w-6 motion-safe:animate-spin text-brand-600" aria-hidden="true" />
+      <h1 className={AUTH_HEADLINE}>Verifying your email…</h1>
+      <p className={AUTH_SUBHEAD}>Just a moment.</p>
     </>
   );
 }
 
-function SuccessState() {
+function SuccessState({ onContinue }) {
   return (
     <>
-      <CheckCircle className="mb-5 h-12 w-12 text-primary" />
-      <h1 className=" text-2xl font-bold text-foreground">Email verified!</h1>
-      <p className="mt-2 text-sm text-muted-foreground">
-        Your account is now active. Redirecting to your dashboard…
+      <Check className="mb-6 h-6 w-6 text-status-success" aria-hidden="true" />
+      <h1 className={AUTH_HEADLINE}>You&apos;re all set.</h1>
+      <p className={`${AUTH_SUBHEAD} mb-6`}>
+        Your email is verified. Redirecting to Today…
       </p>
+      <Button type="button" size="lg" className="w-full" onClick={onContinue}>
+        Continue
+      </Button>
     </>
   );
 }
 
 function ErrorState({ errorCode }) {
+  const isExpired = errorCode === "TOKEN_EXPIRED";
+
   return (
     <>
-      <XCircle className="mb-5 h-12 w-12 text-destructive" />
-      <h1 className=" text-2xl font-bold text-foreground">
-        {errorCode === "TOKEN_EXPIRED" ? "Link expired" : "Invalid link"}
+      <X className="mb-6 h-6 w-6 text-brand-700" aria-hidden="true" />
+      <h1 className={AUTH_HEADLINE}>
+        {isExpired ? "This link expired." : "Invalid link"}
       </h1>
-      <p className="mt-2 mb-6 text-sm text-muted-foreground">
-        {errorCode === "TOKEN_EXPIRED"
-          ? "This verification link has expired. Request a new one below."
+      <p className={`${AUTH_SUBHEAD} mb-6`}>
+        {isExpired
+          ? "Request a new verification email below."
           : "This verification link is not valid. It may have already been used."}
       </p>
-      <Button asChild className="w-full">
-        <Link to="/verify-email">Request a new link</Link>
+      <Button asChild size="lg" className="w-full">
+        <Link to="/verify-email">Send a new link</Link>
       </Button>
     </>
   );
@@ -56,13 +62,13 @@ function ErrorState({ errorCode }) {
 function MissingTokenState() {
   return (
     <>
-      <XCircle className="mb-5 h-12 w-12 text-destructive" />
-      <h1 className=" text-2xl font-bold text-foreground">Missing token</h1>
-      <p className="mt-2 mb-6 text-sm text-muted-foreground">
+      <X className="mb-6 h-6 w-6 text-brand-700" aria-hidden="true" />
+      <h1 className={AUTH_HEADLINE}>Missing token</h1>
+      <p className={`${AUTH_SUBHEAD} mb-6`}>
         No verification token was found in this link.
       </p>
-      <Button asChild className="w-full">
-        <Link to="/verify-email">Request a new link</Link>
+      <Button asChild size="lg" className="w-full">
+        <Link to="/verify-email">Send a new link</Link>
       </Button>
     </>
   );
@@ -93,9 +99,9 @@ function VerifyEmailConfirm() {
     <AuthLayout>
       <div className="flex flex-col items-center text-center">
         {isPending && <VerifyingState />}
-        {isSuccess && <SuccessState />}
+        {isSuccess && <SuccessState onContinue={() => navigate("/today", { replace: true })} />}
         {isError && <ErrorState errorCode={errorCode} />}
-        {!token && <MissingTokenState />}
+        {!token && !isPending && !isSuccess && !isError && <MissingTokenState />}
       </div>
     </AuthLayout>
   );

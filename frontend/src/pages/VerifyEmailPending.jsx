@@ -1,33 +1,43 @@
 /** Post-registration "Check your email" page with resend option and 60s cooldown. */
 
 import { useState, useEffect, useCallback } from "react";
-import { Link } from "react-router-dom";
-
+import Loader2 from "lucide-react/dist/esm/icons/loader-2";
 import Mail from "lucide-react/dist/esm/icons/mail";
+
 import { useResendVerification } from "../hooks/useAuth";
+import { useAuth } from "../context/AuthContext";
 import AuthLayout from "../components/AuthLayout";
+import { AUTH_HEADLINE, AUTH_SUBHEAD } from "../lib/authFormStyles";
 import { Button } from "../components/ui/button";
 
 const RESEND_COOLDOWN_S = 60;
 
+function maskEmail(email) {
+  if (!email) return "";
+  const [local, domain] = email.split("@");
+  if (!domain) return email;
+  const prefix = local.slice(0, 2);
+  return `${prefix}***@${domain}`;
+}
+
 function ResendStatus({ status }) {
   if (status === "sent") {
     return (
-      <p role="status" className="mb-4 w-full rounded-lg bg-primary/10 border border-primary/20 px-3 py-3 text-sm text-primary">
+      <p role="status" className="mb-4 text-sm text-text-2">
         Verification email resent. Check your inbox.
       </p>
     );
   }
   if (status === "already_verified") {
     return (
-      <p role="status" className="mb-4 w-full rounded-lg bg-primary/10 border border-primary/20 px-3 py-3 text-sm text-primary">
+      <p role="status" className="mb-4 text-sm text-text-2">
         Your email is already verified. You can sign in.
       </p>
     );
   }
   if (status === "error") {
     return (
-      <p role="alert" className="mb-4 w-full rounded-lg bg-destructive/10 border border-destructive/20 px-3 py-2 text-sm text-destructive">
+      <p role="alert" className="mb-4 text-xs text-brand-700">
         Could not resend. Please try again in a moment.
       </p>
     );
@@ -35,24 +45,8 @@ function ResendStatus({ status }) {
   return null;
 }
 
-function ResendEmailButton({ isPending, cooldown, onResend }) {
-  return (
-    <Button
-      type="button"
-      onClick={onResend}
-      disabled={isPending || cooldown > 0}
-      className="w-full"
-    >
-      {isPending
-        ? "Sending…"
-        : cooldown > 0
-        ? `Resend in ${cooldown}s`
-        : "Resend verification email"}
-    </Button>
-  );
-}
-
 function VerifyEmailPending() {
+  const { user, logout } = useAuth();
   const { mutateAsync: resend, isPending } = useResendVerification();
   const [cooldown, setCooldown] = useState(0);
   const [resendStatus, setResendStatus] = useState(null);
@@ -78,28 +72,52 @@ function VerifyEmailPending() {
     }
   }, [resend]);
 
+  const maskedEmail = maskEmail(user?.email ?? "");
+
   return (
     <AuthLayout>
       <div className="flex flex-col items-center text-center">
-        <Mail className="mb-5 h-8 w-8 text-muted-foreground" />
+        <Mail
+          className="mb-6 h-6 w-6 text-brand-600 motion-safe:animate-pulse-soft"
+          aria-hidden="true"
+        />
 
-        <h1 className=" text-2xl font-bold text-foreground">Check your email</h1>
-        <p className="mt-2 mb-8 text-sm text-muted-foreground">
-          We sent a verification link to your email address. Click the link to activate your account.
-        </p>
+        <h1 className={AUTH_HEADLINE}>Check your email</h1>
+        <p className={`${AUTH_SUBHEAD} mb-2`}>We sent a verification link to</p>
+        {maskedEmail && (
+          <p className="mb-8 text-sm font-medium text-text-1">{maskedEmail}</p>
+        )}
 
         <ResendStatus status={resendStatus} />
-        <ResendEmailButton isPending={isPending} cooldown={cooldown} onResend={handleResend} />
+        <Button
+          type="button"
+          variant="outline"
+          size="lg"
+          onClick={handleResend}
+          disabled={isPending || cooldown > 0}
+          className="h-9 w-full border-border-2 bg-surface-0 hover:bg-surface-1"
+        >
+          {isPending ? (
+            <>
+              <Loader2 className="motion-safe:animate-spin" aria-hidden="true" />
+              Sending…
+            </>
+          ) : cooldown > 0 ? (
+            `Resend in ${cooldown}s`
+          ) : (
+            "Resend verification email"
+          )}
+        </Button>
 
-        <p className="mt-6 text-sm text-muted-foreground">
+        <p className="mt-6 text-xs text-text-3">
           Wrong email?{" "}
-          <Link to="/register" className="font-medium text-primary hover:underline">
-            Sign up again
-          </Link>
-          {" "}or{" "}
-          <Link to="/login" className="font-medium text-primary hover:underline">
-            Sign in
-          </Link>
+          <button
+            type="button"
+            onClick={logout}
+            className="text-text-2 hover:text-text-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 focus-visible:outline-offset-2 dark:focus-visible:outline-1"
+          >
+            Sign out
+          </button>
         </p>
       </div>
     </AuthLayout>

@@ -2,9 +2,11 @@
 
 import { useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import Loader2 from "lucide-react/dist/esm/icons/loader-2";
 
 import { useAuth } from "../context/AuthContext";
 import { useGithubAuth } from "../hooks/useAuth";
+import AuthLayout from "../components/AuthLayout";
 
 function GithubCallback() {
   const [searchParams] = useSearchParams();
@@ -34,14 +36,17 @@ function GithubCallback() {
   }, [searchParams, signInWithGithub, login, navigate]);
 
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      role="status"
-      aria-live="polite"
-      aria-label="Authenticating with GitHub"
-    >
-      <div className="h-10 w-10 animate-spin rounded-full border-4 border-border border-t-primary" />
-    </div>
+    <AuthLayout>
+      <div
+        className="flex flex-col items-center text-center"
+        role="status"
+        aria-live="polite"
+        aria-label="Authenticating with GitHub"
+      >
+        <Loader2 className="mb-4 h-6 w-6 animate-spin motion-safe:animate-spin text-brand-600" aria-hidden="true" />
+        <p className="text-sm text-text-2">Signing you in…</p>
+      </div>
+    </AuthLayout>
   );
 }
 

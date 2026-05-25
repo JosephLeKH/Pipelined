@@ -2,8 +2,9 @@
 
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
 import Loader2 from "lucide-react/dist/esm/icons/loader-2";
+
+import AuthLayout from "../components/AuthLayout";
 
 function GmailCallback() {
   const navigate = useNavigate();
@@ -13,10 +14,13 @@ function GmailCallback() {
   }, [navigate]);
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <Loader2 className="h-8 w-8 animate-spin text-primary" aria-hidden="true" />
-      <span className="sr-only">Connecting Gmail…</span>
-    </div>
+    <AuthLayout>
+      <div className="flex flex-col items-center text-center" role="status" aria-live="polite">
+        <Loader2 className="mb-4 h-6 w-6 motion-safe:animate-spin text-brand-600" aria-hidden="true" />
+        <p className="text-sm text-text-2">Connecting Gmail…</p>
+        <span className="sr-only">Connecting Gmail…</span>
+      </div>
+    </AuthLayout>
   );
 }
 

@@ -55,7 +55,7 @@ describe("Login", () => {
 
     expect(screen.getByLabelText("Email")).toBeInTheDocument();
     expect(screen.getByLabelText("Password")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Sign in" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Log in" })).toBeInTheDocument();
   });
 
   it("should render Google sign-in button", () => {
@@ -75,7 +75,7 @@ describe("Login", () => {
 
     // Focus the email field and blur it to trigger validation error
     await userEvent.click(screen.getByLabelText("Email"));
-    await userEvent.click(screen.getByRole("button", { name: "Sign in" }));
+    await userEvent.click(screen.getByRole("button", { name: "Log in" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent("Enter a valid email address.");
   });
@@ -86,7 +86,7 @@ describe("Login", () => {
     await userEvent.type(screen.getByLabelText("Email"), "alice@example.com");
     // Focus and blur the password field to trigger validation error
     await userEvent.click(screen.getByLabelText("Password"));
-    await userEvent.click(screen.getByRole("button", { name: "Sign in" }));
+    await userEvent.click(screen.getByRole("button", { name: "Log in" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent("Password must be at least 8 characters.");
   });
@@ -96,7 +96,7 @@ describe("Login", () => {
 
     await userEvent.type(screen.getByLabelText("Email"), "wrong@example.com");
     await userEvent.type(screen.getByLabelText("Password"), "wrongpass123");
-    await userEvent.click(screen.getByRole("button", { name: "Sign in" }));
+    await userEvent.click(screen.getByRole("button", { name: "Log in" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent("Incorrect email or password.");
   });
@@ -106,7 +106,7 @@ describe("Login", () => {
 
     await userEvent.type(screen.getByLabelText("Email"), "alice@example.com");
     await userEvent.type(screen.getByLabelText("Password"), "password123");
-    await userEvent.click(screen.getByRole("button", { name: "Sign in" }));
+    await userEvent.click(screen.getByRole("button", { name: "Log in" }));
 
     await waitFor(() => {
       expect(screen.getByText("Today")).toBeInTheDocument();

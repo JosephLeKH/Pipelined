@@ -2,56 +2,12 @@
 
 import { useState, useCallback } from "react";
 import { Link } from "react-router-dom";
+import Loader2 from "lucide-react/dist/esm/icons/loader-2";
 
 import { useForgotPassword } from "../hooks/useAuth";
 import AuthLayout from "../components/AuthLayout";
+import { AUTH_ERROR, AUTH_HEADLINE, AUTH_INPUT, AUTH_LABEL, AUTH_SUBHEAD } from "../lib/authFormStyles";
 import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
-
-function EmailInput({ email, onChange }) {
-  return (
-    <div className="mb-5">
-      <label htmlFor="email" className="block text-sm font-medium text-foreground mb-1.5">Email</label>
-      <Input
-        id="email"
-        type="email"
-        autoComplete="email"
-        value={email}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder="you@example.com"
-      />
-    </div>
-  );
-}
-
-function ErrorAlert({ error }) {
-  if (!error) return null;
-  return (
-    <p role="alert" className="mb-4 rounded-lg bg-destructive/10 border border-destructive/20 px-3 py-2 text-sm text-destructive">
-      {error}
-    </p>
-  );
-}
-
-function SuccessMessage() {
-  return (
-    <p role="status" className="rounded-lg bg-primary/10 border border-primary/20 px-3 py-3 text-sm text-primary">
-      If that email is registered, a reset link has been sent. Check your inbox.
-    </p>
-  );
-}
-
-function ForgotPasswordForm({ email, error, isPending, onEmailChange, onSubmit }) {
-  return (
-    <form onSubmit={onSubmit} noValidate>
-      <EmailInput email={email} onChange={onEmailChange} />
-      <ErrorAlert error={error} />
-      <Button type="submit" disabled={isPending} className="w-full">
-        {isPending ? "Sending…" : "Send reset link"}
-      </Button>
-    </form>
-  );
-}
 
 function ForgotPassword() {
   const { mutateAsync: sendReset, isPending } = useForgotPassword();
@@ -78,15 +34,50 @@ function ForgotPassword() {
 
   return (
     <AuthLayout>
-      <h1 className=" text-xl font-semibold text-foreground">Forgot password?</h1>
-      <p className="mt-1 mb-6 text-sm text-muted-foreground">
+      <h1 className={AUTH_HEADLINE}>Reset your password</h1>
+      <p className={`${AUTH_SUBHEAD} mb-8`}>
         Enter your email and we&apos;ll send you a reset link.
       </p>
 
-      {submitted ? <SuccessMessage /> : <ForgotPasswordForm email={email} error={error} isPending={isPending} onEmailChange={setEmail} onSubmit={handleSubmit} />}
+      {submitted ? (
+        <p role="status" className="text-sm text-text-2">
+          If that email is registered, a reset link has been sent. Check your inbox.
+        </p>
+      ) : (
+        <form onSubmit={handleSubmit} noValidate>
+          <div className="mb-6">
+            <label htmlFor="email" className={AUTH_LABEL}>Email</label>
+            <input
+              id="email"
+              type="email"
+              autoComplete="email"
+              className={AUTH_INPUT}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
+            />
+          </div>
+          {error && <p role="alert" className={`mb-4 ${AUTH_ERROR}`}>{error}</p>}
+          <Button type="submit" size="lg" disabled={isPending} className="w-full">
+            {isPending ? (
+              <>
+                <Loader2 className="motion-safe:animate-spin" aria-hidden="true" />
+                Sending…
+              </>
+            ) : (
+              "Send reset link"
+            )}
+          </Button>
+        </form>
+      )}
 
-      <p className="mt-6 text-center text-sm text-muted-foreground">
-        <Link to="/login" className="text-primary hover:text-primary/80 text-sm">Back to sign in</Link>
+      <p className="mt-6 text-center text-[13px] text-text-2">
+        <Link
+          to="/login"
+          className="text-brand-600 hover:text-brand-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 focus-visible:outline-offset-2 dark:focus-visible:outline-1"
+        >
+          Back to sign in
+        </Link>
       </p>
     </AuthLayout>
   );

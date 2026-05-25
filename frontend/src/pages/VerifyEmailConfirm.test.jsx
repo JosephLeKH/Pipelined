@@ -59,7 +59,7 @@ describe("VerifyEmailConfirm", () => {
     render(<VerifyEmailConfirm />, { wrapper: makeWrapper(VALID_TOKEN) });
 
     await waitFor(() => {
-      expect(screen.getByRole("heading", { name: /email verified/i })).toBeInTheDocument();
+      expect(screen.getByRole("heading", { name: /you're all set/i })).toBeInTheDocument();
     });
   });
 
@@ -83,7 +83,7 @@ describe("VerifyEmailConfirm", () => {
     render(<VerifyEmailConfirm />, { wrapper: makeWrapper("expired-token") });
 
     await waitFor(() => {
-      expect(screen.getByRole("link", { name: /request a new link/i })).toBeInTheDocument();
+      expect(screen.getByRole("link", { name: /send a new link/i })).toBeInTheDocument();
     });
   });
 
