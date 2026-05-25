@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 
-import WeeklyReviewSection from "./WeeklyReviewSection";
+import WeeklyReviewSection, { WeeklyReviewTeaser } from "./WeeklyReviewSection";
 
 const MOCK_REVIEW = {
   week_start: "2026-05-19",
@@ -53,5 +53,23 @@ describe("WeeklyReviewSection", () => {
 
     expect(screen.getByLabelText("Weekly review")).toBeInTheDocument();
     expect(screen.queryByText("Response rate")).not.toBeInTheDocument();
+  });
+});
+
+describe("WeeklyReviewTeaser", () => {
+  it("should render Sunday teaser copy and read link", () => {
+    render(
+      <MemoryRouter>
+        <WeeklyReviewTeaser
+          review={MOCK_REVIEW}
+          isLoading={false}
+          onReadReview={() => {}}
+        />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByText("This week's review")).toBeInTheDocument();
+    expect(screen.getByText("You shipped 3 applications this week.")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /read your sunday review/i })).toBeInTheDocument();
   });
 });

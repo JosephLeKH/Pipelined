@@ -11,6 +11,8 @@ import {
   getFirstName,
   getStoredCompletedMissions,
   getTimeOfDay,
+  isSundayInTimezone,
+  formatWeeklyReviewTeaser,
   setBriefExpandedForDate,
   storeCompletedMission,
 } from "./todayUtils";
@@ -79,5 +81,18 @@ describe("todayUtils", () => {
     ]);
     storeCompletedMission("2026-05-23", mission);
     expect(getStoredCompletedMissions("2026-05-23")).toHaveLength(1);
+  });
+
+  it("should detect Sunday in user timezone", () => {
+    expect(isSundayInTimezone("America/Los_Angeles", new Date("2026-05-24T12:00:00"))).toBe(true);
+    expect(isSundayInTimezone("America/Los_Angeles", new Date("2026-05-23T12:00:00"))).toBe(false);
+  });
+
+  it("should format weekly review teaser narrative", () => {
+    expect(
+      formatWeeklyReviewTeaser({
+        velocity: { applied_this_week: 8, weekly_goal: 10, percent_of_goal: 0.8 },
+      }),
+    ).toBe("You shipped 8 applications this week.");
   });
 });

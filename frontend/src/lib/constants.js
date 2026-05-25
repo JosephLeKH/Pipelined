@@ -108,6 +108,8 @@ export const VIEW_MODE_STORAGE_KEY = "pipelined_view_mode";
 
 export const ONBOARDING_DISMISSED_KEY = "pipelined_onboarding_dismissed";
 export const ONBOARDING_CONFETTI_DISMISS_MS = 3_000;
+export const CHROME_EXTENSION_URL = "https://chromewebstore.google.com/detail/pipelined";
+export const EXTENSION_STEP_CLICKED_KEY = "pipelined_extension_step_clicked";
 export const COPILOT_TRIED_KEY = "pipelined_copilot_tried";
 export const TODAY_VISITED_KEY = "pipelined_today_visited";
 export const MORNING_BRIEF_EXPANDED_KEY = "pipelined_brief_expanded_by_date";

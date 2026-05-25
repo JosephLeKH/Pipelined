@@ -63,6 +63,22 @@ export function formatDaysLeftInWeek(now = new Date(), timezone) {
   return `${daysLeft} days left`;
 }
 
+/** Whether the given instant is Sunday in the user's timezone. */
+export function isSundayInTimezone(timezone, now = new Date()) {
+  const tz = timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const weekday = new Intl.DateTimeFormat(LOCALE, { weekday: "short", timeZone: tz })
+    .formatToParts(now)
+    .find((part) => part.type === "weekday")?.value;
+  return weekday === "Sun";
+}
+
+/** Narrative copy for the Sunday weekly review teaser row. */
+export function formatWeeklyReviewTeaser(review) {
+  const applied = review?.velocity?.applied_this_week ?? 0;
+  const appliedLabel = applied === 1 ? "1 application" : `${applied} applications`;
+  return `You shipped ${appliedLabel} this week.`;
+}
+
 function readBriefExpandedMap() {
   try {
     const raw = localStorage.getItem(MORNING_BRIEF_EXPANDED_KEY);

@@ -39,6 +39,18 @@ const MOCK_BRIEF = {
   mission_progress: { cleared: 0, total: 1 },
 };
 
+const MOCK_WEEKLY_REVIEW = {
+  week_start: "2026-05-19",
+  response_rate: 0.42,
+  ghost_rate: 0.25,
+  velocity: {
+    applied_this_week: 8,
+    weekly_goal: 10,
+    percent_of_goal: 0.8,
+  },
+  stale_applications: [],
+};
+
 let snoozeCalled = false;
 let doneCalled = false;
 
@@ -63,10 +75,15 @@ const server = setupServer(
         weekly_goal: 5,
         default_stages: [],
         morning_brief_hour: 9,
+        email_verified: true,
       },
     })
   ),
   http.post("/api/auth/refresh", () => HttpResponse.json({ data: { ok: true } })),
+  http.get("/api/review/weekly", () => HttpResponse.json({ data: MOCK_WEEKLY_REVIEW })),
+  http.get("/api/email/status", () =>
+    HttpResponse.json({ data: { connected: true, apps_tracked: 1 } }),
+  ),
   ...passthroughHandlers,
 );
 
@@ -210,5 +227,53 @@ describe("TodayPage", () => {
     render(<TodayPage />, { wrapper: BriefOpenWrapper });
 
     expect(await screen.findByText("Beta Corp — follow-up")).toBeInTheDocument();
+  });
+
+  it("should show onboarding checklist when steps are incomplete", async () => {
+    server.use(
+      http.get("/api/auth/me", () =>
+        HttpResponse.json({
+          data: {
+            id: "user1",
+            email: "test@test.com",
+            display_name: "Test User",
+            email_verified: false,
+            weekly_goal: 0,
+            morning_brief_hour: 9,
+          },
+        }),
+      ),
+      http.get("/api/applications/stats", () =>
+        HttpResponse.json({ data: { total_applied: 0, applied_this_week: 0 } }),
+      ),
+      http.get("/api/email/status", () =>
+        HttpResponse.json({ data: { connected: false, apps_tracked: 0 } }),
+      ),
+    );
+
+    render(<TodayPage />, { wrapper: makeWrapper() });
+
+    expect(await screen.findByText("Get started")).toBeInTheDocument();
+    expect(screen.getByText("Verify your email")).toBeInTheDocument();
+  });
+
+  it("should show Sunday weekly review teaser only on Sunday", async () => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date("2026-05-24T12:00:00"));
+
+    render(<TodayPage />, { wrapper: makeWrapper() });
+
+    expect(await screen.findByText("You shipped 8 applications this week.")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /read your sunday review/i })).toBeInTheDocument();
+  });
+
+  it("should hide weekly review teaser on weekdays", async () => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date("2026-05-23T12:00:00"));
+
+    render(<TodayPage />, { wrapper: makeWrapper() });
+
+    await screen.findByRole("heading", { level: 1 });
+    expect(screen.queryByText(/read your sunday review/i)).not.toBeInTheDocument();
   });
 });

@@ -1,16 +1,17 @@
 /** Mission Control today page — prioritized missions with snooze/done actions. */
 
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
 import Sun from "lucide-react/dist/esm/icons/sun";
 
 import MissionProgressStrip from "../components/MissionProgressStrip";
 import MorningBriefSkeleton from "../components/MorningBriefSkeleton";
+import OnboardingChecklist from "../components/OnboardingChecklist";
 import TodayMorningBrief from "../components/TodayMorningBrief";
 import TodayMissionsList from "../components/TodayMissionsList";
 import WeeklyGoalSection from "../components/WeeklyGoalSection";
-import WeeklyReviewSection from "../components/WeeklyReviewSection";
+import WeeklyReviewSection, { WeeklyReviewTeaser } from "../components/WeeklyReviewSection";
 import { useAuth } from "../context/AuthContext";
 import { useApplicationStats } from "../hooks/useApplications";
 import { useMissionActions } from "../hooks/useMissionActions";
@@ -22,7 +23,7 @@ import {
   getBriefEmptyMessage,
 } from "../lib/briefConstants";
 import { TODAY_VISITED_KEY } from "../lib/constants";
-import { formatTodayDateRow, formatTodayGreeting } from "../lib/todayUtils";
+import { formatTodayDateRow, formatTodayGreeting, isSundayInTimezone } from "../lib/todayUtils";
 
 function TodayGreeting({ user, briefDate, missionCount }) {
   const timezone = user?.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -57,6 +58,7 @@ function TodayPage() {
 
   const [searchParams] = useSearchParams();
   const forceBriefOpen = searchParams.get("brief") === "open";
+  const [weeklyReviewOpen, setWeeklyReviewOpen] = useState(false);
 
   const { user } = useAuth();
   const { data: brief, isLoading, isError } = useMorningBrief();
@@ -73,6 +75,7 @@ function TodayPage() {
   const weeklyGoal = user?.weekly_goal ?? 0;
   const appliedThisWeek = stats?.applied_this_week ?? 0;
   const timezone = user?.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const isSunday = isSundayInTimezone(timezone);
 
   const handleSnooze = useCallback(
     (missionId) => snooze.mutate(missionId),
@@ -114,6 +117,7 @@ function TodayPage() {
               weeklyGoal={weeklyGoal}
               timezone={timezone}
             />
+            <OnboardingChecklist />
             <TodayMissionsList
               missions={missions}
               briefDate={brief.date}
@@ -133,7 +137,14 @@ function TodayPage() {
               forceOpen={forceBriefOpen}
             />
             <MissionProgressStrip cleared={progress.cleared} total={progress.total} />
-            {weeklyReviewEnabled && (
+            {weeklyReviewEnabled && isSunday && !weeklyReviewOpen && (
+              <WeeklyReviewTeaser
+                review={weeklyReview}
+                isLoading={isReviewLoading}
+                onReadReview={() => setWeeklyReviewOpen(true)}
+              />
+            )}
+            {weeklyReviewEnabled && isSunday && weeklyReviewOpen && (
               <WeeklyReviewSection review={weeklyReview} isLoading={isReviewLoading} />
             )}
           </>

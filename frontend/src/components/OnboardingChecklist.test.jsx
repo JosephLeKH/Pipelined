@@ -1,19 +1,17 @@
-/** Tests for OnboardingChecklist: agent onboarding steps, dismiss, completion. */
+/** Tests for OnboardingChecklist: setup steps, dismiss, completion. */
 
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter } from "react-router-dom";
-import { describe, it, expect, beforeAll, afterAll, afterEach, vi } from "vitest";
+import { describe, it, expect, beforeAll, afterAll, afterEach } from "vitest";
 
 import { AuthProvider } from "../context/AuthContext";
 import OnboardingChecklist from "./OnboardingChecklist";
 import {
-  COPILOT_TRIED_KEY,
+  EXTENSION_STEP_CLICKED_KEY,
   ONBOARDING_DISMISSED_KEY,
-  OPEN_COPILOT_EVENT,
-  TODAY_VISITED_KEY,
 } from "../lib/constants";
 
 const server = setupServer(
@@ -23,10 +21,19 @@ const server = setupServer(
         id: "u1",
         email: "test@example.com",
         display_name: "Test User",
-        agent_profile: {},
+        email_verified: false,
+        weekly_goal: 0,
       },
-    })
-  )
+    }),
+  ),
+  http.get("/api/applications/stats", () =>
+    HttpResponse.json({ data: { total_applied: 0, applied_this_week: 0 } }),
+  ),
+  http.get("/api/email/status", () =>
+    HttpResponse.json({ data: { connected: false, apps_tracked: 0 } }),
+  ),
+  http.post("/api/auth/resend-verification", () => HttpResponse.json({ data: { ok: true } })),
+  http.post("/api/auth/refresh", () => HttpResponse.json({ data: { ok: true } })),
 );
 
 beforeAll(() => server.listen({ onUnhandledRequest: "warn" }));
@@ -50,21 +57,24 @@ function Wrapper({ children }) {
 }
 
 describe("OnboardingChecklist", () => {
-  it("should render 3 agent onboarding steps", () => {
+  it("should render five onboarding steps", async () => {
     render(<OnboardingChecklist />, { wrapper: Wrapper });
 
-    expect(screen.getByText("Set agent profile")).toBeInTheDocument();
-    expect(screen.getByText("Try co-pilot")).toBeInTheDocument();
-    expect(screen.getByText("Open Today")).toBeInTheDocument();
+    expect(await screen.findByText("Verify your email")).toBeInTheDocument();
+    expect(screen.getByText("Save your first application")).toBeInTheDocument();
+    expect(screen.getByText("Connect Gmail")).toBeInTheDocument();
+    expect(screen.getByText("Set a weekly goal")).toBeInTheDocument();
+    expect(screen.getByText("Install Chrome extension")).toBeInTheDocument();
+    expect(screen.getByText("0 of 5 complete")).toBeInTheDocument();
   });
 
-  it("should hide checklist when dismiss button is clicked", () => {
+  it("should hide checklist when dismiss button is clicked", async () => {
     render(<OnboardingChecklist />, { wrapper: Wrapper });
-    expect(screen.getByText("Set agent profile")).toBeInTheDocument();
+    expect(await screen.findByText("Verify your email")).toBeInTheDocument();
 
-    fireEvent.click(screen.getByText("Dismiss"));
+    fireEvent.click(screen.getByRole("button", { name: /dismiss checklist/i }));
 
-    expect(screen.queryByText("Set agent profile")).not.toBeInTheDocument();
+    expect(screen.queryByText("Verify your email")).not.toBeInTheDocument();
     expect(localStorage.getItem(ONBOARDING_DISMISSED_KEY)).toBe("true");
   });
 
@@ -73,55 +83,51 @@ describe("OnboardingChecklist", () => {
 
     render(<OnboardingChecklist />, { wrapper: Wrapper });
 
-    expect(screen.queryByText("Set agent profile")).not.toBeInTheDocument();
+    expect(screen.queryByText("Verify your email")).not.toBeInTheDocument();
   });
 
-  it("should show agent profile step as checked when profile is configured", async () => {
+  it("should hide when all steps are complete", async () => {
     server.use(
       http.get("/api/auth/me", () =>
         HttpResponse.json({
           data: {
             id: "u1",
             email: "test@example.com",
-            display_name: "Test User",
-            agent_profile: {
-              target_roles: ["Software Engineer"],
-              career_goals: "Staff IC role",
-            },
+            email_verified: true,
+            weekly_goal: 5,
           },
-        })
-      )
+        }),
+      ),
+      http.get("/api/applications/stats", () =>
+        HttpResponse.json({ data: { total_applied: 3, applied_this_week: 1 } }),
+      ),
+      http.get("/api/email/status", () =>
+        HttpResponse.json({ data: { connected: true, apps_tracked: 1 } }),
+      ),
     );
+    localStorage.setItem(EXTENSION_STEP_CLICKED_KEY, "true");
 
     render(<OnboardingChecklist />, { wrapper: Wrapper });
-    const label = await screen.findByText("Set agent profile");
 
-    expect(label).toHaveClass("text-muted-foreground");
+    await waitFor(() => {
+      expect(screen.queryByText("Verify your email")).not.toBeInTheDocument();
+    });
+    expect(localStorage.getItem(ONBOARDING_DISMISSED_KEY)).toBe("true");
   });
 
-  it("should mark co-pilot step complete and dispatch open event", () => {
-    const handler = vi.fn();
-    window.addEventListener(OPEN_COPILOT_EVENT, handler);
-
+  it("should mark extension step complete when Install is clicked", async () => {
     render(<OnboardingChecklist />, { wrapper: Wrapper });
-    fireEvent.click(screen.getByText("Open co-pilot"));
 
-    expect(localStorage.getItem(COPILOT_TRIED_KEY)).toBe("true");
-    expect(handler).toHaveBeenCalledOnce();
+    const installLink = await screen.findByRole("link", { name: /→ install/i });
+    fireEvent.click(installLink);
 
-    window.removeEventListener(OPEN_COPILOT_EVENT, handler);
+    expect(localStorage.getItem(EXTENSION_STEP_CLICKED_KEY)).toBe("true");
   });
 
-  it("should mark Today step complete when Go to Today is clicked", () => {
-    render(<OnboardingChecklist />, { wrapper: Wrapper });
-    fireEvent.click(screen.getByText("Go to Today"));
-
-    expect(localStorage.getItem(TODAY_VISITED_KEY)).toBe("true");
-  });
-
-  it("should link to agent settings for profile step", () => {
+  it("should link to pipeline settings for weekly goal step", async () => {
     render(<OnboardingChecklist />, { wrapper: Wrapper });
 
-    expect(screen.getByText("Go to Agent settings")).toBeInTheDocument();
+    const goalLink = await screen.findByRole("link", { name: /→ set goal/i });
+    expect(goalLink).toHaveAttribute("href", "/settings?section=pipeline");
   });
 });

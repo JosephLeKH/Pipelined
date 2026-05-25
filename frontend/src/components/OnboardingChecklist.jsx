@@ -1,195 +1,231 @@
-/** Dismissable onboarding checklist — three agent setup steps for new users. */
+/** Dismissable onboarding checklist — five setup steps for new users on Today. */
 
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
-import CheckCircle2 from "lucide-react/dist/esm/icons/check-circle-2";
+import Check from "lucide-react/dist/esm/icons/check";
 import Circle from "lucide-react/dist/esm/icons/circle";
+import X from "lucide-react/dist/esm/icons/x";
 
+import InboxSetupDialog from "./InboxSetupDialog";
+import { useResendVerification } from "../hooks/useAuth";
 import { useAuth } from "../context/AuthContext";
+import { useApplicationStats } from "../hooks/useApplications";
+import { useGmailStatus } from "../hooks/useGmailStatus";
 import { trackEvent } from "../lib/analytics";
 import {
-  COPILOT_TRIED_KEY,
-  ONBOARDING_CONFETTI_DISMISS_MS,
+  CHROME_EXTENSION_URL,
+  EXTENSION_STEP_CLICKED_KEY,
   ONBOARDING_DISMISSED_KEY,
-  OPEN_COPILOT_EVENT,
-  TODAY_VISITED_KEY,
 } from "../lib/constants";
-import { Button } from "./ui/button";
 
-const ONBOARDING_STEPS = 3;
+const ONBOARDING_STEPS = 5;
 
-function hasAgentProfile(user) {
-  const profile = user?.agent_profile ?? {};
-  return Boolean(
-    profile.career_goals?.trim() ||
-    (Array.isArray(profile.target_roles) && profile.target_roles.length > 0)
+function OnboardingStepRow({ label, done, action }) {
+  return (
+    <div className="flex items-center justify-between gap-3 py-1">
+      <div className="flex min-w-0 items-center gap-2.5">
+        {done ? (
+          <Check className="h-3.5 w-3.5 shrink-0 text-brand-600" aria-hidden="true" />
+        ) : (
+          <Circle className="h-3.5 w-3.5 shrink-0 text-text-3" strokeWidth={1.5} aria-hidden="true" />
+        )}
+        <span className={`text-sm ${done ? "text-text-3" : "text-text-1"}`}>{label}</span>
+      </div>
+      {!done && action}
+    </div>
   );
 }
 
-function StepRow({ label, description, done }) {
+function StepActionLink({ children, onClick, href, external }) {
+  const className = [
+    "shrink-0 text-sm text-brand-600 hover:underline",
+    "focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600",
+    "dark:focus-visible:outline-1",
+  ].join(" ");
+
+  if (href) {
+    return (
+      <a
+        href={href}
+        target={external ? "_blank" : undefined}
+        rel={external ? "noopener noreferrer" : undefined}
+        className={className}
+        onClick={onClick}
+      >
+        {children}
+      </a>
+    );
+  }
+
   return (
-    <div className="flex items-start gap-3">
-      {done
-        ? <><CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-primary" aria-hidden="true" /><span className="sr-only">Completed</span></>
-        : <><Circle className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground/30" aria-hidden="true" /><span className="sr-only">Incomplete</span></>
-      }
-      <div className="min-w-0">
-        <p className={`text-sm font-medium ${done ? "text-muted-foreground" : "text-foreground"}`}>
-          {label}
-        </p>
-        {!done && description && (
-          <p className="text-xs text-muted-foreground">{description}</p>
-        )}
-      </div>
-    </div>
+    <button type="button" onClick={onClick} className={className}>
+      {children}
+    </button>
   );
 }
 
 function OnboardingChecklist() {
   const [dismissed, setDismissed] = useState(
-    () => localStorage.getItem(ONBOARDING_DISMISSED_KEY) === "true"
+    () => localStorage.getItem(ONBOARDING_DISMISSED_KEY) === "true",
   );
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [copilotTried, setCopilotTried] = useState(
-    () => localStorage.getItem(COPILOT_TRIED_KEY) === "true"
+  const [extensionClicked, setExtensionClicked] = useState(
+    () => localStorage.getItem(EXTENSION_STEP_CLICKED_KEY) === "true",
   );
-  const [todayVisited, setTodayVisited] = useState(
-    () => localStorage.getItem(TODAY_VISITED_KEY) === "true"
-  );
+  const [gmailDialogOpen, setGmailDialogOpen] = useState(false);
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { data: stats } = useApplicationStats();
+  const { data: gmailStatus } = useGmailStatus();
+  const { mutateAsync: resendVerification, isPending: isResending } = useResendVerification();
 
-  const profileDone = hasAgentProfile(user);
-  const allDone = profileDone && copilotTried && todayVisited;
+  const emailDone = user?.email_verified !== false;
+  const applicationDone = (stats?.total_applied ?? 0) > 0;
+  const gmailDone = Boolean(gmailStatus?.connected);
+  const goalDone = (user?.weekly_goal ?? 0) > 0;
+  const extensionDone = extensionClicked;
+
+  const steps = useMemo(
+    () => [
+      { id: "verify_email", label: "Verify your email", done: emailDone },
+      { id: "save_application", label: "Save your first application", done: applicationDone },
+      { id: "connect_gmail", label: "Connect Gmail", done: gmailDone },
+      { id: "set_weekly_goal", label: "Set a weekly goal", done: goalDone },
+      { id: "install_extension", label: "Install Chrome extension", done: extensionDone },
+    ],
+    [emailDone, applicationDone, gmailDone, goalDone, extensionDone],
+  );
+
+  const completedCount = steps.filter((step) => step.done).length;
+  const allDone = completedCount === ONBOARDING_STEPS;
+  const hasIncomplete = completedCount < ONBOARDING_STEPS;
+
+  useEffect(() => {
+    steps
+      .filter((step) => step.done)
+      .forEach((step) => trackEvent("onboarding_step_completed", { step: step.id }));
+  }, [steps]);
 
   useEffect(() => {
     if (!allDone || dismissed) return;
-    setShowSuccess(true);
-    const t = setTimeout(() => {
-      localStorage.setItem(ONBOARDING_DISMISSED_KEY, "true");
-      setDismissed(true);
-    }, ONBOARDING_CONFETTI_DISMISS_MS);
-    return () => clearTimeout(t);
+    localStorage.setItem(ONBOARDING_DISMISSED_KEY, "true");
+    setDismissed(true);
   }, [allDone, dismissed]);
-
-  const completedSteps = [
-    profileDone && "set_agent_profile",
-    copilotTried && "try_copilot",
-    todayVisited && "open_today",
-  ].filter(Boolean);
-
-  useEffect(() => {
-    completedSteps.forEach((step) => trackEvent("onboarding_step_completed", { step }));
-  }, [profileDone, copilotTried, todayVisited]);
 
   const handleDismiss = () => {
     localStorage.setItem(ONBOARDING_DISMISSED_KEY, "true");
     setDismissed(true);
-    trackEvent("onboarding_dismissed", { completed_steps: completedSteps.length });
+    trackEvent("onboarding_dismissed", { completed_steps: completedCount });
   };
 
-  const handleTryCopilot = () => {
-    localStorage.setItem(COPILOT_TRIED_KEY, "true");
-    setCopilotTried(true);
-    window.dispatchEvent(new CustomEvent(OPEN_COPILOT_EVENT));
+  const handleResendEmail = async () => {
+    try {
+      await resendVerification();
+    } catch {
+      /* banner handles errors elsewhere */
+    }
   };
 
-  const handleOpenToday = () => {
-    localStorage.setItem(TODAY_VISITED_KEY, "true");
-    setTodayVisited(true);
-    navigate("/today");
+  const handleInstallExtension = () => {
+    localStorage.setItem(EXTENSION_STEP_CLICKED_KEY, "true");
+    setExtensionClicked(true);
   };
 
-  if (dismissed) return null;
-
-  if (showSuccess) {
-    return (
-      <div className="mb-4 rounded-lg border border-border border-l-4 border-l-primary bg-card p-4 text-center">
-        <p className="font-semibold text-primary">You are all set!</p>
-      </div>
-    );
-  }
+  if (dismissed || !hasIncomplete) return null;
 
   return (
-    <div className="mb-4 rounded-lg border border-border border-l-4 border-l-primary bg-card p-4">
-      <div className="mb-3 flex items-center justify-between">
-        <h2 className=" font-semibold text-foreground">Get started with your agent</h2>
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          onClick={handleDismiss}
-          className="text-muted-foreground hover:text-foreground"
-        >
-          Dismiss
-        </Button>
-      </div>
-      <div className="mb-3">
-        <div className="mb-1 flex items-center text-xs text-muted-foreground">
-          <span>{completedSteps.length} of {ONBOARDING_STEPS} steps complete</span>
+    <>
+      <section
+        aria-label="Get started"
+        className="rounded-lg border border-border-1 bg-surface-1 p-4"
+      >
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <div className="flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-1">
+            <h2 className="text-xs font-medium uppercase tracking-wider text-text-3">Get started</h2>
+            <span className="text-xs text-text-3">
+              {completedCount} of {ONBOARDING_STEPS} complete
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={handleDismiss}
+            aria-label="Dismiss checklist"
+            className={[
+              "rounded-md p-1 text-text-3 hover:text-text-1 hover:bg-surface-2",
+              "focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600",
+              "dark:focus-visible:outline-1",
+            ].join(" ")}
+          >
+            <X className="h-4 w-4" aria-hidden="true" />
+          </button>
         </div>
-        <div className="h-1.5 overflow-hidden rounded-full bg-muted">
-          <div
-            className="h-full rounded-full bg-primary transition-all"
-            style={{ width: `${(completedSteps.length / ONBOARDING_STEPS) * 100}%` }}
+
+        <div className="space-y-1">
+          <OnboardingStepRow
+            label="Verify your email"
+            done={emailDone}
+            action={
+              !emailDone && (
+                <StepActionLink onClick={handleResendEmail}>
+                  {isResending ? "Sending…" : "→ Resend email"}
+                </StepActionLink>
+              )
+            }
+          />
+          <OnboardingStepRow
+            label="Save your first application"
+            done={applicationDone}
+            action={
+              !applicationDone && (
+                <StepActionLink onClick={() => navigate("/dashboard")}>
+                  → Add application
+                </StepActionLink>
+              )
+            }
+          />
+          <OnboardingStepRow
+            label="Connect Gmail"
+            done={gmailDone}
+            action={
+              !gmailDone && (
+                <StepActionLink onClick={() => setGmailDialogOpen(true)}>→ Connect</StepActionLink>
+              )
+            }
+          />
+          <OnboardingStepRow
+            label="Set a weekly goal"
+            done={goalDone}
+            action={
+              !goalDone && (
+                <Link
+                  to="/settings?section=pipeline"
+                  className="shrink-0 text-sm text-brand-600 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 dark:focus-visible:outline-1"
+                >
+                  → Set goal
+                </Link>
+              )
+            }
+          />
+          <OnboardingStepRow
+            label="Install Chrome extension"
+            done={extensionDone}
+            action={
+              !extensionDone && (
+                <StepActionLink
+                  href={CHROME_EXTENSION_URL}
+                  external
+                  onClick={handleInstallExtension}
+                >
+                  → Install
+                </StepActionLink>
+              )
+            }
           />
         </div>
-      </div>
-      <div className="flex flex-col gap-3">
-        <div>
-          <StepRow
-            label="Set agent profile"
-            description="Tell the co-pilot your target roles and goals."
-            done={profileDone}
-          />
-          {!profileDone && (
-            <Button
-              type="button"
-              variant="link"
-              onClick={() => navigate("/settings?section=agent")}
-              className="ml-8 h-auto p-0 text-xs"
-            >
-              Go to Agent settings
-            </Button>
-          )}
-        </div>
-        <div>
-          <StepRow
-            label="Try co-pilot"
-            description="Ask a question grounded in your pipeline."
-            done={copilotTried}
-          />
-          {!copilotTried && (
-            <Button
-              type="button"
-              variant="link"
-              onClick={handleTryCopilot}
-              className="ml-8 h-auto p-0 text-xs"
-            >
-              Open co-pilot
-            </Button>
-          )}
-        </div>
-        <div>
-          <StepRow
-            label="Open Today"
-            description="See your ranked missions for the day."
-            done={todayVisited}
-          />
-          {!todayVisited && (
-            <Button
-              type="button"
-              variant="link"
-              onClick={handleOpenToday}
-              className="ml-8 h-auto p-0 text-xs"
-            >
-              Go to Today
-            </Button>
-          )}
-        </div>
-      </div>
-    </div>
+      </section>
+
+      <InboxSetupDialog open={gmailDialogOpen} onOpenChange={setGmailDialogOpen} />
+    </>
   );
 }
 
