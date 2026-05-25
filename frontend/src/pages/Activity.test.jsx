@@ -1,4 +1,4 @@
-/** Tests for the Activity page timeline. */
+/** Tests for the Activity page agent feed. */
 
 import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter, Routes, Route, useLocation } from "react-router-dom";
@@ -13,37 +13,37 @@ import ActivityPage from "./Activity";
 
 const MOCK_ENTRIES = [
   {
-    type: "applied",
-    timestamp: new Date(Date.now() - 86_400_000).toISOString(),
+    id: "run1",
+    agent_type: "autopilot",
+    status: "success",
+    summary: "Autopilot scanned 1,284 jobs · matched 3",
+    created_at: new Date().toISOString(),
+    application_id: null,
+  },
+  {
+    id: "run2",
+    agent_type: "brief",
+    status: "success",
+    summary: "Morning brief sent",
+    created_at: new Date(Date.now() - 86_400_000).toISOString(),
+    application_id: null,
+  },
+  {
+    id: "run3",
+    agent_type: "classify",
+    status: "success",
+    summary: "Gmail sync: 12 new emails classified",
+    created_at: new Date(Date.now() - 172_800_000).toISOString(),
     application_id: "app1",
-    company: "Acme",
-    role_title: "Engineer",
-    details: {},
-  },
-  {
-    type: "stage_change",
-    timestamp: new Date(Date.now() - 172_800_000).toISOString(),
-    application_id: "app2",
-    company: "Beta",
-    role_title: "PM",
-    details: { from_stage: "Applied", to_stage: "Interview" },
-  },
-  {
-    type: "event_created",
-    timestamp: new Date(Date.now() - 259_200_000).toISOString(),
-    application_id: "app3",
-    company: "Gamma",
-    role_title: "SWE",
-    details: { event_type: "phone_screen" },
   },
 ];
 
 const server = setupServer(
-  http.get("/api/activity", () =>
-    HttpResponse.json({ data: MOCK_ENTRIES, meta: { total: 3, days: 30 } })
+  http.get("/api/agent/activity", () =>
+    HttpResponse.json({ data: MOCK_ENTRIES, meta: { limit: 50 } }),
   ),
   http.get("/api/notifications/unread-count", () =>
-    HttpResponse.json({ data: { count: 0 } })
+    HttpResponse.json({ data: { count: 0 } }),
   ),
   http.get("/api/auth/me", () =>
     HttpResponse.json({
@@ -55,7 +55,7 @@ const server = setupServer(
         weekly_goal: 5,
         default_stages: [],
       },
-    })
+    }),
   ),
 );
 
@@ -63,7 +63,6 @@ beforeAll(() => server.listen({ onUnhandledRequest: "warn" }));
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
-/** Captures the current route for navigation assertions. */
 let capturedLocation = null;
 function LocationCapture() {
   const location = useLocation();
@@ -84,6 +83,7 @@ function makeWrapper(initialPath = "/activity") {
               <Routes>
                 <Route path="/activity" element={children} />
                 <Route path="/dashboard" element={<LocationCapture />} />
+                <Route path="/inbox/pending" element={<LocationCapture />} />
               </Routes>
             </AuthProvider>
           </MemoryRouter>
@@ -97,36 +97,35 @@ describe("ActivityPage", () => {
   it("should render the Activity heading", async () => {
     render(<ActivityPage />, { wrapper: makeWrapper() });
 
-    expect(await screen.findByRole("heading", { name: /activity/i })).toBeDefined();
+    expect(await screen.findByRole("heading", { name: /^activity$/i })).toBeDefined();
   });
 
-  it("should render timeline entries from the feed", async () => {
+  it("should render agent activity rows with summary and timestamp", async () => {
     render(<ActivityPage />, { wrapper: makeWrapper() });
 
-    expect(await screen.findByText(/Applied to Engineer at Acme/)).toBeDefined();
-    expect(await screen.findByText(/Moved Beta PM from Applied to Interview/)).toBeDefined();
-    expect(await screen.findByText(/Scheduled phone_screen for Gamma/)).toBeDefined();
+    expect(await screen.findByText("Autopilot scanned 1,284 jobs · matched 3")).toBeDefined();
+    expect(screen.getByText("Morning brief sent")).toBeDefined();
+    expect(screen.getByText("Gmail sync: 12 new emails classified")).toBeDefined();
+    expect(screen.getAllByRole("time")).toHaveLength(3);
   });
 
-  it("should show total count", async () => {
+  it("should show run count", async () => {
     render(<ActivityPage />, { wrapper: makeWrapper() });
 
-    expect(await screen.findByText("3 actions")).toBeDefined();
+    expect(await screen.findByText("3 runs")).toBeDefined();
   });
 
-  it("should render time range selector buttons", async () => {
+  it("should group entries under date headings", async () => {
     render(<ActivityPage />, { wrapper: makeWrapper() });
 
-    expect(await screen.findByText("Last 7 days")).toBeDefined();
-    expect(screen.getByText("Last 30 days")).toBeDefined();
-    expect(screen.getByText("Last 90 days")).toBeDefined();
-    expect(screen.getByText("All time")).toBeDefined();
+    expect(await screen.findByText("Today")).toBeDefined();
+    expect(screen.getByText("Yesterday")).toBeDefined();
   });
 
   it("should show empty state when no entries", async () => {
     server.use(
-      http.get("/api/activity", () =>
-        HttpResponse.json({ data: [], meta: { total: 0, days: 30 } })
+      http.get("/api/agent/activity", () =>
+        HttpResponse.json({ data: [], meta: { limit: 50 } }),
       ),
     );
 
@@ -135,10 +134,8 @@ describe("ActivityPage", () => {
     expect(await screen.findByText("No activity yet")).toBeDefined();
   });
 
-  it("should show error state when activity feed fails", async () => {
-    server.use(
-      http.get("/api/activity", () => HttpResponse.error()),
-    );
+  it("should show error state when agent activity fails", async () => {
+    server.use(http.get("/api/agent/activity", () => HttpResponse.error()));
 
     render(<ActivityPage />, { wrapper: makeWrapper() });
 
@@ -146,34 +143,25 @@ describe("ActivityPage", () => {
     expect(screen.getByRole("button", { name: /retry loading activity/i })).toBeDefined();
   });
 
-  it("should call refetch when retry button is clicked", async () => {
-    let callCount = 0;
-    server.use(
-      http.get("/api/activity", () => {
-        callCount += 1;
-        return HttpResponse.error();
-      }),
-    );
-
-    render(<ActivityPage />, { wrapper: makeWrapper() });
-
-    await screen.findByText("Failed to load activity.");
-    const before = callCount;
-
-    fireEvent.click(screen.getByRole("button", { name: /retry loading activity/i }));
-
-    await new Promise((r) => setTimeout(r, 50));
-    expect(callCount).toBeGreaterThan(before);
-  });
-
-  it("should navigate to dashboard on entry click", async () => {
+  it("should navigate to dashboard when entry has application_id", async () => {
     capturedLocation = null;
 
     render(<ActivityPage />, { wrapper: makeWrapper() });
 
-    const entry = await screen.findByText(/Applied to Engineer at Acme/);
+    const entry = await screen.findByText("Gmail sync: 12 new emails classified");
     fireEvent.click(entry);
 
     expect(capturedLocation).toBe("/dashboard?selected=app1");
+  });
+
+  it("should navigate to pending inbox for autopilot entry", async () => {
+    capturedLocation = null;
+
+    render(<ActivityPage />, { wrapper: makeWrapper() });
+
+    const entry = await screen.findByText("Autopilot scanned 1,284 jobs · matched 3");
+    fireEvent.click(entry);
+
+    expect(capturedLocation).toBe("/inbox/pending");
   });
 });

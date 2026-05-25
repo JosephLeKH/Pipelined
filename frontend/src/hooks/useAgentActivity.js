@@ -10,7 +10,10 @@ export const AGENT_ACTIVITY_KEY = ["agent", "activity"];
 export function useAgentActivity({ limit = 20, applicationId, enabled = true } = {}) {
   return useQuery({
     queryKey: [...AGENT_ACTIVITY_KEY, { limit, applicationId }],
-    queryFn: () => fetchAgentActivity({ limit, applicationId }),
+    queryFn: async () => {
+      const response = await fetchAgentActivity({ limit, applicationId });
+      return response?.data ?? response ?? [];
+    },
     staleTime: QUERY_STALE_TIME_MS,
     enabled,
   });
