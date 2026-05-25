@@ -1,0 +1,10 @@
+# PRD-10-system-ui — complete
+
+- Branch: redesign/prd-10-system-ui
+- Iterations: 11
+- Final commit: da8f6a0
+- Linear sources cited:
+  - https://linear.app/method — design principles for banners, dialogs, empty states, action hierarchy
+  - https://linear.app/blog — drawer slide for secondary panels
+  - https://windframe.dev/styles/linear — token extraction (surface/border/text, modal radius, kbd styling)
+- Open follow-ups: none
