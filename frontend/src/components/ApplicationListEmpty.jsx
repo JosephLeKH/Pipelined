@@ -36,7 +36,7 @@ export function ApplicationListEmpty({ isLoading, error, refetch, applications, 
     const hasFilters = Object.keys(filters).length > 0;
     if (hasFilters) {
       return (
-        <div className="py-16 text-center text-muted-foreground">
+        <div className="py-16 text-center text-text-3">
           <p>No applications match your filters.</p>
           {onClearFilters && (
             <Button type="button" variant="link" onClick={onClearFilters} className="mt-3 h-auto p-0 text-sm">

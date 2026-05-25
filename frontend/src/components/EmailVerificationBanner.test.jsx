@@ -20,7 +20,10 @@ const server = setupServer(
 );
 
 beforeAll(() => server.listen({ onUnhandledRequest: "bypass" }));
-afterEach(() => server.resetHandlers());
+afterEach(() => {
+  server.resetHandlers();
+  localStorage.clear();
+});
 afterAll(() => server.close());
 
 function makeWrapper(user = null) {

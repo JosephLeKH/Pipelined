@@ -1,6 +1,6 @@
-/** Tests for CsvImportModal — file input, import flow, result summary. */
+/** Tests for CsvImportModal — 4-step wizard, import flow, result summary. */
 
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
@@ -39,49 +39,65 @@ function makeWrapper() {
   );
 }
 
+const CSV_CONTENT = "company,role_title\nAcme,SWE\nBeta,PM";
+
+async function uploadCsvFile() {
+  const fileInput = screen.getByLabelText(/csv file/i);
+  const csvFile = new File([CSV_CONTENT], "apps.csv", { type: "text/csv" });
+  await userEvent.upload(fileInput, csvFile);
+  await waitFor(() => {
+    expect(screen.getByRole("button", { name: /^next$/i })).not.toBeDisabled();
+  });
+}
+
 describe("CsvImportModal", () => {
-  it("should render the file input when open", () => {
-    // Arrange / Act
+  it("should render the 4-step progress indicator when open", () => {
     render(<CsvImportModal isOpen={true} onClose={() => {}} />, { wrapper: makeWrapper() });
 
-    // Assert
     expect(screen.getByRole("dialog", { name: /import csv/i })).toBeInTheDocument();
-    expect(screen.getByLabelText(/csv file/i)).toBeInTheDocument();
+    expect(screen.getByRole("list", { name: /import progress/i })).toBeInTheDocument();
+    expect(screen.getByText("Upload")).toBeInTheDocument();
+    expect(screen.getByText("Map columns")).toBeInTheDocument();
+    expect(screen.getByText("Preview")).toBeInTheDocument();
+    expect(screen.getByText("Import")).toBeInTheDocument();
   });
 
   it("should not render when isOpen is false", () => {
-    // Arrange / Act
     render(<CsvImportModal isOpen={false} onClose={() => {}} />, { wrapper: makeWrapper() });
 
-    // Assert
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 
-  it("should enable Import button after a file is selected", async () => {
-    // Arrange
+  it("should enable Next after a file is selected on step 1", async () => {
     render(<CsvImportModal isOpen={true} onClose={() => {}} />, { wrapper: makeWrapper() });
-    const fileInput = screen.getByLabelText(/csv file/i);
-    const csvFile = new File(["company,role_title\nAcme,SWE"], "apps.csv", { type: "text/csv" });
 
-    // Act
-    await userEvent.upload(fileInput, csvFile);
-
-    // Assert
-    expect(screen.getByRole("button", { name: /import csv/i })).not.toBeDisabled();
+    await uploadCsvFile();
   });
 
-  it("should POST file and show result summary on success", async () => {
-    // Arrange
+  it("should advance through mapping and preview steps", async () => {
     render(<CsvImportModal isOpen={true} onClose={() => {}} />, { wrapper: makeWrapper() });
-    const fileInput = screen.getByLabelText(/csv file/i);
-    const csvFile = new File(["company,role_title\nAcme,SWE"], "apps.csv", { type: "text/csv" });
 
-    await userEvent.upload(fileInput, csvFile);
+    await uploadCsvFile();
+    await userEvent.click(screen.getByRole("button", { name: /^next$/i }));
 
-    // Act
-    await userEvent.click(screen.getByRole("button", { name: /import csv/i }));
+    expect(screen.getByRole("table")).toBeInTheDocument();
+    expect(screen.getByText("Target field")).toBeInTheDocument();
 
-    // Assert
+    await userEvent.click(screen.getByRole("button", { name: /^next$/i }));
+
+    expect(screen.getByText(/showing first/i)).toBeInTheDocument();
+    expect(screen.getByText("Acme")).toBeInTheDocument();
+  });
+
+  it("should POST mapped file and show result summary on success", async () => {
+    render(<CsvImportModal isOpen={true} onClose={() => {}} />, { wrapper: makeWrapper() });
+
+    await uploadCsvFile();
+    await userEvent.click(screen.getByRole("button", { name: /^next$/i }));
+    await userEvent.click(screen.getByRole("button", { name: /^next$/i }));
+    await userEvent.click(screen.getByRole("button", { name: /^next$/i }));
+    await userEvent.click(screen.getByRole("button", { name: /^import$/i }));
+
     await waitFor(() => {
       expect(screen.getByRole("status")).toHaveTextContent("3");
       expect(screen.getByRole("status")).toHaveTextContent("1");
@@ -89,7 +105,6 @@ describe("CsvImportModal", () => {
   });
 
   it("should show error alert when import request fails", async () => {
-    // Arrange
     server.use(
       http.post("/api/applications/import", () =>
         HttpResponse.json(
@@ -99,30 +114,26 @@ describe("CsvImportModal", () => {
       )
     );
     render(<CsvImportModal isOpen={true} onClose={() => {}} />, { wrapper: makeWrapper() });
-    const fileInput = screen.getByLabelText(/csv file/i);
-    const csvFile = new File(["company,role_title\nAcme,SWE"], "apps.csv", { type: "text/csv" });
 
-    await userEvent.upload(fileInput, csvFile);
+    await uploadCsvFile();
+    await userEvent.click(screen.getByRole("button", { name: /^next$/i }));
+    await userEvent.click(screen.getByRole("button", { name: /^next$/i }));
+    await userEvent.click(screen.getByRole("button", { name: /^next$/i }));
+    await userEvent.click(screen.getByRole("button", { name: /^import$/i }));
 
-    // Act
-    await userEvent.click(screen.getByRole("button", { name: /import csv/i }));
-
-    // Assert
     await waitFor(() => {
-      expect(screen.getByRole("alert")).toBeInTheDocument();
+      expect(screen.getByRole("alert")).toHaveTextContent("2 MB");
     });
   });
 
   it("should call onClose when Close button is clicked", async () => {
-    // Arrange
     const onClose = vi.fn();
     render(<CsvImportModal isOpen={true} onClose={onClose} />, { wrapper: makeWrapper() });
 
-    // Act
-    const closeButtons = screen.getAllByRole("button", { name: /^close$/i });
+    const dialog = screen.getByRole("dialog");
+    const closeButtons = within(dialog).getAllByRole("button", { name: /^close$/i });
     await userEvent.click(closeButtons[closeButtons.length - 1]);
 
-    // Assert
     expect(onClose).toHaveBeenCalledOnce();
   });
 });

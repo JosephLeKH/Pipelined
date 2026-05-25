@@ -90,3 +90,4 @@ session.md
 *.swo
 *~
 scripts/ralph/redesign_logs/
+frontend/.lighthouse-dashboard.json

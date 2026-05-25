@@ -3,38 +3,36 @@
 import { useState, useCallback } from "react";
 
 const getTodayString = () => new Date().toISOString().slice(0, 10);
+const DEFAULT_SOURCE = "manual";
 
 export function useManualAddFormState({ reset }) {
-  const [roleTitle, setRoleTitle] = useState("");
   const [company, setCompany] = useState("");
+  const [roleTitle, setRoleTitle] = useState("");
   const [sourceUrl, setSourceUrl] = useState("");
   const [dateApplied, setDateApplied] = useState(getTodayString);
   const [stage, setStage] = useState("");
-  const [compensation, setCompensation] = useState("");
-  const [location, setLocation] = useState("");
-  const [remoteStatus, setRemoteStatus] = useState("");
-  const [companyType, setCompanyType] = useState("");
-  const [tags, setTags] = useState([]);
+  const [source, setSource] = useState(DEFAULT_SOURCE);
+  const [jobDescription, setJobDescription] = useState("");
+  const [notes, setNotes] = useState("");
   const [fieldErrors, setFieldErrors] = useState({});
 
   const resetForm = useCallback(() => {
-    setRoleTitle(""); setCompany(""); setSourceUrl(""); setDateApplied(getTodayString());
-    setStage(""); setCompensation(""); setLocation(""); setRemoteStatus(""); setCompanyType(""); setTags([]);
-    setFieldErrors({}); reset();
+    setCompany("");
+    setRoleTitle("");
+    setSourceUrl("");
+    setDateApplied(getTodayString());
+    setStage("");
+    setSource(DEFAULT_SOURCE);
+    setJobDescription("");
+    setNotes("");
+    setFieldErrors({});
+    reset();
   }, [reset]);
 
-  const applyTemplate = useCallback((template) => {
-    const f = template.fields;
-    if (f.remote_status) setRemoteStatus(f.remote_status);
-    if (f.company_type) setCompanyType(f.company_type);
-    if (f.compensation) setCompensation(f.compensation);
-    if (f.tags?.length) setTags(f.tags);
-  }, []);
-
   return {
-    roleTitle, setRoleTitle, company, setCompany, sourceUrl, setSourceUrl,
-    dateApplied, setDateApplied, stage, setStage, compensation, setCompensation,
-    location, setLocation, remoteStatus, setRemoteStatus, companyType, setCompanyType,
-    tags, setTags, fieldErrors, setFieldErrors, resetForm, applyTemplate,
+    company, setCompany, roleTitle, setRoleTitle, sourceUrl, setSourceUrl,
+    dateApplied, setDateApplied, stage, setStage, source, setSource,
+    jobDescription, setJobDescription, notes, setNotes,
+    fieldErrors, setFieldErrors, resetForm,
   };
 }

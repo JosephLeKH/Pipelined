@@ -8,8 +8,9 @@ vi.mock("./NotesEditor", () => ({
 
 describe("DetailPanelNotes", () => {
   it("should render NotesEditor with the correct applicationId", () => {
-    render(<DetailPanelNotes applicationId="app-123" initialValue="some notes" />);
+    render(<DetailPanelNotes applicationId="app-123" initialValue="some notes" onDirtyChange={vi.fn()} />);
 
+    expect(screen.getByRole("heading", { name: "Notes" })).toBeInTheDocument();
     const editor = screen.getByTestId("notes-editor");
     expect(editor).toBeInTheDocument();
     expect(editor).toHaveAttribute("data-app-id", "app-123");

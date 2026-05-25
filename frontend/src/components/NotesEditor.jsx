@@ -1,72 +1,125 @@
 /** Inline notes editor for an application in the detail panel. */
 
-import { useState, useEffect } from "react";
-
-import Pencil from "lucide-react/dist/esm/icons/pencil";
+import { useState, useEffect, useCallback, useRef } from "react";
 
 import { useUpdateApplication } from "../hooks/useApplications";
 import { NOTES_MAX_LENGTH } from "../lib/constants";
-import { Button } from "./ui/button";
+import { formatSavedAgo } from "../lib/dateUtils";
+import { cn } from "../lib/utils";
 import MarkdownEditor from "./MarkdownEditor";
 
 const AMBER_PCT = 0.8;
+const SAVE_STATUS_IDLE = "idle";
+const SAVE_STATUS_SAVING = "saving";
+const SAVE_STATUS_SAVED = "saved";
+const SAVE_STATUS_ERROR = "error";
+const SAVED_AGO_TICK_MS = 1000;
 
-function NotesEditView({ value, onChange, maxLength, onSave, onCancel }) {
-  const charPct = value.length / maxLength;
-  const charCls = charPct >= 1 ? "text-destructive" : charPct >= AMBER_PCT ? "text-amber-600 dark:text-amber-400" : "text-muted-foreground";
-  return (
-    <>
-      <MarkdownEditor id="notes-textarea" value={value} onChange={onChange} maxLength={maxLength} />
-      <div className="flex items-center justify-between">
-        <span className={`text-xs ${charCls}`}>{value.length}/{maxLength}</span>
-        <div className="flex gap-2">
-          <Button type="button" variant="ghost" size="sm" onClick={onCancel}>Cancel</Button>
-          <Button type="button" size="sm" onClick={onSave}>Save</Button>
-        </div>
-      </div>
-    </>
-  );
+function NotesSaveStatus({ saveStatus, savedAt, errorMsg }) {
+  if (errorMsg) {
+    return <span className="text-xs text-brand-700">{errorMsg}</span>;
+  }
+  if (saveStatus === SAVE_STATUS_SAVING) {
+    return <span className="text-xs text-text-3">Saving…</span>;
+  }
+  if (saveStatus === SAVE_STATUS_SAVED && savedAt) {
+    return (
+      <span className="text-xs text-text-3" data-testid="notes-save-status">
+        Saved · {formatSavedAgo(savedAt)}
+      </span>
+    );
+  }
+  return null;
 }
 
 function NotesEditor({ applicationId, initialValue, onDirtyChange }) {
   const { mutate: updateApp } = useUpdateApplication();
-  const [isEditing, setIsEditing] = useState(false);
+  const containerRef = useRef(null);
   const [savedValue, setSavedValue] = useState(initialValue ?? "");
   const [draft, setDraft] = useState(initialValue ?? "");
+  const [saveStatus, setSaveStatus] = useState(SAVE_STATUS_IDLE);
+  const [savedAt, setSavedAt] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
+  const [, setTick] = useState(0);
 
   useEffect(() => {
-    onDirtyChange?.(isEditing && draft !== savedValue);
-  }, [isEditing, draft, savedValue, onDirtyChange]);
+    setSavedValue(initialValue ?? "");
+    setDraft(initialValue ?? "");
+    setSaveStatus(SAVE_STATUS_IDLE);
+    setSavedAt(null);
+    setErrorMsg(null);
+  }, [applicationId, initialValue]);
 
-  const handleEdit = () => { setDraft(savedValue); setErrorMsg(null); setIsEditing(true); };
-  const handleCancel = () => { setDraft(savedValue); setErrorMsg(null); setIsEditing(false); };
-  const handleSave = () => {
+  useEffect(() => {
+    onDirtyChange?.(draft.trim() !== savedValue);
+  }, [draft, savedValue, onDirtyChange]);
+
+  useEffect(() => {
+    if (saveStatus !== SAVE_STATUS_SAVED || !savedAt) return undefined;
+    const id = setInterval(() => setTick((n) => n + 1), SAVED_AGO_TICK_MS);
+    return () => clearInterval(id);
+  }, [saveStatus, savedAt]);
+
+  const saveNotes = useCallback(() => {
     const trimmed = draft.trim();
+    if (trimmed === savedValue) return;
+    setSaveStatus(SAVE_STATUS_SAVING);
+    setErrorMsg(null);
     updateApp({ id: applicationId, body: { notes: trimmed } }, {
-      onSuccess: () => { setSavedValue(trimmed); setDraft(trimmed); setIsEditing(false); setErrorMsg(null); },
-      onError: () => setErrorMsg("Failed to save notes. Please try again."),
+      onSuccess: () => {
+        setSavedValue(trimmed);
+        setDraft(trimmed);
+        setSaveStatus(SAVE_STATUS_SAVED);
+        setSavedAt(new Date());
+        setErrorMsg(null);
+      },
+      onError: () => {
+        setSaveStatus(SAVE_STATUS_ERROR);
+        setErrorMsg("Failed to save notes. Please try again.");
+      },
     });
+  }, [applicationId, draft, savedValue, updateApp]);
+
+  const handleEditorBlur = (e) => {
+    if (containerRef.current?.contains(e.relatedTarget)) return;
+    saveNotes();
   };
+
+  const charPct = draft.length / NOTES_MAX_LENGTH;
+  const charCls = charPct >= 1
+    ? "text-brand-700"
+    : charPct >= AMBER_PCT
+      ? "text-amber-600 dark:text-amber-400"
+      : "text-text-3";
 
   return (
     <div className="flex flex-col gap-1.5" data-testid="notes-editor">
-      <div className="flex items-center justify-between">
-        <label className="text-xs font-medium uppercase text-muted-foreground" htmlFor={isEditing ? "notes-textarea" : undefined}>Notes</label>
-        {!isEditing && (
-          <Button type="button" variant="ghost" size="icon" onClick={handleEdit} aria-label="Edit notes" className="h-7 w-7 text-muted-foreground hover:text-foreground">
-            <Pencil className="h-3.5 w-3.5" aria-hidden="true" />
-          </Button>
-        )}
-      </div>
-      {errorMsg && <p role="alert" className="text-xs text-destructive">{errorMsg}</p>}
-      {isEditing ? (
-        <NotesEditView value={draft} onChange={setDraft} maxLength={NOTES_MAX_LENGTH} onSave={handleSave} onCancel={handleCancel} />
-      ) : (
-        <p className="whitespace-pre-wrap text-sm text-foreground" data-testid="notes-display">
-          {savedValue || <span className="text-muted-foreground">No notes yet.</span>}
-        </p>
+      <label className="text-xs font-medium uppercase text-text-3" htmlFor="notes-textarea">
+        Notes
+      </label>
+      {errorMsg && saveStatus === SAVE_STATUS_ERROR && (
+        <p role="alert" className="text-xs text-brand-700">{errorMsg}</p>
       )}
+      <div
+        ref={containerRef}
+        className={cn(
+          "rounded-md border border-transparent transition-[background-color,border-color]",
+          "duration-hover ease-out motion-safe focus-within:border-border-1 focus-within:bg-surface-1",
+        )}
+      >
+        <MarkdownEditor
+          id="notes-textarea"
+          value={draft}
+          onChange={setDraft}
+          maxLength={NOTES_MAX_LENGTH}
+          className="px-2 pb-2 pt-1"
+          onBlur={handleEditorBlur}
+        />
+      </div>
+      <div className="flex items-center justify-between">
+        <span className={`text-xs ${charCls}`}>{draft.length}/{NOTES_MAX_LENGTH}</span>
+        <NotesSaveStatus saveStatus={saveStatus} savedAt={savedAt} errorMsg={errorMsg} />
+      </div>
     </div>
   );
 }

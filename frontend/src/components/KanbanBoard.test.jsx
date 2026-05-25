@@ -120,7 +120,7 @@ describe("KanbanBoard", () => {
 
     // Assert — Offer column has no cards
     const offerColumn = within(desktop).getByTestId("kanban-column-Offer");
-    expect(offerColumn).toHaveTextContent("No applications");
+    expect(offerColumn).toHaveTextContent("Drop applications here");
   });
 
   it("should show the correct card count badge per column", async () => {
@@ -129,6 +129,6 @@ describe("KanbanBoard", () => {
 
     // Assert — Applied has 2 apps
     const appliedColumn = within(desktop).getByTestId("kanban-column-Applied");
-    expect(appliedColumn).toHaveTextContent("2");
+    expect(appliedColumn).toHaveTextContent("(2)");
   });
 });

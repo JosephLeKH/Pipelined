@@ -29,14 +29,14 @@ function renderTimeline(props = {}) {
 describe("ApplicationTimeline", () => {
   it("should render the toggle button with aria-expanded", () => {
     renderTimeline();
-    const btn = screen.getByRole("button", { name: /toggle timeline/i });
+    const btn = screen.getByRole("button", { name: /toggle timeline entries/i });
     expect(btn).toBeInTheDocument();
     expect(btn.getAttribute("aria-expanded")).toBe("true");
   });
 
   it("should collapse timeline on toggle button click", async () => {
     renderTimeline();
-    const btn = screen.getByRole("button", { name: /toggle timeline/i });
+    const btn = screen.getByRole("button", { name: /toggle timeline entries/i });
     await userEvent.click(btn);
     expect(btn.getAttribute("aria-expanded")).toBe("false");
     expect(screen.queryByTestId("timeline")).not.toBeInTheDocument();

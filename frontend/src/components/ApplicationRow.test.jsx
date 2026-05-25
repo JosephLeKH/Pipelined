@@ -1,6 +1,6 @@
 /** Tests for ApplicationRow — swipe-to-reveal actions, desktop click, follow-up bell. */
 
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor, within } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 import ApplicationRow from "./ApplicationRow";
@@ -34,6 +34,7 @@ function renderRow(overrides = {}) {
     checked: false,
     onToggle: vi.fn(),
     hasSelection: false,
+    isSelected: false,
     ...overrides,
   };
   render(
@@ -57,7 +58,7 @@ describe("ApplicationRow — desktop interactions", () => {
   it("should call onSelect when row is clicked", () => {
     const { onSelect } = renderRow();
 
-    fireEvent.click(screen.getByRole("row"));
+    fireEvent.click(screen.getByRole("listitem"));
 
     expect(onSelect).toHaveBeenCalledWith(APP);
   });
@@ -65,7 +66,7 @@ describe("ApplicationRow — desktop interactions", () => {
   it("should call onSelect when Enter is pressed on row", () => {
     const { onSelect } = renderRow();
 
-    fireEvent.keyDown(screen.getByRole("row"), { key: "Enter" });
+    fireEvent.keyDown(screen.getByRole("listitem"), { key: "Enter" });
 
     expect(onSelect).toHaveBeenCalledWith(APP);
   });
@@ -100,13 +101,25 @@ describe("ApplicationRow — desktop interactions", () => {
 
     expect(screen.getByTestId("fit-badge")).toHaveTextContent("67%");
   });
+
+  it("should render a 40px-tall row on desktop viewport", () => {
+    renderRow();
+
+    expect(screen.getByRole("listitem")).toHaveClass("md:h-10");
+  });
+
+  it("should apply selected styling when isSelected is true", () => {
+    renderRow({ isSelected: true });
+
+    expect(screen.getByRole("listitem")).toHaveClass("border-l-brand-600");
+  });
 });
 
 describe("ApplicationRow — swipe actions", () => {
   let dateNowSpy;
 
   beforeEach(() => {
-    // Freeze time so elapsed calculations are predictable
+    Object.defineProperty(window, "innerWidth", { writable: true, configurable: true, value: 375 });
     const t = Date.now();
     dateNowSpy = vi.spyOn(Date, "now").mockReturnValue(t);
   });
@@ -116,20 +129,23 @@ describe("ApplicationRow — swipe actions", () => {
   });
 
   function getRow() {
-    return screen.getByRole("row");
+    return screen.getByRole("listitem");
+  }
+
+  function getSwipePanel() {
+    return screen.getByTestId("row-swipe-actions");
   }
 
   it("should reveal swipe actions when swiped left past threshold", async () => {
     renderRow();
     const row = getRow();
 
-    // swipe: dx=-100 (> 80px threshold), dy=5 (ratio 20:1 > 2:1), within 300ms
     fireEvent.touchStart(row, { touches: [{ clientX: 300, clientY: 100 }] });
     fireEvent.touchMove(row, { touches: [{ clientX: 200, clientY: 105 }] });
     fireEvent.touchEnd(row);
 
     await waitFor(() => {
-      expect(screen.getByLabelText("Archive application")).toBeVisible();
+      expect(within(getSwipePanel()).getByLabelText("Archive application")).toBeVisible();
     });
   });
 
@@ -137,29 +153,24 @@ describe("ApplicationRow — swipe actions", () => {
     renderRow();
     const row = getRow();
 
-    // swipe: dx=-50 (< 80px threshold)
     fireEvent.touchStart(row, { touches: [{ clientX: 300, clientY: 100 }] });
     fireEvent.touchMove(row, { touches: [{ clientX: 250, clientY: 103 }] });
     fireEvent.touchEnd(row);
 
-    const archiveBtn = screen.queryByLabelText("Archive application");
-    if (archiveBtn) {
-      expect(archiveBtn.closest("[aria-hidden]")).toHaveAttribute("aria-hidden", "true");
-    }
+    expect(getSwipePanel()).toHaveAttribute("aria-hidden", "true");
   });
 
   it("should call onArchive and snap back when archive button is tapped after swipe", async () => {
     const { onArchive } = renderRow();
     const row = getRow();
 
-    // Reveal swipe actions
     fireEvent.touchStart(row, { touches: [{ clientX: 300, clientY: 100 }] });
     fireEvent.touchMove(row, { touches: [{ clientX: 200, clientY: 105 }] });
     fireEvent.touchEnd(row);
 
-    await waitFor(() => expect(screen.getByLabelText("Archive application")).toBeVisible());
+    await waitFor(() => expect(within(getSwipePanel()).getByLabelText("Archive application")).toBeVisible());
 
-    fireEvent.click(screen.getByLabelText("Archive application"));
+    fireEvent.click(within(getSwipePanel()).getByLabelText("Archive application"));
 
     expect(onArchive).toHaveBeenCalledWith("a1");
   });
@@ -172,9 +183,9 @@ describe("ApplicationRow — swipe actions", () => {
     fireEvent.touchMove(row, { touches: [{ clientX: 200, clientY: 105 }] });
     fireEvent.touchEnd(row);
 
-    await waitFor(() => expect(screen.getByLabelText("Set follow-up")).toBeVisible());
+    await waitFor(() => expect(within(getSwipePanel()).getByLabelText("Set follow-up")).toBeVisible());
 
-    fireEvent.click(screen.getByLabelText("Set follow-up"));
+    fireEvent.click(within(getSwipePanel()).getByLabelText("Set follow-up"));
 
     expect(onSetFollowUp).toHaveBeenCalledWith("a1");
   });
@@ -183,12 +194,10 @@ describe("ApplicationRow — swipe actions", () => {
     renderRow();
     const row = getRow();
 
-    // Right swipe: dx=+100
     fireEvent.touchStart(row, { touches: [{ clientX: 100, clientY: 100 }] });
     fireEvent.touchMove(row, { touches: [{ clientX: 200, clientY: 103 }] });
     fireEvent.touchEnd(row);
 
-    const actionPanel = document.querySelector("[aria-hidden]");
-    expect(actionPanel).not.toHaveAttribute("aria-hidden", "false");
+    expect(getSwipePanel()).toHaveAttribute("aria-hidden", "true");
   });
 });

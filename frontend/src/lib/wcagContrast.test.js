@@ -16,6 +16,8 @@ const LIGHT_BODY_PAIRS = [
 const DARK_BODY_PAIRS = [
   { fg: "#F4F4F5", bg: "#08090A", label: "dark text-1 on surface-0" },
   { fg: "#A1A1AA", bg: "#08090A", label: "dark text-2 on surface-0" },
+  { fg: "#858589", bg: "#08090A", label: "dark text-3 on surface-0" },
+  { fg: "#858589", bg: "#0F1011", label: "dark text-3 on surface-1" },
 ];
 
 describe("wcagContrast", () => {

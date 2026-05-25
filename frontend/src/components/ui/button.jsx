@@ -28,7 +28,7 @@ const buttonVariants = cva(
         destructive:
           "bg-transparent text-brand-700 hover:bg-brand-50",
         link:
-          "bg-transparent text-brand-600 underline-offset-2 hover:underline",
+          "bg-transparent text-brand-600 underline-offset-2 hover:underline dark:text-brand-300",
       },
       size: {
         sm: "h-7 px-2.5 text-xs",

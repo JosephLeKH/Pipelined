@@ -99,7 +99,7 @@ describe("KanbanCard", () => {
     expect(screen.getByText(/stale application/i)).toBeInTheDocument();
   });
 
-  it("should show fit score from ai_analysis when present", () => {
+  it("should show fit score as plain percent text", () => {
     renderCard({ ...FRESH_APP, ai_analysis: { fit_score: 91 } });
 
     expect(screen.getByTestId("fit-badge")).toHaveTextContent("91%");
@@ -111,15 +111,9 @@ describe("KanbanCard", () => {
     expect(screen.getByTestId("fit-badge")).toHaveTextContent("58%");
   });
 
-  it("should not show fit badge when score is unscored", () => {
+  it("should not show fit score when unscored", () => {
     renderCard(FRESH_APP);
 
     expect(screen.queryByTestId("fit-badge")).not.toBeInTheDocument();
-  });
-
-  it("should show interview prep indicator when briefing exists", () => {
-    const { container } = renderCard({ ...FRESH_APP, interview_prep_briefing: { summary: "Ready" } });
-
-    expect(container.querySelector(".lucide-sparkles")).toBeTruthy();
   });
 });

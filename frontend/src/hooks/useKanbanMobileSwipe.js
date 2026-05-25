@@ -1,11 +1,17 @@
 /** Mobile swipe navigation state and handlers for KanbanBoard. */
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { SWIPE_THRESHOLD_PX, SWIPE_MAX_MS, SWIPE_H_TO_V_RATIO } from "../lib/constants";
 
 export function useKanbanMobileSwipe(stages) {
   const [mobileStage, setMobileStage] = useState(stages[0] ?? "");
   const mobileSwipeRef = useRef(null);
+
+  useEffect(() => {
+    if (stages.length > 0 && !stages.includes(mobileStage)) {
+      setMobileStage(stages[0]);
+    }
+  }, [stages, mobileStage]);
 
   const handleMobileTouchStart = useCallback((e) => {
     mobileSwipeRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY, time: Date.now() };

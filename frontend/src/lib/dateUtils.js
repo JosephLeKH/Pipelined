@@ -91,6 +91,22 @@ export function formatRelative(isoString) {
   return formatDate(isoString);
 }
 
+const SAVED_AGO_JUST_NOW_MS = 5000;
+const MS_PER_SECOND = 1000;
+const SECONDS_PER_MINUTE = 60;
+
+/** Compact relative label for autosave microcopy ("2 s ago", "3 min ago"). */
+export function formatSavedAgo(savedAt, now = new Date()) {
+  if (!savedAt) return "";
+  const elapsedMs = now.getTime() - savedAt.getTime();
+  if (elapsedMs < SAVED_AGO_JUST_NOW_MS) return "just now";
+  const seconds = Math.floor(elapsedMs / MS_PER_SECOND);
+  if (seconds < SECONDS_PER_MINUTE) return `${seconds} s ago`;
+  const minutes = Math.floor(seconds / SECONDS_PER_MINUTE);
+  if (minutes < SECONDS_PER_MINUTE) return `${minutes} min ago`;
+  return formatRelative(savedAt.toISOString());
+}
+
 /**
  * Convert a Date object to an ISO date string (YYYY-MM-DD) using local time.
  * Used for calendar key generation and form date inputs.

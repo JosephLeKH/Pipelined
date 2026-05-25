@@ -17,33 +17,57 @@ import ThreadSummarySection from "./ThreadSummarySection";
 import {
   ApplicationPrepSection,
   DetailField,
+  DetailPanelMetaRow,
   FollowUpSection,
   JobPostingLink,
   StageSelector,
   TagsSection,
 } from "./DetailPanelSections";
-import { formatDate } from "../lib/dateUtils";
 
-export function PanelBody({ application, handleStageChange, handleUpdate, onAddEvent, onDirtyChange, expandFollowUpDraft = false }) {
+export function PanelBody({
+  application,
+  handleStageChange,
+  handleUpdate,
+  onAddEvent,
+  onDirtyChange,
+  expandFollowUpDraft = false,
+}) {
   const { user } = useAuth();
   const stageOptions = user?.default_stages ?? [];
-  const dateApplied = formatDate(application.date_applied);
 
   function handleFitScoreUpdate(data) {
     handleUpdate(data);
   }
 
   return (
-    <div className="flex flex-col gap-4 px-6 py-4">
+    <div className="flex flex-col gap-4 px-4 pb-6">
+      <div className="flex h-12 shrink-0 items-center gap-3 border-b border-border-1">
+        <span className="text-xs text-text-3">Stage</span>
+        <StageSelector
+          stageOptions={stageOptions}
+          currentStage={application.current_stage}
+          onStageChange={handleStageChange}
+        />
+      </div>
+
+      <DetailPanelMetaRow application={application} />
+
+      <JobPostingLink url={application.source_url} />
+
       <div className="grid grid-cols-2 gap-3">
-        <DetailField label="Date Applied" value={dateApplied} />
         <DetailField label="Location" value={application.location} />
         <DetailField label="Remote" value={application.remote_status} />
         <DetailField label="Compensation" value={application.compensation} />
         <DetailField label="Company Type" value={application.company_type} />
       </div>
-      <JobPostingLink url={application.source_url} />
-      <AiPanelGroup>
+
+      <DetailPanelNotes
+        applicationId={application.id}
+        initialValue={application.notes}
+        onDirtyChange={onDirtyChange}
+      />
+
+      <AiPanelGroup defaultOpen={false}>
         <AiFitSection
           application={application}
           hasResume={Boolean(user?.has_resume)}
@@ -72,19 +96,25 @@ export function PanelBody({ application, handleStageChange, handleUpdate, onAddE
           onSummaryGenerated={(summary) => handleUpdate({ thread_summary: summary })}
         />
       </AiPanelGroup>
-      <StageSelector stageOptions={stageOptions} currentStage={application.current_stage} onStageChange={handleStageChange} />
+
       <TagsSection application={application} onUpdate={handleUpdate} />
       <FollowUpSection application={application} onUpdate={handleUpdate} />
+
       {application.current_stage === "Offer" && (
         <>
           <OfferSummarySection application={application} />
           <OfferDetailsSection application={application} onUpdate={handleUpdate} />
         </>
       )}
-      <DetailPanelNotes applicationId={application.id} initialValue={application.notes} onDirtyChange={onDirtyChange} />
+
       <ApplicationPrepSection applicationId={application.id} initialChecklist={application.prep_checklist} />
       <AgentActivitySection applicationId={application.id} />
-      <DetailPanelTimeline stageHistory={application.stage_history} applicationId={application.id} onAddEvent={onAddEvent} />
+
+      <DetailPanelTimeline
+        stageHistory={application.stage_history}
+        applicationId={application.id}
+        onAddEvent={onAddEvent}
+      />
       <ContactsSection applicationId={application.id} />
     </div>
   );

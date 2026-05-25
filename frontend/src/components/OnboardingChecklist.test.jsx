@@ -62,7 +62,7 @@ describe("OnboardingChecklist", () => {
     render(<OnboardingChecklist />, { wrapper: Wrapper });
     expect(screen.getByText("Set agent profile")).toBeInTheDocument();
 
-    fireEvent.click(screen.getByText("Dismiss"));
+    fireEvent.click(screen.getByRole("button", { name: /dismiss/i }));
 
     expect(screen.queryByText("Set agent profile")).not.toBeInTheDocument();
     expect(localStorage.getItem(ONBOARDING_DISMISSED_KEY)).toBe("true");
@@ -96,7 +96,7 @@ describe("OnboardingChecklist", () => {
     render(<OnboardingChecklist />, { wrapper: Wrapper });
     const label = await screen.findByText("Set agent profile");
 
-    expect(label).toHaveClass("text-muted-foreground");
+    expect(label).toHaveClass("text-text-3");
   });
 
   it("should mark co-pilot step complete and dispatch open event", () => {

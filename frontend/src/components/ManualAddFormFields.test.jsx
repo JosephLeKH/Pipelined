@@ -2,10 +2,6 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { ManualAddFormFields } from "./ManualAddFormFields";
 
-vi.mock("./TemplateBar", () => ({
-  default: () => <div data-testid="template-bar" />,
-}));
-
 vi.mock("./DuplicateWarning", () => ({
   DuplicateWarning: () => <div data-testid="duplicate-warning" />,
 }));
@@ -20,43 +16,42 @@ vi.mock("./FormField", () => ({
   ),
 }));
 
-vi.mock("./TagInput", () => ({
-  default: () => <div data-testid="tag-input" />,
-}));
-
 vi.mock("./ManualAddFormDateRow", () => ({
   ManualAddFormDateRow: () => <div data-testid="date-row" />,
 }));
 
-vi.mock("./ManualAddFormCategoryRow", () => ({
-  ManualAddFormCategoryRow: () => <div data-testid="category-row" />,
+vi.mock("./ManualAddFormStagePicker", () => ({
+  ManualAddFormStagePicker: () => <div data-testid="stage-picker" />,
+}));
+
+vi.mock("./ManualAddFormSourcePicker", () => ({
+  ManualAddFormSourcePicker: () => <div data-testid="source-picker" />,
+}));
+
+vi.mock("./ManualAddFormCollapsibleField", () => ({
+  ManualAddFormCollapsibleField: ({ label }) => <div data-testid={`collapsible-${label}`} />,
 }));
 
 function buildHook(overrides = {}) {
   return {
-    roleTitle: "",
-    setRoleTitle: vi.fn(),
     company: "",
     setCompany: vi.fn(),
+    roleTitle: "",
+    setRoleTitle: vi.fn(),
     sourceUrl: "",
     setSourceUrl: vi.fn(),
     dateApplied: "",
     setDateApplied: vi.fn(),
-    compensation: "",
-    setCompensation: vi.fn(),
-    location: "",
-    setLocation: vi.fn(),
     stage: "",
     setStage: vi.fn(),
     stageOptions: [],
-    remoteStatus: "",
-    setRemoteStatus: vi.fn(),
-    companyType: "",
-    setCompanyType: vi.fn(),
-    tags: [],
-    setTags: vi.fn(),
+    source: "manual",
+    setSource: vi.fn(),
+    jobDescription: "",
+    setJobDescription: vi.fn(),
+    notes: "",
+    setNotes: vi.fn(),
     fieldErrors: {},
-    applyTemplate: vi.fn(),
     isDuplicate: false,
     existingId: null,
     mutationError: null,
@@ -69,16 +64,23 @@ describe("ManualAddFormFields", () => {
     vi.clearAllMocks();
   });
 
+  it("should render company input with aria-required", () => {
+    render(<ManualAddFormFields hook={buildHook()} />);
+
+    expect(screen.getByLabelText(/company/i)).toHaveAttribute("aria-required", "true");
+  });
+
   it("should render role title input with aria-required", () => {
     render(<ManualAddFormFields hook={buildHook()} />);
 
     expect(screen.getByLabelText(/role title/i)).toHaveAttribute("aria-required", "true");
   });
 
-  it("should render company input with aria-required", () => {
+  it("should render stage and source pickers", () => {
     render(<ManualAddFormFields hook={buildHook()} />);
 
-    expect(screen.getByLabelText(/company \*/i)).toHaveAttribute("aria-required", "true");
+    expect(screen.getByTestId("stage-picker")).toBeInTheDocument();
+    expect(screen.getByTestId("source-picker")).toBeInTheDocument();
   });
 
   it("should show DuplicateWarning when isDuplicate is true", () => {
@@ -93,12 +95,12 @@ describe("ManualAddFormFields", () => {
     expect(screen.getByRole("alert")).toHaveTextContent("Server error");
   });
 
-  it("should call setRoleTitle when role title input changes", () => {
-    const setRoleTitle = vi.fn();
+  it("should call setCompany when company input changes", () => {
+    const setCompany = vi.fn();
 
-    render(<ManualAddFormFields hook={buildHook({ setRoleTitle })} />);
-    fireEvent.change(screen.getByLabelText(/role title/i), { target: { value: "Software Engineer" } });
+    render(<ManualAddFormFields hook={buildHook({ setCompany })} />);
+    fireEvent.change(screen.getByLabelText(/company/i), { target: { value: "Acme Corp" } });
 
-    expect(setRoleTitle).toHaveBeenCalledWith("Software Engineer");
+    expect(setCompany).toHaveBeenCalledWith("Acme Corp");
   });
 });

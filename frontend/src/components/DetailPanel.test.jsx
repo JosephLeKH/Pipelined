@@ -1,6 +1,6 @@
 /** Tests for DetailPanel — field display, notes blur, stage change, close on Escape/click-outside. */
 
-import { render, screen, fireEvent, waitFor, within } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
@@ -71,8 +71,7 @@ describe("DetailPanel", () => {
     render(<DetailPanel application={APP} onClose={() => {}} />, { wrapper: makeWrapper() });
 
     // Assert
-    expect(screen.getByText("Software Engineer")).toBeInTheDocument();
-    expect(screen.getByText("Acme Corp")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Acme Corp — Software Engineer" })).toBeInTheDocument();
   });
 
   it("should display location, remote_status, compensation, and company_type fields", () => {
@@ -96,28 +95,21 @@ describe("DetailPanel", () => {
   });
 
   it("should render the notes field with the saved value", () => {
-    // Arrange / Act
     render(<DetailPanel application={APP} onClose={() => {}} />, { wrapper: makeWrapper() });
 
-    // Assert — saved value shown in read-only display
-    expect(screen.getByTestId("notes-display")).toHaveTextContent("Great company!");
+    expect(screen.getByTestId("markdown-write-textarea")).toHaveValue("Great company!");
   });
 
-  it("should toggle into edit mode when the Edit notes button is clicked", async () => {
-    // Arrange
+  it("should show notes editor without save or cancel buttons", () => {
     render(<DetailPanel application={APP} onClose={() => {}} />, { wrapper: makeWrapper() });
 
-    // Act
-    await userEvent.click(screen.getByRole("button", { name: /edit notes/i }));
-
-    // Assert — textarea now visible
-    expect(screen.getByRole("textbox", { name: /notes/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /save/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /cancel/i })).toBeInTheDocument();
+    expect(screen.getByTestId("markdown-write-textarea")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /save/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /cancel/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /edit notes/i })).not.toBeInTheDocument();
   });
 
-  it("should call PATCH mutation with notes when Save is clicked", async () => {
-    // Arrange
+  it("should call PATCH mutation with notes on blur", async () => {
     let patchBody = null;
     server.use(
       http.patch("/api/applications/:id", async ({ request }) => {
@@ -126,32 +118,23 @@ describe("DetailPanel", () => {
       })
     );
     render(<DetailPanel application={APP} onClose={() => {}} />, { wrapper: makeWrapper() });
-    await userEvent.click(screen.getByRole("button", { name: /edit notes/i }));
 
-    // Act
-    const textarea = screen.getByRole("textbox", { name: /notes/i });
+    const textarea = screen.getByTestId("markdown-write-textarea");
     await userEvent.clear(textarea);
     await userEvent.type(textarea, "Updated notes");
-    await userEvent.click(screen.getByRole("button", { name: /save/i }));
+    fireEvent.blur(textarea);
 
-    // Assert
     await waitFor(() => expect(patchBody).toEqual({ notes: "Updated notes" }));
   });
 
-  it("should revert to saved value when Cancel is clicked in edit mode", async () => {
-    // Arrange
+  it("should keep draft content in editor until blur save completes", async () => {
     render(<DetailPanel application={APP} onClose={() => {}} />, { wrapper: makeWrapper() });
-    await userEvent.click(screen.getByRole("button", { name: /edit notes/i }));
 
-    // Act
-    const textarea = screen.getByRole("textbox", { name: /notes/i });
+    const textarea = screen.getByTestId("markdown-write-textarea");
     await userEvent.clear(textarea);
     await userEvent.type(textarea, "Unsaved changes");
-    await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
 
-    // Assert — back to read mode showing original value
-    expect(screen.getByTestId("notes-display")).toHaveTextContent("Great company!");
-    expect(screen.queryByRole("textbox", { name: /notes/i })).not.toBeInTheDocument();
+    expect(textarea).toHaveValue("Unsaved changes");
   });
 
   it("should call PATCH with new stage on stage select change", async () => {
@@ -165,12 +148,11 @@ describe("DetailPanel", () => {
     );
     render(<DetailPanel application={APP} onClose={() => {}} />, { wrapper: makeWrapper() });
 
-    // Wait for auth to load so stage pill buttons are populated
-    const stageGroup = screen.getByRole("group", { name: /stage/i });
-    await waitFor(() => expect(within(stageGroup).getAllByRole("button").length).toBeGreaterThan(1));
+    await waitFor(() => expect(screen.getByRole("button", { name: /stage/i })).toBeInTheDocument());
 
-    // Act
-    await userEvent.click(within(stageGroup).getByRole("button", { name: "Phone Screen" }));
+    // Act — open stage dropdown and pick a new stage
+    await userEvent.click(screen.getByRole("button", { name: /stage/i }));
+    await userEvent.click(screen.getByRole("menuitem", { name: /phone screen/i }));
 
     // Assert
     await waitFor(() => expect(patchBody).toEqual({ current_stage: "Phone Screen" }));
@@ -279,7 +261,7 @@ describe("DetailPanel", () => {
   it("should trap focus: Tab from last focusable element wraps to first", async () => {
     // Arrange
     render(<DetailPanel application={APP} onClose={() => {}} />, { wrapper: makeWrapper() });
-    await screen.findByText("Software Engineer");
+    await screen.findByRole("heading", { name: "Acme Corp — Software Engineer" });
 
     const dialog = screen.getByRole("dialog");
     const FOCUSABLE = 'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled])';
@@ -297,7 +279,7 @@ describe("DetailPanel", () => {
   it("should trap focus: Shift+Tab from first focusable element wraps to last", async () => {
     // Arrange
     render(<DetailPanel application={APP} onClose={() => {}} />, { wrapper: makeWrapper() });
-    await screen.findByText("Software Engineer");
+    await screen.findByRole("heading", { name: "Acme Corp — Software Engineer" });
 
     const dialog = screen.getByRole("dialog");
     const FOCUSABLE = 'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled])';
@@ -321,6 +303,21 @@ describe("DetailPanel", () => {
     expect(overlay).toHaveClass("pointer-events-none");
   });
 
+  it("should render the drawer at 520px width with 220ms slide transition", () => {
+    render(<DetailPanel application={APP} onClose={() => {}} />, { wrapper: makeWrapper() });
+
+    const panel = screen.getByTestId("detail-panel");
+    expect(panel).toHaveStyle({ width: "520px" });
+    expect(panel.style.transitionDuration).toBe("220ms");
+    expect(panel).toHaveClass("motion-safe-drawer");
+  });
+
+  it("should position overlay below the top header", () => {
+    render(<DetailPanel application={APP} onClose={() => {}} />, { wrapper: makeWrapper() });
+
+    expect(screen.getByTestId("panel-overlay")).toHaveClass("top-11");
+  });
+
   it("should revert stage optimistically when stage update fails", async () => {
     // Arrange — PATCH will fail
     server.use(
@@ -330,16 +327,16 @@ describe("DetailPanel", () => {
     );
     render(<DetailPanel application={APP} onClose={() => {}} />, { wrapper: makeWrapper() });
 
-    const stageGroup = screen.getByRole("group", { name: /stage/i });
-    await waitFor(() => expect(within(stageGroup).getAllByRole("button").length).toBeGreaterThan(1));
+    const stageTrigger = await screen.findByRole("button", { name: /stage/i });
+    await waitFor(() => expect(stageTrigger).toHaveTextContent("Applied"));
 
-    // Act — click a different stage; optimistic update fires then rolls back on error
-    await userEvent.click(within(stageGroup).getByRole("button", { name: "Offer" }));
+    // Act — pick a different stage; optimistic update fires then rolls back on error
+    await userEvent.click(stageTrigger);
+    await userEvent.click(screen.getByRole("menuitem", { name: /^offer$/i }));
 
-    // Assert — after server error, original stage is restored
+    // Assert — after server error, original stage is restored on the trigger
     await waitFor(() => {
-      const activeStage = within(stageGroup).getByRole("button", { name: "Applied", pressed: true });
-      expect(activeStage).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /stage/i })).toHaveTextContent("Applied");
     });
   });
 });

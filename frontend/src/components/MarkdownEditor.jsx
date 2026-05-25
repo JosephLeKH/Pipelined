@@ -14,11 +14,16 @@ import Code from "lucide-react/dist/esm/icons/code";
 import LinkIcon from "lucide-react/dist/esm/icons/link";
 import Quote from "lucide-react/dist/esm/icons/quote";
 
+import { cn } from "../lib/utils";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 
 const TAB_WRITE = "write";
 const TAB_PREVIEW = "preview";
+const TOOLBAR_BTN =
+  "h-8 w-8 text-text-2 hover:text-text-1 hover:bg-surface-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 focus-visible:outline-offset-1";
+const TAB_ACTIVE = "border-b-2 border-brand-600 text-text-1";
+const TAB_INACTIVE = "text-text-3 hover:text-text-1";
 
 const TOOLBAR_ACTIONS = [
   { label: "Bold", icon: Bold, wrap: { before: "**", after: "**" }, placeholder: "bold text" },
@@ -63,12 +68,20 @@ function MarkdownToolbar({ textareaRef, value, onChange }) {
   };
 
   return (
-    <div className="flex flex-wrap gap-0.5 border-b border-border pb-1 mb-1" role="toolbar" aria-label="Formatting options">
+    <div className="mb-1 flex h-8 flex-wrap gap-0.5 border-b border-border-1 pb-1" role="toolbar" aria-label="Formatting options">
       {TOOLBAR_ACTIONS.map((action) => {
         const Icon = action.icon;
         return (
-          <Button key={action.label} type="button" variant="ghost" size="icon" aria-label={action.label} className="h-7 w-7" onClick={() => handleAction(action)}>
-            <Icon className="h-3.5 w-3.5" aria-hidden="true" />
+          <Button
+            key={action.label}
+            type="button"
+            variant="ghost"
+            size="icon"
+            aria-label={action.label}
+            className={TOOLBAR_BTN}
+            onClick={() => handleAction(action)}
+          >
+            <Icon className="h-4 w-4" aria-hidden="true" />
           </Button>
         );
       })}
@@ -78,13 +91,13 @@ function MarkdownToolbar({ textareaRef, value, onChange }) {
 
 function MarkdownCheatsheet() {
   return (
-    <div role="tooltip" className="absolute right-0 top-7 z-50 w-48 rounded-lg border border-border bg-card p-3 shadow-md">
-      <p className="mb-2 text-xs font-semibold text-foreground">Markdown supported</p>
+    <div role="tooltip" className="absolute right-0 top-8 z-50 w-48 rounded-lg border border-border-1 bg-surface-0 p-3 shadow-modal">
+      <p className="mb-2 text-xs font-semibold text-text-1">Markdown supported</p>
       <ul className="space-y-1">
         {CHEATSHEET_ITEMS.map(({ label, syntax }) => (
           <li key={label} className="flex items-center justify-between gap-2">
-            <span className="text-xs text-muted-foreground">{label}</span>
-            <code className="rounded bg-muted px-1 py-0.5 text-xs text-foreground">{syntax}</code>
+            <span className="text-xs text-text-3">{label}</span>
+            <code className="rounded bg-surface-2 px-1 py-0.5 text-xs text-text-1">{syntax}</code>
           </li>
         ))}
       </ul>
@@ -95,17 +108,35 @@ function MarkdownCheatsheet() {
 function MarkdownTabBar({ activeTab, onTabChange }) {
   const [showCheatsheet, setShowCheatsheet] = useState(false);
   return (
-    <div className="flex items-center justify-between border-b border-border mb-2">
+    <div className="mb-2 flex h-8 items-center justify-between border-b border-border-1">
       <div className="flex gap-1" role="tablist">
         {[TAB_WRITE, TAB_PREVIEW].map((tab) => (
-          <button key={tab} type="button" role="tab" aria-selected={activeTab === tab} onClick={() => onTabChange(tab)}
-            className={`px-3 py-1 text-xs font-medium capitalize transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring ${activeTab === tab ? "border-b-2 border-primary text-primary" : "text-muted-foreground hover:text-foreground"}`}
-          >{tab}</button>
+          <button
+            key={tab}
+            type="button"
+            role="tab"
+            aria-selected={activeTab === tab}
+            onClick={() => onTabChange(tab)}
+            className={cn(
+              "px-3 py-1 text-xs font-medium capitalize transition-colors motion-safe",
+              "focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 focus-visible:outline-offset-1",
+              activeTab === tab ? TAB_ACTIVE : TAB_INACTIVE,
+            )}
+          >
+            {tab}
+          </button>
         ))}
       </div>
       <div className="relative">
-        <Button type="button" variant="ghost" size="icon" aria-label="Markdown supported" onClick={() => setShowCheatsheet((v) => !v)} className="h-7 w-7">
-          <HelpCircle className="h-3.5 w-3.5" aria-hidden="true" />
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          aria-label="Markdown supported"
+          onClick={() => setShowCheatsheet((v) => !v)}
+          className={TOOLBAR_BTN}
+        >
+          <HelpCircle className="h-4 w-4" aria-hidden="true" />
         </Button>
         {showCheatsheet && <MarkdownCheatsheet />}
       </div>
@@ -113,7 +144,7 @@ function MarkdownTabBar({ activeTab, onTabChange }) {
   );
 }
 
-function MarkdownEditor({ id, value, onChange, maxLength, className }) {
+function MarkdownEditor({ id, value, onChange, maxLength, className, onBlur }) {
   const [activeTab, setActiveTab] = useState(TAB_WRITE);
   const textareaRef = useRef(null);
 
@@ -128,7 +159,6 @@ function MarkdownEditor({ id, value, onChange, maxLength, className }) {
     requestAnimationFrame(() => { el.selectionStart = el.selectionEnd = start + 2; });
   };
 
-  // Safe: DOMPurify strips all malicious HTML before rendering
   const safeHtml = DOMPurify.sanitize(marked.parse(value ?? ""));
 
   return (
@@ -137,15 +167,25 @@ function MarkdownEditor({ id, value, onChange, maxLength, className }) {
       {activeTab === TAB_WRITE && (
         <>
           <MarkdownToolbar textareaRef={textareaRef} value={value ?? ""} onChange={onChange} />
-          <Textarea ref={textareaRef} id={id}
-          className="min-h-[120px] resize-y rounded-input bg-background text-foreground"
-          value={value ?? ""} onChange={(e) => onChange(e.target.value)} onKeyDown={handleKeyDown} maxLength={maxLength} data-testid="markdown-write-textarea"
+          <Textarea
+            ref={textareaRef}
+            id={id}
+            className="min-h-[120px] resize-y rounded-md border-0 bg-transparent text-sm text-text-1 shadow-none focus-visible:ring-0"
+            value={value ?? ""}
+            onChange={(e) => onChange(e.target.value)}
+            onBlur={onBlur}
+            onKeyDown={handleKeyDown}
+            maxLength={maxLength}
+            data-testid="markdown-write-textarea"
           />
         </>
       )}
       {activeTab === TAB_PREVIEW && (
-        // Safe: safeHtml is DOMPurify-sanitized above
-        <div aria-label="Markdown preview" className="markdown-preview min-h-[120px] rounded-input border border-border bg-muted px-3 py-2 text-sm" dangerouslySetInnerHTML={{ __html: safeHtml }} />
+        <div
+          aria-label="Markdown preview"
+          className="markdown-preview min-h-[120px] rounded-md border border-border-1 bg-surface-2 px-3 py-2 text-sm text-text-1"
+          dangerouslySetInnerHTML={{ __html: safeHtml }}
+        />
       )}
     </div>
   );

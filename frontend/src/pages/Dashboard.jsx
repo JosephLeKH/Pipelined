@@ -11,8 +11,8 @@ import AutopilotResumeBanner from "../components/AutopilotResumeBanner";
 import FilterBar from "../components/FilterBar";
 import FollowUpBanner from "../components/FollowUpBanner";
 import InboxSetupBanner from "../components/InboxSetupBanner";
-import GoalProgress from "../components/GoalProgress";
 import StatsBar from "../components/StatsBar";
+import { useFilterBarParams } from "../hooks/useFilterBarParams";
 import ApplicationList from "../components/ApplicationList";
 import KanbanBoard from "../components/KanbanBoard";
 import CsvImportModal from "../components/CsvImportModal";
@@ -26,32 +26,81 @@ import { useDashboardFilters } from "../hooks/useDashboardFilters";
 import { VIEW_MODE_STORAGE_KEY, OPEN_IMPORT_CSV_EVENT } from "../lib/constants";
 import { trackEvent } from "../lib/analytics";
 
-function DashboardContent({ viewMode, onSetViewMode, isExporting, onExport, filters, onSelect, onAdd, onImportCsv, shortcutsEnabled, onClearFilters, selectedApp, onClosePanel, isModalOpen, isImportOpen, onCloseModal, onCloseImport, followUpsDue, onViewFollowUps, expandFollowUpDraft }) {
+function DashboardContent({
+  viewMode,
+  onSetViewMode,
+  applicationCount,
+  isExporting,
+  onExport,
+  filters,
+  onSelect,
+  onAdd,
+  onImportCsv,
+  shortcutsEnabled,
+  onClearFilters,
+  selectedApp,
+  selectedId,
+  onClosePanel,
+  isModalOpen,
+  isImportOpen,
+  onCloseModal,
+  onCloseImport,
+  addPrefillStage,
+  followUpsDue,
+  onViewFollowUps,
+  expandFollowUpDraft,
+  filtersActive,
+}) {
   return (
-    <main className="flex-1 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 space-y-6">
-        <DashboardToolbar viewMode={viewMode} onSetViewMode={onSetViewMode} isExporting={isExporting} onImport={onImportCsv} onExport={onExport} onAdd={onAdd} />
+    <div className="flex min-h-0 flex-1 flex-col">
+      <div className="space-y-2 px-4 pt-3">
         <OnboardingChecklist />
         <AutopilotResumeBanner />
         <InboxSetupBanner />
         <FollowUpBanner followUpsDue={followUpsDue} onView={onViewFollowUps} />
+      </div>
+      <DashboardToolbar
+        viewMode={viewMode}
+        onSetViewMode={onSetViewMode}
+        applicationCount={applicationCount}
+        isExporting={isExporting}
+        onImport={onImportCsv}
+        onExport={onExport}
+        onAdd={onAdd}
+      />
+      <FilterBar />
+      <div className="flex flex-col gap-4 px-4 pb-6">
         <section role="region" aria-label="Goal progress and statistics">
-          <GoalProgress />
-          <StatsBar />
+          <StatsBar filtersActive={filtersActive} />
         </section>
         <section role="region" aria-label="Application board">
-          <FilterBar />
           {viewMode === "kanban" ? (
-            <KanbanBoard filters={filters} onSelect={onSelect} />
+            <KanbanBoard
+              filters={filters}
+              onSelect={onSelect}
+              onAddStage={(stage) => onAdd(stage)}
+            />
           ) : (
-            <ApplicationList filters={filters} onSelect={onSelect} onAdd={onAdd} onImportCsv={onImportCsv} shortcutsEnabled={shortcutsEnabled} onClearFilters={onClearFilters} />
+            <ApplicationList
+              filters={filters}
+              onSelect={onSelect}
+              onAdd={onAdd}
+              onImportCsv={onImportCsv}
+              shortcutsEnabled={shortcutsEnabled}
+              onClearFilters={onClearFilters}
+              selectedId={selectedId}
+            />
           )}
         </section>
-        <DetailPanel application={selectedApp ?? null} onClose={onClosePanel} expandFollowUpDraft={expandFollowUpDraft} />
-        <ManualAddForm isOpen={isModalOpen} onClose={onCloseModal} />
-        <CsvImportModal isOpen={isImportOpen} onClose={onCloseImport} />
       </div>
-    </main>
+      <DetailPanel
+        application={selectedApp ?? null}
+        onClose={onClosePanel}
+        expandFollowUpDraft={expandFollowUpDraft}
+      />
+      <ManualAddForm isOpen={isModalOpen} onClose={onCloseModal} initialStage={addPrefillStage} />
+      <CsvImportModal isOpen={isImportOpen} onClose={onCloseImport} />
+    </div>
   );
 }
 
@@ -60,6 +109,7 @@ function Dashboard() {
   const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isImportOpen, setIsImportOpen] = useState(false);
+  const [addPrefillStage, setAddPrefillStage] = useState("");
 
   useEffect(() => {
     if (searchParams.get("gmail_connected") === "1") {
@@ -83,6 +133,7 @@ function Dashboard() {
     searchParams.get("section") === "follow-up" ||
     searchParams.get("action") === "follow-up";
   const { filters, selectedId, includeArchived, handleSelect, handleClosePanel, handleClearFilters, handleViewFollowUps } = useDashboardFilters();
+  const { activeFilterCount } = useFilterBarParams();
   const { data: selectedApp } = useApplication(selectedId);
   const { data: stats } = useApplicationStats();
   const handleExport = useCallback(async () => {
@@ -95,17 +146,31 @@ function Dashboard() {
     catch { console.warn("[dashboard] Failed to persist view mode to localStorage"); }
   }, []);
   const shortcutsEnabled = !isModalOpen && !isImportOpen;
-  useHotkeys("a", () => setIsModalOpen(true), { enabled: shortcutsEnabled });
+  const openAddModal = useCallback((stage = "") => {
+    setAddPrefillStage(stage);
+    setIsModalOpen(true);
+  }, []);
+  const closeAddModal = useCallback(() => {
+    setIsModalOpen(false);
+    setAddPrefillStage("");
+  }, []);
+  useHotkeys("a", () => openAddModal(), { enabled: shortcutsEnabled });
   return (
     <>
       <DashboardContent
-        viewMode={viewMode} onSetViewMode={handleSetViewMode} isExporting={isExporting} onExport={handleExport}
-        filters={filters} onSelect={handleSelect} onAdd={() => setIsModalOpen(true)} onImportCsv={() => setIsImportOpen(true)}
-        shortcutsEnabled={shortcutsEnabled} onClearFilters={handleClearFilters} selectedApp={selectedApp} onClosePanel={handleClosePanel}
-        isModalOpen={isModalOpen} isImportOpen={isImportOpen} onCloseModal={() => setIsModalOpen(false)} onCloseImport={() => setIsImportOpen(false)}
+        viewMode={viewMode}
+        onSetViewMode={handleSetViewMode}
+        applicationCount={stats?.data?.total_applied}
+        isExporting={isExporting}
+        onExport={handleExport}
+        filters={filters} onSelect={handleSelect} onAdd={openAddModal} onImportCsv={() => setIsImportOpen(true)}
+        shortcutsEnabled={shortcutsEnabled} onClearFilters={handleClearFilters} selectedApp={selectedApp} selectedId={selectedId} onClosePanel={handleClosePanel}
+        isModalOpen={isModalOpen} isImportOpen={isImportOpen} onCloseModal={closeAddModal} onCloseImport={() => setIsImportOpen(false)}
+        addPrefillStage={addPrefillStage}
         followUpsDue={stats?.follow_ups_due ?? 0}
         onViewFollowUps={() => handleViewFollowUps(stats?.first_follow_up_due_id)}
         expandFollowUpDraft={expandFollowUpDraft}
+        filtersActive={activeFilterCount > 0}
       />
     </>
   );

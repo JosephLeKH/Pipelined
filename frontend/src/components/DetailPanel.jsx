@@ -4,36 +4,70 @@ import { useRef, useMemo } from "react";
 
 import { useDetailPanelState } from "../hooks/useDetailPanelState";
 import { useDetailPanelKeyboard } from "../hooks/useDetailPanelKeyboard";
+import { useSidebarCollapsed } from "../hooks/useSidebarCollapsed";
 import { DetailPanelHeader } from "./DetailPanelHeader";
 import { Button } from "./ui/button";
 import { PanelBody } from "./DetailPanelBody";
 import UndoToast from "./UndoToast";
 import { usePanelDrag } from "../hooks/usePanelDrag";
+import {
+  DETAIL_PANEL_WIDTH_PX,
+  DRAWER_ANIMATION_MS,
+  SIDEBAR_COLLAPSED_WIDTH_PX,
+  SIDEBAR_WIDTH_PX,
+} from "../lib/constants";
+import { MODAL_BACKDROP, MODAL_CARD } from "../lib/designTokens";
 
 function DiscardDialog({ onDiscard, onCancel }) {
   return (
-    <div className="absolute inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center p-4" role="alertdialog" aria-modal="true" aria-labelledby="discard-dialog-title">
-      <div className="bg-card rounded-2xl border border-border shadow-lg w-full max-w-sm mx-auto relative">
-        <div className="p-6">
-          <h3 id="discard-dialog-title" className=" text-base font-semibold text-foreground">Discard unsaved notes?</h3>
-          <p className="mt-1 text-sm text-muted-foreground">Your changes will be lost.</p>
-          <div className="mt-4 flex justify-end gap-2">
-            <Button type="button" variant="outline" size="sm" onClick={onCancel}>Cancel</Button>
-            <Button type="button" variant="destructive" size="sm" onClick={onDiscard}>Discard</Button>
-          </div>
+    <div
+      className={`${MODAL_BACKDROP} absolute inset-0 z-50`}
+      role="alertdialog"
+      aria-modal="true"
+      aria-labelledby="discard-dialog-title"
+    >
+      <div className={`${MODAL_CARD} max-w-sm p-6`}>
+        <h3 id="discard-dialog-title" className="text-base font-semibold text-text-1">
+          Discard unsaved notes?
+        </h3>
+        <p className="mt-1 text-sm text-text-2">Your changes will be lost.</p>
+        <div className="mt-4 flex justify-end gap-2">
+          <Button type="button" variant="ghost" size="sm" onClick={onCancel}>
+            Cancel
+          </Button>
+          <Button type="button" variant="destructive" size="sm" onClick={onDiscard}>
+            Discard
+          </Button>
         </div>
       </div>
     </div>
   );
 }
 
-function PanelContent({ displayApp, panelDragHandlers, actions, undoPendingId, showDiscardDialog, expandFollowUpDraft }) {
+function PanelContent({
+  displayApp,
+  isOpen,
+  panelDragHandlers,
+  actions,
+  undoPendingId,
+  showDiscardDialog,
+  expandFollowUpDraft,
+}) {
   return (
     <>
+      {isOpen && !displayApp && (
+        <h2 id="detail-panel-heading" className="sr-only">
+          Application details
+        </h2>
+      )}
       {displayApp && (
-        <div key={displayApp.id} className="flex h-full flex-col overflow-y-auto animate-slideInRight">
-          <div className="flex w-full shrink-0 touch-none items-center justify-center py-3 md:hidden" aria-hidden="true" {...panelDragHandlers}>
-            <div className="h-1 w-10 rounded-full bg-muted-foreground/30" />
+        <div key={displayApp.id} className="flex h-full flex-col overflow-y-auto bg-surface-0">
+          <div
+            className="flex w-full shrink-0 touch-none items-center justify-center py-3 md:hidden"
+            aria-hidden="true"
+            {...panelDragHandlers}
+          >
+            <div className="h-1 w-10 rounded-full bg-text-3/30" />
           </div>
           <DetailPanelHeader application={displayApp} onClose={actions.onClose} onDelete={actions.onDelete} />
           <PanelBody
@@ -46,7 +80,9 @@ function PanelContent({ displayApp, panelDragHandlers, actions, undoPendingId, s
           />
         </div>
       )}
-      {showDiscardDialog && <DiscardDialog onDiscard={actions.onConfirmDiscard} onCancel={actions.onCancelDiscard} />}
+      {showDiscardDialog && (
+        <DiscardDialog onDiscard={actions.onConfirmDiscard} onCancel={actions.onCancelDiscard} />
+      )}
       {undoPendingId && (
         <UndoToast message="Application deleted." onUndo={actions.onUndoDelete} onDismiss={actions.onUndoDismiss} />
       )}
@@ -57,39 +93,102 @@ function PanelContent({ displayApp, panelDragHandlers, actions, undoPendingId, s
 function DetailPanel({ application, onClose, onAddEvent, expandFollowUpDraft = false }) {
   const overlayRef = useRef(null);
   const panelRef = useRef(null);
+  const { collapsed } = useSidebarCollapsed();
   const { dragOffset, reset: resetDrag, handlers: panelDragHandlers } = usePanelDrag(onClose);
-  const { cachedApp, setNotesDirty, undoPendingId, confirmClose, handleDelete,
-    handleUndoDelete, handleUndoDismiss, handleStageChange, handleUpdate,
-    showDiscardDialog, confirmDiscard, cancelDiscard,
+  const {
+    cachedApp,
+    setNotesDirty,
+    undoPendingId,
+    confirmClose,
+    handleDelete,
+    handleUndoDelete,
+    handleUndoDismiss,
+    handleStageChange,
+    handleUpdate,
+    showDiscardDialog,
+    confirmDiscard,
+    cancelDiscard,
   } = useDetailPanelState(application, onClose, resetDrag);
   const panelOpen = Boolean(application);
-  const { handlePanelKeyDown, handleOverlayClick } = useDetailPanelKeyboard(panelRef, overlayRef, confirmClose, panelOpen);
+  const { handlePanelKeyDown, handleOverlayClick } = useDetailPanelKeyboard(
+    panelRef,
+    overlayRef,
+    confirmClose,
+    panelOpen,
+  );
   const displayApp = application ?? cachedApp;
   const isOpen = Boolean(application) || Boolean(undoPendingId);
-  const actions = useMemo(() => ({
-    onClose: confirmClose, onDelete: handleDelete, onStageChange: handleStageChange,
-    onUpdate: handleUpdate, onAddEvent, onDirtyChange: setNotesDirty,
-    onUndoDelete: handleUndoDelete, onUndoDismiss: handleUndoDismiss,
-    onConfirmDiscard: confirmDiscard, onCancelDiscard: cancelDiscard,
-  }), [confirmClose, handleDelete, handleStageChange, handleUpdate, onAddEvent, setNotesDirty, handleUndoDelete, handleUndoDismiss, confirmDiscard, cancelDiscard]);
+  const sidebarWidth = collapsed ? SIDEBAR_COLLAPSED_WIDTH_PX : SIDEBAR_WIDTH_PX;
+  const actions = useMemo(
+    () => ({
+      onClose: confirmClose,
+      onDelete: handleDelete,
+      onStageChange: handleStageChange,
+      onUpdate: handleUpdate,
+      onAddEvent,
+      onDirtyChange: setNotesDirty,
+      onUndoDelete: handleUndoDelete,
+      onUndoDismiss: handleUndoDismiss,
+      onConfirmDiscard: confirmDiscard,
+      onCancelDiscard: cancelDiscard,
+    }),
+    [
+      confirmClose,
+      handleDelete,
+      handleStageChange,
+      handleUpdate,
+      onAddEvent,
+      setNotesDirty,
+      handleUndoDelete,
+      handleUndoDismiss,
+      confirmDiscard,
+      cancelDiscard,
+    ],
+  );
+
+  const panelStyle = dragOffset
+    ? { transform: `translateY(${dragOffset}px)`, transition: "none" }
+    : { transitionDuration: `${DRAWER_ANIMATION_MS}ms` };
 
   return (
     <div
       ref={overlayRef}
       data-testid="panel-overlay"
-      className={`fixed inset-0 z-40 transition-opacity duration-200 ${isOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"}`}
+      className={`fixed inset-x-0 bottom-0 top-11 z-40 transition-opacity motion-reduce:transition-none md:bottom-0 ${
+        isOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
+      }`}
+      style={{ transitionDuration: `${DRAWER_ANIMATION_MS}ms` }}
       onClick={handleOverlayClick}
     >
-      <div className="absolute inset-0 bg-black/30 pointer-events-none" aria-hidden="true" />
+      <div
+        className="pointer-events-none absolute inset-0 bg-black/30 motion-reduce:backdrop-blur-none md:hidden"
+        aria-hidden="true"
+      />
+      <div
+        className="pointer-events-none absolute inset-y-0 right-0 hidden bg-black/30 motion-reduce:backdrop-blur-none md:block md:backdrop-blur-sm"
+        style={{ left: sidebarWidth }}
+        aria-hidden="true"
+      />
       <div
         ref={panelRef}
-        className={`fixed inset-x-0 bottom-0 h-[90vh] rounded-t-xl bg-card shadow-sm border-l border-border transition-transform [transition-duration:250ms] md:inset-x-auto md:bottom-auto md:right-0 md:top-0 md:h-full md:w-[480px] md:rounded-none ${isOpen ? "translate-y-0 md:translate-x-0" : "translate-y-full md:translate-y-0 md:translate-x-full"}`}
-        style={{ transform: dragOffset ? `translateY(${dragOffset}px)` : undefined, transition: dragOffset ? "none" : undefined }}
-        role="dialog" aria-modal="true" aria-labelledby="detail-panel-heading" onKeyDown={handlePanelKeyDown}
+        data-testid="detail-panel"
+        className={`fixed inset-x-0 bottom-0 flex h-[90vh] flex-col rounded-t-xl border-l border-border-1 bg-surface-0 shadow-modal motion-safe-drawer md:inset-x-auto md:bottom-0 md:right-0 md:top-11 md:h-[calc(100vh-2.75rem)] md:rounded-none ${
+          isOpen ? "translate-y-0 md:translate-x-0" : "translate-y-full md:translate-y-0 md:translate-x-full"
+        }`}
+        style={{ ...panelStyle, width: DETAIL_PANEL_WIDTH_PX, maxWidth: "100%" }}
+        role={isOpen ? "dialog" : undefined}
+        aria-modal={isOpen ? true : undefined}
+        aria-labelledby={isOpen ? "detail-panel-heading" : undefined}
+        aria-label={isOpen && !displayApp ? "Application details" : undefined}
+        onKeyDown={handlePanelKeyDown}
       >
         <PanelContent
-          displayApp={displayApp} panelDragHandlers={panelDragHandlers} actions={actions}
-          undoPendingId={undoPendingId} showDiscardDialog={showDiscardDialog}
+          displayApp={displayApp}
+          isOpen={isOpen}
+          panelDragHandlers={panelDragHandlers}
+          actions={actions}
+          undoPendingId={undoPendingId}
+          showDiscardDialog={showDiscardDialog}
           expandFollowUpDraft={expandFollowUpDraft}
         />
       </div>

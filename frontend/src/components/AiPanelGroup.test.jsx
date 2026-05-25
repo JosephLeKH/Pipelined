@@ -5,27 +5,38 @@ import userEvent from "@testing-library/user-event";
 import AiPanelGroup from "./AiPanelGroup";
 
 describe("AiPanelGroup", () => {
-  it("should render children when expanded by default", () => {
+  it("should hide children when collapsed by default", () => {
     render(
       <AiPanelGroup>
         <p>Fit section</p>
       </AiPanelGroup>
     );
 
-    expect(screen.getByText("Fit section")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /ai insights/i })).toHaveAttribute("aria-expanded", "true");
+    expect(screen.queryByText("Fit section")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /^ai$/i })).toHaveAttribute("aria-expanded", "false");
   });
 
-  it("should collapse and hide children when toggled", async () => {
+  it("should expand and show children when toggled open", async () => {
     render(
       <AiPanelGroup>
         <p>Hidden content</p>
       </AiPanelGroup>
     );
 
-    await userEvent.click(screen.getByRole("button", { name: /ai insights/i }));
+    await userEvent.click(screen.getByRole("button", { name: /^ai$/i }));
 
-    expect(screen.queryByText("Hidden content")).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /ai insights/i })).toHaveAttribute("aria-expanded", "false");
+    expect(screen.getByText("Hidden content")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /^ai$/i })).toHaveAttribute("aria-expanded", "true");
+  });
+
+  it("should render children when defaultOpen is true", () => {
+    render(
+      <AiPanelGroup defaultOpen>
+        <p>Fit section</p>
+      </AiPanelGroup>
+    );
+
+    expect(screen.getByText("Fit section")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /^ai$/i })).toHaveAttribute("aria-expanded", "true");
   });
 });

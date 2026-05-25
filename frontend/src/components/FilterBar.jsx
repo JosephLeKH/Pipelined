@@ -1,155 +1,163 @@
-/** Filter controls for the application pipeline: stage, company type, remote status, date range, archive toggle, search. */
+/** Linear-style inline filter row for the application pipeline dashboard. */
 
-import { useCallback, useRef, useState } from "react";
-import { useSearchParams } from "react-router-dom";
 import SearchIcon from "lucide-react/dist/esm/icons/search";
-import { trackEvent } from "../lib/analytics";
 import { useTags } from "../hooks/useApplications";
+import {
+  datePresetLabel,
+  DATE_PRESET_OPTIONS,
+  useFilterBarParams,
+} from "../hooks/useFilterBarParams";
 import { Input } from "./ui/input";
-import { Checkbox } from "./ui/checkbox";
-
-import { STAGE_COLORS, SEARCH_DEBOUNCE_MS, COMPANY_TYPE_OPTIONS, REMOTE_STATUS_OPTIONS } from "../lib/constants";
+import {
+  DropdownMenuCheckboxItem,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from "./ui/dropdown-menu";
+import {
+  MultiSelectFilterDropdown,
+  SingleSelectFilterDropdown,
+} from "./FilterBarDropdown";
+import { SavedViewsDropdown } from "./FilterBarSavedViews";
+import {
+  STAGE_COLORS,
+  COMPANY_TYPE_OPTIONS,
+  REMOTE_STATUS_OPTIONS,
+} from "../lib/constants";
 
 const STAGE_OPTIONS = Object.keys(STAGE_COLORS);
 
-function CheckboxGroup({ label, groupKey, options, selected, onChange }) {
-  return (
-    <fieldset className="flex shrink-0 flex-col gap-1">
-      <legend className="mb-1 text-xs font-medium uppercase text-muted-foreground">{label}</legend>
-      {options.map((opt) => {
-        const inputId = `filter-${groupKey}-${opt}`;
-        return (
-          <label key={opt} htmlFor={inputId} className="flex items-center gap-2 text-sm text-foreground">
-            <Checkbox
-              id={inputId}
-              checked={selected.includes(opt)}
-              onCheckedChange={(checked) => {
-                if (checked) { onChange([...selected, opt]); } else { onChange(selected.filter((s) => s !== opt)); }
-              }}
-            />
-            {opt}
-          </label>
-        );
-      })}
-    </fieldset>
-  );
-}
-
 function ArchivedBanner() {
   return (
-    <div role="status" className="flex items-center gap-2 rounded-md bg-muted px-4 py-2 text-sm text-foreground border border-border">
+    <div
+      role="status"
+      className="mb-2 flex items-center gap-2 rounded-md border border-border-1 bg-surface-1 px-3 py-1.5 text-xs text-text-1"
+    >
       <span className="font-medium">Viewing archived applications.</span>
-      <span>Uncheck &ldquo;Show archived&rdquo; to return to active view.</span>
+      <span className="text-text-3">Clear filters to return to active view.</span>
     </div>
   );
 }
 
-function SearchFieldset({ searchValue, onSearchChange }) {
-  return (
-    <fieldset className="flex shrink-0 flex-col gap-1">
-      <legend className="mb-1 text-xs font-medium uppercase text-muted-foreground">Search</legend>
-      <div className="relative flex items-center">
-        <SearchIcon className="absolute left-2 h-4 w-4 text-muted-foreground" aria-hidden="true" />
-        <Input
-          type="text"
-          aria-label="search applications"
-          value={searchValue}
-          onChange={onSearchChange}
-          placeholder="Title, company, notes..."
-          className="pl-8 pr-2"
-        />
-      </div>
-    </fieldset>
-  );
-}
-
-function DateRangeFilter({ dateFrom, dateTo, onUpdate }) {
-  return (
-    <fieldset className="flex shrink-0 flex-col gap-1">
-      <legend className="mb-1 text-xs font-medium uppercase text-muted-foreground">Date Range</legend>
-      <label className="flex items-center gap-2 text-sm text-foreground">
-        From
-        <Input type="date" value={dateFrom} aria-label="date from" onChange={(e) => onUpdate("date_from", e.target.value)} className="px-2" />
-      </label>
-      <label className="flex items-center gap-2 text-sm text-foreground">
-        To
-        <Input type="date" value={dateTo} aria-label="date to" onChange={(e) => onUpdate("date_to", e.target.value)} className="px-2" />
-      </label>
-    </fieldset>
-  );
-}
-
-function ArchiveFieldset({ includeArchived, onToggle }) {
-  return (
-    <fieldset className="flex shrink-0 flex-col gap-1">
-      <legend className="mb-1 text-xs font-medium uppercase text-muted-foreground">Archive</legend>
-      <label className="flex items-center gap-2 text-sm text-foreground">
-        <Checkbox aria-label="Show archived" checked={includeArchived} onCheckedChange={onToggle} />
-        Show archived
-      </label>
-    </fieldset>
-  );
-}
-
-function useFilterParams() {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [searchValue, setSearchValue] = useState(searchParams.get("q") ?? "");
-  const debounceRef = useRef(null);
-  const stages = searchParams.getAll("stage");
-  const companyTypes = searchParams.getAll("company_type");
-  const remoteStatuses = searchParams.getAll("remote_status");
-  const selectedTags = searchParams.getAll("tags");
-  const dateFrom = searchParams.get("date_from") ?? "";
-  const dateTo = searchParams.get("date_to") ?? "";
-  const includeArchived = searchParams.get("include_archived") === "true";
-  const updateFilter = useCallback((key, value) => {
-    const next = new URLSearchParams(searchParams);
-    next.delete(key);
-    if (Array.isArray(value)) { value.forEach((v) => next.append(key, v)); } else if (value) { next.set(key, value); }
-    setSearchParams(next, { replace: true });
-  }, [searchParams, setSearchParams]);
-  const handleSearchChange = useCallback((e) => {
-    const val = e.target.value;
-    setSearchValue(val);
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => {
-      updateFilter("q", val);
-      if (val.trim()) { trackEvent("search_performed", { type: "applications", query_length: val.trim().length }); }
-    }, SEARCH_DEBOUNCE_MS);
-  }, [updateFilter]);
-  const toggleArchived = useCallback(() => {
-    const next = new URLSearchParams(searchParams);
-    if (includeArchived) { next.delete("include_archived"); } else { next.set("include_archived", "true"); }
-    setSearchParams(next, { replace: true });
-  }, [searchParams, setSearchParams, includeArchived]);
-  return { stages, companyTypes, remoteStatuses, selectedTags, dateFrom, dateTo, includeArchived, searchValue, handleSearchChange, updateFilter, toggleArchived };
-}
-
 function FilterBar() {
   const { data: tagsData } = useTags();
-  const { stages, companyTypes, remoteStatuses, selectedTags, dateFrom, dateTo,
-    includeArchived, searchValue, handleSearchChange, updateFilter, toggleArchived } = useFilterParams();
+  const {
+    stages,
+    companyTypes,
+    remoteStatuses,
+    selectedTags,
+    includeArchived,
+    searchValue,
+    handleSearchChange,
+    toggleMulti,
+    applyDatePreset,
+    toggleArchived,
+    clearAll,
+    currentFilters,
+    activeFilterCount,
+    datePreset,
+  } = useFilterBarParams();
 
-  const activeFilterCount = stages.length + companyTypes.length + remoteStatuses.length + selectedTags.length
-    + (dateFrom ? 1 : 0) + (dateTo ? 1 : 0) + (includeArchived ? 1 : 0) + (searchValue.trim() ? 1 : 0);
-  const filterSummary = activeFilterCount === 0
-    ? "No filters active"
-    : `${activeFilterCount} filter${activeFilterCount !== 1 ? "s" : ""} active`;
+  const filterSummary =
+    activeFilterCount === 0
+      ? "No filters active"
+      : `${activeFilterCount} filter${activeFilterCount !== 1 ? "s" : ""} active`;
 
   return (
-    <div role="region" aria-label="Filter Controls" className="flex flex-col gap-3">
-      <span className="sr-only" aria-live="polite" aria-atomic="true">{filterSummary}</span>
+    <div
+      role="region"
+      aria-label="Filter Controls"
+      className="sticky top-[calc(2.75rem+3.5rem)] z-10 border-b border-border-1 bg-surface-0/90 px-4 py-2 backdrop-blur motion-reduce:backdrop-blur-none"
+    >
+      <span className="sr-only" aria-live="polite" aria-atomic="true">
+        {filterSummary}
+      </span>
       {includeArchived && <ArchivedBanner />}
-      <div className="flex gap-6 overflow-x-auto rounded-xl bg-card p-4 border border-border md:flex-wrap">
-        <SearchFieldset searchValue={searchValue} onSearchChange={handleSearchChange} />
-        <CheckboxGroup label="Stage" groupKey="stage" options={STAGE_OPTIONS} selected={stages} onChange={(val) => updateFilter("stage", val)} />
-        <CheckboxGroup label="Company Type" groupKey="company-type" options={COMPANY_TYPE_OPTIONS} selected={companyTypes} onChange={(val) => updateFilter("company_type", val)} />
-        <CheckboxGroup label="Remote Status" groupKey="remote-status" options={REMOTE_STATUS_OPTIONS} selected={remoteStatuses} onChange={(val) => updateFilter("remote_status", val)} />
-        <DateRangeFilter dateFrom={dateFrom} dateTo={dateTo} onUpdate={updateFilter} />
+      <div className="flex h-7 flex-nowrap items-center gap-1 overflow-x-auto md:flex-wrap md:overflow-visible">
+        <MultiSelectFilterDropdown
+          label="Stage"
+          paramKey="stage"
+          options={STAGE_OPTIONS}
+          selected={stages}
+          onToggle={toggleMulti}
+        />
+        <MultiSelectFilterDropdown
+          label="Company"
+          paramKey="company_type"
+          options={COMPANY_TYPE_OPTIONS}
+          selected={companyTypes}
+          onToggle={toggleMulti}
+        />
+        <MultiSelectFilterDropdown
+          label="Remote"
+          paramKey="remote_status"
+          options={REMOTE_STATUS_OPTIONS}
+          selected={remoteStatuses}
+          onToggle={toggleMulti}
+        />
+        <SingleSelectFilterDropdown
+          label="Updated"
+          displayValue={datePresetLabel(datePreset)}
+        >
+          <DropdownMenuLabel>Updated</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          {DATE_PRESET_OPTIONS.map(({ id, label }) => (
+            <DropdownMenuItem key={id} onSelect={() => applyDatePreset(id)}>
+              {label}
+              {datePreset === id && (
+                <span className="ml-auto text-[10px] text-brand-600">●</span>
+              )}
+            </DropdownMenuItem>
+          ))}
+        </SingleSelectFilterDropdown>
         {tagsData?.tags?.length > 0 && (
-          <CheckboxGroup label="Tags" groupKey="tags" options={tagsData.tags.map((t) => t.name)} selected={selectedTags} onChange={(val) => updateFilter("tags", val)} />
+          <MultiSelectFilterDropdown
+            label="Tags"
+            paramKey="tags"
+            options={tagsData.tags.map((t) => t.name)}
+            selected={selectedTags}
+            onToggle={toggleMulti}
+          />
         )}
-        <ArchiveFieldset includeArchived={includeArchived} onToggle={toggleArchived} />
+        <SingleSelectFilterDropdown
+          label="Archive"
+          displayValue={includeArchived ? "Archived" : "Active only"}
+        >
+          <DropdownMenuCheckboxItem
+            checked={includeArchived}
+            onCheckedChange={toggleArchived}
+            onSelect={(e) => e.preventDefault()}
+          >
+            Show archived
+          </DropdownMenuCheckboxItem>
+        </SingleSelectFilterDropdown>
+        <SavedViewsDropdown
+          currentFilters={currentFilters}
+          hasActiveFilters={activeFilterCount > 0}
+        />
+        <div className="relative ml-auto flex min-w-[8rem] shrink-0 items-center">
+          <SearchIcon
+            className="pointer-events-none absolute left-2 h-3 w-3 text-text-3"
+            aria-hidden="true"
+          />
+          <Input
+            type="text"
+            aria-label="search applications"
+            value={searchValue}
+            onChange={handleSearchChange}
+            placeholder="Search…"
+            className="h-7 border-0 bg-transparent pl-7 pr-2 text-xs shadow-none focus-visible:ring-1"
+          />
+        </div>
+        {activeFilterCount > 0 && (
+          <button
+            type="button"
+            onClick={clearAll}
+            className="shrink-0 text-xs text-text-3 hover:text-brand-700 dark:hover:text-brand-300 motion-reduce:transition-none transition-colors duration-hover ease-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 focus-visible:outline-offset-2 dark:focus-visible:outline-1"
+          >
+            Clear
+          </button>
+        )}
       </div>
     </div>
   );

@@ -3,14 +3,14 @@
 import { useState } from "react";
 import { CLEARBIT_LOGO_BASE_URL } from "../lib/constants";
 
-function CompanyLogo({ company_domain, company, size = 32 }) {
+function CompanyLogo({ company_domain, company, size = 16 }) {
   const [hasError, setHasError] = useState(false);
   const initial = (company || "?")[0].toUpperCase();
 
   if (!company_domain || hasError) {
     return (
       <span
-        className="inline-flex shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground font-medium"
+        className="inline-flex shrink-0 items-center justify-center rounded-full bg-brand-100 font-medium text-brand-700 dark:bg-brand-900/30 dark:text-brand-300"
         style={{ width: size, height: size, fontSize: Math.round(size * 0.45) }}
         aria-hidden="true"
         data-testid="company-logo-fallback"

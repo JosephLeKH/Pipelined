@@ -78,12 +78,12 @@ describe("Dashboard", () => {
     expect(screen.getAllByRole("button", { name: /add application/i }).length).toBeGreaterThan(0);
   });
 
-  it("should render FilterBar stage checkboxes", async () => {
+  it("should render FilterBar stage filter trigger", async () => {
     // Arrange / Act
     render(<Dashboard />, { wrapper: makeWrapper() });
 
-    // Assert — FilterBar renders stage checkboxes
-    expect(await screen.findByRole("checkbox", { name: /applied/i })).toBeInTheDocument();
+    // Assert — FilterBar renders inline stage dropdown
+    expect(await screen.findByRole("button", { name: "Stage: All" })).toBeInTheDocument();
   });
 
   it("should render ApplicationList with application data", async () => {
@@ -101,7 +101,7 @@ describe("Dashboard", () => {
     await screen.findByText("Acme Corp");
 
     // Act
-    await userEvent.click(screen.getByText("Acme Corp").closest("[role='row']"));
+    await userEvent.click(screen.getByText("Acme Corp").closest("[role='listitem']"));
 
     // Assert — DetailPanel slide-in panel becomes visible (trangray-x-0 class)
     const panel = await screen.findByRole("dialog", { name: /software engineer/i });
@@ -148,12 +148,24 @@ describe("Dashboard", () => {
     expect(screen.getByRole("dialog", { name: /add application/i })).toBeInTheDocument();
   });
 
+  it("should open ManualAddForm modal when pressing a keyboard shortcut", async () => {
+    // Arrange
+    render(<Dashboard />, { wrapper: makeWrapper() });
+
+    // Act
+    await userEvent.keyboard("a");
+
+    // Assert
+    expect(await screen.findByRole("dialog", { name: /add application/i })).toBeInTheDocument();
+  });
+
   it("should render StatsBar metrics after stats load", async () => {
     // Arrange / Act
     render(<Dashboard />, { wrapper: makeWrapper() });
 
-    // Assert — one of the metric labels
-    expect(await screen.findByText("Total Applied")).toBeInTheDocument();
-    expect(await screen.findByText("5")).toBeInTheDocument();
+    // Assert — collapsed summary and expanded metric grid
+    const summary = await screen.findByTestId("stats-collapsed-summary");
+    expect(summary).toHaveTextContent("applications");
+    expect(await screen.findByLabelText(/total applied/i)).toBeInTheDocument();
   });
 });
