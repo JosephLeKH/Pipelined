@@ -123,6 +123,10 @@ export default {
           from: { opacity: "0", transform: "translateY(8px)" },
           to: { opacity: "1", transform: "translateY(0)" },
         },
+        missionComplete: {
+          from: { opacity: "1", transform: "translateY(0)" },
+          to: { opacity: "0.5", transform: "translateY(6px)" },
+        },
         pulseSoft: {
           "0%, 100%": { opacity: "1" },
           "50%": { opacity: "0.5" },
@@ -131,6 +135,7 @@ export default {
       animation: {
         "slide-in-right": "slideInRight 0.25s ease-out",
         "fade-in-up": "fadeInUp 0.4s ease-out forwards",
+        "mission-complete": "missionComplete 280ms ease-out forwards",
         "pulse-soft": "pulseSoft 1.4s ease-in-out infinite",
       },
       borderRadius: {

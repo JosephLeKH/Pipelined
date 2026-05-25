@@ -1,6 +1,9 @@
 /** Greeting and date formatting helpers for the Today page. */
 
-import { MORNING_BRIEF_EXPANDED_KEY } from "./constants";
+import {
+  COMPLETED_MISSIONS_BY_DATE_KEY,
+  MORNING_BRIEF_EXPANDED_KEY,
+} from "./constants";
 
 const LOCALE = "en-US";
 
@@ -82,4 +85,34 @@ export function setBriefExpandedForDate(briefDate, expanded) {
   const map = readBriefExpandedMap();
   map[briefDate] = expanded;
   localStorage.setItem(MORNING_BRIEF_EXPANDED_KEY, JSON.stringify(map));
+}
+
+function readCompletedMissionsMap() {
+  try {
+    const raw = localStorage.getItem(COMPLETED_MISSIONS_BY_DATE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
+
+/** Completed mission snapshots stored per brief date for the bottom group. */
+export function getStoredCompletedMissions(briefDate) {
+  if (!briefDate) return [];
+  const map = readCompletedMissionsMap();
+  return Array.isArray(map[briefDate]) ? map[briefDate] : [];
+}
+
+/** Append a completed mission snapshot for a brief date; returns updated list. */
+export function storeCompletedMission(briefDate, mission) {
+  if (!briefDate || !mission?.id) return getStoredCompletedMissions(briefDate);
+  const map = readCompletedMissionsMap();
+  const existing = Array.isArray(map[briefDate]) ? map[briefDate] : [];
+  if (existing.some((item) => item.id === mission.id)) {
+    return existing;
+  }
+  const next = [...existing, { id: mission.id, title: mission.title, action_url: mission.action_url }];
+  map[briefDate] = next;
+  localStorage.setItem(COMPLETED_MISSIONS_BY_DATE_KEY, JSON.stringify(map));
+  return next;
 }

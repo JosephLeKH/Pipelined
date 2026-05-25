@@ -9,10 +9,15 @@ import {
   getBriefExpandedForDate,
   getDaysLeftInWeek,
   getFirstName,
+  getStoredCompletedMissions,
   getTimeOfDay,
   setBriefExpandedForDate,
+  storeCompletedMission,
 } from "./todayUtils";
-import { MORNING_BRIEF_EXPANDED_KEY } from "./constants";
+import {
+  COMPLETED_MISSIONS_BY_DATE_KEY,
+  MORNING_BRIEF_EXPANDED_KEY,
+} from "./constants";
 
 describe("todayUtils", () => {
   it("should return morning before noon", () => {
@@ -57,5 +62,22 @@ describe("todayUtils", () => {
     setBriefExpandedForDate("2026-05-23", true);
     expect(getBriefExpandedForDate("2026-05-23")).toBe(true);
     expect(getBriefExpandedForDate("2026-05-24")).toBe(false);
+  });
+
+  it("should persist completed mission snapshots per brief date", () => {
+    localStorage.removeItem(COMPLETED_MISSIONS_BY_DATE_KEY);
+    const mission = {
+      id: "follow_ups:0",
+      title: "Acme — follow-up overdue",
+      action_url: "/dashboard?selected=app1",
+    };
+
+    expect(getStoredCompletedMissions("2026-05-23")).toEqual([]);
+    storeCompletedMission("2026-05-23", mission);
+    expect(getStoredCompletedMissions("2026-05-23")).toEqual([
+      { id: mission.id, title: mission.title, action_url: mission.action_url },
+    ]);
+    storeCompletedMission("2026-05-23", mission);
+    expect(getStoredCompletedMissions("2026-05-23")).toHaveLength(1);
   });
 });

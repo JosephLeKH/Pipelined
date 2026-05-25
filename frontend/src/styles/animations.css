@@ -8,6 +8,7 @@
   .animate-scaleIn,
   .animate-shimmer,
   .animate-pulse-dot,
+  .animate-mission-complete,
   .scroll-reveal {
     animation: none !important;
     transition: none !important;

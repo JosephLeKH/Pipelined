@@ -112,6 +112,7 @@ function MissionCard({
         "dark:focus-visible:outline-1",
         "motion-safe:transition-colors motion-safe:duration-hover",
         completed ? "opacity-50" : "",
+        isCompleting ? "motion-safe:animate-mission-complete" : "",
       ].join(" ")}
     >
       <span
@@ -119,12 +120,17 @@ function MissionCard({
         aria-hidden="true"
       />
       <div className="min-w-0 flex-1">
-        <p className={`text-sm text-text-1 ${completed ? "line-through text-text-3" : ""}`}>
+        <p
+          className={[
+            "text-sm",
+            completed || isCompleting ? "line-through text-text-3" : "text-text-1",
+          ].join(" ")}
+        >
           {mission.title}
         </p>
-        {!completed && <MissionSubtitle mission={mission} dueLabel={dueLabel} />}
+        {!completed && !isCompleting && <MissionSubtitle mission={mission} dueLabel={dueLabel} />}
       </div>
-      {!completed && (
+      {!completed && !isCompleting && (
         <div
           className={[
             "flex items-center gap-1",

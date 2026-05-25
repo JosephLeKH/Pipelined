@@ -76,6 +76,7 @@ afterEach(() => {
   snoozeCalled = false;
   doneCalled = false;
   vi.useRealTimers();
+  localStorage.clear();
 });
 afterAll(() => server.close());
 
@@ -122,14 +123,29 @@ describe("TodayPage", () => {
   });
 
   it("should call done API when Complete is clicked", async () => {
-    const user = userEvent.setup();
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
     render(<TodayPage />, { wrapper: makeWrapper() });
 
     await screen.findByRole("heading", { level: 1 });
     const completeButton = await screen.findByRole("button", { name: /complete/i });
     await user.click(completeButton);
 
+    await vi.advanceTimersByTimeAsync(300);
     await waitFor(() => expect(doneCalled).toBe(true));
+  });
+
+  it("should move completed mission into collapsed group", async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    render(<TodayPage />, { wrapper: makeWrapper() });
+
+    await screen.findByRole("heading", { level: 1 });
+    await user.click(await screen.findByRole("button", { name: /complete/i }));
+    await vi.advanceTimersByTimeAsync(300);
+
+    expect(await screen.findByRole("button", { name: /completed \(1\)/i })).toBeInTheDocument();
+    expect(screen.queryByText("Acme — follow-up overdue")).not.toBeInTheDocument();
   });
 
   it("should show mission progress strip", async () => {

@@ -3,13 +3,12 @@
 import { useCallback, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 
-import Check from "lucide-react/dist/esm/icons/check";
 import Sun from "lucide-react/dist/esm/icons/sun";
 
-import MissionCard from "../components/MissionCard";
 import MissionProgressStrip from "../components/MissionProgressStrip";
 import MorningBriefSkeleton from "../components/MorningBriefSkeleton";
 import TodayMorningBrief from "../components/TodayMorningBrief";
+import TodayMissionsList from "../components/TodayMissionsList";
 import WeeklyGoalSection from "../components/WeeklyGoalSection";
 import WeeklyReviewSection from "../components/WeeklyReviewSection";
 import { useAuth } from "../context/AuthContext";
@@ -38,64 +37,6 @@ function TodayGreeting({ user, briefDate, missionCount }) {
         {formatTodayGreeting(user)}
       </h1>
     </header>
-  );
-}
-
-function TodaySectionHeading({ children }) {
-  return (
-    <h2 className="mb-2 text-xs font-medium uppercase tracking-wider text-text-3">
-      {children}
-    </h2>
-  );
-}
-
-function TodayEmptyState() {
-  return (
-    <div
-      className="flex flex-col items-center py-16 text-center motion-safe:animate-fade-in-up"
-      role="status"
-    >
-      <div
-        className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-brand-50 dark:bg-brand-900/30"
-        aria-hidden="true"
-      >
-        <Check className="h-6 w-6 text-brand-600" />
-      </div>
-      <p className="text-base font-semibold text-text-1">You&apos;re caught up.</p>
-      <p className="mt-1 max-w-sm text-sm text-text-3">
-        No missions ranked for today. Enjoy the breather.
-      </p>
-    </div>
-  );
-}
-
-function TodayMissionsList({
-  missions,
-  onSnooze,
-  onDone,
-  snoozePendingId,
-  donePendingId,
-}) {
-  if (!missions.length) {
-    return <TodayEmptyState />;
-  }
-
-  return (
-    <section aria-label="Today's missions">
-      <TodaySectionHeading>Today&apos;s missions</TodaySectionHeading>
-      <ul className="overflow-hidden rounded-lg border border-border-1 bg-surface-0">
-        {missions.map((mission) => (
-          <MissionCard
-            key={mission.id}
-            mission={mission}
-            onSnooze={onSnooze}
-            onDone={onDone}
-            isSnoozing={snoozePendingId === mission.id}
-            isCompleting={donePendingId === mission.id}
-          />
-        ))}
-      </ul>
-    </section>
   );
 }
 
@@ -175,6 +116,8 @@ function TodayPage() {
             />
             <TodayMissionsList
               missions={missions}
+              briefDate={brief.date}
+              clearedCount={progress.cleared}
               onSnooze={handleSnooze}
               onDone={handleDone}
               snoozePendingId={snooze.isPending ? snooze.variables : null}
