@@ -14,8 +14,6 @@ import structlog
 from bson import ObjectId
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import StreamingResponse
-from openai import AsyncOpenAI
-
 from ai.agent_log import AGENT_TYPE_PREP, STATUS_FAILED, STATUS_SUCCESS, log_agent_run
 from ai.openrouter_client import OpenRouterError, agent_llm_configured, complete_json_with_usage
 from auth.dependencies import get_verified_user as get_current_user
@@ -44,8 +42,6 @@ logger = structlog.get_logger()
 
 router = APIRouter(prefix="/api/applications", tags=["interview-prep"])
 
-GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/openai/"
-GEMINI_MODEL = "gemini-2.0-flash"
 async def _get_application(app_id: str, user_id: str) -> dict:
     """Fetch an application and verify it belongs to the requesting user."""
     try:
@@ -89,10 +85,10 @@ async def interview_prep_stream(
     if not company:
         raise HTTPException(status_code=422, detail="Application has no company name")
 
-    if not settings.gemini_api_key:
+    if not settings.openrouter_api_key:
         raise HTTPException(
             status_code=503,
-            detail="Interview prep is not configured (missing GEMINI_API_KEY)",
+            detail="Interview prep is not configured (missing OPENROUTER_API_KEY)",
         )
 
     async def event_stream():
@@ -101,7 +97,6 @@ async def interview_prep_stream(
                 company=company,
                 role=role,
                 resume_text=resume_text,
-                gemini_api_key=settings.gemini_api_key,
                 exa_api_key=settings.exa_api_key,
                 interview_round=interview_round,
             ):

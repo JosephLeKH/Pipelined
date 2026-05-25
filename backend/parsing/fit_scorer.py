@@ -1,4 +1,4 @@
-"""OpenAI GPT-4o mini client for scoring resume-to-job fit."""
+"""Resume-to-job fit scoring via OpenRouter."""
 
 import json
 from typing import Any
@@ -6,6 +6,7 @@ from typing import Any
 import structlog
 from openai import AsyncOpenAI, OpenAIError
 
+from ai.openrouter_client import get_openrouter_client
 from config import settings
 from parsing.ai_cache import (
     check_and_increment_quota,
@@ -34,18 +35,6 @@ SYSTEM_PROMPT = (
     "- summary: string (1-2 sentence explanation of the fit score)\n"
     "Return only valid JSON with these 4 keys and no other text."
 )
-
-_client: AsyncOpenAI | None = None
-
-
-def _get_client() -> AsyncOpenAI:
-    global _client
-    if _client is None:
-        _client = AsyncOpenAI(
-            api_key=settings.openai_api_key,
-            timeout=FIT_SCORE_TIMEOUT_SECONDS,
-        )
-    return _client
 
 
 def _validate_parsed_result(parsed: dict) -> dict | None:
@@ -83,9 +72,10 @@ async def _call_openai(
 
     try:
         response = await client.chat.completions.create(
-            model=settings.openai_model,
+            model=settings.openrouter_default_model,
             temperature=FIT_SCORE_TEMPERATURE,
             max_tokens=FIT_SCORE_MAX_TOKENS,
+            timeout=FIT_SCORE_TIMEOUT_SECONDS,
             messages=[
                 {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": user_content},
@@ -122,7 +112,7 @@ async def _execute_score_fit(
     if user_id:
         await check_and_increment_quota(user_id)
 
-    call_result = await _call_openai(_get_client(), resume_text, job_description)
+    call_result = await _call_openai(get_openrouter_client(), resume_text, job_description)
     if call_result is None:
         return null_result
 
@@ -130,7 +120,7 @@ async def _execute_score_fit(
     usage = response.usage
     input_tokens = usage.prompt_tokens if usage else 0
     output_tokens = usage.completion_tokens if usage else 0
-    await store_response(cache_key, result, settings.openai_model, input_tokens, output_tokens)
+    await store_response(cache_key, result, settings.openrouter_default_model, input_tokens, output_tokens)
     return result
 
 
@@ -150,15 +140,15 @@ async def score_fit(
     """
     null_result: dict = {field: None for field in FIT_SCORE_FIELDS}
 
-    if not settings.openai_api_key:
-        logger.warning("openai_api_key_missing_for_fit_scorer")
+    if not settings.openrouter_api_key:
+        logger.warning("openrouter_api_key_missing_for_fit_scorer")
         return null_result
 
     if not resume_text or not job_description:
         return null_result
 
     cache_key = compute_cache_key(
-        settings.openai_model,
+        settings.openrouter_default_model,
         resume_text[:500] + role_title + company,
     )
     return await _execute_score_fit(cache_key, null_result, resume_text, job_description, user_id)

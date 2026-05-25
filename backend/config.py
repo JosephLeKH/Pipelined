@@ -18,8 +18,6 @@ def validate_production_secrets(s: "Settings") -> None:
 
     if s.jwt_secret == DEV_JWT_SECRET:
         issues.append("JWT_SECRET is set to the insecure dev default")
-    if not s.openai_api_key:
-        issues.append("OPENAI_API_KEY is empty")
 
     if not issues:
         return

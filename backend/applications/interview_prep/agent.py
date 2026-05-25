@@ -10,7 +10,9 @@ from datetime import UTC, datetime
 from typing import Any
 
 import structlog
-from openai import AsyncOpenAI
+
+from ai.openrouter_client import get_openrouter_client
+from config import settings
 
 from .constants import INTERVIEW_ROUND_FOCUS
 from .schemas import InterviewBriefing
@@ -18,8 +20,6 @@ from .tools import fetch_page, get_levels_data, search_reddit, web_search
 
 logger = structlog.get_logger()
 
-_MODEL = "gemini-2.0-flash"
-_GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/openai/"
 _MAX_ITERATIONS = 12
 
 TOOL_DEFS: list[dict[str, Any]] = [
@@ -191,7 +191,6 @@ async def run_agent(
     company: str,
     role: str,
     resume_text: str,
-    gemini_api_key: str,
     exa_api_key: str,
     interview_round: str | None = None,
 ) -> AsyncGenerator[ProgressEvent, None]:
@@ -202,7 +201,7 @@ async def run_agent(
       {"type": "done", "briefing": {...}}
       {"type": "error", "message": "..."}
     """
-    client = AsyncOpenAI(api_key=gemini_api_key, base_url=_GEMINI_BASE_URL)
+    client = get_openrouter_client()
     system_prompt = _build_system_prompt(company, role, resume_text, interview_round)
 
     round_hint = ""
@@ -223,7 +222,7 @@ async def run_agent(
 
     for iteration in range(_MAX_ITERATIONS):
         response = await client.chat.completions.create(
-            model=_MODEL,
+            model=settings.openrouter_default_model,
             max_tokens=4096,
             messages=messages,  # type: ignore[arg-type]
             tools=TOOL_DEFS,  # type: ignore[arg-type]
