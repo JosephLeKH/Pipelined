@@ -50,9 +50,9 @@ function CmdKPill() {
       type="button"
       variant="ghost"
       size="icon"
-      aria-label="Open command palette"
+      aria-label={`Command palette, ${modKey}K`}
       onClick={() => window.dispatchEvent(new CustomEvent(OPEN_COMMAND_PALETTE_EVENT))}
-      className="h-6 w-6 font-mono text-xs text-text-3 md:hidden"
+      className="h-6 w-6 font-mono text-xs text-text-2 md:hidden"
     >
       {modKey}K
     </Button>

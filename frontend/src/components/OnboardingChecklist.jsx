@@ -47,7 +47,7 @@ function StepRow({ label, description, done }) {
       )}
       <div className="min-w-0">
         <p className={`text-sm font-medium ${done ? "text-text-3" : "text-text-1"}`}>{label}</p>
-        {!done && description && <p className="text-xs text-text-3">{description}</p>}
+        {!done && description && <p className="text-xs text-text-2">{description}</p>}
       </div>
     </div>
   );
@@ -132,7 +132,7 @@ function OnboardingChecklist() {
         </button>
       </div>
       <div className="mb-3">
-        <div className="mb-1 flex items-center text-xs text-text-3">
+        <div className="mb-1 flex items-center text-xs text-text-2">
           <span>
             {completedSteps.length} of {ONBOARDING_STEPS} steps complete
           </span>

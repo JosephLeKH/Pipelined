@@ -21,9 +21,9 @@ export function formatMultiSelectLabel(selected, allLabel = "All") {
   return `${selected.length} selected`;
 }
 
-export function FilterDropdownTrigger({ label, value, ariaLabel }) {
+export function FilterDropdownTrigger({ label, value }) {
   return (
-    <Button type="button" variant="ghost" className={TRIGGER_CLASS} aria-label={ariaLabel}>
+    <Button type="button" variant="ghost" className={TRIGGER_CLASS}>
       <span className="text-text-3">{label}:</span>
       <span className="font-medium text-text-1">{value}</span>
       <ChevronDown className="h-3 w-3 text-text-3" aria-hidden="true" />
@@ -44,11 +44,7 @@ export function MultiSelectFilterDropdown({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <FilterDropdownTrigger
-          label={label}
-          value={displayValue}
-          ariaLabel={`Filter by ${label.toLowerCase()}, current ${displayValue}`}
-        />
+        <FilterDropdownTrigger label={label} value={displayValue} />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="max-h-64 overflow-y-auto">
         <DropdownMenuLabel>{label}</DropdownMenuLabel>
@@ -68,18 +64,11 @@ export function MultiSelectFilterDropdown({
   );
 }
 
-export function SingleSelectFilterDropdown({
-  label,
-  value,
-  displayValue,
-  ariaLabel,
-  children,
-  contentClassName,
-}) {
+export function SingleSelectFilterDropdown({ label, displayValue, children, contentClassName }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <FilterDropdownTrigger label={label} value={displayValue} ariaLabel={ariaLabel} />
+        <FilterDropdownTrigger label={label} value={displayValue} />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className={cn("min-w-[10rem]", contentClassName)}>
         {children}

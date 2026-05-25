@@ -34,16 +34,16 @@ describe("FilterBar", () => {
   it("should render inline filter triggers for stage, company, remote, and updated", () => {
     render(<FilterBar />, { wrapper: makeWrapper() });
 
-    expect(screen.getByRole("button", { name: /filter by stage/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /filter by company/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /filter by remote/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /filter by updated date/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Stage: All" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Company: All" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Remote: All" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Updated:/i })).toBeInTheDocument();
   });
 
   it("should show selected stage in the trigger label from URL params", () => {
     render(<FilterBar />, { wrapper: makeWrapper(["/?stage=Offer"]) });
 
-    expect(screen.getByRole("button", { name: /filter by stage.*offer/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Stage: Offer" })).toBeInTheDocument();
   });
 
   it("should show Last 30 days in trigger when URL matches the preset", () => {
@@ -51,7 +51,7 @@ describe("FilterBar", () => {
     const to = new Date().toISOString().slice(0, 10);
     render(<FilterBar />, { wrapper: makeWrapper([`/?date_from=${from}&date_to=${to}`]) });
 
-    expect(screen.getByRole("button", { name: /filter by updated date.*last 30 days/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Updated: Last 30 days/i })).toBeInTheDocument();
   });
 
   it("should read initial date range from URL search params", () => {
@@ -59,7 +59,7 @@ describe("FilterBar", () => {
       wrapper: makeWrapper(["/?date_from=2025-01-01&date_to=2025-12-31"]),
     });
 
-    expect(screen.getByRole("button", { name: /filter by updated date.*custom/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Updated: Custom/i })).toBeInTheDocument();
   });
 
   it("should render the search input", () => {
@@ -88,11 +88,11 @@ describe("FilterBar", () => {
     await userEvent.click(clearBtn);
 
     expect(screen.queryByRole("button", { name: "Clear" })).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /filter by stage.*all/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Stage: All" })).toBeInTheDocument();
   });
 
   it("should render saved views dropdown trigger", () => {
     render(<FilterBar />, { wrapper: makeWrapper() });
-    expect(screen.getByRole("button", { name: "Saved views" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Saved view: None" })).toBeInTheDocument();
   });
 });

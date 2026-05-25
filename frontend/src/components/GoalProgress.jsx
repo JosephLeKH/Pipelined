@@ -131,7 +131,7 @@ function GoalProgressExpanded({ appliedThisWeek, weeklyGoal, currentStreak, pct,
           Edit goal
         </Link>
         {currentStreak > 0 && (
-          <span className="mt-1 flex items-center gap-1 text-xs font-medium text-brand-600">
+          <span className="mt-1 flex items-center gap-1 text-xs font-medium text-brand-600 dark:text-brand-300">
             <Flame className="h-3.5 w-3.5" aria-hidden="true" />
             {currentStreak} week streak
           </span>

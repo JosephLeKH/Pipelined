@@ -98,7 +98,6 @@ function FilterBar() {
         <SingleSelectFilterDropdown
           label="Updated"
           displayValue={datePresetLabel(datePreset)}
-          ariaLabel={`Filter by updated date, ${datePresetLabel(datePreset)}`}
         >
           <DropdownMenuLabel>Updated</DropdownMenuLabel>
           <DropdownMenuSeparator />
@@ -123,7 +122,6 @@ function FilterBar() {
         <SingleSelectFilterDropdown
           label="Archive"
           displayValue={includeArchived ? "Archived" : "Active only"}
-          ariaLabel="Archive filter"
         >
           <DropdownMenuCheckboxItem
             checked={includeArchived}

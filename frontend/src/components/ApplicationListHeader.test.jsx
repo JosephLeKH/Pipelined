@@ -22,6 +22,6 @@ describe("ApplicationListHeader", () => {
     expect(screen.getByText("Role")).toBeInTheDocument();
     expect(screen.getByText("Score")).toBeInTheDocument();
     expect(screen.getByText("Updated")).toBeInTheDocument();
-    expect(screen.getByTestId("application-list-header")).toHaveClass("h-8", "bg-surface-1");
+    expect(screen.getByTestId("application-list-header")).toHaveClass("h-8", "bg-surface-1", "md:flex");
   });
 });

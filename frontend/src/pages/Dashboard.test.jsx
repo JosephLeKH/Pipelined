@@ -83,7 +83,7 @@ describe("Dashboard", () => {
     render(<Dashboard />, { wrapper: makeWrapper() });
 
     // Assert — FilterBar renders inline stage dropdown
-    expect(await screen.findByRole("button", { name: /filter by stage/i })).toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: "Stage: All" })).toBeInTheDocument();
   });
 
   it("should render ApplicationList with application data", async () => {

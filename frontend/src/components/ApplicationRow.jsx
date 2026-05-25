@@ -65,6 +65,7 @@ function SwipeActions({ onArchive, onFollowUp, revealed }) {
         type="button"
         variant="ghost"
         aria-label="Set follow-up"
+        tabIndex={revealed ? 0 : -1}
         onClick={onFollowUp}
         className="h-full w-20 flex-col gap-1 rounded-none bg-amber-500 text-xs font-medium text-white hover:bg-amber-600 active:bg-amber-700"
       >
@@ -75,6 +76,7 @@ function SwipeActions({ onArchive, onFollowUp, revealed }) {
         type="button"
         variant="ghost"
         aria-label="Archive application"
+        tabIndex={revealed ? 0 : -1}
         onClick={onArchive}
         className="h-full w-20 flex-col gap-1 rounded-none bg-destructive text-xs font-medium text-destructive-foreground hover:bg-destructive/90 active:bg-destructive/80"
       >

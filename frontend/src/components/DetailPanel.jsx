@@ -44,9 +44,22 @@ function DiscardDialog({ onDiscard, onCancel }) {
   );
 }
 
-function PanelContent({ displayApp, panelDragHandlers, actions, undoPendingId, showDiscardDialog, expandFollowUpDraft }) {
+function PanelContent({
+  displayApp,
+  isOpen,
+  panelDragHandlers,
+  actions,
+  undoPendingId,
+  showDiscardDialog,
+  expandFollowUpDraft,
+}) {
   return (
     <>
+      {isOpen && !displayApp && (
+        <h2 id="detail-panel-heading" className="sr-only">
+          Application details
+        </h2>
+      )}
       {displayApp && (
         <div key={displayApp.id} className="flex h-full flex-col overflow-y-auto bg-surface-0">
           <div
@@ -163,13 +176,15 @@ function DetailPanel({ application, onClose, onAddEvent, expandFollowUpDraft = f
           isOpen ? "translate-y-0 md:translate-x-0" : "translate-y-full md:translate-y-0 md:translate-x-full"
         }`}
         style={{ ...panelStyle, width: DETAIL_PANEL_WIDTH_PX, maxWidth: "100%" }}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="detail-panel-heading"
+        role={isOpen ? "dialog" : undefined}
+        aria-modal={isOpen ? true : undefined}
+        aria-labelledby={isOpen ? "detail-panel-heading" : undefined}
+        aria-label={isOpen && !displayApp ? "Application details" : undefined}
         onKeyDown={handlePanelKeyDown}
       >
         <PanelContent
           displayApp={displayApp}
+          isOpen={isOpen}
           panelDragHandlers={panelDragHandlers}
           actions={actions}
           undoPendingId={undoPendingId}

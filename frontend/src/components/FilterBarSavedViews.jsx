@@ -111,7 +111,6 @@ export function SavedViewsDropdown({ currentFilters, hasActiveFilters }) {
     <SingleSelectFilterDropdown
       label="Saved view"
       displayValue={displayValue}
-      ariaLabel="Saved views"
       contentClassName="w-64"
     >
       {searches.length > 0 && (

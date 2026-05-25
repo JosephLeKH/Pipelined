@@ -13,7 +13,7 @@ function SortHeader({ field, label, sortBy, sortOrder, onSort }) {
       type="button"
       onClick={() => onSort(field)}
       className={cn(
-        "inline-flex h-auto items-center gap-0.5 p-0 text-[11px] font-medium uppercase tracking-[0.06em] text-text-3",
+        "inline-flex min-h-6 min-w-6 items-center gap-0.5 px-1 py-0.5 text-[11px] font-medium uppercase tracking-[0.06em] text-text-3",
         "hover:text-text-1 motion-reduce:transition-none transition-colors duration-hover ease-out",
         HEADER_FOCUS,
         isActive && "text-text-2"
@@ -32,7 +32,7 @@ function SortHeader({ field, label, sortBy, sortOrder, onSort }) {
 export function ApplicationListHeader({ sortBy, sortOrder, onSort, allSelected, onSelectAll }) {
   return (
     <div
-      className="flex h-8 items-center gap-3 border-b border-border-2 bg-surface-1 px-4"
+      className="hidden h-8 items-center gap-3 border-b border-border-2 bg-surface-1 px-4 md:flex"
       data-testid="application-list-header"
     >
       <span className="w-4 shrink-0" onClick={(e) => e.stopPropagation()}>
