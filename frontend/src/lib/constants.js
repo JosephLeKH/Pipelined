@@ -166,6 +166,11 @@ export const DETAIL_PANEL_WIDTH_PX = 520;
 export const MANUAL_ADD_FORM_WIDTH_PX = 520;
 export const MANUAL_ADD_VISIBLE_STAGES = 4;
 export const COPILOT_DRAWER_WIDTH_PX = 480;
+export const CALENDAR_EVENT_DRAWER_WIDTH_PX = 480;
+export const CALENDAR_EVENT_MODAL_WIDTH_PX = 480;
+export const CALENDAR_EVENT_DOT_MAX = 3;
+export const CALENDAR_DEFAULT_DURATION_MIN = 30;
+export const CALENDAR_UPCOMING_WINDOW_DAYS = 7;
 
 /** Source options for ManualAddForm segmented control (PRD-04 §10.1). */
 export const MANUAL_ADD_SOURCE_OPTIONS = [

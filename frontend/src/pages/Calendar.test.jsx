@@ -68,27 +68,28 @@ function makeWrapper() {
 }
 
 describe("Calendar page", () => {
-  it("should render the Calendar heading", async () => {
+  it("should render the Calendar heading with month subtitle", async () => {
     const Wrapper = makeWrapper();
 
     render(<Calendar />, { wrapper: Wrapper });
 
     await waitFor(
       () => {
-        expect(screen.getByRole("heading", { name: "Calendar", level: 1 })).toBeInTheDocument();
+        expect(screen.getByRole("heading", { name: /calendar/i, level: 1 })).toBeInTheDocument();
       },
       { timeout: 3000 }
     );
   });
 
-  it("should render the CalendarGrid with navigation buttons", async () => {
+  it("should render month navigation buttons", async () => {
     const Wrapper = makeWrapper();
 
     render(<Calendar />, { wrapper: Wrapper });
 
     await waitFor(() => {
-      const prevButtons = screen.getAllByRole("button");
-      expect(prevButtons.length).toBeGreaterThan(0);
+      expect(screen.getByRole("button", { name: /previous month/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /next month/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /jump to today/i })).toBeInTheDocument();
     });
   });
 

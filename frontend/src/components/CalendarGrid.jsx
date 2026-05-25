@@ -1,22 +1,15 @@
-/** Monthly calendar grid: renders days, event chips, and navigation controls. */
+/** Monthly calendar grid: day cells with event dots (PRD-06 §7.1). */
 
-import { useCallback, useMemo } from "react";
-
-import BookOpen from "lucide-react/dist/esm/icons/book-open";
-import ChevronLeft from "lucide-react/dist/esm/icons/chevron-left";
-import ChevronRight from "lucide-react/dist/esm/icons/chevron-right";
+import { useMemo } from "react";
 
 import { useCalendarEvents } from "../hooks/useCalendar";
-import { DEFAULT_EVENT_COLOR, EVENT_TYPE_COLORS, WEEK_DAYS, WEEK_DAYS_FULL } from "../lib/constants";
-import { toISODate, formatDateLong, formatTime } from "../lib/dateUtils";
-import { Button } from "./ui/button";
+import { CALENDAR_EVENT_DOT_MAX, WEEK_DAYS, WEEK_DAYS_FULL } from "../lib/constants";
+import { toISODate, formatDateLong } from "../lib/dateUtils";
 import ApiErrorMessage from "./ApiErrorMessage";
 import SkeletonCalendarCell from "./SkeletonCalendarCell";
 
-const MONTH_NAMES = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December",
-];
+const CELL_FOCUS =
+  "focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 focus-visible:outline-offset-2 dark:focus-visible:outline-1";
 
 /** Build a 6-week grid of Date objects anchored to the given month. */
 function buildWeeks(month, year) {
@@ -37,102 +30,61 @@ function buildWeeks(month, year) {
   return weeks;
 }
 
+function EventDots({ events }) {
+  const visible = events.slice(0, CALENDAR_EVENT_DOT_MAX);
+  const overflow = events.length - CALENDAR_EVENT_DOT_MAX;
 
-function EventChip({ event, onEventClick }) {
-  const colors = EVENT_TYPE_COLORS[event.event_type] ?? DEFAULT_EVENT_COLOR;
-  const timeStr = event.time ? ` · ${formatTime(event.time)}` : "";
-  const label = `${event.company ?? "Unknown"} · ${event.event_type.replace(/_/g, " ")}${timeStr}`;
-  const hasPrepData = Boolean(
-    event.prep_data?.notes?.trim() ||
-    event.prep_data?.checklist?.length ||
-    event.prep_data?.questions?.length
-  );
   return (
-    <button
-      type="button"
-      onClick={(e) => { e.stopPropagation(); onEventClick(event); }}
-      className={`flex w-full items-center gap-1 truncate rounded-full border px-2 py-0.5 text-left text-xs font-medium ${colors.bg} ${colors.text} ${colors.border} hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring`}
-      title={label}
-      aria-label={label}
-    >
-      <span className={`inline-block h-2 w-2 flex-shrink-0 rounded-full ${colors.dot}`} aria-hidden="true" />
-      <span className="truncate">{label}</span>
-      {hasPrepData && (
-        <>
-          <BookOpen className="h-3 w-3 flex-shrink-0 ml-auto" aria-hidden="true" />
-          <span className="sr-only">Has prep notes</span>
-        </>
+    <div className="mt-auto flex flex-wrap items-center gap-1 pt-1" aria-hidden="true">
+      {visible.map((ev) => (
+        <span key={ev.id} className="h-1.5 w-1.5 rounded-full bg-brand-600 dark:bg-brand-500" />
+      ))}
+      {overflow > 0 && (
+        <span className="text-[10px] font-medium leading-none text-text-3">+{overflow}</span>
       )}
-    </button>
+    </div>
   );
 }
 
-function DayCell({ date, isCurrentMonth, events, onDayClick, onEventClick }) {
+function DayCell({ date, isCurrentMonth, events, selectedDate, onDayClick }) {
   const today = toISODate(new Date());
   const dateStr = toISODate(date);
   const isToday = dateStr === today;
+  const isSelected = selectedDate === dateStr;
+  const eventCount = events.length;
 
   return (
     <div
       role="button"
       tabIndex={0}
       onClick={() => onDayClick(date)}
-      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") onDayClick(date); }}
-      aria-label={formatDateLong(date)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") onDayClick(date);
+      }}
+      aria-label={`${formatDateLong(date)}${eventCount ? `, ${eventCount} event${eventCount !== 1 ? "s" : ""}` : ""}`}
       aria-current={isToday ? "date" : undefined}
-      className={`min-h-[48px] cursor-pointer border border-border p-1.5 transition-colors hover:bg-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring md:min-h-[80px] ${
-        isCurrentMonth ? "bg-card" : "bg-muted/50"
-      }`}
+      aria-pressed={isSelected || undefined}
+      data-date={dateStr}
+      className={[
+        "flex min-h-24 cursor-pointer flex-col border border-border-1 p-2",
+        "motion-reduce:transition-none transition-colors duration-[120ms] ease-out hover:bg-surface-1",
+        isCurrentMonth ? "bg-surface-0" : "bg-surface-1/40",
+        isToday && "border-t-2 border-t-brand-600 dark:border-t-brand-500",
+        isSelected && "bg-brand-50/40 dark:bg-brand-900/20",
+        CELL_FOCUS,
+      ]
+        .filter(Boolean)
+        .join(" ")}
     >
       <span
-        className={`inline-flex h-6 w-6 items-center justify-center rounded-full text-xs font-medium ${
-          isToday
-            ? "bg-primary/10 text-primary"
-            : isCurrentMonth
-            ? "text-foreground"
-            : "text-muted-foreground"
-        }`}
+        className={[
+          "text-[11px] font-medium leading-none",
+          isToday ? "text-brand-600 dark:text-brand-400" : isCurrentMonth ? "text-text-1" : "text-text-3",
+        ].join(" ")}
       >
         {date.getDate()}
       </span>
-      <div className="mt-1 flex flex-col gap-0.5">
-        {events.map((ev) => (
-          <EventChip key={ev.id} event={ev} onEventClick={onEventClick} />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function CalendarHeader({ month, year, onPrev, onNext, onToday }) {
-  return (
-    <div className="flex items-center justify-between px-4 py-3">
-      <h2 className=" text-xl font-semibold text-foreground">
-        {MONTH_NAMES[month - 1]} {year}
-      </h2>
-      <div className="flex items-center gap-2">
-        <Button type="button" variant="outline" size="sm" onClick={onToday} aria-label="Jump to today">
-          Today
-        </Button>
-        <Button
-          type="button"
-          variant="outline"
-          onClick={onPrev}
-          aria-label="Previous month"
-          className="p-1.5 h-auto"
-        >
-          <ChevronLeft className="h-4 w-4" aria-hidden="true" />
-        </Button>
-        <Button
-          type="button"
-          variant="outline"
-          onClick={onNext}
-          aria-label="Next month"
-          className="p-1.5 h-auto"
-        >
-          <ChevronRight className="h-4 w-4" aria-hidden="true" />
-        </Button>
-      </div>
+      {eventCount > 0 && <EventDots events={events} />}
     </div>
   );
 }
@@ -159,16 +111,22 @@ function useCalendarGridData(month, year) {
   return { eventsByDate, weeks, isLoading, error, refetch };
 }
 
-function CalendarContent({ isLoading, error, refetch, weeks, eventsByDate, month, onDayClick, onEventClick }) {
+function CalendarContent({ isLoading, error, refetch, weeks, eventsByDate, month, selectedDate, onDayClick }) {
   if (isLoading) {
     return (
       <div className="grid grid-cols-7">
-        {weeks.flat().map((date) => <SkeletonCalendarCell key={toISODate(date)} />)}
+        {weeks.flat().map((date) => (
+          <SkeletonCalendarCell key={toISODate(date)} />
+        ))}
       </div>
     );
   }
   if (error) {
-    return <div className="p-6"><ApiErrorMessage error={error} onRetry={refetch} /></div>;
+    return (
+      <div className="p-6">
+        <ApiErrorMessage error={error} onRetry={refetch} />
+      </div>
+    );
   }
   return (
     <div className="grid grid-cols-7">
@@ -180,8 +138,8 @@ function CalendarContent({ isLoading, error, refetch, weeks, eventsByDate, month
             date={date}
             isCurrentMonth={date.getMonth() + 1 === month}
             events={eventsByDate[dateStr] ?? []}
+            selectedDate={selectedDate}
             onDayClick={onDayClick}
-            onEventClick={onEventClick}
           />
         );
       })}
@@ -190,50 +148,40 @@ function CalendarContent({ isLoading, error, refetch, weeks, eventsByDate, month
 }
 
 /**
- * CalendarGrid renders a monthly grid of days with event chips.
+ * CalendarGrid renders a monthly grid of days with event dots.
  *
  * Props:
- *   month        {number}   1-indexed month (1–12)
- *   year         {number}   4-digit year
- *   onMonthChange {function} (month, year) => void — called on nav
- *   onEventClick  {function} (event) => void — called when a chip is clicked
- *   onDayClick    {function} (date) => void — called when an empty day is clicked
+ *   month         {number}   1-indexed month (1–12)
+ *   year          {number}   4-digit year
+ *   selectedDate  {string}   ISO date (YYYY-MM-DD) for selected cell highlight
+ *   onDayClick    {function} (date) => void — called when a day cell is clicked
  */
-function CalendarGrid({ month, year, onMonthChange, onEventClick, onDayClick }) {
+function CalendarGrid({ month, year, selectedDate, onDayClick }) {
   const { eventsByDate, weeks, isLoading, error, refetch } = useCalendarGridData(month, year);
 
-  const handlePrev = useCallback(() => {
-    const prev = month === 1 ? { m: 12, y: year - 1 } : { m: month - 1, y: year };
-    onMonthChange(prev.m, prev.y);
-  }, [month, year, onMonthChange]);
-
-  const handleNext = useCallback(() => {
-    const next = month === 12 ? { m: 1, y: year + 1 } : { m: month + 1, y: year };
-    onMonthChange(next.m, next.y);
-  }, [month, year, onMonthChange]);
-
-  const handleToday = useCallback(() => {
-    const now = new Date();
-    onMonthChange(now.getMonth() + 1, now.getFullYear());
-  }, [onMonthChange]);
-
   return (
-    <div className="overflow-hidden rounded-xl border border-border bg-card">
-      <div aria-live="polite" aria-atomic="true" className="sr-only">
-        {MONTH_NAMES[month - 1]} {year}
-      </div>
-      <CalendarHeader month={month} year={year} onPrev={handlePrev} onNext={handleNext} onToday={handleToday} />
-      <div className="grid grid-cols-7 border-t border-border">
+    <div className="overflow-hidden rounded-lg border border-border-1 bg-surface-0">
+      <div className="grid grid-cols-7 border-b border-border-1">
         {WEEK_DAYS.map((d, i) => (
-          <div key={d} className="border-b border-border py-2 text-center text-xs font-medium uppercase text-muted-foreground">
-            <abbr title={WEEK_DAYS_FULL[i]}>{d}</abbr>
+          <div
+            key={d}
+            className="border-r border-border-1 py-2 text-center text-[11px] font-medium uppercase text-text-3 last:border-r-0"
+          >
+            <abbr title={WEEK_DAYS_FULL[i]} className="no-underline">
+              {d}
+            </abbr>
           </div>
         ))}
       </div>
       <CalendarContent
-        isLoading={isLoading} error={error} refetch={refetch}
-        weeks={weeks} eventsByDate={eventsByDate} month={month}
-        onDayClick={onDayClick} onEventClick={onEventClick}
+        isLoading={isLoading}
+        error={error}
+        refetch={refetch}
+        weeks={weeks}
+        eventsByDate={eventsByDate}
+        month={month}
+        selectedDate={selectedDate}
+        onDayClick={onDayClick}
       />
     </div>
   );
