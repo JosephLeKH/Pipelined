@@ -1,4 +1,4 @@
-/** Tests for FeedbackWidget: renders button, opens popover, submits, and closes. */
+/** Tests for FeedbackWidget: renders button, opens drawer, submits, and closes. */
 
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -39,10 +39,11 @@ function makeWrapper(user = { id: "u1", email: "test@example.com", email_verifie
 }
 
 describe("FeedbackWidget", () => {
-  it("should render the feedback button for authenticated users", () => {
+  it("should render the feedback pill button for authenticated users", () => {
     render(<FeedbackWidget />, { wrapper: makeWrapper() });
 
     expect(screen.getByRole("button", { name: /send feedback/i })).toBeInTheDocument();
+    expect(screen.getByText("Feedback")).toBeInTheDocument();
   });
 
   it("should not render when user is null", () => {
@@ -51,27 +52,27 @@ describe("FeedbackWidget", () => {
     expect(screen.queryByRole("button", { name: /send feedback/i })).not.toBeInTheDocument();
   });
 
-  it("should open popover when button is clicked", async () => {
+  it("should open right drawer when button is clicked", async () => {
     render(<FeedbackWidget />, { wrapper: makeWrapper() });
 
     fireEvent.click(screen.getByRole("button", { name: /send feedback/i }));
 
-    expect(screen.getByRole("dialog", { name: /send feedback/i })).toBeInTheDocument();
+    expect(screen.getByRole("dialog", { name: /how can we improve/i })).toBeInTheDocument();
     expect(screen.getByLabelText(/message/i)).toBeInTheDocument();
   });
 
-  it("should close popover when X button is clicked", async () => {
+  it("should close drawer when close button is clicked", async () => {
     render(<FeedbackWidget />, { wrapper: makeWrapper() });
 
     fireEvent.click(screen.getByRole("button", { name: /send feedback/i }));
-    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    expect(screen.getByRole("dialog", { name: /how can we improve/i })).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: /close/i }));
 
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 
-  it("should submit feedback and close popover on success", async () => {
+  it("should submit feedback and close drawer on success", async () => {
     render(<FeedbackWidget />, { wrapper: makeWrapper() });
 
     fireEvent.click(screen.getByRole("button", { name: /send feedback/i }));
