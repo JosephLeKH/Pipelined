@@ -1,9 +1,32 @@
 """Pydantic request/response models for application endpoints."""
 
 from datetime import datetime
-from typing import Literal
+from typing import Annotated, Literal
 
-from pydantic import AnyHttpUrl, BaseModel, ConfigDict, Field, field_validator
+from pydantic import AnyHttpUrl, BaseModel, BeforeValidator, ConfigDict, Field, field_validator
+
+
+def _coerce_iso_datetime(value: object) -> object:
+    """Parse date/datetime strings into datetime objects.
+
+    Strict Pydantic in object-validation mode rejects all string inputs
+    for datetime fields. Clients submit dates as strings (YYYY-MM-DD from
+    HTML date inputs, or full ISO from JS toISOString), so we eagerly
+    parse here and hand a real datetime to the strict validator.
+    """
+    if not isinstance(value, str):
+        return value
+    if len(value) == 10 and value.count("-") == 2:
+        return datetime.fromisoformat(f"{value}T00:00:00+00:00")
+    # Accept full ISO with optional trailing Z (Python <3.11 needs +00:00).
+    iso = value.replace("Z", "+00:00") if value.endswith("Z") else value
+    try:
+        return datetime.fromisoformat(iso)
+    except ValueError:
+        return value  # let strict validator surface a clean error
+
+
+FlexibleDatetime = Annotated[datetime | None, BeforeValidator(_coerce_iso_datetime)]
 
 ValidSource = Literal["extension", "board", "manual", "email", "autopilot"]
 ValidCompanyType = Literal["startup", "mid", "enterprise", "gov", "nonprofit", "other"]
@@ -59,7 +82,7 @@ class ApplicationCreate(BaseModel):
     company_type: ValidCompanyType | None = None
     location: str | None = Field(None, max_length=MAX_LOCATION_LENGTH)
     remote_status: ValidRemoteStatus | None = None
-    date_applied: datetime | None = None
+    date_applied: FlexibleDatetime = None
     tags: list[str] = Field(default_factory=list, max_length=MAX_TAG_COUNT)
     page_text: str | None = Field(None, max_length=MAX_PAGE_TEXT_LENGTH)
     job_description: str | None = Field(None, max_length=MAX_JOB_DESCRIPTION_LENGTH)
