@@ -28,6 +28,19 @@ export const STAGE_COLORS = {
 
 export const DEFAULT_STAGE_COLOR = sc(D.neutral, "bg-surface-1 dark:bg-surface-2", "text-text-2 dark:text-text-2", "border-border-1");
 
+/** PRD-00 §3.4 — six dot colors for the pipeline stage color picker. */
+export const STAGE_COLOR_PICKER_OPTIONS = [
+  { key: "neutral", hex: D.neutral, label: "Neutral" },
+  { key: "info", hex: D.info, label: "Blue" },
+  { key: "violet", hex: D.violet, label: "Violet" },
+  { key: "warn", hex: D.warn, label: "Amber" },
+  { key: "orange", hex: D.orange, label: "Orange" },
+  { key: "success", hex: D.success, label: "Green" },
+];
+
+/** Terminal stages that cannot be removed from the pipeline editor. */
+export const REQUIRED_PIPELINE_STAGES = ["Offer", "Rejected"];
+
 export const MS_PER_DAY = 86_400_000;
 
 export const STALE_APPLICATION_DAYS = 14;

@@ -102,10 +102,10 @@ describe("ApplicationRow — desktop interactions", () => {
     expect(screen.getByTestId("fit-badge")).toHaveTextContent("67%");
   });
 
-  it("should render a 40px-tall row on desktop viewport", () => {
+  it("should use density row-height token on desktop viewport", () => {
     renderRow();
 
-    expect(screen.getByRole("listitem")).toHaveClass("md:h-10");
+    expect(screen.getByRole("listitem")).toHaveClass("md:h-[var(--row-height)]");
   });
 
   it("should apply selected styling when isSelected is true", () => {

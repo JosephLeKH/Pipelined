@@ -56,6 +56,13 @@
   --border-2: rgba(0, 0, 0, 0.1);
   --border-3: rgba(0, 0, 0, 0.16);
   --shadow-modal: 0 20px 60px rgba(0, 0, 0, 0.12);
+
+  /* Appearance prefs — compact default (PRD-08) */
+  --row-height: 36px;
+}
+
+:root[data-density="comfortable"] {
+  --row-height: 40px;
 }
 
 .dark {

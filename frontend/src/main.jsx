@@ -14,6 +14,7 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import App from "./App";
 import { QUERY_STALE_TIME_MS } from "./lib/constants";
 import { initAnalytics } from "./lib/analytics";
+import { initAppearancePrefs } from "./lib/appearancePrefs";
 import "./index.css";
 import "./styles/animations.css";
 import "./styles/marketing.css";
@@ -21,6 +22,8 @@ import "./styles/marketing.css";
 if (import.meta.env.VITE_POSTHOG_KEY) {
   initAnalytics();
 }
+
+initAppearancePrefs();
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {

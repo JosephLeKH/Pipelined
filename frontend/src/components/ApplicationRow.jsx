@@ -43,7 +43,7 @@ export function StagePill({ stage }) {
 
 function rowClassName({ archived, isFocused, isSelected }) {
   const classes = [
-    "group flex h-14 cursor-pointer items-center gap-3 border-b border-border-1 px-4 md:h-10",
+    "group flex h-14 cursor-pointer items-center gap-3 border-b border-border-1 px-4 md:h-[var(--row-height)]",
     "hover:bg-surface-1 motion-reduce:transition-none transition-colors duration-[120ms] ease-out",
     "focus:outline-none focus-visible:border-l-2 focus-visible:border-l-brand-600",
   ];

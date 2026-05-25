@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import SettingsProfileSection from "./SettingsProfileSection";
 
 vi.mock("../context/AuthContext", () => ({
@@ -14,6 +14,7 @@ vi.mock("./TimezoneSelector", () => ({
   default: ({ value, onChange }) => (
     <select aria-label="Timezone" value={value} onChange={(e) => onChange(e.target.value)}>
       <option value="America/New_York">America/New_York</option>
+      <option value="America/Los_Angeles">America/Los_Angeles</option>
     </select>
   ),
 }));
@@ -26,14 +27,16 @@ const mockMutateAsync = vi.fn();
 describe("SettingsProfileSection", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    useAuth.mockReturnValue({ user: { display_name: "Alice", email: "alice@example.com" } });
+    useAuth.mockReturnValue({
+      user: { display_name: "Alice", email: "alice@example.com", timezone: "America/New_York" },
+    });
     useUpdateUser.mockReturnValue({ mutateAsync: mockMutateAsync, isPending: false });
   });
 
   it("should render Profile heading", () => {
     render(<SettingsProfileSection />);
 
-    expect(screen.getByText("Profile")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Profile" })).toBeInTheDocument();
   });
 
   it("should display initials avatar when user has no avatar_url", () => {
@@ -44,7 +47,12 @@ describe("SettingsProfileSection", () => {
 
   it("should display img avatar when user has avatar_url", () => {
     useAuth.mockReturnValue({
-      user: { display_name: "Alice", email: "alice@example.com", avatar_url: "https://example.com/avatar.png" },
+      user: {
+        display_name: "Alice",
+        email: "alice@example.com",
+        avatar_url: "https://example.com/avatar.png",
+        timezone: "America/New_York",
+      },
     });
 
     render(<SettingsProfileSection />);
@@ -54,33 +62,61 @@ describe("SettingsProfileSection", () => {
     expect(img).toHaveAttribute("src", "https://example.com/avatar.png");
   });
 
-  it("should show success banner after saving profile", async () => {
+  it("should hide save footer until form is dirty", () => {
+    render(<SettingsProfileSection />);
+
+    expect(screen.queryByRole("button", { name: "Save" })).not.toBeInTheDocument();
+  });
+
+  it("should show save footer when display name changes", () => {
+    render(<SettingsProfileSection />);
+
+    fireEvent.change(screen.getByLabelText("Display name"), { target: { value: "Bob" } });
+
+    expect(screen.getByRole("button", { name: "Save" })).toBeInTheDocument();
+  });
+
+  it("should show Saved microcopy after saving profile", async () => {
     mockMutateAsync.mockResolvedValue({});
 
     render(<SettingsProfileSection />);
-    fireEvent.click(screen.getByRole("button", { name: /save profile/i }));
+    fireEvent.change(screen.getByLabelText("Display name"), { target: { value: "Bob" } });
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
 
-    await screen.findByText("Profile saved.");
-
-    expect(screen.getByRole("alert")).toHaveTextContent("Profile saved.");
+    await waitFor(() => {
+      expect(screen.getByText("Saved")).toBeInTheDocument();
+    });
   });
 
   it("should show error message when save fails", async () => {
     mockMutateAsync.mockRejectedValue({ message: "Server error" });
 
     render(<SettingsProfileSection />);
-    fireEvent.click(screen.getByRole("button", { name: /save profile/i }));
+    fireEvent.change(screen.getByLabelText("Display name"), { target: { value: "Bob" } });
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
 
     await screen.findByText("Server error");
 
     expect(screen.getByRole("alert")).toHaveTextContent("Server error");
   });
 
-  it("should disable Save profile button while save is pending", () => {
+  it("should disable Save button while save is pending", () => {
     useUpdateUser.mockReturnValue({ mutateAsync: mockMutateAsync, isPending: true });
 
     render(<SettingsProfileSection />);
+    fireEvent.change(screen.getByLabelText("Display name"), { target: { value: "Bob" } });
 
-    expect(screen.getByRole("button", { name: /save profile/i })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Save" })).toBeDisabled();
+  });
+
+  it("should reset fields when Cancel is clicked", () => {
+    render(<SettingsProfileSection />);
+
+    const input = screen.getByLabelText("Display name");
+    fireEvent.change(input, { target: { value: "Bob" } });
+    fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+
+    expect(input).toHaveValue("Alice");
+    expect(screen.queryByRole("button", { name: "Save" })).not.toBeInTheDocument();
   });
 });
