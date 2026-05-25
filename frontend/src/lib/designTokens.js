@@ -44,7 +44,7 @@ export const INPUT_BASE =
   "focus:outline-none transition-colors text-sm px-3 py-2 font-sans w-full " +
   "disabled:opacity-50 disabled:cursor-not-allowed";
 
-/** Form field label — Poppins, foreground color. */
+/** Form field label — Inter display weight, foreground color. */
 export const INPUT_LABEL = "text-sm font-medium text-foreground mb-1.5 font-display";
 
 /** Helper text below a form field. */
@@ -67,7 +67,7 @@ export const MODAL_CARD =
 /** Nav container — white bg, bottom border, no gradient. */
 export const NAV_CONTAINER = "bg-white border-b border-border-default dark:bg-gray-900 dark:border-dark-border";
 
-/** Nav link — muted text, warms on hover, Poppins, no background. */
+/** Nav link — muted text, warms on hover, no background. */
 export const NAV_LINK =
   "text-gray-500 hover:text-gray-900 text-sm font-display font-medium transition-colors px-3 py-2 rounded-md dark:text-gray-400 dark:hover:text-gray-100";
 
@@ -75,10 +75,10 @@ export const NAV_LINK =
 export const NAV_LINK_ACTIVE =
   "text-brand-600 text-sm font-display font-semibold px-3 py-2 rounded-md dark:text-brand-400";
 
-/** Nav brand / logo text — foreground, Poppins semibold, tight tracking. */
+/** Nav brand / logo text — foreground, semibold, tight tracking. */
 export const NAV_BRAND = "text-foreground font-display font-semibold text-lg tracking-tight";
 
-/** Default badge — warm surface-secondary bg, muted text, pill shape, Poppins. */
+/** Default badge — warm surface-secondary bg, muted text, pill shape. */
 export const BADGE_DEFAULT =
   "bg-surface-secondary text-muted-foreground text-xs font-display font-medium px-2 py-0.5 rounded-full";
 

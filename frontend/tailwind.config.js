@@ -95,7 +95,7 @@ export default {
         dark: {
           bg: "#141413",
           surface: "#1c1c1a",
-          accent: "#d97757",
+          accent: "#8C1515",
           text: "#e8e4de",
           "text-secondary": "#b0aea5",
           border: "rgba(255,255,255,0.08)",
@@ -108,7 +108,7 @@ export default {
       },
       fontFamily: {
         sans: ["Inter", "system-ui", "-apple-system", "sans-serif"],
-        display: ["Poppins", "Arial", "sans-serif"],
+        display: ["Inter", "system-ui", "-apple-system", "sans-serif"],
       },
       boxShadow: {
         card: "0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06)",
