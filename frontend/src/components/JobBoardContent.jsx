@@ -1,6 +1,9 @@
 /** Content area for JobBoard: loading skeleton, error, empty state, job grid, load more. */
 
+import Briefcase from "lucide-react/dist/esm/icons/briefcase";
+
 import ApiErrorMessage from "../components/ApiErrorMessage";
+import EmptyState from "../components/EmptyState";
 import JobCard from "../components/JobCard";
 import { Button } from "./ui/button";
 
@@ -14,43 +17,27 @@ function LoadingSkeleton() {
   );
 }
 
-function BriefcaseSvg() {
+function JobBoardEmptyState({ hasFilters, onClear }) {
   return (
-    <svg width="88" height="80" viewBox="0 0 88 80" fill="none" aria-hidden="true">
-      {/* Case body */}
-      <rect x="8" y="28" width="72" height="42" rx="8" fill="#FAE0E0" className="dark:fill-brand-900/40" stroke="#8C1515" strokeWidth="2" />
-      {/* Handle */}
-      <path d="M30 28V22a6 6 0 0112 0v6" stroke="#8C1515" strokeWidth="2" strokeLinecap="round" fill="none" />
-      {/* Clasp bar */}
-      <rect x="8" y="44" width="72" height="6" rx="2" fill="#8C1515" opacity="0.3" />
-      {/* Clasp center */}
-      <rect x="37" y="42" width="14" height="10" rx="3" fill="#8C1515" opacity="0.7" />
-      {/* Search lens */}
-      <circle cx="65" cy="20" r="10" fill="none" stroke="#F4BFBF" strokeWidth="2.5" />
-      <line x1="72" y1="27" x2="78" y2="33" stroke="#F4BFBF" strokeWidth="2.5" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function EmptyState({ hasFilters, onClear }) {
-  return (
-    <div className="flex flex-col items-center gap-4 py-20 text-center">
-      <BriefcaseSvg />
-      <div>
-        <p className="text-base font-semibold text-foreground">No listings match your filters</p>
-        <p className="mt-1 text-sm text-muted-foreground">Try adjusting your filters or search terms</p>
-      </div>
-      {hasFilters && (
-        <Button type="button" variant="ghost" onClick={onClear}>Clear filters</Button>
-      )}
-    </div>
+    <EmptyState
+      icon={Briefcase}
+      title="No listings match your filters"
+      description="Try adjusting your filters or search terms"
+      action={
+        hasFilters ? (
+          <Button type="button" variant="ghost" size="sm" onClick={onClear}>
+            Clear filters
+          </Button>
+        ) : null
+      }
+    />
   );
 }
 
 export function JobBoardContent({ isLoading, error, jobs, total, hasFilters, hasMore, onClearFilters, onLoadMore, onSelectJob, refetch }) {
   if (isLoading) return <LoadingSkeleton />;
   if (error) return <ApiErrorMessage error={error} onRetry={refetch} />;
-  if (jobs.length === 0) return <EmptyState hasFilters={hasFilters} onClear={onClearFilters} />;
+  if (jobs.length === 0) return <JobBoardEmptyState hasFilters={hasFilters} onClear={onClearFilters} />;
   return (
     <>
       {total > 0 && (

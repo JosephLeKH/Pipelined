@@ -47,4 +47,21 @@ describe("ShortcutHelp", () => {
       expect(screen.queryByRole("dialog")).toBeNull();
     });
   });
+
+  it("should list PRD-01 navigation and action shortcuts", () => {
+    render(<ShortcutHelp />);
+
+    fireEvent.keyDown(document, { key: "?" });
+
+    expect(screen.getByText("Go to Today")).toBeInTheDocument();
+    expect(screen.getByText("Go to Inbox")).toBeInTheDocument();
+    expect(screen.getByText("Go to Settings")).toBeInTheDocument();
+    expect(screen.getByText("Open co-pilot")).toBeInTheDocument();
+    expect(screen.getByText("Collapse sidebar")).toBeInTheDocument();
+    expect(screen.getByText("g → t")).toBeInTheDocument();
+    expect(screen.getByText("g → i")).toBeInTheDocument();
+    expect(screen.getByText("g → s")).toBeInTheDocument();
+    expect(screen.getByText("o")).toBeInTheDocument();
+    expect(screen.getByText("[")).toBeInTheDocument();
+  });
 });

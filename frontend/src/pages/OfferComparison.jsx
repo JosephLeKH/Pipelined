@@ -5,6 +5,7 @@ import Handshake from "lucide-react/dist/esm/icons/handshake";
 import LayoutDashboard from "lucide-react/dist/esm/icons/layout-dashboard";
 import Trophy from "lucide-react/dist/esm/icons/trophy";
 
+import EmptyState from "../components/EmptyState";
 import { OfferNegotiationPanel } from "../components/OfferNegotiationPanel";
 import { EditableCell } from "../components/OfferEditableCell";
 import { useApplications, useUpdateApplication } from "../hooks/useApplications";
@@ -52,20 +53,6 @@ function ErrorState({ onRetry }) {
         <Button type="button" variant="outline" onClick={onRetry} aria-label="Retry loading offers">
           Try again
         </Button>
-      </div>
-    </>
-  );
-}
-
-function EmptyState() {
-  return (
-    <>
-      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-3 text-muted-foreground">
-        <Trophy className="mb-2 h-10 w-10 text-muted-foreground/40" aria-hidden="true" />
-        <p className="text-sm font-medium text-foreground">No offers yet</p>
-        <p className="text-xs font-sans text-muted-foreground">
-          Move an application to the Offer stage to compare packages here.
-        </p>
       </div>
     </>
   );
@@ -215,7 +202,15 @@ function OfferComparison() {
   if (error) return <ErrorState onRetry={refetch} />;
 
   const apps = data?.data ?? [];
-  if (apps.length === 0) return <EmptyState />;
+  if (apps.length === 0) {
+    return (
+      <EmptyState
+        icon={Trophy}
+        title="No offers yet"
+        description="Move an application to the Offer stage to compare packages here."
+      />
+    );
+  }
 
   return (
     <>
