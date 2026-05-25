@@ -105,6 +105,20 @@ function TodayPage() {
           </>
         )}
 
+        {!isLoading && !isError && !brief && (
+          <>
+            <TodayGreeting user={user} briefDate={null} missionCount={0} />
+            <TodayMorningBrief
+              brief={null}
+              briefHour={briefHour}
+              emptyMessage={emptyMessage}
+              forceOpen
+              onGenerateBrief={() => generateBrief.mutate()}
+              isGenerating={generateBrief.isPending}
+            />
+          </>
+        )}
+
         {!isLoading && !isError && brief && (
           <>
             <TodayGreeting

@@ -27,24 +27,33 @@ async def brief_api_user(client):
 
 
 @pytest.mark.asyncio(loop_scope="session")
-async def test_get_brief_today_generates_on_demand(client, brief_api_user):
+async def test_get_brief_today_returns_null_when_absent(client, brief_api_user):
     _, cookies = brief_api_user
 
     response = await client.get("/api/brief/today", cookies=cookies)
+
+    assert response.status_code == 200
+    assert response.json()["data"] is None
+
+
+@pytest.mark.asyncio(loop_scope="session")
+async def test_post_generate_today_brief_creates_one(client, brief_api_user):
+    _, cookies = brief_api_user
+
+    response = await client.post("/api/brief/today/generate", cookies=cookies)
 
     assert response.status_code == 200
     data = response.json()["data"]
     assert "date" in data
     assert "sections" in data
     assert "summary_line" in data
-    assert "missions" in data
     assert isinstance(data["missions"], list)
 
 
 @pytest.mark.asyncio(loop_scope="session")
 async def test_get_brief_history_returns_list(client, brief_api_user):
     _, cookies = brief_api_user
-    await client.get("/api/brief/today", cookies=cookies)
+    await client.post("/api/brief/today/generate", cookies=cookies)
 
     response = await client.get("/api/brief/history?days=7", cookies=cookies)
 
@@ -98,7 +107,7 @@ async def test_get_brief_today_includes_oa_deadline_missions(client, brief_api_u
     })
     app_id = str(app_result.inserted_id)
 
-    response = await client.get("/api/brief/today", cookies=cookies)
+    response = await client.post("/api/brief/today/generate", cookies=cookies)
 
     assert response.status_code == 200
     data = response.json()["data"]

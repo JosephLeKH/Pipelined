@@ -2,7 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { fetchTodayBrief } from "../api/brief";
+import { fetchTodayBrief, generateTodayBrief } from "../api/brief";
 
 export const MORNING_BRIEF_KEYS = {
   today: ["brief", "today"],
@@ -20,10 +20,9 @@ export function useGenerateBrief() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: fetchTodayBrief,
-    onSuccess: () => {
-      // Invalidate and refetch the brief data
-      queryClient.invalidateQueries({ queryKey: MORNING_BRIEF_KEYS.today });
+    mutationFn: generateTodayBrief,
+    onSuccess: (brief) => {
+      queryClient.setQueryData(MORNING_BRIEF_KEYS.today, brief);
     },
   });
 }

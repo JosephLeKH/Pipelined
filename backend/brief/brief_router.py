@@ -1,4 +1,4 @@
-"""Morning brief read endpoints."""
+"""Morning brief read and on-demand generation endpoints."""
 
 import structlog
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
@@ -15,9 +15,23 @@ ON_DEMAND_RATE_LIMIT = "3/hour"
 
 
 @router.get("/today", status_code=200)
+async def get_today_brief(user: dict = Depends(get_current_user)) -> dict:
+    """Return today's morning brief if one exists. Does not generate.
+
+    Generation is intentionally separated into POST /today/generate so that
+    page loads and window-focus refetches never consume the on-demand quota.
+    """
+    user_id = str(user["_id"])
+    payload = await brief_service.get_today_brief_response(user_id, allow_generate=False)
+    if payload is None:
+        return {"data": None}
+    return {"data": BriefResponse.from_payload(payload)}
+
+
+@router.post("/today/generate", status_code=200)
 @limiter.limit(ON_DEMAND_RATE_LIMIT, key_func=get_user_key)
-async def get_today_brief(request: Request, user: dict = Depends(get_current_user)) -> dict:
-    """Return today's morning brief, generating on demand when missing."""
+async def generate_today_brief(request: Request, user: dict = Depends(get_current_user)) -> dict:
+    """Generate today's brief on demand. Rate-limited per user."""
     user_id = str(user["_id"])
     payload = await brief_service.get_today_brief_response(user_id, allow_generate=True)
     if payload is None:
@@ -25,7 +39,7 @@ async def get_today_brief(request: Request, user: dict = Depends(get_current_use
             status_code=429,
             detail={
                 "code": "BRIEF_GENERATION_LIMIT",
-                "message": "On-demand brief generation limit reached. Try again later.",
+                "message": "Brief generation limit reached. Try again in an hour.",
             },
         )
     return {"data": BriefResponse.from_payload(payload)}
