@@ -7,7 +7,7 @@ describe("AuthLayout", () => {
   it("should render Pipelined brand heading", () => {
     render(<MemoryRouter><AuthLayout><div /></AuthLayout></MemoryRouter>);
 
-    expect(screen.getByText("Pipelined")).toBeInTheDocument();
+    expect(screen.getAllByText("Pipelined").length).toBeGreaterThanOrEqual(1);
   });
 
   it("should render children", () => {

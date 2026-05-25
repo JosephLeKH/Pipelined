@@ -42,6 +42,20 @@
   --color-shimmer-highlight: #f5f4f0;
   --color-shimmer-dark-base: #374151;
   --color-shimmer-dark-highlight: #4b5563;
+
+  /* Linear redesign tokens — Stanford Cardinal accent */
+  --surface-0: #ffffff;
+  --surface-1: #fafafa;
+  --surface-2: #f4f4f5;
+  --surface-3: #efeff0;
+  --text-1: #2e2d29;
+  --text-2: #53565a;
+  --text-3: #8e8f94;
+  --text-4: #b4b5b9;
+  --border-1: rgba(0, 0, 0, 0.06);
+  --border-2: rgba(0, 0, 0, 0.1);
+  --border-3: rgba(0, 0, 0, 0.16);
+  --shadow-modal: 0 20px 60px rgba(0, 0, 0, 0.12);
 }
 
 .dark {
@@ -75,6 +89,19 @@
   /* Legacy dark custom tokens */
   --color-prose-blockquote-border: #4a4139;
   --color-prose-blockquote-text: #b0aea5;
+
+  --surface-0: #08090a;
+  --surface-1: #0f1011;
+  --surface-2: #1a1b1e;
+  --surface-3: #212226;
+  --text-1: #f4f4f5;
+  --text-2: #a1a1aa;
+  --text-3: #71717a;
+  --text-4: #52525b;
+  --border-1: rgba(255, 255, 255, 0.06);
+  --border-2: rgba(255, 255, 255, 0.1);
+  --border-3: rgba(255, 255, 255, 0.16);
+  --shadow-modal: 0 20px 60px rgba(0, 0, 0, 0.4);
 }
 
 @layer base {
@@ -126,7 +153,26 @@
 
 @layer utilities {
   .font-display {
-    font-family: 'Poppins', Arial, sans-serif;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  .shadow-modal {
+    box-shadow: var(--shadow-modal);
+  }
+
+  .motion-safe-sidebar {
+    transition: width 200ms ease-out;
+  }
+
+  .motion-safe-drawer {
+    transition: transform 220ms ease-out;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .motion-safe-sidebar,
+    .motion-safe-drawer {
+      transition: none;
+    }
   }
 }
 

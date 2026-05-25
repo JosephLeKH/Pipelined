@@ -7,7 +7,6 @@ import XIcon from "lucide-react/dist/esm/icons/x";
 
 import JobDetailPanel from "../components/JobDetailPanel";
 import JobSearchInput from "../components/JobSearchInput";
-import NavBar from "../components/NavBar";
 import SaveSearchPopover from "../components/SaveSearchPopover";
 import SavedSearchesSidebar from "../components/SavedSearchesSidebar";
 import { JobBoardContent } from "../components/JobBoardContent";
@@ -32,9 +31,7 @@ function JobBoard() {
   }, []);
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <NavBar />
-      <main className="flex flex-col gap-6 px-4 py-8 sm:px-6">
+    <main className="flex flex-col gap-6 px-4 py-8 sm:px-6">
       <div className="flex flex-col gap-3">
         <h1 className="font-display text-2xl font-semibold text-foreground">Job Board</h1>
         <div className="flex items-center gap-3">
@@ -82,8 +79,7 @@ function JobBoard() {
         </div>
       </div>
       {selectedJob && <JobDetailPanel job={selectedJob} onClose={() => setSelectedJob(null)} />}
-      </main>
-    </div>
+    </main>
   );
 }
 

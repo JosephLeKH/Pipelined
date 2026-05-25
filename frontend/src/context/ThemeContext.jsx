@@ -36,6 +36,12 @@ export function ThemeProvider({ children }) {
     }
   }, [theme]);
 
+  const applyTheme = useCallback((next) => {
+    if (!THEMES.includes(next)) return;
+    localStorage.setItem(STORAGE_KEY, next);
+    setTheme(next);
+  }, []);
+
   const cycleTheme = useCallback(() => {
     setTheme((prev) => {
       const next = THEMES[(THEMES.indexOf(prev) + 1) % THEMES.length];
@@ -45,7 +51,7 @@ export function ThemeProvider({ children }) {
   }, []);
 
   return (
-    <ThemeContext.Provider value={{ theme, cycleTheme }}>
+    <ThemeContext.Provider value={{ theme, setTheme: applyTheme, cycleTheme }}>
       {children}
     </ThemeContext.Provider>
   );

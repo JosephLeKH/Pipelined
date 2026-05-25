@@ -9,7 +9,6 @@ import { Button } from "../components/ui/button";
 import { AnalyticsMainCharts, AnalyticsTagsTable, AnalyticsFunnelSection } from "../components/AnalyticsCharts";
 import EmptyState from "../components/EmptyState";
 import ErrorBoundary from "../components/ErrorBoundary";
-import NavBar from "../components/NavBar";
 
 const DATE_RANGES = [
   { label: "Last 30 days", value: 30 },
@@ -20,9 +19,7 @@ const DATE_RANGES = [
 
 function AnalyticsLoading() {
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <NavBar />
-      <main className="flex-1 px-4 sm:px-6 py-8">
+    <main className="flex-1 px-4 sm:px-6 py-8">
         <div className="flex flex-col gap-6" aria-hidden="true">
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             {Array.from({ length: 4 }).map((_, i) => (
@@ -42,21 +39,17 @@ function AnalyticsLoading() {
           </div>
         </div>
       </main>
-    </div>
   );
 }
 
 function AnalyticsError({ onRetry }) {
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <NavBar />
-      <main className="flex flex-1 flex-col items-center justify-center gap-4 text-destructive">
+    <main className="flex flex-1 flex-col items-center justify-center gap-4 text-destructive">
         <p>Failed to load analytics.</p>
         <Button variant="outline" onClick={onRetry} aria-label="Retry loading analytics">
           Try again
         </Button>
-      </main>
-    </div>
+    </main>
   );
 }
 
@@ -91,9 +84,7 @@ function Analytics() {
   if (error) return <AnalyticsError onRetry={refetch} />;
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <NavBar />
-      <main className="flex-1 px-4 sm:px-6 py-8">
+    <main className="flex-1 px-4 sm:px-6 py-8">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <h1 className="font-display text-2xl font-semibold text-foreground">Analytics</h1>
           <AnalyticsDateRangePicker days={days} setDays={setDays} />
@@ -118,7 +109,6 @@ function Analytics() {
           </ErrorBoundary>
         )}
       </main>
-    </div>
   );
 }
 

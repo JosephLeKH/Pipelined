@@ -111,6 +111,16 @@ export const ONBOARDING_CONFETTI_DISMISS_MS = 3_000;
 export const COPILOT_TRIED_KEY = "pipelined_copilot_tried";
 export const TODAY_VISITED_KEY = "pipelined_today_visited";
 export const OPEN_COPILOT_EVENT = "pipelined:open-copilot";
+export const OPEN_COMMAND_PALETTE_EVENT = "pipelined:open-command-palette";
+export const OPEN_IMPORT_CSV_EVENT = "pipelined:open-import-csv";
+
+export const SIDEBAR_COLLAPSED_STORAGE_KEY = "pipelined_sidebar_collapsed";
+export const SIDEBAR_WIDTH_PX = 240;
+export const SIDEBAR_COLLAPSED_WIDTH_PX = 56;
+export const SIDEBAR_ANIMATION_MS = 200;
+export const DRAWER_ANIMATION_MS = 220;
+export const SIDEBAR_TOOLTIP_DELAY_MS = 400;
+export const COPILOT_DRAWER_WIDTH_PX = 480;
 
 export const EVENT_TYPE_OPTIONS = [
   { value: "phone_screen", label: "Phone Screen" },

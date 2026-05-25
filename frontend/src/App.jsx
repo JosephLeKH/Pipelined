@@ -7,16 +7,13 @@ import { trackEvent } from "./lib/analytics";
 
 import { useAuth } from "./context/AuthContext";
 import ErrorBoundary from "./components/ErrorBoundary";
-import CommandPalette from "./components/CommandPalette";
-import EmailVerificationBanner from "./components/EmailVerificationBanner";
-import OfflineBanner from "./components/OfflineBanner";
+import AppShell from "./components/shell/AppShell";
 import FeedbackWidget from "./components/FeedbackWidget";
-import ShortcutHelp from "./components/ShortcutHelp";
 import UpgradePlanModal from "./components/UpgradePlanModal";
 import { Button } from "./components/ui/button";
-import { CHORD_TIMEOUT_MS } from "./lib/shortcuts";
+import { CHORD_DESTINATIONS, CHORD_TIMEOUT_MS } from "./lib/shortcuts";
+import { OPEN_IMPORT_CSV_EVENT } from "./lib/constants";
 
-const CHORD_DESTINATIONS = { d: "/dashboard", c: "/calendar", a: "/analytics", j: "/jobs" };
 const IGNORED_CHORD_TAGS = new Set(["INPUT", "TEXTAREA", "SELECT"]);
 
 function GlobalChordShortcuts() {
@@ -33,6 +30,13 @@ function GlobalChordShortcuts() {
         clearTimeout(chordTimer.current);
         pendingChord.current = null;
         navigate(CHORD_DESTINATIONS[e.key]);
+        return;
+      }
+      if (e.key === "i") {
+        e.preventDefault();
+        window.dispatchEvent(new CustomEvent(OPEN_IMPORT_CSV_EVENT));
+        pendingChord.current = null;
+        clearTimeout(chordTimer.current);
         return;
       }
       if (e.key === "g") {
@@ -132,16 +136,7 @@ function RouteErrorFallback() {
 function AuthenticatedShell() {
   const { user } = useAuth();
   if (!user) return null;
-  return (
-    <>
-      <EmailVerificationBanner />
-      <UpgradePlanModal />
-      <CommandPalette />
-      <ShortcutHelp />
-      <GlobalChordShortcuts />
-      <FeedbackWidget />
-    </>
-  );
+  return <GlobalChordShortcuts />;
 }
 
 function App() {
@@ -153,7 +148,6 @@ function App() {
       >
         Skip to main content
       </a>
-      <OfflineBanner />
       <Suspense fallback={<LoadingSpinner />}>
         <PageTracker />
         <AuthenticatedShell />
@@ -172,16 +166,18 @@ function App() {
         <Route path="/pipeline/:slug" element={<PageWrapper><PublicPipeline /></PageWrapper>} />
         <Route path="/shared/timeline/:slug" element={<PageWrapper><PublicTimeline /></PageWrapper>} />
         <Route path="/pricing" element={<PageWrapper><Pricing /></PageWrapper>} />
-        <Route path="/dashboard" element={<ProtectedPage><Dashboard /></ProtectedPage>} />
-        <Route path="/calendar" element={<ProtectedPage><Calendar /></ProtectedPage>} />
-        <Route path="/analytics" element={<ProtectedPage><Analytics /></ProtectedPage>} />
-        <Route path="/activity" element={<ProtectedPage><ActivityPage /></ProtectedPage>} />
-        <Route path="/settings" element={<ProtectedPage><Settings /></ProtectedPage>} />
-        <Route path="/offers" element={<ProtectedPage><OfferComparison /></ProtectedPage>} />
-        <Route path="/tags" element={<ProtectedPage><Tags /></ProtectedPage>} />
-        <Route path="/today" element={<ProtectedPage><TodayPage /></ProtectedPage>} />
+        <Route element={<ProtectedPage><AppShell /></ProtectedPage>}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/calendar" element={<Calendar />} />
+          <Route path="/analytics" element={<Analytics />} />
+          <Route path="/activity" element={<ActivityPage />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="/offers" element={<OfferComparison />} />
+          <Route path="/tags" element={<Tags />} />
+          <Route path="/today" element={<TodayPage />} />
+          <Route path="/inbox/pending" element={<PendingInboxPage />} />
+        </Route>
         <Route path="/brief" element={<Navigate to="/today" replace />} />
-        <Route path="/inbox/pending" element={<ProtectedPage><PendingInboxPage /></ProtectedPage>} />
         </Routes>
         </ErrorBoundary>
         </main>

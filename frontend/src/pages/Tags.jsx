@@ -13,7 +13,6 @@ import { useTags, useRenameTag, useDeleteTag } from "../hooks/useApplications";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import EmptyState from "../components/EmptyState";
-import NavBar from "../components/NavBar";
 
 const SORT_NAME = "name";
 const SORT_COUNT = "count";
@@ -213,9 +212,7 @@ function Tags() {
   const mutationError = renameMutation.error || deleteMutation.error;
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <NavBar />
-      <main className="flex-1 px-4 sm:px-6 py-8">
+    <main className="flex-1 px-4 sm:px-6 py-8">
         <div className="mb-6 flex items-end justify-between gap-4">
           <div>
             <h1 className="font-display text-2xl font-semibold text-foreground">Tags</h1>
@@ -289,7 +286,6 @@ function Tags() {
           />
         )}
       </main>
-    </div>
   );
 }
 

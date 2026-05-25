@@ -7,7 +7,6 @@ import { toast } from "sonner";
 import Inbox from "lucide-react/dist/esm/icons/inbox";
 
 import EmptyState from "../components/EmptyState";
-import NavBar from "../components/NavBar";
 import PendingOpportunityCard from "../components/PendingOpportunityCard";
 import {
   usePendingOpportunities,
@@ -59,9 +58,7 @@ function PendingInboxPage() {
   const items = opportunities ?? [];
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <NavBar />
-      <main className="flex-1 px-4 py-8 sm:px-6">
+    <main className="flex-1 px-4 py-8 sm:px-6">
         <div className="mx-auto max-w-2xl space-y-6">
           <header>
             <h1 className="font-display text-2xl font-semibold text-foreground">
@@ -110,7 +107,6 @@ function PendingInboxPage() {
           )}
         </div>
       </main>
-    </div>
   );
 }
 

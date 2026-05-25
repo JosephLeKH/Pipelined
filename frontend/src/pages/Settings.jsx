@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
-import NavBar from "../components/NavBar";
 import SettingsAccountSection from "../components/SettingsAccountSection";
 import SettingsNotificationsSection from "../components/SettingsNotificationsSection";
 import SettingsPipelineSection from "../components/SettingsPipelineSection";
@@ -183,9 +182,7 @@ function Settings() {
   const activeSection = searchParams.get("section") || "pipeline";
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <NavBar />
-      <div className="mx-auto w-full max-w-2xl flex-1 px-6 py-8">
+    <div className="mx-auto w-full max-w-2xl flex-1 px-6 py-8">
         <h1 className="mb-6 text-2xl font-semibold font-display text-foreground">
           Settings
         </h1>
@@ -193,7 +190,6 @@ function Settings() {
         <main id={SETTINGS_PANEL_ID} role="tabpanel">
           {renderSection(activeSection, user)}
         </main>
-      </div>
     </div>
   );
 }

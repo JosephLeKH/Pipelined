@@ -190,9 +190,11 @@ async def get_recommended_listings(user_id: str) -> list[dict]:
     apps_col = get_collection("applications")
     uid_obj = ObjectId(user_id)
 
+    from applications.service_constants import OFFER_STAGE  # noqa: PLC0415
+
     saved_searches_coro = list_saved_searches(user_id)
     offer_apps_coro = apps_col.find(
-        {"user_id": uid_obj, "stage": "offer"},
+        {"user_id": uid_obj, "current_stage": OFFER_STAGE},
         projection={"remote_status": 1, "company_type": 1, "_id": 0},
     ).to_list(length=50)
     keywords_coro = _get_user_role_keywords(user_id)

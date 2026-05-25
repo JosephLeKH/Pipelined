@@ -23,13 +23,22 @@ function ReasonBadge({ reason }) {
 }
 
 function RecommendationCard({ job, onSelect }) {
+  const hasSignal = typeof job.score === "number" && job.score > 0;
   return (
     <div className="flex flex-col gap-1">
       <JobCard job={job} onSelect={onSelect} />
       <div className="flex flex-wrap items-center gap-2 px-1">
-        <span className="text-xs text-muted-foreground">{FIT_SCORE_LABEL}</span>
-        <FitBadge score={job.score} />
-        {job.reason && <ReasonBadge reason={job.reason} />}
+        {hasSignal ? (
+          <>
+            <span className="text-xs text-muted-foreground">{FIT_SCORE_LABEL}</span>
+            <FitBadge score={job.score} />
+            {job.reason && <ReasonBadge reason={job.reason} />}
+          </>
+        ) : (
+          <span className="text-xs text-muted-foreground">
+            Save a search or log an offer to personalize fit
+          </span>
+        )}
       </div>
     </div>
   );

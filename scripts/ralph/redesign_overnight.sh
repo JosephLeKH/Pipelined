@@ -158,10 +158,11 @@ run_one_prd() {
   status_write "$prd_name" "starting" "0" ""
 
   # Branch off base. DO NOT stash or clean — that destroyed the docs once already.
-  # Capture git stderr to iter log for diagnosability; skip the PRD if checkout fails.
+  # If the checkout legitimately fails (e.g. conflicting tracked changes), skip
+  # this PRD and move on rather than nuking files.
   git -C "$PROJECT_ROOT" fetch origin "$BASE_BRANCH" >/dev/null 2>&1 || true
-  if ! git -C "$PROJECT_ROOT" checkout -B "$branch" "$BASE_BRANCH" >>"$iter_log" 2>&1; then
-    echo "  ✗ checkout failed — see $iter_log; skipping PRD"
+  if ! git -C "$PROJECT_ROOT" checkout -B "$branch" "$BASE_BRANCH" >/dev/null 2>&1; then
+    echo "  ✗ checkout failed — skipping PRD (no destructive recovery)"
     status_write "$prd_name" "skipped-checkout-failed" "0" ""
     return 3
   fi

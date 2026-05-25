@@ -16,7 +16,6 @@ import MissionProgressStrip from "../components/MissionProgressStrip";
 import MorningBriefHistoryPanel from "../components/MorningBriefHistoryPanel";
 import WeeklyReviewSection from "../components/WeeklyReviewSection";
 import MorningBriefSkeleton from "../components/MorningBriefSkeleton";
-import NavBar from "../components/NavBar";
 import { Button } from "../components/ui/button";
 import { useAuth } from "../context/AuthContext";
 import { useMissionActions } from "../hooks/useMissionActions";
@@ -200,9 +199,7 @@ function TodayPage() {
   );
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <NavBar />
-      <main className="flex-1 px-4 py-8 sm:px-6">
+    <main className="flex-1 px-4 py-8 sm:px-6">
         <div className="mx-auto max-w-2xl space-y-8">
           {!isLoading && !isError && brief && (
             <TodayHero
@@ -247,7 +244,6 @@ function TodayPage() {
           )}
         </div>
       </main>
-    </div>
   );
 }
 

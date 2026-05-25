@@ -8,10 +8,6 @@ vi.mock("../hooks/useApplications", () => ({
   useDeleteTag: vi.fn(),
 }));
 
-vi.mock("../components/NavBar", () => ({
-  default: () => <nav data-testid="navbar" />,
-}));
-
 import { useTags, useRenameTag, useDeleteTag } from "../hooks/useApplications";
 
 const MOCK_TAGS = [

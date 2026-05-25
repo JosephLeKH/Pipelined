@@ -1,21 +1,40 @@
-/** Hook: action items for the command palette (add form, export CSV, theme toggle). */
+/** Hook: quick action items for the command palette (add, import, co-pilot, mock interview). */
 
 import { useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 
-import { exportApplicationsCsv } from "../api/applications";
+import { OPEN_COPILOT_EVENT } from "../lib/constants";
+import { getRecentApplicationIds } from "../lib/recentApplications";
 
-async function downloadCsvFile() {
-  const blob = await exportApplicationsCsv();
-  const url = URL.createObjectURL(blob);
-  Object.assign(document.createElement("a"), { href: url, download: "applications.csv" }).click();
-  URL.revokeObjectURL(url);
+function openCopilot() {
+  window.dispatchEvent(new CustomEvent(OPEN_COPILOT_EVENT));
 }
 
-/** Returns the static action items array for the command palette. */
-export function useCommandPaletteActions({ setFormOpen, cycleTheme }) {
-  return useMemo(() => [
-    { id: "action-add",    type: "action", label: "Add Application",  fn: () => setFormOpen(true) },
-    { id: "action-export", type: "action", label: "Export CSV",        fn: downloadCsvFile },
-    { id: "action-theme",  type: "action", label: "Toggle Dark Mode", fn: cycleTheme },
-  ], [setFormOpen, cycleTheme]);
+function startMockInterview(navigate) {
+  const recentId = getRecentApplicationIds()[0];
+  if (recentId) {
+    navigate(`/dashboard?selected=${recentId}`);
+    return;
+  }
+  navigate("/dashboard");
+}
+
+/** Returns quick action items for the command palette. */
+export function useCommandPaletteActions({ setFormOpen, setImportOpen }) {
+  const navigate = useNavigate();
+
+  return useMemo(
+    () => [
+      { id: "action-add", type: "action", label: "Add Application", fn: () => setFormOpen(true) },
+      { id: "action-import", type: "action", label: "Import CSV", fn: () => setImportOpen(true) },
+      { id: "action-copilot", type: "action", label: "Open co-pilot", fn: openCopilot },
+      {
+        id: "action-mock",
+        type: "action",
+        label: "Start mock interview",
+        fn: () => startMockInterview(navigate),
+      },
+    ],
+    [navigate, setFormOpen, setImportOpen],
+  );
 }

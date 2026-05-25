@@ -13,10 +13,10 @@ import {
   COPILOT_SUGGESTED_PROMPTS,
   COPILOT_TITLE,
 } from "../lib/aiConstants";
+import { COPILOT_DRAWER_WIDTH_PX, DRAWER_ANIMATION_MS } from "../lib/constants";
 import {
   BUTTON_GHOST,
   BUTTON_PRIMARY,
-  CARD_BASE,
   INPUT_BASE,
   TAG,
 } from "../lib/designTokens";
@@ -117,18 +117,19 @@ function CoPilotPanel({ open, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex sm:justify-end">
+    <div className="fixed inset-0 z-50 flex justify-end">
       <button
         type="button"
         aria-label="Close co-pilot"
-        className="absolute inset-0 bg-black/30 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
         onClick={onClose}
       />
       <aside
         aria-label="Co-pilot chat"
-        className={`relative flex h-full w-full flex-col animate-slide-in-right sm:max-w-md ${CARD_BASE} shadow-modal`}
+        style={{ maxWidth: COPILOT_DRAWER_WIDTH_PX, animationDuration: `${DRAWER_ANIMATION_MS}ms` }}
+        className="relative flex h-full w-full flex-col border-l border-border-1 bg-surface-0 shadow-modal motion-safe-drawer animate-slide-in-right"
       >
-        <header className="flex items-start justify-between border-b border-border px-4 py-3">
+        <header className="flex items-start justify-between border-b border-border-1 px-4 py-3">
           <div className="flex items-start gap-2">
             <Bot className="mt-0.5 h-5 w-5 text-brand-600" aria-hidden="true" />
             <div>
@@ -164,7 +165,7 @@ function CoPilotPanel({ open, onClose }) {
           <p role="alert" className="px-4 pb-2 text-sm text-destructive">{errorMessage}</p>
         )}
 
-        <form onSubmit={handleSubmit} className="border-t border-border p-4">
+        <form onSubmit={handleSubmit} className="border-t border-border-1 p-4">
           <div className="flex gap-2">
             <input
               type="text"

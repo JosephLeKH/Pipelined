@@ -10,10 +10,6 @@ vi.mock("../hooks/useApplications", () => ({
   useUpdateApplication: vi.fn(() => ({ mutate: vi.fn() })),
 }));
 
-vi.mock("../components/NavBar", () => ({
-  default: () => <nav data-testid="navbar" />,
-}));
-
 import { useApplications, useUpdateApplication } from "../hooks/useApplications";
 
 const mockRefetch = vi.fn();
