@@ -12,6 +12,10 @@ vi.mock("../lib/analytics", () => ({
   trackEvent: vi.fn(),
 }));
 
+vi.mock("sonner", () => ({
+  toast: { success: vi.fn() },
+}));
+
 import { useMyTimelineShare, useCreateTimelineShare, useRevokeTimelineShare } from "../hooks/useSharing";
 
 const mockCreateMutate = vi.fn();
@@ -61,7 +65,9 @@ describe("ShareTimeline", () => {
 
     render(<ShareTimeline />);
 
-    expect(screen.getByText(/shared\/timeline\/tl-xyz/i)).toBeInTheDocument();
+    expect(screen.getByLabelText("Timeline share link URL").value).toMatch(
+      /\/shared\/timeline\/tl-xyz/,
+    );
   });
 
   it("should call revokeShare when Revoke link is clicked", () => {
@@ -73,12 +79,23 @@ describe("ShareTimeline", () => {
     expect(mockRevokeMutate).toHaveBeenCalledOnce();
   });
 
-  it("should show Copied! after Copy link is clicked", async () => {
+  it("should show copied state after copy button is clicked", async () => {
     useMyTimelineShare.mockReturnValue({ data: SHARE_FIXTURE, isLoading: false });
 
     render(<ShareTimeline />);
     fireEvent.click(screen.getByRole("button", { name: /copy timeline link/i }));
 
-    expect(await screen.findByText("Copied!")).toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: /link copied/i })).toBeInTheDocument();
+  });
+
+  it("should render Open public page link when share exists", () => {
+    useMyTimelineShare.mockReturnValue({ data: SHARE_FIXTURE, isLoading: false });
+
+    render(<ShareTimeline />);
+
+    expect(screen.getByRole("link", { name: /open public page/i })).toHaveAttribute(
+      "href",
+      expect.stringContaining("/shared/timeline/tl-xyz"),
+    );
   });
 });
