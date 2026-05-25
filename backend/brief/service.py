@@ -47,9 +47,11 @@ async def build_today_brief_payload(user_id: str, doc: dict) -> dict:
     return response
 
 
-async def get_today_brief_response(user_id: str, *, allow_generate: bool = True) -> dict | None:
+async def get_today_brief_response(
+    user_id: str, *, allow_generate: bool = True, force: bool = False
+) -> dict | None:
     """Return today's brief API payload with missions and progress."""
-    doc = await get_today_brief(user_id, allow_generate=allow_generate)
+    doc = await get_today_brief(user_id, allow_generate=allow_generate, force=force)
     if doc is None:
         return None
     return await build_today_brief_payload(user_id, doc)
@@ -70,12 +72,20 @@ async def complete_mission_for_user(user_id: str, mission_id: str) -> dict:
     return await complete_mission(user_id, mission_id)
 
 
-async def get_today_brief(user_id: str, *, allow_generate: bool = True) -> dict | None:
-    """Return today's brief, optionally generating on demand when missing."""
+async def get_today_brief(
+    user_id: str, *, allow_generate: bool = True, force: bool = False
+) -> dict | None:
+    """Return today's brief.
+
+    When ``force`` is True, regenerate even if a brief already exists for today
+    (still subject to the on-demand quota). When False, return the stored brief
+    if one exists; otherwise generate on demand when ``allow_generate`` is True.
+    """
     local_date = await _local_date_for_user(user_id)
-    stored = await get_brief_for_date(user_id, local_date)
-    if stored or not allow_generate:
-        return stored
+    if not force:
+        stored = await get_brief_for_date(user_id, local_date)
+        if stored or not allow_generate:
+            return stored
     if not await _can_generate_on_demand(user_id):
         return None
     await _record_on_demand_generation(user_id)

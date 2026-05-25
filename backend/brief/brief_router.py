@@ -31,9 +31,16 @@ async def get_today_brief(user: dict = Depends(get_current_user)) -> dict:
 @router.post("/today/generate", status_code=200)
 @limiter.limit(ON_DEMAND_RATE_LIMIT, key_func=get_user_key)
 async def generate_today_brief(request: Request, user: dict = Depends(get_current_user)) -> dict:
-    """Generate today's brief on demand. Rate-limited per user."""
+    """Generate today's brief on demand. Rate-limited per user.
+
+    Always regenerates from current data (overwrites any existing brief for
+    today), so clicking the button produces fresh content even if a brief
+    was already created earlier in the day.
+    """
     user_id = str(user["_id"])
-    payload = await brief_service.get_today_brief_response(user_id, allow_generate=True)
+    payload = await brief_service.get_today_brief_response(
+        user_id, allow_generate=True, force=True
+    )
     if payload is None:
         raise HTTPException(
             status_code=429,
