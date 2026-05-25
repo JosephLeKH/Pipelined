@@ -11,8 +11,8 @@ const EMPTY_STATE_THRESHOLD = 3;
 function useAnalyticsData(days) {
   const { data: analytics, isLoading, error, refetch } = useAnalytics(days);
   const { data: funnelData = [] } = useFunnel();
-  const { data: statsData } = useApplicationStats();
-  const tagOfferRates = statsData?.tag_offer_rates ?? [];
+  const { data: stats } = useApplicationStats();
+  const tagOfferRates = stats?.tag_offer_rates ?? [];
 
   const totalApps = analytics
     ? analytics.stage_funnel.reduce((sum, s) => sum + s.count, 0)
@@ -20,7 +20,7 @@ function useAnalyticsData(days) {
 
   const hasEnoughData = totalApps >= EMPTY_STATE_THRESHOLD;
 
-  return { analytics, funnelData, tagOfferRates, totalApps, hasEnoughData, isLoading, error, refetch };
+  return { analytics, funnelData, tagOfferRates, stats, totalApps, hasEnoughData, isLoading, error, refetch };
 }
 
 export default useAnalyticsData;

@@ -34,11 +34,11 @@ describe("AgentActivitySection", () => {
     await userEvent.click(screen.getByRole("button", { name: /agent activity/i }));
 
     expect(useAgentActivity).toHaveBeenCalledWith(
-      expect.objectContaining({ applicationId: "app-123", enabled: true })
+      expect.objectContaining({ applicationId: "app-123", enabled: true }),
     );
     expect(screen.getByText("Interview prep ready for Acme")).toBeInTheDocument();
+    expect(screen.getByRole("time")).toBeInTheDocument();
   });
-});
 
   it("should show error message when fetch fails", async () => {
     useAgentActivity.mockReturnValue({ data: [], isLoading: false, isError: true });
@@ -48,3 +48,4 @@ describe("AgentActivitySection", () => {
 
     expect(screen.getByRole("alert")).toHaveTextContent("Could not load agent activity.");
   });
+});

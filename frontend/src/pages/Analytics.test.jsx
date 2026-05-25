@@ -43,6 +43,17 @@ const ANALYTICS_EMPTY = {
   top_companies: [],
 };
 
+const STATS_DATA = {
+  total_applied: 10,
+  active_count: 8,
+  response_rate: 0.25,
+  avg_days_to_first_response: 4.2,
+  stale_count: 1,
+  applied_this_week: 3,
+  current_streak: 2,
+  tag_offer_rates: [],
+};
+
 const server = setupServer(
   http.get("/api/auth/me", () =>
     HttpResponse.json({
@@ -54,8 +65,11 @@ const server = setupServer(
   ),
   http.get("/api/applications/funnel", () =>
     HttpResponse.json({ data: FUNNEL_DATA }),
+  ),
+  http.get("/api/applications/stats", () =>
+    HttpResponse.json({ data: STATS_DATA })
+  ),
   ...passthroughHandlers,
-  )
 );
 
 beforeAll(() => server.listen({ onUnhandledRequest: "warn" }));
@@ -95,11 +109,37 @@ describe("Analytics", () => {
     expect(screen.getByText("All time")).toBeInTheDocument();
   });
 
+  it("should render KPI tiles with metrics from analytics and stats", async () => {
+    renderAnalytics();
+
+    await screen.findByText("Applications per Week");
+
+    expect(screen.getByText("Interviews")).toBeInTheDocument();
+    expect(screen.getByText("Reply rate")).toBeInTheDocument();
+    expect(screen.getByText("Avg response")).toBeInTheDocument();
+    expect(screen.getByText("25.0%")).toBeInTheDocument();
+    expect(screen.getByText("4.2 days")).toBeInTheDocument();
+
+    const kpiGrid = screen.getByText("Interviews").closest(".grid");
+    expect(kpiGrid).toHaveTextContent("Applied");
+    expect(kpiGrid).toHaveTextContent("10");
+    expect(kpiGrid).toHaveTextContent("2");
+  });
+
+  it("should show positive delta in success color when applied trend improves", async () => {
+    renderAnalytics();
+
+    // weeks: W01=3, W02=5 → recent 5 vs prior 3 → +67%
+    const delta = await screen.findByText(/67%/);
+    expect(delta).toHaveClass("text-status-success");
+    expect(delta.textContent).toMatch(/↑/);
+  });
+
   it("should render chart section headings when data has enough entries", async () => {
     renderAnalytics();
 
     expect(await screen.findByText("Applications per Week")).toBeInTheDocument();
-    expect(screen.getByText("Stage Funnel")).toBeInTheDocument();
+    expect(screen.queryByText("Stage Funnel")).not.toBeInTheDocument();
     expect(screen.getByText("Response Rate by Month")).toBeInTheDocument();
     expect(screen.getByText("Top 10 Companies Applied To")).toBeInTheDocument();
   });
@@ -135,10 +175,17 @@ describe("Analytics", () => {
     expect(screen.getByText("Last 30 days").className).toMatch(/bg-primary/);
   });
 
-  it("should render the funnel chart section heading", async () => {
+  it("should render the pipeline funnel section heading", async () => {
     renderAnalytics();
 
-    expect(await screen.findByText("Stage Conversion Funnel")).toBeInTheDocument();
+    expect(await screen.findByText("Pipeline funnel")).toBeInTheDocument();
+  });
+
+  it("should render drop-off between funnel stages", async () => {
+    renderAnalytics();
+
+    // Applied 10 → Phone Screen 7: −30% drop-off (3 lost)
+    expect(await screen.findByText(/−30% drop-off \(3 lost\)/)).toBeInTheDocument();
   });
 
   it("should render the conversion rates table heading", async () => {
@@ -152,9 +199,9 @@ describe("Analytics", () => {
 
     await screen.findByText("Conversion Rates by Stage");
 
-    expect(screen.getByText("Applied")).toBeInTheDocument();
-    expect(screen.getByText("Phone Screen")).toBeInTheDocument();
-    expect(screen.getByText("Offer")).toBeInTheDocument();
+    expect(screen.getAllByText("Applied").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText("Phone Screen").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText("Offer").length).toBeGreaterThanOrEqual(1);
   });
 
   it("should color-code high conversion rate in brand color", async () => {

@@ -7,21 +7,7 @@ import ChevronDown from "lucide-react/dist/esm/icons/chevron-down";
 import ChevronUp from "lucide-react/dist/esm/icons/chevron-up";
 
 import { useAgentActivity } from "../hooks/useAgentActivity";
-import { agentTypeLabel, AGENT_STATUS_STYLES } from "../lib/agentActivity";
-import { formatDate } from "../lib/dateUtils";
-
-function ActivityRow({ entry }) {
-  const statusClass = AGENT_STATUS_STYLES[entry.status] ?? "text-muted-foreground";
-
-  return (
-    <li className="border-b border-border py-2 last:border-b-0" data-testid="agent-log-row">
-      <p className="text-sm font-medium text-foreground">{agentTypeLabel(entry.agent_type)}</p>
-      <p className="text-sm text-muted-foreground">{entry.summary}</p>
-      <p className={`text-xs ${statusClass}`}>{entry.status}</p>
-      <p className="text-xs text-muted-foreground">{formatDate(entry.created_at)}</p>
-    </li>
-  );
-}
+import AgentActivityRow from "./AgentActivityRow";
 
 function AgentActivitySection({ applicationId }) {
   const [expanded, setExpanded] = useState(false);
@@ -32,39 +18,46 @@ function AgentActivitySection({ applicationId }) {
   });
 
   return (
-    <section aria-label="Agent activity log" className="rounded-lg border border-border p-4">
+    <section
+      aria-label="Agent activity log"
+      className="rounded-lg border border-border-1 bg-surface-0 p-4"
+    >
       <button
         type="button"
         onClick={() => setExpanded((prev) => !prev)}
         aria-expanded={expanded}
-        className="flex w-full items-center justify-between text-left text-sm font-semibold text-foreground"
+        className="flex w-full items-center justify-between text-left text-sm font-semibold text-text-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 dark:focus-visible:ring-1"
       >
         <span className="inline-flex items-center gap-2">
-          <Bot className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+          <Bot className="h-4 w-4 text-text-3" aria-hidden="true" />
           Agent activity
         </span>
         {expanded ? (
-          <ChevronUp className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+          <ChevronUp className="h-4 w-4 shrink-0 text-text-3" aria-hidden="true" />
         ) : (
-          <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+          <ChevronDown className="h-4 w-4 shrink-0 text-text-3" aria-hidden="true" />
         )}
       </button>
 
       {expanded && (
-        <div className="mt-3 border-t border-border pt-3">
+        <div className="mt-3 border-t border-border-1 pt-2">
           {isLoading && (
-            <p className="text-sm text-muted-foreground">Loading agent log…</p>
+            <p className="text-sm text-text-3">Loading agent log…</p>
           )}
           {!isLoading && isError && (
-            <p className="text-sm text-destructive" role="alert">Could not load agent activity.</p>
+            <p className="text-sm text-destructive" role="alert">
+              Could not load agent activity.
+            </p>
           )}
           {!isLoading && !isError && entries.length === 0 && (
-            <p className="text-sm text-muted-foreground">No agent activity for this application.</p>
+            <p className="text-sm text-text-3">No agent activity for this application.</p>
           )}
           {!isLoading && !isError && entries.length > 0 && (
-            <ul className="list-none space-y-2" data-testid="agent-log-list">
+            <ul className="list-none" data-testid="agent-log-list">
               {entries.map((entry) => (
-                <ActivityRow key={entry.id} entry={entry} />
+                <li key={entry.id}>
+                  <AgentActivityRow entry={entry} compact />
+                </li>
               ))}
             </ul>
           )}

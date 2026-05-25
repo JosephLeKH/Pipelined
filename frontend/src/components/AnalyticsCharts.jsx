@@ -6,20 +6,24 @@ import { Bar } from "recharts/es6/cartesian/Bar";
 import { Line } from "recharts/es6/cartesian/Line";
 import { XAxis } from "recharts/es6/cartesian/XAxis";
 import { YAxis } from "recharts/es6/cartesian/YAxis";
-import { CartesianGrid } from "recharts/es6/cartesian/CartesianGrid";
 import { Tooltip } from "recharts/es6/component/Tooltip";
-import { Legend } from "recharts/es6/component/Legend";
 import { ResponsiveContainer } from "recharts/es6/component/ResponsiveContainer";
 
-const CHART_COLORS = [
-  "hsl(var(--chart-1))",
-  "hsl(var(--chart-2))",
-  "hsl(var(--chart-3))",
-  "hsl(var(--chart-4))",
-  "hsl(var(--chart-5))",
-];
-const CHART_GRID_COLOR = "hsl(var(--border))";
-const CHART_TICK_COLOR = "hsl(var(--muted-foreground))";
+import { PipelineFunnel } from "./PipelineFunnel";
+
+const CHART_COLORS = {
+  series1: "#8C1515",
+  series2: "#3B82F6",
+  series3: "#175E54",
+  series4: "#F59E0B",
+  series5: "#71717A",
+};
+
+const CHART_TICK = { fontSize: 11, fill: "var(--text-3)" };
+const CHART_AXIS_LINE = { stroke: "var(--border-1)" };
+const BAR_RADIUS_UP = [8, 8, 0, 0];
+const BAR_RADIUS_RIGHT = [0, 8, 8, 0];
+const CHART_HEIGHT = 240;
 const CONVERSION_HIGH_THRESHOLD = 0.6;
 const CONVERSION_LOW_THRESHOLD = 0.3;
 const AVG_DAYS_HIGHLIGHT_THRESHOLD = 21;
@@ -35,13 +39,29 @@ function avgDaysColorClass(days) {
   return days > AVG_DAYS_HIGHLIGHT_THRESHOLD ? "text-destructive" : "";
 }
 
+function hasChartValues(data, valueKey) {
+  return data?.length > 0 && data.some((row) => Number(row[valueKey]) > 0);
+}
+
+function axisProps(extra = {}) {
+  return {
+    tick: CHART_TICK,
+    axisLine: CHART_AXIS_LINE,
+    tickLine: CHART_AXIS_LINE,
+    ...extra,
+  };
+}
+
 function CustomTooltip({ active, payload, label, formatter }) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="rounded-xl bg-card border border-border px-3 py-2 text-sm">
-      {label != null && <p className="mb-1 text-xs text-muted-foreground">{label}</p>}
+    <div
+      data-testid="analytics-chart-tooltip"
+      className="rounded-md border border-border-2 bg-surface-0 p-2 text-xs text-text-1 shadow-[var(--shadow-popover)]"
+    >
+      {label != null && <p className="mb-1 text-text-3">{label}</p>}
       {payload.map((entry) => (
-        <p key={entry.dataKey} className="text-foreground">
+        <p key={entry.dataKey}>
           {entry.name}: {formatter ? formatter(entry.value) : entry.value}
         </p>
       ))}
@@ -49,16 +69,40 @@ function CustomTooltip({ active, payload, label, formatter }) {
   );
 }
 
+function EmptyChartMessage() {
+  return (
+    <div className="relative flex items-center justify-center" style={{ height: CHART_HEIGHT }}>
+      <div className="absolute inset-x-0 top-1/2 border-t border-dashed border-border-1" aria-hidden="true" />
+      <p className="relative bg-surface-0 px-3 text-xs text-text-3">No data for this range</p>
+    </div>
+  );
+}
+
 function ChartCard({ title, description, children }) {
   return (
-    <div className="rounded-xl bg-card border border-border p-6">
+    <div className="rounded-lg border border-border-1 bg-surface-0 p-6">
       <div className="mb-4">
-        <h2 className=" text-sm font-medium text-foreground">{title}</h2>
-        {description && (
-          <p className="mt-0.5 text-xs text-muted-foreground">{description}</p>
-        )}
+        <h2 className="text-sm font-medium text-text-1">{title}</h2>
+        {description && <p className="mt-0.5 text-xs text-text-3">{description}</p>}
       </div>
       {children}
+    </div>
+  );
+}
+
+function ChartContainer({ data, valueKey, ariaLabel, children }) {
+  if (!hasChartValues(data, valueKey)) {
+    return (
+      <div role="img" aria-label={ariaLabel}>
+        <EmptyChartMessage />
+      </div>
+    );
+  }
+  return (
+    <div role="img" aria-label={ariaLabel}>
+      <ResponsiveContainer width="100%" height={CHART_HEIGHT}>
+        {children}
+      </ResponsiveContainer>
     </div>
   );
 }
@@ -66,35 +110,14 @@ function ChartCard({ title, description, children }) {
 function WeeklyApplicationsChart({ data }) {
   return (
     <ChartCard title="Applications per Week" description="How many applications you submitted each week">
-      <div role="img" aria-label="Bar chart: Applications per Week">
-        <ResponsiveContainer width="100%" height={240}>
-          <BarChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" stroke={CHART_GRID_COLOR} />
-            <XAxis dataKey="week" tick={{ fontSize: 11, fill: CHART_TICK_COLOR }} />
-            <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: CHART_TICK_COLOR }} />
-            <Tooltip content={<CustomTooltip />} />
-            <Bar dataKey="count" name="Applications" fill={CHART_COLORS[0]} radius={[3, 3, 0, 0]} />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
-    </ChartCard>
-  );
-}
-
-function StageFunnelChart({ data }) {
-  return (
-    <ChartCard title="Stage Funnel" description="Distribution of applications across pipeline stages">
-      <div role="img" aria-label="Bar chart: Stage Funnel">
-        <ResponsiveContainer width="100%" height={240}>
-          <BarChart data={data} layout="vertical">
-            <CartesianGrid strokeDasharray="3 3" stroke={CHART_GRID_COLOR} />
-            <XAxis type="number" allowDecimals={false} tick={{ fontSize: 11, fill: CHART_TICK_COLOR }} />
-            <YAxis type="category" dataKey="stage" tick={{ fontSize: 11, fill: CHART_TICK_COLOR }} width={90} />
-            <Tooltip content={<CustomTooltip />} />
-            <Bar dataKey="count" name="Applications" fill={CHART_COLORS[1]} radius={[0, 3, 3, 0]} />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
+      <ChartContainer data={data} valueKey="count" ariaLabel="Bar chart: Applications per Week">
+        <BarChart data={data}>
+          <XAxis dataKey="week" {...axisProps()} />
+          <YAxis allowDecimals={false} {...axisProps()} />
+          <Tooltip content={<CustomTooltip />} />
+          <Bar dataKey="count" name="Applications" fill={CHART_COLORS.series1} radius={BAR_RADIUS_UP} />
+        </BarChart>
+      </ChartContainer>
     </ChartCard>
   );
 }
@@ -102,18 +125,26 @@ function StageFunnelChart({ data }) {
 function ResponseRateChart({ data }) {
   return (
     <ChartCard title="Response Rate by Month" description="Percentage of applications that received a response">
-      <div role="img" aria-label="Line chart: Response Rate by Month">
-        <ResponsiveContainer width="100%" height={240}>
-          <LineChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" stroke={CHART_GRID_COLOR} />
-            <XAxis dataKey="month" tick={{ fontSize: 11, fill: CHART_TICK_COLOR }} />
-            <YAxis domain={[0, 1]} tickFormatter={(v) => `${Math.round(v * 100)}%`} tick={{ fontSize: 11, fill: CHART_TICK_COLOR }} />
-            <Tooltip content={<CustomTooltip formatter={(v) => `${Math.round(v * 100)}%`} />} />
-            <Legend />
-            <Line type="monotone" dataKey="rate" name="Response Rate" stroke={CHART_COLORS[2]} dot={false} strokeWidth={2} />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
+      <ChartContainer data={data} valueKey="rate" ariaLabel="Line chart: Response Rate by Month">
+        <LineChart data={data}>
+          <XAxis dataKey="month" {...axisProps()} />
+          <YAxis
+            domain={[0, 1]}
+            tickFormatter={(value) => `${Math.round(value * 100)}%`}
+            {...axisProps()}
+          />
+          <Tooltip content={<CustomTooltip formatter={(value) => `${Math.round(value * 100)}%`} />} />
+          <Line
+            type="monotone"
+            dataKey="rate"
+            name="Response Rate"
+            stroke={CHART_COLORS.series3}
+            strokeWidth={2}
+            dot={false}
+            activeDot={{ r: 4, fill: CHART_COLORS.series3, stroke: CHART_COLORS.series3 }}
+          />
+        </LineChart>
+      </ChartContainer>
     </ChartCard>
   );
 }
@@ -121,17 +152,14 @@ function ResponseRateChart({ data }) {
 function TopCompaniesChart({ data }) {
   return (
     <ChartCard title="Top 10 Companies Applied To" description="Companies you've applied to most frequently">
-      <div role="img" aria-label="Bar chart: Top 10 Companies Applied To">
-        <ResponsiveContainer width="100%" height={240}>
-          <BarChart data={data} layout="vertical">
-            <CartesianGrid strokeDasharray="3 3" stroke={CHART_GRID_COLOR} />
-            <XAxis type="number" allowDecimals={false} tick={{ fontSize: 11, fill: CHART_TICK_COLOR }} />
-            <YAxis type="category" dataKey="company" tick={{ fontSize: 11, fill: CHART_TICK_COLOR }} width={100} />
-            <Tooltip content={<CustomTooltip />} />
-            <Bar dataKey="count" name="Applications" fill={CHART_COLORS[3]} radius={[0, 3, 3, 0]} />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
+      <ChartContainer data={data} valueKey="count" ariaLabel="Bar chart: Top 10 Companies Applied To">
+        <BarChart data={data} layout="vertical">
+          <XAxis type="number" allowDecimals={false} {...axisProps()} />
+          <YAxis type="category" dataKey="company" {...axisProps({ width: 100 })} />
+          <Tooltip content={<CustomTooltip />} />
+          <Bar dataKey="count" name="Applications" fill={CHART_COLORS.series4} radius={BAR_RADIUS_RIGHT} />
+        </BarChart>
+      </ChartContainer>
     </ChartCard>
   );
 }
@@ -140,7 +168,6 @@ function AnalyticsMainCharts({ analytics }) {
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
       <WeeklyApplicationsChart data={analytics.applications_by_week} />
-      <StageFunnelChart data={analytics.stage_funnel} />
       <ResponseRateChart data={analytics.response_rate_by_month} />
       <TopCompaniesChart data={analytics.top_companies} />
     </div>
@@ -154,19 +181,19 @@ function AnalyticsTagsTable({ tagOfferRates }) {
         <table className="w-full text-sm" aria-label="Tags offer rate">
           <caption className="sr-only">Tag offer rates</caption>
           <thead>
-            <tr className="border-b border-border">
-              <th scope="col" className="pb-2 text-left text-xs font-medium text-muted-foreground">Tag</th>
-              <th scope="col" className="pb-2 text-right text-xs font-medium text-muted-foreground">Applications</th>
-              <th scope="col" className="pb-2 text-right text-xs font-medium text-muted-foreground">Offers</th>
-              <th scope="col" className="pb-2 text-right text-xs font-medium text-muted-foreground">Offer Rate</th>
+            <tr className="border-b border-border-1">
+              <th scope="col" className="pb-2 text-left text-xs font-medium text-text-3">Tag</th>
+              <th scope="col" className="pb-2 text-right text-xs font-medium text-text-3">Applications</th>
+              <th scope="col" className="pb-2 text-right text-xs font-medium text-text-3">Offers</th>
+              <th scope="col" className="pb-2 text-right text-xs font-medium text-text-3">Offer Rate</th>
             </tr>
           </thead>
           <tbody>
             {tagOfferRates.map((row) => (
-              <tr key={row.tag} className="border-b border-border last:border-0">
-                <td className="py-2 pr-4 text-foreground">{row.tag}</td>
-                <td className="py-2 text-right text-foreground">{row.application_count}</td>
-                <td className="py-2 text-right text-muted-foreground">{row.offer_count}</td>
+              <tr key={row.tag} className="border-b border-border-1 last:border-0">
+                <td className="py-2 pr-4 text-text-1">{row.tag}</td>
+                <td className="py-2 text-right text-text-1">{row.application_count}</td>
+                <td className="py-2 text-right text-text-3">{row.offer_count}</td>
                 <td className={`py-2 text-right ${rateColorClass(row.offer_rate)}`}>
                   {`${Math.round(row.offer_rate * 100)}%`}
                 </td>
@@ -181,13 +208,13 @@ function AnalyticsTagsTable({ tagOfferRates }) {
 
 function ConversionRatesRow({ row, isLast }) {
   return (
-    <tr className="border-b border-border last:border-0">
-      <td className="py-2 pr-4 text-foreground">{row.stage}</td>
-      <td className="py-2 text-right text-foreground">{row.entered_count}</td>
-      <td className="py-2 text-right text-muted-foreground">
+    <tr className="border-b border-border-1 last:border-0">
+      <td className="py-2 pr-4 text-text-1">{row.stage}</td>
+      <td className="py-2 text-right text-text-1">{row.entered_count}</td>
+      <td className="py-2 text-right text-text-3">
         {isLast ? "—" : row.exited_to_next_count}
       </td>
-      <td className={`py-2 text-right ${isLast ? "text-muted-foreground/50" : rateColorClass(row.conversion_rate)}`}>
+      <td className={`py-2 text-right ${isLast ? "text-text-3/50" : rateColorClass(row.conversion_rate)}`}>
         {isLast ? "—" : `${Math.round(row.conversion_rate * 100)}%`}
       </td>
       <td className={`py-2 text-right ${avgDaysColorClass(row.avg_days_in_stage)}`}>
@@ -204,38 +231,20 @@ function ConversionRatesTable({ data }) {
         <table className="w-full text-sm" aria-label="Conversion rates by stage">
           <caption className="sr-only">Conversion rates by stage</caption>
           <thead>
-            <tr className="border-b border-border">
-              <th scope="col" className="pb-2 text-left text-xs font-medium text-muted-foreground">Stage</th>
-              <th scope="col" className="pb-2 text-right text-xs font-medium text-muted-foreground">Entered</th>
-              <th scope="col" className="pb-2 text-right text-xs font-medium text-muted-foreground">Converted</th>
-              <th scope="col" className="pb-2 text-right text-xs font-medium text-muted-foreground">Rate</th>
-              <th scope="col" className="pb-2 text-right text-xs font-medium text-muted-foreground">Avg Days</th>
+            <tr className="border-b border-border-1">
+              <th scope="col" className="pb-2 text-left text-xs font-medium text-text-3">Stage</th>
+              <th scope="col" className="pb-2 text-right text-xs font-medium text-text-3">Entered</th>
+              <th scope="col" className="pb-2 text-right text-xs font-medium text-text-3">Converted</th>
+              <th scope="col" className="pb-2 text-right text-xs font-medium text-text-3">Rate</th>
+              <th scope="col" className="pb-2 text-right text-xs font-medium text-text-3">Avg Days</th>
             </tr>
           </thead>
           <tbody>
-            {data.map((row, i) => (
-              <ConversionRatesRow key={row.stage} row={row} isLast={i === data.length - 1} />
+            {data.map((row, index) => (
+              <ConversionRatesRow key={row.stage} row={row} isLast={index === data.length - 1} />
             ))}
           </tbody>
         </table>
-      </div>
-    </ChartCard>
-  );
-}
-
-function FunnelBarChart({ data }) {
-  return (
-    <ChartCard title="Stage Conversion Funnel" description="Applications entering each stage">
-      <div role="img" aria-label="Bar chart: Stage Conversion Funnel">
-        <ResponsiveContainer width="100%" height={Math.max(180, data.length * 40)}>
-          <BarChart data={data} layout="vertical">
-            <CartesianGrid strokeDasharray="3 3" stroke={CHART_GRID_COLOR} />
-            <XAxis type="number" allowDecimals={false} tick={{ fontSize: 11, fill: CHART_TICK_COLOR }} />
-            <YAxis type="category" dataKey="stage" tick={{ fontSize: 11, fill: CHART_TICK_COLOR }} width={110} />
-            <Tooltip content={<CustomTooltip />} />
-            <Bar dataKey="entered_count" name="Applications Entered" fill={CHART_COLORS[4]} radius={[0, 3, 3, 0]} />
-          </BarChart>
-        </ResponsiveContainer>
       </div>
     </ChartCard>
   );
@@ -245,10 +254,10 @@ function AnalyticsFunnelSection({ funnelData }) {
   if (!funnelData.length) return null;
   return (
     <>
-      <FunnelBarChart data={funnelData} />
+      <PipelineFunnel funnelData={funnelData} />
       <ConversionRatesTable data={funnelData} />
     </>
   );
 }
 
-export { AnalyticsMainCharts, AnalyticsTagsTable, AnalyticsFunnelSection };
+export { AnalyticsMainCharts, AnalyticsTagsTable, AnalyticsFunnelSection, CHART_COLORS, CustomTooltip };
