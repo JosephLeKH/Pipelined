@@ -26,7 +26,9 @@ describe("UpgradePlanModal", () => {
     fireEvent(window, new CustomEvent(TIER_LIMIT_EXCEEDED_EVENT));
 
     expect(screen.getByRole("dialog")).toBeInTheDocument();
-    expect(screen.getByText(/you've reached a free plan limit/i)).toBeInTheDocument();
+    expect(screen.getByText("Pipelined Pro")).toBeInTheDocument();
+    expect(screen.getByText(/unlock unlimited co-pilot/i)).toBeInTheDocument();
+    expect(screen.getByText(/\$5\/mo · cancel anytime/i)).toBeInTheDocument();
   });
 
   it("should show resource label and usage when event has limit details", () => {
@@ -71,13 +73,22 @@ describe("UpgradePlanModal", () => {
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 
-  it("should navigate to /pricing and close when Upgrade to Pro is clicked", () => {
+  it("should navigate to /pricing and close when Upgrade is clicked", () => {
     render(<UpgradePlanModal />);
     fireEvent(window, new CustomEvent(TIER_LIMIT_EXCEEDED_EVENT));
 
-    fireEvent.click(screen.getByRole("button", { name: /upgrade to pro/i }));
+    fireEvent.click(screen.getByRole("button", { name: /^upgrade$/i }));
 
     expect(mockNavigate).toHaveBeenCalledWith("/pricing");
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+
+  it("should close when Maybe later is clicked", () => {
+    render(<UpgradePlanModal />);
+    fireEvent(window, new CustomEvent(TIER_LIMIT_EXCEEDED_EVENT));
+
+    fireEvent.click(screen.getByRole("button", { name: /maybe later/i }));
+
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 });
