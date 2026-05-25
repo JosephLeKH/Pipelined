@@ -14,31 +14,10 @@ const mockApp = {
 };
 
 describe("DetailPanelHeader", () => {
-  it("should render role title and company name", () => {
+  it("should render inline company and role title", () => {
     render(<DetailPanelHeader application={mockApp} onClose={vi.fn()} onDelete={vi.fn()} />);
 
-    expect(screen.getByText("Software Engineer")).toBeInTheDocument();
-    expect(screen.getByText("Acme Corp")).toBeInTheDocument();
-  });
-
-  it("should show AI status pills when fit score and prep are present", () => {
-    render(
-      <DetailPanelHeader
-        application={{
-          ...mockApp,
-          ai_analysis: { fit_score: 82 },
-          interview_prep_briefing: { company: "Acme Corp" },
-          source: "email",
-        }}
-        onClose={vi.fn()}
-        onDelete={vi.fn()}
-      />
-    );
-
-    expect(screen.getByLabelText("AI status")).toBeInTheDocument();
-    expect(screen.getByText("Prep ready")).toBeInTheDocument();
-    expect(screen.getByText("Gmail synced")).toBeInTheDocument();
-    expect(screen.getByTestId("fit-badge")).toHaveTextContent("82%");
+    expect(screen.getByRole("heading", { name: "Acme Corp — Software Engineer" })).toBeInTheDocument();
   });
 
   it("should call onClose when close button is clicked", async () => {
@@ -50,27 +29,13 @@ describe("DetailPanelHeader", () => {
     expect(onClose).toHaveBeenCalledOnce();
   });
 
-  it("should call onDelete when delete button is clicked", async () => {
+  it("should call onDelete from the actions menu", async () => {
     const onDelete = vi.fn();
     render(<DetailPanelHeader application={mockApp} onClose={vi.fn()} onDelete={onDelete} />);
 
-    await userEvent.click(screen.getByRole("button", { name: "Delete application" }));
+    await userEvent.click(screen.getByRole("button", { name: "Application actions" }));
+    await userEvent.click(screen.getByRole("menuitem", { name: /delete application/i }));
 
     expect(onDelete).toHaveBeenCalledOnce();
   });
-  it("should show Researching pill when interview prep is generating", () => {
-    render(
-      <DetailPanelHeader
-        application={{
-          ...mockApp,
-          interview_prep_status: "generating",
-        }}
-        onClose={vi.fn()}
-        onDelete={vi.fn()}
-      />
-    );
-
-    expect(screen.getByText("Researching")).toBeInTheDocument();
-  });
-
 });

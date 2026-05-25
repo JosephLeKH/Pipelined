@@ -71,8 +71,7 @@ describe("DetailPanel", () => {
     render(<DetailPanel application={APP} onClose={() => {}} />, { wrapper: makeWrapper() });
 
     // Assert
-    expect(screen.getByText("Software Engineer")).toBeInTheDocument();
-    expect(screen.getByText("Acme Corp")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Acme Corp — Software Engineer" })).toBeInTheDocument();
   });
 
   it("should display location, remote_status, compensation, and company_type fields", () => {
@@ -279,7 +278,7 @@ describe("DetailPanel", () => {
   it("should trap focus: Tab from last focusable element wraps to first", async () => {
     // Arrange
     render(<DetailPanel application={APP} onClose={() => {}} />, { wrapper: makeWrapper() });
-    await screen.findByText("Software Engineer");
+    await screen.findByRole("heading", { name: "Acme Corp — Software Engineer" });
 
     const dialog = screen.getByRole("dialog");
     const FOCUSABLE = 'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled])';
@@ -297,7 +296,7 @@ describe("DetailPanel", () => {
   it("should trap focus: Shift+Tab from first focusable element wraps to last", async () => {
     // Arrange
     render(<DetailPanel application={APP} onClose={() => {}} />, { wrapper: makeWrapper() });
-    await screen.findByText("Software Engineer");
+    await screen.findByRole("heading", { name: "Acme Corp — Software Engineer" });
 
     const dialog = screen.getByRole("dialog");
     const FOCUSABLE = 'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled])';
@@ -319,6 +318,21 @@ describe("DetailPanel", () => {
     const overlay = screen.getByTestId("panel-overlay");
     expect(overlay).toHaveClass("opacity-0");
     expect(overlay).toHaveClass("pointer-events-none");
+  });
+
+  it("should render the drawer at 520px width with 220ms slide transition", () => {
+    render(<DetailPanel application={APP} onClose={() => {}} />, { wrapper: makeWrapper() });
+
+    const panel = screen.getByTestId("detail-panel");
+    expect(panel).toHaveStyle({ width: "520px" });
+    expect(panel.style.transitionDuration).toBe("220ms");
+    expect(panel).toHaveClass("motion-safe-drawer");
+  });
+
+  it("should position overlay below the top header", () => {
+    render(<DetailPanel application={APP} onClose={() => {}} />, { wrapper: makeWrapper() });
+
+    expect(screen.getByTestId("panel-overlay")).toHaveClass("top-11");
   });
 
   it("should revert stage optimistically when stage update fails", async () => {

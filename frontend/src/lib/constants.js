@@ -141,6 +141,8 @@ export const SIDEBAR_COLLAPSED_WIDTH_PX = 56;
 export const SIDEBAR_ANIMATION_MS = 200;
 export const DRAWER_ANIMATION_MS = 220;
 export const SIDEBAR_TOOLTIP_DELAY_MS = 400;
+export const TOP_BAR_HEIGHT_PX = 44;
+export const DETAIL_PANEL_WIDTH_PX = 520;
 export const COPILOT_DRAWER_WIDTH_PX = 480;
 
 export const EVENT_TYPE_OPTIONS = [
