@@ -1,28 +1,127 @@
-@import "./styles/tokens.css";
-@import "./styles/typography.css";
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  /* shadcn/ui design tokens — mapped to Pipelined brand */
+  --background: 0 0% 98%;           /* #fafafa surface */
+  --foreground: 30 5% 8%;           /* #141413 gray-900 */
+  --card: 0 0% 100%;                /* white */
+  --card-foreground: 30 5% 8%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 30 5% 8%;
+  --primary: 15 63% 60%;            /* #d97757 brand-500 */
+  --primary-foreground: 0 0% 100%;  /* white on brand */
+  --secondary: 30 5% 96%;           /* #f5f5f4 gray-100 */
+  --secondary-foreground: 30 5% 20%;
+  --muted: 30 5% 96%;
+  --muted-foreground: 28 16% 36%;   /* #6b5f4e gray-500 */
+  --accent: 19 80% 90%;             /* #fae4d4 brand-100 */
+  --accent-foreground: 18 50% 32%;  /* #7d4127 brand-800 */
+  --destructive: 0 84% 60%;         /* rose-500 */
+  --destructive-foreground: 0 0% 100%;
+  --border: 30 10% 88%;             /* ~gray-200 */
+  --input: 30 10% 88%;
+  --ring: 15 63% 60%;               /* brand-500 focus ring */
+  --radius: 0.5rem;
+
+  /* Chart palette */
+  --chart-1: 15 63% 60%;            /* #d97757 brand-500 */
+  --chart-2: 210 49% 61%;           /* #6a9bcc accent-blue */
+  --chart-3: 85 20% 46%;            /* #788c5d accent-green */
+  --chart-4: 218 11% 65%;           /* #9ca3af muted gray */
+  --chart-5: 217 12% 84%;           /* #d1d5db light gray */
+
+  /* Legacy custom tokens */
+  --color-body-bg: #fafafa;
+  --color-body-text: #141413;
+  --color-prose-blockquote-border: #d4ccbd;
+  --color-prose-blockquote-text: #6b5f4e;
+  --color-prose-link: #6a9bcc;
+  --color-shimmer-base: #e8e6dc;
+  --color-shimmer-highlight: #f5f4f0;
+  --color-shimmer-dark-base: #374151;
+  --color-shimmer-dark-highlight: #4b5563;
+
+  /* Linear redesign tokens — Stanford Cardinal accent */
+  --surface-0: #ffffff;
+  --surface-1: #fafafa;
+  --surface-2: #f4f4f5;
+  --surface-3: #efeff0;
+  --text-1: #2e2d29;
+  --text-2: #53565a;
+  --text-3: #8e8f94;
+  --text-4: #b4b5b9;
+  --border-1: rgba(0, 0, 0, 0.06);
+  --border-2: rgba(0, 0, 0, 0.1);
+  --border-3: rgba(0, 0, 0, 0.16);
+  --shadow-modal: 0 20px 60px rgba(0, 0, 0, 0.12);
+}
+
+.dark {
+  --background: 30 5% 8%;           /* #141413 */
+  --foreground: 30 14% 89%;         /* #e8e4de */
+  --card: 30 3% 11%;                /* #1c1c1a dark-surface */
+  --card-foreground: 30 14% 89%;
+  --popover: 30 3% 11%;
+  --popover-foreground: 30 14% 89%;
+  --primary: 15 63% 60%;            /* brand-500 stays same in dark */
+  --primary-foreground: 0 0% 100%;
+  --secondary: 30 5% 16%;           /* dark secondary surface */
+  --secondary-foreground: 30 14% 89%;
+  --muted: 30 5% 16%;
+  --muted-foreground: 30 10% 65%;   /* #b0aea5 */
+  --accent: 18 25% 22%;             /* dark accent */
+  --accent-foreground: 19 80% 75%;
+  --destructive: 0 63% 31%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 30 5% 20%;              /* rgba(255,255,255,0.08) approx */
+  --input: 30 5% 20%;
+  --ring: 15 63% 60%;
+
+  /* Chart palette (unchanged in dark — charts need stable colors) */
+  --chart-1: 15 63% 60%;
+  --chart-2: 210 49% 61%;
+  --chart-3: 85 20% 46%;
+  --chart-4: 218 11% 65%;
+  --chart-5: 217 12% 84%;
+
+  /* Legacy dark custom tokens */
+  --color-prose-blockquote-border: #4a4139;
+  --color-prose-blockquote-text: #b0aea5;
+
+  --surface-0: #08090a;
+  --surface-1: #0f1011;
+  --surface-2: #1a1b1e;
+  --surface-3: #212226;
+  --text-1: #f4f4f5;
+  --text-2: #a1a1aa;
+  --text-3: #71717a;
+  --text-4: #52525b;
+  --border-1: rgba(255, 255, 255, 0.06);
+  --border-2: rgba(255, 255, 255, 0.1);
+  --border-3: rgba(255, 255, 255, 0.16);
+  --shadow-modal: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
 @layer base {
-  * {
-    @apply border-border;
-  }
-
-  html {
-    font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
-  }
-
   body {
-    @apply bg-surface-0 text-text-1 antialiased;
-    font-size: 13px;
-    line-height: 1.45;
-    letter-spacing: -0.011em;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    letter-spacing: -0.01em;
+    color: var(--color-body-text);
+    background-color: var(--color-body-bg);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .dark body {
+    background-color: var(--color-body-text);
   }
 
   ::selection {
-    background-color: rgba(140, 21, 21, 0.15);
+    background-color: rgba(217, 119, 87, 0.2);
   }
 
   h1,
@@ -31,42 +130,53 @@
   h4,
   h5,
   h6 {
-    font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
-    font-weight: 600;
-    color: var(--text-1);
+    font-family: 'Poppins', Arial, sans-serif;
   }
 
   h1 {
-    font-size: 20px;
-    letter-spacing: -0.018em;
-    line-height: 1.25;
+    font-weight: 600;
+    font-size: 1.5rem;
+    letter-spacing: -0.02em;
   }
 
   h2 {
-    font-size: 16px;
-    letter-spacing: -0.014em;
-    line-height: 1.3;
+    font-weight: 600;
+    font-size: 1.25rem;
+    letter-spacing: -0.025em;
   }
 
   h3 {
-    font-size: 14px;
-    letter-spacing: -0.01em;
-    line-height: 1.35;
+    font-weight: 500;
+    font-size: 1.125rem;
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
+@layer utilities {
+  .font-display {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  .shadow-modal {
+    box-shadow: var(--shadow-modal);
+  }
+
+  .motion-safe-sidebar {
+    transition: width 200ms ease-out;
+  }
+
+  .motion-safe-drawer {
+    transition: transform 220ms ease-out;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .motion-safe-sidebar,
+    .motion-safe-drawer {
+      transition: none;
+    }
   }
 }
 
-/* Prose styles for markdown-preview container */
+/* Prose styles for markdown-preview container (no @tailwindcss/typography dependency) */
 .markdown-preview h1,
 .markdown-preview h2,
 .markdown-preview h3,
@@ -79,18 +189,9 @@
   margin-bottom: 0.5em;
   color: inherit;
 }
-
-.markdown-preview h1 {
-  font-size: 20px;
-}
-
-.markdown-preview h2 {
-  font-size: 16px;
-}
-
-.markdown-preview h3 {
-  font-size: 14px;
-}
+.markdown-preview h1 { font-size: 1.25rem; }
+.markdown-preview h2 { font-size: 1.125rem; }
+.markdown-preview h3 { font-size: 1rem; }
 
 .markdown-preview p {
   margin-top: 0;
@@ -102,49 +203,50 @@
   padding-left: 1.5em;
   margin-bottom: 0.75em;
 }
-
-.markdown-preview ul {
-  list-style-type: disc;
-}
-
-.markdown-preview ol {
-  list-style-type: decimal;
-}
-
-.markdown-preview li {
-  margin-bottom: 0.25em;
-}
+.markdown-preview ul { list-style-type: disc; }
+.markdown-preview ol { list-style-type: decimal; }
+.markdown-preview li { margin-bottom: 0.25em; }
 
 .markdown-preview code {
-  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-family: ui-monospace, monospace;
   font-size: 0.85em;
-  background-color: var(--surface-2);
+  background-color: rgba(0, 0, 0, 0.06);
   padding: 0.1em 0.35em;
-  border-radius: var(--radius-sm);
+  border-radius: 3px;
 }
-
 .markdown-preview pre {
-  background-color: var(--surface-2);
-  border-radius: var(--radius-md);
+  background-color: rgba(0, 0, 0, 0.06);
+  border-radius: 6px;
   padding: 0.75em 1em;
   overflow-x: auto;
   margin-bottom: 0.75em;
 }
-
 .markdown-preview pre code {
   background: none;
   padding: 0;
 }
 
 .markdown-preview blockquote {
-  border-left: 3px solid var(--border-2);
+  border-left: 3px solid var(--color-prose-blockquote-border);
   padding-left: 1em;
   margin-left: 0;
-  color: var(--text-2);
+  color: var(--color-prose-blockquote-text);
   margin-bottom: 0.75em;
 }
 
 .markdown-preview a {
-  color: var(--brand-600);
+  color: var(--color-prose-link);
   text-decoration: underline;
+}
+
+.dark .markdown-preview code,
+.dark .markdown-preview pre {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+.dark .markdown-preview blockquote {
+  border-left-color: var(--color-prose-blockquote-border);
+  color: var(--color-prose-blockquote-text);
+}
+.dark .markdown-preview a {
+  color: var(--color-prose-link);
 }

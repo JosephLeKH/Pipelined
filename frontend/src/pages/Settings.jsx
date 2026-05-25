@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
-import NavBar from "../components/NavBar";
 import SettingsAccountSection from "../components/SettingsAccountSection";
 import SettingsNotificationsSection from "../components/SettingsNotificationsSection";
 import SettingsPipelineSection from "../components/SettingsPipelineSection";
@@ -43,7 +42,7 @@ const NAV_ITEMS = [
 ];
 
 const SETTINGS_PANEL_ID = "settings-panel";
-const SETTINGS_SECTION_DIVIDER = "border-t border-border-1 pt-8 mt-2";
+const SETTINGS_SECTION_DIVIDER = "border-t border-border-default pt-8 mt-2";
 
 function TabNav({ activeSection, onSelect }) {
   return (
@@ -58,8 +57,8 @@ function TabNav({ activeSection, onSelect }) {
           onClick={() => onSelect(id)}
           className={
             activeSection === id
-              ? "bg-primary/10 text-primary text-sm font-semibold px-3 py-2 rounded-md"
-              : "text-muted-foreground hover:text-foreground text-sm font-medium transition-colors px-3 py-2 rounded-md"
+              ? "bg-primary/10 text-primary text-sm font-display font-semibold px-3 py-2 rounded-md"
+              : "text-muted-foreground hover:text-foreground text-sm font-display font-medium transition-colors px-3 py-2 rounded-md"
           }
         >
           {label}
@@ -72,7 +71,7 @@ function TabNav({ activeSection, onSelect }) {
 function CalendarSectionContent({ timezone, saved, error, isPending, onTimezoneChange, onSave }) {
   return (
     <div className="rounded-xl bg-card border border-border p-6">
-      <h2 className="mb-1 text-lg font-semibold text-foreground">
+      <h2 className="mb-1 text-lg font-semibold font-display text-foreground">
         Calendar
       </h2>
       <p className="mb-5 text-sm font-sans text-muted-foreground">
@@ -131,7 +130,7 @@ function CalendarSection() {
 function SharingSection() {
   return (
     <div className="rounded-xl bg-card border border-border p-6">
-      <h2 className="mb-1 text-lg font-semibold text-foreground">
+      <h2 className="mb-1 text-lg font-semibold font-display text-foreground">
         Sharing
       </h2>
       <p className="mb-5 text-sm font-sans text-muted-foreground">
@@ -183,17 +182,14 @@ function Settings() {
   const activeSection = searchParams.get("section") || "pipeline";
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <NavBar />
-      <div className="mx-auto w-full max-w-2xl flex-1 px-6 py-8">
-        <h1 className="mb-6 text-2xl font-semibold text-foreground">
+    <div className="mx-auto w-full max-w-2xl flex-1 px-6 py-8">
+        <h1 className="mb-6 text-2xl font-semibold font-display text-foreground">
           Settings
         </h1>
         <TabNav activeSection={activeSection} onSelect={(id) => setSearchParams({ section: id })} />
         <main id={SETTINGS_PANEL_ID} role="tabpanel">
           {renderSection(activeSection, user)}
         </main>
-      </div>
     </div>
   );
 }

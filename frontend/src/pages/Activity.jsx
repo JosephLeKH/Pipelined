@@ -8,7 +8,6 @@ import Plus from "lucide-react/dist/esm/icons/plus";
 import ArrowRight from "lucide-react/dist/esm/icons/arrow-right";
 import CalendarDays from "lucide-react/dist/esm/icons/calendar-days";
 
-import NavBar from "../components/NavBar";
 import { useActivityFeed } from "../hooks/useActivity";
 import { Button } from "../components/ui/button";
 
@@ -251,15 +250,12 @@ function ActivityPage() {
   );
 
   return (
-    <div className="min-h-screen bg-background">
-      <NavBar />
-      <main className="mx-auto max-w-2xl px-4 sm:px-6 py-8">
+    <main className="mx-auto max-w-2xl px-4 sm:px-6 py-8">
         <ActivityHeader days={days} total={total} isLoading={isLoading} onDaysChange={setDays} />
         {error
           ? <ActivityError onRetry={refetch} />
           : <ActivityTimeline isLoading={isLoading} entries={entries} onEntryClick={handleEntryClick} />}
       </main>
-    </div>
   );
 }
 

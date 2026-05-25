@@ -1,4 +1,6 @@
-/** Tailwind CSS configuration for Pipelined frontend — Linear-inspired tokens (PRD-00). */
+/** Tailwind CSS configuration for Pipelined frontend. */
+import defaultTheme from "tailwindcss/defaultTheme";
+import colors from "tailwindcss/colors";
 import animatePlugin from "tailwindcss-animate";
 
 /** @type {import('tailwindcss').Config} */
@@ -8,12 +10,8 @@ export default {
   theme: {
     extend: {
       colors: {
-        border: {
-          DEFAULT: "hsl(var(--border))",
-          1: "var(--border-1)",
-          2: "var(--border-2)",
-          3: "var(--border-3)",
-        },
+        // shadcn CSS variable mappings
+        border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
@@ -46,61 +44,103 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        // Brand palette — Stanford Cardinal Red (Linear redesign)
         brand: {
-          50: "var(--brand-50)",
-          100: "var(--brand-100)",
-          200: "var(--brand-200)",
-          500: "var(--brand-500)",
-          600: "var(--brand-600)",
-          700: "var(--brand-700)",
-          800: "var(--brand-800)",
-          900: "var(--brand-900)",
+          50: "#fdf2f2",
+          100: "#fae0e0",
+          200: "#f4bfbf",
+          500: "#b81e1e",
+          600: "#8c1515",
+          700: "#820000",
+          800: "#6e0f0f",
+          900: "#4f0a0a",
         },
-        surface: {
-          0: "var(--surface-0)",
-          1: "var(--surface-1)",
-          2: "var(--surface-2)",
-          3: "var(--surface-3)",
+        "surface-0": "var(--surface-0)",
+        "surface-1": "var(--surface-1)",
+        "surface-2": "var(--surface-2)",
+        "surface-3": "var(--surface-3)",
+        "text-1": "var(--text-1)",
+        "text-2": "var(--text-2)",
+        "text-3": "var(--text-3)",
+        "text-4": "var(--text-4)",
+        "border-1": "var(--border-1)",
+        "border-2": "var(--border-2)",
+        "border-3": "var(--border-3)",
+        // Neutral gray palette — cool-shifted for modern SaaS aesthetic
+        gray: {
+          50: "#fafafa",
+          100: "#f5f5f4",
+          200: "#e7e5e4",
+          300: "#d4ccbd",
+          400: "#b0aea5",
+          500: "#6b5f4e",
+          600: "#4a4139",
+          700: "#332d26",
+          800: "#1f1b17",
+          900: "#141413",
+          950: "#0d0c0b",
         },
-        text: {
-          1: "var(--text-1)",
-          2: "var(--text-2)",
-          3: "var(--text-3)",
-          4: "var(--text-4)",
+        // Secondary accent colors
+        "accent-blue": "#6a9bcc",
+        "accent-green": "#788c5d",
+        // Semantic tokens — surfaces
+        "surface-primary": "#ffffff",
+        "surface-secondary": "#fafafa",
+        "surface-tertiary": "#e7e5e4",
+        // Semantic tokens — borders
+        "border-default": "rgba(0,0,0,0.08)",
+        "border-strong": "rgba(0,0,0,0.16)",
+        // Dark mode semantic tokens
+        dark: {
+          bg: "#141413",
+          surface: "#1c1c1a",
+          accent: "#d97757",
+          text: "#e8e4de",
+          "text-secondary": "#b0aea5",
+          border: "rgba(255,255,255,0.08)",
         },
-        status: {
-          neutral: "var(--status-neutral)",
-          info: "var(--status-info)",
-          violet: "var(--status-violet)",
-          warn: "var(--status-warn)",
-          orange: "var(--status-orange)",
-          success: "var(--status-success)",
-          muted: "var(--status-muted)",
-        },
+        // Semantic colors
+        success: colors.emerald[500],
+        warning: colors.amber[500],
+        danger: colors.rose[500],
+        info: "#6a9bcc",
       },
       fontFamily: {
-        sans: ["Inter", "ui-sans-serif", "system-ui", "-apple-system", "sans-serif"],
-        mono: ["JetBrains Mono", "ui-monospace", "SFMono-Regular", "monospace"],
+        sans: ["Inter", "system-ui", "-apple-system", "sans-serif"],
+        display: ["Poppins", "Arial", "sans-serif"],
       },
       boxShadow: {
-        popover: "var(--shadow-popover)",
-        modal: "var(--shadow-modal)",
+        card: "0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06)",
+        "card-hover": "0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04)",
+        modal: "0 20px 60px rgba(0,0,0,0.12)",
+      },
+      keyframes: {
+        slideInRight: {
+          from: { transform: "translateX(100%)" },
+          to: { transform: "translateX(0)" },
+        },
+        fadeInUp: {
+          from: { opacity: "0", transform: "translateY(8px)" },
+          to: { opacity: "1", transform: "translateY(0)" },
+        },
+        pulseSoft: {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0.5" },
+        },
+      },
+      animation: {
+        "slide-in-right": "slideInRight 0.25s ease-out",
+        "fade-in-up": "fadeInUp 0.4s ease-out forwards",
+        "pulse-soft": "pulseSoft 1.4s ease-in-out infinite",
       },
       borderRadius: {
-        sm: "var(--radius-sm)",
-        md: "var(--radius-md)",
-        lg: "var(--radius-lg)",
-        xl: "var(--radius-xl)",
-      },
-      transitionDuration: {
-        hover: "120",
-        "hover-text": "100",
-        drawer: "220",
-        modal: "180",
-        toast: "200",
-      },
-      transitionTimingFunction: {
-        drawer: "cubic-bezier(0.22, 0.61, 0.36, 1)",
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
+        card: "0.75rem",
+        button: "0.5rem",
+        badge: "9999px",
+        input: "0.5rem",
       },
     },
   },

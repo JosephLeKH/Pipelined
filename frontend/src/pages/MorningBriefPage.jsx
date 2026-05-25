@@ -6,7 +6,6 @@ import EmptyState from "../components/EmptyState";
 import MorningBriefHistoryPanel from "../components/MorningBriefHistoryPanel";
 import MorningBriefSectionCard from "../components/MorningBriefSectionCard";
 import MorningBriefSkeleton from "../components/MorningBriefSkeleton";
-import NavBar from "../components/NavBar";
 import { useAuth } from "../context/AuthContext";
 import { useMorningBrief } from "../hooks/useMorningBrief";
 import {
@@ -77,9 +76,7 @@ function MorningBriefPage() {
   const emptyMessage = getBriefEmptyMessage(briefHour);
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <NavBar />
-      <main className="flex-1 px-4 py-8 sm:px-6">
+    <main className="flex-1 px-4 py-8 sm:px-6">
         <div className="mx-auto max-w-2xl space-y-8">
           {!isLoading && !isError && brief && <MorningBriefHero date={brief.date} />}
           {isLoading && (
@@ -104,7 +101,6 @@ function MorningBriefPage() {
           )}
         </div>
       </main>
-    </div>
   );
 }
 

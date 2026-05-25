@@ -5,7 +5,6 @@ import Handshake from "lucide-react/dist/esm/icons/handshake";
 import LayoutDashboard from "lucide-react/dist/esm/icons/layout-dashboard";
 import Trophy from "lucide-react/dist/esm/icons/trophy";
 
-import NavBar from "../components/NavBar";
 import { OfferNegotiationPanel } from "../components/OfferNegotiationPanel";
 import { EditableCell } from "../components/OfferEditableCell";
 import { useApplications, useUpdateApplication } from "../hooks/useApplications";
@@ -19,7 +18,6 @@ const SKELETON_ROW_COUNT = 5;
 function LoadingState() {
   return (
     <>
-      <NavBar />
       <main className="px-4 sm:px-6 py-8" aria-hidden="true">
         <div className="mb-6 flex items-center justify-between gap-4">
           <div className="h-7 w-48 rounded shimmer-bg animate-shimmer" />
@@ -49,7 +47,6 @@ function LoadingState() {
 function ErrorState({ onRetry }) {
   return (
     <>
-      <NavBar />
       <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 text-destructive">
         <p>Failed to load offers.</p>
         <Button type="button" variant="outline" onClick={onRetry} aria-label="Retry loading offers">
@@ -63,7 +60,6 @@ function ErrorState({ onRetry }) {
 function EmptyState() {
   return (
     <>
-      <NavBar />
       <div className="flex min-h-[60vh] flex-col items-center justify-center gap-3 text-muted-foreground">
         <Trophy className="mb-2 h-10 w-10 text-muted-foreground/40" aria-hidden="true" />
         <p className="text-sm font-medium text-foreground">No offers yet</p>
@@ -223,7 +219,6 @@ function OfferComparison() {
 
   return (
     <>
-      <NavBar />
       <main className="px-4 sm:px-6 py-8">
         <div className="mb-6 flex items-center justify-between gap-4">
           <OfferComparisonHeader />

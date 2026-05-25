@@ -7,7 +7,6 @@ import ApiErrorMessage from "../components/ApiErrorMessage";
 import CalendarEventDetail from "../components/CalendarEventDetail";
 import CalendarGrid from "../components/CalendarGrid";
 import EmptyState from "../components/EmptyState";
-import NavBar from "../components/NavBar";
 import NewEventForm from "../components/NewEventForm";
 import { useCalendarEvents } from "../hooks/useCalendar";
 
@@ -59,9 +58,7 @@ function Calendar() {
   const handleMonthChange = useCallback((m, y) => { setMonth(m); setYear(y); }, []);
   const handleDayClick = useCallback((date) => setNewEventForm({ date, applicationId: null }), []);
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <NavBar />
-      <CalendarContent
+    <CalendarContent
         month={month}
         year={year}
         events={events}
@@ -75,8 +72,7 @@ function Calendar() {
         onDayClick={handleDayClick}
         onCloseEventDetail={() => setSelectedEvent(null)}
         onCloseForm={() => setNewEventForm(null)}
-      />
-    </div>
+    />
   );
 }
 

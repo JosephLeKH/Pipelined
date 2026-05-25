@@ -12,7 +12,6 @@ import FilterBar from "../components/FilterBar";
 import FollowUpBanner from "../components/FollowUpBanner";
 import InboxSetupBanner from "../components/InboxSetupBanner";
 import GoalProgress from "../components/GoalProgress";
-import NavBar from "../components/NavBar";
 import StatsBar from "../components/StatsBar";
 import ApplicationList from "../components/ApplicationList";
 import KanbanBoard from "../components/KanbanBoard";
@@ -24,7 +23,7 @@ import { DashboardToolbar } from "../components/DashboardToolbar";
 import { useApplication, useApplicationStats } from "../hooks/useApplications";
 import { useApplicationExport } from "../hooks/useApplicationExport";
 import { useDashboardFilters } from "../hooks/useDashboardFilters";
-import { VIEW_MODE_STORAGE_KEY } from "../lib/constants";
+import { VIEW_MODE_STORAGE_KEY, OPEN_IMPORT_CSV_EVENT } from "../lib/constants";
 import { trackEvent } from "../lib/analytics";
 
 function DashboardContent({ viewMode, onSetViewMode, isExporting, onExport, filters, onSelect, onAdd, onImportCsv, shortcutsEnabled, onClearFilters, selectedApp, onClosePanel, isModalOpen, isImportOpen, onCloseModal, onCloseImport, followUpsDue, onViewFollowUps, expandFollowUpDraft }) {
@@ -69,6 +68,12 @@ function Dashboard() {
       setSearchParams((prev) => { prev.delete("gmail_connected"); prev.delete("email"); return prev; }, { replace: true });
     }
   }, [searchParams, setSearchParams, queryClient]);
+
+  useEffect(() => {
+    const openImport = () => setIsImportOpen(true);
+    window.addEventListener(OPEN_IMPORT_CSV_EVENT, openImport);
+    return () => window.removeEventListener(OPEN_IMPORT_CSV_EVENT, openImport);
+  }, []);
   const [viewMode, setViewMode] = useState(() => {
     try { return localStorage.getItem(VIEW_MODE_STORAGE_KEY) ?? "list"; }
     catch { return "list"; }
@@ -92,8 +97,7 @@ function Dashboard() {
   const shortcutsEnabled = !isModalOpen && !isImportOpen;
   useHotkeys("a", () => setIsModalOpen(true), { enabled: shortcutsEnabled });
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <NavBar />
+    <>
       <DashboardContent
         viewMode={viewMode} onSetViewMode={handleSetViewMode} isExporting={isExporting} onExport={handleExport}
         filters={filters} onSelect={handleSelect} onAdd={() => setIsModalOpen(true)} onImportCsv={() => setIsImportOpen(true)}
@@ -103,7 +107,7 @@ function Dashboard() {
         onViewFollowUps={() => handleViewFollowUps(stats?.first_follow_up_due_id)}
         expandFollowUpDraft={expandFollowUpDraft}
       />
-    </div>
+    </>
   );
 }
 
