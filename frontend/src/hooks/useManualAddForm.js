@@ -11,13 +11,21 @@ import { useManualAddFormDialog } from "./useManualAddFormDialog";
 
 const DUPLICATE_CODE = "DUPLICATE_APPLICATION";
 
+// HTML <input type="date"> yields "YYYY-MM-DD"; backend's strict Pydantic
+// schema requires a full ISO datetime, so convert at the boundary.
+const toIsoDatetime = (dateStr) => {
+  if (!dateStr) return undefined;
+  const parsed = new Date(`${dateStr}T00:00:00`);
+  return Number.isNaN(parsed.getTime()) ? undefined : parsed.toISOString();
+};
+
 const buildBody = ({
   roleTitle, company, sourceUrl, dateApplied, stage, source, jobDescription,
 }) => ({
   role_title: roleTitle.trim(),
   company: company.trim(),
   source,
-  date_applied: dateApplied,
+  ...(toIsoDatetime(dateApplied) && { date_applied: toIsoDatetime(dateApplied) }),
   ...(stage && { current_stage: stage }),
   ...(sourceUrl.trim() && { source_url: sourceUrl.trim() }),
   ...(jobDescription.trim() && { job_description: jobDescription.trim() }),
