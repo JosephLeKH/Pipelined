@@ -90,7 +90,7 @@ export function ApplicationListBody({ d, rowActions, bulkActions, onSelect, sele
           />
         )}
         <div className="relative flex flex-col">
-          {isFetching && !isLoading && <div className="absolute inset-x-0 top-0 h-0.5 animate-pulse bg-primary" aria-hidden="true" data-testid="fetch-progress-bar" />}
+          {isFetching && !isLoading && <div className="absolute inset-x-0 top-0 h-0.5 animate-pulse bg-brand-600 motion-reduce:animate-none" aria-hidden="true" data-testid="fetch-progress-bar" />}
           <ApplicationListHeader sortBy={sortBy} sortOrder={sortOrder} onSort={handleSort} allSelected={allSelected} onSelectAll={handleSelectAll} />
           <FixedSizeList ref={listRef} height={Math.max(300, windowHeight - LIST_OFFSET_PX)} itemCount={applications.length} itemSize={rowHeight} width="100%" itemData={rowData}>{Row}</FixedSizeList>
         </div>

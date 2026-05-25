@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 import CheckCircle2 from "lucide-react/dist/esm/icons/check-circle-2";
 import Circle from "lucide-react/dist/esm/icons/circle";
+import X from "lucide-react/dist/esm/icons/x";
 
 import { useAuth } from "../context/AuthContext";
 import { trackEvent } from "../lib/analytics";
@@ -19,6 +20,9 @@ import { Button } from "./ui/button";
 
 const ONBOARDING_STEPS = 3;
 
+const BANNER_FOCUS_RING =
+  "focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 focus-visible:outline-offset-2 dark:focus-visible:outline-1";
+
 function hasAgentProfile(user) {
   const profile = user?.agent_profile ?? {};
   return Boolean(
@@ -30,17 +34,20 @@ function hasAgentProfile(user) {
 function StepRow({ label, description, done }) {
   return (
     <div className="flex items-start gap-3">
-      {done
-        ? <><CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-primary" aria-hidden="true" /><span className="sr-only">Completed</span></>
-        : <><Circle className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground/30" aria-hidden="true" /><span className="sr-only">Incomplete</span></>
-      }
+      {done ? (
+        <>
+          <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-brand-600" aria-hidden="true" />
+          <span className="sr-only">Completed</span>
+        </>
+      ) : (
+        <>
+          <Circle className="mt-0.5 h-5 w-5 shrink-0 text-text-4" aria-hidden="true" />
+          <span className="sr-only">Incomplete</span>
+        </>
+      )}
       <div className="min-w-0">
-        <p className={`text-sm font-medium ${done ? "text-muted-foreground" : "text-foreground"}`}>
-          {label}
-        </p>
-        {!done && description && (
-          <p className="text-xs text-muted-foreground">{description}</p>
-        )}
+        <p className={`text-sm font-medium ${done ? "text-text-3" : "text-text-1"}`}>{label}</p>
+        {!done && description && <p className="text-xs text-text-3">{description}</p>}
       </div>
     </div>
   );
@@ -105,33 +112,34 @@ function OnboardingChecklist() {
 
   if (showSuccess) {
     return (
-      <div className="mb-4 rounded-lg border border-border border-l-4 border-l-primary bg-card p-4 text-center">
-        <p className="font-semibold text-primary">You are all set!</p>
+      <div className="mb-4 rounded-lg border border-border-1 bg-surface-1 p-4 text-center">
+        <p className="font-semibold text-brand-700 dark:text-brand-200">You are all set!</p>
       </div>
     );
   }
 
   return (
-    <div className="mb-4 rounded-lg border border-border border-l-4 border-l-primary bg-card p-4">
-      <div className="mb-3 flex items-center justify-between">
-        <h2 className=" font-semibold text-foreground">Get started with your agent</h2>
-        <Button
+    <div className="mb-4 rounded-lg border border-border-1 bg-surface-1 p-4">
+      <div className="mb-3 flex items-center justify-between gap-2">
+        <h2 className="font-semibold text-text-1">Get started with your agent</h2>
+        <button
           type="button"
-          variant="ghost"
-          size="sm"
           onClick={handleDismiss}
-          className="text-muted-foreground hover:text-foreground"
+          aria-label="Dismiss"
+          className={`inline-flex h-4 w-4 shrink-0 items-center justify-center rounded text-text-3 hover:bg-surface-2 hover:text-text-1 motion-reduce:transition-none transition-colors duration-hover ease-out ${BANNER_FOCUS_RING}`}
         >
-          Dismiss
-        </Button>
+          <X className="h-3.5 w-3.5" aria-hidden="true" />
+        </button>
       </div>
       <div className="mb-3">
-        <div className="mb-1 flex items-center text-xs text-muted-foreground">
-          <span>{completedSteps.length} of {ONBOARDING_STEPS} steps complete</span>
+        <div className="mb-1 flex items-center text-xs text-text-3">
+          <span>
+            {completedSteps.length} of {ONBOARDING_STEPS} steps complete
+          </span>
         </div>
-        <div className="h-1.5 overflow-hidden rounded-full bg-muted">
+        <div className="h-1 overflow-hidden rounded-sm bg-surface-2">
           <div
-            className="h-full rounded-full bg-primary transition-all"
+            className="h-full rounded-sm bg-brand-600 motion-reduce:transition-none transition-all duration-hover ease-out"
             style={{ width: `${(completedSteps.length / ONBOARDING_STEPS) * 100}%` }}
           />
         </div>
@@ -148,7 +156,7 @@ function OnboardingChecklist() {
               type="button"
               variant="link"
               onClick={() => navigate("/settings?section=agent")}
-              className="ml-8 h-auto p-0 text-xs"
+              className="ml-8 h-auto p-0 text-xs text-brand-700 hover:text-brand-800 dark:text-brand-300"
             >
               Go to Agent settings
             </Button>
@@ -165,7 +173,7 @@ function OnboardingChecklist() {
               type="button"
               variant="link"
               onClick={handleTryCopilot}
-              className="ml-8 h-auto p-0 text-xs"
+              className="ml-8 h-auto p-0 text-xs text-brand-700 hover:text-brand-800 dark:text-brand-300"
             >
               Open co-pilot
             </Button>
@@ -182,7 +190,7 @@ function OnboardingChecklist() {
               type="button"
               variant="link"
               onClick={handleOpenToday}
-              className="ml-8 h-auto p-0 text-xs"
+              className="ml-8 h-auto p-0 text-xs text-brand-700 hover:text-brand-800 dark:text-brand-300"
             >
               Go to Today
             </Button>

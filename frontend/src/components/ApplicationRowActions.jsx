@@ -237,8 +237,8 @@ export function BulkActionBar({ selectedCount, onMoveToStage, onDeleteSelected, 
   }
 
   return (
-    <div role="toolbar" aria-label="Bulk actions" className="flex flex-wrap items-center gap-3 rounded-md border border-primary/20 bg-primary/10 px-4 py-2 text-sm">
-      <span className="font-medium text-primary">{selectedCount} selected</span>
+    <div role="toolbar" aria-label="Bulk actions" className="flex flex-wrap items-center gap-3 rounded-md border border-brand-600/20 bg-brand-50/40 px-4 py-2 text-sm dark:border-brand-700/30 dark:bg-brand-900/20">
+      <span className="font-medium text-brand-700 dark:text-brand-200">{selectedCount} selected</span>
       {overLimit && <span className="text-warning">Select {BULK_EDIT_MAX_IDS} or fewer to use bulk edit</span>}
       <div className="ml-auto flex flex-wrap items-center gap-2">
         <BulkMoveControls stageOptions={stageOptions} selectedStage={selectedStage} setSelectedStage={setSelectedStage} isMoving={isMoving} isBusy={isBusy} onMove={handleMove} />

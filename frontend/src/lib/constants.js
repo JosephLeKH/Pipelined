@@ -129,6 +129,10 @@ export const VIEW_MODE_STORAGE_KEY = "pipelined_view_mode";
 
 export const ONBOARDING_DISMISSED_KEY = "pipelined_onboarding_dismissed";
 export const ONBOARDING_CONFETTI_DISMISS_MS = 3_000;
+export const EMAIL_VERIFICATION_BANNER_DISMISSED_KEY = "pipelined_email_verify_banner_dismissed";
+export const INBOX_SETUP_BANNER_DISMISSED_KEY = "pipelined_gmail_banner_dismissed";
+export const AUTOPILOT_RESUME_BANNER_DISMISSED_KEY = "pipelined_autopilot_resume_banner_dismissed";
+export const FOLLOW_UP_BANNER_DISMISSED_KEY = "pipelined_follow_up_banner_dismissed";
 export const COPILOT_TRIED_KEY = "pipelined_copilot_tried";
 export const TODAY_VISITED_KEY = "pipelined_today_visited";
 export const OPEN_COPILOT_EVENT = "pipelined:open-copilot";

@@ -135,7 +135,7 @@ export function SavedViewsDropdown({ currentFilters, hasActiveFilters }) {
                   variant="ghost"
                   size="icon"
                   aria-label={`Delete saved view: ${s.name}`}
-                  className="h-6 w-6 text-text-3 hover:text-destructive"
+                  className="h-6 w-6 text-text-3 hover:text-danger"
                   onClick={(e) => handleDelete(e, s.id)}
                 >
                   <Trash2 className="h-3 w-3" aria-hidden="true" />
