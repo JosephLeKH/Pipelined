@@ -30,7 +30,7 @@ function ShortcutHelp() {
         size="icon"
         onClick={open}
         aria-label="Show keyboard shortcuts"
-        className="fixed bottom-5 right-5 z-40 h-9 w-9 rounded-full shadow-md"
+        className="fixed bottom-20 right-6 z-40 h-9 w-9 rounded-full shadow-md"
       >
         <Keyboard className="h-4 w-4" aria-hidden="true" />
       </Button>
