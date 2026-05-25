@@ -1,55 +1,94 @@
-/** Collapsible panel listing previous morning briefs from GET /api/brief/history. */
+/** Right drawer listing previous morning briefs from GET /api/brief/history. */
 
-import { useState } from "react";
+import { useEffect, useRef } from "react";
 
-import ChevronDown from "lucide-react/dist/esm/icons/chevron-down";
-import ChevronRight from "lucide-react/dist/esm/icons/chevron-right";
+import X from "lucide-react/dist/esm/icons/x";
 
 import { useBriefHistory } from "../hooks/useBriefHistory";
-import { CARD_BASE } from "../lib/designTokens";
+import { DRAWER_ANIMATION_MS } from "../lib/constants";
 import { Button } from "./ui/button";
 
 const HISTORY_DAYS = 7;
+const DRAWER_WIDTH_PX = 480;
 
-function MorningBriefHistoryPanel() {
-  const [open, setOpen] = useState(false);
+function MorningBriefHistoryPanel({ open, onClose }) {
+  const panelRef = useRef(null);
   const { data, isLoading, isError } = useBriefHistory(HISTORY_DAYS);
   const briefs = data?.data ?? [];
   const pastBriefs = briefs.slice(1);
+  const hasHistory = !isLoading && !isError && pastBriefs.length > 0;
 
-  if (isLoading || isError || pastBriefs.length === 0) {
-    return null;
-  }
+  useEffect(() => {
+    if (!open) return undefined;
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [open, onClose]);
 
-  const ToggleIcon = open ? ChevronDown : ChevronRight;
+  useEffect(() => {
+    if (open && panelRef.current) {
+      panelRef.current.focus();
+    }
+  }, [open]);
+
+  if (!hasHistory) return null;
 
   return (
-    <section aria-label="Previous briefs" className={`${CARD_BASE} overflow-hidden`}>
-      <Button
+    <div
+      className={[
+        "fixed inset-0 z-40 motion-safe:transition-opacity",
+        open ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0",
+      ].join(" ")}
+      style={{ transitionDuration: `${DRAWER_ANIMATION_MS}ms` }}
+      aria-hidden={!open}
+    >
+      <button
         type="button"
-        variant="ghost"
-        onClick={() => setOpen((prev) => !prev)}
-        aria-expanded={open}
-        className="flex h-auto w-full items-center justify-between rounded-none px-4 py-3.5 text-left hover:bg-surface-1/60"
+        className="absolute inset-0 bg-black/30 motion-reduce:transition-none"
+        aria-label="Close brief history"
+        onClick={onClose}
+        tabIndex={open ? 0 : -1}
+      />
+      <aside
+        ref={panelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Previous briefs"
+        tabIndex={-1}
+        className={[
+          "fixed right-0 top-0 flex h-full flex-col border-l border-border-1",
+          "bg-surface-0 shadow-modal motion-safe-drawer focus:outline-none",
+          open ? "translate-x-0" : "translate-x-full",
+        ].join(" ")}
+        style={{ width: `${DRAWER_WIDTH_PX}px`, maxWidth: "100vw" }}
       >
-        <span className=" text-sm font-semibold text-foreground">
-          Previous briefs
-        </span>
-        <ToggleIcon className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
-      </Button>
-
-      {open && (
-        <ul className="divide-y divide-border-1 border-t border-border-1">
+        <div className="flex items-center justify-between border-b border-border-1 px-4 py-3">
+          <h2 className="text-sm font-semibold text-text-1">Previous briefs</h2>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            aria-label="Close"
+            onClick={onClose}
+            className="h-8 w-8 text-text-2"
+          >
+            <X className="h-4 w-4" aria-hidden="true" />
+          </Button>
+        </div>
+        <ul className="flex-1 overflow-y-auto divide-y divide-border-1">
           {pastBriefs.map((brief) => (
             <li key={brief.date} className="px-4 py-3">
-              <p className="text-sm font-medium text-foreground">{brief.date}</p>
-              <p className="mt-0.5 text-xs text-muted-foreground">{brief.summary_line}</p>
+              <p className="text-sm font-medium text-text-1">{brief.date}</p>
+              <p className="mt-0.5 text-xs text-text-3">{brief.summary_line}</p>
             </li>
           ))}
         </ul>
-      )}
-    </section>
+      </aside>
+    </div>
   );
 }
 
+export { HISTORY_DAYS };
 export default MorningBriefHistoryPanel;

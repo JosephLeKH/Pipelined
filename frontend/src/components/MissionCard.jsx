@@ -1,87 +1,171 @@
-/** Single prioritized mission card with reason, CTA, snooze, and done actions. */
+/** Single-line mission row with priority dot, hover actions, and row navigation. */
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
-import ArrowRight from "lucide-react/dist/esm/icons/arrow-right";
 import Check from "lucide-react/dist/esm/icons/check";
 import Clock from "lucide-react/dist/esm/icons/clock";
-import Target from "lucide-react/dist/esm/icons/target";
+import MoreHorizontal from "lucide-react/dist/esm/icons/more-horizontal";
 
-import AiSection from "./AiSection";
-import FitBadge from "./FitBadge";
 import MissionPriorityPill from "./MissionPriorityPill";
 import { Button } from "./ui/button";
 import {
-  BRIEF_SECTION_ACCENTS,
-  parseBriefItemScore,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
+import {
+  getMissionUrgencyTier,
+  MISSION_PRIORITY_DOT_CLASSES,
   parseDeadlineLabel,
 } from "../lib/briefConstants";
-import { BADGE_BASE, BUTTON_GHOST, BUTTON_SECONDARY } from "../lib/designTokens";
 
-const FIT_BADGE_SECTIONS = new Set(["high_matches", "pending_approvals"]);
-
-const DEADLINE_TONE_STYLES = {
-  overdue: "bg-rose-100 text-rose-800 border-rose-200 dark:bg-rose-900/30 dark:text-rose-300 dark:border-rose-700/50",
-  urgent: "bg-amber-100 text-amber-800 border-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-700/50",
-  soon: "bg-surface-1 text-muted-foreground border-border-1",
-};
-
-function DeadlineBadge({ body }) {
-  const parsed = parseDeadlineLabel(body);
-  if (!parsed) return null;
+function MissionRowMenu({ actionUrl, onSnooze }) {
   return (
-    <span className={`${BADGE_BASE} border ${DEADLINE_TONE_STYLES[parsed.tone]}`}>
-      {parsed.label}
-    </span>
+    <div className="relative shrink-0" onClick={(e) => e.stopPropagation()}>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            aria-label="Mission actions"
+            className="h-7 w-7 rounded text-text-2"
+          >
+            <MoreHorizontal className="h-4 w-4" aria-hidden="true" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-36">
+          <DropdownMenuItem asChild>
+            <Link to={actionUrl}>Open</Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={onSnooze}>Snooze</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
   );
 }
 
-function MissionCard({ mission, onSnooze, onDone, isSnoozing, isCompleting }) {
-  const accent = BRIEF_SECTION_ACCENTS[mission.section] ?? "border-l-brand-500";
-  const fitScore = FIT_BADGE_SECTIONS.has(mission.section)
-    ? parseBriefItemScore(mission.body)
+function MissionSubtitle({ mission, dueLabel }) {
+  return (
+    <p className="mt-0.5 flex flex-wrap items-center gap-1.5 text-xs text-text-3">
+      <span>{mission.reason}</span>
+      <MissionPriorityPill priority={mission.priority} />
+      {dueLabel && <span>· {dueLabel}</span>}
+    </p>
+  );
+}
+
+function MissionCard({
+  mission,
+  onSnooze,
+  onDone,
+  isSnoozing,
+  isCompleting,
+  completed = false,
+}) {
+  const navigate = useNavigate();
+  const tier = getMissionUrgencyTier(mission.priority);
+  const dotClass = MISSION_PRIORITY_DOT_CLASSES[tier];
+  const dueLabel = mission.section === "oa_deadlines"
+    ? parseDeadlineLabel(mission.body)?.label
     : null;
   const busy = isSnoozing || isCompleting;
 
+  const handleRowClick = (event) => {
+    if (event.target.closest("button, a, [role='menu']")) return;
+    navigate(mission.action_url);
+  };
+
+  const handleRowKeyDown = (event) => {
+    if (completed || busy) return;
+    if (event.target.closest("button, a, [role='menu']")) return;
+
+    const key = event.key.toLowerCase();
+    if (key === "enter") {
+      event.preventDefault();
+      navigate(mission.action_url);
+      return;
+    }
+    if (key === "c") {
+      event.preventDefault();
+      onDone(mission.id);
+      return;
+    }
+    if (key === "s") {
+      event.preventDefault();
+      onSnooze(mission.id);
+    }
+  };
+
   return (
-    <AiSection
-      title={mission.title}
-      icon={Target}
-      className={accent}
-      headerExtra={
-        <MissionPriorityPill priority={mission.priority} section={mission.section} />
-      }
+    <li
+      role="button"
+      tabIndex={0}
+      onClick={handleRowClick}
+      onKeyDown={handleRowKeyDown}
+      aria-label={mission.title}
+      className={[
+        "group flex items-center gap-3 border-b border-border-1 px-3 py-3",
+        "hover:bg-surface-1 focus-visible:outline focus-visible:outline-2",
+        "focus-visible:outline-brand-600 focus-visible:outline-offset-[-2px]",
+        "dark:focus-visible:outline-1",
+        "motion-safe:transition-colors motion-safe:duration-hover",
+        completed ? "opacity-50" : "",
+        isCompleting ? "motion-safe:animate-mission-complete" : "",
+      ].join(" ")}
     >
-      <p className="text-sm text-muted-foreground">{mission.reason}</p>
-      {mission.section === "oa_deadlines" && <DeadlineBadge body={mission.body} />}
-      {fitScore != null && <FitBadge score={fitScore} />}
-      <div className="flex flex-wrap items-center gap-2 pt-1">
-        <Button asChild size="sm">
-          <Link to={mission.action_url} className="inline-flex items-center gap-1.5">
-            Open
-            <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
-          </Link>
-        </Button>
-        <button
-          type="button"
-          onClick={() => onSnooze(mission.id)}
-          disabled={busy}
-          className={`${BUTTON_GHOST} inline-flex items-center gap-1.5 px-3 py-1.5 text-xs`}
+      <span
+        className={`h-1.5 w-1.5 shrink-0 rounded-full ${dotClass}`}
+        aria-hidden="true"
+      />
+      <div className="min-w-0 flex-1">
+        <p
+          className={[
+            "text-sm",
+            completed || isCompleting ? "line-through text-text-3" : "text-text-1",
+          ].join(" ")}
         >
-          <Clock className="h-3.5 w-3.5" aria-hidden="true" />
-          Snooze
-        </button>
-        <button
-          type="button"
-          onClick={() => onDone(mission.id)}
-          disabled={busy}
-          className={`${BUTTON_SECONDARY} inline-flex items-center gap-1.5 px-3 py-1.5 text-xs`}
-        >
-          <Check className="h-3.5 w-3.5" aria-hidden="true" />
-          Done
-        </button>
+          {mission.title}
+        </p>
+        {!completed && !isCompleting && <MissionSubtitle mission={mission} dueLabel={dueLabel} />}
       </div>
-    </AiSection>
+      {!completed && !isCompleting && (
+        <div
+          className={[
+            "flex items-center gap-1",
+            "opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100",
+            "motion-safe:transition-opacity motion-safe:duration-hover",
+          ].join(" ")}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            aria-label="Complete"
+            disabled={busy}
+            onClick={() => onDone(mission.id)}
+          >
+            <Check className="h-3.5 w-3.5" aria-hidden="true" />
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            aria-label="Snooze"
+            disabled={busy}
+            onClick={() => onSnooze(mission.id)}
+          >
+            <Clock className="h-3.5 w-3.5" aria-hidden="true" />
+          </Button>
+          <MissionRowMenu
+            actionUrl={mission.action_url}
+            onSnooze={() => onSnooze(mission.id)}
+          />
+        </div>
+      )}
+    </li>
   );
 }
 

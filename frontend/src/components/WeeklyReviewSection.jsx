@@ -1,4 +1,4 @@
-/** Weekly pipeline review metrics on the Today page. */
+/** Weekly pipeline review metrics and Sunday teaser on the Today page. */
 
 import { Link } from "react-router-dom";
 
@@ -6,19 +6,17 @@ import BarChart3 from "lucide-react/dist/esm/icons/bar-chart-3";
 import Ghost from "lucide-react/dist/esm/icons/ghost";
 import TrendingUp from "lucide-react/dist/esm/icons/trending-up";
 
-import { CARD_BASE } from "../lib/designTokens";
+import { formatWeeklyReviewTeaser } from "../lib/todayUtils";
 
-function MetricCard({ label, value, icon: Icon, description }) {
+function MetricRow({ label, value, icon: Icon, description }) {
   return (
-    <div className="rounded-lg border border-border bg-surface-1/40 p-4">
-      <div className="flex items-center gap-2 text-muted-foreground">
+    <div className="rounded-lg border border-border-1 bg-surface-1/40 p-4">
+      <div className="flex items-center gap-2 text-text-3">
         <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
-        <span className="text-xs font-medium uppercase tracking-wide">{label}</span>
+        <span className="text-xs font-medium uppercase tracking-wider">{label}</span>
       </div>
-      <p className="mt-2 text-2xl font-semibold text-foreground">{value}</p>
-      {description && (
-        <p className="mt-1 text-xs text-muted-foreground">{description}</p>
-      )}
+      <p className="mt-2 text-2xl font-semibold text-text-1">{value}</p>
+      {description && <p className="mt-1 text-xs text-text-3">{description}</p>}
     </div>
   );
 }
@@ -27,15 +25,50 @@ function formatPercent(rate) {
   return `${Math.round(rate * 100)}%`;
 }
 
+export function WeeklyReviewTeaser({ review, isLoading, onReadReview }) {
+  if (isLoading) {
+    return (
+      <section aria-label="Weekly review" className="animate-pulse">
+        <div className="mb-2 h-3 w-36 rounded bg-surface-2" />
+        <div className="h-12 rounded-lg bg-surface-1" />
+      </section>
+    );
+  }
+
+  if (!review) return null;
+
+  return (
+    <section aria-label="Weekly review">
+      <h2 className="mb-2 text-xs font-medium uppercase tracking-wider text-text-3">
+        This week&apos;s review
+      </h2>
+      <div className="flex min-h-12 flex-wrap items-center justify-between gap-3 rounded-lg border border-border-1 bg-surface-1 p-4">
+        <p className="text-sm text-text-2">{formatWeeklyReviewTeaser(review)}</p>
+        <button
+          type="button"
+          onClick={onReadReview}
+          className={[
+            "shrink-0 text-sm text-brand-600 hover:underline",
+            "focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600",
+            "dark:focus-visible:outline-1",
+          ].join(" ")}
+        >
+          Read your Sunday review →
+        </button>
+      </div>
+    </section>
+  );
+}
+
 function WeeklyReviewSection({ review, isLoading }) {
   if (isLoading) {
     return (
-      <section aria-label="Weekly review" className={`${CARD_BASE} p-5 animate-pulse`}>
-        <div className="h-5 w-40 rounded bg-muted" />
+      <section aria-label="Weekly review" className="animate-pulse rounded-lg border border-border-1 bg-surface-1 p-5">
+        <div className="h-4 w-40 rounded bg-surface-2" />
         <div className="mt-4 grid gap-3 sm:grid-cols-3">
-          <div className="h-20 rounded-lg bg-muted" />
-          <div className="h-20 rounded-lg bg-muted" />
-          <div className="h-20 rounded-lg bg-muted" />
+          <div className="h-20 rounded-lg bg-surface-2" />
+          <div className="h-20 rounded-lg bg-surface-2" />
+          <div className="h-20 rounded-lg bg-surface-2" />
         </div>
       </section>
     );
@@ -47,27 +80,25 @@ function WeeklyReviewSection({ review, isLoading }) {
   const velocityLabel = `${velocity.applied_this_week} / ${velocity.weekly_goal} applied`;
 
   return (
-    <section aria-label="Weekly review" className={`${CARD_BASE} p-5 animate-fade-in-up`}>
-      <div className="mb-4 flex items-center justify-between gap-3">
-        <div>
-          <h2 className=" text-lg font-semibold text-foreground">Weekly review</h2>
-          <p className="text-sm text-muted-foreground">Week of {review.week_start}</p>
-        </div>
+    <section aria-label="Weekly review" className="rounded-lg border border-border-1 bg-surface-1 p-5">
+      <div className="mb-4">
+        <h2 className="text-xs font-medium uppercase tracking-wider text-text-3">Weekly review</h2>
+        <p className="mt-1 text-sm text-text-2">Week of {review.week_start}</p>
       </div>
       <div className="grid gap-3 sm:grid-cols-3">
-        <MetricCard
+        <MetricRow
           label="Response rate"
           value={formatPercent(responseRate)}
           icon={BarChart3}
           description="Applications that heard back"
         />
-        <MetricCard
+        <MetricRow
           label="Ghost rate"
           value={formatPercent(ghostRate)}
           icon={Ghost}
           description="Waiting past your median"
         />
-        <MetricCard
+        <MetricRow
           label="Velocity"
           value={velocityLabel}
           icon={TrendingUp}
@@ -76,20 +107,22 @@ function WeeklyReviewSection({ review, isLoading }) {
       </div>
       {staleApps.length > 0 && (
         <div className="mt-5">
-          <h3 className="text-sm font-medium text-foreground">Stale applications</h3>
-          <ul className="mt-2 space-y-2">
+          <h3 className="text-xs font-medium uppercase tracking-wider text-text-3">Stale applications</h3>
+          <ul className="mt-2 divide-y divide-border-1">
             {staleApps.slice(0, 5).map((app) => (
               <li key={app.id}>
                 <Link
                   to={`/dashboard?selected=${app.id}`}
-                  className="flex items-center justify-between rounded-md px-2 py-1.5 text-sm hover:bg-surface-1"
+                  className={[
+                    "flex items-center justify-between px-2 py-2 text-sm hover:bg-surface-2",
+                    "focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600",
+                    "dark:focus-visible:outline-1",
+                  ].join(" ")}
                 >
-                  <span className="text-foreground">
+                  <span className="text-text-1">
                     {app.company} — {app.role_title}
                   </span>
-                  <span className="text-xs text-muted-foreground">
-                    {app.days_since_update}d idle
-                  </span>
+                  <span className="text-xs text-text-3">{app.days_since_update}d idle</span>
                 </Link>
               </li>
             ))}

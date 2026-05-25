@@ -1,7 +1,5 @@
 /** Footer progress strip showing missions cleared today. */
 
-import { CARD_BASE } from "../lib/designTokens";
-
 function MissionProgressStrip({ cleared = 0, total = 0 }) {
   if (total === 0) return null;
 
@@ -10,24 +8,27 @@ function MissionProgressStrip({ cleared = 0, total = 0 }) {
 
   return (
     <footer
-      className={`${CARD_BASE} p-4`}
+      className="rounded-lg border border-border-1 bg-surface-1 p-4"
       aria-label={`${cleared} of ${total} missions cleared today`}
     >
       <div className="flex items-center justify-between gap-3 text-sm">
-        <span className="font-medium text-foreground">
+        <span className="font-medium text-text-1">
           {cleared} of {total} missions cleared today
         </span>
-        <span className="text-muted-foreground">{percent}%</span>
+        <span className="text-text-3">{percent}%</span>
       </div>
       <div
-        className="mt-2 h-2 overflow-hidden rounded-full bg-surface-1"
+        className="mt-2 h-1.5 overflow-hidden rounded-full bg-surface-2"
         role="progressbar"
         aria-valuenow={cleared}
         aria-valuemin={0}
         aria-valuemax={total}
       >
         <div
-          className="h-full rounded-full bg-brand-500 transition-all duration-300"
+          className={[
+            "h-full rounded-full bg-brand-600",
+            "motion-safe:transition-[width] motion-safe:duration-200",
+          ].join(" ")}
           style={{ width: `${percent}%` }}
         />
       </div>

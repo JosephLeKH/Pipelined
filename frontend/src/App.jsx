@@ -177,7 +177,7 @@ function App() {
           <Route path="/today" element={<TodayPage />} />
           <Route path="/inbox/pending" element={<PendingInboxPage />} />
         </Route>
-        <Route path="/brief" element={<Navigate to="/today" replace />} />
+        <Route path="/brief" element={<Navigate to="/today?brief=open" replace />} />
         </Routes>
         </ErrorBoundary>
         </main>
