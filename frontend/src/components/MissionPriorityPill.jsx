@@ -1,19 +1,22 @@
-/** Colored priority pill for mission cards — section-aware clay palette. */
+/** Inline priority pill for top-ranked missions — subtle surface badge. */
 
 import {
-  MISSION_PRIORITY_PILL_STYLES,
-  MISSION_SECTION_LABELS,
+  getMissionUrgencyTier,
+  MISSION_URGENCY_LABELS,
 } from "../lib/briefConstants";
-import { BADGE_BASE } from "../lib/designTokens";
 
-function MissionPriorityPill({ priority, section }) {
-  const sectionLabel = MISSION_SECTION_LABELS[section] ?? "Mission";
-  const colorClass = MISSION_PRIORITY_PILL_STYLES[section]
-    ?? "bg-surface-1 text-muted-foreground border-border-1";
+const TOP_PRIORITY_MAX = 3;
+
+function MissionPriorityPill({ priority }) {
+  if (priority > TOP_PRIORITY_MAX) return null;
+
+  const tier = getMissionUrgencyTier(priority);
+  const label = MISSION_URGENCY_LABELS[tier];
+  if (!label) return null;
 
   return (
-    <span className={`${BADGE_BASE} border ${colorClass}`}>
-      #{priority} · {sectionLabel}
+    <span className="rounded-sm bg-surface-1 px-1.5 py-0.5 text-[11px] text-text-2">
+      {label}
     </span>
   );
 }

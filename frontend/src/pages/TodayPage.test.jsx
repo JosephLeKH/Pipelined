@@ -1,4 +1,4 @@
-/** Tests for TodayPage mission cards and actions. */
+/** Tests for TodayPage mission rows and actions. */
 
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -6,7 +6,7 @@ import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter } from "react-router-dom";
-import { describe, it, expect, beforeAll, afterAll, afterEach } from "vitest";
+import { describe, it, expect, beforeAll, afterAll, afterEach, vi } from "vitest";
 
 import { AuthProvider } from "../context/AuthContext";
 import { ThemeProvider } from "../context/ThemeContext";
@@ -49,7 +49,7 @@ const server = setupServer(
       data: {
         id: "user1",
         email: "test@test.com",
-        display_name: "Test",
+        display_name: "Test User",
         has_resume: false,
         weekly_goal: 5,
         default_stages: [],
@@ -66,6 +66,7 @@ afterEach(() => {
   server.resetHandlers();
   snoozeCalled = false;
   doneCalled = false;
+  vi.useRealTimers();
 });
 afterAll(() => server.close());
 
@@ -87,32 +88,36 @@ function makeWrapper() {
 }
 
 describe("TodayPage", () => {
-  it("should render hero with top mission and reason", async () => {
+  it("should render greeting with mission row", async () => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date("2026-05-23T09:00:00"));
+
     render(<TodayPage />, { wrapper: makeWrapper() });
 
-    expect(await screen.findByText(/Mission #1/i)).toBeInTheDocument();
-    expect(screen.getAllByText("Acme — follow-up overdue").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("Follow-up is overdue — respond today").length).toBeGreaterThan(0);
+    expect(await screen.findByRole("heading", { level: 1, name: /Good morning, Test\./i })).toBeInTheDocument();
+    expect(screen.getByText("Acme — follow-up overdue")).toBeInTheDocument();
+    expect(screen.getByText("Follow-up is overdue — respond today")).toBeInTheDocument();
+    expect(screen.getByText("Saturday, May 23 · 1 mission")).toBeInTheDocument();
   });
 
   it("should call snooze API when Snooze is clicked", async () => {
     const user = userEvent.setup();
     render(<TodayPage />, { wrapper: makeWrapper() });
 
-    await screen.findByRole("heading", { level: 1, name: "Today" });
-    const snoozeButtons = await screen.findAllByRole("button", { name: /snooze/i });
-    await user.click(snoozeButtons[0]);
+    await screen.findByRole("heading", { level: 1 });
+    const snoozeButton = await screen.findByRole("button", { name: /snooze/i });
+    await user.click(snoozeButton);
 
     await waitFor(() => expect(snoozeCalled).toBe(true));
   });
 
-  it("should call done API when Done is clicked", async () => {
+  it("should call done API when Complete is clicked", async () => {
     const user = userEvent.setup();
     render(<TodayPage />, { wrapper: makeWrapper() });
 
-    await screen.findByRole("heading", { level: 1, name: "Today" });
-    const doneButtons = await screen.findAllByRole("button", { name: /done/i });
-    await user.click(doneButtons[0]);
+    await screen.findByRole("heading", { level: 1 });
+    const completeButton = await screen.findByRole("button", { name: /complete/i });
+    await user.click(completeButton);
 
     await waitFor(() => expect(doneCalled).toBe(true));
   });
@@ -121,5 +126,24 @@ describe("TodayPage", () => {
     render(<TodayPage />, { wrapper: makeWrapper() });
 
     expect(await screen.findByLabelText("0 of 1 missions cleared today")).toBeInTheDocument();
+  });
+
+  it("should show empty state when there are no missions", async () => {
+    server.use(
+      http.get("/api/brief/today", () =>
+        HttpResponse.json({
+          data: {
+            ...MOCK_BRIEF,
+            missions: [],
+            mission_progress: { cleared: 0, total: 0 },
+          },
+        })
+      )
+    );
+
+    render(<TodayPage />, { wrapper: makeWrapper() });
+
+    expect(await screen.findByText("You're caught up.")).toBeInTheDocument();
+    expect(screen.getByText(/No missions ranked for today/i)).toBeInTheDocument();
   });
 });

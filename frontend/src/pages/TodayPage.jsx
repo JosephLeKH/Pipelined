@@ -1,22 +1,15 @@
 /** Mission Control today page — prioritized missions with snooze/done actions. */
 
 import { useCallback, useEffect } from "react";
-import { Link } from "react-router-dom";
 
-import ArrowRight from "lucide-react/dist/esm/icons/arrow-right";
 import Check from "lucide-react/dist/esm/icons/check";
-import Clock from "lucide-react/dist/esm/icons/clock";
-import Sparkles from "lucide-react/dist/esm/icons/sparkles";
 import Sun from "lucide-react/dist/esm/icons/sun";
 
-import EmptyState from "../components/EmptyState";
 import MissionCard from "../components/MissionCard";
-import MissionPriorityPill from "../components/MissionPriorityPill";
 import MissionProgressStrip from "../components/MissionProgressStrip";
 import MorningBriefHistoryPanel from "../components/MorningBriefHistoryPanel";
 import WeeklyReviewSection from "../components/WeeklyReviewSection";
 import MorningBriefSkeleton from "../components/MorningBriefSkeleton";
-import { Button } from "../components/ui/button";
 import { useAuth } from "../context/AuthContext";
 import { useMissionActions } from "../hooks/useMissionActions";
 import { useMorningBrief } from "../hooks/useMorningBrief";
@@ -25,148 +18,90 @@ import {
   BRIEF_UNAVAILABLE_MESSAGE,
   DEFAULT_MORNING_BRIEF_HOUR,
   getBriefEmptyMessage,
-  MISSION_HERO_PRIORITY,
 } from "../lib/briefConstants";
 import { TODAY_VISITED_KEY } from "../lib/constants";
-import { CARD_BASE, BUTTON_GHOST, BUTTON_SECONDARY } from "../lib/designTokens";
+import { formatTodayDateRow, formatTodayGreeting } from "../lib/todayUtils";
 
-function TodayHeroMission({ mission, onSnooze, onDone, isSnoozing, isCompleting }) {
-  const busy = isSnoozing || isCompleting;
+function TodayGreeting({ user, briefDate, missionCount }) {
+  const timezone = user?.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const dateRow = formatTodayDateRow(briefDate, missionCount, timezone);
 
   return (
-    <div
-      className={`${CARD_BASE} animate-fade-in-up border-l-4 border-brand-500 bg-gradient-to-br from-brand-50/80 to-white p-5 dark:from-brand-950/40 dark:to-gray-800`}
-    >
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex items-start gap-3">
-          <div
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-brand-100 dark:bg-brand-900/40"
-            aria-hidden="true"
-          >
-            <Sparkles className="h-5 w-5 text-brand-600 dark:text-brand-400" />
-          </div>
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-brand-700 dark:text-brand-300">
-              Mission #{MISSION_HERO_PRIORITY}
-            </p>
-            <h2 className="mt-1 text-xl font-semibold text-foreground">
-              {mission.title}
-            </h2>
-            <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{mission.reason}</p>
-          </div>
-        </div>
-        <MissionPriorityPill priority={mission.priority} section={mission.section} />
-      </div>
-      <div className="mt-4 flex flex-wrap items-center gap-2">
-        <Button asChild size="sm">
-          <Link to={mission.action_url} className="inline-flex items-center gap-1.5">
-            Start mission
-            <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
-          </Link>
-        </Button>
-        <button
-          type="button"
-          onClick={() => onSnooze(mission.id)}
-          disabled={busy}
-          className={`${BUTTON_GHOST} inline-flex items-center gap-1.5 px-3 py-1.5 text-xs`}
-        >
-          <Clock className="h-3.5 w-3.5" aria-hidden="true" />
-          Snooze
-        </button>
-        <button
-          type="button"
-          onClick={() => onDone(mission.id)}
-          disabled={busy}
-          className={`${BUTTON_SECONDARY} inline-flex items-center gap-1.5 px-3 py-1.5 text-xs`}
-        >
-          <Check className="h-3.5 w-3.5" aria-hidden="true" />
-          Done
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function TodayHero({ date, topMission, onSnooze, onDone, snoozePendingId, donePendingId }) {
-  return (
-    <header className="space-y-4 pb-2 animate-fade-in-up">
-      <div className="flex items-center gap-3">
-        <div
-          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-brand-50 dark:bg-brand-900/30"
-          aria-hidden="true"
-        >
-          <Sun className="h-6 w-6 text-brand-500" />
-        </div>
-        <div>
-          <h1 className=" text-2xl font-semibold text-foreground">Today</h1>
-          {date && <p className="mt-0.5 text-sm text-muted-foreground">{date}</p>}
-        </div>
-      </div>
-      {topMission && (
-        <TodayHeroMission
-          mission={topMission}
-          onSnooze={onSnooze}
-          onDone={onDone}
-          isSnoozing={snoozePendingId === topMission.id}
-          isCompleting={donePendingId === topMission.id}
-        />
-      )}
+    <header className="pb-6 pt-8">
+      <p className="text-xs font-medium uppercase tracking-wider text-text-3">
+        {dateRow}
+      </p>
+      <h1 className="mt-2 text-3xl font-semibold tracking-tight text-text-1">
+        {formatTodayGreeting(user)}
+      </h1>
     </header>
   );
 }
 
-function TodayEmptyState({ description }) {
+function TodaySectionHeading({ children }) {
   return (
-    <div className="animate-fade-in-up">
-      <EmptyState
-        icon={Sun}
-        title="All caught up"
-        description={description}
-        svg={(
-          <div
-            className="mb-2 flex h-20 w-20 items-center justify-center rounded-full bg-brand-50 ring-4 ring-brand-100 dark:bg-brand-900/20 dark:ring-brand-900/40"
-            aria-hidden="true"
-          >
-            <Sun className="h-10 w-10 text-brand-400 animate-pulse-soft" />
-          </div>
-        )}
-      />
+    <h2 className="mb-2 text-xs font-medium uppercase tracking-wider text-text-3">
+      {children}
+    </h2>
+  );
+}
+
+function TodayEmptyState() {
+  return (
+    <div
+      className="flex flex-col items-center py-16 text-center motion-safe:animate-fade-in-up"
+      role="status"
+    >
+      <div
+        className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-brand-50 dark:bg-brand-900/30"
+        aria-hidden="true"
+      >
+        <Check className="h-6 w-6 text-brand-600" />
+      </div>
+      <p className="text-base font-semibold text-text-1">You&apos;re caught up.</p>
+      <p className="mt-1 max-w-sm text-sm text-text-3">
+        No missions ranked for today. Enjoy the breather.
+      </p>
     </div>
   );
 }
 
-function TodayContent({ brief, emptyMessage, onSnooze, onDone, snoozePendingId, donePendingId }) {
-  const missions = brief?.missions ?? [];
-  const listMissions = missions.filter((m) => m.priority !== MISSION_HERO_PRIORITY);
-
+function TodayMissionsList({
+  missions,
+  onSnooze,
+  onDone,
+  snoozePendingId,
+  donePendingId,
+}) {
   if (!missions.length) {
-    return <TodayEmptyState description={brief?.summary_line ?? emptyMessage} />;
-  }
-
-  if (!listMissions.length) {
-    return null;
+    return <TodayEmptyState />;
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-        Up next
-      </p>
-      {listMissions.map((mission, index) => (
-        <div
-          key={mission.id}
-          className="animate-fade-in-up"
-          style={{ animationDelay: `${index * 80}ms` }}
-        >
+    <section aria-label="Today's missions">
+      <TodaySectionHeading>Today&apos;s missions</TodaySectionHeading>
+      <ul className="overflow-hidden rounded-lg border border-border-1 bg-surface-0">
+        {missions.map((mission) => (
           <MissionCard
+            key={mission.id}
             mission={mission}
             onSnooze={onSnooze}
             onDone={onDone}
             isSnoozing={snoozePendingId === mission.id}
             isCompleting={donePendingId === mission.id}
           />
-        </div>
-      ))}
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+function TodayBriefUnavailable() {
+  return (
+    <div className="rounded-lg border border-border-1 bg-surface-1 p-6 text-center">
+      <Sun className="mx-auto mb-3 h-8 w-8 text-text-3" aria-hidden="true" />
+      <p className="font-medium text-text-1">Brief not ready</p>
+      <p className="mt-1 text-sm text-text-3">{BRIEF_UNAVAILABLE_MESSAGE}</p>
     </div>
   );
 }
@@ -185,7 +120,7 @@ function TodayPage() {
   const { snooze, done } = useMissionActions();
   const briefHour = user?.morning_brief_hour ?? DEFAULT_MORNING_BRIEF_HOUR;
   const emptyMessage = getBriefEmptyMessage(briefHour);
-  const topMission = brief?.missions?.find((m) => m.priority === MISSION_HERO_PRIORITY) ?? null;
+  const missions = brief?.missions ?? [];
   const progress = brief?.mission_progress ?? { cleared: 0, total: 0 };
 
   const handleSnooze = useCallback(
@@ -200,50 +135,47 @@ function TodayPage() {
 
   return (
     <main className="flex-1 px-4 py-8 sm:px-6">
-        <div className="mx-auto max-w-2xl space-y-8">
-          {!isLoading && !isError && brief && (
-            <TodayHero
-              date={brief.date}
-              topMission={topMission}
+      <div className="mx-auto max-w-2xl space-y-8">
+        {isLoading && (
+          <>
+            <TodayGreeting user={user} briefDate={null} missionCount={0} />
+            <MorningBriefSkeleton />
+          </>
+        )}
+
+        {!isLoading && isError && (
+          <>
+            <TodayGreeting user={user} briefDate={null} missionCount={0} />
+            <TodayBriefUnavailable />
+          </>
+        )}
+
+        {!isLoading && !isError && brief && (
+          <>
+            <TodayGreeting
+              user={user}
+              briefDate={brief.date}
+              missionCount={missions.length}
+            />
+            <TodayMissionsList
+              missions={missions}
               onSnooze={handleSnooze}
               onDone={handleDone}
               snoozePendingId={snooze.isPending ? snooze.variables : null}
               donePendingId={done.isPending ? done.variables : null}
             />
-          )}
-          {isLoading && (
-            <>
-              <TodayHero date={null} topMission={null} />
-              <MorningBriefSkeleton />
-            </>
-          )}
-
-          {!isLoading && isError && (
-            <>
-              <TodayHero date={null} topMission={null} />
-              <EmptyState icon={Sun} title="Brief not ready" description={BRIEF_UNAVAILABLE_MESSAGE} />
-            </>
-          )}
-
-          {!isLoading && !isError && brief && (
-            <>
-              <TodayContent
-                brief={brief}
-                emptyMessage={emptyMessage}
-                onSnooze={handleSnooze}
-                onDone={handleDone}
-                snoozePendingId={snooze.isPending ? snooze.variables : null}
-                donePendingId={done.isPending ? done.variables : null}
-              />
-              <MissionProgressStrip cleared={progress.cleared} total={progress.total} />
-              {weeklyReviewEnabled && (
-                <WeeklyReviewSection review={weeklyReview} isLoading={isReviewLoading} />
-              )}
-              <MorningBriefHistoryPanel />
-            </>
-          )}
-        </div>
-      </main>
+            {!missions.length && emptyMessage && (
+              <p className="text-center text-sm text-text-3">{emptyMessage}</p>
+            )}
+            <MissionProgressStrip cleared={progress.cleared} total={progress.total} />
+            {weeklyReviewEnabled && (
+              <WeeklyReviewSection review={weeklyReview} isLoading={isReviewLoading} />
+            )}
+            <MorningBriefHistoryPanel />
+          </>
+        )}
+      </div>
+    </main>
   );
 }
 

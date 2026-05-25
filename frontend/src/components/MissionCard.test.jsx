@@ -1,6 +1,7 @@
-/** Tests for MissionCard deadline badge rendering. */
+/** Tests for MissionCard deadline label and row rendering. */
 
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import { describe, it, expect, vi } from "vitest";
 
@@ -17,35 +18,38 @@ const BASE_MISSION = {
   prep_ready: false,
 };
 
-function renderCard(mission = BASE_MISSION) {
+function renderCard(mission = BASE_MISSION, props = {}) {
   return render(
     <MemoryRouter>
-      <MissionCard
-        mission={mission}
-        onSnooze={vi.fn()}
-        onDone={vi.fn()}
-        isSnoozing={false}
-        isCompleting={false}
-      />
+      <ul>
+        <MissionCard
+          mission={mission}
+          onSnooze={vi.fn()}
+          onDone={vi.fn()}
+          isSnoozing={false}
+          isCompleting={false}
+          {...props}
+        />
+      </ul>
     </MemoryRouter>,
   );
 }
 
 describe("MissionCard", () => {
-  it("should show deadline badge for oa_deadlines missions", () => {
+  it("should show deadline label for oa_deadlines missions", () => {
     renderCard();
 
-    expect(screen.getByText("Due in 2 days")).toBeInTheDocument();
+    expect(screen.getByText(/Due in 2 days/)).toBeInTheDocument();
     expect(screen.getByText("OA due in 2 days")).toBeInTheDocument();
   });
 
-  it("should show overdue badge when deadline is past", () => {
+  it("should show overdue label when deadline is past", () => {
     renderCard({ ...BASE_MISSION, body: "Overdue by 1 day", reason: "OA overdue" });
 
-    expect(screen.getByText("Overdue 1 day")).toBeInTheDocument();
+    expect(screen.getByText(/Overdue 1 day/)).toBeInTheDocument();
   });
 
-  it("should not show deadline badge for non-OA sections", () => {
+  it("should not show deadline label for non-OA sections", () => {
     renderCard({
       ...BASE_MISSION,
       section: "follow_ups",
@@ -54,5 +58,18 @@ describe("MissionCard", () => {
     });
 
     expect(screen.queryByText("Due in 2 days")).not.toBeInTheDocument();
+  });
+
+  it("should expose Complete and Snooze action buttons", () => {
+    renderCard();
+
+    expect(screen.getByRole("button", { name: "Complete" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Snooze" })).toBeInTheDocument();
+  });
+
+  it("should show urgency pill for top-three priorities", () => {
+    renderCard({ ...BASE_MISSION, priority: 1 });
+
+    expect(screen.getByText("Urgent")).toBeInTheDocument();
   });
 });

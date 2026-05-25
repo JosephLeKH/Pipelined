@@ -38,6 +38,29 @@ export const MISSION_PRIORITY_PILL_STYLES = {
 
 export const MISSION_HERO_PRIORITY = 1;
 
+/** Urgency tier from mission rank — top rank is most urgent. */
+export function getMissionUrgencyTier(priority) {
+  if (priority <= 1) return "urgent";
+  if (priority === 2) return "high";
+  if (priority === 3) return "medium";
+  return "low";
+}
+
+/** Priority dot background classes keyed by urgency tier. */
+export const MISSION_PRIORITY_DOT_CLASSES = {
+  urgent: "bg-brand-600",
+  high: "bg-status-orange",
+  medium: "bg-status-warn",
+  low: "bg-status-neutral",
+};
+
+/** Inline pill labels for top-three mission ranks. */
+export const MISSION_URGENCY_LABELS = {
+  urgent: "Urgent",
+  high: "High",
+  medium: "Medium",
+};
+
 export const BRIEF_UNAVAILABLE_MESSAGE = "Brief not available right now — try again later";
 
 const SCORE_PATTERN = /(?:Match|Fit) score (\d+)/;
