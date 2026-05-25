@@ -135,6 +135,8 @@ export const AUTOPILOT_RESUME_BANNER_DISMISSED_KEY = "pipelined_autopilot_resume
 export const FOLLOW_UP_BANNER_DISMISSED_KEY = "pipelined_follow_up_banner_dismissed";
 /** Dismissed banners reappear after this many days (PRD-10). */
 export const BANNER_DISMISS_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+/** Undo toasts stay longer than default toasts so users can revert delete/archive. */
+export const UNDO_TOAST_DURATION_MS = 10000;
 export const COPILOT_TRIED_KEY = "pipelined_copilot_tried";
 export const TODAY_VISITED_KEY = "pipelined_today_visited";
 export const OPEN_COPILOT_EVENT = "pipelined:open-copilot";

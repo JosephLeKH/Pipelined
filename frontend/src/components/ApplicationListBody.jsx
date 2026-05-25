@@ -1,18 +1,19 @@
 /** Main list body: modals, bulk action bar, virtualized rows. */
 
 import { memo, useState, useEffect } from "react";
+import { toast } from "sonner";
 import { FixedSizeList } from "react-window";
 import ApplicationRow from "./ApplicationRow";
 import { ApplicationListHeader } from "./ApplicationListHeader";
 import { BulkActionBar, BulkDeleteConfirmModal } from "./ApplicationRowActions";
 import MergeDialog from "./MergeDialog";
-import UndoToast from "./UndoToast";
 import {
   APPLICATION_ROW_HEIGHT_DESKTOP,
   APPLICATION_ROW_HEIGHT_MOBILE,
   LIST_OFFSET_PX,
   MD_BREAKPOINT_PX,
 } from "../lib/constants";
+import { showUndoToast } from "../lib/showUndoToast";
 
 function useApplicationRowHeight() {
   const [height, setHeight] = useState(() =>
@@ -65,6 +66,16 @@ export function ApplicationListBody({ d, rowActions, bulkActions, onSelect, sele
   const undoMessage = undoAction?.type === "bulk_delete"
     ? `Deleted ${undoAction.count} application${undoAction.count === 1 ? "" : "s"}.`
     : undoAction?.type === "delete" ? "Application deleted." : "Application archived.";
+
+  useEffect(() => {
+    if (!undoAction) return undefined;
+    const toastId = showUndoToast(undoMessage, {
+      onUndo: handleUndo,
+      onDismiss: () => setUndoAction(null),
+    });
+    return () => toast.dismiss(toastId);
+  }, [undoAction, undoMessage, handleUndo, setUndoAction]);
+
   const rowData = {
     applications, onSelect, onArchive: handleArchive, onUnarchive: handleUnarchive,
     onDelete: handleDelete, selectedIds, onToggle: handleToggle, hasSelection, focusedIdx, selectedId,
@@ -74,7 +85,6 @@ export function ApplicationListBody({ d, rowActions, bulkActions, onSelect, sele
     <>
       {bulkDeletePending && <BulkDeleteConfirmModal count={selectedIds.size} onConfirm={handleBulkDeleteConfirm} onCancel={() => setBulkDeletePending(false)} />}
       {mergeDialogOpen && mergeApps?.length === 2 && <MergeDialog apps={mergeApps} onConfirm={handleMergeConfirm} onCancel={() => setMergeDialogOpen(false)} isPending={mergeMutation.isPending} />}
-      {undoAction && <UndoToast message={undoMessage} onUndo={handleUndo} onDismiss={() => setUndoAction(null)} />}
       <div className="flex flex-col gap-2">
         {hasSelection && (
           <BulkActionBar
