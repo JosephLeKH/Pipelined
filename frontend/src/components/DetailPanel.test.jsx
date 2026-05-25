@@ -95,28 +95,21 @@ describe("DetailPanel", () => {
   });
 
   it("should render the notes field with the saved value", () => {
-    // Arrange / Act
     render(<DetailPanel application={APP} onClose={() => {}} />, { wrapper: makeWrapper() });
 
-    // Assert — saved value shown in read-only display
-    expect(screen.getByTestId("notes-display")).toHaveTextContent("Great company!");
+    expect(screen.getByTestId("markdown-write-textarea")).toHaveValue("Great company!");
   });
 
-  it("should toggle into edit mode when the Edit notes button is clicked", async () => {
-    // Arrange
+  it("should show notes editor without save or cancel buttons", () => {
     render(<DetailPanel application={APP} onClose={() => {}} />, { wrapper: makeWrapper() });
 
-    // Act
-    await userEvent.click(screen.getByRole("button", { name: /edit notes/i }));
-
-    // Assert — textarea now visible
-    expect(screen.getByRole("textbox", { name: /notes/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /save/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /cancel/i })).toBeInTheDocument();
+    expect(screen.getByTestId("markdown-write-textarea")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /save/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /cancel/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /edit notes/i })).not.toBeInTheDocument();
   });
 
-  it("should call PATCH mutation with notes when Save is clicked", async () => {
-    // Arrange
+  it("should call PATCH mutation with notes on blur", async () => {
     let patchBody = null;
     server.use(
       http.patch("/api/applications/:id", async ({ request }) => {
@@ -125,32 +118,23 @@ describe("DetailPanel", () => {
       })
     );
     render(<DetailPanel application={APP} onClose={() => {}} />, { wrapper: makeWrapper() });
-    await userEvent.click(screen.getByRole("button", { name: /edit notes/i }));
 
-    // Act
-    const textarea = screen.getByRole("textbox", { name: /notes/i });
+    const textarea = screen.getByTestId("markdown-write-textarea");
     await userEvent.clear(textarea);
     await userEvent.type(textarea, "Updated notes");
-    await userEvent.click(screen.getByRole("button", { name: /save/i }));
+    fireEvent.blur(textarea);
 
-    // Assert
     await waitFor(() => expect(patchBody).toEqual({ notes: "Updated notes" }));
   });
 
-  it("should revert to saved value when Cancel is clicked in edit mode", async () => {
-    // Arrange
+  it("should keep draft content in editor until blur save completes", async () => {
     render(<DetailPanel application={APP} onClose={() => {}} />, { wrapper: makeWrapper() });
-    await userEvent.click(screen.getByRole("button", { name: /edit notes/i }));
 
-    // Act
-    const textarea = screen.getByRole("textbox", { name: /notes/i });
+    const textarea = screen.getByTestId("markdown-write-textarea");
     await userEvent.clear(textarea);
     await userEvent.type(textarea, "Unsaved changes");
-    await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
 
-    // Assert — back to read mode showing original value
-    expect(screen.getByTestId("notes-display")).toHaveTextContent("Great company!");
-    expect(screen.queryByRole("textbox", { name: /notes/i })).not.toBeInTheDocument();
+    expect(textarea).toHaveValue("Unsaved changes");
   });
 
   it("should call PATCH with new stage on stage select change", async () => {

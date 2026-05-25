@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { formatDate, formatDateTime, formatTime, formatRelative, toISODate } from "./dateUtils";
+import { formatDate, formatDateTime, formatTime, formatRelative, formatSavedAgo, toISODate } from "./dateUtils";
 
 describe("formatDate", () => {
   it("should format an ISO datetime string as 'Mon D, YYYY'", () => {
@@ -98,6 +98,39 @@ describe("formatRelative", () => {
 
   it("should return empty string for falsy input", () => {
     expect(formatRelative("")).toBe("");
+  });
+});
+
+describe("formatSavedAgo", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-05-25T12:00:00.000Z"));
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("should return 'just now' within 5 seconds", () => {
+    const savedAt = new Date("2026-05-25T11:59:58.000Z");
+
+    expect(formatSavedAgo(savedAt)).toBe("just now");
+  });
+
+  it("should return seconds ago for recent saves", () => {
+    const savedAt = new Date("2026-05-25T11:59:50.000Z");
+
+    expect(formatSavedAgo(savedAt)).toBe("10 s ago");
+  });
+
+  it("should return minutes ago for older saves", () => {
+    const savedAt = new Date("2026-05-25T11:57:00.000Z");
+
+    expect(formatSavedAgo(savedAt)).toBe("3 min ago");
+  });
+
+  it("should return empty string for falsy input", () => {
+    expect(formatSavedAgo(null)).toBe("");
   });
 });
 
