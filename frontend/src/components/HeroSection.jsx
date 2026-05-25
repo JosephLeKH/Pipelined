@@ -1,4 +1,4 @@
-/** Hero section for the marketing landing — AI-native positioning with mock product card. */
+/** Hero section for the marketing landing. AI-native positioning with mock product card. */
 
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -22,18 +22,18 @@ const MOCK_MISSIONS = [
   {
     icon: Briefcase,
     title: "Follow up with Stripe recruiter",
-    meta: "Sent 7d ago · No reply",
+    meta: "Sent a week ago · No reply",
     accent: true,
   },
   {
     icon: Clock,
-    title: "Confirm Linear loop — Thursday 2 PM",
+    title: "Confirm Linear loop, Thursday at 2 PM",
     meta: "Interview · 2 days",
     accent: false,
   },
   {
     icon: Check,
-    title: "Apply: Anthropic — SWE Intern",
+    title: "Apply: Anthropic, SWE Intern",
     meta: "Apply Pack draft ready",
     accent: false,
   },
@@ -63,7 +63,7 @@ function HeroProductCard() {
                 Today
               </p>
               <h3 className="mt-1 text-lg font-semibold text-text-1">
-                3 missions to clear
+                Your missions, ranked
               </h3>
             </div>
             <span className="inline-flex items-center gap-1 rounded-full border border-brand-100 bg-brand-50 px-2.5 py-1 text-[11px] font-medium text-brand-700">
@@ -106,7 +106,7 @@ function HeroProductCard() {
           <div className="mt-5 flex items-center gap-2 rounded-lg border border-dashed border-border-2 bg-surface-1 px-3 py-2.5">
             <span className="inline-flex h-1.5 w-1.5 animate-pulse-soft rounded-full bg-brand-600" aria-hidden="true" />
             <p className="text-xs text-text-2">
-              <span className="font-medium text-text-1">Autopilot</span> scanned 47 listings overnight — 3 matched your profile.
+              <span className="font-medium text-text-1">Autopilot</span> is watching your top companies overnight.
             </p>
           </div>
         </div>
@@ -133,7 +133,7 @@ export default function HeroSection() {
         <div>
           <div className="mb-5 inline-flex h-7 items-center gap-2 rounded-full border border-brand-100 bg-brand-50 px-3 text-xs font-medium text-brand-700">
             <Sparkles className="h-3 w-3" aria-hidden="true" />
-            AI-native job search · Built at Stanford
+            AI-native job search. Built at Stanford.
           </div>
 
           <h1 className="max-w-[640px] text-[2.5rem] font-semibold leading-[1.04] tracking-[-0.030em] text-text-1 md:text-[3.25rem] lg:text-[3.75rem]">
@@ -147,8 +147,8 @@ export default function HeroSection() {
 
           <p className="mt-6 max-w-[540px] text-lg leading-[1.55] text-text-2">
             Capture every application from one-click save to signed offer. Pipelined is your
-            agentic copilot — ranking missions, drafting Apply Packs, rehearsing interviews,
-            and surfacing what to do next.
+            agentic copilot. It ranks today&apos;s missions, drafts your Apply Pack, rehearses
+            interview loops, and tells you what to do next.
           </p>
 
           <div className="mt-8 flex flex-wrap items-center gap-3">
@@ -156,7 +156,7 @@ export default function HeroSection() {
               to="/register"
               className="marketing-focus inline-flex h-10 items-center gap-1 rounded-md bg-brand-700 px-5 text-sm font-medium text-white shadow-sm transition-colors duration-120 hover:bg-brand-800"
             >
-              Sign up — free
+              Get started
               <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
             </Link>
             <button
@@ -172,15 +172,15 @@ export default function HeroSection() {
           <ul className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs font-medium text-text-3">
             <li className="inline-flex items-center gap-1.5">
               <Check className="h-3 w-3 text-brand-600" aria-hidden="true" />
-              Free for students
+              Capture every job
             </li>
             <li className="inline-flex items-center gap-1.5">
               <Check className="h-3 w-3 text-brand-600" aria-hidden="true" />
-              No credit card
+              Draft every application
             </li>
             <li className="inline-flex items-center gap-1.5">
               <Check className="h-3 w-3 text-brand-600" aria-hidden="true" />
-              10 boards supported
+              Review every week
             </li>
           </ul>
         </div>

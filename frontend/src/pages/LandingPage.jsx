@@ -9,7 +9,6 @@ import MarketingFooter from "../components/marketing/MarketingFooter";
 import TrustBand from "../components/marketing/TrustBand";
 import AutopilotFlow from "../components/marketing/AutopilotFlow";
 import FeatureBento from "../components/marketing/FeatureBento";
-import MetricsBar from "../components/marketing/MetricsBar";
 import NumberedSection from "../components/marketing/NumberedSection";
 import LandingChangelog from "../components/marketing/LandingChangelog";
 import TestimonialGrid from "../components/marketing/TestimonialGrid";
@@ -31,7 +30,6 @@ function LandingPage() {
         {LANDING_SECTIONS.map((section) => (
           <NumberedSection key={section.id} {...section} />
         ))}
-        <MetricsBar />
         <LandingChangelog />
         <TestimonialGrid />
         <FinalCTA />

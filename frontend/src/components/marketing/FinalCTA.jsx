@@ -1,4 +1,4 @@
-/** Final CTA — full-bleed Cardinal Red gradient with white CTA cluster. */
+/** Final CTA. Full-bleed Cardinal Red gradient with white CTA cluster. */
 
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -43,8 +43,8 @@ export default function FinalCTA() {
               Available today.
             </h2>
             <p className="mx-auto mt-5 max-w-xl text-base leading-[1.6] text-white/80">
-              Free for students. No credit card. Sign up in 30 seconds and capture your next
-              application with one click.
+              Capture your next application with one click. Let Pipelined draft, rehearse,
+              and review the rest.
             </p>
 
             <div className="mt-9 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
@@ -52,7 +52,7 @@ export default function FinalCTA() {
                 to="/register"
                 className="marketing-focus inline-flex h-11 items-center justify-center gap-1.5 rounded-md bg-white px-6 text-sm font-semibold text-brand-700 shadow-sm transition-colors duration-120 hover:bg-white/95"
               >
-                Sign up free
+                Get started
                 <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
               </Link>
               {user && (

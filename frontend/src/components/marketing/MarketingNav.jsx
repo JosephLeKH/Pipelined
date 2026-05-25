@@ -1,4 +1,4 @@
-/** Sticky marketing top nav — 56 px, backdrop blur, mobile drawer. */
+/** Sticky marketing top nav. 56 px, backdrop blur, mobile drawer. */
 
 import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
@@ -15,9 +15,9 @@ import {
 
 const NAV_LINKS = [
   { label: "Product", to: "/#capture" },
+  { label: "Autopilot", to: "/#autopilot" },
   { label: "Changelog", to: "/#changelog" },
   { label: "Students", to: "/#testimonials" },
-  { label: "Pricing", to: "/pricing" },
 ];
 
 function MarketingNavLink({ to, children, onClick, className = "" }) {

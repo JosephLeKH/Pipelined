@@ -1,4 +1,4 @@
-/** Feature bento — mixed-size product highlight grid (Ramp-style). */
+/** Feature bento. Mixed-size product highlight grid (Ramp-style). */
 
 import MessageSquare from "lucide-react/dist/esm/icons/message-square";
 import Chrome from "lucide-react/dist/esm/icons/chrome";
@@ -37,7 +37,7 @@ function CopilotPreview() {
     { from: "you", text: "Which Stripe interviewer should I prep for?" },
     {
       from: "ai",
-      text: "Based on your loop, you have Sarah Chen — Senior PM. She tends to dig into product sense + data trade-offs.",
+      text: "Based on your loop, you have Sarah Chen, Senior PM. She tends to dig into product sense and data trade-offs.",
     },
   ];
   return (
@@ -70,7 +70,7 @@ export default function FeatureBento() {
             The toolkit
           </p>
           <h2 className="mt-3 text-display-lg tracking-[-0.025em] text-text-1">
-            Every surface a recruiter sees — covered.
+            Every surface a recruiter sees, covered.
           </h2>
         </div>
 
@@ -82,7 +82,7 @@ export default function FeatureBento() {
             </h3>
             <p className="mt-2 max-w-md text-sm leading-relaxed text-text-2">
               Grounded chat over your real applications, threads, and résumé. Cited answers
-              stream in seconds — no hallucinated companies, no made-up dates.
+              stream in seconds. No hallucinated companies. No made-up dates.
             </p>
             <CopilotPreview />
           </BentoCard>
@@ -90,15 +90,15 @@ export default function FeatureBento() {
           <BentoCard>
             <FeatureLabel icon={Chrome} label="Extension" />
             <h3 className="text-base font-semibold leading-snug text-text-1">
-              One-click capture across 10 boards.
+              One-click capture, anywhere you apply.
             </h3>
             <p className="mt-2 text-sm leading-relaxed text-text-2">
-              Reads structured listings on LinkedIn, Greenhouse, Lever, Workday — falls back
-              to GPT for anything unstructured.
+              Reads structured listings on LinkedIn, Greenhouse, Lever, and Workday. Falls
+              back to GPT for anything unstructured.
             </p>
             <div className="mt-auto pt-4">
               <div className="flex flex-wrap gap-1.5">
-                {["LinkedIn", "Greenhouse", "Lever", "Workday", "+6"].map((label) => (
+                {["LinkedIn", "Greenhouse", "Lever", "Workday"].map((label) => (
                   <span
                     key={label}
                     className="inline-flex h-6 items-center rounded-full border border-border-1 bg-surface-1 px-2 text-[11px] font-medium text-text-2"
@@ -113,10 +113,10 @@ export default function FeatureBento() {
           <BentoCard>
             <FeatureLabel icon={Calendar} label="Calendar" />
             <h3 className="text-base font-semibold leading-snug text-text-1">
-              Interviews & loops in one view.
+              Interviews and loops in one view.
             </h3>
             <p className="mt-2 text-sm leading-relaxed text-text-2">
-              Linked to applications and inboxes — never lose track of who you&apos;re talking
+              Linked to applications and inboxes. Never lose track of who you&apos;re talking
               to or when.
             </p>
           </BentoCard>
@@ -127,8 +127,8 @@ export default function FeatureBento() {
               Threads attach to apps automatically.
             </h3>
             <p className="mt-2 text-sm leading-relaxed text-text-2">
-              Read-only ingestion classifies replies, rejections, and offer letters — and
-              surfaces ghosts before you do.
+              Read-only ingestion classifies replies, rejections, and offer letters. Surfaces
+              ghosts before you do.
             </p>
           </BentoCard>
 
@@ -138,8 +138,8 @@ export default function FeatureBento() {
               Know which apps are worth your time.
             </h3>
             <p className="mt-2 text-sm leading-relaxed text-text-2">
-              Per-application fit scores against your résumé and target stack — so you spend
-              the hour on the right job.
+              Per-application fit scores against your résumé and target stack. Spend the
+              hour on the right job.
             </p>
           </BentoCard>
 

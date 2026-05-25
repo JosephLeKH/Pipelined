@@ -1,4 +1,4 @@
-/** Autopilot flow — visual narrative of the agentic loop (scan → score → draft → review). */
+/** Autopilot flow. Visual narrative of the agentic loop (scan, draft, rehearse, review). */
 
 import Radar from "lucide-react/dist/esm/icons/radar";
 import FileText from "lucide-react/dist/esm/icons/file-text";
@@ -11,30 +11,30 @@ const FLOW_STEPS = [
   {
     icon: Radar,
     label: "01 · Scan",
-    title: "Watchlist scans 10 boards nightly.",
+    title: "Watchlist scans the major boards nightly.",
     description:
-      "While you sleep, Autopilot crawls LinkedIn, Greenhouse, Lever, Workday and 6 more — filtering by your profile, tags, and salary band.",
+      "While you sleep, Autopilot crawls LinkedIn, Greenhouse, Lever, Workday and more. It filters by your profile, tags, and salary band.",
   },
   {
     icon: FileText,
     label: "02 · Draft",
     title: "Apply Pack writes a tailored draft.",
     description:
-      "Resume bullets, cover letter, and \"why this company\" — cited from your résumé and the JD. Streams in 8–10 seconds. You copy and send.",
+      "Resume bullets, cover letter, and \"why this company,\" cited from your résumé and the JD. You copy. You send.",
   },
   {
     icon: Mic,
     label: "03 · Rehearse",
     title: "Mock Interview runs in your browser.",
     description:
-      "Behavioural or technical, scored against the actual role. SSE streaming, real conversation feel. Debrief surfaces what to fix.",
+      "Behavioural or technical, scored against the actual role. Live conversation feel. The debrief tells you exactly what to fix.",
   },
   {
     icon: LineChart,
     label: "04 · Review",
-    title: "Weekly Review email lands Monday.",
+    title: "Weekly Review lands every Monday.",
     description:
-      "Pipeline funnel, ghost rate, response times, and what moved this week — so you know what to double down on.",
+      "Pipeline funnel, ghost rate, response times, and what moved this week. You see what to double down on.",
   },
 ];
 
@@ -61,7 +61,7 @@ export default function AutopilotFlow() {
           </h2>
           <p className="mt-4 text-base leading-[1.6] text-text-2">
             Pipelined isn&apos;t a spreadsheet with autocomplete. It&apos;s a system of agents
-            that scout, draft, rehearse, and review — so your job search compounds while you
+            that scout, draft, rehearse, and review. Your job search compounds while you
             sleep.
           </p>
         </div>
@@ -102,7 +102,7 @@ export default function AutopilotFlow() {
           <p className="text-center text-sm leading-relaxed text-text-2">
             <span className="font-semibold text-text-1">Suggest-only by policy.</span>{" "}
             Autopilot drafts and Mock Interviews <em>never</em> auto-send. You review, edit,
-            and ship — Pipelined just removes the friction in between.
+            and ship. Pipelined just removes the friction in between.
           </p>
         </div>
       </div>

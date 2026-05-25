@@ -1,4 +1,4 @@
-/** Trust band — slim social-proof strip with university affiliations under the hero. */
+/** Trust band. Slim social-proof strip with university affiliations under the hero. */
 
 const SCHOOLS = [
   "Stanford",
