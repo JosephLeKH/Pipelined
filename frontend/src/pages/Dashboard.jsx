@@ -45,6 +45,7 @@ function DashboardContent({
   isImportOpen,
   onCloseModal,
   onCloseImport,
+  addPrefillStage,
   followUpsDue,
   onViewFollowUps,
   expandFollowUpDraft,
@@ -74,7 +75,11 @@ function DashboardContent({
         </section>
         <section role="region" aria-label="Application board">
           {viewMode === "kanban" ? (
-            <KanbanBoard filters={filters} onSelect={onSelect} />
+            <KanbanBoard
+              filters={filters}
+              onSelect={onSelect}
+              onAddStage={(stage) => onAdd(stage)}
+            />
           ) : (
             <ApplicationList
               filters={filters}
@@ -93,7 +98,7 @@ function DashboardContent({
         onClose={onClosePanel}
         expandFollowUpDraft={expandFollowUpDraft}
       />
-      <ManualAddForm isOpen={isModalOpen} onClose={onCloseModal} />
+      <ManualAddForm isOpen={isModalOpen} onClose={onCloseModal} initialStage={addPrefillStage} />
       <CsvImportModal isOpen={isImportOpen} onClose={onCloseImport} />
     </div>
   );
@@ -104,6 +109,7 @@ function Dashboard() {
   const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isImportOpen, setIsImportOpen] = useState(false);
+  const [addPrefillStage, setAddPrefillStage] = useState("");
 
   useEffect(() => {
     if (searchParams.get("gmail_connected") === "1") {
@@ -140,7 +146,15 @@ function Dashboard() {
     catch { console.warn("[dashboard] Failed to persist view mode to localStorage"); }
   }, []);
   const shortcutsEnabled = !isModalOpen && !isImportOpen;
-  useHotkeys("a", () => setIsModalOpen(true), { enabled: shortcutsEnabled });
+  const openAddModal = useCallback((stage = "") => {
+    setAddPrefillStage(stage);
+    setIsModalOpen(true);
+  }, []);
+  const closeAddModal = useCallback(() => {
+    setIsModalOpen(false);
+    setAddPrefillStage("");
+  }, []);
+  useHotkeys("a", () => openAddModal(), { enabled: shortcutsEnabled });
   return (
     <>
       <DashboardContent
@@ -149,9 +163,10 @@ function Dashboard() {
         applicationCount={stats?.data?.total_applied}
         isExporting={isExporting}
         onExport={handleExport}
-        filters={filters} onSelect={handleSelect} onAdd={() => setIsModalOpen(true)} onImportCsv={() => setIsImportOpen(true)}
+        filters={filters} onSelect={handleSelect} onAdd={openAddModal} onImportCsv={() => setIsImportOpen(true)}
         shortcutsEnabled={shortcutsEnabled} onClearFilters={handleClearFilters} selectedApp={selectedApp} selectedId={selectedId} onClosePanel={handleClosePanel}
-        isModalOpen={isModalOpen} isImportOpen={isImportOpen} onCloseModal={() => setIsModalOpen(false)} onCloseImport={() => setIsImportOpen(false)}
+        isModalOpen={isModalOpen} isImportOpen={isImportOpen} onCloseModal={closeAddModal} onCloseImport={() => setIsImportOpen(false)}
+        addPrefillStage={addPrefillStage}
         followUpsDue={stats?.follow_ups_due ?? 0}
         onViewFollowUps={() => handleViewFollowUps(stats?.first_follow_up_due_id)}
         expandFollowUpDraft={expandFollowUpDraft}

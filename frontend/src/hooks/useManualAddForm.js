@@ -1,6 +1,6 @@
 /** Composition hook: state + dialog + submit logic for ManualAddForm. */
 
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 
 import { useCreateApplication } from "./useApplications";
 import { useAuth } from "../context/AuthContext";
@@ -19,13 +19,17 @@ const buildBody = ({ roleTitle, company, sourceUrl, dateApplied, stage, compensa
   tags,
 });
 
-export function useManualAddForm({ isOpen, onClose }) {
+export function useManualAddForm({ isOpen, onClose, initialStage = "" }) {
   const { mutate, isPending, error: mutationError, reset } = useCreateApplication();
   const { user } = useAuth();
   const stageOptions = user?.default_stages ?? [];
   const formState = useManualAddFormState({ reset });
   const { resetForm, setFieldErrors, roleTitle, company, sourceUrl, dateApplied,
-          stage, compensation, location, remoteStatus, companyType, tags } = formState;
+          stage, setStage, compensation, location, remoteStatus, companyType, tags } = formState;
+
+  useEffect(() => {
+    if (isOpen && initialStage) setStage(initialStage);
+  }, [isOpen, initialStage, setStage]);
   const isDuplicate = mutationError?.code === DUPLICATE_CODE;
   const existingId = mutationError?.details?.existing_id;
 

@@ -11,8 +11,8 @@ import {
   DialogTitle,
 } from "./ui/dialog";
 
-function ManualAddForm({ isOpen, onClose }) {
-  const hook = useManualAddForm({ isOpen, onClose });
+function ManualAddForm({ isOpen, onClose, initialStage = "" }) {
+  const hook = useManualAddForm({ isOpen, onClose, initialStage });
   const { handleClose, handleSubmit, isPending } = hook;
 
   return (

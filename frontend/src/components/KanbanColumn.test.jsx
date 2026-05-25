@@ -31,17 +31,19 @@ const makeApp = (overrides = {}) => ({
 });
 
 describe("KanbanColumn", () => {
-  it("should render stage name and application count badge", () => {
+  it("should render stage name and application count", () => {
     render(<KanbanColumn stage="Applied" applications={[makeApp()]} onSelect={vi.fn()} />);
 
     expect(screen.getByText("Applied")).toBeInTheDocument();
     expect(screen.getByLabelText("1 applications")).toBeInTheDocument();
+    expect(screen.getByText("(1)")).toBeInTheDocument();
   });
 
   it("should render empty drop zone when no applications", () => {
     render(<KanbanColumn stage="Offer" applications={[]} onSelect={vi.fn()} />);
 
-    expect(screen.getByLabelText("No applications")).toBeInTheDocument();
+    expect(screen.getByLabelText("Drop applications here")).toBeInTheDocument();
+    expect(screen.getByText("Drop applications here")).toBeInTheDocument();
   });
 
   it("should render a KanbanCard for each application", () => {
@@ -63,5 +65,17 @@ describe("KanbanColumn", () => {
     fireEvent.click(screen.getByTestId("kanban-card"));
 
     expect(onSelect).toHaveBeenCalledWith(app);
+  });
+
+  it("should call onAddStage when column add button is clicked", () => {
+    const onAddStage = vi.fn();
+
+    render(
+      <KanbanColumn stage="Applied" applications={[makeApp()]} onSelect={vi.fn()} onAddStage={onAddStage} />,
+    );
+
+    fireEvent.click(screen.getByLabelText("Add application to Applied"));
+
+    expect(onAddStage).toHaveBeenCalledWith("Applied");
   });
 });
