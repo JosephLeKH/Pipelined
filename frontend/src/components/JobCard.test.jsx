@@ -60,10 +60,10 @@ describe("JobCard", () => {
     expect(screen.getByTestId("fit-badge")).toHaveTextContent("92%");
   });
 
-  it("should be 160 px tall", () => {
+  it("should have a 160px minimum height so cards in a row visually align", () => {
     render(<JobCard job={JOB} />);
 
-    expect(screen.getByTestId("job-card")).toHaveClass("h-40");
+    expect(screen.getByTestId("job-card")).toHaveClass("min-h-40");
   });
 
   it("should call onSelect when tile is clicked", () => {

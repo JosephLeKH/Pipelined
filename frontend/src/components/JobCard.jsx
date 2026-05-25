@@ -56,7 +56,7 @@ function JobCard({ job, score, onSelect }) {
   return (
     <article
       className={cn(
-        "relative flex h-40 flex-col rounded-lg border border-border-1 bg-surface-0 p-4",
+        "relative flex min-h-40 flex-col overflow-hidden rounded-lg border border-border-1 bg-surface-0 p-4",
         "cursor-pointer hover:bg-surface-1 motion-reduce:transition-none transition-colors duration-[120ms] ease-out",
         TILE_FOCUS
       )}
@@ -76,7 +76,7 @@ function JobCard({ job, score, onSelect }) {
         {showFit && <FitBadge score={fitScore} />}
       </div>
 
-      <p className="mt-1 line-clamp-2 text-[13px] leading-snug text-text-2">{role}</p>
+      <p className="mt-1 line-clamp-3 text-[13px] leading-snug text-text-2">{role}</p>
 
       <p className="mt-1 truncate text-xs text-text-3">{formatMetaLine(job)}</p>
 
