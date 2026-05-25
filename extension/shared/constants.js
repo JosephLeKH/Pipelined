@@ -13,8 +13,8 @@ export const PAGE_TEXT_MAX_CHARS = 3200;
 export const JOB_DESCRIPTION_MAX_CHARS = 8000;
 export const MAX_RECENT = 5;
 
-export const API_BASE = "https://api.pipelined.app";
-export const APP_DASHBOARD_URL = "https://app.pipelined.app/dashboard";
+export const API_BASE = "https://pipelined-zci7h.ondigitalocean.app";
+export const APP_DASHBOARD_URL = "https://pipelined-zci7h.ondigitalocean.app/dashboard";
 
 export const MS_PER_DAY = 86400000;
 export const MS_PER_HOUR = 3600000;

@@ -5,7 +5,7 @@
   "description": "Track job applications in one click.",
   "permissions": ["storage", "activeTab"],
   "host_permissions": [
-    "https://api.pipelined.app/*"
+    "https://pipelined-zci7h.ondigitalocean.app/*"
   ],
   "content_scripts": [
     {
@@ -33,11 +33,6 @@
     "type": "module"
   },
   "action": {
-    "default_popup": "popup/popup.html",
-    "default_icon": {
-      "16": "icons/icon-16.png",
-      "48": "icons/icon-48.png",
-      "128": "icons/icon-128.png"
-    }
+    "default_popup": "popup/popup.html"
   }
 }
