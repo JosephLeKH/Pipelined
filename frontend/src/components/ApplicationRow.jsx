@@ -34,14 +34,22 @@ const STALE_DAYS = 14;
 const TERMINAL_STAGES = ['Offer', 'Rejected'];
 
 
+const MUTED_STAGE_LABELS = new Set(["Rejected", "Withdrawn"]);
+
 export function StagePill({ stage }) {
   const color = STAGE_COLORS[stage] ?? DEFAULT_STAGE_COLOR;
+  const muted = MUTED_STAGE_LABELS.has(stage);
   return (
     <span
       aria-label={stage}
-      className={`rounded-full text-xs font-medium px-2.5 py-1 inline-flex items-center gap-1.5 ${color.bg} ${color.text}`}
+      data-testid="stage-pill"
+      className={`inline-flex items-center gap-1.5 text-xs text-text-1 ${muted ? "line-through" : ""}`}
     >
-      <span className={`h-1.5 w-1.5 rounded-full ${color.dot}`} />
+      <span
+        className="h-1.5 w-1.5 shrink-0 rounded-full"
+        style={{ backgroundColor: color.dotColor }}
+        aria-hidden="true"
+      />
       {stage}
     </span>
   );

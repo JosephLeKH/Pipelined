@@ -1,20 +1,32 @@
 /** App-wide constants: stage colors, breakpoints, timings. */
 
-export const STAGE_COLORS = {
-  Applied: { bg: "bg-brand-100 dark:bg-brand-900/30", text: "text-brand-800 dark:text-brand-300", dot: "bg-brand-500 dark:bg-brand-400", border: "border-brand-500 dark:border-brand-400", activeBg: "bg-brand-500 dark:bg-brand-400" },
-  "Phone Screen": { bg: "bg-blue-100 dark:bg-blue-900/30", text: "text-blue-800 dark:text-blue-300", dot: "bg-status-info dark:bg-blue-400", border: "border-status-info dark:border-blue-400", activeBg: "bg-status-info dark:bg-blue-400" },
-  Onsite: { bg: "bg-amber-100 dark:bg-amber-900/30", text: "text-amber-800 dark:text-amber-300", dot: "bg-amber-500 dark:bg-amber-400", border: "border-amber-500 dark:border-amber-400", activeBg: "bg-amber-500 dark:bg-amber-400" },
-  Offer: { bg: "bg-emerald-100 dark:bg-emerald-900/30", text: "text-emerald-800 dark:text-emerald-300", dot: "bg-emerald-500 dark:bg-emerald-400", border: "border-emerald-500 dark:border-emerald-400", activeBg: "bg-emerald-500 dark:bg-emerald-400" },
-  Rejected: { bg: "bg-rose-100 dark:bg-rose-900/30", text: "text-rose-800 dark:text-rose-300", dot: "bg-rose-500 dark:bg-rose-400", border: "border-rose-500 dark:border-rose-400", activeBg: "bg-rose-500 dark:bg-rose-400" },
+/** PRD-00 §3.4 dot hex values — dots only; pill backgrounds are never tinted in list rows. */
+const D = {
+  neutral: "#71717A",
+  info: "#3B82F6",
+  violet: "#8B5CF6",
+  warn: "#F59E0B",
+  orange: "#F97316",
+  success: "#175E54",
 };
 
-export const DEFAULT_STAGE_COLOR = {
-  bg: "bg-gray-100 dark:bg-gray-800",
-  text: "text-gray-800 dark:text-gray-200",
-  dot: "bg-gray-500 dark:bg-gray-400",
-  border: "border-gray-400 dark:border-gray-600",
-  activeBg: "bg-gray-500 dark:bg-gray-400",
+/** @param {string} hex @param {string} bg @param {string} text @param {string} [border] */
+function sc(hex, bg, text, border = `border-[${hex}]`) {
+  return { dotColor: hex, dot: `bg-[${hex}]`, bg, text, border, activeBg: `bg-[${hex}]` };
+}
+
+export const STAGE_COLORS = {
+  "To Apply": sc(D.neutral, "bg-surface-1 dark:bg-surface-2", "text-text-2 dark:text-text-2", "border-border-1"),
+  Applied: sc(D.info, "bg-blue-100 dark:bg-blue-900/30", "text-blue-800 dark:text-blue-300"),
+  "Phone Screen": sc(D.violet, "bg-violet-100 dark:bg-violet-900/30", "text-violet-800 dark:text-violet-300"),
+  Technical: sc(D.warn, "bg-amber-100 dark:bg-amber-900/30", "text-amber-800 dark:text-amber-300"),
+  Onsite: sc(D.orange, "bg-orange-100 dark:bg-orange-900/30", "text-orange-800 dark:text-orange-300"),
+  Offer: sc(D.success, "bg-emerald-100 dark:bg-emerald-900/30", "text-emerald-800 dark:text-emerald-300"),
+  Rejected: sc(D.neutral, "bg-surface-1 dark:bg-surface-2", "text-text-3 dark:text-text-3", "border-border-1"),
+  Withdrawn: sc(D.neutral, "bg-surface-1 dark:bg-surface-2", "text-text-3 dark:text-text-3", "border-border-1"),
 };
+
+export const DEFAULT_STAGE_COLOR = sc(D.neutral, "bg-surface-1 dark:bg-surface-2", "text-text-2 dark:text-text-2", "border-border-1");
 
 export const MS_PER_DAY = 86_400_000;
 
@@ -102,7 +114,16 @@ export const BULK_MAX_IDS = 500;
 
 export const BULK_EDIT_MAX_IDS = 50;
 
-export const STAGES = Object.keys(STAGE_COLORS);
+export const DEFAULT_PIPELINE_STAGES = [
+  "Applied",
+  "Phone Screen",
+  "Onsite",
+  "Offer",
+  "Rejected",
+];
+
+/** Default kanban column order when user prefs are unavailable. */
+export const STAGES = DEFAULT_PIPELINE_STAGES;
 
 export const VIEW_MODE_STORAGE_KEY = "pipelined_view_mode";
 

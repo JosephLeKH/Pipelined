@@ -1,19 +1,14 @@
-/** Colored pill displaying AI resume-job fit score. */
+/** Fit score display — sparkle + percent, no pill background (PRD-04 §7.4). */
 
-import { BADGE_FIT_HIGH, BADGE_FIT_MEDIUM, BADGE_FIT_LOW, BADGE_FIT_CRITICAL } from "../lib/designTokens";
+import Sparkles from "lucide-react/dist/esm/icons/sparkles";
 
-const FIT_HIGH_MIN = 80;
-const FIT_MED_MIN = 50;
-const FIT_LOW_MIN = 30;
+const FIT_HIGH_MIN = 70;
+const FIT_MED_MIN = 40;
 
-function fitColor(score) {
-  if (score === null || score === undefined) {
-    return "bg-muted text-muted-foreground";
-  }
-  if (score >= FIT_HIGH_MIN) return BADGE_FIT_HIGH;
-  if (score >= FIT_MED_MIN) return BADGE_FIT_MEDIUM;
-  if (score >= FIT_LOW_MIN) return BADGE_FIT_LOW;
-  return BADGE_FIT_CRITICAL;
+function scoreTextClass(score) {
+  if (score >= FIT_HIGH_MIN) return "text-xs font-semibold text-text-1";
+  if (score >= FIT_MED_MIN) return "text-xs font-semibold text-text-2";
+  return "text-xs font-semibold text-text-3";
 }
 
 function FitBadge({ score }) {
@@ -22,15 +17,18 @@ function FitBadge({ score }) {
   }
 
   const label = `${score}%`;
-  const colorClass = fitColor(score);
+  const showSparkle = score >= FIT_HIGH_MIN;
 
   return (
     <span
-      className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${colorClass}`}
+      className="inline-flex w-11 items-center justify-end gap-0.5"
       aria-label={`Fit score: ${label}`}
       data-testid="fit-badge"
     >
-      {label}
+      {showSparkle && (
+        <Sparkles className="h-[11px] w-[11px] shrink-0 text-brand-600" aria-hidden="true" />
+      )}
+      <span className={scoreTextClass(score)}>{label}</span>
     </span>
   );
 }
