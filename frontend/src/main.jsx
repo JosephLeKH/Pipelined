@@ -16,6 +16,7 @@ import { QUERY_STALE_TIME_MS } from "./lib/constants";
 import { initAnalytics } from "./lib/analytics";
 import "./index.css";
 import "./styles/animations.css";
+import "./styles/marketing.css";
 
 if (import.meta.env.VITE_POSTHOG_KEY) {
   initAnalytics();

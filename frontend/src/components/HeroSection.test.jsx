@@ -14,6 +14,7 @@ describe("HeroSection", () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText("Get Started Free")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /sign up — free/i })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(/pipeline for/i);
   });
 });

@@ -48,11 +48,20 @@ function renderTimeline(slug = TEST_SLUG) {
 }
 
 describe("PublicTimeline", () => {
-  it("should render the display name and application after load", async () => {
+  it("should render marketing chrome and metadata after load", async () => {
     renderTimeline();
 
-    expect(await screen.findByText("Jane Doe's Job Search")).toBeInTheDocument();
-    expect(screen.getByText("Acme Corp")).toBeInTheDocument();
+    expect(await screen.findByText(/jane doe · job search timeline/i)).toBeInTheDocument();
+    expect(screen.getByText(/1 applications/)).toBeInTheDocument();
+    expect(screen.getByText(/1 interviews/)).toBeInTheDocument();
+    expect(screen.getAllByText("Pipelined").length).toBeGreaterThan(0);
+    expect(screen.getByText(/built by a stanford cs student/i)).toBeInTheDocument();
+  });
+
+  it("should render application rows in read-only timeline", async () => {
+    renderTimeline();
+
+    expect(await screen.findByText("Acme Corp")).toBeInTheDocument();
     expect(screen.getByText("Software Engineer")).toBeInTheDocument();
   });
 
@@ -68,11 +77,11 @@ describe("PublicTimeline", () => {
     expect(await screen.findByText("Link not found")).toBeInTheDocument();
   });
 
-  it("should render the CTA link to register", async () => {
+  it("should render the Cardinal CTA link to register", async () => {
     renderTimeline();
 
-    await screen.findByText("Jane Doe's Job Search");
+    await screen.findByText(/jane doe · job search timeline/i);
 
-    expect(screen.getByRole("link", { name: /track yours free/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /track yours/i })).toHaveAttribute("href", "/register");
   });
 });

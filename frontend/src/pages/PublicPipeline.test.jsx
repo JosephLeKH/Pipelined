@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import PublicPipeline from "./PublicPipeline";
 
@@ -62,19 +62,35 @@ describe("PublicPipeline", () => {
     expect(screen.getByText(/link not found/i)).toBeInTheDocument();
   });
 
-  it("should render the pipeline owner display name in the header", () => {
+  it("should render marketing nav and footer", () => {
     renderPage();
 
-    expect(screen.getByText(/jane doe's pipeline/i)).toBeInTheDocument();
+    expect(screen.getByRole("navigation", { name: /primary/i })).toBeInTheDocument();
+    expect(screen.getAllByText("Pipelined").length).toBeGreaterThan(0);
+    expect(screen.getByText(/built by a stanford cs student/i)).toBeInTheDocument();
   });
 
-  it("should render stat cards for total applied and active count", () => {
+  it("should render the pipeline owner display name in metadata", () => {
     renderPage();
 
-    expect(screen.getByText("42")).toBeInTheDocument();
-    expect(screen.getByText("Total Applied")).toBeInTheDocument();
-    expect(screen.getByText("10")).toBeInTheDocument();
-    expect(screen.getByText("Active")).toBeInTheDocument();
+    expect(screen.getByText(/jane doe · job search pipeline/i)).toBeInTheDocument();
+    expect(screen.getByText(/42 applications/)).toBeInTheDocument();
+    expect(screen.getByText(/1 interviews/)).toBeInTheDocument();
+  });
+
+  it("should render the Cardinal track-yours CTA bar", () => {
+    renderPage();
+
+    expect(screen.getByText(/want to track yours/i)).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /track yours/i })).toHaveAttribute("href", "/register");
+  });
+
+  it("should render stage strip chips for each stage", () => {
+    renderPage();
+
+    const stageSection = screen.getByLabelText(/pipeline stages/i);
+    expect(within(stageSection).getByText("Applied")).toBeInTheDocument();
+    expect(within(stageSection).getByText("Phone Screen")).toBeInTheDocument();
   });
 
   it("should render a row for each application in the pipeline", () => {
