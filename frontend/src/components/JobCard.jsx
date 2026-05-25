@@ -7,9 +7,24 @@ import FitBadge from "./FitBadge";
 import { Button } from "./ui/button";
 import { useCreateApplication } from "../hooks/useApplications";
 import { cn } from "../lib/utils";
+import { formatDateShort } from "../lib/dateUtils";
+import { MS_PER_DAY } from "../lib/constants";
 
 const TILE_FOCUS =
   "focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 focus-visible:outline-offset-2 dark:focus-visible:outline-1";
+
+function formatPostedCompact(isoString) {
+  if (!isoString) return null;
+  const date = new Date(isoString);
+  const now = new Date();
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const targetStart = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  const diffDays = Math.round((todayStart - targetStart) / MS_PER_DAY);
+  if (diffDays <= 0) return "Today";
+  if (diffDays === 1) return "1d ago";
+  if (diffDays <= 30) return `${diffDays}d ago`;
+  return formatDateShort(isoString);
+}
 
 function formatMetaLine(job) {
   const parts = [];
@@ -31,6 +46,7 @@ function JobCard({ job, score, onSelect }) {
   const role = job.role ?? "Untitled Role";
   const fitScore = score ?? job.score;
   const showFit = typeof fitScore === "number" && fitScore > 0;
+  const posted = formatPostedCompact(job.date_posted);
 
   const handleTrack = useCallback(
     (event) => {
@@ -80,7 +96,10 @@ function JobCard({ job, score, onSelect }) {
 
       <p className="mt-1 truncate text-xs text-text-3">{formatMetaLine(job)}</p>
 
-      <div className="mt-auto pt-2">
+      <div className="mt-auto flex items-center justify-between gap-2 pt-2">
+        <span className="min-w-0 truncate text-xs text-text-3">
+          {posted ? `Posted ${posted}` : ""}
+        </span>
         <Button
           type="button"
           variant="secondary"

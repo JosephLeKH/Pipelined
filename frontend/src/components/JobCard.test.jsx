@@ -93,6 +93,21 @@ describe("JobCard", () => {
     expect(toast.success).toHaveBeenCalledWith("Tracking Anthropic · Forward Deployed Engineer");
   });
 
+  it("should render posted date label when date_posted is provided", () => {
+    const twoDaysAgo = new Date();
+    twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+
+    render(<JobCard job={{ ...JOB, date_posted: twoDaysAgo.toISOString() }} />);
+
+    expect(screen.getByText("Posted 2d ago")).toBeInTheDocument();
+  });
+
+  it("should omit posted label when date_posted is missing", () => {
+    render(<JobCard job={JOB} />);
+
+    expect(screen.queryByText(/^Posted /)).not.toBeInTheDocument();
+  });
+
   it("should render fallback text when role and company are null", () => {
     render(<JobCard job={{ ...JOB, role: null, company: null, location: null, remote_status: null, experience_level: null, score: null }} />);
 
