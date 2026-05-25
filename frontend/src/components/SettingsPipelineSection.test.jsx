@@ -10,11 +10,29 @@ vi.mock("../hooks/useAuth", () => ({
   useUpdateUser: vi.fn(),
 }));
 
-vi.mock("./PipelineStagesEditor", () => ({
-  default: ({ onSave }) => (
-    <button onClick={() => onSave(["Applied", "Phone Screen"])}>Stub Save Stages</button>
-  ),
-}));
+vi.mock("./PipelineStagesEditor", () => {
+  const React = require("react");
+  return {
+    default: function MockPipelineStagesEditor({ onSave, onDirtyChange, saveSignal }) {
+      React.useEffect(() => {
+        if (saveSignal > 0) {
+          onSave(["Applied", "Phone Screen"]);
+        }
+      }, [saveSignal, onSave]);
+
+      return (
+        <div>
+          <button type="button" onClick={() => onDirtyChange?.(true)}>
+            Mark dirty
+          </button>
+          <button type="button" onClick={() => onSave(["Applied", "Phone Screen"])}>
+            Stub Save Stages
+          </button>
+        </div>
+      );
+    },
+  };
+});
 
 vi.mock("./WeeklyGoalSection", () => ({
   default: () => <div data-testid="weekly-goal-stub" />,
@@ -38,7 +56,7 @@ describe("SettingsPipelineSection", () => {
     useUpdateUser.mockReturnValue({ mutateAsync: mockMutateAsync, isPending: false, error: null });
   });
 
-  it("should render Pipeline Stages heading", () => {
+  it("should render Pipeline stages heading", () => {
     render(<SettingsPipelineSection />);
 
     expect(screen.getByRole("heading", { name: /pipeline stages/i })).toBeInTheDocument();
@@ -50,14 +68,15 @@ describe("SettingsPipelineSection", () => {
     expect(screen.getByRole("button", { name: /stub save stages/i })).toBeInTheDocument();
   });
 
-  it("should show success banner after save", async () => {
+  it("should show Saved microcopy after save via shell footer", async () => {
     mockMutateAsync.mockResolvedValue({ default_stages: ["Applied", "Phone Screen"] });
 
     render(<SettingsPipelineSection />);
 
-    fireEvent.click(screen.getByRole("button", { name: /stub save stages/i }));
+    fireEvent.click(screen.getByRole("button", { name: /mark dirty/i }));
+    fireEvent.click(screen.getByRole("button", { name: /^save$/i }));
 
-    expect(await screen.findByRole("alert")).toHaveTextContent("Stages saved successfully.");
+    expect(await screen.findByText("Saved")).toBeInTheDocument();
   });
 
   it("should show streak badge when user has a weekly streak", () => {

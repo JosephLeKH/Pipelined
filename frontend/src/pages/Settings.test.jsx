@@ -175,25 +175,31 @@ describe("Settings page", () => {
         expect(screen.getByDisplayValue("Applied")).toBeInTheDocument();
       });
 
-      await userEvent.click(screen.getByRole("button", { name: /save stages/i }));
+      const input = screen.getByRole("textbox", { name: /new stage name/i });
+      await userEvent.type(input, "Screening");
+      await userEvent.click(screen.getByRole("button", { name: /add stage/i }));
+      await userEvent.click(screen.getByRole("button", { name: /^save$/i }));
 
       await waitFor(() => {
         expect(patchSpy).toHaveBeenCalledWith({
-          default_stages: DEFAULT_STAGES,
+          default_stages: [...DEFAULT_STAGES, "Screening"],
         });
       });
     });
 
-    it("should show success message after saving", async () => {
+    it("should show Saved microcopy after saving", async () => {
       render(null, { wrapper: makeWrapper(["/settings/stages"]) });
       await waitFor(() => {
         expect(screen.getByDisplayValue("Applied")).toBeInTheDocument();
       });
 
-      await userEvent.click(screen.getByRole("button", { name: /save stages/i }));
+      const input = screen.getByRole("textbox", { name: /new stage name/i });
+      await userEvent.type(input, "Screening");
+      await userEvent.click(screen.getByRole("button", { name: /add stage/i }));
+      await userEvent.click(screen.getByRole("button", { name: /^save$/i }));
 
       await waitFor(() => {
-        expect(screen.getByRole("alert")).toHaveTextContent(/saved successfully/i);
+        expect(screen.getByText("Saved")).toBeInTheDocument();
       });
     });
   });
