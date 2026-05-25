@@ -78,12 +78,12 @@ describe("Dashboard", () => {
     expect(screen.getAllByRole("button", { name: /add application/i }).length).toBeGreaterThan(0);
   });
 
-  it("should render FilterBar stage checkboxes", async () => {
+  it("should render FilterBar stage filter trigger", async () => {
     // Arrange / Act
     render(<Dashboard />, { wrapper: makeWrapper() });
 
-    // Assert — FilterBar renders stage checkboxes
-    expect(await screen.findByRole("checkbox", { name: /applied/i })).toBeInTheDocument();
+    // Assert — FilterBar renders inline stage dropdown
+    expect(await screen.findByRole("button", { name: /filter by stage/i })).toBeInTheDocument();
   });
 
   it("should render ApplicationList with application data", async () => {

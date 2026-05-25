@@ -66,13 +66,13 @@ function DashboardContent({
         onExport={onExport}
         onAdd={onAdd}
       />
+      <FilterBar />
       <div className="flex flex-col gap-4 px-4 pb-6">
         <section role="region" aria-label="Goal progress and statistics">
           <GoalProgress />
           <StatsBar />
         </section>
         <section role="region" aria-label="Application board">
-          <FilterBar />
           {viewMode === "kanban" ? (
             <KanbanBoard filters={filters} onSelect={onSelect} />
           ) : (
