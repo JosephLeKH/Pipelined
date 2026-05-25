@@ -8,6 +8,7 @@ import X from "lucide-react/dist/esm/icons/x";
 
 import { useAuth } from "../context/AuthContext";
 import { AUTOPILOT_RESUME_BANNER_DISMISSED_KEY } from "../lib/constants";
+import { dismissBanner, isBannerDismissed } from "../lib/utils";
 import { Button } from "./ui/button";
 
 const BANNER_FOCUS_RING =
@@ -15,48 +16,41 @@ const BANNER_FOCUS_RING =
 
 function AutopilotResumeBanner() {
   const { user } = useAuth();
-  const [dismissed, setDismissed] = useState(
-    () => localStorage.getItem(AUTOPILOT_RESUME_BANNER_DISMISSED_KEY) === "true"
+  const [dismissed, setDismissed] = useState(() =>
+    isBannerDismissed(AUTOPILOT_RESUME_BANNER_DISMISSED_KEY)
   );
 
   if (user?.has_resume || dismissed) return null;
 
   const handleDismiss = () => {
-    localStorage.setItem(AUTOPILOT_RESUME_BANNER_DISMISSED_KEY, "true");
+    dismissBanner(AUTOPILOT_RESUME_BANNER_DISMISSED_KEY);
     setDismissed(true);
   };
 
   return (
     <div
-      className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border-1 bg-surface-1 p-4"
-      role="alert"
-      aria-live="polite"
+      role="status"
       data-testid="autopilot-resume-banner"
+      className="flex h-9 items-center gap-3 border-b border-border-1 bg-surface-1 px-4 text-xs text-text-1"
     >
-      <div className="flex min-w-0 items-center gap-2">
-        <FileText className="h-4 w-4 shrink-0 text-brand-600" aria-hidden="true" />
-        <span className="text-sm font-medium text-text-1">
-          Upload a resume to enable autopilot job matching
-        </span>
-      </div>
-      <div className="flex shrink-0 items-center gap-2">
-        <Button type="button" variant="ghost" size="sm" asChild>
-          <Link
-            to="/settings?section=resume"
-            className="text-xs font-medium text-brand-700 hover:bg-surface-2 hover:text-brand-800 dark:text-brand-300"
-          >
-            Upload resume
-          </Link>
-        </Button>
-        <button
-          type="button"
-          onClick={handleDismiss}
-          aria-label="Dismiss"
-          className={`inline-flex h-4 w-4 items-center justify-center rounded text-text-3 hover:bg-surface-2 hover:text-text-1 motion-reduce:transition-none transition-colors duration-hover ease-out ${BANNER_FOCUS_RING}`}
+      <FileText size={14} aria-hidden="true" className="shrink-0 text-brand-600" />
+      <span className="min-w-0 truncate">Upload a resume to enable autopilot job matching</span>
+      <Button type="button" variant="ghost" size="sm" asChild className="h-6 shrink-0 px-2 text-xs">
+        <Link
+          to="/settings?section=resume"
+          className="text-brand-700 hover:bg-surface-2 hover:text-brand-800 dark:text-brand-300"
         >
-          <X className="h-3.5 w-3.5" aria-hidden="true" />
-        </button>
-      </div>
+          Upload resume
+        </Link>
+      </Button>
+      <button
+        type="button"
+        onClick={handleDismiss}
+        aria-label="Dismiss"
+        className={`ml-auto inline-flex shrink-0 items-center justify-center rounded text-text-3 hover:bg-surface-2 hover:text-text-1 motion-reduce:transition-none transition-colors duration-hover ease-out ${BANNER_FOCUS_RING}`}
+      >
+        <X size={14} aria-hidden="true" />
+      </button>
     </div>
   );
 }

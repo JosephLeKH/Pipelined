@@ -133,6 +133,8 @@ export const EMAIL_VERIFICATION_BANNER_DISMISSED_KEY = "pipelined_email_verify_b
 export const INBOX_SETUP_BANNER_DISMISSED_KEY = "pipelined_gmail_banner_dismissed";
 export const AUTOPILOT_RESUME_BANNER_DISMISSED_KEY = "pipelined_autopilot_resume_banner_dismissed";
 export const FOLLOW_UP_BANNER_DISMISSED_KEY = "pipelined_follow_up_banner_dismissed";
+/** Dismissed banners reappear after this many days (PRD-10). */
+export const BANNER_DISMISS_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 export const COPILOT_TRIED_KEY = "pipelined_copilot_tried";
 export const TODAY_VISITED_KEY = "pipelined_today_visited";
 export const OPEN_COPILOT_EVENT = "pipelined:open-copilot";
