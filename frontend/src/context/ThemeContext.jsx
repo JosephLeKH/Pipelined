@@ -42,9 +42,14 @@ export function ThemeProvider({ children }) {
     setTheme(next);
   }, []);
 
+  // The TopBar toggle alternates light <-> dark only. "system" is still
+  // a valid stored value (settable from the Settings page or legacy
+  // localStorage), but we don't cycle into it to avoid surprise flips
+  // when the OS preference is dark. When toggling from system, exit to
+  // the opposite of what is currently displayed.
   const cycleTheme = useCallback(() => {
     setTheme((prev) => {
-      const next = THEMES[(THEMES.indexOf(prev) + 1) % THEMES.length];
+      const next = computeIsDark(prev) ? "light" : "dark";
       localStorage.setItem(STORAGE_KEY, next);
       return next;
     });

@@ -81,13 +81,10 @@ describe("ThemeContext", () => {
     expect(localStorage.getItem(STORAGE_KEY)).toBe("dark");
 
     await userEvent.click(screen.getByRole("button", { name: /cycle/i }));
-    expect(localStorage.getItem(STORAGE_KEY)).toBe("system");
-
-    await userEvent.click(screen.getByRole("button", { name: /cycle/i }));
     expect(localStorage.getItem(STORAGE_KEY)).toBe("light");
   });
 
-  it("should cycle theme: light → dark → system → light", async () => {
+  it("should cycle theme: light <-> dark only (no system)", async () => {
     renderWithProvider();
     expect(screen.getByTestId("theme-value").textContent).toBe("light");
 
@@ -95,10 +92,17 @@ describe("ThemeContext", () => {
     expect(screen.getByTestId("theme-value").textContent).toBe("dark");
 
     await userEvent.click(screen.getByRole("button", { name: /cycle/i }));
+    expect(screen.getByTestId("theme-value").textContent).toBe("light");
+  });
+
+  it("should exit system mode to the opposite of the displayed appearance", async () => {
+    // OS prefers light (default mock), so system displays light.
+    // Cycling should leave system mode and switch to dark.
+    renderWithProvider("system");
     expect(screen.getByTestId("theme-value").textContent).toBe("system");
 
     await userEvent.click(screen.getByRole("button", { name: /cycle/i }));
-    expect(screen.getByTestId("theme-value").textContent).toBe("light");
+    expect(screen.getByTestId("theme-value").textContent).toBe("dark");
   });
 
   it("should apply dark class when system preference is dark and theme is system", () => {
