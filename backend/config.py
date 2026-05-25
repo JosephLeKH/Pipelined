@@ -51,10 +51,22 @@ class Settings(BaseSettings):
     # Gemini — Interview Prep Agent (free tier via Google AI Studio, OpenAI-compatible)
     gemini_api_key: str = ""
 
-    # OpenRouter — canonical LLM provider for agent features
+    # DigitalOcean GenAI — primary LLM provider (billed against DO credits)
+    do_inference_api_key: str = ""
+    do_inference_base_url: str = "https://inference.do-ai.run/v1"
+    do_default_model: str = "llama3.3-70b-instruct"
+
+    # OpenRouter — fallback LLM provider when DO is unavailable
     openrouter_api_key: str = ""
     openrouter_base_url: str = "https://openrouter.ai/api/v1"
     openrouter_default_model: str = "google/gemini-2.0-flash-001"
+
+    # DigitalOcean Spaces — S3-compatible blob storage for resume PDFs
+    spaces_access_key: str = ""
+    spaces_secret_key: str = ""
+    spaces_region: str = "nyc3"
+    spaces_bucket: str = ""
+    spaces_endpoint_url: str = ""
 
     # Exa — web search for Interview Prep Agent
     exa_api_key: str = ""

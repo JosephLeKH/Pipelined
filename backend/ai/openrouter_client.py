@@ -1,8 +1,14 @@
-"""OpenRouter LLM client for agent features."""
+"""LLM client with DO GenAI as primary and OpenRouter as fallback.
+
+Despite the module name, this routes through DigitalOcean's inference platform
+when `DO_INFERENCE_API_KEY` is set, falling back to OpenRouter on transient
+errors. The public functions are unchanged so call sites keep working.
+"""
 
 import asyncio
 import json
 import re
+from dataclasses import dataclass
 
 import structlog
 from openai import APIConnectionError, APITimeoutError, AsyncOpenAI, OpenAIError
@@ -16,69 +22,109 @@ DEFAULT_MAX_TOKENS = 500
 DEFAULT_TIMEOUT_SECONDS = 15.0
 _FENCE_PATTERN = re.compile(r"^```(?:json)?\s*|\s*```$", re.DOTALL)
 
-_client: AsyncOpenAI | None = None
+_PROVIDER_DO = "do"
+_PROVIDER_OPENROUTER = "openrouter"
+
+_TRANSIENT_ERRORS: tuple[type[BaseException], ...] = (
+    asyncio.TimeoutError,
+    APITimeoutError,
+    APIConnectionError,
+    OpenAIError,
+)
+
+
+@dataclass(frozen=True)
+class _Provider:
+    name: str
+    api_key: str
+    base_url: str
+    model: str
+
+
+_do_client: AsyncOpenAI | None = None
+_openrouter_client: AsyncOpenAI | None = None
 
 
 class OpenRouterError(Exception):
-    """Raised when an OpenRouter JSON completion fails."""
+    """Raised when an LLM completion fails on all configured providers."""
 
 
 def agent_llm_configured() -> bool:
-    """Return True when OpenRouter or legacy Gemini is configured."""
-    return bool(settings.openrouter_api_key or settings.gemini_api_key)
+    """Return True when DO, OpenRouter, or legacy Gemini is configured."""
+    return bool(
+        settings.do_inference_api_key
+        or settings.openrouter_api_key
+        or settings.gemini_api_key
+    )
+
+
+def _do_provider() -> _Provider | None:
+    if not settings.do_inference_api_key:
+        return None
+    return _Provider(
+        name=_PROVIDER_DO,
+        api_key=settings.do_inference_api_key,
+        base_url=settings.do_inference_base_url,
+        model=settings.do_default_model,
+    )
+
+
+def _openrouter_provider() -> _Provider | None:
+    if not settings.openrouter_api_key:
+        return None
+    return _Provider(
+        name=_PROVIDER_OPENROUTER,
+        api_key=settings.openrouter_api_key,
+        base_url=settings.openrouter_base_url,
+        model=settings.openrouter_default_model,
+    )
+
+
+def _ordered_providers() -> list[_Provider]:
+    """Return providers in priority order: DO primary, OpenRouter fallback."""
+    return [p for p in (_do_provider(), _openrouter_provider()) if p is not None]
+
+
+def _client_for(provider: _Provider) -> AsyncOpenAI:
+    """Return a cached AsyncOpenAI client for the given provider."""
+    global _do_client, _openrouter_client
+    if provider.name == _PROVIDER_DO:
+        if _do_client is None:
+            _do_client = AsyncOpenAI(api_key=provider.api_key, base_url=provider.base_url)
+        return _do_client
+    if _openrouter_client is None:
+        _openrouter_client = AsyncOpenAI(api_key=provider.api_key, base_url=provider.base_url)
+    return _openrouter_client
 
 
 def get_openrouter_client() -> AsyncOpenAI:
-    """Return a cached AsyncOpenAI client pointed at OpenRouter."""
-    global _client
-    if _client is None:
-        _client = AsyncOpenAI(
-            api_key=settings.openrouter_api_key,
-            base_url=settings.openrouter_base_url,
-        )
-    return _client
+    """Return the primary LLM client (DO if configured, else OpenRouter).
+
+    Name kept for backward compatibility; callers do not get automatic fallback.
+    """
+    providers = _ordered_providers()
+    if not providers:
+        raise OpenRouterError("No LLM provider configured")
+    return _client_for(providers[0])
 
 
 def _strip_markdown_fences(content: str) -> str:
     return _FENCE_PATTERN.sub("", content.strip())
 
 
-async def complete_json(
+async def _call_provider(
+    provider: _Provider,
     system: str,
     user: str,
     *,
-    model: str | None = None,
-    temperature: float = DEFAULT_TEMPERATURE,
-    max_tokens: int = DEFAULT_MAX_TOKENS,
-    timeout: float = DEFAULT_TIMEOUT_SECONDS,
-) -> dict:
-    """Call OpenRouter chat completions and parse a JSON object from the response."""
-    parsed, _, _ = await complete_json_with_usage(
-        system,
-        user,
-        model=model,
-        temperature=temperature,
-        max_tokens=max_tokens,
-        timeout=timeout,
-    )
-    return parsed
-
-
-async def complete_json_with_usage(
-    system: str,
-    user: str,
-    *,
-    model: str | None = None,
-    temperature: float = DEFAULT_TEMPERATURE,
-    max_tokens: int = DEFAULT_MAX_TOKENS,
-    timeout: float = DEFAULT_TIMEOUT_SECONDS,
+    model: str | None,
+    temperature: float,
+    max_tokens: int,
+    timeout: float,
 ) -> tuple[dict, int, int]:
-    """Like complete_json but also returns input and output token counts."""
-    if not settings.openrouter_api_key:
-        raise OpenRouterError("OpenRouter API key is not configured")
-
-    resolved_model = model or settings.openrouter_default_model
-    client = get_openrouter_client()
+    """Single-provider JSON call. Raises OpenRouterError on any failure."""
+    resolved_model = model or provider.model
+    client = _client_for(provider)
 
     try:
         response = await asyncio.wait_for(
@@ -93,46 +139,88 @@ async def complete_json_with_usage(
             ),
             timeout=timeout,
         )
-    except (asyncio.TimeoutError, APITimeoutError, APIConnectionError, OpenAIError) as exc:
-        logger.warning("openrouter_request_failed", model=resolved_model, error=str(exc))
+    except _TRANSIENT_ERRORS as exc:
+        logger.warning("llm_request_failed", provider=provider.name, model=resolved_model, error=str(exc))
         raise OpenRouterError(str(exc)) from exc
 
     content = response.choices[0].message.content
     if not content:
-        raise OpenRouterError("OpenRouter returned empty content")
+        raise OpenRouterError(f"{provider.name} returned empty content")
 
     usage = response.usage
     input_tokens = usage.prompt_tokens if usage else 0
     output_tokens = usage.completion_tokens if usage else 0
 
     try:
-        raw = _strip_markdown_fences(content)
-        parsed = json.loads(raw)
+        parsed = json.loads(_strip_markdown_fences(content))
     except json.JSONDecodeError as exc:
-        logger.warning("openrouter_json_parse_failed", model=resolved_model)
-        raise OpenRouterError("OpenRouter response was not valid JSON") from exc
+        logger.warning("llm_json_parse_failed", provider=provider.name, model=resolved_model)
+        raise OpenRouterError(f"{provider.name} response was not valid JSON") from exc
 
     if not isinstance(parsed, dict):
-        raise OpenRouterError("OpenRouter response was not a JSON object")
+        raise OpenRouterError(f"{provider.name} response was not a JSON object")
 
     return parsed, input_tokens, output_tokens
 
 
-async def stream_chat(
+async def complete_json(
     system: str,
-    messages: list[dict[str, str]],
+    user: str,
     *,
     model: str | None = None,
     temperature: float = DEFAULT_TEMPERATURE,
     max_tokens: int = DEFAULT_MAX_TOKENS,
     timeout: float = DEFAULT_TIMEOUT_SECONDS,
-):
-    """Yield text deltas from an OpenRouter streaming chat completion."""
-    if not settings.openrouter_api_key:
-        raise OpenRouterError("OpenRouter API key is not configured")
+) -> dict:
+    """Call the LLM and parse a JSON object from the response."""
+    parsed, _, _ = await complete_json_with_usage(
+        system, user, model=model, temperature=temperature, max_tokens=max_tokens, timeout=timeout
+    )
+    return parsed
 
-    resolved_model = model or settings.openrouter_default_model
-    client = get_openrouter_client()
+
+async def complete_json_with_usage(
+    system: str,
+    user: str,
+    *,
+    model: str | None = None,
+    temperature: float = DEFAULT_TEMPERATURE,
+    max_tokens: int = DEFAULT_MAX_TOKENS,
+    timeout: float = DEFAULT_TIMEOUT_SECONDS,
+) -> tuple[dict, int, int]:
+    """Try DO first, fall back to OpenRouter on transient error. Returns (parsed, in_tokens, out_tokens)."""
+    providers = _ordered_providers()
+    if not providers:
+        raise OpenRouterError("No LLM provider configured")
+
+    last_exc: OpenRouterError | None = None
+    for provider in providers:
+        try:
+            return await _call_provider(
+                provider, system, user,
+                model=model, temperature=temperature, max_tokens=max_tokens, timeout=timeout,
+            )
+        except OpenRouterError as exc:
+            last_exc = exc
+            if provider is not providers[-1]:
+                logger.warning("llm_falling_back", from_provider=provider.name)
+
+    raise last_exc or OpenRouterError("All LLM providers failed")
+
+
+async def _stream_provider(
+    provider: _Provider,
+    system: str,
+    messages: list[dict[str, str]],
+    *,
+    model: str | None,
+    temperature: float,
+    max_tokens: int,
+    timeout: float,
+):
+    """Open a streaming completion on a single provider."""
+    resolved_model = model or provider.model
+    client = _client_for(provider)
     payload_messages = [{"role": "system", "content": system}, *messages]
 
     try:
@@ -146,8 +234,8 @@ async def stream_chat(
             ),
             timeout=timeout,
         )
-    except (asyncio.TimeoutError, APITimeoutError, APIConnectionError, OpenAIError) as exc:
-        logger.warning("openrouter_stream_failed", model=resolved_model, error=str(exc))
+    except _TRANSIENT_ERRORS as exc:
+        logger.warning("llm_stream_failed", provider=provider.name, model=resolved_model, error=str(exc))
         raise OpenRouterError(str(exc)) from exc
 
     async for chunk in stream:
@@ -157,3 +245,34 @@ async def stream_chat(
         delta = choice.delta.content
         if delta:
             yield delta
+
+
+async def stream_chat(
+    system: str,
+    messages: list[dict[str, str]],
+    *,
+    model: str | None = None,
+    temperature: float = DEFAULT_TEMPERATURE,
+    max_tokens: int = DEFAULT_MAX_TOKENS,
+    timeout: float = DEFAULT_TIMEOUT_SECONDS,
+):
+    """Yield text deltas. Falls back from DO to OpenRouter only on initial connection failure."""
+    providers = _ordered_providers()
+    if not providers:
+        raise OpenRouterError("No LLM provider configured")
+
+    last_exc: OpenRouterError | None = None
+    for provider in providers:
+        try:
+            async for delta in _stream_provider(
+                provider, system, messages,
+                model=model, temperature=temperature, max_tokens=max_tokens, timeout=timeout,
+            ):
+                yield delta
+            return
+        except OpenRouterError as exc:
+            last_exc = exc
+            if provider is not providers[-1]:
+                logger.warning("llm_stream_falling_back", from_provider=provider.name)
+
+    raise last_exc or OpenRouterError("All LLM providers failed")

@@ -305,12 +305,30 @@ async def save_resume_text(user_id: str, resume_text: str) -> None:
     logger.info("resume_saved", user_id=user_id, chars=len(resume_text))
 
 
-async def clear_resume_text(user_id: str) -> None:
-    """Remove stored resume text from the user document."""
+async def save_resume_pdf_key(user_id: str, key: str) -> None:
+    """Store the Spaces object key for the user's uploaded PDF."""
     users = get_collection("users")
     await users.update_one(
         {"_id": ObjectId(user_id)},
-        {"$unset": {"resume_text": ""}},
+        {"$set": {"resume_pdf_key": key}},
+    )
+
+
+async def get_resume_pdf_key(user_id: str) -> str | None:
+    """Return the Spaces key for the user's PDF, or None if not set."""
+    users = get_collection("users")
+    user = await users.find_one({"_id": ObjectId(user_id)}, {"resume_pdf_key": 1})
+    if user is None:
+        return None
+    return user.get("resume_pdf_key")
+
+
+async def clear_resume_text(user_id: str) -> None:
+    """Remove stored resume text and PDF key from the user document."""
+    users = get_collection("users")
+    await users.update_one(
+        {"_id": ObjectId(user_id)},
+        {"$unset": {"resume_text": "", "resume_pdf_key": ""}},
     )
     logger.info("resume_cleared", user_id=user_id)
 
