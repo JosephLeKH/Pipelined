@@ -1,11 +1,11 @@
-/** Tests for Settings page — pipeline stages section. */
+/** Tests for Settings page — two-column layout and pipeline stages section. */
 
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { describe, it, expect, beforeAll, afterAll, afterEach, vi } from "vitest";
 
 import { AuthProvider } from "../context/AuthContext";
@@ -45,15 +45,22 @@ beforeAll(() => server.listen({ onUnhandledRequest: "warn" }));
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
-function makeWrapper() {
+function makeWrapper(initialEntries = ["/settings"]) {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
   });
-  return ({ children }) => (
+  return () => (
     <ThemeProvider>
       <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={["/settings"]}>
-          <AuthProvider>{withTooltipProvider(children)}</AuthProvider>
+        <MemoryRouter initialEntries={initialEntries}>
+          <Routes>
+            <Route
+              path="/settings/*"
+              element={
+                <AuthProvider>{withTooltipProvider(<Settings />)}</AuthProvider>
+              }
+            />
+          </Routes>
         </MemoryRouter>
       </QueryClientProvider>
     </ThemeProvider>
@@ -61,79 +68,63 @@ function makeWrapper() {
 }
 
 describe("Settings page", () => {
-  describe("tab navigation accessibility", () => {
-    it("should render nav with role tablist", () => {
-      render(<Settings />, { wrapper: makeWrapper() });
-      expect(screen.getByRole("tablist")).toBeInTheDocument();
+  describe("layout and navigation", () => {
+    it("should render two-column layout with settings heading and sub-nav", () => {
+      render(null, { wrapper: makeWrapper(["/settings/profile"]) });
+
+      expect(screen.getByRole("heading", { name: /^settings$/i, level: 1 })).toBeInTheDocument();
+      expect(screen.getByRole("navigation", { name: /settings sections/i })).toBeInTheDocument();
     });
 
-    it("should render all tab buttons with role tab", () => {
-      render(<Settings />, { wrapper: makeWrapper() });
-      const tabs = screen.getAllByRole("tab");
-      expect(tabs.length).toBeGreaterThan(0);
+    it("should redirect /settings to /settings/profile by default", async () => {
+      render(null, { wrapper: makeWrapper(["/settings"]) });
+
+      await waitFor(() => {
+        expect(screen.getByRole("link", { name: /^profile$/i })).toHaveAttribute(
+          "aria-current",
+          "page",
+        );
+      });
     });
 
-    it("should have aria-selected=true on active tab and false on others", () => {
-      render(<Settings />, { wrapper: makeWrapper() });
-      const tabs = screen.getAllByRole("tab");
-      const selected = tabs.filter((t) => t.getAttribute("aria-selected") === "true");
-      const unselected = tabs.filter((t) => t.getAttribute("aria-selected") === "false");
+    it("should highlight active nav item with aria-current", async () => {
+      render(null, { wrapper: makeWrapper(["/settings/stages"]) });
 
-      expect(selected.length).toBe(1);
-      expect(unselected.length).toBe(tabs.length - 1);
+      await waitFor(() => {
+        expect(screen.getByRole("link", { name: /pipeline stages/i })).toHaveAttribute(
+          "aria-current",
+          "page",
+        );
+      });
     });
 
-    it("should update aria-selected when a different tab is clicked", async () => {
-      render(<Settings />, { wrapper: makeWrapper() });
-      const profileTab = screen.getByRole("tab", { name: /^profile$/i });
-      await userEvent.click(profileTab);
+    it("should redirect legacy ?section= query params to new paths", async () => {
+      render(null, { wrapper: makeWrapper(["/settings?section=pipeline"]) });
 
-      expect(profileTab.getAttribute("aria-selected")).toBe("true");
+      await waitFor(() => {
+        expect(screen.getByRole("heading", { name: /pipeline stages/i })).toBeInTheDocument();
+      });
     });
 
-    it("should render tabpanel with id matching active tab", () => {
-      render(<Settings />, { wrapper: makeWrapper() });
-      const panel = screen.getByRole("tabpanel");
+    it("should render agent profile section at /settings/agent-profile", async () => {
+      render(null, { wrapper: makeWrapper(["/settings/agent-profile"]) });
 
-      expect(panel).toBeInTheDocument();
-      expect(panel.id).toBe("settings-panel");
-    });
-
-    it("should have aria-controls on active tab pointing to the tabpanel id", () => {
-      render(<Settings />, { wrapper: makeWrapper() });
-      const activeTab = screen.getAllByRole("tab").find(
-        (t) => t.getAttribute("aria-selected") === "true"
-      );
-      const panel = screen.getByRole("tabpanel");
-
-      expect(activeTab.getAttribute("aria-controls")).toBe(panel.id);
-    });
-
-    it("should render Agent tab with profile, activity, and watchlist sections", async () => {
-      render(<Settings />, { wrapper: makeWrapper() });
-
-      await userEvent.click(screen.getByRole("tab", { name: /^agent$/i }));
-
-      expect(screen.getByRole("heading", { name: /agent profile/i })).toBeInTheDocument();
-      expect(screen.getByRole("heading", { name: /agent activity/i })).toBeInTheDocument();
-      expect(screen.getByRole("heading", { name: /company watchlist/i })).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByRole("heading", { name: /agent profile/i })).toBeInTheDocument();
+      });
     });
   });
 
   describe("pipeline stages section", () => {
     it("should render the pipeline stages heading", async () => {
-      // Arrange / Act
-      render(<Settings />, { wrapper: makeWrapper() });
+      render(null, { wrapper: makeWrapper(["/settings/stages"]) });
 
-      // Assert
       expect(screen.getByRole("heading", { name: /pipeline stages/i })).toBeInTheDocument();
     });
 
     it("should render current stages from user profile", async () => {
-      // Arrange / Act
-      render(<Settings />, { wrapper: makeWrapper() });
+      render(null, { wrapper: makeWrapper(["/settings/stages"]) });
 
-      // Assert — each default stage name is rendered in the editor
       await waitFor(() => {
         expect(screen.getByDisplayValue("Applied")).toBeInTheDocument();
       });
@@ -142,33 +133,27 @@ describe("Settings page", () => {
     });
 
     it("should show add stage input", async () => {
-      // Arrange / Act
-      render(<Settings />, { wrapper: makeWrapper() });
+      render(null, { wrapper: makeWrapper(["/settings/stages"]) });
 
-      // Assert
       await waitFor(() => {
         expect(screen.getByRole("textbox", { name: /new stage name/i })).toBeInTheDocument();
       });
     });
 
     it("should add a new stage when Add is clicked", async () => {
-      // Arrange
-      render(<Settings />, { wrapper: makeWrapper() });
+      render(null, { wrapper: makeWrapper(["/settings/stages"]) });
       await waitFor(() => {
         expect(screen.getByDisplayValue("Applied")).toBeInTheDocument();
       });
 
-      // Act
       const input = screen.getByRole("textbox", { name: /new stage name/i });
       await userEvent.type(input, "Screening");
       await userEvent.click(screen.getByRole("button", { name: /add stage/i }));
 
-      // Assert — new stage appears in the list
       expect(screen.getByDisplayValue("Screening")).toBeInTheDocument();
     });
 
     it("should call PATCH /api/auth/me on save", async () => {
-      // Arrange
       const patchSpy = vi.fn();
       server.use(
         http.patch("/api/auth/me", async ({ request }) => {
@@ -185,15 +170,13 @@ describe("Settings page", () => {
         })
       );
 
-      render(<Settings />, { wrapper: makeWrapper() });
+      render(null, { wrapper: makeWrapper(["/settings/stages"]) });
       await waitFor(() => {
         expect(screen.getByDisplayValue("Applied")).toBeInTheDocument();
       });
 
-      // Act
       await userEvent.click(screen.getByRole("button", { name: /save stages/i }));
 
-      // Assert
       await waitFor(() => {
         expect(patchSpy).toHaveBeenCalledWith({
           default_stages: DEFAULT_STAGES,
@@ -202,16 +185,13 @@ describe("Settings page", () => {
     });
 
     it("should show success message after saving", async () => {
-      // Arrange
-      render(<Settings />, { wrapper: makeWrapper() });
+      render(null, { wrapper: makeWrapper(["/settings/stages"]) });
       await waitFor(() => {
         expect(screen.getByDisplayValue("Applied")).toBeInTheDocument();
       });
 
-      // Act
       await userEvent.click(screen.getByRole("button", { name: /save stages/i }));
 
-      // Assert
       await waitFor(() => {
         expect(screen.getByRole("alert")).toHaveTextContent(/saved successfully/i);
       });

@@ -1,197 +1,68 @@
-/** Settings page — tab-navigated settings with organized card sections. */
+/** Settings page — two-column layout with nested sub-routes. */
 
-import { useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Navigate, Route, Routes, useSearchParams } from "react-router-dom";
 
 import SettingsAccountSection from "../components/SettingsAccountSection";
+import SettingsAgentActivitySection from "../components/SettingsAgentActivitySection";
+import SettingsAgentProfileSection from "../components/SettingsAgentProfileSection";
+import SettingsAppearanceSection from "../components/SettingsAppearanceSection";
+import SettingsAutopilotSection from "../components/SettingsAutopilotSection";
+import SettingsGitHubSection from "../components/SettingsGitHubSection";
+import SettingsIntegrationsSection from "../components/SettingsIntegrationsSection";
+import SettingsLayout from "../components/SettingsLayout";
 import SettingsNotificationsSection from "../components/SettingsNotificationsSection";
 import SettingsPipelineSection from "../components/SettingsPipelineSection";
-import SettingsAutopilotSection from "../components/SettingsAutopilotSection";
-import SettingsWatchlistSection from "../components/SettingsWatchlistSection";
-import SettingsAgentProfileSection from "../components/SettingsAgentProfileSection";
-import SettingsAgentActivitySection from "../components/SettingsAgentActivitySection";
 import SettingsProfileSection from "../components/SettingsProfileSection";
-import SettingsResumeSection from "../components/SettingsResumeSection";
-import SettingsTemplatesSection from "../components/SettingsTemplatesSection";
 import SettingsReferralSection from "../components/SettingsReferralSection";
 import SettingsReportSection from "../components/SettingsReportSection";
-import SettingsIntegrationsSection from "../components/SettingsIntegrationsSection";
+import SettingsResumeSection from "../components/SettingsResumeSection";
+import SettingsSharingSection from "../components/SettingsSharingSection";
+import SettingsTemplatesSection from "../components/SettingsTemplatesSection";
 import SettingsUsageSection from "../components/SettingsUsageSection";
-import SharePipeline from "../components/SharePipeline";
-import ShareTimeline from "../components/ShareTimeline";
-import TimezoneSelector from "../components/TimezoneSelector";
+import SettingsWatchlistSection from "../components/SettingsWatchlistSection";
 import { useAuth } from "../context/AuthContext";
-import { useUpdateUser } from "../hooks/useAuth";
-import { Button } from "../components/ui/button";
+import { SETTINGS_LEGACY_REDIRECTS } from "../lib/settingsRoutes";
 
-const NAV_ITEMS = [
-  { id: "pipeline", label: "Pipeline" },
-  { id: "profile", label: "Profile" },
-  { id: "calendar", label: "Calendar" },
-  { id: "notifications", label: "Notifications" },
-  { id: "integrations", label: "Integrations" },
-  { id: "autopilot", label: "Autopilot" },
-  { id: "agent", label: "Agent" },
-  { id: "resume", label: "Resume & AI" },
-  { id: "templates", label: "Templates" },
-  { id: "sharing", label: "Sharing" },
-  { id: "reports", label: "Reports" },
-  { id: "referral", label: "Invite Friends" },
-  { id: "usage", label: "Usage & Plan" },
-  { id: "account", label: "Account" },
-];
-
-const SETTINGS_PANEL_ID = "settings-panel";
-const SETTINGS_SECTION_DIVIDER = "border-t border-border-default pt-8 mt-2";
-
-function TabNav({ activeSection, onSelect }) {
-  return (
-    <nav role="tablist" className="mb-6 flex flex-wrap gap-1 border-b border-border pb-3">
-      {NAV_ITEMS.map(({ id, label }) => (
-        <button
-          key={id}
-          type="button"
-          role="tab"
-          aria-selected={activeSection === id}
-          aria-controls={SETTINGS_PANEL_ID}
-          onClick={() => onSelect(id)}
-          className={
-            activeSection === id
-              ? "bg-primary/10 text-primary text-sm font-display font-semibold px-3 py-2 rounded-md"
-              : "text-muted-foreground hover:text-foreground text-sm font-display font-medium transition-colors px-3 py-2 rounded-md"
-          }
-        >
-          {label}
-        </button>
-      ))}
-    </nav>
-  );
-}
-
-function CalendarSectionContent({ timezone, saved, error, isPending, onTimezoneChange, onSave }) {
-  return (
-    <div className="rounded-xl bg-card border border-border p-6">
-      <h2 className="mb-1 text-lg font-semibold font-display text-foreground">
-        Calendar
-      </h2>
-      <p className="mb-5 text-sm font-sans text-muted-foreground">
-        Calendar events will display times in your selected timezone.
-      </p>
-      <TimezoneSelector value={timezone} onChange={onTimezoneChange} />
-      {saved && !isPending && (
-        <p role="alert" className="mt-4 rounded-lg bg-primary/10 border border-primary/20 px-3 py-3 text-sm text-primary">
-          Timezone saved.
-        </p>
-      )}
-      {error && (
-        <p role="alert" className="mt-4 text-sm text-destructive">{error}</p>
-      )}
-      <div className="mt-4 flex justify-end">
-        <Button type="button" onClick={onSave} disabled={isPending}>
-          Save timezone
-        </Button>
-      </div>
-    </div>
-  );
-}
-
-function CalendarSection() {
+function SettingsRoutes() {
   const { user } = useAuth();
-  const { mutateAsync, isPending } = useUpdateUser();
-  const [timezone, setTimezone] = useState(
-    () => user?.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone ?? "America/New_York"
-  );
-  const [saved, setSaved] = useState(false);
-  const [error, setError] = useState(null);
-
-  const handleSave = async () => {
-    setSaved(false);
-    setError(null);
-    try {
-      await mutateAsync({ timezone });
-      setSaved(true);
-    } catch (err) {
-      setError(err?.message ?? "Failed to save timezone.");
-    }
-  };
 
   return (
-    <CalendarSectionContent
-      timezone={timezone}
-      saved={saved}
-      error={error}
-      isPending={isPending}
-      onTimezoneChange={setTimezone}
-      onSave={handleSave}
-    />
+    <Routes>
+      <Route element={<SettingsLayout />}>
+        <Route index element={<Navigate to="profile" replace />} />
+        <Route path="profile" element={<SettingsProfileSection />} />
+        <Route path="notifications" element={<SettingsNotificationsSection />} />
+        <Route path="appearance" element={<SettingsAppearanceSection />} />
+        <Route path="stages" element={<SettingsPipelineSection />} />
+        <Route path="templates" element={<SettingsTemplatesSection />} />
+        <Route path="agent-profile" element={<SettingsAgentProfileSection />} />
+        <Route path="autopilot" element={<SettingsAutopilotSection />} />
+        <Route path="watchlist" element={<SettingsWatchlistSection />} />
+        <Route path="resume" element={<SettingsResumeSection />} />
+        <Route path="agent-notifications" element={<SettingsNotificationsSection />} />
+        <Route path="integrations/gmail" element={<SettingsIntegrationsSection />} />
+        <Route path="integrations/github" element={<SettingsGitHubSection />} />
+        <Route path="billing" element={<SettingsUsageSection user={user} />} />
+        <Route path="referral" element={<SettingsReferralSection user={user} />} />
+        <Route path="account" element={<SettingsAccountSection />} />
+        <Route path="sharing" element={<SettingsSharingSection />} />
+        <Route path="reports" element={<SettingsReportSection />} />
+        <Route path="agent-activity" element={<SettingsAgentActivitySection />} />
+      </Route>
+    </Routes>
   );
-}
-
-function SharingSection() {
-  return (
-    <div className="rounded-xl bg-card border border-border p-6">
-      <h2 className="mb-1 text-lg font-semibold font-display text-foreground">
-        Sharing
-      </h2>
-      <p className="mb-5 text-sm font-sans text-muted-foreground">
-        Generate read-only public links to share your pipeline or timeline with recruiters and friends.
-      </p>
-      <div className="flex flex-col gap-4">
-        <SharePipeline />
-        <ShareTimeline />
-      </div>
-    </div>
-  );
-}
-
-function renderSection(activeSection, user) {
-  switch (activeSection) {
-    case "profile": return <SettingsProfileSection />;
-    case "pipeline": return <SettingsPipelineSection />;
-    case "calendar": return <CalendarSection />;
-    case "notifications": return <SettingsNotificationsSection />;
-    case "integrations": return <SettingsIntegrationsSection />;
-    case "autopilot":
-      return <SettingsAutopilotSection />;
-    case "agent":
-      return (
-        <div className="flex flex-col">
-          <SettingsAgentProfileSection />
-          <div className={SETTINGS_SECTION_DIVIDER}>
-            <SettingsAgentActivitySection />
-          </div>
-          <div className={SETTINGS_SECTION_DIVIDER}>
-            <SettingsWatchlistSection />
-          </div>
-        </div>
-      );
-    case "resume": return <SettingsResumeSection />;
-    case "templates": return <SettingsTemplatesSection />;
-    case "sharing": return <SharingSection />;
-    case "reports": return <SettingsReportSection />;
-    case "referral": return <SettingsReferralSection user={user} />;
-    case "usage": return <SettingsUsageSection user={user} />;
-    case "account": return <SettingsAccountSection />;
-    default: return null;
-  }
 }
 
 function Settings() {
-  const { user } = useAuth();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const activeSection = searchParams.get("section") || "pipeline";
+  const [searchParams] = useSearchParams();
+  const section = searchParams.get("section");
+  const legacyTarget = section ? SETTINGS_LEGACY_REDIRECTS[section] : null;
 
-  return (
-    <div className="mx-auto w-full max-w-2xl flex-1 px-6 py-8">
-        <h1 className="mb-6 text-2xl font-semibold font-display text-foreground">
-          Settings
-        </h1>
-        <TabNav activeSection={activeSection} onSelect={(id) => setSearchParams({ section: id })} />
-        <main id={SETTINGS_PANEL_ID} role="tabpanel">
-          {renderSection(activeSection, user)}
-        </main>
-    </div>
-  );
+  if (legacyTarget) {
+    return <Navigate to={`/settings/${legacyTarget}`} replace />;
+  }
+
+  return <SettingsRoutes />;
 }
 
 export default Settings;

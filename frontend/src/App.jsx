@@ -171,7 +171,7 @@ function App() {
           <Route path="/calendar" element={<Calendar />} />
           <Route path="/analytics" element={<Analytics />} />
           <Route path="/activity" element={<ActivityPage />} />
-          <Route path="/settings" element={<Settings />} />
+          <Route path="/settings/*" element={<Settings />} />
           <Route path="/offers" element={<OfferComparison />} />
           <Route path="/tags" element={<Tags />} />
           <Route path="/today" element={<TodayPage />} />
