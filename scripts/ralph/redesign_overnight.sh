@@ -138,7 +138,7 @@ run_one_prd() {
   local prd_path="$PRD_DIR/$prd_file"
   local prd_name="${prd_file%.md}"
   local prd_number="${prd_name%%-*}"
-  local branch="redesign/${prd_name,,}"
+  local branch="redesign/$(echo "$prd_name" | tr '[:upper:]' '[:lower:]')"
   local progress_file="$LOG_DIR/${prd_name}.progress.txt"
   local iter_log="$LOG_DIR/${prd_name}.iter.log"
   local complete_marker="$COMPLETE_DIR/${prd_name}.done"
