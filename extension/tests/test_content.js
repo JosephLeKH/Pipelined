@@ -76,8 +76,8 @@ describe("content.js constants", () => {
     expect(BANNER_AUTO_DISMISS_MS).toBe(8000);
   });
 
-  it("should export FADE_DURATION_MS = 300", () => {
-    expect(FADE_DURATION_MS).toBe(300);
+  it("should export FADE_DURATION_MS = 220", () => {
+    expect(FADE_DURATION_MS).toBe(220);
   });
 });
 
@@ -107,7 +107,7 @@ describe("injectBanner()", () => {
 
     expect(styleEl).not.toBeNull();
     expect(styleEl.textContent).toContain("pipelined-banner");
-    expect(styleEl.textContent).toContain("#ffffff");
+    expect(styleEl.textContent).toContain("#2E2D29");
   });
 
   it("should inject CSS inline (style element, not link)", () => {

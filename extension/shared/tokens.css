@@ -1,0 +1,55 @@
+/* Extension design tokens — SYNC: docs/redesign/PRD-00-design-system.md §3 */
+
+:root {
+  --brand-50:  #FDF2F2;
+  --brand-100: #FAE0E0;
+  --brand-600: #8C1515;
+  --brand-700: #820000;
+  --brand-800: #6E0F0F;
+  --surface-0: #FFFFFF;
+  --surface-1: #FAFAFA;
+  --surface-2: #F4F4F5;
+  --surface-3: #EFEFF0;
+  --text-1:    #2E2D29;
+  --text-2:    #53565A;
+  --text-3:    #8E8F94;
+  --text-4:    #B4B5B9;
+  --border-1:  rgba(0, 0, 0, 0.06);
+  --border-2:  rgba(0, 0, 0, 0.10);
+  --status-neutral: #71717A;
+  --status-info:    #3B82F6;
+  --status-violet:  #8B5CF6;
+  --status-warn:    #F59E0B;
+  --status-orange:  #F97316;
+  --status-success: #175E54;
+  --status-muted:   #71717A;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --shadow-popover: 0 1px 2px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --surface-0: #08090A;
+    --surface-1: #0F1011;
+    --surface-2: #1A1B1E;
+    --surface-3: #212226;
+    --text-1:    #F4F4F5;
+    --text-2:    #A1A1AA;
+    --text-3:    #71717A;
+    --text-4:    #52525B;
+    --border-1:  rgba(255, 255, 255, 0.06);
+    --border-2:  rgba(255, 255, 255, 0.10);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

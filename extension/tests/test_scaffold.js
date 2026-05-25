@@ -6,6 +6,7 @@
 import { readFileSync, existsSync } from "fs";
 import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";
+import { API_BASE } from "../shared/constants.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, "..");
@@ -29,7 +30,7 @@ describe("Extension scaffold", () => {
     });
 
     it("should have API host_permissions", () => {
-      expect(manifest.host_permissions).toContain("https://api.pipelined.app/*");
+      expect(manifest.host_permissions).toContain(`${API_BASE}/*`);
     });
 
     it("should declare a service_worker", () => {

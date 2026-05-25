@@ -2,9 +2,9 @@
 
 import {
   BANNER_AUTO_DISMISS_MS,
-  BANNER_SUCCESS_DISMISS_MS,
   createBannerHost,
   dismiss,
+  showBannerSuccess,
 } from "./banner_helpers.js";
 import { MSG } from "../shared/constants.js";
 
@@ -59,18 +59,17 @@ async function handleContactSave(shadow, host, fields) {
   }
 
   if (result.status === "success") {
-    showContactSuccess(shadow, host, fields.name);
+    showContactSuccess(shadow, host);
   } else {
     showContactError(shadow, button);
   }
 }
 
-function showContactSuccess(shadow, host, name) {
-  const displayName = name || "Contact";
-  shadow.querySelector(".pipelined-text").textContent =
-    `\u2713 ${displayName} saved to Pipelined!`;
-  shadow.querySelector("[data-action='save']")?.remove();
-  setTimeout(() => dismiss(host), BANNER_SUCCESS_DISMISS_MS);
+function showContactSuccess(shadow, host) {
+  showBannerSuccess(shadow, host, {
+    headline: "Saved contact \u2014 added to your network",
+    icon: "user",
+  });
 }
 
 function showContactError(shadow, button) {
