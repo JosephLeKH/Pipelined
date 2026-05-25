@@ -75,6 +75,7 @@ def _set_csrf_cookie(response: Response) -> None:
         key=CSRF_COOKIE_NAME,
         value=generate_csrf_token(),
         max_age=REFRESH_MAX_AGE,
+        path="/",
         httponly=False,
         secure=not settings.debug,
         samesite="lax",
