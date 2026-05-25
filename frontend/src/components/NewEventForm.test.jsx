@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import NewEventForm from "./NewEventForm";
+import { CALENDAR_EVENT_MODAL_WIDTH_PX } from "../lib/constants";
 
 vi.mock("../hooks/useNewEventForm", () => ({
   useNewEventForm: vi.fn(),
@@ -49,11 +50,14 @@ describe("NewEventForm", () => {
     useAppSelector.mockReturnValue({ ...mockAppSelector });
   });
 
-  it("should render the modal dialog", () => {
+  it("should render the modal dialog at 480px width", () => {
     render(<NewEventForm initialDate={null} initialApplicationId={null} onClose={vi.fn()} />);
 
     expect(screen.getByRole("dialog")).toBeInTheDocument();
-    expect(screen.getByText("New Event")).toBeInTheDocument();
+    expect(screen.getByText("Add interview / event")).toBeInTheDocument();
+    expect(screen.getByTestId("new-event-form")).toHaveStyle({
+      maxWidth: `${CALENDAR_EVENT_MODAL_WIDTH_PX}px`,
+    });
   });
 
   it("should call onClose when Cancel is clicked", () => {
@@ -76,11 +80,11 @@ describe("NewEventForm", () => {
     expect(onClose).toHaveBeenCalledOnce();
   });
 
-  it("should disable Save Event button while form is pending", () => {
+  it("should disable Add event button while form is pending", () => {
     useNewEventForm.mockReturnValue({ ...mockHook, isPending: true });
 
     render(<NewEventForm initialDate={null} initialApplicationId={null} onClose={vi.fn()} />);
 
-    expect(screen.getByRole("button", { name: /saving/i })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /adding/i })).toBeDisabled();
   });
 });

@@ -172,6 +172,23 @@ export const CALENDAR_EVENT_DOT_MAX = 3;
 export const CALENDAR_DEFAULT_DURATION_MIN = 30;
 export const CALENDAR_UPCOMING_WINDOW_DAYS = 7;
 
+/** Default prep checklist items for calendar event detail drawer (PRD-06 §7.3). */
+export const CALENDAR_EVENT_PREP_ITEMS = [
+  { id: "review-jd", text: "Review job description" },
+  { id: "review-brief", text: "Re-read your interview prep brief" },
+  { id: "prepare-questions", text: "Prepare 3 questions to ask" },
+];
+
+/** Location label shown in calendar event detail by event type. */
+export const EVENT_TYPE_LOCATION_LABELS = {
+  phone_screen: "Phone",
+  technical: "Video call",
+  onsite: "Onsite",
+  behavioral: "Video call",
+  offer: "Remote",
+  other: "TBD",
+};
+
 /** Source options for ManualAddForm segmented control (PRD-04 §10.1). */
 export const MANUAL_ADD_SOURCE_OPTIONS = [
   { value: "manual", label: "Manual" },
