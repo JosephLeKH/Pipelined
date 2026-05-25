@@ -37,9 +37,9 @@ from templates.router import router as templates_router
 from autopilot.router import router as autopilot_router
 from copilot.router import router as copilot_router
 from review.router import router as review_router
-from jobs.sync import create_scheduler
+from jobs.sync import create_scheduler, sync_github_repos
 from config import settings, validate_production_secrets
-from database import connect, disconnect, ensure_indexes
+from database import connect, disconnect, ensure_indexes, get_collection
 from middleware.cache_control import CacheControlMiddleware
 from middleware.csrf import CSRFMiddleware
 from middleware.rate_limit import limiter
@@ -63,9 +63,26 @@ async def _rate_limit_handler(request: Request, exc: RateLimitExceeded) -> JSONR
     )
 
 
+async def _seed_job_listings_if_empty() -> None:
+    """Run GitHub sync once on boot if job_listings is empty (e.g. first deploy).
+
+    Why: the scheduled job only fires once daily at GITHUB_SYNC_HOUR_UTC, so a fresh
+    deploy shows an empty board until the next tick. Runs as a fire-and-forget task.
+    """
+    try:
+        count = await get_collection("job_listings").estimated_document_count()
+        if count == 0:
+            logger.info("seeding_job_listings_on_startup")
+            await sync_github_repos()
+    except Exception:
+        logger.exception("seed_job_listings_failed")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Connect to MongoDB and start the scheduler on startup; reverse on shutdown."""
+    import asyncio  # noqa: PLC0415
+
     logger.info("starting_up")
     validate_production_secrets(settings)
     await connect()
@@ -75,6 +92,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     scheduler = create_scheduler()
     scheduler.start()
     logger.info("scheduler_started")
+    asyncio.create_task(_seed_job_listings_if_empty())
     yield
     scheduler.shutdown()
     logger.info("scheduler_stopped")

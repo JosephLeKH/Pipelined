@@ -81,7 +81,11 @@ class Settings(BaseSettings):
     # GitHub Sync
     github_token: str = ""
     github_sync_hour_utc: int = 3
-    github_repos: list[str] = ["SimplifyJobs/Summer2026-Internships"]
+    github_repos: list[str] = [
+        "vanshb03/Summer2027-Internships@dev",
+        "vanshb03/Summer2027-Internships@dev:OFFSEASON_README.md",
+        "vanshb03/New-Grad-2027",
+    ]
 
     # Rate Limiting
     rate_limit_standard: str = "60/minute"

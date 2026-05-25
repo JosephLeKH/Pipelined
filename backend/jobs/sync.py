@@ -51,9 +51,25 @@ async def _get_paginated(client: httpx.AsyncClient, url: str) -> list[dict]:
     return results
 
 
-async def _fetch_readme_content(client: httpx.AsyncClient, repo: str) -> str:
-    """Fetch and base64-decode the README.md content for a GitHub repo."""
-    url = f"{GITHUB_API_BASE}/repos/{repo}/contents/{README_PATH}"
+def _parse_repo_spec(spec: str) -> tuple[str, str, str | None]:
+    """Parse 'owner/repo[@ref][:path]' into (repo, path, ref).
+
+    Examples:
+      'SimplifyJobs/New-Grad-Positions'                   -> ('SimplifyJobs/New-Grad-Positions', 'README.md', None)
+      'vanshb03/Summer2027-Internships@dev'               -> ('vanshb03/Summer2027-Internships', 'README.md', 'dev')
+      'vanshb03/Summer2027-Internships@dev:OFFSEASON_README.md'
+    """
+    rest, _, path = spec.partition(":")
+    repo, _, ref = rest.partition("@")
+    return repo, path or README_PATH, ref or None
+
+
+async def _fetch_readme_content(client: httpx.AsyncClient, spec: str) -> str:
+    """Fetch and base64-decode README content for a repo spec (see _parse_repo_spec)."""
+    repo, path, ref = _parse_repo_spec(spec)
+    url = f"{GITHUB_API_BASE}/repos/{repo}/contents/{path}"
+    if ref:
+        url = f"{url}?ref={ref}"
     pages = await _get_paginated(client, url)
     data = pages[0] if pages else {}
     content_b64: str = data.get("content", "")
