@@ -1,0 +1,10 @@
+# PRD-03-auth — complete
+
+- Branch: redesign/prd-03-auth
+- Iterations: 1
+- Final commit: 522aa73
+- Linear sources cited:
+  - https://linear.app/login — centered single-column auth layout, minimal chrome
+  - https://linear.app/method — calm form-first hierarchy over marketing panels
+  - https://windframe.dev/styles/linear — token density (h-9 inputs, tracking-[-0.022em], surface-0 background)
+- Open follow-ups: none
