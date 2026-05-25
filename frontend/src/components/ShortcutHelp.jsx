@@ -45,7 +45,7 @@ function ShortcutHelp() {
               const items = SHORTCUTS.filter((s) => s.scope === scope);
               return (
                 <div key={scope}>
-                  <h3 className="mb-3 font-display text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                     {scope}
                   </h3>
                   <div className="grid grid-cols-2 gap-x-6 gap-y-2">

@@ -24,7 +24,7 @@ const TIME_RANGES = [
 
 const TYPE_STYLES = {
   applied: "bg-primary",
-  stage_change: "bg-accent-blue",
+  stage_change: "bg-status-info",
   event_created: "bg-amber-400 dark:bg-amber-900/40",
 };
 
@@ -126,7 +126,7 @@ function ActivityHeader({ days, total, isLoading, onDaysChange }) {
   return (
     <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <h1 className="flex items-center gap-2 font-display text-2xl font-semibold text-foreground">
+        <h1 className="flex items-center gap-2 text-2xl font-semibold text-foreground">
           <Activity className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
           Activity
         </h1>

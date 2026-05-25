@@ -54,8 +54,8 @@ const NAV_LINKS = [
 const THEME_ICONS = { system: Monitor, light: Sun, dark: Moon };
 const THEME_LABELS = { system: "System theme", light: "Light theme", dark: "Dark theme" };
 
-const NAV_LINK = "text-muted-foreground hover:text-foreground text-sm font-display font-medium transition-colors px-3 py-2 rounded-md";
-const NAV_LINK_ACTIVE = "text-primary text-sm font-display font-semibold px-3 py-2 rounded-md";
+const NAV_LINK = "text-muted-foreground hover:text-foreground text-sm font-medium transition-colors px-3 py-2 rounded-md";
+const NAV_LINK_ACTIVE = "text-primary text-sm font-semibold px-3 py-2 rounded-md";
 
 function UserAvatar({ user }) {
   if (user?.avatar_url) {
@@ -225,7 +225,7 @@ function NavBar() {
   return (
     <nav aria-label="Main navigation" className="bg-card border-b border-border">
       <div className="flex items-center gap-4 px-6 py-3">
-        <span className="mr-2 text-foreground font-display font-semibold text-lg tracking-tight">Pipelined</span>
+        <span className="mr-2 text-foreground font-semibold text-lg tracking-tight">Pipelined</span>
         <DesktopNavLinks navLinks={navLinks} pathname={pathname} badgeCounts={badgeCounts} />
         <DesktopActions user={user} ThemeIcon={ThemeIcon} theme={theme} handleCycleTheme={handleCycleTheme} handleLogout={handleLogout} onOpenCopilot={() => setCopilotOpen(true)} />
         <div className="ml-auto flex items-center gap-1 md:hidden">

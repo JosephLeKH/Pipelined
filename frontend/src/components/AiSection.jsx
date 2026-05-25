@@ -17,7 +17,7 @@ function AiSection({ title, icon: Icon, children, className = "", id, headerExtr
           >
             <Icon className="h-4 w-4 text-brand-500" />
           </div>
-          <h3 id={id ? `${id}-heading` : undefined} className="font-display text-sm font-semibold text-foreground">
+          <h3 id={id ? `${id}-heading` : undefined} className=" text-sm font-semibold text-foreground">
             {title}
           </h3>
         </div>

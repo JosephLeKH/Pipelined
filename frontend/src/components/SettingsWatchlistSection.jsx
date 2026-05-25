@@ -70,7 +70,7 @@ function SettingsWatchlistSection() {
 
   return (
     <div className={`${CARD_BASE} p-6`}>
-      <h2 className="font-display mb-1 text-lg font-semibold text-foreground">Company watchlist</h2>
+      <h2 className=" mb-1 text-lg font-semibold text-foreground">Company watchlist</h2>
       <p className="mb-5 text-sm text-muted-foreground">{WATCHLIST_EXPLAINER}</p>
 
       {error && <p role="alert" className="mb-4 text-sm text-destructive">{error}</p>}

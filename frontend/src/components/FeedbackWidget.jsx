@@ -164,7 +164,7 @@ function FeedbackPopover({ user, page, onClose, onSubmit }) {
       className="rounded-xl bg-card border border-border absolute bottom-14 right-0 w-80 p-4 animate-slideInUp shadow-lg"
     >
       <div className="mb-3 flex items-center justify-between">
-        <h2 className="font-display text-sm font-semibold text-foreground">How can we improve?</h2>
+        <h2 className=" text-sm font-semibold text-foreground">How can we improve?</h2>
         <Button type="button" variant="ghost" onClick={onClose} aria-label="Close" className="p-1 h-auto">
           <X className="h-4 w-4 text-muted-foreground" />
         </Button>

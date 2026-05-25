@@ -10,7 +10,7 @@ import { Input } from "../components/ui/input";
 function PasswordInput({ label, id, value, onChange }) {
   return (
     <div className="mb-4">
-      <label htmlFor={id} className="block text-sm font-medium text-foreground mb-1.5 font-display">{label}</label>
+      <label htmlFor={id} className="block text-sm font-medium text-foreground mb-1.5">{label}</label>
       <Input
         id={id}
         type="password"
@@ -52,7 +52,7 @@ function ResetPassword() {
 
   return (
     <AuthLayout>
-      <h1 className="font-display text-xl font-semibold text-foreground">Set new password</h1>
+      <h1 className=" text-xl font-semibold text-foreground">Set new password</h1>
       <p className="mt-1 mb-6 text-sm text-muted-foreground">Choose a strong password for your account.</p>
 
       {success ? (

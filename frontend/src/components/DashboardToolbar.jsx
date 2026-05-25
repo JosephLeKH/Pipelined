@@ -11,7 +11,7 @@ import { cn } from "../lib/utils";
 export function DashboardToolbar({ viewMode, onSetViewMode, isExporting, onImport, onExport, onAdd }) {
   return (
     <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-      <h1 className="font-display text-2xl font-semibold text-foreground">Dashboard</h1>
+      <h1 className=" text-2xl font-semibold text-foreground">Dashboard</h1>
       <div className="flex flex-wrap items-center gap-1 sm:gap-2">
         <div className="flex overflow-hidden rounded-md border border-input">
           <Button type="button" variant="ghost" aria-label="List view" aria-pressed={viewMode === "list"}

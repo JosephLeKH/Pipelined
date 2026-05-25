@@ -37,7 +37,7 @@ function RecommendationCard({ job, onSelect }) {
 
 function RecommendationsError({ onRetry }) {
   return (
-    <div className="rounded-xl border border-border-default bg-surface-secondary/50 px-4 py-6 text-center">
+    <div className="rounded-xl border border-border-1 bg-surface-1/50 px-4 py-6 text-center">
       <p className="text-sm text-muted-foreground">Could not load recommendations.</p>
       <button
         type="button"
@@ -62,7 +62,7 @@ export function JobRecommendations({ onSelectJob }) {
     return (
       <section aria-labelledby="recommendations-heading" className="flex flex-col gap-3">
         <header>
-          <h2 id="recommendations-heading" className="flex items-center gap-1.5 font-display text-sm font-semibold text-foreground">
+          <h2 id="recommendations-heading" className="flex items-center gap-1.5 text-sm font-semibold text-foreground">
             <TrendingUp className="h-4 w-4 text-brand-500" aria-hidden="true" />
             {SECTION_TITLE}
           </h2>
@@ -78,7 +78,7 @@ export function JobRecommendations({ onSelectJob }) {
   return (
     <section aria-labelledby="recommendations-heading" className="flex flex-col gap-3">
       <header>
-        <h2 id="recommendations-heading" className="flex items-center gap-1.5 font-display text-sm font-semibold text-foreground">
+        <h2 id="recommendations-heading" className="flex items-center gap-1.5 text-sm font-semibold text-foreground">
           <TrendingUp className="h-4 w-4 text-brand-500" aria-hidden="true" />
           {SECTION_TITLE}
         </h2>

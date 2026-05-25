@@ -55,7 +55,7 @@ function CopyFieldButton({ text, label }) {
 
 function ApplyPackField({ label, text, children }) {
   return (
-    <div className="flex flex-col gap-1.5 rounded-lg border border-border-default bg-surface-secondary/50 p-3">
+    <div className="flex flex-col gap-1.5 rounded-lg border border-border-1 bg-surface-1/50 p-3">
       <div className="flex items-center justify-between gap-2">
         <span className="text-xs font-medium text-muted-foreground">{label}</span>
         {text ? <CopyFieldButton text={text} label={label} /> : null}

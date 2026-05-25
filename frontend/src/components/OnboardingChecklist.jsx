@@ -114,7 +114,7 @@ function OnboardingChecklist() {
   return (
     <div className="mb-4 rounded-lg border border-border border-l-4 border-l-primary bg-card p-4">
       <div className="mb-3 flex items-center justify-between">
-        <h2 className="font-display font-semibold text-foreground">Get started with your agent</h2>
+        <h2 className=" font-semibold text-foreground">Get started with your agent</h2>
         <Button
           type="button"
           variant="ghost"

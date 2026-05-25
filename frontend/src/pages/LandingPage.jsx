@@ -110,15 +110,15 @@ function LandingNav() {
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4 md:px-10">
-        <Link to="/" className="font-display font-semibold text-lg tracking-tight text-foreground flex items-center gap-2">
+        <Link to="/" className=" font-semibold text-lg tracking-tight text-foreground flex items-center gap-2">
           <GitBranch className="h-5 w-5 text-primary" aria-hidden="true" />
           Pipelined
         </Link>
         <nav className="flex items-center gap-2">
-          <a href="#features" className="text-muted-foreground hover:text-foreground text-sm font-display font-medium transition-colors px-3 py-2 rounded-md hidden sm:block">
+          <a href="#features" className="text-muted-foreground hover:text-foreground text-sm font-medium transition-colors px-3 py-2 rounded-md hidden sm:block">
             Features
           </a>
-          <Link to="/login" className="text-muted-foreground hover:text-foreground text-sm font-display font-medium transition-colors px-3 py-2 rounded-md">
+          <Link to="/login" className="text-muted-foreground hover:text-foreground text-sm font-medium transition-colors px-3 py-2 rounded-md">
             Log in
           </Link>
           <Button asChild>
@@ -163,7 +163,7 @@ function FeaturesSection() {
 
   return (
     <section id="features" className="mx-auto max-w-6xl px-6 py-24 md:px-10">
-      <h2 className="mb-4 text-center text-3xl font-display font-semibold tracking-tight text-foreground">
+      <h2 className="mb-4 text-center text-3xl font-semibold tracking-tight text-foreground">
         Everything you need to land the job
       </h2>
       <p className="mx-auto mb-12 max-w-2xl text-center font-sans text-lg leading-relaxed text-muted-foreground">
@@ -173,7 +173,7 @@ function FeaturesSection() {
         {FEATURES.map(({ icon: Icon, title, description }) => (
           <div key={title} className="rounded-xl bg-card border border-border scroll-reveal flex flex-col gap-3 p-6">
             <Icon className="h-6 w-6 text-muted-foreground" aria-hidden="true" />
-            <h3 className="text-base font-display font-semibold text-foreground">{title}</h3>
+            <h3 className="text-base font-semibold text-foreground">{title}</h3>
             <p className="font-sans text-sm leading-relaxed text-muted-foreground">{description}</p>
           </div>
         ))}
@@ -186,7 +186,7 @@ function BottomCTA() {
   return (
     <section className="bg-muted py-24 text-center">
       <div className="mx-auto max-w-2xl px-6">
-        <h2 className="mb-4 text-3xl font-display font-semibold tracking-tight text-foreground">
+        <h2 className="mb-4 text-3xl font-semibold tracking-tight text-foreground">
           Start tracking your applications today
         </h2>
         <p className="mb-8 font-sans text-lg leading-relaxed text-muted-foreground">
@@ -207,7 +207,7 @@ function LandingFooter() {
         <div className="mb-10 grid grid-cols-2 gap-8 sm:grid-cols-3">
           {Object.entries(FOOTER_LINKS).map(([heading, items]) => (
             <div key={heading}>
-              <p className="mb-3 font-display text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 {heading}
               </p>
               <ul className="space-y-2">

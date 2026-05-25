@@ -8,7 +8,7 @@ export default function HeroSection() {
   return (
     <section className="bg-muted py-24">
       <div className="mx-auto max-w-3xl px-6 text-center">
-        <h1 className="mb-6 text-4xl font-display font-semibold tracking-tight text-foreground md:text-5xl">
+        <h1 className="mb-6 text-4xl font-semibold tracking-tight text-foreground md:text-5xl">
           Your job search co-pilot,{" "}
           <span className="text-primary">one mission at a time.</span>
         </h1>

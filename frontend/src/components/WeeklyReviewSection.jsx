@@ -10,12 +10,12 @@ import { CARD_BASE } from "../lib/designTokens";
 
 function MetricCard({ label, value, icon: Icon, description }) {
   return (
-    <div className="rounded-lg border border-border bg-surface-secondary/40 p-4">
+    <div className="rounded-lg border border-border bg-surface-1/40 p-4">
       <div className="flex items-center gap-2 text-muted-foreground">
         <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
         <span className="text-xs font-medium uppercase tracking-wide">{label}</span>
       </div>
-      <p className="mt-2 font-display text-2xl font-semibold text-foreground">{value}</p>
+      <p className="mt-2 text-2xl font-semibold text-foreground">{value}</p>
       {description && (
         <p className="mt-1 text-xs text-muted-foreground">{description}</p>
       )}
@@ -50,7 +50,7 @@ function WeeklyReviewSection({ review, isLoading }) {
     <section aria-label="Weekly review" className={`${CARD_BASE} p-5 animate-fade-in-up`}>
       <div className="mb-4 flex items-center justify-between gap-3">
         <div>
-          <h2 className="font-display text-lg font-semibold text-foreground">Weekly review</h2>
+          <h2 className=" text-lg font-semibold text-foreground">Weekly review</h2>
           <p className="text-sm text-muted-foreground">Week of {review.week_start}</p>
         </div>
       </div>
@@ -82,7 +82,7 @@ function WeeklyReviewSection({ review, isLoading }) {
               <li key={app.id}>
                 <Link
                   to={`/dashboard?selected=${app.id}`}
-                  className="flex items-center justify-between rounded-md px-2 py-1.5 text-sm hover:bg-surface-secondary"
+                  className="flex items-center justify-between rounded-md px-2 py-1.5 text-sm hover:bg-surface-1"
                 >
                   <span className="text-foreground">
                     {app.company} — {app.role_title}

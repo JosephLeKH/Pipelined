@@ -85,7 +85,7 @@ function SettingsAutopilotSection() {
   return (
     <div className="flex flex-col gap-4">
       <div className={`${CARD_BASE} p-6`}>
-        <h2 className="font-display mb-1 text-lg font-semibold text-foreground">Autopilot</h2>
+        <h2 className=" mb-1 text-lg font-semibold text-foreground">Autopilot</h2>
         <p className="mb-5 text-sm text-muted-foreground">{AUTOPILOT_EXPLAINER}</p>
 
         {needsResume && (

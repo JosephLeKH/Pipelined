@@ -36,7 +36,7 @@ export function LoginForm({ email, setEmail, password, setPassword, error, isPen
   return (
     <form onSubmit={handleSubmit} noValidate>
       <div className="mb-4">
-        <Label htmlFor="email" className="mb-1.5 block font-display text-sm font-medium">Email</Label>
+        <Label htmlFor="email" className="mb-1.5 block text-sm font-medium">Email</Label>
         <Input
           id="email"
           type="email"
@@ -52,7 +52,7 @@ export function LoginForm({ email, setEmail, password, setPassword, error, isPen
       </div>
       <div className="mb-5">
         <div className="mb-1.5 flex items-center justify-between">
-          <Label htmlFor="password" className="font-display text-sm font-medium">Password</Label>
+          <Label htmlFor="password" className=" text-sm font-medium">Password</Label>
           <Link to="/forgot-password" className="text-primary hover:text-primary/80 transition-colors text-sm">Forgot password?</Link>
         </div>
         <Input

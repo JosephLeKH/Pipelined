@@ -13,11 +13,11 @@ import { Label } from "./ui/label";
 
 const AVATAR_COLORS = [
   "bg-primary",
-  "bg-accent-blue",
+  "bg-status-info",
   "bg-amber-400 dark:bg-amber-500",
   "bg-emerald-500 dark:bg-emerald-600",
   "bg-destructive",
-  "bg-sky-500 dark:bg-sky-600", // intentional palette color; bg-accent-blue already used above
+  "bg-sky-500 dark:bg-sky-600", // intentional palette color; bg-status-info already used above
 ];
 
 function avatarColor(name) {
@@ -53,7 +53,7 @@ function SettingsProfileSection() {
 
   return (
     <div className="rounded-xl bg-card border border-border p-6">
-      <h2 className="mb-1 text-lg font-semibold font-display text-foreground">Profile</h2>
+      <h2 className="mb-1 text-lg font-semibold text-foreground">Profile</h2>
       <p className="mb-6 text-sm text-muted-foreground">
         Manage your display name, email, and timezone.
       </p>

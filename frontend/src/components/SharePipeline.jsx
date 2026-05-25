@@ -112,7 +112,7 @@ function SharePipeline() {
 
   return (
     <section aria-labelledby="share-heading" className="flex flex-col gap-3 rounded-xl border border-border p-4">
-      <h2 id="share-heading" className="text-sm font-semibold font-display text-foreground">
+      <h2 id="share-heading" className="text-sm font-semibold text-foreground">
         Share Your Pipeline
       </h2>
       {isLoading ? (

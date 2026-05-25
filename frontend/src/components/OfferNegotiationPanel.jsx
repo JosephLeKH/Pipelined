@@ -22,7 +22,7 @@ function TotalCompBreakdown({ offer }) {
 
   return (
     <div className="rounded-xl bg-card border border-border p-4 flex flex-col gap-2">
-      <h3 className="font-display text-xs font-semibold uppercase tracking-wide text-muted-foreground">Annual Value Breakdown</h3>
+      <h3 className=" text-xs font-semibold uppercase tracking-wide text-muted-foreground">Annual Value Breakdown</h3>
       <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
         <span className="text-muted-foreground">Base Salary</span>
         <span className="font-medium text-foreground text-right">{fmt(base)}</span>

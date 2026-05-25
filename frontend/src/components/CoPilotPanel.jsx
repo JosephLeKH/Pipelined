@@ -24,7 +24,7 @@ import {
 function TypingIndicator() {
   return (
     <div className="flex justify-start" aria-live="polite" aria-label="Co-pilot is typing">
-      <div className="flex items-center gap-1.5 rounded-xl border border-border-default bg-surface-secondary px-3 py-2.5">
+      <div className="flex items-center gap-1.5 rounded-xl border border-border-1 bg-surface-1 px-3 py-2.5">
         <span className="h-1.5 w-1.5 animate-pulse-soft rounded-full bg-brand-500 [animation-delay:0ms]" />
         <span className="h-1.5 w-1.5 animate-pulse-soft rounded-full bg-brand-500 [animation-delay:200ms]" />
         <span className="h-1.5 w-1.5 animate-pulse-soft rounded-full bg-brand-500 [animation-delay:400ms]" />
@@ -41,7 +41,7 @@ function ChatMessage({ message, onAction }) {
         className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed shadow-sm ${
           isUser
             ? "rounded-br-md bg-brand-500 text-white"
-            : "rounded-bl-md border border-border-default bg-white text-foreground dark:bg-gray-800"
+            : "rounded-bl-md border border-border-1 bg-white text-foreground dark:bg-gray-800"
         }`}
       >
         <p className="whitespace-pre-wrap">{message.content}</p>
@@ -132,7 +132,7 @@ function CoPilotPanel({ open, onClose }) {
           <div className="flex items-start gap-2">
             <Bot className="mt-0.5 h-5 w-5 text-brand-600" aria-hidden="true" />
             <div>
-              <h2 className="font-display text-base font-semibold text-foreground">{COPILOT_TITLE}</h2>
+              <h2 className=" text-base font-semibold text-foreground">{COPILOT_TITLE}</h2>
               <p className="text-xs text-muted-foreground">{COPILOT_SUBTITLE}</p>
             </div>
           </div>

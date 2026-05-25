@@ -51,7 +51,7 @@ function RequirementsList({ requirements }) {
   const items = Array.isArray(requirements) ? requirements : [requirements];
   return (
     <div>
-      <h3 className="mb-2 font-display text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+      <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
         Requirements
       </h3>
       <ul className="flex flex-col gap-1.5 text-sm text-foreground">
@@ -133,7 +133,7 @@ function JobDetailPanel({ job, onClose }) {
               size={48}
             />
             <div>
-              <h2 className="font-display text-xl font-semibold text-foreground">
+              <h2 className=" text-xl font-semibold text-foreground">
                 {job.role ?? "Untitled Role"}
               </h2>
               <p className="text-sm text-muted-foreground">{job.company ?? ""}</p>
@@ -167,7 +167,7 @@ function JobDetailPanel({ job, onClose }) {
 
           {job.description && (
             <div>
-              <h3 className="mb-2 font-display text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 Description
               </h3>
               <p className="whitespace-pre-wrap text-sm leading-relaxed text-foreground">

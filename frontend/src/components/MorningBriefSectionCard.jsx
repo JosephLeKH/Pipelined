@@ -10,10 +10,10 @@ import { CARD_BASE } from "../lib/designTokens";
 
 function MorningBriefItem({ title, body, actionUrl, fitScore }) {
   return (
-    <li className="border-t border-border-default first:border-t-0">
+    <li className="border-t border-border-1 first:border-t-0">
       <Link
         to={actionUrl}
-        className="flex items-start gap-3 px-4 py-3.5 text-left transition-colors hover:bg-surface-secondary/60"
+        className="flex items-start gap-3 px-4 py-3.5 text-left transition-colors hover:bg-surface-1/60"
       >
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
@@ -41,7 +41,7 @@ function MorningBriefSectionCard({ sectionKey, label, items }) {
       aria-label={label}
       className={`${CARD_BASE} border-l-4 ${accentClass} overflow-hidden`}
     >
-      <h2 className="border-b border-border-default px-4 py-3.5 font-display text-sm font-semibold text-foreground">
+      <h2 className="border-b border-border-1 px-4 py-3.5 text-sm font-semibold text-foreground">
         {label}
       </h2>
       <ul>

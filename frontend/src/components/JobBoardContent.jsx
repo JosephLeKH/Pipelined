@@ -18,16 +18,16 @@ function BriefcaseSvg() {
   return (
     <svg width="88" height="80" viewBox="0 0 88 80" fill="none" aria-hidden="true">
       {/* Case body */}
-      <rect x="8" y="28" width="72" height="42" rx="8" fill="#fae4d4" className="dark:fill-brand-900/40" stroke="#d97757" strokeWidth="2" />
+      <rect x="8" y="28" width="72" height="42" rx="8" fill="#FAE0E0" className="dark:fill-brand-900/40" stroke="#8C1515" strokeWidth="2" />
       {/* Handle */}
-      <path d="M30 28V22a6 6 0 0112 0v6" stroke="#d97757" strokeWidth="2" strokeLinecap="round" fill="none" />
+      <path d="M30 28V22a6 6 0 0112 0v6" stroke="#8C1515" strokeWidth="2" strokeLinecap="round" fill="none" />
       {/* Clasp bar */}
-      <rect x="8" y="44" width="72" height="6" rx="2" fill="#d97757" opacity="0.3" />
+      <rect x="8" y="44" width="72" height="6" rx="2" fill="#8C1515" opacity="0.3" />
       {/* Clasp center */}
-      <rect x="37" y="42" width="14" height="10" rx="3" fill="#d97757" opacity="0.7" />
+      <rect x="37" y="42" width="14" height="10" rx="3" fill="#8C1515" opacity="0.7" />
       {/* Search lens */}
-      <circle cx="65" cy="20" r="10" fill="none" stroke="#eeac80" strokeWidth="2.5" />
-      <line x1="72" y1="27" x2="78" y2="33" stroke="#eeac80" strokeWidth="2.5" strokeLinecap="round" />
+      <circle cx="65" cy="20" r="10" fill="none" stroke="#F4BFBF" strokeWidth="2.5" />
+      <line x1="72" y1="27" x2="78" y2="33" stroke="#F4BFBF" strokeWidth="2.5" strokeLinecap="round" />
     </svg>
   );
 }

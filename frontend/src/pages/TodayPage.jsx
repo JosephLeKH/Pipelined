@@ -50,7 +50,7 @@ function TodayHeroMission({ mission, onSnooze, onDone, isSnoozing, isCompleting 
             <p className="text-xs font-semibold uppercase tracking-wide text-brand-700 dark:text-brand-300">
               Mission #{MISSION_HERO_PRIORITY}
             </p>
-            <h2 className="mt-1 font-display text-xl font-semibold text-foreground">
+            <h2 className="mt-1 text-xl font-semibold text-foreground">
               {mission.title}
             </h2>
             <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{mission.reason}</p>
@@ -99,7 +99,7 @@ function TodayHero({ date, topMission, onSnooze, onDone, snoozePendingId, donePe
           <Sun className="h-6 w-6 text-brand-500" />
         </div>
         <div>
-          <h1 className="font-display text-2xl font-semibold text-foreground">Today</h1>
+          <h1 className=" text-2xl font-semibold text-foreground">Today</h1>
           {date && <p className="mt-0.5 text-sm text-muted-foreground">{date}</p>}
         </div>
       </div>

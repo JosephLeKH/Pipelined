@@ -30,7 +30,7 @@ function SettingsAgentActivitySection() {
 
   return (
     <div className={`${CARD_BASE} p-6`}>
-      <h2 className="mb-1 font-display text-lg font-semibold text-foreground">
+      <h2 className="mb-1 text-lg font-semibold text-foreground">
         Agent activity
       </h2>
       <p className="mb-5 text-sm text-muted-foreground">

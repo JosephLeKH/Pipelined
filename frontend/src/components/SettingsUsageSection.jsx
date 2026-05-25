@@ -39,7 +39,7 @@ function SettingsUsageSection({ user }) {
     <div className="rounded-xl bg-card border border-border p-6">
       <div className="mb-5 flex items-start justify-between gap-4">
         <div>
-          <h2 className="font-display text-lg font-semibold text-foreground">
+          <h2 className=" text-lg font-semibold text-foreground">
             Usage & Plan
           </h2>
           <p className="mt-0.5 text-sm text-muted-foreground">
@@ -57,7 +57,7 @@ function SettingsUsageSection({ user }) {
       </div>
 
       <div className="mt-6 border-t border-border pt-5">
-        <h3 className="font-display mb-1 text-base font-semibold text-foreground">AI usage</h3>
+        <h3 className=" mb-1 text-base font-semibold text-foreground">AI usage</h3>
         <p className="mb-4 text-sm text-muted-foreground">
           Fit scores, resume insights, follow-up drafts, and interview prep share this daily limit. Resets at midnight UTC.
         </p>

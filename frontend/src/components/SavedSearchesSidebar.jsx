@@ -23,7 +23,7 @@ export default function SavedSearchesSidebar({ onApply }) {
 
   return (
     <div className="rounded-xl bg-card border border-border p-4 shadow-sm">
-      <h2 className="mb-3 font-display text-sm font-semibold text-foreground">Saved Searches</h2>
+      <h2 className="mb-3 text-sm font-semibold text-foreground">Saved Searches</h2>
       <ul className="flex flex-col gap-1" aria-label="Saved searches list">
         {searches.map((s) => (
           <li key={s.id}>

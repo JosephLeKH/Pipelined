@@ -123,7 +123,7 @@ function SettingsResumeSection() {
   return (
     <div className="flex flex-col gap-4">
       <div className="rounded-xl bg-card border border-border p-6">
-        <h2 className="font-display mb-1 text-lg font-semibold text-foreground">Resume & AI</h2>
+        <h2 className=" mb-1 text-lg font-semibold text-foreground">Resume & AI</h2>
         <p className="mb-5 text-sm text-muted-foreground">
           Upload your resume to enable AI fit scoring on new applications.
         </p>

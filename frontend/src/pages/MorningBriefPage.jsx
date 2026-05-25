@@ -27,7 +27,7 @@ function MorningBriefHero({ date }) {
           <Sun className="h-6 w-6 text-brand-500" />
         </div>
         <div>
-          <h1 className="font-display text-2xl font-semibold text-foreground">
+          <h1 className=" text-2xl font-semibold text-foreground">
             Morning Brief
           </h1>
           {date && (

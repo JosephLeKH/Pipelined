@@ -1,0 +1,13 @@
+# PRD-00-design-system — complete
+
+- Branch: redesign/prd-00-design-system
+- Iterations: 2
+- Final commit: b0a0584
+- Linear sources cited:
+  - https://windframe.dev/styles/linear — Inter tracking, h-8 buttons, 6–8px radius, flat cards
+  - https://linear.app/method — density, opinionated palette, motion principles
+  - https://linear.app/ — app-shell density, neutral surfaces
+- Open follow-ups:
+  - PRD-08: dev contrast lint toggle in Settings → Appearance
+  - Extension: replace `#6366F1` / `#d97757` in `popup.css` and `banner_helpers.js` when extension redesign PRD runs
+  - Migrate inline `ToggleSwitch` in Settings sections to `components/ui/switch.jsx` (optional cleanup)
