@@ -21,9 +21,17 @@ import {
 
 const ONBOARDING_STEPS = 5;
 
-function OnboardingStepRow({ label, done, action }) {
-  return (
-    <div className="flex items-center justify-between gap-3 py-1">
+function OnboardingStepRow({ label, done, actionLabel, onClick, to, href, external, disabled }) {
+  const rowClass = [
+    "flex w-full items-center justify-between gap-3 rounded-md py-1 px-1 -mx-1 text-left",
+    "focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600",
+    "dark:focus-visible:outline-1",
+    done ? "cursor-default" : "hover:bg-surface-2",
+    disabled ? "cursor-default opacity-70" : "",
+  ].join(" ");
+
+  const content = (
+    <>
       <div className="flex min-w-0 items-center gap-2.5">
         {done ? (
           <Check className="h-3.5 w-3.5 shrink-0 text-brand-600" aria-hidden="true" />
@@ -32,35 +40,56 @@ function OnboardingStepRow({ label, done, action }) {
         )}
         <span className={`text-sm ${done ? "text-text-3" : "text-text-1"}`}>{label}</span>
       </div>
-      {!done && action}
-    </div>
+      {!done && actionLabel && (
+        <span className="shrink-0 text-sm text-brand-600">{actionLabel}</span>
+      )}
+    </>
   );
-}
 
-function StepActionLink({ children, onClick, href, external }) {
-  const className = [
-    "shrink-0 text-sm text-brand-600 hover:underline",
-    "focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600",
-    "dark:focus-visible:outline-1",
-  ].join(" ");
+  if (to) {
+    return (
+      <Link
+        to={done ? "#" : to}
+        className={rowClass}
+        onClick={(e) => {
+          if (done) e.preventDefault();
+          else onClick?.(e);
+        }}
+        aria-disabled={done || undefined}
+        tabIndex={done ? -1 : undefined}
+      >
+        {content}
+      </Link>
+    );
+  }
 
   if (href) {
     return (
       <a
-        href={href}
-        target={external ? "_blank" : undefined}
-        rel={external ? "noopener noreferrer" : undefined}
-        className={className}
-        onClick={onClick}
+        href={done ? undefined : href}
+        target={external && !done ? "_blank" : undefined}
+        rel={external && !done ? "noopener noreferrer" : undefined}
+        className={rowClass}
+        onClick={(e) => {
+          if (done) e.preventDefault();
+          else onClick?.(e);
+        }}
+        aria-disabled={done || undefined}
+        tabIndex={done ? -1 : undefined}
       >
-        {children}
+        {content}
       </a>
     );
   }
 
   return (
-    <button type="button" onClick={onClick} className={className}>
-      {children}
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={done || disabled}
+      className={rowClass}
+    >
+      {content}
     </button>
   );
 }
@@ -164,62 +193,35 @@ function OnboardingChecklist() {
           <OnboardingStepRow
             label="Verify your email"
             done={emailDone}
-            action={
-              !emailDone && (
-                <StepActionLink onClick={handleResendEmail}>
-                  {isResending ? "Sending…" : "→ Resend email"}
-                </StepActionLink>
-              )
-            }
+            actionLabel={isResending ? "Sending…" : "→ Resend email"}
+            onClick={handleResendEmail}
+            disabled={isResending}
           />
           <OnboardingStepRow
             label="Save your first application"
             done={applicationDone}
-            action={
-              !applicationDone && (
-                <StepActionLink onClick={() => navigate("/dashboard")}>
-                  → Add application
-                </StepActionLink>
-              )
-            }
+            actionLabel="→ Add application"
+            onClick={() => navigate("/dashboard")}
           />
           <OnboardingStepRow
             label="Connect Gmail"
             done={gmailDone}
-            action={
-              !gmailDone && (
-                <StepActionLink onClick={() => setGmailDialogOpen(true)}>→ Connect</StepActionLink>
-              )
-            }
+            actionLabel="→ Connect"
+            onClick={() => setGmailDialogOpen(true)}
           />
           <OnboardingStepRow
             label="Set a weekly goal"
             done={goalDone}
-            action={
-              !goalDone && (
-                <Link
-                  to="/settings?section=pipeline"
-                  className="shrink-0 text-sm text-brand-600 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 dark:focus-visible:outline-1"
-                >
-                  → Set goal
-                </Link>
-              )
-            }
+            actionLabel="→ Set goal"
+            to="/settings?section=pipeline"
           />
           <OnboardingStepRow
             label="Install Chrome extension"
             done={extensionDone}
-            action={
-              !extensionDone && (
-                <StepActionLink
-                  href={CHROME_EXTENSION_URL}
-                  external
-                  onClick={handleInstallExtension}
-                >
-                  → Install
-                </StepActionLink>
-              )
-            }
+            actionLabel="→ Install"
+            href={CHROME_EXTENSION_URL}
+            external
+            onClick={handleInstallExtension}
           />
         </div>
       </section>

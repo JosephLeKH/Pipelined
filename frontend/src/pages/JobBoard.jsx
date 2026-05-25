@@ -83,9 +83,11 @@ function JobBoard() {
         </div>
       )}
       <div className="flex gap-6">
-        <aside className="hidden w-56 shrink-0 lg:block">
-          <SavedSearchesSidebar onApply={handleApplySavedSearch} />
-        </aside>
+        {savedCount > 0 && (
+          <aside className="hidden w-56 shrink-0 lg:block">
+            <SavedSearchesSidebar onApply={handleApplySavedSearch} />
+          </aside>
+        )}
         <div className="flex min-w-0 flex-1 flex-col gap-6">
           {!hasActiveFilters && <JobRecommendations onSelectJob={setSelectedJob} />}
           <JobBoardContent isLoading={isLoading} error={error} jobs={jobs} total={total} hasFilters={hasActiveFilters} hasMore={hasMore} onClearFilters={handleClearFilters} onLoadMore={handleLoadMore} onSelectJob={setSelectedJob} refetch={refetch} selectedJobId={selectedJob?.id ?? null} />
