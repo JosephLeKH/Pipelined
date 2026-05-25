@@ -16,7 +16,13 @@ vi.mock("recharts/es6/component/ResponsiveContainer", () => ({
   ResponsiveContainer: ({ children }) => <div>{children}</div>,
 }));
 
-import { AnalyticsMainCharts, AnalyticsFunnelSection, AnalyticsTagsTable } from "./AnalyticsCharts";
+import {
+  AnalyticsMainCharts,
+  AnalyticsFunnelSection,
+  AnalyticsTagsTable,
+  CHART_COLORS,
+  CustomTooltip,
+} from "./AnalyticsCharts";
 
 const WEEKLY_DATA = [
   { week: "2024-W01", count: 5 },
@@ -52,6 +58,28 @@ const ANALYTICS = {
   top_companies: TOP_COMPANIES,
 };
 
+describe("CHART_COLORS", () => {
+  it("should use Cardinal Red as series1 per PRD chart palette", () => {
+    expect(CHART_COLORS.series1).toBe("#8C1515");
+    expect(CHART_COLORS.series2).toBe("#3B82F6");
+    expect(CHART_COLORS.series3).toBe("#175E54");
+  });
+});
+
+describe("CustomTooltip", () => {
+  it("should render token-styled tooltip surface", () => {
+    render(
+      <CustomTooltip
+        active
+        label="2026-W01"
+        payload={[{ dataKey: "count", name: "Applications", value: 5 }]}
+      />
+    );
+    const tooltip = screen.getByTestId("analytics-chart-tooltip");
+    expect(tooltip).toHaveClass("bg-surface-0", "border-border-2", "text-xs");
+  });
+});
+
 describe("AnalyticsMainCharts", () => {
   it("should render Applications per Week heading", () => {
     render(<AnalyticsMainCharts analytics={ANALYTICS} />);
@@ -71,6 +99,20 @@ describe("AnalyticsMainCharts", () => {
   it("should render Top 10 Companies heading", () => {
     render(<AnalyticsMainCharts analytics={ANALYTICS} />);
     expect(screen.getByText("Top 10 Companies Applied To")).toBeInTheDocument();
+  });
+
+  it("should show empty chart message when all series values are zero", () => {
+    render(
+      <AnalyticsMainCharts
+        analytics={{
+          applications_by_week: [{ week: "2026-W01", count: 0 }],
+          stage_funnel: [{ stage: "Applied", count: 0 }],
+          response_rate_by_month: [{ month: "2026-01", rate: 0 }],
+          top_companies: [{ company: "Acme", count: 0 }],
+        }}
+      />
+    );
+    expect(screen.getAllByText("No data for this range").length).toBeGreaterThanOrEqual(1);
   });
 });
 
