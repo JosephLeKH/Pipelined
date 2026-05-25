@@ -22,11 +22,22 @@ function BriefSectionHeading({ children }) {
   );
 }
 
-function TodayMorningBriefContent({ brief, emptyMessage, onGenerateBrief, isGenerating }) {
+function TodayMorningBriefContent({
+  brief,
+  emptyMessage,
+  onGenerateBrief,
+  isGenerating,
+  generateError,
+}) {
   const sections = brief?.sections ?? {};
   const hasItems = BRIEF_SECTION_ORDER.some(({ key }) => sections[key]?.length > 0);
 
   if (!hasItems) {
+    const errorMessage = generateError
+      ? generateError?.response?.data?.detail?.message
+          ?? generateError?.message
+          ?? "Could not generate brief. Try again in a bit."
+      : null;
     return (
       <div className="px-1 py-2 text-center">
         <Sun className="mx-auto mb-2 h-6 w-6 text-text-3" aria-hidden="true" />
@@ -34,14 +45,19 @@ function TodayMorningBriefContent({ brief, emptyMessage, onGenerateBrief, isGene
         <p className="mt-1 text-xs text-text-3">{brief?.summary_line ?? emptyMessage}</p>
         {onGenerateBrief && (
           <Button
+            type="button"
             onClick={onGenerateBrief}
             disabled={isGenerating}
-            variant="primary"
             size="sm"
             className="mt-3"
           >
             {isGenerating ? "Generating..." : "Generate brief"}
           </Button>
+        )}
+        {errorMessage && (
+          <p role="alert" className="mt-2 text-xs text-brand-700 dark:text-brand-300">
+            {errorMessage}
+          </p>
         )}
       </div>
     );
@@ -64,7 +80,15 @@ function TodayMorningBriefContent({ brief, emptyMessage, onGenerateBrief, isGene
   );
 }
 
-function TodayMorningBrief({ brief, briefHour, emptyMessage, forceOpen, onGenerateBrief, isGenerating }) {
+function TodayMorningBrief({
+  brief,
+  briefHour,
+  emptyMessage,
+  forceOpen,
+  onGenerateBrief,
+  isGenerating,
+  generateError,
+}) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [historyOpen, setHistoryOpen] = useState(false);
   const { data: historyData } = useBriefHistory(HISTORY_DAYS);
@@ -156,6 +180,7 @@ function TodayMorningBrief({ brief, briefHour, emptyMessage, forceOpen, onGenera
             emptyMessage={emptyMessage}
             onGenerateBrief={onGenerateBrief}
             isGenerating={isGenerating}
+            generateError={generateError}
           />
         </div>
       )}

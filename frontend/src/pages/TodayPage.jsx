@@ -115,6 +115,7 @@ function TodayPage() {
               forceOpen
               onGenerateBrief={() => generateBrief.mutate()}
               isGenerating={generateBrief.isPending}
+              generateError={generateBrief.error}
             />
           </>
         )}
@@ -152,6 +153,7 @@ function TodayPage() {
               forceOpen={forceBriefOpen}
               onGenerateBrief={() => generateBrief.mutate()}
               isGenerating={generateBrief.isPending}
+              generateError={generateBrief.error}
             />
             <MissionProgressStrip cleared={progress.cleared} total={progress.total} />
             {weeklyReviewEnabled && isSunday && !weeklyReviewOpen && (
