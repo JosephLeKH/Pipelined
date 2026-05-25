@@ -32,7 +32,6 @@ function SortHeader({ field, label, sortBy, sortOrder, onSort }) {
 export function ApplicationListHeader({ sortBy, sortOrder, onSort, allSelected, onSelectAll }) {
   return (
     <div
-      role="row"
       className="flex h-8 items-center gap-3 border-b border-border-2 bg-surface-1 px-4"
       data-testid="application-list-header"
     >

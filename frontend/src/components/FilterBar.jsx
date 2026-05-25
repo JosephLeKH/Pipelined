@@ -155,7 +155,7 @@ function FilterBar() {
           <button
             type="button"
             onClick={clearAll}
-            className="shrink-0 text-xs text-text-3 hover:text-brand-700 motion-reduce:transition-none transition-colors duration-hover ease-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 focus-visible:outline-offset-2 dark:focus-visible:outline-1"
+            className="shrink-0 text-xs text-text-3 hover:text-brand-700 dark:hover:text-brand-300 motion-reduce:transition-none transition-colors duration-hover ease-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 focus-visible:outline-offset-2 dark:focus-visible:outline-1"
           >
             Clear
           </button>

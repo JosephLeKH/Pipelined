@@ -58,7 +58,7 @@ describe("ApplicationRow — desktop interactions", () => {
   it("should call onSelect when row is clicked", () => {
     const { onSelect } = renderRow();
 
-    fireEvent.click(screen.getByRole("row"));
+    fireEvent.click(screen.getByRole("listitem"));
 
     expect(onSelect).toHaveBeenCalledWith(APP);
   });
@@ -66,7 +66,7 @@ describe("ApplicationRow — desktop interactions", () => {
   it("should call onSelect when Enter is pressed on row", () => {
     const { onSelect } = renderRow();
 
-    fireEvent.keyDown(screen.getByRole("row"), { key: "Enter" });
+    fireEvent.keyDown(screen.getByRole("listitem"), { key: "Enter" });
 
     expect(onSelect).toHaveBeenCalledWith(APP);
   });
@@ -105,13 +105,13 @@ describe("ApplicationRow — desktop interactions", () => {
   it("should render a 40px-tall row on desktop viewport", () => {
     renderRow();
 
-    expect(screen.getByRole("row")).toHaveClass("md:h-10");
+    expect(screen.getByRole("listitem")).toHaveClass("md:h-10");
   });
 
   it("should apply selected styling when isSelected is true", () => {
     renderRow({ isSelected: true });
 
-    expect(screen.getByRole("row")).toHaveClass("border-l-brand-600");
+    expect(screen.getByRole("listitem")).toHaveClass("border-l-brand-600");
   });
 });
 
@@ -129,7 +129,7 @@ describe("ApplicationRow — swipe actions", () => {
   });
 
   function getRow() {
-    return screen.getByRole("row");
+    return screen.getByRole("listitem");
   }
 
   function getSwipePanel() {

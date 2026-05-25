@@ -26,7 +26,7 @@ function FitBadge({ score }) {
       data-testid="fit-badge"
     >
       {showSparkle && (
-        <Sparkles className="h-[11px] w-[11px] shrink-0 text-brand-600" aria-hidden="true" />
+        <Sparkles className="h-[11px] w-[11px] shrink-0 text-brand-600 dark:text-brand-400" aria-hidden="true" />
       )}
       <span className={scoreTextClass(score)}>{label}</span>
     </span>

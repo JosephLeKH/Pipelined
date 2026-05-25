@@ -101,7 +101,7 @@ describe("Dashboard", () => {
     await screen.findByText("Acme Corp");
 
     // Act
-    await userEvent.click(screen.getByText("Acme Corp").closest("[role='row']"));
+    await userEvent.click(screen.getByText("Acme Corp").closest("[role='listitem']"));
 
     // Assert — DetailPanel slide-in panel becomes visible (trangray-x-0 class)
     const panel = await screen.findByRole("dialog", { name: /software engineer/i });

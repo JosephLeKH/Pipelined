@@ -28,7 +28,6 @@ export function StagePill({ stage }) {
   const muted = MUTED_STAGE_LABELS.has(stage);
   return (
     <span
-      aria-label={stage}
       data-testid="stage-pill"
       className={`inline-flex shrink-0 items-center gap-1.5 text-xs text-text-1 ${muted ? "line-through" : ""}`}
     >
@@ -112,7 +111,8 @@ function ApplicationRow({
         onFollowUp={() => handleAction(() => onSetFollowUp?.(application.id))}
       />
       <div
-        role="row"
+        role="listitem"
+        aria-label={`${application.company}, ${application.role_title}, ${application.current_stage}`}
         className={rowClassName({ archived, isFocused, isSelected })}
         style={{
           transform: offset !== 0 ? `translateX(${offset}px)` : undefined,
@@ -136,7 +136,7 @@ function ApplicationRow({
             <Tooltip>
               <TooltipTrigger asChild>
                 <span
-                  tabIndex={0}
+                  role="img"
                   className="block h-2 w-2 animate-pulse cursor-default rounded-full bg-amber-400 motion-reduce:animate-none dark:bg-amber-500"
                   data-testid="stale-indicator"
                   aria-label="Stale application — no updates in 14+ days"

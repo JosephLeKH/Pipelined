@@ -53,7 +53,7 @@ export function DetailPanelHeader({ application, onClose, onDelete }) {
         <DropdownMenuContent align="end" className="min-w-[10rem]">
           <DropdownMenuItem
             onSelect={onDelete}
-            className="text-brand-700 focus:bg-brand-50 focus:text-brand-700"
+            className="text-brand-700 focus:bg-brand-50 focus:text-brand-700 dark:text-brand-300 dark:focus:bg-brand-900/30 dark:focus:text-brand-200"
           >
             <Trash2 className="h-4 w-4" aria-hidden="true" />
             Delete application

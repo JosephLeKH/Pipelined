@@ -101,7 +101,7 @@ describe("ApplicationList", () => {
 
     // Verify the stale indicator is inside the OldCo row
     const oldCoCell = screen.getByText("OldCo");
-    const row = oldCoCell.closest("[role='row']");
+    const row = oldCoCell.closest("[role='listitem']");
     expect(within(row).getByTestId("stale-indicator")).toBeInTheDocument();
   });
 
@@ -112,7 +112,7 @@ describe("ApplicationList", () => {
     await screen.findByText("Acme Corp");
 
     // Act
-    await userEvent.click(screen.getByText("Acme Corp").closest("[role='row']"));
+    await userEvent.click(screen.getByText("Acme Corp").closest("[role='listitem']"));
 
     // Assert
     expect(onSelect).toHaveBeenCalledWith(expect.objectContaining({ id: "app1" }));
@@ -193,14 +193,15 @@ describe("ApplicationList", () => {
     expect(document.querySelectorAll("[data-testid='skeleton-row']")).toHaveLength(0);
   });
 
-  it("should render StagePill with aria-label matching stage name", async () => {
+  it("should render StagePill with visible stage label text", async () => {
     // Arrange / Act
     render(<ApplicationList onSelect={() => {}} />, { wrapper: makeWrapper() });
     await screen.findByText("Acme Corp");
 
-    // Assert — each stage has an aria-label on the badge
-    expect(screen.getByLabelText("Applied")).toBeInTheDocument();
-    expect(screen.getByLabelText("Phone Screen")).toBeInTheDocument();
+    // Assert — dot+label pill shows stage name (listitem aria-label also includes stage)
+    const pills = screen.getAllByTestId("stage-pill");
+    expect(pills.some((el) => el.textContent?.includes("Applied"))).toBe(true);
+    expect(pills.some((el) => el.textContent?.includes("Phone Screen"))).toBe(true);
   });
 
   it("should render stale indicator with accessible aria-label", async () => {
