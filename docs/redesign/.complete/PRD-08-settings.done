@@ -1,0 +1,12 @@
+# PRD-08-settings — complete
+
+- Branch: redesign/prd-08-settings
+- Iterations: 6
+- Final commit: 88518f7
+- Linear sources cited:
+  - https://linear.app/settings/account — two-column settings layout with left sub-nav, sticky save footer, field block layout
+  - https://windframe.dev/styles/linear — 240px sidebar, 13px nav labels, surface hover tokens, dark-mode semantic colors
+- Open follow-ups:
+  - Wire SettingsPageShell into remaining form sections (notifications, autopilot, agent profile, integrations)
+  - Re-skin remaining Settings*Section components per PRD §5–6 (TimezoneSelector, templates, resume, watchlist)
+  - Update deep links (?section=) in autopilot resume link to /settings/resume
