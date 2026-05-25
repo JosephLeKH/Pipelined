@@ -109,6 +109,16 @@ export default {
         sans: ["Inter", "system-ui", "-apple-system", "sans-serif"],
         display: ["Poppins", "Arial", "sans-serif"],
       },
+      fontSize: {
+        xs: ["0.875rem", { lineHeight: "1.25rem" }],
+        sm: ["1rem", { lineHeight: "1.5rem" }],
+        base: ["1.125rem", { lineHeight: "1.625rem" }],
+        lg: ["1.25rem", { lineHeight: "1.875rem" }],
+        xl: ["1.375rem", { lineHeight: "2rem" }],
+        "2xl": ["1.75rem", { lineHeight: "2.25rem" }],
+        "3xl": ["2.125rem", { lineHeight: "2.5rem" }],
+        "4xl": ["2.5rem", { lineHeight: "2.75rem" }],
+      },
       boxShadow: {
         card: "0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06)",
         "card-hover": "0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04)",
