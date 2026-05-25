@@ -1,0 +1,58 @@
+/** Marketing page utilities — scroll reveal, section rhythm, focus rings. */
+
+@media (prefers-reduced-motion: no-preference) {
+  .marketing-reveal {
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 320ms ease-out, transform 320ms ease-out;
+  }
+
+  .marketing-reveal.in-view {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .cta-arrow-hover {
+    transition: transform 120ms ease-out;
+  }
+
+  .group:hover .cta-arrow-hover,
+  .group:focus-visible .cta-arrow-hover {
+    transform: translateX(2px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marketing-reveal {
+    opacity: 1;
+    transform: none;
+  }
+
+  .cta-arrow-hover {
+    transform: none;
+  }
+}
+
+.marketing-section {
+  padding-top: 4.5rem;
+  padding-bottom: 4.5rem;
+}
+
+@media (min-width: 768px) {
+  .marketing-section {
+    padding-top: 6rem;
+    padding-bottom: 6rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .marketing-section {
+    padding-top: 7.5rem;
+    padding-bottom: 7.5rem;
+  }
+}
+
+.marketing-focus:focus-visible {
+  outline: 2px solid #8C1515;
+  outline-offset: 2px;
+}

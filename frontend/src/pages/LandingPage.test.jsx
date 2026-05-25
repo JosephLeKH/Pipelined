@@ -1,4 +1,4 @@
-/** Tests for LandingPage: hero content, feature highlights, CTAs, Chrome CTA, auth redirect. */
+/** Tests for LandingPage: hero, numbered sections, CTAs, auth redirect. */
 
 import { render, screen, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -39,38 +39,34 @@ function makeWrapper() {
 }
 
 describe("LandingPage", () => {
-  it("should render the hero tagline with co-pilot messaging", () => {
+  it("should render the hero headline and subhead", () => {
     render(<LandingPage />, { wrapper: makeWrapper() });
 
-    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(/co-pilot/i);
-    expect(screen.getByText(/Start each day on Today/i)).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(/pipeline for/i);
+    expect(screen.getByText(/Capture every application from one-click save/i)).toBeInTheDocument();
   });
 
-  it("should render agent-native feature highlights", () => {
+  it("should render numbered product sections", () => {
     render(<LandingPage />, { wrapper: makeWrapper() });
 
-    expect(screen.getByText("Co-pilot")).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Today" })).toBeInTheDocument();
-    expect(screen.getByText("Apply Pack")).toBeInTheDocument();
-    expect(screen.getByText("Mock Interview")).toBeInTheDocument();
-    expect(screen.getByText("Watchlist")).toBeInTheDocument();
-    expect(screen.getByText("Autopilot")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /capture every job in one click/i })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /know what to do this morning/i })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /draft a great application/i })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /rehearse before the real call/i })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /see where time goes/i })).toBeInTheDocument();
   });
 
-  it("should render core product feature highlights", () => {
+  it("should render trust and compliance copy", () => {
     render(<LandingPage />, { wrapper: makeWrapper() });
 
-    expect(screen.getByText("Pipeline Dashboard")).toBeInTheDocument();
-    expect(screen.getByText("One-Click Chrome Extension")).toBeInTheDocument();
-    expect(screen.getByText("Interview Calendar")).toBeInTheDocument();
-    expect(screen.getByText("Curated Job Board")).toBeInTheDocument();
-    expect(screen.queryByText(/GPT-powered/i)).not.toBeInTheDocument();
+    expect(screen.getByText(/No auto-send — you copy, you send/i)).toBeInTheDocument();
+    expect(screen.getByText(/Loved by students at top CS programs/i)).toBeInTheDocument();
   });
 
   it("should render Sign Up CTA links", () => {
     render(<LandingPage />, { wrapper: makeWrapper() });
 
-    const signUpLinks = screen.getAllByRole("link", { name: /sign up|get started/i });
+    const signUpLinks = screen.getAllByRole("link", { name: /sign up/i });
     expect(signUpLinks.length).toBeGreaterThan(0);
   });
 
@@ -89,7 +85,7 @@ describe("LandingPage", () => {
     render(<LandingPage />, { wrapper: makeWrapper() });
 
     await waitFor(() => {
-      expect(screen.getByRole("heading", { name: "Today" })).toBeInTheDocument();
+      expect(screen.getByText("Today")).toBeInTheDocument();
     });
   });
 });
