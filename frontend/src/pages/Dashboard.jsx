@@ -26,15 +26,47 @@ import { useDashboardFilters } from "../hooks/useDashboardFilters";
 import { VIEW_MODE_STORAGE_KEY, OPEN_IMPORT_CSV_EVENT } from "../lib/constants";
 import { trackEvent } from "../lib/analytics";
 
-function DashboardContent({ viewMode, onSetViewMode, isExporting, onExport, filters, onSelect, onAdd, onImportCsv, shortcutsEnabled, onClearFilters, selectedApp, selectedId, onClosePanel, isModalOpen, isImportOpen, onCloseModal, onCloseImport, followUpsDue, onViewFollowUps, expandFollowUpDraft }) {
+function DashboardContent({
+  viewMode,
+  onSetViewMode,
+  applicationCount,
+  isExporting,
+  onExport,
+  filters,
+  onSelect,
+  onAdd,
+  onImportCsv,
+  shortcutsEnabled,
+  onClearFilters,
+  selectedApp,
+  selectedId,
+  onClosePanel,
+  isModalOpen,
+  isImportOpen,
+  onCloseModal,
+  onCloseImport,
+  followUpsDue,
+  onViewFollowUps,
+  expandFollowUpDraft,
+}) {
   return (
-    <main className="flex-1 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 space-y-6">
-        <DashboardToolbar viewMode={viewMode} onSetViewMode={onSetViewMode} isExporting={isExporting} onImport={onImportCsv} onExport={onExport} onAdd={onAdd} />
+    <div className="flex min-h-0 flex-1 flex-col">
+      <div className="space-y-2 px-4 pt-3">
         <OnboardingChecklist />
         <AutopilotResumeBanner />
         <InboxSetupBanner />
         <FollowUpBanner followUpsDue={followUpsDue} onView={onViewFollowUps} />
+      </div>
+      <DashboardToolbar
+        viewMode={viewMode}
+        onSetViewMode={onSetViewMode}
+        applicationCount={applicationCount}
+        isExporting={isExporting}
+        onImport={onImportCsv}
+        onExport={onExport}
+        onAdd={onAdd}
+      />
+      <div className="flex flex-col gap-4 px-4 pb-6">
         <section role="region" aria-label="Goal progress and statistics">
           <GoalProgress />
           <StatsBar />
@@ -44,14 +76,26 @@ function DashboardContent({ viewMode, onSetViewMode, isExporting, onExport, filt
           {viewMode === "kanban" ? (
             <KanbanBoard filters={filters} onSelect={onSelect} />
           ) : (
-            <ApplicationList filters={filters} onSelect={onSelect} onAdd={onAdd} onImportCsv={onImportCsv} shortcutsEnabled={shortcutsEnabled} onClearFilters={onClearFilters} selectedId={selectedId} />
+            <ApplicationList
+              filters={filters}
+              onSelect={onSelect}
+              onAdd={onAdd}
+              onImportCsv={onImportCsv}
+              shortcutsEnabled={shortcutsEnabled}
+              onClearFilters={onClearFilters}
+              selectedId={selectedId}
+            />
           )}
         </section>
-        <DetailPanel application={selectedApp ?? null} onClose={onClosePanel} expandFollowUpDraft={expandFollowUpDraft} />
-        <ManualAddForm isOpen={isModalOpen} onClose={onCloseModal} />
-        <CsvImportModal isOpen={isImportOpen} onClose={onCloseImport} />
       </div>
-    </main>
+      <DetailPanel
+        application={selectedApp ?? null}
+        onClose={onClosePanel}
+        expandFollowUpDraft={expandFollowUpDraft}
+      />
+      <ManualAddForm isOpen={isModalOpen} onClose={onCloseModal} />
+      <CsvImportModal isOpen={isImportOpen} onClose={onCloseImport} />
+    </div>
   );
 }
 
@@ -99,7 +143,11 @@ function Dashboard() {
   return (
     <>
       <DashboardContent
-        viewMode={viewMode} onSetViewMode={handleSetViewMode} isExporting={isExporting} onExport={handleExport}
+        viewMode={viewMode}
+        onSetViewMode={handleSetViewMode}
+        applicationCount={stats?.data?.total_applied}
+        isExporting={isExporting}
+        onExport={handleExport}
         filters={filters} onSelect={handleSelect} onAdd={() => setIsModalOpen(true)} onImportCsv={() => setIsImportOpen(true)}
         shortcutsEnabled={shortcutsEnabled} onClearFilters={handleClearFilters} selectedApp={selectedApp} selectedId={selectedId} onClosePanel={handleClosePanel}
         isModalOpen={isModalOpen} isImportOpen={isImportOpen} onCloseModal={() => setIsModalOpen(false)} onCloseImport={() => setIsImportOpen(false)}

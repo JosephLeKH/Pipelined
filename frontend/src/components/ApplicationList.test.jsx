@@ -144,7 +144,7 @@ describe("ApplicationList", () => {
     expect(screen.getByRole("button", { name: /company/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /role/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /stage/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /date applied/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /updated/i })).toBeInTheDocument();
   });
 
   it("should update sort_by in URL when a column header is clicked", async () => {

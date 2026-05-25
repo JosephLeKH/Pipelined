@@ -61,13 +61,13 @@ describe("DashboardToolbar", () => {
     expect(onSetViewMode).toHaveBeenCalledWith("kanban");
   });
 
-  it("should show spinner and disable Export CSV while isExporting", () => {
+  it("should show spinner and disable Export while isExporting", () => {
     renderToolbar({ ...DEFAULT_PROPS, isExporting: true });
 
-    expect(screen.getByRole("button", { name: /export csv/i })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /^export$/i })).toBeDisabled();
   });
 
-  it("should call onAdd when Add Application is clicked", () => {
+  it("should call onAdd when Add application is clicked", () => {
     const onAdd = vi.fn();
 
     renderToolbar({ ...DEFAULT_PROPS, onAdd: onAdd });
@@ -75,5 +75,13 @@ describe("DashboardToolbar", () => {
     fireEvent.click(screen.getByRole("button", { name: /add application/i }));
 
     expect(onAdd).toHaveBeenCalledOnce();
+  });
+
+  it("should render sticky sub-header below top bar offset", () => {
+    renderToolbar({ ...DEFAULT_PROPS, applicationCount: 12 });
+
+    const bar = screen.getByRole("heading", { name: /dashboard/i }).parentElement;
+    expect(bar).toHaveClass("sticky", "top-11", "h-14");
+    expect(screen.getByText("12 applications")).toBeInTheDocument();
   });
 });

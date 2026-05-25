@@ -1,4 +1,4 @@
-/** Header toolbar for Dashboard: page title, view toggle, Import/Export/Add buttons. */
+/** Sticky Dashboard sub-header: title, count, view toggle, import/export/add actions. */
 
 import LayoutGrid from "lucide-react/dist/esm/icons/layout-grid";
 import List from "lucide-react/dist/esm/icons/list";
@@ -8,46 +8,90 @@ import { Button } from "./ui/button";
 import { Tooltip, TooltipTrigger, TooltipContent } from "./ui/tooltip";
 import { cn } from "../lib/utils";
 
-export function DashboardToolbar({ viewMode, onSetViewMode, isExporting, onImport, onExport, onAdd }) {
+function ViewToggle({ viewMode, onChange }) {
+  const segmentClass = (active) =>
+    cn(
+      "inline-flex h-7 w-8 items-center justify-center rounded motion-reduce:transition-none",
+      "transition-colors duration-hover ease-out",
+      "focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 focus-visible:outline-offset-2",
+      "dark:focus-visible:outline-1",
+      active ? "bg-surface-0 text-text-1 shadow-sm" : "text-text-2 hover:text-text-1"
+    );
+
   return (
-    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-      <h1 className=" text-2xl font-semibold text-foreground">Dashboard</h1>
-      <div className="flex flex-wrap items-center gap-1 sm:gap-2">
-        <div className="flex overflow-hidden rounded-md border border-input">
-          <Button type="button" variant="ghost" aria-label="List view" aria-pressed={viewMode === "list"}
-            onClick={() => onSetViewMode("list")}
-            className={cn("rounded-l-md rounded-r-none h-auto px-2 py-1.5",
-              viewMode === "list"
-                ? "bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground"
-                : "bg-card text-muted-foreground hover:bg-muted hover:text-foreground"
-            )}>
-            <List className="h-4 w-4" aria-hidden="true" />
-          </Button>
-          <Button type="button" variant="ghost" aria-label="Kanban view" aria-pressed={viewMode === "kanban"}
-            onClick={() => onSetViewMode("kanban")}
-            className={cn("rounded-r-md rounded-l-none border-l border-input h-auto px-2 py-1.5",
-              viewMode === "kanban"
-                ? "bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground"
-                : "bg-card text-muted-foreground hover:bg-muted hover:text-foreground"
-            )}>
-            <LayoutGrid className="h-4 w-4" aria-hidden="true" />
-          </Button>
-        </div>
-        <Button type="button" variant="outline" onClick={onImport}>
+    <div
+      role="group"
+      aria-label="View mode"
+      className="flex rounded-md bg-surface-1 p-0.5"
+    >
+      <button
+        type="button"
+        aria-label="List view"
+        aria-pressed={viewMode === "list"}
+        onClick={() => onChange("list")}
+        className={segmentClass(viewMode === "list")}
+      >
+        <List className="h-3.5 w-3.5" aria-hidden="true" />
+      </button>
+      <button
+        type="button"
+        aria-label="Kanban view"
+        aria-pressed={viewMode === "kanban"}
+        onClick={() => onChange("kanban")}
+        className={segmentClass(viewMode === "kanban")}
+      >
+        <LayoutGrid className="h-3.5 w-3.5" aria-hidden="true" />
+      </button>
+    </div>
+  );
+}
+
+export function DashboardToolbar({
+  viewMode,
+  onSetViewMode,
+  applicationCount,
+  isExporting,
+  onImport,
+  onExport,
+  onAdd,
+}) {
+  const countLabel =
+    applicationCount == null
+      ? null
+      : `${applicationCount} application${applicationCount === 1 ? "" : "s"}`;
+
+  return (
+    <div className="sticky top-11 z-20 flex h-14 shrink-0 items-center gap-3 border-b border-border-1 bg-surface-0/90 px-4 backdrop-blur motion-reduce:backdrop-blur-none">
+      <h1 className="text-base font-semibold text-text-1">Dashboard</h1>
+      {countLabel != null && (
+        <span className="text-xs text-text-3">{countLabel}</span>
+      )}
+      <div className="ml-auto flex items-center gap-1.5">
+        <ViewToggle viewMode={viewMode} onChange={onSetViewMode} />
+        <Button type="button" variant="secondary" size="sm" onClick={onImport}>
           Import CSV
         </Button>
-        <Button type="button" variant="outline" onClick={onExport} disabled={isExporting} className="flex items-center gap-2">
-          {isExporting && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
-          Export CSV
+        <Button
+          type="button"
+          variant="secondary"
+          size="sm"
+          onClick={onExport}
+          disabled={isExporting}
+          className="inline-flex items-center gap-1.5"
+        >
+          {isExporting && <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />}
+          Export
         </Button>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button type="button" onClick={onAdd} aria-keyshortcuts="a">
-              Add Application
-              <kbd className="ml-1.5 hidden rounded bg-muted px-1 py-0.5 text-xs text-muted-foreground sm:inline">A</kbd>
+            <Button type="button" variant="default" size="sm" onClick={onAdd} aria-keyshortcuts="a">
+              + Add application
+              <kbd className="ml-1 hidden rounded bg-white/20 px-1 py-0.5 text-[10px] sm:inline">
+                A
+              </kbd>
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Add Application (A)</TooltipContent>
+          <TooltipContent>Add application (A)</TooltipContent>
         </Tooltip>
       </div>
     </div>
