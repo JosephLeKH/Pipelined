@@ -112,9 +112,13 @@
 }
 
 @layer base {
+  html {
+    font-size: 110%;
+  }
+
   body {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    font-size: 16px;
+    font-size: 1rem;
     line-height: 1.6;
     letter-spacing: -0.01em;
     color: var(--color-body-text);
