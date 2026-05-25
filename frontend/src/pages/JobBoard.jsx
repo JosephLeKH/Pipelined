@@ -75,7 +75,7 @@ function JobBoard() {
         </aside>
         <div className="flex min-w-0 flex-1 flex-col gap-6">
           {!hasActiveFilters && <JobRecommendations onSelectJob={setSelectedJob} />}
-          <JobBoardContent isLoading={isLoading} error={error} jobs={jobs} total={total} hasFilters={hasActiveFilters} hasMore={hasMore} onClearFilters={handleClearFilters} onLoadMore={handleLoadMore} onSelectJob={setSelectedJob} refetch={refetch} />
+          <JobBoardContent isLoading={isLoading} error={error} jobs={jobs} total={total} hasFilters={hasActiveFilters} hasMore={hasMore} onClearFilters={handleClearFilters} onLoadMore={handleLoadMore} onSelectJob={setSelectedJob} refetch={refetch} selectedJobId={selectedJob?.id ?? null} />
         </div>
       </div>
       {selectedJob && <JobDetailPanel job={selectedJob} onClose={() => setSelectedJob(null)} />}

@@ -1,87 +1,168 @@
-/** Compact row component for a job listing in the list view of the job board. */
+/** Compact 40 px row for job board list — Linear dense layout matching ApplicationRow. */
 
-import MapPin from "lucide-react/dist/esm/icons/map-pin";
-import ExternalLink from "lucide-react/dist/esm/icons/external-link";
+import { useCallback } from "react";
+import { toast } from "sonner";
 
-import { formatDate } from "../lib/dateUtils";
+import Bookmark from "lucide-react/dist/esm/icons/bookmark";
+import Plus from "lucide-react/dist/esm/icons/plus";
 
-const REMOTE_COLORS = {
-  remote: "text-primary",
-  hybrid: "text-primary",
-  onsite: "text-amber-600 dark:text-amber-400",
-  unknown: "text-muted-foreground",
-};
+import CompanyLogo from "./CompanyLogo";
+import { Button } from "./ui/button";
+import { useCreateApplication } from "../hooks/useApplications";
+import { MS_PER_DAY } from "../lib/constants";
+import { formatDateShort } from "../lib/dateUtils";
+import { cn } from "../lib/utils";
 
-function JobRow({ job, style }) {
-  const datePosted = job.date_posted ? formatDate(job.date_posted) : "—";
+const PILL_CLASS =
+  "inline-flex w-16 shrink-0 justify-center rounded-full bg-surface-1 px-2 py-0.5 text-[11px] capitalize text-text-2";
 
-  const remoteColor = REMOTE_COLORS[job.remote_status] ?? "text-muted-foreground";
+const ROW_FOCUS =
+  "focus:outline-none focus-visible:border-l-2 focus-visible:border-l-brand-600 dark:focus-visible:border-l-brand-500";
+
+function formatPostedCompact(isoString) {
+  if (!isoString) return "—";
+  const date = new Date(isoString);
+  const now = new Date();
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const targetStart = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  const diffDays = Math.round((todayStart - targetStart) / MS_PER_DAY);
+  if (diffDays === 0) return "Today";
+  if (diffDays === 1) return "1d ago";
+  if (diffDays <= 30) return `${diffDays}d ago`;
+  return formatDateShort(isoString);
+}
+
+function remoteLabel(status) {
+  if (!status || status === "unknown") return null;
+  return status.charAt(0).toUpperCase() + status.slice(1);
+}
+
+function levelLabel(level) {
+  if (!level) return null;
+  return level.replace(/_/g, " ");
+}
+
+function rowClassName({ isSelected, isFocused }) {
+  return cn(
+    "group flex h-10 cursor-pointer items-center gap-2 border-b border-border-1 px-4",
+    "hover:bg-surface-1 motion-reduce:transition-none transition-colors duration-[120ms] ease-out",
+    ROW_FOCUS,
+    (isSelected || isFocused) && "border-l-2 border-l-brand-600 bg-brand-50/40 dark:border-l-brand-500 dark:bg-brand-900/20"
+  );
+}
+
+function JobRow({ job, style, onSelect, isSelected = false, isFocused = false, isBookmarked = false }) {
+  const createMutation = useCreateApplication();
+  const company = job.company ?? "Unknown Company";
+  const role = job.role ?? "Untitled Role";
+  const remote = remoteLabel(job.remote_status);
+  const level = levelLabel(job.experience_level);
+  const posted = formatPostedCompact(job.date_posted);
+
+  const handleTrack = useCallback(
+    (event) => {
+      event.stopPropagation();
+      createMutation.mutate(
+        {
+          role_title: role,
+          company,
+          location: job.location ?? "",
+          current_stage: "To Apply",
+          source: "board",
+          source_url: job.apply_url || undefined,
+        },
+        {
+          onSuccess: () => toast.success(`Tracking ${company} — ${role}`),
+          onError: () => toast.error("Failed to track job. Are you signed in?"),
+        }
+      );
+    },
+    [company, createMutation, job.apply_url, job.location, role]
+  );
 
   return (
     <div
       style={style}
-      className="flex items-center gap-4 border-b border-border px-4 hover:bg-muted transition-colors"
       role="row"
       data-testid="job-row"
+      aria-label={`${company}, ${role}`}
+      className={rowClassName({ isSelected, isFocused })}
+      onClick={() => onSelect?.(job)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onSelect?.(job);
+        }
+      }}
+      tabIndex={0}
     >
-      <div className="flex min-w-0 flex-1 items-center gap-4">
-        <div className="flex min-w-0 flex-col">
-          <span className="truncate font-medium text-foreground">
-            {job.role ?? "Untitled Role"}
-          </span>
-          <span className="truncate text-sm text-muted-foreground">
-            {job.company ?? "Unknown Company"}
-          </span>
-        </div>
+      <span className="flex w-4 shrink-0 items-center justify-center" aria-hidden="true">
+        <Bookmark
+          className={cn(
+            "h-4 w-4",
+            isBookmarked ? "fill-brand-600 text-brand-600" : "text-text-3"
+          )}
+        />
+      </span>
 
-        {job.location && (
-          <span className="hidden items-center gap-1 text-sm text-muted-foreground md:flex">
-            <MapPin className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-            <span className="truncate">{job.location}</span>
-          </span>
-        )}
+      <CompanyLogo
+        company_domain={job.company_domain ?? null}
+        company={company}
+        size={16}
+      />
 
-        {job.remote_status && (
-          <span className={`hidden shrink-0 text-sm font-medium lg:block ${remoteColor}`}>
-            {job.remote_status}
-          </span>
-        )}
+      <span className="w-[140px] shrink-0 truncate text-[13px] font-medium text-text-1">
+        {company}
+      </span>
 
-        {job.experience_level && (
-          <span className="hidden shrink-0 text-sm text-muted-foreground xl:block">
-            {job.experience_level}
-          </span>
-        )}
-      </div>
+      <span className="min-w-0 flex-1 truncate text-[13px] font-normal text-text-2">
+        {role}
+      </span>
 
-      <div className="flex shrink-0 items-center gap-3">
-        {job.salary_range && (
-          <span className="hidden text-sm text-muted-foreground lg:block">{job.salary_range}</span>
+      <span className="hidden w-20 shrink-0 truncate text-xs text-text-3 sm:block">
+        {job.location ?? "—"}
+      </span>
+
+      {remote ? (
+        <span className={cn(PILL_CLASS, "hidden lg:inline-flex")}>{remote}</span>
+      ) : (
+        <span className="hidden w-16 shrink-0 lg:block" aria-hidden="true" />
+      )}
+
+      {level ? (
+        <span className={cn(PILL_CLASS, "hidden xl:inline-flex")}>{level}</span>
+      ) : (
+        <span className="hidden w-16 shrink-0 xl:block" aria-hidden="true" />
+      )}
+
+      <span className="hidden w-16 shrink-0 text-[11px] text-text-3 md:block">{posted}</span>
+
+      {job.is_stale && (
+        <span
+          className="hidden shrink-0 rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-medium text-amber-800 dark:bg-amber-900/40 dark:text-amber-300 lg:inline-flex"
+          data-testid="stale-badge"
+        >
+          Stale
+        </span>
+      )}
+
+      <Button
+        type="button"
+        variant="ghost"
+        size="sm"
+        disabled={createMutation.isPending}
+        aria-label={`Track ${role} at ${company}`}
+        onClick={handleTrack}
+        className={cn(
+          "h-7 shrink-0 gap-0.5 px-2 text-xs font-medium text-brand-700 opacity-100 md:opacity-0",
+          "hover:bg-brand-50 hover:text-brand-800 group-hover:opacity-100",
+          "focus-visible:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 focus-visible:outline-offset-2",
+          "dark:text-brand-300 dark:hover:bg-brand-900/30 dark:focus-visible:outline-1"
         )}
-        <span className="hidden text-xs text-muted-foreground sm:block">{datePosted}</span>
-        {job.is_stale && (
-          <span
-            className="rounded-full bg-amber-100 px-1.5 py-0.5 text-xs font-medium text-amber-800 dark:bg-amber-900/40 dark:text-amber-300"
-            data-testid="stale-badge"
-          >
-            Stale
-          </span>
-        )}
-        {job.apply_url ? (
-          <a
-            href={job.apply_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1 rounded-md bg-primary text-primary-foreground text-xs px-2.5 py-1 font-medium transition-colors hover:bg-primary/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-            aria-label={`Apply to ${job.role ?? "this role"} at ${job.company ?? "this company"}`}
-          >
-            Apply
-            <ExternalLink className="h-3 w-3" aria-hidden="true" />
-          </a>
-        ) : (
-          <span className="w-14" />
-        )}
-      </div>
+      >
+        <Plus className="h-3 w-3" aria-hidden="true" />
+        Track
+      </Button>
     </div>
   );
 }
