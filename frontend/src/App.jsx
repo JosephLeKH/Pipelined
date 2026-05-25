@@ -6,7 +6,7 @@ import { Routes, Route, Navigate, Link, useNavigate, useLocation, useSearchParam
 import { trackEvent } from "./lib/analytics";
 
 import { useAuth } from "./context/AuthContext";
-import ErrorBoundary from "./components/ErrorBoundary";
+import ErrorBoundary, { ErrorFallbackUI } from "./components/ErrorBoundary";
 import AppShell from "./components/shell/AppShell";
 import FeedbackWidget from "./components/FeedbackWidget";
 import UpgradePlanModal from "./components/UpgradePlanModal";
@@ -122,15 +122,7 @@ function PageTracker() {
 }
 
 function RouteErrorFallback() {
-  return (
-    <div role="alert" className="flex flex-col items-center gap-4 py-16 text-center">
-      <p className="text-lg font-semibold text-foreground">Something went wrong</p>
-      <p className="text-sm text-muted-foreground">An error occurred on this page.</p>
-      <Button asChild>
-        <Link to="/dashboard">Go to Dashboard</Link>
-      </Button>
-    </div>
-  );
+  return <ErrorFallbackUI />;
 }
 
 function AuthenticatedShell() {

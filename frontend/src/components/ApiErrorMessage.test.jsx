@@ -13,7 +13,8 @@ describe("ApiErrorMessage", () => {
 
     // Assert
     expect(screen.getByRole("alert")).toBeInTheDocument();
-    expect(screen.getByText("Failed to load applications.")).toBeInTheDocument();
+    expect(screen.getByText("Something went wrong")).toBeInTheDocument();
+    expect(screen.getByText(/Failed to load applications\./)).toBeInTheDocument();
   });
 
   it("should display fallback message when error has no message", () => {
@@ -21,7 +22,7 @@ describe("ApiErrorMessage", () => {
     render(<ApiErrorMessage error={{}} />);
 
     // Assert
-    expect(screen.getByText("An unexpected error occurred. Please try again.")).toBeInTheDocument();
+    expect(screen.getByText(/An unexpected error occurred\. Please try again\./)).toBeInTheDocument();
   });
 
   it("should display fallback message when error is null", () => {
@@ -29,7 +30,7 @@ describe("ApiErrorMessage", () => {
     render(<ApiErrorMessage error={null} />);
 
     // Assert
-    expect(screen.getByText("An unexpected error occurred. Please try again.")).toBeInTheDocument();
+    expect(screen.getByText(/An unexpected error occurred\. Please try again\./)).toBeInTheDocument();
   });
 
   it("should not render a Retry button when onRetry is not provided", () => {

@@ -2,9 +2,14 @@
 
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { MemoryRouter } from "react-router-dom";
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 
 import ErrorBoundary from "./ErrorBoundary";
+
+function renderWithRouter(ui) {
+  return render(<MemoryRouter>{ui}</MemoryRouter>);
+}
 
 function ThrowError({ shouldThrow }) {
   if (shouldThrow) throw new Error("Test error message");
@@ -23,7 +28,7 @@ afterEach(() => {
 describe("ErrorBoundary", () => {
   it("should render children when there is no error", () => {
     // Arrange / Act
-    render(
+    renderWithRouter(
       <ErrorBoundary>
         <div>Child content</div>
       </ErrorBoundary>
@@ -35,7 +40,7 @@ describe("ErrorBoundary", () => {
 
   it("should show fallback UI when a child throws", () => {
     // Arrange / Act
-    render(
+    renderWithRouter(
       <ErrorBoundary>
         <ThrowError shouldThrow />
       </ErrorBoundary>
@@ -44,31 +49,13 @@ describe("ErrorBoundary", () => {
     // Assert
     expect(screen.getByRole("alert")).toBeInTheDocument();
     expect(screen.getByText("Something went wrong")).toBeInTheDocument();
-    expect(screen.getByText("Test error message")).toBeInTheDocument();
-  });
-
-  it("should show generic message when error has no message", () => {
-    // Arrange
-    function ThrowNoMessage() {
-      const err = new Error();
-      err.message = "";
-      throw err;
-    }
-
-    // Act
-    render(
-      <ErrorBoundary>
-        <ThrowNoMessage />
-      </ErrorBoundary>
-    );
-
-    // Assert
-    expect(screen.getByText("An unexpected error occurred.")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /go to dashboard/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /refresh/i })).toBeInTheDocument();
   });
 
   it("should render custom fallback when fallback prop is provided", () => {
     // Arrange / Act
-    render(
+    renderWithRouter(
       <ErrorBoundary fallback={<div>Custom fallback</div>}>
         <ThrowError shouldThrow />
       </ErrorBoundary>
@@ -78,7 +65,7 @@ describe("ErrorBoundary", () => {
     expect(screen.getByText("Custom fallback")).toBeInTheDocument();
   });
 
-  it("should reset and re-render children when Try again is clicked after fixing the error", async () => {
+  it("should reset and re-render children when Refresh is clicked after fixing the error", async () => {
     // Arrange — use a mutable ref so the child stops throwing when reset fires
     const user = userEvent.setup();
     let shouldThrow = true;
@@ -88,7 +75,7 @@ describe("ErrorBoundary", () => {
       return <div>No error</div>;
     }
 
-    render(
+    renderWithRouter(
       <ErrorBoundary>
         <ControlledError />
       </ErrorBoundary>
@@ -98,7 +85,7 @@ describe("ErrorBoundary", () => {
 
     // Act — fix the throw, then reset
     shouldThrow = false;
-    await user.click(screen.getByRole("button", { name: /try again/i }));
+    await user.click(screen.getByRole("button", { name: /refresh/i }));
 
     // Assert
     expect(screen.getByText("No error")).toBeInTheDocument();
