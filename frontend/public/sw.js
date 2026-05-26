@@ -37,31 +37,41 @@ self.addEventListener("fetch", (event) => {
   // Network-only for all API requests — never serve stale data
   if (url.pathname.startsWith("/api/")) return;
 
-  // Cache-first for app shell and static assets
   if (request.method !== "GET") return;
 
-  event.respondWith(
-    caches.match(request).then((cached) => {
-      if (cached) return cached;
-      return fetch(request)
+  // Network-first for SPA navigations (HTML documents) so a deploy is picked up
+  // on the next reload. Cache-first would pin users to the bundle they first
+  // loaded, even after we ship new JS.
+  if (request.mode === "navigate") {
+    event.respondWith(
+      fetch(request)
         .then((response) => {
           if (response.ok) {
             const clone = response.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+            caches.open(CACHE_NAME).then((cache) => cache.put("/index.html", clone));
           }
           return response;
         })
-        .catch(async (err) => {
-          // Network failed (QUIC drop, offline, etc.). For SPA navigations
-          // fall back to the cached index.html so the app shell still loads
-          // and React Router can take over. Otherwise rethrow so the browser
-          // shows its normal network error UI for the specific resource.
-          if (request.mode === "navigate") {
-            const shell = await caches.match("/index.html");
-            if (shell) return shell;
-          }
-          throw err;
-        });
-    })
+        .catch(async () => {
+          const shell = await caches.match("/index.html");
+          if (shell) return shell;
+          throw new Error("offline and no cached shell");
+        }),
+    );
+    return;
+  }
+
+  // Cache-first for static assets (JS/CSS chunks, images, fonts).
+  event.respondWith(
+    caches.match(request).then((cached) => {
+      if (cached) return cached;
+      return fetch(request).then((response) => {
+        if (response.ok) {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+        }
+        return response;
+      });
+    }),
   );
 });

@@ -112,10 +112,6 @@
 }
 
 @layer base {
-  html {
-    zoom: 1.1;
-  }
-
   body {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     font-size: 16px;
