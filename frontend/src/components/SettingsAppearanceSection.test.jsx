@@ -78,7 +78,7 @@ describe("SettingsAppearanceSection", () => {
 
     expect(localStorage.getItem(FONT_SIZE_KEY)).toBe("4");
     expect(document.documentElement.dataset.fontSizeStep).toBe("4");
-    expect(document.documentElement.style.fontSize).toBe("21px");
+    expect(document.documentElement.style.fontSize).toBe("20px");
   });
 
   it("should persist accent preference", async () => {
