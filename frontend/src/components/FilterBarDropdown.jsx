@@ -4,7 +4,6 @@ import * as React from "react";
 
 import ChevronDown from "lucide-react/dist/esm/icons/chevron-down";
 import { cn } from "../lib/utils";
-import { Button } from "./ui/button";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -15,7 +14,7 @@ import {
 } from "./ui/dropdown-menu";
 
 const TRIGGER_CLASS =
-  "h-7 shrink-0 gap-1 rounded-md px-2 text-xs font-normal text-text-2 hover:bg-surface-1 hover:text-text-1 motion-reduce:transition-none transition-colors duration-hover ease-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 focus-visible:outline-offset-2 dark:focus-visible:outline-1";
+  "inline-flex h-7 shrink-0 items-center gap-1 rounded-md px-2 text-xs font-normal text-text-2 bg-transparent hover:bg-surface-1 hover:text-text-1 motion-reduce:transition-none transition-colors duration-hover ease-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 focus-visible:outline-offset-2 dark:focus-visible:outline-1";
 
 export function formatMultiSelectLabel(selected, allLabel = "All") {
   if (!selected.length) return allLabel;
@@ -23,20 +22,7 @@ export function formatMultiSelectLabel(selected, allLabel = "All") {
   return `${selected.length} selected`;
 }
 
-export const FilterDropdownTrigger = React.forwardRef(function FilterDropdownTrigger(
-  { label, value, ...props },
-  ref,
-) {
-  return (
-    <Button ref={ref} type="button" variant="ghost" className={TRIGGER_CLASS} {...props}>
-      <span className="text-text-3">{label}:</span>
-      <span className="font-medium text-text-1">{value}</span>
-      <ChevronDown className="h-3 w-3 text-text-3" aria-hidden="true" />
-    </Button>
-  );
-});
-
-function TriggerLabel({ label, value }) {
+function TriggerContent({ label, value }) {
   return (
     <>
       <span className="text-text-3">{label}:</span>
@@ -58,10 +44,8 @@ export function MultiSelectFilterDropdown({
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button type="button" variant="ghost" className={TRIGGER_CLASS}>
-          <TriggerLabel label={label} value={displayValue} />
-        </Button>
+      <DropdownMenuTrigger type="button" className={TRIGGER_CLASS}>
+        <TriggerContent label={label} value={displayValue} />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="max-h-64 overflow-y-auto">
         <DropdownMenuLabel>{label}</DropdownMenuLabel>
@@ -84,10 +68,8 @@ export function MultiSelectFilterDropdown({
 export function SingleSelectFilterDropdown({ label, displayValue, children, contentClassName }) {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button type="button" variant="ghost" className={TRIGGER_CLASS}>
-          <TriggerLabel label={label} value={displayValue} />
-        </Button>
+      <DropdownMenuTrigger type="button" className={TRIGGER_CLASS}>
+        <TriggerContent label={label} value={displayValue} />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className={cn("min-w-[10rem]", contentClassName)}>
         {children}

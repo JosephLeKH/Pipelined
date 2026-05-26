@@ -16,7 +16,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "./ui/dropdown-menu";
-import { FilterDropdownTrigger, SingleSelectFilterDropdown } from "./FilterBarDropdown";
+import { SingleSelectFilterDropdown } from "./FilterBarDropdown";
 
 const MAX_SAVE_NAME_LENGTH = 100;
 
@@ -125,7 +125,7 @@ export function SavedViewsDropdown({ currentFilters, hasActiveFilters }) {
               <span className="truncate">{s.name}</span>
               <div className="flex shrink-0 items-center gap-1">
                 {s.new_matches_count > 0 && (
-                  <span className="rounded-full bg-brand-50 px-1.5 py-0.5 text-[10px] font-semibold text-brand-700 dark:bg-brand-900/30 dark:text-brand-300">
+                  <span className="rounded-full bg-brand-50 px-1.5 py-0.5 text-[0.625rem] font-semibold text-brand-700 dark:bg-brand-900/30 dark:text-brand-300">
                     {s.new_matches_count}
                   </span>
                 )}
