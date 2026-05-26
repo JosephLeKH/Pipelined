@@ -49,16 +49,14 @@ function AppShell() {
 
   return (
     <>
-      <div className="flex h-dvh flex-col overflow-hidden bg-surface-0">
-        <EmailVerificationBanner />
-        <OfflineBanner />
-        <div className="flex min-h-0 flex-1">
-          <Sidebar collapsed={collapsed} onOpenCopilot={openCopilot} />
-          <div className="flex min-w-0 flex-1 flex-col">
-            <TopBar onToggleMobileSidebar={() => setMobileOpen(true)} />
-            <div className="flex-1 overflow-auto">
-              <Outlet />
-            </div>
+      <div className="flex h-dvh overflow-hidden bg-surface-0">
+        <Sidebar collapsed={collapsed} onOpenCopilot={openCopilot} />
+        <div className="flex min-w-0 flex-1 flex-col">
+          <EmailVerificationBanner />
+          <OfflineBanner />
+          <TopBar onToggleMobileSidebar={() => setMobileOpen(true)} />
+          <div className="flex-1 overflow-auto">
+            <Outlet />
           </div>
         </div>
       </div>

@@ -36,6 +36,16 @@ export const FilterDropdownTrigger = React.forwardRef(function FilterDropdownTri
   );
 });
 
+function TriggerLabel({ label, value }) {
+  return (
+    <>
+      <span className="text-text-3">{label}:</span>
+      <span className="font-medium text-text-1">{value}</span>
+      <ChevronDown className="h-3 w-3 text-text-3" aria-hidden="true" />
+    </>
+  );
+}
+
 export function MultiSelectFilterDropdown({
   label,
   paramKey,
@@ -49,7 +59,9 @@ export function MultiSelectFilterDropdown({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <FilterDropdownTrigger label={label} value={displayValue} />
+        <Button type="button" variant="ghost" className={TRIGGER_CLASS}>
+          <TriggerLabel label={label} value={displayValue} />
+        </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="max-h-64 overflow-y-auto">
         <DropdownMenuLabel>{label}</DropdownMenuLabel>
@@ -73,7 +85,9 @@ export function SingleSelectFilterDropdown({ label, displayValue, children, cont
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <FilterDropdownTrigger label={label} value={displayValue} />
+        <Button type="button" variant="ghost" className={TRIGGER_CLASS}>
+          <TriggerLabel label={label} value={displayValue} />
+        </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className={cn("min-w-[10rem]", contentClassName)}>
         {children}
