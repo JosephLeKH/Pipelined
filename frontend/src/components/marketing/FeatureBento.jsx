@@ -101,7 +101,7 @@ export default function FeatureBento() {
                 {["LinkedIn", "Greenhouse", "Lever", "Workday"].map((label) => (
                   <span
                     key={label}
-                    className="inline-flex h-6 items-center rounded-full border border-border-1 bg-surface-1 px-2 text-[11px] font-medium text-text-2"
+                    className="inline-flex h-6 items-center rounded-full border border-border-1 bg-surface-1 px-2 text-[0.6875rem] font-medium text-text-2"
                   >
                     {label}
                   </span>

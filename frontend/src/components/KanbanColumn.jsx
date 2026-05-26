@@ -43,7 +43,7 @@ function KanbanColumnBody({ applications, isOver, onSelect, setNodeRef }) {
     <div
       ref={setNodeRef}
       className={cn(
-        "flex max-h-[600px] flex-col gap-2 overflow-y-auto rounded-lg bg-surface-1 p-2",
+        "flex max-h-[37.5rem] flex-col gap-2 overflow-y-auto rounded-lg bg-surface-1 p-2",
         "motion-reduce:transition-none transition-colors duration-150",
         isOver && "ring-2 ring-inset ring-brand-600/30",
       )}
@@ -72,7 +72,7 @@ export function KanbanColumn({ stage, applications, onSelect, onAddStage }) {
 
   return (
     <div
-      className="flex min-w-[260px] flex-1 flex-col"
+      className="flex min-w-[16.25rem] flex-1 flex-col"
       data-testid={`kanban-column-${stage}`}
       aria-label={`${stage} column`}
     >

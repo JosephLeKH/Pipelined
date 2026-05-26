@@ -8,7 +8,7 @@ export function SettingsFieldBlock({ label, help, children, htmlFor }) {
   const LabelTag = htmlFor ? "label" : "span";
   return (
     <div className="flex flex-col gap-1">
-      <LabelTag htmlFor={htmlFor} className="text-[13px] font-medium text-text-1">
+      <LabelTag htmlFor={htmlFor} className="text-[0.8125rem] font-medium text-text-1">
         {label}
       </LabelTag>
       {children}

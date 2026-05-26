@@ -167,7 +167,7 @@ function AiFitSection({ application, hasResume, aiScoresRemainingToday, onScoreG
           size="sm"
           onClick={handleAnalyzeFit}
           disabled={isLoading}
-          className="w-full min-h-[44px] sm:min-h-0 sm:w-auto"
+          className="w-full min-h-[2.75rem] sm:min-h-0 sm:w-auto"
         >
           <Sparkles className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
           {isLoading ? "Analyzing…" : "Analyze fit"}

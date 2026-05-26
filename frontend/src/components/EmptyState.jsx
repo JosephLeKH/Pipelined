@@ -39,7 +39,7 @@ function EmptyState({ title, description, icon, svg, action, actionButton, child
       {svg ? <div className="mb-4">{svg}</div> : icon ? <div className="mb-4">{renderIcon(icon)}</div> : null}
       <h3 className="text-sm font-semibold text-text-1">{title}</h3>
       {description && (
-        <p className="mt-1 max-w-[320px] text-[13px] text-text-2">{description}</p>
+        <p className="mt-1 max-w-[20rem] text-[0.8125rem] text-text-2">{description}</p>
       )}
       {children}
       {action ? <div className="mt-4">{action}</div> : renderLegacyActions(actionButton)}

@@ -9,7 +9,7 @@ function OfferCompareRow({ field, app, offerDetails, onSave, isTotalRow = false 
     const total = computeTotalY1(offerDetails);
     return (
       <div className="flex items-baseline justify-between gap-3 border-t border-border-1 pt-3">
-        <span className="text-[11px] font-medium uppercase tracking-wide text-text-3">
+        <span className="text-[0.6875rem] font-medium uppercase tracking-wide text-text-3">
           Total Y1
         </span>
         <span className="text-base font-semibold text-text-1">
@@ -21,7 +21,7 @@ function OfferCompareRow({ field, app, offerDetails, onSave, isTotalRow = false 
 
   return (
     <div className="flex items-baseline justify-between gap-3">
-      <span className="text-[11px] font-medium uppercase tracking-wide text-text-3">
+      <span className="text-[0.6875rem] font-medium uppercase tracking-wide text-text-3">
         {field.label}
       </span>
       <div className="min-w-0 text-right text-sm font-medium text-text-1">
@@ -49,7 +49,7 @@ export function OfferComparisonCard({ app, isBest, onSave }) {
       aria-label={`${app.company ?? "Unknown"} offer${isBest ? ", best total Y1" : ""}`}
     >
       {isBest && (
-        <span className="absolute right-4 top-4 rounded-md bg-brand-700 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-white">
+        <span className="absolute right-4 top-4 rounded-md bg-brand-700 px-2 py-0.5 text-[0.6875rem] font-semibold uppercase tracking-wide text-white">
           Best
         </span>
       )}

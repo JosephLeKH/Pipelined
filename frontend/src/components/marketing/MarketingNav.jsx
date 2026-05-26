@@ -23,7 +23,7 @@ const NAV_LINKS = [
 function MarketingNavLink({ to, children, onClick, className = "" }) {
   const isHash = to.startsWith("/#");
   const base =
-    "rounded-md px-1.5 py-1 text-[13px] font-medium text-text-2 transition-colors duration-120 hover:text-text-1 marketing-focus";
+    "rounded-md px-1.5 py-1 text-[0.8125rem] font-medium text-text-2 transition-colors duration-120 hover:text-text-1 marketing-focus";
 
   if (isHash) {
     return (
@@ -50,7 +50,7 @@ export default function MarketingNav() {
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-6">
         <Link to="/" className="marketing-focus flex items-center gap-1.5 rounded-md">
           <GitBranch className="h-4 w-4 text-brand-700" strokeWidth={2} aria-hidden="true" />
-          <span className="text-[15px] font-semibold tracking-tight text-text-1">Pipelined</span>
+          <span className="text-[0.9375rem] font-semibold tracking-tight text-text-1">Pipelined</span>
         </Link>
 
         <nav className="hidden items-center gap-1 md:flex" aria-label="Primary">
@@ -64,13 +64,13 @@ export default function MarketingNav() {
         <div className="flex items-center gap-2">
           <Link
             to="/login"
-            className="marketing-focus hidden rounded-md px-2 py-1 text-[13px] font-medium text-text-2 transition-colors duration-120 hover:text-text-1 sm:inline"
+            className="marketing-focus hidden rounded-md px-2 py-1 text-[0.8125rem] font-medium text-text-2 transition-colors duration-120 hover:text-text-1 sm:inline"
           >
             Log in
           </Link>
           <Link
             to="/register"
-            className="marketing-focus rounded-md bg-brand-700 px-3 py-1.5 text-[13px] font-medium text-white transition-colors duration-120 hover:bg-brand-800"
+            className="marketing-focus rounded-md bg-brand-700 px-3 py-1.5 text-[0.8125rem] font-medium text-white transition-colors duration-120 hover:bg-brand-800"
           >
             Sign up
           </Link>
@@ -100,14 +100,14 @@ export default function MarketingNav() {
           <div className="mt-auto flex flex-col gap-2 pt-8">
             <Link
               to="/login"
-              className="marketing-focus rounded-md px-1.5 py-2 text-[13px] font-medium text-text-2"
+              className="marketing-focus rounded-md px-1.5 py-2 text-[0.8125rem] font-medium text-text-2"
               onClick={closeMobile}
             >
               Log in
             </Link>
             <Link
               to="/register"
-              className="marketing-focus rounded-md bg-brand-700 px-3 py-2 text-center text-[13px] font-medium text-white hover:bg-brand-800"
+              className="marketing-focus rounded-md bg-brand-700 px-3 py-2 text-center text-[0.8125rem] font-medium text-white hover:bg-brand-800"
               onClick={closeMobile}
             >
               Sign up

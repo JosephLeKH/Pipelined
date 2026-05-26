@@ -28,7 +28,7 @@ function KanbanDragOverlayCard({ application }) {
   const fitScore = getDisplayFitScore(application);
 
   return (
-    <article className="w-[260px] rounded-lg border border-border-1 bg-surface-0 p-3 shadow-modal">
+    <article className="w-[16.25rem] rounded-lg border border-border-1 bg-surface-0 p-3 shadow-modal">
       <div className="flex items-start gap-2">
         <CompanyLogo
           company_domain={application.company_domain ?? null}
@@ -49,7 +49,7 @@ function KanbanLoadingSkeleton({ stages }) {
   return (
     <div className="flex gap-3 overflow-x-auto pb-4" aria-busy="true">
       {stages.map((stage) => (
-        <div key={stage} className="flex min-w-[280px] flex-1 flex-col">
+        <div key={stage} className="flex min-w-[17.5rem] flex-1 flex-col">
           <div className="flex h-10 items-center gap-2 border-b border-border-1 bg-surface-1 px-3">
             <span className="text-sm font-medium text-text-3">{stage}</span>
           </div>

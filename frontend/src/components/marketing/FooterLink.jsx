@@ -7,7 +7,7 @@ export function FooterStubLink({ children }) {
     <button
       type="button"
       data-stub="true"
-      className="marketing-focus text-left text-[13px] text-white/75 transition-colors duration-120 hover:text-white"
+      className="marketing-focus text-left text-[0.8125rem] text-white/75 transition-colors duration-120 hover:text-white"
       onClick={() => toast.info("Coming soon")}
     >
       {children}
@@ -20,7 +20,7 @@ export function FooterLink({ to, href, children }) {
     return (
       <a
         href={to}
-        className="marketing-focus text-[13px] text-white/75 transition-colors duration-120 hover:text-white"
+        className="marketing-focus text-[0.8125rem] text-white/75 transition-colors duration-120 hover:text-white"
       >
         {children}
       </a>
@@ -30,7 +30,7 @@ export function FooterLink({ to, href, children }) {
   return (
     <a
       href={href}
-      className="marketing-focus text-[13px] text-white/75 transition-colors duration-120 hover:text-white"
+      className="marketing-focus text-[0.8125rem] text-white/75 transition-colors duration-120 hover:text-white"
     >
       {children}
     </a>

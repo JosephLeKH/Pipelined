@@ -27,7 +27,7 @@ function PricingCard({
   return (
     <article className={cardClass}>
       {highlighted && (
-        <span className="absolute right-4 top-4 inline-flex h-6 items-center rounded-md bg-brand-700 px-2 text-[11px] font-semibold uppercase tracking-[0.04em] text-white">
+        <span className="absolute right-4 top-4 inline-flex h-6 items-center rounded-md bg-brand-700 px-2 text-[0.6875rem] font-semibold uppercase tracking-[0.04em] text-white">
           Best for full season
         </span>
       )}

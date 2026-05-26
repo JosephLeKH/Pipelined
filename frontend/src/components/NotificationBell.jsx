@@ -42,7 +42,7 @@ function UnreadIndicator({ unreadCount }) {
     return (
       <span
         aria-hidden="true"
-        className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-brand-600 px-1 text-[10px] font-semibold leading-none text-white"
+        className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-brand-600 px-1 text-[0.625rem] font-semibold leading-none text-white"
       >
         9+
       </span>
@@ -52,7 +52,7 @@ function UnreadIndicator({ unreadCount }) {
   return (
     <span
       aria-hidden="true"
-      className="absolute right-[3px] top-[3px] h-1.5 w-1.5 rounded-full bg-brand-600"
+      className="absolute right-[0.1875rem] top-[0.1875rem] h-1.5 w-1.5 rounded-full bg-brand-600"
     />
   );
 }

@@ -67,7 +67,7 @@ function StageStrip({ applications }) {
           {stages.map(({ stage, count }) => (
             <span
               key={stage}
-              className="inline-flex shrink-0 items-center gap-1.5 rounded-md border border-border-1 bg-surface-1 px-3 py-1.5 text-[13px] font-medium text-text-1"
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-md border border-border-1 bg-surface-1 px-3 py-1.5 text-[0.8125rem] font-medium text-text-1"
             >
               <StageDot stage={stage} />
               {stage}

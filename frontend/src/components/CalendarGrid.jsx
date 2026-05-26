@@ -40,7 +40,7 @@ function EventDots({ events }) {
         <span key={ev.id} className="h-1.5 w-1.5 rounded-full bg-brand-600 dark:bg-brand-500" />
       ))}
       {overflow > 0 && (
-        <span className="text-[10px] font-medium leading-none text-text-3">+{overflow}</span>
+        <span className="text-[0.625rem] font-medium leading-none text-text-3">+{overflow}</span>
       )}
     </div>
   );
@@ -78,7 +78,7 @@ function DayCell({ date, isCurrentMonth, events, selectedDate, onDayClick }) {
     >
       <span
         className={[
-          "text-[11px] font-medium leading-none",
+          "text-[0.6875rem] font-medium leading-none",
           isToday ? "text-brand-600 dark:text-brand-400" : isCurrentMonth ? "text-text-1" : "text-text-3",
         ].join(" ")}
       >
@@ -165,7 +165,7 @@ function CalendarGrid({ month, year, selectedDate, onDayClick }) {
         {WEEK_DAYS.map((d, i) => (
           <div
             key={d}
-            className="border-r border-border-1 py-2 text-center text-[11px] font-medium uppercase text-text-3 last:border-r-0"
+            className="border-r border-border-1 py-2 text-center text-[0.6875rem] font-medium uppercase text-text-3 last:border-r-0"
           >
             <abbr title={WEEK_DAYS_FULL[i]} className="no-underline">
               {d}

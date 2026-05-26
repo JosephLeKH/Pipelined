@@ -59,7 +59,7 @@ function ResumeInsightsSection({ application, onUpdate, onInsightsGenerated }) {
         size="sm"
         onClick={handleAnalyze}
         disabled={isLoading || !jdValue.trim()}
-        className="w-full min-h-[44px] sm:min-h-0 sm:w-auto"
+        className="w-full min-h-[2.75rem] sm:min-h-0 sm:w-auto"
       >
         {hasCached ? (
           <RefreshCw className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />

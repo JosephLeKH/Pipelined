@@ -8,7 +8,7 @@ import { groupAgentEntriesByDate } from "../lib/agentActivity";
 
 function DateHeading({ label }) {
   return (
-    <h2 className="pt-4 text-[11px] font-medium uppercase tracking-wider text-text-3 first:pt-0">
+    <h2 className="pt-4 text-[0.6875rem] font-medium uppercase tracking-wider text-text-3 first:pt-0">
       {label}
     </h2>
   );

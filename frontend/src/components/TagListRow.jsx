@@ -51,7 +51,7 @@ function TagNameEditor({ name, onSave, onCancel }) {
         onChange={(e) => setValue(e.target.value)}
         onKeyDown={handleKeyDown}
         autoFocus
-        className="h-7 max-w-xs text-[13px]"
+        className="h-7 max-w-xs text-[0.8125rem]"
       />
       <Button type="button" variant="ghost" onClick={handleSave} aria-label="Save" className="h-7 w-7 p-0">
         <Check className="h-4 w-4 text-brand-600" aria-hidden="true" />
@@ -94,7 +94,7 @@ function TagListRow({ tag, tagColor, onRename, onDelete, onColorChange }) {
         />
       ) : (
         <>
-          <span className="min-w-0 flex-1 truncate text-[13px] font-medium text-text-1">
+          <span className="min-w-0 flex-1 truncate text-[0.8125rem] font-medium text-text-1">
             #{tag.name}
           </span>
           <span className="shrink-0 text-xs text-text-3 tabular-nums">

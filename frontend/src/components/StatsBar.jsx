@@ -110,7 +110,7 @@ function CollapsedSummary({ stats, isLoading }) {
 
   return (
     <div
-      className="flex min-w-0 flex-1 flex-wrap items-center gap-x-0 text-[13px] sm:flex-nowrap"
+      className="flex min-w-0 flex-1 flex-wrap items-center gap-x-0 text-[0.8125rem] sm:flex-nowrap"
       data-testid="stats-collapsed-summary"
     >
       {COLLAPSED_SUMMARY.map(({ key, label }, index) => {

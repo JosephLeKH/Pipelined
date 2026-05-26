@@ -71,7 +71,7 @@ const FOOTER_COLUMNS = [
 function FooterColumn({ heading, links }) {
   return (
     <div>
-      <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-white/55">
+      <p className="mb-3 text-[0.6875rem] font-semibold uppercase tracking-[0.08em] text-white/55">
         {heading}
       </p>
       <ul className="flex flex-col gap-2">
@@ -99,7 +99,7 @@ export default function MarketingFooter() {
           <div className="lg:col-span-1">
             <Link to="/" className="marketing-focus inline-flex items-center gap-1.5 rounded-md">
               <GitBranch className="h-4 w-4 text-brand-700" strokeWidth={2} aria-hidden="true" />
-              <span className="text-[15px] font-semibold text-white">Pipelined</span>
+              <span className="text-[0.9375rem] font-semibold text-white">Pipelined</span>
             </Link>
           </div>
           {FOOTER_COLUMNS.map((col) => (

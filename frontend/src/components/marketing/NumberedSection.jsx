@@ -30,7 +30,7 @@ export default function NumberedSection({
         {number}. {eyebrow}
       </p>
       <h2 className="text-display-lg text-text-1 md:text-[2.5rem]">{headline}</h2>
-      <p className="max-w-[640px] text-lg leading-[1.55] text-text-2">{subhead}</p>
+      <p className="max-w-[40rem] text-lg leading-[1.55] text-text-2">{subhead}</p>
       {bullets.length > 0 && (
         <ul className="flex flex-col gap-2">
           {bullets.map((item) => (

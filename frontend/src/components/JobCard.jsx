@@ -35,7 +35,12 @@ function formatMetaLine(job) {
     parts.push(job.remote_status.charAt(0).toUpperCase() + job.remote_status.slice(1));
   }
   if (job.experience_level) {
-    parts.push(job.experience_level.replace(/_/g, " "));
+    parts.push(
+      job.experience_level
+        .split("_")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" "),
+    );
   }
   return parts.length > 0 ? parts.join(" · ") : "N/A";
 }
@@ -88,11 +93,11 @@ function JobCard({ job, score, onSelect }) {
       }}
     >
       <div className="flex items-start justify-between gap-2">
-        <span className="min-w-0 truncate text-[13px] font-medium text-text-1">{company}</span>
+        <span className="min-w-0 truncate text-[0.8125rem] font-medium text-text-1">{company}</span>
         {showFit && <FitBadge score={fitScore} />}
       </div>
 
-      <p className="mt-1 line-clamp-3 text-[13px] leading-snug text-text-2">{role}</p>
+      <p className="mt-1 line-clamp-3 text-[0.8125rem] leading-snug text-text-2">{role}</p>
 
       <p className="mt-1 truncate text-xs text-text-3">{formatMetaLine(job)}</p>
 

@@ -112,9 +112,19 @@
 }
 
 @layer base {
+  /**
+   * Scale the entire UI by 10% via root font-size. Tailwind utilities are
+   * rem-based so they all pick this up; arbitrary px values are converted
+   * to rem in source so they scale too. Do NOT use `zoom` here — `zoom`
+   * breaks viewport units (h-dvh) and causes the sidebar to overflow.
+   */
+  html {
+    font-size: 110%;
+  }
+
   body {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    font-size: 16px;
+    font-size: 1rem;
     line-height: 1.6;
     letter-spacing: -0.01em;
     color: var(--color-body-text);

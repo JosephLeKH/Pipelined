@@ -13,7 +13,7 @@ function KanbanCardFooter({ stale, followUpOverdue }) {
   if (!stale && !followUpOverdue) return null;
 
   return (
-    <div className="mt-2 flex items-center gap-2 text-[11px] text-text-3">
+    <div className="mt-2 flex items-center gap-2 text-[0.6875rem] text-text-3">
       {stale && (
         <>
           <Clock className="h-3.5 w-3.5 text-warning" data-testid="stale-indicator" aria-hidden="true" />

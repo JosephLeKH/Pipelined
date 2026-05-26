@@ -170,7 +170,7 @@ function BulkMoveControls({ stageOptions, selectedStage, setSelectedStage, isMov
   return (
     <>
       <Select value={selectedStage || undefined} onValueChange={setSelectedStage} disabled={isBusy}>
-        <SelectTrigger className="h-8 w-auto min-w-[140px] text-sm" aria-label="Move to stage">
+        <SelectTrigger className="h-8 w-auto min-w-[8.75rem] text-sm" aria-label="Move to stage">
           <SelectValue placeholder="Move to stage…" />
         </SelectTrigger>
         <SelectContent>

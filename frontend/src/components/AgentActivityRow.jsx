@@ -25,7 +25,7 @@ function AgentActivityRow({ entry, onClick, compact = false }) {
   const inner = (
     <>
       <AgentActivityDot agentType={entry.agent_type} />
-      <span className="min-w-0 flex-1 truncate text-[13px] font-medium text-text-1">
+      <span className="min-w-0 flex-1 truncate text-[0.8125rem] font-medium text-text-1">
         {title}
       </span>
       <time

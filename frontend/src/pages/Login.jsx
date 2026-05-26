@@ -31,7 +31,7 @@ function Login() {
           />
         </div>
 
-        <p className="order-5 mt-6 text-center text-[13px] text-text-2">
+        <p className="order-5 mt-6 text-center text-[0.8125rem] text-text-2">
           Don&apos;t have an account?{" "}
           <Link
             to="/register"
@@ -48,7 +48,7 @@ function Login() {
 
         <div className="order-3 my-6 flex items-center gap-3">
           <hr className="flex-1 border-border-2" />
-          <span className="text-[11px] font-medium text-text-3">or with email</span>
+          <span className="text-[0.6875rem] font-medium text-text-3">or with email</span>
           <hr className="flex-1 border-border-2" />
         </div>
       </div>

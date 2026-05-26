@@ -63,7 +63,7 @@ function JobBoard() {
         <div className="relative lg:hidden">
           <Button type="button" variant="ghost" size="sm" className="flex items-center gap-1.5" onClick={() => setSavedOpen(true)}>Saved searches</Button>
           {savedCount > 0 && (
-            <span aria-hidden="true" className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-medium text-primary-foreground">
+            <span aria-hidden="true" className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[0.625rem] font-medium text-primary-foreground">
               {savedCount}
             </span>
           )}

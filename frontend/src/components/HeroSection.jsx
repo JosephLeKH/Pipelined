@@ -44,14 +44,14 @@ function HeroProductCard() {
     <div className="relative">
       <div
         aria-hidden="true"
-        className="absolute -inset-x-8 -inset-y-6 -z-10 rounded-[36px] bg-gradient-to-br from-brand-100/40 via-transparent to-brand-50/0 blur-2xl"
+        className="absolute -inset-x-8 -inset-y-6 -z-10 rounded-[2.25rem] bg-gradient-to-br from-brand-100/40 via-transparent to-brand-50/0 blur-2xl"
       />
       <div className="rounded-2xl border border-border-2 bg-surface-0 shadow-[0_24px_70px_-30px_rgba(140,21,21,0.18),0_2px_6px_-1px_rgba(0,0,0,0.04)]">
         <div className="flex items-center gap-1.5 border-b border-border-1 px-4 py-3">
           <span className="h-2.5 w-2.5 rounded-full bg-border-3" aria-hidden="true" />
           <span className="h-2.5 w-2.5 rounded-full bg-border-3" aria-hidden="true" />
           <span className="h-2.5 w-2.5 rounded-full bg-border-3" aria-hidden="true" />
-          <span className="ml-3 text-[11px] font-medium text-text-3">
+          <span className="ml-3 text-[0.6875rem] font-medium text-text-3">
             pipelined.app / today
           </span>
         </div>
@@ -59,14 +59,14 @@ function HeroProductCard() {
         <div className="px-6 pb-6 pt-5">
           <div className="mb-4 flex items-center justify-between">
             <div>
-              <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-text-3">
+              <p className="text-[0.6875rem] font-medium uppercase tracking-[0.08em] text-text-3">
                 Today
               </p>
               <h3 className="mt-1 text-lg font-semibold text-text-1">
                 Your missions, ranked
               </h3>
             </div>
-            <span className="inline-flex items-center gap-1 rounded-full border border-brand-100 bg-brand-50 px-2.5 py-1 text-[11px] font-medium text-brand-700">
+            <span className="inline-flex items-center gap-1 rounded-full border border-brand-100 bg-brand-50 px-2.5 py-1 text-[0.6875rem] font-medium text-brand-700">
               <Sparkles className="h-3 w-3" aria-hidden="true" />
               AI ranked
             </span>
@@ -122,7 +122,7 @@ export default function HeroSection() {
     <section className="relative isolate overflow-hidden bg-surface-0 pt-20 lg:pt-24">
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[640px] bg-[radial-gradient(80%_50%_at_50%_0%,rgba(140,21,21,0.06),transparent_60%)]"
+        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[40rem] bg-[radial-gradient(80%_50%_at_50%_0%,rgba(140,21,21,0.06),transparent_60%)]"
       />
       <div
         aria-hidden="true"
@@ -136,7 +136,7 @@ export default function HeroSection() {
             AI-native job search. Built at Stanford.
           </div>
 
-          <h1 className="max-w-[640px] text-[2.5rem] font-semibold leading-[1.04] tracking-[-0.030em] text-text-1 md:text-[3.25rem] lg:text-[3.75rem]">
+          <h1 className="max-w-[40rem] text-[2.5rem] font-semibold leading-[1.04] tracking-[-0.030em] text-text-1 md:text-[3.25rem] lg:text-[3.75rem]">
             The pipeline for
             <br />
             your job search,{" "}
@@ -145,7 +145,7 @@ export default function HeroSection() {
             </span>
           </h1>
 
-          <p className="mt-6 max-w-[540px] text-lg leading-[1.55] text-text-2">
+          <p className="mt-6 max-w-[33.75rem] text-lg leading-[1.55] text-text-2">
             Capture every application from one-click save to signed offer. Pipelined is your
             agentic copilot. It ranks today&apos;s missions, drafts your Apply Pack, rehearses
             interview loops, and tells you what to do next.

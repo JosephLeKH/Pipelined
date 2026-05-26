@@ -15,7 +15,7 @@ function MissionPriorityPill({ priority }) {
   if (!label) return null;
 
   return (
-    <span className="rounded-sm bg-surface-1 px-1.5 py-0.5 text-[11px] text-text-2">
+    <span className="rounded-sm bg-surface-1 px-1.5 py-0.5 text-[0.6875rem] text-text-2">
       {label}
     </span>
   );

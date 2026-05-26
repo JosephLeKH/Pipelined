@@ -54,8 +54,8 @@ function GoalProgressCompact({ appliedThisWeek, weeklyGoal, pct, isLoading }) {
 
   return (
     <div className="flex min-w-0 items-center gap-2" aria-label="Weekly goal progress">
-      <span className="shrink-0 text-[13px] text-text-3">Goal:</span>
-      <span className="shrink-0 text-[13px] font-medium text-text-1">
+      <span className="shrink-0 text-[0.8125rem] text-text-3">Goal:</span>
+      <span className="shrink-0 text-[0.8125rem] font-medium text-text-1">
         {appliedThisWeek}/{weeklyGoal} this week
       </span>
       <GoalMiniBar pct={pct} />

@@ -33,7 +33,7 @@ function dropOffLabel(current, next) {
 
 function FunnelBar({ stage, count, widthPct, dotColor }) {
   return (
-    <div className="flex min-h-[40px] items-center gap-3">
+    <div className="flex min-h-[2.5rem] items-center gap-3">
       <span
         className="shrink-0 text-sm text-text-1"
         style={{ width: STAGE_LABEL_WIDTH }}

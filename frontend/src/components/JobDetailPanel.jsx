@@ -150,7 +150,7 @@ function JobDetailPanel({ job, onClose }) {
             {posted && (showFit || job.is_stale) && <span aria-hidden="true">·</span>}
             {showFit && <FitBadge score={fitScore} />}
             {job.is_stale && (
-              <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-medium text-amber-800 dark:bg-amber-900/40 dark:text-amber-300">
+              <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[0.6875rem] font-medium text-amber-800 dark:bg-amber-900/40 dark:text-amber-300">
                 {STALE_LABEL}
               </span>
             )}

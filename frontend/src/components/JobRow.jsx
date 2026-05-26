@@ -14,7 +14,7 @@ import { formatDateShort } from "../lib/dateUtils";
 import { cn } from "../lib/utils";
 
 const PILL_CLASS =
-  "inline-flex w-16 shrink-0 justify-center rounded-full bg-surface-1 px-2 py-0.5 text-[11px] capitalize text-text-2";
+  "inline-flex w-16 shrink-0 justify-center rounded-full bg-surface-1 px-2 py-0.5 text-[0.6875rem] capitalize text-text-2";
 
 const ROW_FOCUS =
   "focus:outline-none focus-visible:border-l-2 focus-visible:border-l-brand-600 dark:focus-visible:border-l-brand-500";
@@ -111,11 +111,11 @@ function JobRow({ job, style, onSelect, isSelected = false, isFocused = false, i
         size={16}
       />
 
-      <span className="w-[140px] shrink-0 truncate text-[13px] font-medium text-text-1">
+      <span className="w-[8.75rem] shrink-0 truncate text-[0.8125rem] font-medium text-text-1">
         {company}
       </span>
 
-      <span className="min-w-0 flex-1 truncate text-[13px] font-normal text-text-2">
+      <span className="min-w-0 flex-1 truncate text-[0.8125rem] font-normal text-text-2">
         {role}
       </span>
 
@@ -135,11 +135,11 @@ function JobRow({ job, style, onSelect, isSelected = false, isFocused = false, i
         <span className="hidden w-16 shrink-0 xl:block" aria-hidden="true" />
       )}
 
-      <span className="hidden w-16 shrink-0 text-[11px] text-text-3 md:block">{posted}</span>
+      <span className="hidden w-16 shrink-0 text-[0.6875rem] text-text-3 md:block">{posted}</span>
 
       {job.is_stale && (
         <span
-          className="hidden shrink-0 rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-medium text-amber-800 dark:bg-amber-900/40 dark:text-amber-300 lg:inline-flex"
+          className="hidden shrink-0 rounded-full bg-amber-100 px-1.5 py-0.5 text-[0.625rem] font-medium text-amber-800 dark:bg-amber-900/40 dark:text-amber-300 lg:inline-flex"
           data-testid="stale-badge"
         >
           Stale

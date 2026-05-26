@@ -105,7 +105,7 @@ function FilterBar() {
             <DropdownMenuItem key={id} onSelect={() => applyDatePreset(id)}>
               {label}
               {datePreset === id && (
-                <span className="ml-auto text-[10px] text-brand-600">●</span>
+                <span className="ml-auto text-[0.625rem] text-brand-600">●</span>
               )}
             </DropdownMenuItem>
           ))}

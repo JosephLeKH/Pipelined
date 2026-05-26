@@ -105,7 +105,7 @@ export function MockInterviewPanel({ applicationId, interviewRound = null }) {
       icon={MessageSquare}
       id="mock-interview-active"
       headerExtra={
-        <span className="text-[11px] text-muted-foreground">
+        <span className="text-[0.6875rem] text-muted-foreground">
           Turn {turnCount}/{maxTurns}
         </span>
       }

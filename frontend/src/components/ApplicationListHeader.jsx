@@ -13,7 +13,7 @@ function SortHeader({ field, label, sortBy, sortOrder, onSort }) {
       type="button"
       onClick={() => onSort(field)}
       className={cn(
-        "inline-flex min-h-6 min-w-6 items-center gap-0.5 px-1 py-0.5 text-[11px] font-medium uppercase tracking-[0.06em] text-text-3",
+        "inline-flex min-h-6 min-w-6 items-center gap-0.5 px-1 py-0.5 text-[0.6875rem] font-medium uppercase tracking-[0.06em] text-text-3",
         "hover:text-text-1 motion-reduce:transition-none transition-colors duration-hover ease-out",
         HEADER_FOCUS,
         isActive && "text-text-2"
@@ -21,7 +21,7 @@ function SortHeader({ field, label, sortBy, sortOrder, onSort }) {
     >
       {label}
       {isActive && (
-        <span className="text-[8px] leading-none" aria-hidden="true">
+        <span className="text-[0.5rem] leading-none" aria-hidden="true">
           {sortOrder === "asc" ? "▲" : "▼"}
         </span>
       )}
@@ -56,7 +56,7 @@ export function ApplicationListHeader({ sortBy, sortOrder, onSort, allSelected, 
       </div>
       <span className="w-4 shrink-0" aria-hidden="true" />
       <div className="w-11 shrink-0 text-right">
-        <span className="text-[11px] font-medium uppercase tracking-[0.06em] text-text-3">
+        <span className="text-[0.6875rem] font-medium uppercase tracking-[0.06em] text-text-3">
           Score
         </span>
       </div>

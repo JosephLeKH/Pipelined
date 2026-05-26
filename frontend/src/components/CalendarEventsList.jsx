@@ -66,8 +66,8 @@ function PageEventRow({ event, onOpen }) {
         aria-hidden="true"
       />
       <span className="w-20 shrink-0 text-xs text-text-2">{event.time ? formatTime(event.time) : "All day"}</span>
-      <span className="min-w-0 flex-1 truncate text-[13px] text-text-1">{title}</span>
-      <span className="w-14 shrink-0 text-right text-[11px] text-text-3">{formatDuration(event)}</span>
+      <span className="min-w-0 flex-1 truncate text-[0.8125rem] text-text-1">{title}</span>
+      <span className="w-14 shrink-0 text-right text-[0.6875rem] text-text-3">{formatDuration(event)}</span>
       <button
         type="button"
         onClick={() => onOpen(event)}

@@ -9,7 +9,7 @@ const NAV_FOCUS_RING =
 
 function NavRow({ item, isActive }) {
   const baseClass =
-    "relative flex h-8 items-center gap-2 pl-4 pr-3 text-[13px] motion-reduce:transition-none transition-colors duration-hover ease-out";
+    "relative flex h-8 items-center gap-2 pl-4 pr-3 text-[0.8125rem] motion-reduce:transition-none transition-colors duration-hover ease-out";
   const stateClass = isActive
     ? "bg-surface-2 text-brand-600 font-medium"
     : "text-text-2 hover:bg-surface-2 hover:text-text-1";
@@ -59,7 +59,7 @@ function SettingsNav() {
     >
       {SETTINGS_NAV_GROUPS.map((group) => (
         <div key={group.label} className="py-2">
-          <p className="px-3 pb-1.5 pt-4 text-[11px] font-medium uppercase tracking-wide text-text-3">
+          <p className="px-3 pb-1.5 pt-4 text-[0.6875rem] font-medium uppercase tracking-wide text-text-3">
             {group.label}
           </p>
           <ul className="flex flex-col">

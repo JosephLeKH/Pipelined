@@ -69,7 +69,7 @@ export default function AutopilotFlow() {
         <div className="relative mt-16">
           <div
             aria-hidden="true"
-            className="absolute left-0 right-0 top-[28px] hidden h-px bg-gradient-to-r from-transparent via-brand-200 to-transparent lg:block"
+            className="absolute left-0 right-0 top-[1.75rem] hidden h-px bg-gradient-to-r from-transparent via-brand-200 to-transparent lg:block"
           />
 
           <ol className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4 lg:gap-6">
@@ -81,7 +81,7 @@ export default function AutopilotFlow() {
                     strokeWidth={1.8}
                     aria-hidden="true"
                   />
-                  <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-brand-700 text-[10px] font-semibold text-white">
+                  <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-brand-700 text-[0.625rem] font-semibold text-white">
                     {idx + 1}
                   </span>
                 </div>

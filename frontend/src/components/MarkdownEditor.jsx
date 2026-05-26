@@ -170,7 +170,7 @@ function MarkdownEditor({ id, value, onChange, maxLength, className, onBlur }) {
           <Textarea
             ref={textareaRef}
             id={id}
-            className="min-h-[120px] resize-y rounded-md border-0 bg-transparent text-sm text-text-1 shadow-none focus-visible:ring-0"
+            className="min-h-[7.5rem] resize-y rounded-md border-0 bg-transparent text-sm text-text-1 shadow-none focus-visible:ring-0"
             value={value ?? ""}
             onChange={(e) => onChange(e.target.value)}
             onBlur={onBlur}
@@ -183,7 +183,7 @@ function MarkdownEditor({ id, value, onChange, maxLength, className, onBlur }) {
       {activeTab === TAB_PREVIEW && (
         <div
           aria-label="Markdown preview"
-          className="markdown-preview min-h-[120px] rounded-md border border-border-1 bg-surface-2 px-3 py-2 text-sm text-text-1"
+          className="markdown-preview min-h-[7.5rem] rounded-md border border-border-1 bg-surface-2 px-3 py-2 text-sm text-text-1"
           dangerouslySetInnerHTML={{ __html: safeHtml }}
         />
       )}

@@ -52,7 +52,7 @@ function RowList({ items, variant = "default" }) {
 }
 
 function SubLabel({ children }) {
-  return <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{children}</span>;
+  return <span className="text-[0.6875rem] font-semibold uppercase tracking-wider text-muted-foreground">{children}</span>;
 }
 
 // ── Tab strip ──────────────────────────────────────────────────────────────────
@@ -142,7 +142,7 @@ function CompTab({ comp }) {
             ${!muted ? "bg-primary/8 dark:bg-primary/12" : "bg-transparent"}
             ${i < tiers.length - 1 ? "border-r border-border" : ""}`}
           >
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{label}</span>
+            <span className="text-[0.625rem] font-semibold uppercase tracking-wider text-muted-foreground">{label}</span>
             <span className={`text-sm font-bold ${!muted ? "text-primary" : "text-foreground"}`}>{value}</span>
           </div>
         ))}
@@ -181,7 +181,7 @@ function ProcessTab({ proc }) {
           <div className="flex flex-col gap-1.5">
             {proc.rounds.map((round, i) => (
               <div key={i} className="flex gap-3">
-                <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-muted text-[10px] font-bold text-muted-foreground">
+                <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-muted text-[0.625rem] font-bold text-muted-foreground">
                   {i + 1}
                 </span>
                 <div className="flex flex-col gap-0.5">

@@ -63,7 +63,7 @@ function ResetPassword() {
         </form>
       )}
 
-      <p className="mt-6 text-center text-[13px] text-text-2">
+      <p className="mt-6 text-center text-[0.8125rem] text-text-2">
         <Link
           to="/login"
           className="text-brand-600 hover:text-brand-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 focus-visible:outline-offset-2 dark:focus-visible:outline-1"

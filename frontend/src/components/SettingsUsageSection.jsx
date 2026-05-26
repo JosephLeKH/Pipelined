@@ -32,7 +32,7 @@ function UsageMeter({ label, used, max }) {
   return (
     <div className="flex flex-col gap-1.5">
       <div className="flex items-center justify-between gap-3">
-        <span className="text-[13px] font-medium text-text-1">{label}</span>
+        <span className="text-[0.8125rem] font-medium text-text-1">{label}</span>
         <span className="flex items-center gap-2 text-sm text-text-2">
           {used} / {max}
           {atLimit ? (
@@ -76,7 +76,7 @@ function SettingsUsageSection({ user }) {
     >
       <div className="flex items-center justify-between gap-4">
         <div>
-          <p className="text-[13px] font-medium text-text-1">Plan</p>
+          <p className="text-[0.8125rem] font-medium text-text-1">Plan</p>
           <p className="mt-1 text-sm text-text-2">Free</p>
         </div>
         <Tooltip>
@@ -90,13 +90,13 @@ function SettingsUsageSection({ user }) {
       </div>
 
       <div className="mt-8 flex flex-col gap-5">
-        <p className="text-[13px] font-medium text-text-1">Usage this month</p>
+        <p className="text-[0.8125rem] font-medium text-text-1">Usage this month</p>
         <UsageMeter label="Applications" used={appCount} max={APP_LIMIT} />
         <UsageMeter label="Contacts" used={contactCount} max={CONTACT_LIMIT} />
       </div>
 
       <div className="mt-8 border-t border-border-1 pt-8">
-        <p className="mb-1 text-[13px] font-medium text-text-1">AI usage</p>
+        <p className="mb-1 text-[0.8125rem] font-medium text-text-1">AI usage</p>
         <p className="mb-4 text-xs text-text-3">
           Fit scores, resume insights, follow-up drafts, and interview prep share this daily limit.
           Resets at midnight UTC.

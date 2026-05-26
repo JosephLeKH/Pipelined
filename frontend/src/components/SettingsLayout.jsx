@@ -13,7 +13,7 @@ function SettingsLayout() {
       <div className="flex min-h-0 flex-1">
         <SettingsNav />
         <div className="min-h-0 flex-1 overflow-y-auto">
-          <div className="mx-auto max-w-[720px] px-6 py-8">
+          <div className="mx-auto max-w-[45rem] px-6 py-8">
             <Outlet />
           </div>
         </div>

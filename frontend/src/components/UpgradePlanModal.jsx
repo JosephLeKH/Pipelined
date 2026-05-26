@@ -57,7 +57,7 @@ function UpgradePlanModal() {
 
   return (
     <Dialog open={visible} onOpenChange={(open) => { if (!open) handleDismiss(); }}>
-      <DialogContent className="max-w-[480px] gap-0 p-6">
+      <DialogContent className="max-w-[30rem] gap-0 p-6">
         <div className="flex flex-col items-center gap-3 py-2 text-center">
           <Sparkles className="h-8 w-8 text-brand-600 dark:text-brand-400" aria-hidden="true" />
 

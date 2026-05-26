@@ -117,7 +117,7 @@ function TagInput({ value = [], onChange, placeholder = "Add a tag…", id }) {
   return (
     <div className="relative">
       <div
-        className="flex min-h-[38px] w-full flex-wrap gap-1.5 rounded-md border border-border-1 bg-surface-0 px-2 py-1.5 text-sm motion-safe:transition-colors motion-reduce:transition-none cursor-text focus-within:border-border-2"
+        className="flex min-h-[2.375rem] w-full flex-wrap gap-1.5 rounded-md border border-border-1 bg-surface-0 px-2 py-1.5 text-sm motion-safe:transition-colors motion-reduce:transition-none cursor-text focus-within:border-border-2"
         onClick={() => inputRef.current?.focus()}
       >
         {value.map((tag) => (
@@ -137,7 +137,7 @@ function TagInput({ value = [], onChange, placeholder = "Add a tag…", id }) {
           onBlur={() => setTimeout(() => setOpen(false), DROPDOWN_CLOSE_DELAY_MS)}
           onKeyDown={handleKeyDown}
           placeholder={value.length === 0 ? placeholder : ""}
-          className="min-w-[120px] flex-1 bg-transparent text-sm text-text-1 placeholder:text-text-3 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 focus-visible:outline-offset-1 dark:focus-visible:outline-1"
+          className="min-w-[7.5rem] flex-1 bg-transparent text-sm text-text-1 placeholder:text-text-3 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 focus-visible:outline-offset-1 dark:focus-visible:outline-1"
           aria-label="Add tag"
           aria-autocomplete="list"
           aria-expanded={open && suggestions.length > 0}

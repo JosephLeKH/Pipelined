@@ -15,7 +15,7 @@ import {
 } from "./ui/dialog";
 
 const KBD_CLASS =
-  "shrink-0 rounded-sm border border-border-1 bg-surface-1 px-1.5 py-0.5 font-mono text-[11px] text-text-1";
+  "shrink-0 rounded-sm border border-border-1 bg-surface-1 px-1.5 py-0.5 font-mono text-[0.6875rem] text-text-1";
 
 function ShortcutHelp() {
   const [isOpen, setIsOpen] = useState(false);
@@ -39,7 +39,7 @@ function ShortcutHelp() {
       </Button>
 
       <Dialog open={isOpen} onOpenChange={(nextOpen) => { if (!nextOpen) close(); }}>
-        <DialogContent className="gap-0 p-0 sm:max-w-[560px]">
+        <DialogContent className="gap-0 p-0 sm:max-w-[35rem]">
           <DialogHeader className="border-b border-border-1 px-6 py-4">
             <DialogTitle className="text-base font-semibold text-text-1">
               Keyboard shortcuts
@@ -55,7 +55,7 @@ function ShortcutHelp() {
                   </h3>
                   <div className="grid grid-cols-2 gap-x-6 gap-y-2">
                     {items.map((s, i) => (
-                      <div key={i} className="flex items-center justify-between text-[13px]">
+                      <div key={i} className="flex items-center justify-between text-[0.8125rem]">
                         <span className="text-text-2">{s.description}</span>
                         <kbd className={KBD_CLASS}>{s.label}</kbd>
                       </div>

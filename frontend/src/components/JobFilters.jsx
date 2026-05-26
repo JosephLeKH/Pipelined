@@ -21,7 +21,10 @@ import { DATE_PRESET_DAYS, isoDateDaysAgo } from "../hooks/useFilterBarParams";
 const REMOTE_FILTER_OPTIONS = REMOTE_STATUS_OPTIONS.filter((o) => o !== "unknown");
 
 function formatOptionLabel(value) {
-  return value.replace(/_/g, " ");
+  return value
+    .split("_")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
 }
 
 function detectPostedPreset(dateFrom) {
@@ -91,7 +94,7 @@ export function JobFilters() {
           <DropdownMenuItem key={opt} onSelect={() => setParam("remote_status", opt)}>
             {formatOptionLabel(opt)}
             {remoteStatus === opt && (
-              <span className="ml-auto text-[10px] text-brand-600">●</span>
+              <span className="ml-auto text-[0.625rem] text-brand-600">●</span>
             )}
           </DropdownMenuItem>
         ))}
@@ -108,7 +111,7 @@ export function JobFilters() {
           <DropdownMenuItem key={opt} onSelect={() => setParam("role_type", opt)}>
             {formatOptionLabel(opt)}
             {roleType === opt && (
-              <span className="ml-auto text-[10px] text-brand-600">●</span>
+              <span className="ml-auto text-[0.625rem] text-brand-600">●</span>
             )}
           </DropdownMenuItem>
         ))}
@@ -125,7 +128,7 @@ export function JobFilters() {
           <DropdownMenuItem key={opt} onSelect={() => setParam("experience_level", opt)}>
             {formatOptionLabel(opt)}
             {experienceLevel === opt && (
-              <span className="ml-auto text-[10px] text-brand-600">●</span>
+              <span className="ml-auto text-[0.625rem] text-brand-600">●</span>
             )}
           </DropdownMenuItem>
         ))}
@@ -138,7 +141,7 @@ export function JobFilters() {
           <DropdownMenuItem key={id} onSelect={() => applyPostedPreset(id)}>
             {label}
             {postedPreset === id && (
-              <span className="ml-auto text-[10px] text-brand-600">●</span>
+              <span className="ml-auto text-[0.625rem] text-brand-600">●</span>
             )}
           </DropdownMenuItem>
         ))}
@@ -151,7 +154,7 @@ export function JobFilters() {
           <DropdownMenuItem key={id} onSelect={() => setParam("sort", id === "best_match" ? null : id)}>
             {label}
             {sort === id && (
-              <span className="ml-auto text-[10px] text-brand-600">●</span>
+              <span className="ml-auto text-[0.625rem] text-brand-600">●</span>
             )}
           </DropdownMenuItem>
         ))}

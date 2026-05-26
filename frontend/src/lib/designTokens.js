@@ -121,7 +121,7 @@ export const BUTTON_TOGGLE_INACTIVE =
 
 /** Tooltip — small text, opacity-based show/hide via group-hover. */
 export const TOOLTIP =
-  "absolute z-10 whitespace-nowrap rounded-md bg-text-1 px-2 py-1 text-[11px] text-surface-0 opacity-0 transition-opacity pointer-events-none group-hover:opacity-100 dark:bg-surface-2 dark:text-text-1";
+  "absolute z-10 whitespace-nowrap rounded-md bg-text-1 px-2 py-1 text-[0.6875rem] text-surface-0 opacity-0 transition-opacity pointer-events-none group-hover:opacity-100 dark:bg-surface-2 dark:text-text-1";
 
 /** Icon-only button base — rounded-md, padding, hover states, focus ring. */
 export const ICON_BUTTON =

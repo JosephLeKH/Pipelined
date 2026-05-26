@@ -86,7 +86,7 @@ function FollowUpDraftSection({ application, autoExpand = false }) {
             size="sm"
             onClick={handleGenerateDraft}
             disabled={isLoading}
-            className="w-full min-h-[44px] sm:min-h-0 sm:w-auto"
+            className="w-full min-h-[2.75rem] sm:min-h-0 sm:w-auto"
           >
             <Mail className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
             {isLoading ? "Generating…" : "Draft follow-up"}

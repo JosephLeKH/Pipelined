@@ -6,7 +6,7 @@ import { Button } from "./ui/button";
 
 function SectionHeader({ label }) {
   return (
-    <p className="sticky top-0 z-10 bg-surface-0 px-3 pb-1 pt-2 text-[11px] font-medium uppercase tracking-[0.06em] text-text-3">
+    <p className="sticky top-0 z-10 bg-surface-0 px-3 pb-1 pt-2 text-[0.6875rem] font-medium uppercase tracking-[0.06em] text-text-3">
       {label}
     </p>
   );
@@ -31,7 +31,7 @@ function PaletteRow({ item, isActive, activate, highlightRef, hint, children }) 
       variant="ghost"
       onClick={() => activate(item)}
       className={cn(
-        "flex h-9 w-full items-center gap-2 rounded-none px-3 text-left text-[13px] justify-start",
+        "flex h-9 w-full items-center gap-2 rounded-none px-3 text-left text-[0.8125rem] justify-start",
         isActive ? "border-l-2 border-brand-600 bg-surface-2" : "hover:bg-surface-2",
       )}
     >

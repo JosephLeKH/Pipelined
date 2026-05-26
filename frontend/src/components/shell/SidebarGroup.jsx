@@ -9,7 +9,7 @@ function SidebarGroup({ label, items, pathname, collapsed, badgeCounts, onOpenCo
   return (
     <div className="px-2 py-1">
       {!collapsed && (
-        <p className="px-2 pb-1 pt-2 text-[11px] font-medium uppercase tracking-[0.06em] text-text-3">
+        <p className="px-2 pb-1 pt-2 text-[0.6875rem] font-medium uppercase tracking-[0.06em] text-text-3">
           {label}
         </p>
       )}

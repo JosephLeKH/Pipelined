@@ -38,7 +38,7 @@ const FOCUS_RING =
 function SettingsFieldBlock({ label, help, children }) {
   return (
     <div className="flex flex-col gap-1">
-      <span className="text-[13px] font-medium text-text-1">{label}</span>
+      <span className="text-[0.8125rem] font-medium text-text-1">{label}</span>
       {children}
       {help ? <p className="mt-1 text-xs text-text-3">{help}</p> : null}
     </div>
@@ -62,7 +62,7 @@ function ThemeSwatch({ option, checked, onSelect }) {
         className={`h-14 w-14 rounded-lg border ${option.previewClass} ${checked ? "ring-2 ring-brand-600 ring-offset-2 dark:ring-1 dark:ring-offset-1" : ""}`}
         aria-hidden="true"
       />
-      <span className="text-[13px] text-text-1">{option.label}</span>
+      <span className="text-[0.8125rem] text-text-1">{option.label}</span>
     </label>
   );
 }
@@ -134,7 +134,7 @@ function SettingsAppearanceSection() {
                   checked={density === option.value}
                   onChange={() => handleDensity(option.value)}
                 />
-                <span className="text-[13px] text-text-1">{option.label}</span>
+                <span className="text-[0.8125rem] text-text-1">{option.label}</span>
               </label>
             ))}
           </RadioGroup>
@@ -184,7 +184,7 @@ function SettingsAppearanceSection() {
                   className={`h-4 w-4 shrink-0 rounded-full ${option.swatch}`}
                   aria-hidden="true"
                 />
-                <span className="text-[13px] text-text-1">{option.label}</span>
+                <span className="text-[0.8125rem] text-text-1">{option.label}</span>
               </label>
             ))}
           </RadioGroup>

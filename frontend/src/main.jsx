@@ -42,7 +42,7 @@ const queryClient = new QueryClient({
 
 const TOAST_CLASS_NAMES = {
   toast:
-    "w-[280px] rounded-lg border border-border-1 bg-surface-0 text-text-1 shadow-[var(--shadow-popover)] px-4 py-3 text-sm",
+    "w-[17.5rem] rounded-lg border border-border-1 bg-surface-0 text-text-1 shadow-[var(--shadow-popover)] px-4 py-3 text-sm",
   success: "border-l-2 border-l-[var(--status-success)] border-status-success/40",
   error: "border-l-2 border-l-brand-700 border-brand-700/40",
   title: "font-medium",

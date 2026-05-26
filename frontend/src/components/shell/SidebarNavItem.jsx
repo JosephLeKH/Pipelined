@@ -15,7 +15,7 @@ function SidebarBadge({ count }) {
   return (
     <span
       aria-label={`${count} pending`}
-      className="ml-auto inline-flex h-4 min-w-[1rem] items-center justify-center rounded px-1.5 text-[11px] font-medium text-text-2 bg-surface-3"
+      className="ml-auto inline-flex h-4 min-w-[1rem] items-center justify-center rounded px-1.5 text-[0.6875rem] font-medium text-text-2 bg-surface-3"
     >
       {count > 99 ? "99+" : count}
     </span>
@@ -24,7 +24,7 @@ function SidebarBadge({ count }) {
 
 function SidebarNavItemInner({ icon: Icon, label, badge, active, collapsed, onClick, to }) {
   const rowClass = cn(
-    "group/nav relative flex h-8 w-full items-center gap-2 rounded-md px-2 text-[13px] text-text-2",
+    "group/nav relative flex h-8 w-full items-center gap-2 rounded-md px-2 text-[0.8125rem] text-text-2",
     "hover:bg-surface-2 hover:text-text-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600 dark:focus-visible:ring-1",
     active && "bg-surface-2 text-brand-600",
     collapsed && "justify-center px-0",

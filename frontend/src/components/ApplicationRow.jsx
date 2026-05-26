@@ -153,10 +153,10 @@ function ApplicationRow({
           company={application.company ?? ""}
           size={16}
         />
-        <span className={`w-40 shrink-0 truncate text-[13px] font-medium ${archived ? "text-text-3 line-through" : "text-text-1"}`}>
+        <span className={`w-40 shrink-0 truncate text-[0.8125rem] font-medium ${archived ? "text-text-3 line-through" : "text-text-1"}`}>
           {application.company}
         </span>
-        <span className={`min-w-0 flex-1 truncate text-[13px] ${archived ? "text-text-3" : "text-text-2"}`}>
+        <span className={`min-w-0 flex-1 truncate text-[0.8125rem] ${archived ? "text-text-3" : "text-text-2"}`}>
           {application.role_title}
         </span>
         <StagePill stage={application.current_stage} />

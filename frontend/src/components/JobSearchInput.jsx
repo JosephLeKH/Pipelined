@@ -54,7 +54,7 @@ export default function JobSearchInput({ onEnterKey }) {
         className="h-10 border-border-1 bg-surface-0 pl-9 pr-14 text-sm text-text-1 shadow-none focus-visible:ring-1 focus-visible:ring-brand-600 dark:focus-visible:ring-brand-500"
       />
       <kbd
-        className="pointer-events-none absolute right-3 hidden rounded border border-border-1 bg-surface-1 px-1.5 py-0.5 text-[10px] font-medium text-text-3 sm:inline-block"
+        className="pointer-events-none absolute right-3 hidden rounded border border-border-1 bg-surface-1 px-1.5 py-0.5 text-[0.625rem] font-medium text-text-3 sm:inline-block"
         aria-hidden="true"
       >
         ⌘K

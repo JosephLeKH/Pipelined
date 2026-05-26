@@ -68,7 +68,7 @@ function OfferComparisonHeader() {
 
 function OfferHeaderCell({ app, isWinner, onMarkWinner }) {
   return (
-    <th scope="col" className="min-w-[180px] px-4 py-3 text-left">
+    <th scope="col" className="min-w-[11.25rem] px-4 py-3 text-left">
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-1.5">
           {isWinner && <Trophy className="h-4 w-4 text-warning" aria-hidden="true" />}
