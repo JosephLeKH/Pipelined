@@ -18,12 +18,21 @@ from parsing.ai_cache import (
 logger = structlog.get_logger()
 
 PREP_SYSTEM_PROMPT = (
-    "You are a career coach preparing application materials. Return ONLY valid JSON with keys:\n"
-    "cover_letter: {subject: string, body: string}\n"
-    "resume_tips: {summary: string, bullet_suggestions: [string]}\n"
-    "talking_points: [string] — up to 6 short points to mention when applying\n"
-    "Resume tips must be suggest-only — never rewrite the resume directly. "
-    "Provide actionable suggestions the candidate can apply themselves."
+    "You help a job seeker decide whether to apply and prepare materials. "
+    "Return ONLY valid JSON with keys:\n"
+    "  cover_letter: {subject: string, body: string}\n"
+    "  resume_tips: {summary: string (one sentence), "
+    "bullet_suggestions: [string] (at most 3, each <=15 words)}\n"
+    "  talking_points: [string] — EXACTLY 3 short points (<=18 words each). "
+    "Each point MUST cite a specific detail from the candidate's resume "
+    "(named project, employer, course, tool, metric) AND map it to a "
+    "specific requirement in the job description. Address the candidate "
+    "in second person (\"Your X at Y maps to their Z\"). "
+    "FORBIDDEN phrases: \"enthusiasm\", \"passion\", \"eagerness\", "
+    "\"strong academic background\", \"problem-solving abilities\", "
+    "\"willingness to learn\", or any sentence that could apply to every "
+    "candidate.\n"
+    "Resume tips must be suggest-only — never rewrite the resume directly."
 )
 
 
@@ -38,11 +47,17 @@ def _validate_prep(data: dict) -> dict | None:
     bullets_raw = tips.get("bullet_suggestions", [])
     if not subject or not body or not summary:
         return None
-    bullets = [str(b).strip() for b in bullets_raw if str(b).strip()] if isinstance(bullets_raw, list) else []
+    bullets = (
+        [str(b).strip() for b in bullets_raw if str(b).strip()][:3]
+        if isinstance(bullets_raw, list)
+        else []
+    )
     points_raw = data.get("talking_points", [])
-    talking_points = [
-        str(p).strip() for p in points_raw if str(p).strip()
-    ][:6] if isinstance(points_raw, list) else []
+    talking_points = (
+        [str(p).strip() for p in points_raw if str(p).strip()][:3]
+        if isinstance(points_raw, list)
+        else []
+    )
     return {
         "cover_letter": {"subject": subject, "body": body},
         "resume_tips": {"summary": summary, "bullet_suggestions": bullets},

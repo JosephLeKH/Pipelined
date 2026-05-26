@@ -11,14 +11,26 @@ vi.mock("sonner", () => ({
 const MOCK_OPPORTUNITY = {
   id: "opp1",
   match_score: 88,
-  match_reason: "Strong Python overlap",
+  match_reason: "Your 2 yrs of FastAPI maps to their backend platform team.",
   cover_letter: { subject: "Application", body: "Dear hiring team" },
   resume_tips: { summary: "Highlight backend work", bullet_suggestions: ["Add metrics"] },
-  talking_points: ["5 years Python", "Led API migration"],
+  talking_points: ["Led API migration at Acme", "Built Stripe payments at Beta"],
   listing_company: "Acme",
   listing_role: "Backend Engineer",
   listing_apply_url: "https://example.com/jobs/acme",
 };
+
+function renderCard(overrides = {}) {
+  return render(
+    <PendingOpportunityCard
+      opportunity={{ ...MOCK_OPPORTUNITY, ...overrides }}
+      onApprove={vi.fn()}
+      onDismiss={vi.fn()}
+      isApproving={false}
+      isDismissing={false}
+    />
+  );
+}
 
 describe("PendingOpportunityCard", () => {
   beforeEach(() => {
@@ -29,73 +41,40 @@ describe("PendingOpportunityCard", () => {
   });
 
   it("should render Watchlist badge when source is watchlist", () => {
-    render(
-      <PendingOpportunityCard
-        opportunity={{ ...MOCK_OPPORTUNITY, source: "watchlist" }}
-        onApprove={vi.fn()}
-        onDismiss={vi.fn()}
-        isApproving={false}
-        isDismissing={false}
-      />
-    );
-
+    renderCard({ source: "watchlist" });
     expect(screen.getByText("Watchlist")).toBeInTheDocument();
   });
 
-  it("should render FitBadge for match score with match reason quote", () => {
-    render(
-      <PendingOpportunityCard
-        opportunity={MOCK_OPPORTUNITY}
-        onApprove={vi.fn()}
-        onDismiss={vi.fn()}
-        isApproving={false}
-        isDismissing={false}
-      />
-    );
-
+  it("should render FitBadge and full match reason inline", () => {
+    renderCard();
     expect(screen.getByTestId("fit-badge")).toHaveTextContent("88%");
     expect(screen.getByText(/suggested by autopilot/i)).toBeInTheDocument();
-    expect(screen.getByText(/Strong Python overlap/)).toBeInTheDocument();
+    expect(
+      screen.getByText("Your 2 yrs of FastAPI maps to their backend platform team.")
+    ).toBeInTheDocument();
   });
 
-  it("should reveal full match reason when Why is clicked", async () => {
-    const longReason =
-      "Strong Python overlap with a long explanation that exceeds the preview limit and keeps going. Additional detail about backend systems.";
-
-    render(
-      <PendingOpportunityCard
-        opportunity={{
-          ...MOCK_OPPORTUNITY,
-          match_reason: longReason,
-        }}
-        onApprove={vi.fn()}
-        onDismiss={vi.fn()}
-        isApproving={false}
-        isDismissing={false}
-      />
-    );
-
-    expect(screen.getByTestId("fit-badge")).toHaveTextContent("88%");
-    expect(screen.queryByText(/Additional detail about backend systems/)).not.toBeInTheDocument();
-
-    await userEvent.click(screen.getByRole("button", { name: /why\?/i }));
-    expect(screen.getByText(longReason)).toBeInTheDocument();
+  it("should always render talking points without a Why? toggle", () => {
+    renderCard();
+    expect(screen.getByText("Led API migration at Acme")).toBeInTheDocument();
+    expect(screen.getByText("Built Stripe payments at Beta")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /why\?/i })).not.toBeInTheDocument();
   });
 
-  it("should expand cover letter and copy to clipboard with success feedback", async () => {
-    render(
-      <PendingOpportunityCard
-        opportunity={MOCK_OPPORTUNITY}
-        onApprove={vi.fn()}
-        onDismiss={vi.fn()}
-        isApproving={false}
-        isDismissing={false}
-      />
-    );
+  it("should cap talking points at 3", () => {
+    renderCard({
+      talking_points: ["one", "two", "three", "four", "five"],
+    });
+    expect(screen.getByText("one")).toBeInTheDocument();
+    expect(screen.getByText("three")).toBeInTheDocument();
+    expect(screen.queryByText("four")).not.toBeInTheDocument();
+  });
 
+  it("should toggle cover letter panel and copy body with subject", async () => {
+    renderCard();
     expect(screen.queryByText("Dear hiring team")).not.toBeInTheDocument();
 
-    await userEvent.click(screen.getByRole("button", { name: /view ai-drafted cover letter/i }));
+    await userEvent.click(screen.getByRole("button", { name: /^cover letter$/i }));
     expect(screen.getByText("Dear hiring team")).toBeInTheDocument();
 
     await userEvent.click(screen.getByRole("button", { name: /copy cover letter/i }));
@@ -105,19 +84,15 @@ describe("PendingOpportunityCard", () => {
     expect(screen.getByRole("button", { name: /cover letter copied/i })).toBeInTheDocument();
   });
 
-  it("should render talking points and apply pack hint", () => {
-    render(
-      <PendingOpportunityCard
-        opportunity={MOCK_OPPORTUNITY}
-        onApprove={vi.fn()}
-        onDismiss={vi.fn()}
-        isApproving={false}
-        isDismissing={false}
-      />
-    );
+  it("should swap to resume tips panel when its toggle is clicked", async () => {
+    renderCard();
 
-    expect(screen.getByText("Talking points")).toBeInTheDocument();
-    expect(screen.getByText("5 years Python")).toBeInTheDocument();
-    expect(screen.getByText(/open apply pack in the application detail/i)).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: /^cover letter$/i }));
+    expect(screen.getByText("Dear hiring team")).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole("button", { name: /^resume tips$/i }));
+    expect(screen.queryByText("Dear hiring team")).not.toBeInTheDocument();
+    expect(screen.getByText("Highlight backend work")).toBeInTheDocument();
+    expect(screen.getByText("Add metrics")).toBeInTheDocument();
   });
 });

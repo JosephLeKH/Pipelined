@@ -27,8 +27,15 @@ from parsing.ai_cache import (
 logger = structlog.get_logger()
 
 MATCH_SCORE_SYSTEM_PROMPT = (
-    "You are a career coach evaluating job fit for a candidate. "
-    "Return ONLY valid JSON with keys: score (integer 0-100), reason (string, 1-2 sentences). "
+    "You evaluate job fit for a candidate. "
+    "Return ONLY valid JSON with keys: "
+    "score (integer 0-100), "
+    "reason (string, ONE sentence, <=20 words, addressed to the candidate in "
+    "second person — e.g. \"Your iOS work at Apple matches their mobile team "
+    "focus\"). "
+    "Do NOT use third person (\"the candidate\", \"this applicant\"). "
+    "The reason must cite a specific detail from the resume that maps to a "
+    "specific requirement in the role. "
     "Score based on resume alignment with role requirements."
 )
 

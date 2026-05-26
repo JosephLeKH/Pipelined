@@ -93,10 +93,10 @@ describe("PendingInboxPage", () => {
 
     expect(await screen.findByLabelText("Acme · Backend Engineer")).toBeInTheDocument();
     expect(screen.getByTestId("fit-badge")).toHaveTextContent("92%");
-    await userEvent.click(screen.getByRole("button", { name: /view ai-drafted cover letter/i }));
+    await userEvent.click(screen.getByRole("button", { name: /^cover letter$/i }));
     expect(screen.getByText("Dear hiring team")).toBeInTheDocument();
 
-    await userEvent.click(screen.getByRole("button", { name: /view resume tips/i }));
+    await userEvent.click(screen.getByRole("button", { name: /^resume tips$/i }));
     expect(screen.getByText(/suggestions only/i)).toBeInTheDocument();
   });
 
