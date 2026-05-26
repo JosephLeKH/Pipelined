@@ -1,5 +1,7 @@
 /** Reusable inline filter dropdown trigger + checkbox menu for FilterBar. */
 
+import * as React from "react";
+
 import ChevronDown from "lucide-react/dist/esm/icons/chevron-down";
 import { cn } from "../lib/utils";
 import { Button } from "./ui/button";
@@ -21,15 +23,18 @@ export function formatMultiSelectLabel(selected, allLabel = "All") {
   return `${selected.length} selected`;
 }
 
-export function FilterDropdownTrigger({ label, value }) {
+export const FilterDropdownTrigger = React.forwardRef(function FilterDropdownTrigger(
+  { label, value, ...props },
+  ref,
+) {
   return (
-    <Button type="button" variant="ghost" className={TRIGGER_CLASS}>
+    <Button ref={ref} type="button" variant="ghost" className={TRIGGER_CLASS} {...props}>
       <span className="text-text-3">{label}:</span>
       <span className="font-medium text-text-1">{value}</span>
       <ChevronDown className="h-3 w-3 text-text-3" aria-hidden="true" />
     </Button>
   );
-}
+});
 
 export function MultiSelectFilterDropdown({
   label,

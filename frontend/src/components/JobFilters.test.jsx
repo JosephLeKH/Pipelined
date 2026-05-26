@@ -1,8 +1,14 @@
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import userEvent from "@testing-library/user-event";
+import { MemoryRouter, Routes, Route, useSearchParams } from "react-router-dom";
 import { JobFilters } from "./JobFilters";
 import { withTooltipProvider } from "../test/testProviders";
+
+function CurrentSearch() {
+  const [params] = useSearchParams();
+  return <div data-testid="current-search">{params.toString()}</div>;
+}
 
 function renderWithRouter(initialSearch = "") {
   return render(
@@ -45,5 +51,27 @@ describe("JobFilters", () => {
     renderWithRouter();
 
     expect(screen.getByRole("region", { name: /job filters/i })).toBeInTheDocument();
+  });
+
+  it("should open the menu and update the URL when a filter option is selected", async () => {
+    const user = userEvent.setup();
+    render(
+      <MemoryRouter initialEntries={["/jobs"]}>
+        <Routes>
+          <Route path="/jobs" element={
+            <>
+              {withTooltipProvider(<JobFilters />)}
+              <CurrentSearch />
+            </>
+          } />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    await user.click(screen.getByRole("button", { name: /remote: any/i }));
+    const remoteItem = await screen.findByRole("menuitem", { name: /^remote$/i });
+    await user.click(remoteItem);
+
+    expect(screen.getByTestId("current-search").textContent).toContain("remote_status=remote");
   });
 });
