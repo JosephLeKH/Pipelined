@@ -59,14 +59,18 @@ describe("StatsBar", () => {
     expect(skeletons.length).toBeGreaterThan(0);
   });
 
-  it("should render 4 metric cards with correct values", async () => {
+  it("should render 4 metric cards with correct values when expanded", async () => {
     // Arrange / Act
+    const user = (await import("@testing-library/user-event")).default.setup();
     render(<StatsBar />, { wrapper: makeWrapper() });
 
-    // Assert — collapsed summary and expanded metric cards
+    // Assert — collapsed summary visible by default with applications
     const summary = await screen.findByTestId("stats-collapsed-summary");
     expect(summary).toHaveTextContent("42 applications");
     expect(summary).toHaveTextContent("30 active");
+
+    // Expand to verify metric grid
+    await user.click(screen.getByRole("button", { name: /expand statistics/i }));
     expect(await screen.findByLabelText(/response rate: 25.0%/i)).toBeInTheDocument();
     expect(await screen.findByLabelText(/avg days to response: 5.3/i)).toBeInTheDocument();
   });
@@ -78,24 +82,28 @@ describe("StatsBar", () => {
         HttpResponse.json({ data: { ...STATS, avg_days_to_first_response: null } })
       )
     );
+    const user = (await import("@testing-library/user-event")).default.setup();
 
     // Act
     render(<StatsBar />, { wrapper: makeWrapper() });
+    await screen.findByText("42");
+    await user.click(screen.getByRole("button", { name: /expand statistics/i }));
 
-    // Assert — total_applied loads and avg days shows N/A
-    expect(await screen.findByText("42")).toBeInTheDocument();
-    const naTexts = screen.getAllByText("N/A");
+    // Assert — avg days shows N/A in expanded grid
+    const naTexts = await screen.findAllByText("N/A");
     expect(naTexts.length).toBeGreaterThanOrEqual(1);
   });
 
   it("should render metric cards with aria-label describing each metric", async () => {
     // Arrange / Act
+    const user = (await import("@testing-library/user-event")).default.setup();
     render(<StatsBar />, { wrapper: makeWrapper() });
     await screen.findByText("42");
+    await user.click(screen.getByRole("button", { name: /expand statistics/i }));
 
     // Assert — each card has an accessible aria-label
-    expect(screen.getByLabelText(/total applied/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/active/i)).toBeInTheDocument();
+    expect(await screen.findByLabelText(/total applied/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/^active: 30$/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/response rate/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/avg days to response/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/stale applications/i)).toBeInTheDocument();
@@ -103,11 +111,31 @@ describe("StatsBar", () => {
 
   it("should render stale applications count from stale_count", async () => {
     // Arrange / Act
+    const user = (await import("@testing-library/user-event")).default.setup();
     render(<StatsBar />, { wrapper: makeWrapper() });
+    await screen.findByText("42");
+    await user.click(screen.getByRole("button", { name: /expand statistics/i }));
 
     // Assert
-    expect(await screen.findByText("7")).toBeInTheDocument();
     expect(await screen.findByLabelText(/stale applications: 7/i)).toBeInTheDocument();
+  });
+
+  it("should auto-expand metric grid when user has no applications", async () => {
+    // Arrange — empty state
+    server.use(
+      http.get("/api/applications/stats", () =>
+        HttpResponse.json({
+          data: { ...STATS, total_applied: 0, active_count: 0, stale_count: 0 },
+        })
+      )
+    );
+
+    // Act
+    render(<StatsBar />, { wrapper: makeWrapper() });
+
+    // Assert — grid is open by default for new users
+    expect(await screen.findByLabelText(/total applied: 0/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /collapse statistics/i })).toBeInTheDocument();
   });
 
   it("should show collapsed summary line with expand caret by default when filters active", async () => {

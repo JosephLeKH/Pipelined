@@ -166,7 +166,7 @@ function OnboardingChecklist() {
     <>
       <section
         aria-label="Get started"
-        className="rounded-lg border border-border-1 bg-surface-1 p-4"
+        className="rounded-lg border border-border-1 bg-surface-0 p-3"
       >
         <div className="mb-3 flex items-center justify-between gap-3">
           <div className="flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-1">

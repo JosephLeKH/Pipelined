@@ -90,7 +90,7 @@ function MetricCell({ metricKey, label, stats, isLoading, Icon }) {
 
   return (
     <div className="flex flex-col gap-1 p-4" aria-label={`${label}: ${displayValue}`}>
-      <span className="text-2xl font-semibold leading-none text-text-1">{displayValue}</span>
+      <span className="text-xl font-semibold leading-none text-text-1">{displayValue}</span>
       <span className="mt-1 flex items-center gap-1.5 text-sm text-text-3">
         <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
         {label}
@@ -130,11 +130,13 @@ function CollapsedSummary({ stats, isLoading }) {
 
 function StatsBar({ filtersActive = false }) {
   const { data: stats, isLoading, error, refetch } = useApplicationStats();
-  const [expanded, setExpanded] = useState(!filtersActive);
+  const hasApplications = (stats?.total_applied ?? 0) > 0;
+  const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
-    setExpanded(!filtersActive);
-  }, [filtersActive]);
+    if (isLoading) return;
+    setExpanded(!hasApplications && !filtersActive);
+  }, [isLoading, hasApplications, filtersActive]);
 
   if (error) return <ApiErrorMessage error={error} onRetry={refetch} />;
 

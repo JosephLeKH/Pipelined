@@ -161,11 +161,13 @@ describe("Dashboard", () => {
 
   it("should render StatsBar metrics after stats load", async () => {
     // Arrange / Act
+    const user = (await import("@testing-library/user-event")).default.setup();
     render(<Dashboard />, { wrapper: makeWrapper() });
 
-    // Assert — collapsed summary and expanded metric grid
+    // Assert — collapsed summary visible by default; expand to confirm metric cells render
     const summary = await screen.findByTestId("stats-collapsed-summary");
     expect(summary).toHaveTextContent("applications");
+    await user.click(await screen.findByRole("button", { name: /expand statistics/i }));
     expect(await screen.findByLabelText(/total applied/i)).toBeInTheDocument();
   });
 });
