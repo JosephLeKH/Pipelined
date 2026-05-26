@@ -12,8 +12,8 @@ export const DEFAULT_DENSITY = "compact";
    (16px) so the app reads at the size of a 1.1-1.2× browser zoom. Inline
    style here overrides any `html { font-size }` rule in CSS — keep that in
    mind when adjusting global scale. */
-export const FONT_SIZE_STEPS = [14, 16, 18, 20, 22];
-export const DEFAULT_FONT_SIZE_INDEX = 2; // 18px ≈ 112.5% of browser default
+export const FONT_SIZE_STEPS = [13, 15, 17, 19, 21];
+export const DEFAULT_FONT_SIZE_INDEX = 2; // 17px ≈ 106% of browser default
 
 export const ACCENTS = ["cardinal", "default"];
 export const DEFAULT_ACCENT = "cardinal";
