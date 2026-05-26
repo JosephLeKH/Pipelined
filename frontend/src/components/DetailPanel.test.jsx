@@ -10,6 +10,7 @@ import { describe, it, expect, vi, beforeAll, afterAll, afterEach } from "vitest
 
 import { AuthProvider } from "../context/AuthContext";
 import DetailPanel from "./DetailPanel";
+import { DETAIL_PANEL_WIDTH_PX } from "../lib/constants";
 import { passthroughHandlers } from "../test/passthroughHandlers";
 
 const APP = {
@@ -303,11 +304,11 @@ describe("DetailPanel", () => {
     expect(overlay).toHaveClass("pointer-events-none");
   });
 
-  it("should render the drawer at 520px width with 220ms slide transition", () => {
+  it("should render the drawer at the configured panel width with 220ms slide transition", () => {
     render(<DetailPanel application={APP} onClose={() => {}} />, { wrapper: makeWrapper() });
 
     const panel = screen.getByTestId("detail-panel");
-    expect(panel).toHaveStyle({ width: "520px" });
+    expect(panel).toHaveStyle({ width: `${DETAIL_PANEL_WIDTH_PX}px` });
     expect(panel.style.transitionDuration).toBe("220ms");
     expect(panel).toHaveClass("motion-safe-drawer");
   });

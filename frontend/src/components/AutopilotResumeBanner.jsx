@@ -33,7 +33,7 @@ function AutopilotResumeBanner() {
       data-testid="autopilot-resume-banner"
       className="flex h-9 items-center gap-3 border-b border-border-1 bg-surface-1 px-4 text-xs text-text-1"
     >
-      <FileText size={14} aria-hidden="true" className="shrink-0 text-brand-600" />
+      <FileText size={15} aria-hidden="true" className="shrink-0 text-brand-600" />
       <span className="min-w-0 truncate">Upload a resume to enable autopilot job matching</span>
       <Button type="button" variant="ghost" size="sm" asChild className="h-6 shrink-0 px-2 text-xs">
         <Link
@@ -49,7 +49,7 @@ function AutopilotResumeBanner() {
         aria-label="Dismiss"
         className={`ml-auto inline-flex shrink-0 items-center justify-center rounded text-text-3 hover:bg-surface-2 hover:text-text-1 motion-reduce:transition-none transition-colors duration-hover ease-out ${BANNER_FOCUS_RING}`}
       >
-        <X size={14} aria-hidden="true" />
+        <X size={15} aria-hidden="true" />
       </button>
     </div>
   );

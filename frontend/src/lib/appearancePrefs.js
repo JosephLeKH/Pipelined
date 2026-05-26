@@ -7,8 +7,13 @@ export const ACCENT_KEY = "pipelined_accent";
 export const DENSITIES = ["compact", "comfortable"];
 export const DEFAULT_DENSITY = "compact";
 
-export const FONT_SIZE_STEPS = [12, 13, 14, 15, 16];
-export const DEFAULT_FONT_SIZE_INDEX = 2;
+/* Font-size steps in px applied to <html> as an inline style. The middle
+   step is the default and is intentionally ~110-120% of the browser default
+   (16px) so the app reads at the size of a 1.1-1.2× browser zoom. Inline
+   style here overrides any `html { font-size }` rule in CSS — keep that in
+   mind when adjusting global scale. */
+export const FONT_SIZE_STEPS = [14, 16, 18, 20, 22];
+export const DEFAULT_FONT_SIZE_INDEX = 2; // 18px ≈ 112.5% of browser default
 
 export const ACCENTS = ["cardinal", "default"];
 export const DEFAULT_ACCENT = "cardinal";
@@ -24,6 +29,10 @@ export function readDensity() {
 
 export function readFontSizeIndex() {
   const raw = localStorage.getItem(FONT_SIZE_KEY);
+  /* localStorage returns null when the key is unset; Number(null) === 0 which
+     is a *valid* index, so without this guard new users silently get the
+     smallest font size (the old bug shipping 12px to every fresh browser). */
+  if (raw === null || raw === "") return DEFAULT_FONT_SIZE_INDEX;
   const index = Number(raw);
   if (Number.isInteger(index) && index >= 0 && index < FONT_SIZE_STEPS.length) {
     return index;
@@ -40,8 +49,12 @@ export function applyDensity(density) {
 }
 
 export function applyFontSizeIndex(index) {
-  document.documentElement.dataset.fontSizeStep = String(index);
-  document.documentElement.style.fontSize = `${FONT_SIZE_STEPS[index]}px`;
+  const safeIndex =
+    Number.isInteger(index) && index >= 0 && index < FONT_SIZE_STEPS.length
+      ? index
+      : DEFAULT_FONT_SIZE_INDEX;
+  document.documentElement.dataset.fontSizeStep = String(safeIndex);
+  document.documentElement.style.fontSize = `${FONT_SIZE_STEPS[safeIndex]}px`;
 }
 
 export function applyAccent(accent) {

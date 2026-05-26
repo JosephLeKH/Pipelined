@@ -57,12 +57,13 @@
   --border-3: rgba(0, 0, 0, 0.16);
   --shadow-modal: 0 20px 60px rgba(0, 0, 0, 0.12);
 
-  /* Appearance prefs — compact default (PRD-08) */
-  --row-height: 36px;
+  /* Appearance prefs — compact default (PRD-08). Expressed in rem so the
+     row height scales with `html { font-size }` like everything else. */
+  --row-height: 2.25rem; /* 36px @ root 16 / 39.6px @ root 17.6 */
 }
 
 :root[data-density="comfortable"] {
-  --row-height: 40px;
+  --row-height: 2.5rem; /* 40px / 44px */
 }
 
 .dark {

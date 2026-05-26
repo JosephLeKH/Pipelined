@@ -190,18 +190,22 @@ export const OPEN_COMMAND_PALETTE_EVENT = "pipelined:open-command-palette";
 export const OPEN_IMPORT_CSV_EVENT = "pipelined:open-import-csv";
 
 export const SIDEBAR_COLLAPSED_STORAGE_KEY = "pipelined_sidebar_collapsed";
-export const SIDEBAR_WIDTH_PX = 240;
-export const SIDEBAR_COLLAPSED_WIDTH_PX = 56;
+/* Pixel constants below are bumped ~10% over their original values to match
+   the global UI scale (html font-size: 110% in index.css). Tailwind utilities
+   are already rem-based so they scale automatically; these constants are only
+   needed where the values are passed through inline styles or JS arithmetic. */
+export const SIDEBAR_WIDTH_PX = 264;            /* was 240, ×1.1 */
+export const SIDEBAR_COLLAPSED_WIDTH_PX = 62;   /* was 56,  ×1.1 */
 export const SIDEBAR_ANIMATION_MS = 200;
 export const DRAWER_ANIMATION_MS = 220;
 export const SIDEBAR_TOOLTIP_DELAY_MS = 400;
-export const TOP_BAR_HEIGHT_PX = 44;
-export const DETAIL_PANEL_WIDTH_PX = 520;
-export const MANUAL_ADD_FORM_WIDTH_PX = 520;
+export const TOP_BAR_HEIGHT_PX = 48;            /* was 44,  ×1.1 */
+export const DETAIL_PANEL_WIDTH_PX = 572;       /* was 520, ×1.1 */
+export const MANUAL_ADD_FORM_WIDTH_PX = 572;    /* was 520, ×1.1 */
 export const MANUAL_ADD_VISIBLE_STAGES = 4;
-export const COPILOT_DRAWER_WIDTH_PX = 480;
-export const CALENDAR_EVENT_DRAWER_WIDTH_PX = 480;
-export const CALENDAR_EVENT_MODAL_WIDTH_PX = 480;
+export const COPILOT_DRAWER_WIDTH_PX = 528;     /* was 480, ×1.1 */
+export const CALENDAR_EVENT_DRAWER_WIDTH_PX = 528; /* was 480, ×1.1 */
+export const CALENDAR_EVENT_MODAL_WIDTH_PX = 528;  /* was 480, ×1.1 */
 export const CALENDAR_EVENT_DOT_MAX = 3;
 export const CALENDAR_DEFAULT_DURATION_MIN = 30;
 export const CALENDAR_UPCOMING_WINDOW_DAYS = 7;
@@ -278,11 +282,14 @@ export const TAG_COLOR_SWATCHES = [
 
 export const TAG_COLORS_STORAGE_KEY = "pipelined_tag_colors";
 
-export const LIST_OFFSET_PX = 280;
+export const LIST_OFFSET_PX = 308; /* was 280, ×1.1 */
 
+/* MD_BREAKPOINT_PX is a viewport-size breakpoint — it must remain in true
+   device pixels and is NOT scaled with the UI. Same goes for the swipe/drag
+   gesture thresholds below: those should match physical touch distances. */
 export const MD_BREAKPOINT_PX = 768;
-export const APPLICATION_ROW_HEIGHT_DESKTOP = 40;
-export const APPLICATION_ROW_HEIGHT_MOBILE = 56;
+export const APPLICATION_ROW_HEIGHT_DESKTOP = 44; /* was 40, ×1.1 */
+export const APPLICATION_ROW_HEIGHT_MOBILE = 62;  /* was 56, ×1.1 */
 
 export const SWIPE_THRESHOLD_PX = 80;
 export const SWIPE_MAX_MS = 300;

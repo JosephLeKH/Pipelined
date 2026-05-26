@@ -64,7 +64,7 @@ function EmailVerificationBanner() {
       data-testid="email-verification-banner"
       className="flex h-9 items-center gap-3 border-b border-brand-100 bg-brand-50 px-4 text-xs text-brand-900 dark:border-brand-800 dark:bg-brand-900/30 dark:text-brand-100"
     >
-      <AlertTriangle size={14} aria-hidden="true" className="shrink-0 text-brand-700 dark:text-brand-300" />
+      <AlertTriangle size={15} aria-hidden="true" className="shrink-0 text-brand-700 dark:text-brand-300" />
       <span className="min-w-0 truncate">
         {resendSent
           ? "Verification email sent. Check your inbox."
@@ -88,7 +88,7 @@ function EmailVerificationBanner() {
         aria-label="Dismiss"
         className={`ml-auto inline-flex shrink-0 items-center justify-center rounded text-brand-700 hover:bg-brand-100 hover:text-brand-900 motion-reduce:transition-none transition-colors duration-hover ease-out dark:text-brand-300 dark:hover:bg-brand-800/40 dark:hover:text-brand-100 ${BANNER_FOCUS_RING}`}
       >
-        <X size={14} aria-hidden="true" />
+        <X size={15} aria-hidden="true" />
       </button>
     </div>
   );

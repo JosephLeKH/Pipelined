@@ -128,7 +128,7 @@ function JobDetailPanel({ job, onClose }) {
         </button>
 
         <div className="flex items-start gap-3 pr-8">
-          <CompanyLogo company={company} company_domain={job.company_domain} size={40} />
+          <CompanyLogo company={company} company_domain={job.company_domain} size={44} />
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-medium text-text-3">{company || "Unknown"}</p>
             <h2 id="job-detail-heading" className="mt-0.5 break-words text-base font-semibold text-text-1">

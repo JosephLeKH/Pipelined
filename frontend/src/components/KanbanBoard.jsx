@@ -33,7 +33,7 @@ function KanbanDragOverlayCard({ application }) {
         <CompanyLogo
           company_domain={application.company_domain ?? null}
           company={application.company ?? ""}
-          size={20}
+          size={22}
         />
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-medium text-text-1">{application.company}</p>

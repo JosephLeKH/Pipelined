@@ -108,7 +108,7 @@ function JobRow({ job, style, onSelect, isSelected = false, isFocused = false, i
       <CompanyLogo
         company_domain={job.company_domain ?? null}
         company={company}
-        size={16}
+        size={18}
       />
 
       <span className="w-[8.75rem] shrink-0 truncate text-[0.8125rem] font-medium text-text-1">

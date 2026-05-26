@@ -10,6 +10,7 @@ import { describe, it, expect, vi, beforeAll, afterAll, afterEach } from "vitest
 
 import { AuthProvider } from "../context/AuthContext";
 import ManualAddForm from "./ManualAddForm";
+import { MANUAL_ADD_FORM_WIDTH_PX } from "../lib/constants";
 import { passthroughHandlers } from "../test/passthroughHandlers";
 
 const CREATED_APP = {
@@ -249,11 +250,11 @@ describe("ManualAddForm", () => {
     expect(requestBody.company).toBe("Acme Corp");
   });
 
-  it("should render at 520px modal width", () => {
+  it("should render at the configured modal max-width", () => {
     render(<ManualAddForm isOpen onClose={() => {}} />, { wrapper: makeWrapper() });
 
     const dialog = screen.getByRole("dialog");
-    expect(dialog).toHaveStyle({ maxWidth: "520px" });
+    expect(dialog).toHaveStyle({ maxWidth: `${MANUAL_ADD_FORM_WIDTH_PX}px` });
   });
 
   it("should move focus into the dialog when modal opens", async () => {

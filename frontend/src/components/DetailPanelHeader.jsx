@@ -32,7 +32,7 @@ export function DetailPanelHeader({ application, onClose, onDelete }) {
       <CompanyLogo
         company_domain={application.company_domain ?? null}
         company={application.company ?? ""}
-        size={24}
+        size={26}
       />
       <h2
         id="detail-panel-heading"

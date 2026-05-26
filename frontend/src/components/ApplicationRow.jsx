@@ -151,7 +151,7 @@ function ApplicationRow({
         <CompanyLogo
           company_domain={application.company_domain ?? null}
           company={application.company ?? ""}
-          size={16}
+          size={18}
         />
         <span className={`w-40 shrink-0 truncate text-[0.8125rem] font-medium ${archived ? "text-text-3 line-through" : "text-text-1"}`}>
           {application.company}
