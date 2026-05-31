@@ -21,6 +21,25 @@ function StageBadge({ stage }) {
   );
 }
 
+function ShortcutHint({ hint }) {
+  const keys = hint.split(/\s+/).filter(Boolean);
+  return (
+    <span
+      className="ml-auto flex shrink-0 items-center gap-1"
+      aria-label={`Shortcut: ${keys.join(" then ")}`}
+    >
+      {keys.map((key, i) => (
+        <kbd
+          key={i}
+          className="rounded border border-border-1 bg-surface-1 px-1.5 py-0.5 font-mono text-[0.6875rem] text-text-2"
+        >
+          {key}
+        </kbd>
+      ))}
+    </span>
+  );
+}
+
 function PaletteRow({ item, isActive, activate, highlightRef, hint, children, isQuickAction }) {
   return (
     <Button
@@ -37,7 +56,7 @@ function PaletteRow({ item, isActive, activate, highlightRef, hint, children, is
       )}
     >
       {children}
-      {hint && <span className="ml-auto shrink-0 font-mono text-xs text-text-3">{hint}</span>}
+      {hint && <ShortcutHint hint={hint} />}
     </Button>
   );
 }

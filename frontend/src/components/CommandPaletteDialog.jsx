@@ -40,7 +40,7 @@ function CommandPaletteDialog({
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Type a command or search… (⌘K)"
             aria-label="Search commands"
-            className="h-12 w-full rounded-none border-0 bg-transparent px-0 text-base text-text-1 shadow-none focus-visible:ring-0"
+            className="h-12 w-full rounded-none border-0 bg-transparent px-0 text-base text-text-1 shadow-none focus-visible:outline-none focus-visible:ring-0"
           />
         </div>
         <div role="listbox" aria-label="Search results" className="max-h-80 overflow-y-auto py-1">

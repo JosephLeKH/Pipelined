@@ -195,6 +195,7 @@ describe("CommandPalette", () => {
     render(<CommandPalette />, { wrapper: Wrapper });
     openPalette();
     const dashboardRow = screen.getByText("Dashboard").closest("button");
-    expect(dashboardRow).toHaveTextContent("g d");
+    const kbds = dashboardRow.querySelectorAll("kbd");
+    expect(Array.from(kbds).map((k) => k.textContent)).toEqual(["g", "d"]);
   });
 });
