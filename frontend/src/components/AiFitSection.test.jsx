@@ -85,7 +85,10 @@ describe("AiFitSection", () => {
     expect(screen.getByText("GraphQL")).toBeInTheDocument();
   });
 
-  it("should show analyze fit CTA when resume exists but no score", () => {
+  it("should auto-fire fit-score generation when resume exists but no score", async () => {
+    const { generateFitScore } = await import("../api/applications");
+    generateFitScore.mockResolvedValueOnce({ score: 71, reason: "auto" });
+
     renderSection({
       application: { ...APPLICATION, date_applied: "2020-01-01T00:00:00Z" },
       hasResume: true,
@@ -93,7 +96,8 @@ describe("AiFitSection", () => {
       onScoreGenerated: vi.fn(),
     });
 
-    expect(screen.getByRole("button", { name: /analyze fit/i })).toBeInTheDocument();
+    expect(generateFitScore).toHaveBeenCalledWith("app1");
+    expect(screen.queryByRole("button", { name: /^analyze fit$/i })).not.toBeInTheDocument();
   });
 
   it("should show source attribution line", () => {

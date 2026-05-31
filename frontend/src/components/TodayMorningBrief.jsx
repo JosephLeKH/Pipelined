@@ -7,6 +7,7 @@ import ChevronDown from "lucide-react/dist/esm/icons/chevron-down";
 import ChevronRight from "lucide-react/dist/esm/icons/chevron-right";
 import Sun from "lucide-react/dist/esm/icons/sun";
 
+import BriefInfoPopover from "./BriefInfoPopover";
 import MorningBriefHistoryPanel, { HISTORY_DAYS } from "./MorningBriefHistoryPanel";
 import MorningBriefSectionCard from "./MorningBriefSectionCard";
 import { Button } from "./ui/button";
@@ -54,28 +55,29 @@ function BriefSectionHeading({ children }) {
   );
 }
 
-function TodayMorningBriefContent({
-  brief,
-  emptyMessage,
-  onGenerateBrief,
-  isGenerating,
-  generateError,
-}) {
-  const sections = brief?.sections ?? {};
-  const hasItems = BRIEF_SECTION_ORDER.some(({ key }) => sections[key]?.length > 0);
-
-  if (!hasItems) {
-    const errorMessage = generateError
-      ? generateError?.response?.data?.detail?.message
-          ?? generateError?.message
-          ?? "Could not generate brief. Try again in a bit."
-      : null;
-    return (
-      <div className="px-1 py-2 text-center">
-        <Sun className="mx-auto mb-2 h-6 w-6 text-text-3" aria-hidden="true" />
-        <p className="text-sm font-medium text-text-1">All caught up</p>
-        <p className="mt-1 text-xs text-text-3">{brief?.summary_line ?? emptyMessage}</p>
-        {onGenerateBrief && (
+function BriefEmptyState({ brief, emptyMessage, onGenerateBrief, isGenerating, generateError, onShowInfo }) {
+  const errorMessage = generateError
+    ? generateError?.response?.data?.detail?.message
+        ?? generateError?.message
+        ?? "Could not generate brief. Try again in a bit."
+    : null;
+  const headline = brief?.summary_line ?? "Nothing to surface today";
+  return (
+    <div className="px-1 py-2 text-center">
+      <Sun className="mx-auto mb-2 h-6 w-6 text-text-3" aria-hidden="true" />
+      <p className="text-sm font-medium text-text-1">{headline}</p>
+      <p className="mt-1 text-xs text-text-3">
+        {brief ? emptyMessage : "Your brief tracks follow-ups, interviews, high-fit roles, and approvals from your pipeline."}
+      </p>
+      <button
+        type="button"
+        onClick={onShowInfo}
+        className="mt-2 text-xs text-text-3 underline-offset-2 hover:text-text-1 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600"
+      >
+        How does this work?
+      </button>
+      {onGenerateBrief && (
+        <div>
           <Button
             type="button"
             onClick={onGenerateBrief}
@@ -85,13 +87,38 @@ function TodayMorningBriefContent({
           >
             {isGenerating ? "Generating..." : "Generate brief"}
           </Button>
-        )}
-        {errorMessage && (
-          <p role="alert" className="mt-2 text-xs text-brand-700 dark:text-brand-300">
-            {errorMessage}
-          </p>
-        )}
-      </div>
+        </div>
+      )}
+      {errorMessage && (
+        <p role="alert" className="mt-2 text-xs text-brand-700 dark:text-brand-300">
+          {errorMessage}
+        </p>
+      )}
+    </div>
+  );
+}
+
+function TodayMorningBriefContent({
+  brief,
+  emptyMessage,
+  onGenerateBrief,
+  isGenerating,
+  generateError,
+  onShowInfo,
+}) {
+  const sections = brief?.sections ?? {};
+  const hasItems = BRIEF_SECTION_ORDER.some(({ key }) => sections[key]?.length > 0);
+
+  if (!hasItems) {
+    return (
+      <BriefEmptyState
+        brief={brief}
+        emptyMessage={emptyMessage}
+        onGenerateBrief={onGenerateBrief}
+        isGenerating={isGenerating}
+        generateError={generateError}
+        onShowInfo={onShowInfo}
+      />
     );
   }
 
@@ -132,7 +159,7 @@ function BriefCollapsedButton({ ToggleIcon, onClick }) {
   );
 }
 
-function BriefExpandedView({ ToggleIcon, timeLabel, toggleExpanded, brief, emptyMessage, onGenerateBrief, isGenerating, generateError }) {
+function BriefExpandedView({ ToggleIcon, timeLabel, toggleExpanded, brief, emptyMessage, onGenerateBrief, isGenerating, generateError, onShowInfo }) {
   return (
     <div className="rounded-lg border border-border-1 bg-surface-1 p-4">
       <button
@@ -154,15 +181,19 @@ function BriefExpandedView({ ToggleIcon, timeLabel, toggleExpanded, brief, empty
         onGenerateBrief={onGenerateBrief}
         isGenerating={isGenerating}
         generateError={generateError}
+        onShowInfo={onShowInfo}
       />
     </div>
   );
 }
 
-function BriefHeader({ timeLabel, hasHistory, onHistoryClick }) {
+function BriefHeader({ timeLabel, hasHistory, onHistoryClick, infoOpen, onInfoOpenChange }) {
   return (
     <div className="mb-2 flex items-center justify-between gap-3">
-      <BriefSectionHeading>Morning brief · {timeLabel}</BriefSectionHeading>
+      <div className="flex items-center gap-1">
+        <BriefSectionHeading>Morning brief · {timeLabel}</BriefSectionHeading>
+        <BriefInfoPopover open={infoOpen} onOpenChange={onInfoOpenChange} />
+      </div>
       {hasHistory && (
         <Button
           type="button"
@@ -178,7 +209,7 @@ function BriefHeader({ timeLabel, hasHistory, onHistoryClick }) {
   );
 }
 
-function BriefContent({ expanded, ToggleIcon, toggleExpanded, timeLabel, brief, emptyMessage, onGenerateBrief, isGenerating, generateError }) {
+function BriefContent({ expanded, ToggleIcon, toggleExpanded, timeLabel, brief, emptyMessage, onGenerateBrief, isGenerating, generateError, onShowInfo }) {
   if (!expanded) {
     return <BriefCollapsedButton ToggleIcon={ToggleIcon} onClick={toggleExpanded} />;
   }
@@ -192,6 +223,7 @@ function BriefContent({ expanded, ToggleIcon, toggleExpanded, timeLabel, brief, 
       onGenerateBrief={onGenerateBrief}
       isGenerating={isGenerating}
       generateError={generateError}
+      onShowInfo={onShowInfo}
     />
   );
 }
@@ -207,6 +239,7 @@ function TodayMorningBrief({
 }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [infoOpen, setInfoOpen] = useState(false);
   const { data: historyData } = useBriefHistory(HISTORY_DAYS);
   const { expanded, toggleExpanded } = useBriefExpanded(brief, forceOpen, setSearchParams);
 
@@ -217,7 +250,13 @@ function TodayMorningBrief({
 
   return (
     <section aria-label="Morning brief">
-      <BriefHeader timeLabel={timeLabel} hasHistory={hasHistory} onHistoryClick={() => setHistoryOpen(true)} />
+      <BriefHeader
+        timeLabel={timeLabel}
+        hasHistory={hasHistory}
+        onHistoryClick={() => setHistoryOpen(true)}
+        infoOpen={infoOpen}
+        onInfoOpenChange={setInfoOpen}
+      />
       <BriefContent
         expanded={expanded}
         ToggleIcon={ToggleIcon}
@@ -228,6 +267,7 @@ function TodayMorningBrief({
         onGenerateBrief={onGenerateBrief}
         isGenerating={isGenerating}
         generateError={generateError}
+        onShowInfo={() => setInfoOpen(true)}
       />
       <MorningBriefHistoryPanel open={historyOpen} onClose={() => setHistoryOpen(false)} />
     </section>

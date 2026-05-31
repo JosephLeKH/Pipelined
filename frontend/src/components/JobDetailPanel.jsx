@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
 
 import CheckCircle from "lucide-react/dist/esm/icons/check-circle";
 import ExternalLink from "lucide-react/dist/esm/icons/external-link";
@@ -14,6 +15,7 @@ import CompanyLogo from "./CompanyLogo";
 import FitBadge from "./FitBadge";
 import { Button } from "./ui/button";
 import { useCreateApplication } from "../hooks/useApplications";
+import { scoreJobListing } from "../api/jobs";
 import { MS_PER_DAY } from "../lib/constants";
 import { formatDateShort } from "../lib/dateUtils";
 
@@ -52,8 +54,19 @@ function JobDetailPanel({ job, onClose }) {
   const company = job.company ?? "";
   const role = job.role ?? "Untitled Role";
   const posted = formatPostedCompact(job.date_posted);
-  const fitScore = job.score ?? job.fit_score ?? null;
+  const seedScore = job.score ?? job.fit_score ?? null;
+
+  const { data: scoreResult, isLoading: isScoring } = useQuery({
+    queryKey: ["job-fit-score", job.id],
+    queryFn: () => scoreJobListing(job.id),
+    enabled: Boolean(job.id) && seedScore == null,
+    staleTime: 5 * 60 * 1000,
+    retry: false,
+  });
+
+  const fitScore = seedScore ?? scoreResult?.score ?? null;
   const showFit = typeof fitScore === "number" && fitScore > 0;
+  const showScoring = seedScore == null && isScoring;
   const remoteLabel = job.remote_status && job.remote_status !== "unknown"
     ? titleCase(job.remote_status)
     : null;
@@ -144,11 +157,18 @@ function JobDetailPanel({ job, onClose }) {
           {job.salary_range && <MetaPill icon={Briefcase}>{job.salary_range}</MetaPill>}
         </div>
 
-        {(posted || showFit || job.is_stale) && (
+        {(posted || showFit || showScoring || job.is_stale) && (
           <div className="flex flex-wrap items-center gap-2 text-xs text-text-3">
             {posted && <span>Posted {posted}</span>}
-            {posted && (showFit || job.is_stale) && <span aria-hidden="true">·</span>}
+            {posted && (showFit || showScoring || job.is_stale) && <span aria-hidden="true">·</span>}
             {showFit && <FitBadge score={fitScore} />}
+            {showScoring && (
+              <span
+                data-testid="job-fit-scoring"
+                aria-live="polite"
+                className="shimmer-bg animate-shimmer h-4 w-16 rounded-full"
+              />
+            )}
             {job.is_stale && (
               <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[0.6875rem] font-medium text-amber-800 dark:bg-amber-900/40 dark:text-amber-300">
                 {STALE_LABEL}

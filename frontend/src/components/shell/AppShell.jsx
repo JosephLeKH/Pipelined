@@ -12,8 +12,10 @@ import ShortcutHelp from "../ShortcutHelp";
 import UpgradePlanModal from "../UpgradePlanModal";
 import { OPEN_COPILOT_EVENT, OPEN_COMMAND_PALETTE_EVENT } from "../../lib/constants";
 import { useHotkeys } from "../../hooks/useHotkeys";
+import { useCopilotDocked } from "../../hooks/useCopilotDocked";
 import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
 import { useSidebarWidth } from "../../hooks/useSidebarWidth";
+import CopilotDockTab from "./CopilotDockTab";
 import MobileSidebar from "./MobileSidebar";
 import Sidebar from "./Sidebar";
 import SidebarResizeHandle from "./SidebarResizeHandle";
@@ -22,19 +24,19 @@ import TopBar from "./TopBar";
 function AppShell() {
   const { collapsed } = useSidebarCollapsed();
   const { width, setWidth } = useSidebarWidth();
+  const { open: copilotOpen, setOpen: setCopilotOpen, toggle: toggleCopilot } = useCopilotDocked();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [copilotOpen, setCopilotOpen] = useState(false);
 
-  const openCopilot = useCallback(() => setCopilotOpen(true), []);
-  const closeCopilot = useCallback(() => setCopilotOpen(false), []);
+  const openCopilot = useCallback(() => setCopilotOpen(true), [setCopilotOpen]);
+  const closeCopilot = useCallback(() => setCopilotOpen(false), [setCopilotOpen]);
 
   useEffect(() => {
     const onOpenCopilot = () => setCopilotOpen(true);
     window.addEventListener(OPEN_COPILOT_EVENT, onOpenCopilot);
     return () => window.removeEventListener(OPEN_COPILOT_EVENT, onOpenCopilot);
-  }, []);
+  }, [setCopilotOpen]);
 
-  useHotkeys("o", openCopilot);
+  useHotkeys("o", toggleCopilot);
 
   useEffect(() => {
     const ignored = new Set(["INPUT", "TEXTAREA", "SELECT"]);
@@ -63,9 +65,10 @@ function AppShell() {
             <Outlet />
           </div>
         </div>
+        <CoPilotPanel open={copilotOpen} onClose={closeCopilot} />
+        <CopilotDockTab open={copilotOpen} onToggle={toggleCopilot} />
       </div>
       <MobileSidebar open={mobileOpen} onOpenChange={setMobileOpen} onOpenCopilot={openCopilot} />
-      <CoPilotPanel open={copilotOpen} onClose={closeCopilot} />
       <CommandPalette />
       <ShortcutHelp />
       <UpgradePlanModal />

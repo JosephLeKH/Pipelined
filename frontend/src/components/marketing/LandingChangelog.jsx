@@ -7,10 +7,18 @@ import ArrowRight from "lucide-react/dist/esm/icons/arrow-right";
 import { useMarketingReveal } from "./useMarketingReveal";
 
 const CHANGELOG_ENTRIES = [
+  { title: "Resizable Sidebar", description: "Drag to fit your screen", date: "May 31" },
+  { title: "Notes WYSIWYG", description: "Inline bold, italic, lists", date: "May 30" },
+  { title: "Faster Job Board", description: "4× daily GitHub sync", date: "May 30" },
+  { title: "Grounded Co-pilot", description: "Per-user retrieval (RAG)", date: "May 28" },
+  { title: "Cardinal Refresh", description: "New palette + Inter type scale", date: "May 26" },
+  { title: "Crash Reporting", description: "Sentry on backend and client", date: "May 24" },
+  { title: "Pending Inbox", description: "Redesigned Autopilot review", date: "May 21" },
   { title: "Mock Interview", description: "Live SSE rehearsals", date: "May 18" },
+  { title: "Settings Overhaul", description: "Two-column with dark mode", date: "May 15" },
+  { title: "Stage Palette", description: "12 color presets", date: "May 12" },
   { title: "Watchlist", description: "Daily career-page scans", date: "May 09" },
   { title: "Apply Pack v2", description: "Cited bullets + CL draft", date: "Apr 27" },
-  { title: "Autopilot", description: "Approve-only mode", date: "Apr 14" },
 ];
 
 export default function LandingChangelog() {

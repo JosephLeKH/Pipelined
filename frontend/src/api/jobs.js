@@ -29,3 +29,8 @@ export async function fetchJob(id) {
 export async function fetchRecommendedJobs() {
   return client.get("/jobs/recommended");
 }
+
+/** Compute (or read cached) fit score for a job listing against the user's resume. */
+export async function scoreJobListing(listingId) {
+  return client.post(`/jobs/${listingId}/fit-score`);
+}

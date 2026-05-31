@@ -1,6 +1,6 @@
 /** Unified AI fit section — one badge, background scoring skeleton, single analyze CTA. */
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import Sparkles from "lucide-react/dist/esm/icons/sparkles";
 import X from "lucide-react/dist/esm/icons/x";
@@ -107,6 +107,7 @@ function AiFitSection({ application, hasResume, aiScoresRemainingToday, onScoreG
   const [isLoading, setIsLoading] = useState(false);
   const queryClient = useQueryClient();
   const lastSyncedScoreRef = useRef(null);
+  const autoFiredForRef = useRef(null);
 
   const isPending = isBackgroundScoringPending(application, hasResume);
   const { data: polledApp } = useQuery({
@@ -137,7 +138,7 @@ function AiFitSection({ application, hasResume, aiScoresRemainingToday, onScoreG
   const detail = localOverride ?? getUnifiedFitDetail(liveApplication);
   const backgroundError = liveApplication.fit_score_status === "error";
   const quotaExceeded = hasResume && aiScoresRemainingToday === 0 && !detail;
-  const showSkeleton = hasResume && !detail && isPending && !quotaExceeded && !backgroundError;
+  const showSkeleton = hasResume && !detail && (isPending || isLoading) && !quotaExceeded && !backgroundError;
 
   useEffect(() => {
     if (detail?.score != null) {
@@ -145,7 +146,7 @@ function AiFitSection({ application, hasResume, aiScoresRemainingToday, onScoreG
     }
   }, [detail?.score]);
 
-  async function handleAnalyzeFit() {
+  const handleAnalyzeFit = useCallback(async ({ silent = false } = {}) => {
     setIsLoading(true);
     try {
       const result = await generateFitScore(application.id);
@@ -160,11 +161,24 @@ function AiFitSection({ application, hasResume, aiScoresRemainingToday, onScoreG
       onScoreGenerated({ fit_score: result.score, fit_score_reason: result.reason });
       queryClient.invalidateQueries({ queryKey: KEYS.detail(application.id) });
     } catch (error) {
-      toast.error(getAiToastError(error, "Could not analyze fit. Try again."));
+      if (!silent) {
+        toast.error(getAiToastError(error, "Could not analyze fit. Try again."));
+      }
     } finally {
       setIsLoading(false);
     }
-  }
+  }, [application.id, onScoreGenerated, queryClient]);
+
+  useEffect(() => {
+    if (!application?.id) return;
+    if (autoFiredForRef.current === application.id) return;
+    if (!hasResume) return;
+    if (detail) return;
+    if (quotaExceeded || backgroundError) return;
+    if (isPending || isLoading) return;
+    autoFiredForRef.current = application.id;
+    handleAnalyzeFit({ silent: true });
+  }, [application?.id, hasResume, detail, quotaExceeded, backgroundError, isPending, isLoading, handleAnalyzeFit]);
 
   async function handleShowReasoning() {
     setIsLoading(true);
@@ -256,19 +270,6 @@ function AiFitSection({ application, hasResume, aiScoresRemainingToday, onScoreG
         </div>
       )}
       {!showSkeleton && !takingTooLong && detail && <FitScoreDetails detail={detail} application={liveApplication} />}
-      {!showSkeleton && !takingTooLong && !detail && hasResume && !quotaExceeded && !backgroundError && (
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={handleAnalyzeFit}
-          disabled={isLoading}
-          className="w-full min-h-[2.75rem] sm:min-h-0 sm:w-auto"
-        >
-          <Sparkles className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
-          {isLoading ? "Analyzing…" : "Analyze fit"}
-        </Button>
-      )}
     </AiSection>
   );
 }

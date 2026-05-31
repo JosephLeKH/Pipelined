@@ -131,6 +131,7 @@ async def ensure_indexes() -> None:
     copilot_sessions = get_collection("copilot_sessions")
     user_embeddings = get_collection("user_embeddings")
     user_embeddings_queue = get_collection("user_embeddings_queue")
+    user_job_scores = get_collection("user_job_scores")
 
     await asyncio.gather(
         _ensure_app_event_listing_indexes(apps, events, listings),
@@ -182,4 +183,14 @@ async def ensure_indexes() -> None:
             name="user_embeddings_ttl",
         ),
         user_embeddings_queue.create_index("user_id", unique=True, name="queue_user_unique"),
+        user_job_scores.create_index(
+            [("user_id", 1), ("listing_id", 1)],
+            unique=True,
+            name="user_job_scores_unique",
+        ),
+        user_job_scores.create_index(
+            "computed_at",
+            expireAfterSeconds=30 * 24 * 3600,
+            name="user_job_scores_ttl",
+        ),
     )

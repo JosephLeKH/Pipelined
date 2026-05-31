@@ -8,7 +8,9 @@ from fastapi import APIRouter, BackgroundTasks, Cookie, Depends, HTTPException, 
 from auth.dependencies import get_current_user
 from config import settings
 from jobs import service as jobs_service
+from jobs.fit_score import ListingNotFoundError, score_listing_for_user
 from jobs.sync import sync_github_repos
+from parsing.ai_cache import QuotaExceededError
 from jobs.schemas import (
     DEFAULT_PAGE_SIZE,
     MAX_PAGE_SIZE,
@@ -137,3 +139,26 @@ async def get_job(listing_id: str) -> dict:
     if doc is None:
         raise HTTPException(status_code=404, detail=JOB_NOT_FOUND_DETAIL)
     return {"data": JobListingResponse.from_doc(doc)}
+
+
+@router.post("/{listing_id}/fit-score", status_code=200)
+async def score_listing(
+    listing_id: str,
+    user: dict = Depends(get_current_user),
+) -> dict:
+    """Score this listing against the current user's resume. Cached per (user, listing)."""
+    user_id = str(user["_id"])
+    try:
+        result = await score_listing_for_user(user_id, listing_id)
+    except ListingNotFoundError:
+        raise HTTPException(status_code=404, detail=JOB_NOT_FOUND_DETAIL)
+    except QuotaExceededError as exc:
+        raise HTTPException(
+            status_code=429,
+            detail={
+                "code": "AI_DAILY_LIMIT",
+                "message": "Daily AI scoring limit reached.",
+                "details": {"limit": exc.limit},
+            },
+        )
+    return {"data": result}

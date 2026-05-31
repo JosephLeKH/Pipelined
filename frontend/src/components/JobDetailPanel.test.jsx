@@ -1,9 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import JobDetailPanel from "./JobDetailPanel";
+import { makeTestWrapper } from "../test/testProviders";
 
 vi.mock("../hooks/useApplications", () => ({
   useCreateApplication: vi.fn(),
+}));
+
+vi.mock("../api/jobs", () => ({
+  scoreJobListing: vi.fn().mockResolvedValue({ score: null, reason: null, cached: false }),
 }));
 
 vi.mock("sonner", () => ({
@@ -12,6 +17,9 @@ vi.mock("sonner", () => ({
 
 import { useCreateApplication } from "../hooks/useApplications";
 import { toast } from "sonner";
+
+const renderPanel = (props) =>
+  render(<JobDetailPanel {...props} />, { wrapper: makeTestWrapper() });
 
 const mockMutate = vi.fn();
 
@@ -37,14 +45,14 @@ describe("JobDetailPanel", () => {
   });
 
   it("should render company and role in the header", () => {
-    render(<JobDetailPanel job={JOB_FIXTURE} onClose={vi.fn()} />);
+    renderPanel({ job: JOB_FIXTURE, onClose: vi.fn() });
 
     expect(screen.getByRole("heading", { name: "Software Engineer" })).toBeInTheDocument();
     expect(screen.getByText("Acme Corp")).toBeInTheDocument();
   });
 
   it("should render location, remote, level, and salary as pills", () => {
-    render(<JobDetailPanel job={JOB_FIXTURE} onClose={vi.fn()} />);
+    renderPanel({ job: JOB_FIXTURE, onClose: vi.fn() });
 
     expect(screen.getByText("San Francisco, CA")).toBeInTheDocument();
     expect(screen.getByText("Hybrid")).toBeInTheDocument();
@@ -55,7 +63,7 @@ describe("JobDetailPanel", () => {
   it("should call onClose when X button is clicked", () => {
     const onClose = vi.fn();
 
-    render(<JobDetailPanel job={JOB_FIXTURE} onClose={onClose} />);
+    renderPanel({ job: JOB_FIXTURE, onClose });
     fireEvent.click(screen.getByRole("button", { name: /^close$/i }));
 
     expect(onClose).toHaveBeenCalledOnce();
@@ -64,14 +72,14 @@ describe("JobDetailPanel", () => {
   it("should call onClose when the backdrop is clicked", () => {
     const onClose = vi.fn();
 
-    render(<JobDetailPanel job={JOB_FIXTURE} onClose={onClose} />);
+    renderPanel({ job: JOB_FIXTURE, onClose });
     fireEvent.click(screen.getByRole("dialog"));
 
     expect(onClose).toHaveBeenCalledOnce();
   });
 
   it("should render Open site button when apply_url is provided", () => {
-    render(<JobDetailPanel job={JOB_FIXTURE} onClose={vi.fn()} />);
+    renderPanel({ job: JOB_FIXTURE, onClose: vi.fn() });
 
     expect(screen.getByRole("button", { name: /open site/i })).toBeInTheDocument();
   });
@@ -79,7 +87,7 @@ describe("JobDetailPanel", () => {
   it("should not render Open site button when apply_url is absent", () => {
     const job = { ...JOB_FIXTURE, apply_url: null };
 
-    render(<JobDetailPanel job={job} onClose={vi.fn()} />);
+    renderPanel({ job, onClose: vi.fn() });
 
     expect(screen.queryByRole("button", { name: /open site/i })).not.toBeInTheDocument();
   });
@@ -87,7 +95,7 @@ describe("JobDetailPanel", () => {
   it("should mark as Applied stage with board source on Mark applied click", () => {
     mockMutate.mockImplementation((_body, { onSuccess }) => onSuccess());
 
-    render(<JobDetailPanel job={JOB_FIXTURE} onClose={vi.fn()} />);
+    renderPanel({ job: JOB_FIXTURE, onClose: vi.fn() });
     fireEvent.click(screen.getByRole("button", { name: /^mark applied$/i }));
 
     expect(mockMutate).toHaveBeenCalledWith(
@@ -108,7 +116,7 @@ describe("JobDetailPanel", () => {
     mockMutate.mockImplementation((_body, { onSuccess }) => onSuccess());
     const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
 
-    render(<JobDetailPanel job={JOB_FIXTURE} onClose={vi.fn()} />);
+    renderPanel({ job: JOB_FIXTURE, onClose: vi.fn() });
     fireEvent.click(screen.getByRole("button", { name: /open site/i }));
 
     expect(openSpy).toHaveBeenCalledWith("https://acme.com/apply", "_blank", "noopener,noreferrer");
@@ -121,14 +129,14 @@ describe("JobDetailPanel", () => {
   });
 
   it("should render fit badge when score is present", () => {
-    render(<JobDetailPanel job={JOB_FIXTURE} onClose={vi.fn()} />);
+    renderPanel({ job: JOB_FIXTURE, onClose: vi.fn() });
 
     expect(screen.getByTestId("fit-badge")).toBeInTheDocument();
     expect(screen.getByText("84%")).toBeInTheDocument();
   });
 
   it("should show description when present", () => {
-    render(<JobDetailPanel job={JOB_FIXTURE} onClose={vi.fn()} />);
+    renderPanel({ job: JOB_FIXTURE, onClose: vi.fn() });
 
     expect(screen.getByText("Build cool things.")).toBeInTheDocument();
   });
@@ -136,7 +144,7 @@ describe("JobDetailPanel", () => {
   it("should show stale badge when job.is_stale is true", () => {
     const job = { ...JOB_FIXTURE, is_stale: true };
 
-    render(<JobDetailPanel job={job} onClose={vi.fn()} />);
+    renderPanel({ job, onClose: vi.fn() });
 
     expect(screen.getByText("May be expired")).toBeInTheDocument();
   });

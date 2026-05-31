@@ -1,4 +1,4 @@
-/** Co-pilot slide-over chat panel — streaming, suggest-only. */
+/** Co-pilot docked right rail — streaming, suggest-only. */
 
 import { useEffect, useRef, useState } from "react";
 
@@ -15,7 +15,7 @@ import {
   COPILOT_SUGGESTED_PROMPTS,
   COPILOT_TITLE,
 } from "../lib/aiConstants";
-import { COPILOT_DRAWER_WIDTH_PX, DRAWER_ANIMATION_MS } from "../lib/constants";
+import { COPILOT_DRAWER_WIDTH_PX } from "../lib/constants";
 import {
   BUTTON_GHOST,
   BUTTON_PRIMARY,
@@ -152,18 +152,11 @@ function CoPilotPanel({ open, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end">
-      <button
-        type="button"
-        aria-label="Close co-pilot"
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-        onClick={onClose}
-      />
-      <aside
-        aria-label="Co-pilot chat"
-        style={{ maxWidth: COPILOT_DRAWER_WIDTH_PX, animationDuration: `${DRAWER_ANIMATION_MS}ms` }}
-        className="relative flex h-full w-full flex-col border-l border-border-1 bg-surface-0 shadow-modal motion-safe-drawer animate-slide-in-right"
-      >
+    <aside
+      aria-label="Co-pilot chat"
+      style={{ width: COPILOT_DRAWER_WIDTH_PX }}
+      className="flex h-full shrink-0 flex-col border-l border-border-1 bg-surface-0"
+    >
         <header className="flex items-start justify-between border-b border-border-1 px-4 py-3">
           <div className="flex items-start gap-2">
             <Bot className="mt-0.5 h-5 w-5 text-brand-600" aria-hidden="true" />
@@ -237,8 +230,7 @@ function CoPilotPanel({ open, onClose }) {
             </button>
           </div>
         </form>
-      </aside>
-    </div>
+    </aside>
   );
 }
 

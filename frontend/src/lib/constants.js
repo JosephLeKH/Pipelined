@@ -130,6 +130,7 @@ export const BANNER_DISMISS_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 /** Undo toasts stay longer than default toasts so users can revert delete/archive. */
 export const UNDO_TOAST_DURATION_MS = 10000;
 export const COPILOT_TRIED_KEY = "pipelined_copilot_tried";
+export const COPILOT_DOCKED_OPEN_KEY = "pipelined_copilot_docked_open";
 export const TODAY_VISITED_KEY = "pipelined_today_visited";
 export const MORNING_BRIEF_EXPANDED_KEY = "pipelined_brief_expanded_by_date";
 export const COMPLETED_MISSIONS_BY_DATE_KEY = "pipelined_completed_missions_by_date";
