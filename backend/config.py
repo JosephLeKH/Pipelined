@@ -80,7 +80,8 @@ class Settings(BaseSettings):
 
     # GitHub Sync
     github_token: str = ""
-    github_sync_hour_utc: int = 3
+    github_sync_hour_utc: str = "3,9,15,21"
+    admin_emails: list[str] = []
     github_repos: list[str] = [
         "vanshb03/Summer2027-Internships@dev",
         "vanshb03/Summer2027-Internships@dev:OFFSEASON_README.md",

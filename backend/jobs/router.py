@@ -3,10 +3,12 @@
 from datetime import datetime
 
 import structlog
-from fastapi import APIRouter, Cookie, Depends, HTTPException, Query
+from fastapi import APIRouter, BackgroundTasks, Cookie, Depends, HTTPException, Query
 
 from auth.dependencies import get_current_user
+from config import settings
 from jobs import service as jobs_service
+from jobs.sync import sync_github_repos
 from jobs.schemas import (
     DEFAULT_PAGE_SIZE,
     MAX_PAGE_SIZE,
@@ -109,6 +111,23 @@ async def get_recommended_jobs(
         for d in docs
     ]
     return {"data": items}
+
+
+@router.post("/refresh", status_code=202)
+async def refresh_jobs(
+    background_tasks: BackgroundTasks,
+    user: dict = Depends(get_current_user),
+) -> dict:
+    """Trigger a GitHub job sync immediately. Admin allowlist required."""
+    email = user.get("email") or ""
+    if email not in settings.admin_emails:
+        raise HTTPException(
+            status_code=403,
+            detail={"error": {"code": "ADMIN_REQUIRED", "message": "Admin access required."}},
+        )
+    background_tasks.add_task(sync_github_repos)
+    logger.info("jobs.refresh.triggered", email=email)
+    return {"data": {"status": "queued", "message": "Job board refresh queued; check back in 30-90s."}}
 
 
 @router.get("/{listing_id}", status_code=200)
