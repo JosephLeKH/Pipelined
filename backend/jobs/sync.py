@@ -16,6 +16,7 @@ from bson import ObjectId
 
 from config import settings
 from database import get_collection
+from jobs.date_parser import parse_listing_date
 from motor.motor_asyncio import AsyncIOMotorCollection
 
 logger = structlog.get_logger()
@@ -116,6 +117,14 @@ def _clean_location(text: str) -> str:
     return _strip_md_links(cleaned)
 
 
+def _extract_date_cell(row: dict) -> str | None:
+    """Return the raw date string for the row, checking common header names."""
+    for key in ("date posted", "age", "posted", "date"):
+        if row.get(key):
+            return row[key]
+    return None
+
+
 def _process_table_row(headers: list[str], cells: list[str]) -> dict | None:
     """Extract a listing from table row cells; return None if the row should be skipped."""
     if not cells or not cells[0] or cells[0].startswith("↳"):
@@ -134,12 +143,20 @@ def _process_table_row(headers: list[str], cells: list[str]) -> dict | None:
     if not apply_url:
         return None
 
-    return {
+    listing: dict = {
         "company": company,
         "role": role,
         "location": location,
         "apply_url": apply_url,
     }
+
+    raw_date = _extract_date_cell(row)
+    if raw_date:
+        parsed_date = parse_listing_date(_strip_md_links(raw_date))
+        if parsed_date is not None:
+            listing["date_posted"] = parsed_date
+
+    return listing
 
 
 def parse_internship_table(content: str) -> list[dict]:
@@ -202,28 +219,36 @@ def _derive_listing_fields(spec: str, listing: dict) -> None:
 
 
 async def _upsert_listing(col: AsyncIOMotorCollection, listing: dict) -> None:
-    """Upsert a listing by url_hash; sets ingested_at and date_posted on first insert."""
+    """Upsert a listing by url_hash.
+
+    `ingested_at` is immutable (first-insert only). `date_posted` refreshes
+    from the parsed source date on every sync; when the source has no date we
+    stamp ingestion time once on first insert and leave it alone afterwards.
+    """
     now = datetime.now(timezone.utc)
     url_hash = compute_url_hash(listing["apply_url"])
+
+    set_fields: dict = {
+        "company": listing["company"],
+        "role": listing["role"],
+        "location": listing["location"],
+        "apply_url": listing["apply_url"],
+        "role_type": listing.get("role_type"),
+        "experience_level": listing.get("experience_level"),
+        "remote_status": listing.get("remote_status"),
+        "url_hash": url_hash,
+        "is_stale": False,
+    }
+    set_on_insert: dict = {"ingested_at": now}
+
+    if "date_posted" in listing:
+        set_fields["date_posted"] = listing["date_posted"]
+    else:
+        set_on_insert["date_posted"] = now
+
     await col.update_one(
         {"url_hash": url_hash},
-        {
-            "$set": {
-                "company": listing["company"],
-                "role": listing["role"],
-                "location": listing["location"],
-                "apply_url": listing["apply_url"],
-                "role_type": listing.get("role_type"),
-                "experience_level": listing.get("experience_level"),
-                "remote_status": listing.get("remote_status"),
-                "url_hash": url_hash,
-                "is_stale": False,
-            },
-            "$setOnInsert": {
-                "ingested_at": now,
-                "date_posted": now,
-            },
-        },
+        {"$set": set_fields, "$setOnInsert": set_on_insert},
         upsert=True,
     )
 

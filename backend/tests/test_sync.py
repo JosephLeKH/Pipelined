@@ -97,6 +97,27 @@ def test_parse_internship_table_returns_empty_for_no_table():
     assert result == []
 
 
+def test_parse_internship_table_extracts_date_posted_from_month_year():
+    listings = parse_internship_table(SAMPLE_README)
+
+    # "Jan 2026" → first of January 2026 (parser convention for month+year).
+    assert listings[0]["date_posted"] == datetime(2026, 1, 1, tzinfo=timezone.utc)
+    assert listings[1]["date_posted"] == datetime(2026, 2, 1, tzinfo=timezone.utc)
+
+
+def test_parse_internship_table_omits_date_when_column_missing():
+    readme_no_date = """
+| Company | Role | Location | Application/Link |
+| --- | --- | --- | --- |
+| [Acme](https://acme.com) | SWE | SF | [Apply](https://acme.com/jobs/swe) |
+"""
+
+    listings = parse_internship_table(readme_no_date)
+
+    assert len(listings) == 1
+    assert "date_posted" not in listings[0]
+
+
 # ---------------------------------------------------------------------------
 # _upsert_listing (requires real MongoDB via app fixture)
 # ---------------------------------------------------------------------------
@@ -165,6 +186,50 @@ async def test_upsert_listing_preserves_ingested_at_on_update(app):
 
     # Assert — ingested_at unchanged ($setOnInsert semantics)
     assert second_doc["ingested_at"] == first_ingested_at
+
+
+async def test_upsert_listing_refreshes_date_posted_when_source_provides_one(app):
+    # Arrange
+    col = get_collection("job_listings")
+    initial_date = datetime(2025, 11, 1, tzinfo=timezone.utc)
+    updated_date = datetime(2026, 1, 15, tzinfo=timezone.utc)
+    listing = {
+        "company": "Acme",
+        "role": "SWE Intern",
+        "location": "SF",
+        "apply_url": "https://acme.com/jobs/swe",
+        "date_posted": initial_date,
+    }
+
+    # Act — insert with first date, then re-upsert with a fresher one
+    await _upsert_listing(col, listing)
+    await _upsert_listing(col, {**listing, "date_posted": updated_date})
+
+    # Assert — date_posted updated to the most recent parse
+    doc = await col.find_one({})
+    assert doc["date_posted"] == updated_date
+
+
+async def test_upsert_listing_keeps_first_insert_date_when_source_has_none(app):
+    # Arrange — listing has no parsed date_posted
+    col = get_collection("job_listings")
+    listing = {
+        "company": "Acme",
+        "role": "SWE Intern",
+        "location": "SF",
+        "apply_url": "https://acme.com/jobs/swe",
+    }
+
+    # Act — insert, then re-upsert with the same dateless listing
+    await _upsert_listing(col, listing)
+    first_doc = await col.find_one({})
+    first_date_posted = first_doc["date_posted"]
+
+    await _upsert_listing(col, listing)
+    second_doc = await col.find_one({})
+
+    # Assert — date_posted stamped on first insert is preserved
+    assert second_doc["date_posted"] == first_date_posted
 
 
 # ---------------------------------------------------------------------------
