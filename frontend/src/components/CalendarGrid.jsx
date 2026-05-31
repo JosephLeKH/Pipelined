@@ -30,18 +30,37 @@ function buildWeeks(month, year) {
   return weeks;
 }
 
-function EventDots({ events }) {
-  const visible = events.slice(0, CALENDAR_EVENT_DOT_MAX);
-  const overflow = events.length - CALENDAR_EVENT_DOT_MAX;
+function EventIndicator({ events }) {
+  if (events.length === 0) return null;
 
+  if (events.length === 1) {
+    const event = events[0];
+    return (
+      <div className="mt-auto flex flex-col gap-0.5 pt-1">
+        <div className="flex items-center gap-1">
+          <span className="h-1.5 w-1.5 rounded-full bg-brand-600 dark:bg-brand-500 flex-shrink-0" />
+          <span className="text-[0.6875rem] font-medium leading-tight text-text-2 truncate">
+            {event.title}
+          </span>
+        </div>
+        {event.company && (
+          <span className="text-[0.625rem] leading-tight text-text-3 truncate pl-2.5">
+            {event.company}
+          </span>
+        )}
+      </div>
+    );
+  }
+
+  const visible = events.slice(0, CALENDAR_EVENT_DOT_MAX);
   return (
     <div className="mt-auto flex flex-wrap items-center gap-1 pt-1" aria-hidden="true">
       {visible.map((ev) => (
         <span key={ev.id} className="h-1.5 w-1.5 rounded-full bg-brand-600 dark:bg-brand-500" />
       ))}
-      {overflow > 0 && (
-        <span className="text-[0.625rem] font-medium leading-none text-text-3">+{overflow}</span>
-      )}
+      <span className="text-[0.625rem] font-medium leading-none text-text-3">
+        {events.length > CALENDAR_EVENT_DOT_MAX ? `${visible.length}+` : events.length}
+      </span>
     </div>
   );
 }
@@ -84,7 +103,7 @@ function DayCell({ date, isCurrentMonth, events, selectedDate, onDayClick }) {
       >
         {date.getDate()}
       </span>
-      {eventCount > 0 && <EventDots events={events} />}
+      {eventCount > 0 && <EventIndicator events={events} />}
     </div>
   );
 }

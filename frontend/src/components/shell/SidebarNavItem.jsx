@@ -22,12 +22,13 @@ function SidebarBadge({ count }) {
   );
 }
 
-function SidebarNavItemInner({ icon: Icon, label, badge, active, collapsed, onClick, to }) {
+function SidebarNavItemInner({ icon: Icon, label, sublabel, badge, active, collapsed, onClick, to }) {
   const rowClass = cn(
-    "group/nav relative flex h-8 w-full items-center gap-2 rounded-md px-2 text-[0.8125rem] text-text-2",
+    "group/nav relative flex min-h-8 w-full flex-col justify-center gap-1 rounded-md px-2 text-[0.8125rem] text-text-2",
     "hover:bg-surface-2 hover:text-text-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600 dark:focus-visible:ring-1",
     active && "bg-surface-2 text-brand-600",
-    collapsed && "justify-center px-0",
+    collapsed && "h-8 flex-row justify-center gap-2",
+    !sublabel && "justify-center",
   );
 
   const content = (
@@ -39,7 +40,12 @@ function SidebarNavItemInner({ icon: Icon, label, badge, active, collapsed, onCl
         />
       )}
       <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
-      {!collapsed && <span className="truncate">{label}</span>}
+      {!collapsed && (
+        <div className="flex flex-1 flex-col gap-0.5 min-w-0">
+          <span className="truncate">{label}</span>
+          {sublabel && <span className="truncate text-[0.75rem] text-text-3">{sublabel}</span>}
+        </div>
+      )}
       {!collapsed && badge ? <SidebarBadge count={badge} /> : null}
     </>
   );

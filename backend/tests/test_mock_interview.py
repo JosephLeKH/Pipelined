@@ -167,3 +167,74 @@ async def test_mock_interview_daily_quota_is_atomic(test_user):
 
     with pytest.raises(mi.MockInterviewLimitError):
         await mi._check_daily_session_quota(user_id, is_new_session=True)
+
+
+async def test_mock_interview_quota_exceeded_error_emits_structured_event(client, test_user, monkeypatch):
+    """Test that pre-stream QuotaExceededError emits structured error with code/message/retry_after."""
+    monkeypatch.setattr("applications.interview_prep.router.agent_llm_configured", lambda: True)
+
+    async def quota_error_stream(user_id, app_doc, resume_text, body):  # noqa: ARG001
+        from parsing.ai_cache import QuotaExceededError
+        raise QuotaExceededError("quota exceeded")
+
+    with patch("applications.interview_prep.router.stream_mock_interview", quota_error_stream):
+        _, cookies = test_user
+        with as_user(client, cookies):
+            create_resp = await client.post("/api/applications", json={
+                "role_title": "Engineer",
+                "company": "Acme",
+                "source": "manual",
+            })
+            app_id = create_resp.json()["data"]["id"]
+            response = await client.post(
+                f"/api/applications/{app_id}/mock-interview",
+                json={"message": ""},
+            )
+
+    assert response.status_code == 200
+    assert "event: error" in response.text
+    assert "ai_quota_exceeded" in response.text
+    assert "retry_after" in response.text
+
+
+async def test_mock_interview_debrief_event_emitted_on_end_session(client, test_user, monkeypatch):
+    """Test that end-session triggers debrief event type."""
+    monkeypatch.setattr("applications.interview_prep.router.agent_llm_configured", lambda: True)
+
+    async def debrief_stream(user_id, app_doc, resume_text, body):  # noqa: ARG001
+        if body.end_session:
+            yield {
+                "type": "token",
+                "content": "Strengths: ",
+            }
+            yield {
+                "type": "debrief",
+                "content": "Strengths: You communicated well. Areas to improve: Practice on live system.",
+                "turn_count": 3,
+                "is_debrief": True,
+            }
+        else:
+            yield {
+                "type": "done",
+                "content": "Question",
+                "turn_count": 0,
+                "is_debrief": False,
+            }
+
+    with patch("applications.interview_prep.router.stream_mock_interview", debrief_stream):
+        _, cookies = test_user
+        with as_user(client, cookies):
+            create_resp = await client.post("/api/applications", json={
+                "role_title": "Engineer",
+                "company": "Acme",
+                "source": "manual",
+            })
+            app_id = create_resp.json()["data"]["id"]
+            response = await client.post(
+                f"/api/applications/{app_id}/mock-interview",
+                json={"message": "", "end_session": True, "history": []},
+            )
+
+    assert response.status_code == 200
+    assert "event: debrief" in response.text
+    assert "Strengths:" in response.text

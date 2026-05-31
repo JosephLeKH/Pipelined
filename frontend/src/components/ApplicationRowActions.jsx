@@ -1,6 +1,7 @@
 /** Row-level action menu, delete confirmation modal, and bulk action bar for ApplicationList. */
 
 import { useState } from "react";
+import PropTypes from "prop-types";
 
 import Loader2 from "lucide-react/dist/esm/icons/loader-2";
 import MoreHorizontal from "lucide-react/dist/esm/icons/more-horizontal";
@@ -34,7 +35,10 @@ import { Tooltip, TooltipTrigger, TooltipContent } from "./ui/tooltip";
 
 const TERMINAL_STAGES = new Set(["Offer", "Rejected", "Withdrawn"]);
 
-export function RowQuickActions({ archived, stage, onArchive, onFollowUp }) {
+export function RowQuickActions({ archived, stage, onArchive, onFollowUp, isActionPending = false }) {
+  if (import.meta.env.DEV && !onFollowUp) {
+    console.error("RowQuickActions: onFollowUp prop is missing. Set follow-up button will not work.");
+  }
   if (archived) return null;
   const isTerminal = TERMINAL_STAGES.has(stage);
   return (
@@ -51,7 +55,8 @@ export function RowQuickActions({ archived, stage, onArchive, onFollowUp }) {
               size="sm"
               aria-label="Set follow-up"
               onClick={onFollowUp}
-              className="h-6 px-2 text-xs text-text-2 hover:text-text-1"
+              disabled={isActionPending}
+              className="h-6 px-2 text-xs text-text-2 hover:text-text-1 disabled:opacity-60"
             >
               Set follow-up
             </Button>
@@ -67,7 +72,8 @@ export function RowQuickActions({ archived, stage, onArchive, onFollowUp }) {
             size="sm"
             aria-label="Archive application"
             onClick={onArchive}
-            className="h-6 px-2 text-xs text-text-2 hover:text-text-1"
+            disabled={isActionPending}
+            className="h-6 px-2 text-xs text-text-2 hover:text-text-1 disabled:opacity-60"
           >
             Archive
           </Button>
@@ -96,21 +102,30 @@ export function RowMenu({ application, onArchive, onUnarchive, onDelete }) {
             <MoreHorizontal className="h-4 w-4" aria-hidden="true" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-36">
+        <DropdownMenuContent align="end" className="w-48">
           {application.archived ? (
             <DropdownMenuItem onClick={() => onUnarchive(application.id)}>
-              Unarchive
+              <div className="flex flex-col gap-1">
+                <span>Unarchive</span>
+                <span className="text-xs text-text-3">Restore to active list</span>
+              </div>
             </DropdownMenuItem>
           ) : (
             <DropdownMenuItem onClick={() => onArchive(application.id)}>
-              Archive
+              <div className="flex flex-col gap-1">
+                <span>Archive</span>
+                <span className="text-xs text-text-3">Hide from list (can recover)</span>
+              </div>
             </DropdownMenuItem>
           )}
           <DropdownMenuItem
             onClick={() => onDelete(application.id)}
             className="text-destructive focus:text-destructive"
           >
-            Delete
+            <div className="flex flex-col gap-1">
+              <span>Delete</span>
+              <span className="text-xs text-destructive/70">Remove permanently (30-day trash)</span>
+            </div>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -170,8 +185,8 @@ function BulkMoveControls({ stageOptions, selectedStage, setSelectedStage, isMov
   return (
     <>
       <Select value={selectedStage || undefined} onValueChange={setSelectedStage} disabled={isBusy}>
-        <SelectTrigger className="h-8 w-auto min-w-[8.75rem] text-sm" aria-label="Move to stage">
-          <SelectValue placeholder="Move to stage…" />
+        <SelectTrigger className="h-8 w-auto min-w-[8.75rem] text-sm" aria-label="Change stage">
+          <SelectValue placeholder="Change stage…" />
         </SelectTrigger>
         <SelectContent>
           {stageOptions.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
@@ -180,7 +195,7 @@ function BulkMoveControls({ stageOptions, selectedStage, setSelectedStage, isMov
       <Button type="button" size="sm" disabled={!selectedStage || isBusy} onClick={onMove}
         aria-busy={isMoving} className="flex items-center gap-1">
         {isMoving && <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />}
-        Move
+        Change stage
       </Button>
     </>
   );
@@ -198,7 +213,7 @@ function BulkEditControls({ followUpDate, setFollowUpDate, tagsAdd, setTagsAdd, 
       <Button type="button" size="sm" disabled={isBusy || overLimit} onClick={onApply}
         aria-busy={isEditing} className="flex items-center gap-1">
         {isEditing && <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />}
-        Apply
+        Save changes
       </Button>
     </>
   );
@@ -207,13 +222,20 @@ function BulkEditControls({ followUpDate, setFollowUpDate, tagsAdd, setTagsAdd, 
 function BulkDangerControls({ selectedCount, isMerging, isDeleting, isBusy, onMerge, onDeleteSelected }) {
   return (
     <>
-      {selectedCount === 2 && (
-        <Button type="button" size="sm" disabled={isBusy} onClick={onMerge}
-          aria-busy={isMerging} className="flex items-center gap-1">
-          {isMerging && <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />}
-          Merge
-        </Button>
-      )}
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div>
+            <Button type="button" size="sm" disabled={selectedCount !== 2 || isBusy} onClick={onMerge}
+              aria-busy={isMerging} className="flex items-center gap-1">
+              {isMerging && <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />}
+              Merge
+            </Button>
+          </div>
+        </TooltipTrigger>
+        {selectedCount !== 2 && (
+          <TooltipContent>Select exactly 2 rows to merge</TooltipContent>
+        )}
+      </Tooltip>
       <Button type="button" size="sm" variant="destructive" disabled={isBusy} onClick={onDeleteSelected}
         className="flex items-center gap-1">
         {isDeleting && <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />}
@@ -222,6 +244,14 @@ function BulkDangerControls({ selectedCount, isMerging, isDeleting, isBusy, onMe
     </>
   );
 }
+
+RowQuickActions.propTypes = {
+  archived: PropTypes.bool,
+  stage: PropTypes.string.isRequired,
+  onArchive: PropTypes.func.isRequired,
+  onFollowUp: PropTypes.func,
+  isActionPending: PropTypes.bool,
+};
 
 export function BulkActionBar({ selectedCount, onMoveToStage, onDeleteSelected, onMerge, onBulkEdit, isDeleting = false, isMoving = false, isMerging = false, isEditing = false }) {
   const { user } = useAuth();

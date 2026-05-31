@@ -80,7 +80,7 @@ describe("ResetPassword", () => {
     expect(await screen.findByRole("alert")).toHaveTextContent("at least 8 characters");
   });
 
-  it("should show success message on valid reset", async () => {
+  it("should show success state with Sign in button on valid reset", async () => {
     render(<ResetPassword />, { wrapper: makeWrapper() });
 
     await userEvent.type(screen.getByLabelText("New password"), "NewPass123!");
@@ -88,7 +88,25 @@ describe("ResetPassword", () => {
     await userEvent.click(screen.getByRole("button", { name: "Reset password" }));
 
     await waitFor(() => {
-      expect(screen.getByRole("status")).toHaveTextContent("Password reset successfully");
+      expect(screen.getByText("Your password has been reset successfully.")).toBeInTheDocument();
+    });
+    expect(screen.getByRole("button", { name: "Sign in" })).toBeInTheDocument();
+  });
+
+  it("should navigate to login on Sign in button click", async () => {
+    render(<ResetPassword />, { wrapper: makeWrapper() });
+
+    await userEvent.type(screen.getByLabelText("New password"), "NewPass123!");
+    await userEvent.type(screen.getByLabelText("Confirm password"), "NewPass123!");
+    await userEvent.click(screen.getByRole("button", { name: "Reset password" }));
+
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "Sign in" })).toBeInTheDocument();
+    });
+    await userEvent.click(screen.getByRole("button", { name: "Sign in" }));
+
+    await waitFor(() => {
+      expect(screen.getByText("Login")).toBeInTheDocument();
     });
   });
 

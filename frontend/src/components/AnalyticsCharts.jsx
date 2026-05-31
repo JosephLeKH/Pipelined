@@ -112,8 +112,8 @@ function WeeklyApplicationsChart({ data }) {
     <ChartCard title="Applications per Week" description="How many applications you submitted each week">
       <ChartContainer data={data} valueKey="count" ariaLabel="Bar chart: Applications per Week">
         <BarChart data={data}>
-          <XAxis dataKey="week" {...axisProps()} />
-          <YAxis allowDecimals={false} {...axisProps()} />
+          <XAxis dataKey="week" label={{ value: "Week", position: "insideBottomRight", offset: -5 }} {...axisProps()} />
+          <YAxis allowDecimals={false} label={{ value: "Applications", angle: -90, position: "insideLeft" }} {...axisProps()} />
           <Tooltip content={<CustomTooltip />} />
           <Bar dataKey="count" name="Applications" fill={CHART_COLORS.series1} radius={BAR_RADIUS_UP} />
         </BarChart>
@@ -127,10 +127,11 @@ function ResponseRateChart({ data }) {
     <ChartCard title="Response Rate by Month" description="Percentage of applications that received a response">
       <ChartContainer data={data} valueKey="rate" ariaLabel="Line chart: Response Rate by Month">
         <LineChart data={data}>
-          <XAxis dataKey="month" {...axisProps()} />
+          <XAxis dataKey="month" label={{ value: "Month", position: "insideBottomRight", offset: -5 }} {...axisProps()} />
           <YAxis
             domain={[0, 1]}
             tickFormatter={(value) => `${Math.round(value * 100)}%`}
+            label={{ value: "Response Rate (%)", angle: -90, position: "insideLeft" }}
             {...axisProps()}
           />
           <Tooltip content={<CustomTooltip formatter={(value) => `${Math.round(value * 100)}%`} />} />
@@ -154,8 +155,8 @@ function TopCompaniesChart({ data }) {
     <ChartCard title="Top 10 Companies Applied To" description="Companies you've applied to most frequently">
       <ChartContainer data={data} valueKey="count" ariaLabel="Bar chart: Top 10 Companies Applied To">
         <BarChart data={data} layout="vertical">
-          <XAxis type="number" allowDecimals={false} {...axisProps()} />
-          <YAxis type="category" dataKey="company" {...axisProps({ width: 100 })} />
+          <XAxis type="number" allowDecimals={false} label={{ value: "Applications", position: "insideBottomRight", offset: -5 }} {...axisProps()} />
+          <YAxis type="category" dataKey="company" label={{ value: "Company", angle: -90, position: "insideLeft" }} {...axisProps({ width: 100 })} />
           <Tooltip content={<CustomTooltip />} />
           <Bar dataKey="count" name="Applications" fill={CHART_COLORS.series4} radius={BAR_RADIUS_RIGHT} />
         </BarChart>

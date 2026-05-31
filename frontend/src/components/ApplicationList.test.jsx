@@ -213,7 +213,7 @@ describe("ApplicationList", () => {
     const staleIndicator = screen.getByTestId("stale-indicator");
     expect(staleIndicator).toHaveAttribute(
       "aria-label",
-      "Stale application: no updates in 14+ days"
+      "Stale application"
     );
   });
 
@@ -302,12 +302,12 @@ describe("ApplicationList", () => {
     // Act — select a row
     await userEvent.click(screen.getByLabelText("Select Acme Corp"));
 
-    // Assert — follow-up date, tags inputs, and Apply button are present
+    // Assert — follow-up date, tags inputs, and Save changes button are present
     const toolbar = screen.getByRole("toolbar", { name: /bulk actions/i });
     expect(within(toolbar).getByLabelText("Follow-up date")).toBeInTheDocument();
     expect(within(toolbar).getByLabelText("Tags to add")).toBeInTheDocument();
     expect(within(toolbar).getByLabelText("Tags to remove")).toBeInTheDocument();
-    expect(within(toolbar).getByRole("button", { name: /apply/i })).toBeInTheDocument();
+    expect(within(toolbar).getByRole("button", { name: /save changes/i })).toBeInTheDocument();
   });
 
   it("should call bulk-update endpoint when Apply is clicked with a follow-up date", async () => {
@@ -322,11 +322,11 @@ describe("ApplicationList", () => {
     render(<ApplicationList onSelect={() => {}} />, { wrapper: makeWrapper() });
     await screen.findByText("Acme Corp");
 
-    // Act — select a row, fill in follow-up date, click Apply
+    // Act — select a row, fill in follow-up date, click Save changes
     await userEvent.click(screen.getByLabelText("Select Acme Corp"));
     const toolbar = screen.getByRole("toolbar", { name: /bulk actions/i });
     await userEvent.type(within(toolbar).getByLabelText("Follow-up date"), "2026-05-01");
-    await userEvent.click(within(toolbar).getByRole("button", { name: /apply/i }));
+    await userEvent.click(within(toolbar).getByRole("button", { name: /save changes/i }));
 
     // Assert — endpoint was called with the correct payload
     await waitFor(() => {

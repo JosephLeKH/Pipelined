@@ -36,6 +36,7 @@ export function useInterviewPrep(appId, cachedBriefing = null, serverStatus = nu
   const start = useCallback(() => {
     if (esRef.current) {
       esRef.current.close();
+      esRef.current = null;
     }
 
     setStatus(STATUS.RUNNING);
@@ -50,12 +51,18 @@ export function useInterviewPrep(appId, cachedBriefing = null, serverStatus = nu
       onDone: (data) => {
         setBriefing(data.briefing);
         setStatus(STATUS.DONE);
-        esRef.current = null;
+        if (esRef.current) {
+          esRef.current.close();
+          esRef.current = null;
+        }
       },
       onError: (data) => {
         setErrorMessage(data.message ?? "Something went wrong. Please try again.");
         setStatus(STATUS.ERROR);
-        esRef.current = null;
+        if (esRef.current) {
+          esRef.current.close();
+          esRef.current = null;
+        }
       },
     });
   }, [appId]);
@@ -73,6 +80,15 @@ export function useInterviewPrep(appId, cachedBriefing = null, serverStatus = nu
     setProgressSteps([]);
     setBriefing(null);
     setErrorMessage(null);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (esRef.current) {
+        esRef.current.close();
+        esRef.current = null;
+      }
+    };
   }, []);
 
   return { status, progressSteps, briefing, errorMessage, start, refresh, reset, STATUS };

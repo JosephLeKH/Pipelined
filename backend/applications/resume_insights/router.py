@@ -3,6 +3,7 @@
 import structlog
 from fastapi import APIRouter, Depends, HTTPException, Request
 
+from ai.exceptions import AIQuotaExceededError
 from ai.openrouter_client import OpenRouterError
 from applications.resume_insights import service as insights_service
 from applications.resume_insights.service import (
@@ -43,6 +44,12 @@ async def generate_resume_insights(
         raise HTTPException(
             status_code=422,
             detail={"code": "MISSING_RESUME", "message": "Upload a resume before generating insights."},
+        )
+    except AIQuotaExceededError:
+        raise HTTPException(
+            status_code=429,
+            detail={"code": "ai_quota_exceeded", "message": "AI quota reached — try again in a few minutes."},
+            headers={"Retry-After": "60"},
         )
     except OpenRouterError:
         raise HTTPException(

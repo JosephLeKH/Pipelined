@@ -9,7 +9,7 @@ import { differenceInDays } from "date-fns/differenceInDays";
 
 import { STAGE_COLORS, DEFAULT_STAGE_COLOR } from "../lib/constants";
 import { Button } from "./ui/button";
-import { formatDate, isStale, isFollowUpOverdue } from "../lib/dateUtils";
+import { formatDate, isFollowUpOverdue } from "../lib/dateUtils";
 import { useSwipeAction } from "../hooks/useSwipeAction";
 import { RowMenu, RowQuickActions } from "./ApplicationRowActions";
 import CompanyLogo from "./CompanyLogo";
@@ -89,9 +89,8 @@ function SwipeActions({ onArchive, onFollowUp, revealed }) {
 
 function ApplicationRow({
   application, onSelect, style, onArchive, onUnarchive, onDelete, onSetFollowUp,
-  checked, onToggle, hasSelection, isFocused = false, isSelected = false,
+  checked, onToggle, hasSelection, isFocused = false, isSelected = false, archiveActionPending = false,
 }) {
-  const stale = isStale(application.updated_at);
   const followUpOverdue = isFollowUpOverdue(application.follow_up_date);
   const dateApplied = formatDate(application.date_applied);
   const archived = Boolean(application.archived);
@@ -100,6 +99,7 @@ function ApplicationRow({
   const staleDays = application.updated_at
     ? differenceInDays(new Date(), new Date(application.updated_at))
     : 0;
+  // Only show stale indicator (pulsing dot) if no update in 14+ days; terminal stages never stale
   const isStaleIndicator = staleDays >= STALE_DAYS && !TERMINAL_STAGES.includes(application.current_stage);
 
   const { offset, revealed, handlers, handleAction } = useSwipeAction();
@@ -134,17 +134,17 @@ function ApplicationRow({
           />
         </span>
         <span className="relative w-2 shrink-0">
-          {stale && !archived && (
+          {isStaleIndicator && !archived && (
             <Tooltip>
               <TooltipTrigger asChild>
                 <span
                   role="img"
                   className="block h-2 w-2 animate-pulse cursor-default rounded-full bg-amber-400 motion-reduce:animate-none dark:bg-amber-500"
                   data-testid="stale-indicator"
-                  aria-label="Stale application: no updates in 14+ days"
+                  aria-label="Stale application"
                 />
               </TooltipTrigger>
-              <TooltipContent>No updates in 14 days. Consider following up.</TooltipContent>
+              <TooltipContent>No update in {staleDays} days. Consider following up.</TooltipContent>
             </Tooltip>
           )}
         </span>
@@ -185,16 +185,6 @@ function ApplicationRow({
           <span className="w-11 shrink-0" />
         )}
         <span className="inline-flex w-4 shrink-0 items-center justify-center">
-          {isStaleIndicator && !archived && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Clock className="h-4 w-4 cursor-default text-warning" data-testid="stale-clock" aria-hidden="true" />
-              </TooltipTrigger>
-              <TooltipContent>No update in {staleDays} days</TooltipContent>
-            </Tooltip>
-          )}
-        </span>
-        <span className="inline-flex w-4 shrink-0 items-center justify-center">
           {followUpOverdue && !archived && (
             <Tooltip>
               <TooltipTrigger asChild>
@@ -214,6 +204,7 @@ function ApplicationRow({
           stage={application.current_stage}
           onArchive={() => onArchive(application.id)}
           onFollowUp={() => onSetFollowUp?.(application.id)}
+          isActionPending={archiveActionPending}
         />
         <RowMenu
           application={application}

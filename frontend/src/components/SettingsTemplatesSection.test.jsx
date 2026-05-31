@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import SettingsTemplatesSection from "./SettingsTemplatesSection";
 
 vi.mock("../hooks/useTemplates", () => ({
@@ -97,12 +98,45 @@ describe("SettingsTemplatesSection", () => {
     );
   });
 
-  it("should call deleteMutate when delete button is clicked", () => {
+  it("should show confirmation dialog before deleting a template", async () => {
     useTemplates.mockReturnValue({ data: [TEMPLATE_FIXTURE], isLoading: false, error: null, refetch: mockRefetch });
 
     render(<SettingsTemplatesSection />);
-    fireEvent.click(screen.getByRole("button", { name: /delete engineering/i }));
+    await userEvent.click(screen.getByRole("button", { name: /delete engineering/i }));
+
+    await waitFor(() => {
+      expect(screen.getByRole("alertdialog")).toBeInTheDocument();
+      expect(screen.getByText(/delete "engineering"/i)).toBeInTheDocument();
+    });
+  });
+
+  it("should call deleteMutate when delete confirmation is accepted", async () => {
+    useTemplates.mockReturnValue({ data: [TEMPLATE_FIXTURE], isLoading: false, error: null, refetch: mockRefetch });
+
+    render(<SettingsTemplatesSection />);
+    await userEvent.click(screen.getByRole("button", { name: /delete engineering/i }));
+
+    await waitFor(() => {
+      expect(screen.getByRole("alertdialog")).toBeInTheDocument();
+    });
+
+    await userEvent.click(screen.getByRole("button", { name: /^delete$/i }));
 
     expect(mockDeleteMutate).toHaveBeenCalledWith("t1");
+  });
+
+  it("should cancel deletion when dialog cancel is clicked", async () => {
+    useTemplates.mockReturnValue({ data: [TEMPLATE_FIXTURE], isLoading: false, error: null, refetch: mockRefetch });
+
+    render(<SettingsTemplatesSection />);
+    await userEvent.click(screen.getByRole("button", { name: /delete engineering/i }));
+
+    await waitFor(() => {
+      expect(screen.getByRole("alertdialog")).toBeInTheDocument();
+    });
+
+    await userEvent.click(screen.getByRole("button", { name: /^cancel$/i }));
+
+    expect(mockDeleteMutate).not.toHaveBeenCalled();
   });
 });

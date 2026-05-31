@@ -92,6 +92,11 @@ function CsvImportModalFooter({ step, wizard }) {
             (step === 0 && !wizard.canAdvanceFromUpload) ||
             (step === 1 && !wizard.canAdvanceFromMap)
           }
+          title={
+            (step === 0 && !wizard.canAdvanceFromUpload && "Select a file first") ||
+            (step === 1 && !wizard.canAdvanceFromMap && "Map all required fields before continuing") ||
+            ""
+          }
         >
           Next
         </Button>

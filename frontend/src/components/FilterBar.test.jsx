@@ -95,4 +95,46 @@ describe("FilterBar", () => {
     render(<FilterBar />, { wrapper: makeWrapper() });
     expect(screen.getByRole("button", { name: "Saved view: None" })).toBeInTheDocument();
   });
+
+  it("should show active indicator dot on filter trigger when stage is filtered", () => {
+    const { container } = render(<FilterBar />, { wrapper: makeWrapper(["/?stage=Offer"]) });
+
+    const stageBtn = screen.getByRole("button", { name: "Stage: Offer" });
+    expect(stageBtn).toBeInTheDocument();
+    // Check that the button contains a dot (active indicator)
+    const dots = stageBtn.querySelectorAll("span.h-1\\.5");
+    expect(dots.length).toBeGreaterThan(0);
+  });
+
+  it("should show active indicator dot on Updated filter when date preset is set", async () => {
+    const from = isoDateDaysAgo(30);
+    const to = new Date().toISOString().slice(0, 10);
+    render(<FilterBar />, { wrapper: makeWrapper([`/?date_from=${from}&date_to=${to}`]) });
+
+    const updatedBtn = screen.getByRole("button", { name: /Updated: Last 30 days/i });
+    expect(updatedBtn).toBeInTheDocument();
+    // Active state should show indicator
+    const dots = updatedBtn.querySelectorAll("span.h-1\\.5");
+    expect(dots.length).toBeGreaterThan(0);
+  });
+
+  it("should NOT show active indicator when Archive filter is 'Active only' (default)", () => {
+    render(<FilterBar />, { wrapper: makeWrapper() });
+
+    const archiveBtn = screen.getByRole("button", { name: "Archive: Active only" });
+    expect(archiveBtn).toBeInTheDocument();
+    // No active indicator for default state
+    const dots = archiveBtn.querySelectorAll("span.h-1\\.5");
+    expect(dots).toHaveLength(0);
+  });
+
+  it("should show active indicator when Archive filter is 'Archived'", async () => {
+    render(<FilterBar />, { wrapper: makeWrapper(["/?include_archived=true"]) });
+
+    const archiveBtn = screen.getByRole("button", { name: "Archive: Archived" });
+    expect(archiveBtn).toBeInTheDocument();
+    // Should have active indicator
+    const dots = archiveBtn.querySelectorAll("span.h-1\\.5");
+    expect(dots.length).toBeGreaterThan(0);
+  });
 });

@@ -1,6 +1,6 @@
 /** Reset password page: sets a new password using the httpOnly reset token cookie. */
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Loader2 from "lucide-react/dist/esm/icons/loader-2";
 
 import { useResetPasswordForm } from "../hooks/useResetPasswordForm";
@@ -9,6 +9,7 @@ import { AUTH_ERROR, AUTH_HEADLINE, AUTH_INPUT, AUTH_LABEL, AUTH_SUBHEAD } from 
 import { Button } from "../components/ui/button";
 
 function ResetPassword() {
+  const navigate = useNavigate();
   const {
     newPassword, confirmPassword, error, success, isPending,
     setNewPassword, setConfirmPassword, handleSubmit,
@@ -20,9 +21,18 @@ function ResetPassword() {
       <p className={`${AUTH_SUBHEAD} mb-8`}>Choose a strong password for your account.</p>
 
       {success ? (
-        <p role="status" className="text-sm text-text-2">
-          Password reset successfully! Redirecting to sign in…
-        </p>
+        <div className="flex flex-col items-center text-center">
+          <div className="mb-6 h-6 w-6 rounded-full bg-status-success flex items-center justify-center">
+            <svg className="h-4 w-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+            </svg>
+          </div>
+          <h1 className={AUTH_HEADLINE}>Password reset</h1>
+          <p className={`${AUTH_SUBHEAD} mb-6`}>Your password has been reset successfully.</p>
+          <Button type="button" size="lg" className="w-full" onClick={() => navigate("/login", { replace: true })}>
+            Sign in
+          </Button>
+        </div>
       ) : (
         <form onSubmit={handleSubmit} noValidate>
           <div className="mb-4">

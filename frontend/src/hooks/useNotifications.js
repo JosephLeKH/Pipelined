@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import {
@@ -18,6 +18,7 @@ const UNREAD_POLL_INTERVAL_MS = 60_000;
 
 export function useNotifications({ unreadOnly = false } = {}) {
   const queryClient = useQueryClient();
+  const [realtimeOffline, setRealtimeOffline] = useState(false);
 
   // Open SSE connection and update cache on new notifications
   useEffect(() => {
@@ -47,7 +48,7 @@ export function useNotifications({ unreadOnly = false } = {}) {
           },
           (error) => {
             console.error("SSE connection failed, falling back to polling:", error);
-            // Connection failed, polling will continue automatically
+            setRealtimeOffline(true);
           }
         );
       } catch (err) {
@@ -64,10 +65,12 @@ export function useNotifications({ unreadOnly = false } = {}) {
     };
   }, [queryClient, unreadOnly]);
 
-  return useQuery({
+  const query = useQuery({
     queryKey: [...NOTIFICATION_KEYS.all, { unreadOnly }],
     queryFn: () => fetchNotifications({ unreadOnly }),
   });
+
+  return { ...query, realtimeOffline };
 }
 
 export function useUnreadCount() {

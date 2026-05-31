@@ -17,10 +17,12 @@ import { getModKeyLabel } from "../../lib/platform";
 import { trackEvent } from "../../lib/analytics";
 import NotificationBell from "../NotificationBell";
 import { Button } from "../ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import TopBarUserMenu from "./TopBarUserMenu";
 
 const THEME_ICONS = { system: Monitor, light: Sun, dark: Moon };
-const THEME_LABELS = { system: "System theme", light: "Light theme", dark: "Dark theme" };
+const THEME_NEXT_STATE = { system: "light", light: "dark", dark: "system" };
+const THEME_TOOLTIPS = { system: "Switch to light theme", light: "Switch to dark theme", dark: "Switch to system theme" };
 
 function SearchTrigger() {
   const modKey = getModKeyLabel();
@@ -43,18 +45,17 @@ function SearchTrigger() {
 }
 
 function CmdKPill() {
-  const modKey = getModKeyLabel();
-
   return (
     <Button
       type="button"
       variant="ghost"
       size="icon"
-      aria-label={`Command palette, ${modKey}K`}
+      aria-label="Search or jump to"
       onClick={() => window.dispatchEvent(new CustomEvent(OPEN_COMMAND_PALETTE_EVENT))}
-      className="h-6 w-6 font-mono text-xs text-text-2 md:hidden"
+      className="md:hidden h-8 w-8 flex items-center gap-1 px-2"
     >
-      {modKey}K
+      <Search className="h-4 w-4 shrink-0" aria-hidden="true" />
+      <span className="text-xs text-text-2">Search</span>
     </Button>
   );
 }
@@ -88,16 +89,20 @@ function TopBar({ onToggleMobileSidebar }) {
         <SearchTrigger />
         <CmdKPill />
         <NotificationBell />
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          onClick={handleCycleTheme}
-          aria-label={THEME_LABELS[theme]}
-          className="text-text-2 hover:text-text-1"
-        >
-          <ThemeIcon className="h-4 w-4" aria-hidden="true" />
-        </Button>
+        <Tooltip delayDuration={200}>
+          <TooltipTrigger asChild>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={handleCycleTheme}
+              className="text-text-2 hover:text-text-1"
+            >
+              <ThemeIcon className="h-4 w-4" aria-hidden="true" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="bottom">{THEME_TOOLTIPS[theme]}</TooltipContent>
+        </Tooltip>
         <TopBarUserMenu user={user} />
       </div>
     </header>

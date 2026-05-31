@@ -98,6 +98,7 @@ function FilterBar() {
         <SingleSelectFilterDropdown
           label="Updated"
           displayValue={datePresetLabel(datePreset)}
+          isActive={datePreset !== "all"}
         >
           <DropdownMenuLabel>Updated</DropdownMenuLabel>
           <DropdownMenuSeparator />
@@ -122,6 +123,7 @@ function FilterBar() {
         <SingleSelectFilterDropdown
           label="Archive"
           displayValue={includeArchived ? "Archived" : "Active only"}
+          isActive={includeArchived}
         >
           <DropdownMenuCheckboxItem
             checked={includeArchived}

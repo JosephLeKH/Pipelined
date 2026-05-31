@@ -54,6 +54,12 @@ describe("PendingOpportunityCard", () => {
     ).toBeInTheDocument();
   });
 
+  it("should label the primary button as 'Add to pipeline'", () => {
+    renderCard();
+    expect(screen.getByRole("button", { name: /add acme · backend engineer to pipeline/i })).toBeInTheDocument();
+    expect(screen.getByText("Add to pipeline")).toBeInTheDocument();
+  });
+
   it("should always render talking points without a Why? toggle", () => {
     renderCard();
     expect(screen.getByText("Led API migration at Acme")).toBeInTheDocument();

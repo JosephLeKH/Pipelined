@@ -4,6 +4,8 @@ import { useState } from "react";
 
 import Check from "lucide-react/dist/esm/icons/check";
 import Copy from "lucide-react/dist/esm/icons/copy";
+import Eye from "lucide-react/dist/esm/icons/eye";
+import EyeOff from "lucide-react/dist/esm/icons/eye-off";
 import ExternalLink from "lucide-react/dist/esm/icons/external-link";
 import Link2 from "lucide-react/dist/esm/icons/link-2";
 import Link2Off from "lucide-react/dist/esm/icons/link-2-off";
@@ -99,9 +101,31 @@ function ActiveShare({ share, onRevoke, isRevoking }) {
   );
 }
 
+function PrivacyInfo() {
+  return (
+    <div className="flex flex-col gap-2 rounded-lg border border-border-2 bg-surface-1 p-3">
+      <div className="flex gap-2">
+        <Eye className="h-4 w-4 shrink-0 text-text-2" aria-hidden="true" />
+        <div className="flex-1 text-xs text-text-2">
+          <p className="font-medium text-text-1">Public viewers see:</p>
+          <p className="mt-1">Company names, stages, dates applied, role titles</p>
+        </div>
+      </div>
+      <div className="flex gap-2">
+        <EyeOff className="h-4 w-4 shrink-0 text-text-2" aria-hidden="true" />
+        <div className="flex-1 text-xs text-text-2">
+          <p className="font-medium text-text-1">Public viewers don't see:</p>
+          <p className="mt-1">Your notes, contact details, follow-up drafts, fit scores, AI insights</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function NoShare({ onCreate, isCreating }) {
   return (
     <div className="flex flex-col gap-3">
+      <PrivacyInfo />
       <p className="text-sm text-text-2">
         Anyone with the link can view a read-only summary of your pipeline.
       </p>

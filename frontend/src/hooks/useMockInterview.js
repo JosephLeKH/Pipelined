@@ -43,18 +43,24 @@ export function useMockInterview(applicationId) {
         )));
       },
       onDone: (data) => {
-        if (data?.is_debrief) {
-          setDebrief(data?.content ?? "");
-          setStatus(STATUS.DEBRIEF);
-        } else {
-          setTurnCount(data?.turn_count ?? 0);
-          setStatus(STATUS.IDLE);
-        }
+        setTurnCount(data?.turn_count ?? 0);
+        setStatus(STATUS.IDLE);
+        abortRef.current = null;
+      },
+      onDebrief: (data) => {
+        setDebrief(data?.content ?? "");
+        setStatus(STATUS.DEBRIEF);
         abortRef.current = null;
       },
       onError: (error) => {
-        const fallback = error?.status === 429 ? COPILOT_RATE_LIMIT_MESSAGE : COPILOT_ERROR_FALLBACK;
-        const message = isAiLimitError(error) ? COPILOT_RATE_LIMIT_MESSAGE : (error?.message ?? fallback);
+        let message = COPILOT_ERROR_FALLBACK;
+        if (error?.code === "ai_quota_exceeded") {
+          message = "AI quota reached. Try again in a minute.";
+        } else if (error?.status === 429 || isAiLimitError(error)) {
+          message = COPILOT_RATE_LIMIT_MESSAGE;
+        } else {
+          message = error?.message ?? COPILOT_ERROR_FALLBACK;
+        }
         setErrorMessage(message);
         setStatus(STATUS.ERROR);
         if (!payload.end_session) {

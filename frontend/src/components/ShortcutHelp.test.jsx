@@ -1,67 +1,111 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { describe, it, expect } from "vitest";
+/** Tests for ShortcutHelp: keyboard trigger, input filtering, shortcut listing. */
 
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { describe, it, expect, beforeEach } from "vitest";
 import ShortcutHelp from "./ShortcutHelp";
-import { SHORTCUT_SCOPES } from "../lib/shortcuts";
 
 describe("ShortcutHelp", () => {
-  it("should not render dialog initially", () => {
-    render(<ShortcutHelp />);
-
-    expect(screen.queryByRole("dialog", { name: /keyboard shortcuts/i })).toBeNull();
+  beforeEach(() => {
+    // Ensure document is clean between tests
+    document.body.innerHTML = "";
   });
 
-  it("should open on '?' keydown and show all scope groups", () => {
+  it("should render the floating button", () => {
     render(<ShortcutHelp />);
-
-    fireEvent.keyDown(document, { key: "?" });
-
-    expect(screen.getByRole("dialog", { name: /keyboard shortcuts/i })).toBeInTheDocument();
-    for (const scope of SHORTCUT_SCOPES) {
-      expect(screen.getByText(scope)).toBeInTheDocument();
-    }
+    const btn = screen.getByRole("button", { name: /Show keyboard shortcuts/i });
+    expect(btn).toBeInTheDocument();
   });
 
-  it("should close when X button is clicked", async () => {
+  it("should open when ? is pressed", async () => {
+    const user = userEvent.setup();
     render(<ShortcutHelp />);
 
-    fireEvent.keyDown(document, { key: "?" });
-    expect(screen.getByRole("dialog", { name: /keyboard shortcuts/i })).toBeInTheDocument();
+    // Dialog should start closed
+    expect(screen.queryByText("Keyboard shortcuts")).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: /^close$/i }));
+    // Trigger ? key
+    await user.keyboard("?");
 
     await waitFor(() => {
-      expect(screen.queryByRole("dialog")).toBeNull();
-    });
+      expect(screen.getByText("Keyboard shortcuts")).toBeInTheDocument();
+    }, { timeout: 1000 });
   });
 
-  it("should close on Escape keydown", async () => {
+  it("should NOT open when ? is pressed inside an input", async () => {
+    const user = userEvent.setup();
+    render(
+      <>
+        <input type="text" defaultValue="" data-testid="input" />
+        <ShortcutHelp />
+      </>
+    );
+
+    const input = screen.getByTestId("input");
+    await user.click(input);
+    await user.keyboard("?");
+
+    // Dialog should remain closed
+    expect(screen.queryByText("Keyboard shortcuts")).not.toBeInTheDocument();
+  });
+
+  it("should list at least three common shortcuts (a, /, Cmd+K)", async () => {
+    const user = userEvent.setup();
     render(<ShortcutHelp />);
 
-    fireEvent.keyDown(document, { key: "?" });
-    expect(screen.getByRole("dialog", { name: /keyboard shortcuts/i })).toBeInTheDocument();
-
-    fireEvent.keyDown(document, { key: "Escape" });
+    await user.keyboard("?");
 
     await waitFor(() => {
-      expect(screen.queryByRole("dialog")).toBeNull();
-    });
+      // Check for 'a' shortcut
+      expect(screen.getByText(/Add new application/i)).toBeInTheDocument();
+      // Check for '/' shortcut
+      expect(screen.getByText(/Focus search/i)).toBeInTheDocument();
+      // Check for Cmd+K shortcut
+      expect(screen.getByText(/Open command palette/i)).toBeInTheDocument();
+    }, { timeout: 1000 });
   });
 
-  it("should list PRD-01 navigation and action shortcuts", () => {
+  it("should display shortcuts organized by scope", async () => {
+    const user = userEvent.setup();
     render(<ShortcutHelp />);
 
-    fireEvent.keyDown(document, { key: "?" });
+    await user.keyboard("?");
 
-    expect(screen.getByText("Go to Today")).toBeInTheDocument();
-    expect(screen.getByText("Go to Inbox")).toBeInTheDocument();
-    expect(screen.getByText("Go to Settings")).toBeInTheDocument();
-    expect(screen.getByText("Open co-pilot")).toBeInTheDocument();
-    expect(screen.getByText("Collapse sidebar")).toBeInTheDocument();
-    expect(screen.getByText("g → t")).toBeInTheDocument();
-    expect(screen.getByText("g → i")).toBeInTheDocument();
-    expect(screen.getByText("g → s")).toBeInTheDocument();
-    expect(screen.getByText("o")).toBeInTheDocument();
-    expect(screen.getByText("[")).toBeInTheDocument();
+    await waitFor(() => {
+      // Check for scope headers (case-insensitive)
+      expect(screen.getByText(/NAVIGATION/i)).toBeInTheDocument();
+      expect(screen.getByText(/ACTIONS/i)).toBeInTheDocument();
+      expect(screen.getByText(/DASHBOARD/i)).toBeInTheDocument();
+    }, { timeout: 1000 });
+  });
+
+  it("should close when clicking the close button", async () => {
+    const user = userEvent.setup();
+    render(<ShortcutHelp />);
+
+    await user.keyboard("?");
+
+    await waitFor(() => {
+      expect(screen.getByText("Keyboard shortcuts")).toBeInTheDocument();
+    }, { timeout: 1000 });
+
+    const closeBtn = screen.getByRole("button", { name: /Close/i });
+    await user.click(closeBtn);
+
+    await waitFor(() => {
+      expect(screen.queryByText("Keyboard shortcuts")).not.toBeInTheDocument();
+    }, { timeout: 1000 });
+  });
+
+  it("should open when clicking the floating button", async () => {
+    const user = userEvent.setup();
+    render(<ShortcutHelp />);
+
+    const btn = screen.getByRole("button", { name: /Show keyboard shortcuts/i });
+    await user.click(btn);
+
+    await waitFor(() => {
+      expect(screen.getByText("Keyboard shortcuts")).toBeInTheDocument();
+    }, { timeout: 1000 });
   });
 });

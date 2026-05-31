@@ -7,7 +7,7 @@ import FileText from "lucide-react/dist/esm/icons/file-text";
 import X from "lucide-react/dist/esm/icons/x";
 
 import { useAuth } from "../context/AuthContext";
-import { AUTOPILOT_RESUME_BANNER_DISMISSED_KEY } from "../lib/constants";
+import { AUTOPILOT_RESUME_BANNER_DISMISSED_KEY, BANNER_Z_AUTO_RESUME } from "../lib/constants";
 import { dismissBanner, isBannerDismissed } from "../lib/utils";
 import { Button } from "./ui/button";
 
@@ -32,6 +32,7 @@ function AutopilotResumeBanner() {
       role="status"
       data-testid="autopilot-resume-banner"
       className="flex h-9 items-center gap-3 border-b border-border-1 bg-surface-1 px-4 text-xs text-text-1"
+      style={{ zIndex: BANNER_Z_AUTO_RESUME }}
     >
       <FileText size={15} aria-hidden="true" className="shrink-0 text-brand-600" />
       <span className="min-w-0 truncate">Upload a resume to enable autopilot job matching</span>

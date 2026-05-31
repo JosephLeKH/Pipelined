@@ -88,7 +88,8 @@ export default function MergeDialog({ apps, onConfirm, onCancel, isPending = fal
         <Alert className="mx-6 mt-4 flex items-start gap-2.5 border-brand-100 bg-brand-50 py-3 dark:border-brand-800 dark:bg-brand-900/30">
           <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-brand-700 dark:text-brand-300" aria-hidden="true" />
           <AlertDescription className="text-brand-900 dark:text-brand-100">
-            This action cannot be undone.
+            <p className="mb-1.5">This action cannot be undone.</p>
+            <p className="text-xs">When fields conflict: if your left choice is empty, we fill it from the right. Otherwise, we keep the left value. Conflicting values move to notes.</p>
           </AlertDescription>
         </Alert>
 

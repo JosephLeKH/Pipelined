@@ -70,8 +70,12 @@ async def _get_pending_doc(user_id: str, opportunity_id: str) -> dict:
     return doc
 
 
-async def approve_pending_opportunity(user_id: str, opportunity_id: str) -> tuple[str, str]:
-    """Approve a pending opportunity and create a To Apply application."""
+async def approve_pending_opportunity(user_id: str, opportunity_id: str) -> tuple[str, str, list[str]]:
+    """Approve a pending opportunity and create a To Apply application.
+
+    Returns: (opportunity_id, application_id, warnings)
+    Warnings may include "apply_pack_attach_failed" if secondary update fails.
+    """
     doc = await _get_pending_doc(user_id, opportunity_id)
     if doc["status"] != PENDING_STATUS:
         raise PendingOpportunityInvalidStateError
@@ -106,13 +110,42 @@ async def approve_pending_opportunity(user_id: str, opportunity_id: str) -> tupl
         "linkedin_note": "",
         "talking_points": talking_points,
     }
-    await get_collection("applications").update_one(
-        {"_id": ObjectId(app_id), "user_id": ObjectId(user_id)},
-        {"$set": {
-            "cover_letter_draft": cover,
-            "apply_pack": apply_pack,
-        }},
-    )
+
+    warnings: list[str] = []
+    try:
+        app_collection = get_collection("applications")
+        app_obj_id = ObjectId(app_id)
+        user_obj_id = ObjectId(user_id)
+
+        # Atomic idempotent update: only set if apply_pack doesn't already exist
+        result = await app_collection.update_one(
+            {
+                "_id": app_obj_id,
+                "user_id": user_obj_id,
+                "apply_pack": {"$exists": False},
+            },
+            {"$set": {
+                "cover_letter_draft": cover,
+                "apply_pack": apply_pack,
+            }},
+        )
+        if result.matched_count == 0:
+            logger.info("apply_pack_already_attached", application_id=app_id)
+    except Exception as exc:
+        logger.exception(
+            "apply_pack_attach_failed",
+            application_id=app_id,
+            error=str(exc),
+        )
+        now = datetime.now(timezone.utc)
+        await get_collection("applications").update_one(
+            {"_id": ObjectId(app_id), "user_id": ObjectId(user_id)},
+            {"$set": {
+                "apply_pack_attach_error": True,
+                "apply_pack_attach_error_at": now,
+            }},
+        )
+        warnings.append("apply_pack_attach_failed")
 
     now = datetime.now(timezone.utc)
     await get_collection("pending_opportunities").update_one(
@@ -124,8 +157,9 @@ async def approve_pending_opportunity(user_id: str, opportunity_id: str) -> tupl
         user_id=user_id,
         opportunity_id=opportunity_id,
         application_id=app_id,
+        warnings=warnings if warnings else None,
     )
-    return opportunity_id, app_id
+    return opportunity_id, app_id, warnings
 
 
 async def dismiss_pending_opportunity(user_id: str, opportunity_id: str) -> None:

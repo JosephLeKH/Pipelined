@@ -85,6 +85,7 @@ export function PanelBody({
         />
         <InterviewPrepAgent
           applicationId={application.id}
+          application={application}
           briefing={application.interview_prep_briefing}
           generatedAt={application.interview_prep_generated_at}
           prepStatus={application.interview_prep_status}

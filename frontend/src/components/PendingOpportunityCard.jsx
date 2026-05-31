@@ -40,7 +40,8 @@ function CopyButton({ text, label }) {
       setCopied(true);
       toast.success("Copied to clipboard");
       setTimeout(() => setCopied(false), COPY_RESET_MS);
-    } catch {
+    } catch (error) {
+      console.warn("Copy failed:", error);
       toast.error("Failed to copy");
     }
   }
@@ -236,13 +237,13 @@ function PendingOpportunityCard({
           size="sm"
           onClick={() => onApprove(opportunity.id)}
           disabled={isBusy}
-          aria-label={`Approve ${company} · ${role}`}
+          aria-label={`Add ${company} · ${role} to pipeline`}
         >
           {isApproving ? (
             "Adding…"
           ) : (
             <>
-              Approve
+              Add to pipeline
               <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
             </>
           )}

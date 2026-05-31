@@ -11,12 +11,11 @@ import { toast } from "sonner";
 
 import { generateApplyPack } from "../api/applications";
 import { getAiToastError } from "../lib/aiConstants";
-import { COPY_RESET_MS } from "../lib/constants";
+import { COPY_RESET_MS, NO_AUTO_SEND_MESSAGE } from "../lib/constants";
 import { SUCCESS_BANNER } from "../lib/designTokens";
+import { formatAiFreshness } from "../lib/fitDisplay";
 import AiSection from "./AiSection";
 import { Button } from "./ui/button";
-
-const APPLY_PACK_DISCLAIMER = "Copy and paste manually. We never auto-submit applications.";
 
 function CopyFieldButton({ text, label }) {
   const [copied, setCopied] = useState(false);
@@ -70,6 +69,7 @@ function ApplyPackSection({ application, onPackGenerated }) {
   const [isLoading, setIsLoading] = useState(false);
   const hasCached = localPack != null;
   const hasJobDescription = Boolean((application.job_description ?? "").trim());
+  const freshness = formatAiFreshness(application.apply_pack_at);
 
   async function handleGenerate() {
     setIsLoading(true);
@@ -90,9 +90,13 @@ function ApplyPackSection({ application, onPackGenerated }) {
 
   return (
     <AiSection title="Apply pack" icon={Sparkles} id="apply-pack">
+      {freshness && (
+        <p className="text-xs text-muted-foreground">Generated {freshness}</p>
+      )}
+      <p className="text-xs text-muted-foreground">Based on your resume, profile, and this job</p>
       <div className={`${SUCCESS_BANNER} flex items-start gap-2 px-3 py-2 text-xs`}>
         <Info className="h-3.5 w-3.5 shrink-0 mt-0.5" aria-hidden="true" />
-        <p>{APPLY_PACK_DISCLAIMER}</p>
+        <p>{NO_AUTO_SEND_MESSAGE}</p>
       </div>
       <Button
         type="button"

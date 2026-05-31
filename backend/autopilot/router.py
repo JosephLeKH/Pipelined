@@ -51,12 +51,12 @@ async def approve_pending(
     user: dict = Depends(get_current_user),
 ) -> dict:
     try:
-        opp_id, app_id = await approve_pending_opportunity(str(user["_id"]), opportunity_id)
+        opp_id, app_id, warnings = await approve_pending_opportunity(str(user["_id"]), opportunity_id)
     except PendingOpportunityNotFoundError:
         raise HTTPException(status_code=404, detail=NOT_FOUND_DETAIL)
     except PendingOpportunityInvalidStateError:
         raise HTTPException(status_code=409, detail=INVALID_STATE_DETAIL)
-    return {"data": ApproveResponse(opportunity_id=opp_id, application_id=app_id)}
+    return {"data": ApproveResponse(opportunity_id=opp_id, application_id=app_id, warnings=warnings)}
 
 
 @router.post("/pending/{opportunity_id}/dismiss", status_code=200)

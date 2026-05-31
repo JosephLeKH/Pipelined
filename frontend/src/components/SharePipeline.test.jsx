@@ -96,4 +96,25 @@ describe("SharePipeline", () => {
       expect.stringContaining("/pipeline/abc123"),
     );
   });
+
+  it("should show privacy info card when no share exists", () => {
+    render(<SharePipeline />);
+
+    expect(screen.getByText(/public viewers see:/i)).toBeInTheDocument();
+    expect(screen.getByText(/public viewers don't see:/i)).toBeInTheDocument();
+    expect(screen.getByText(/company names, stages, dates applied, role titles/i)).toBeInTheDocument();
+    expect(screen.getByText(/your notes, contact details, follow-up drafts, fit scores, ai insights/i)).toBeInTheDocument();
+  });
+
+  it("should show what viewers can and cannot see", () => {
+    render(<SharePipeline />);
+
+    // Verify what viewers CAN see
+    const canSeeText = screen.getByText(/company names, stages, dates applied, role titles/i);
+    expect(canSeeText).toBeInTheDocument();
+
+    // Verify what viewers CANNOT see
+    const cannotSeeText = screen.getByText(/your notes, contact details, follow-up drafts, fit scores, ai insights/i);
+    expect(cannotSeeText).toBeInTheDocument();
+  });
 });

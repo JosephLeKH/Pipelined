@@ -69,7 +69,7 @@ describe("EmailVerificationBanner", () => {
     });
 
     expect(screen.getByTestId("email-verification-banner")).toBeInTheDocument();
-    expect(screen.getByText(/please verify your email/i)).toBeInTheDocument();
+    expect(screen.getByText(/verify your email to unlock notifications and team features/i)).toBeInTheDocument();
   });
 
   it("should hide banner when dismissed", () => {
@@ -102,5 +102,15 @@ describe("EmailVerificationBanner", () => {
     fireEvent(window, new CustomEvent(EMAIL_NOT_VERIFIED_EVENT));
 
     expect(screen.getByTestId("email-verification-banner")).toBeInTheDocument();
+  });
+
+  it("should not say 'to continue' in the banner text", () => {
+    render(<EmailVerificationBanner />, {
+      wrapper: makeWrapper({ id: "u1", email: "a@b.com", email_verified: false }),
+    });
+
+    const banner = screen.getByTestId("email-verification-banner");
+    expect(banner.textContent).not.toMatch(/to continue/i);
+    expect(banner.textContent).toMatch(/unlock notifications and team features/i);
   });
 });

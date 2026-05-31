@@ -55,6 +55,7 @@ class PendingOpportunityResponse(BaseModel):
 class ApproveResponse(BaseModel):
     opportunity_id: str
     application_id: str
+    warnings: list[str] = []
 
 
 class RecruiterLeadResponse(BaseModel):

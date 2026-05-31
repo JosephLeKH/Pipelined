@@ -32,7 +32,7 @@ function useApplicationRowHeight() {
 const Row = memo(function Row({ index, style, data }) {
   const {
     applications, onSelect, onArchive, onUnarchive, onDelete, selectedIds, onToggle,
-    hasSelection, focusedIdx, selectedId,
+    hasSelection, focusedIdx, selectedId, archiveMutationPending,
   } = data;
   const app = applications[index];
   return (
@@ -48,6 +48,7 @@ const Row = memo(function Row({ index, style, data }) {
       hasSelection={hasSelection}
       isFocused={focusedIdx === index}
       isSelected={selectedId === app.id}
+      archiveActionPending={archiveMutationPending}
     />
   );
 });
@@ -57,6 +58,7 @@ export function ApplicationListBody({ d, rowActions, bulkActions, onSelect, sele
     applications, isFetching, isLoading, sortBy, sortOrder, selectedIds, focusedIdx, windowHeight, listRef,
     bulkDeletePending, setBulkDeletePending, mergeDialogOpen, setMergeDialogOpen,
     undoAction, setUndoAction, bulkDeleteMutation, bulkStageMutation, mergeMutation, bulkEditMutation,
+    archiveMutation,
   } = d;
   const { handleSort, handleArchive, handleUnarchive, handleDelete, handleUndo } = rowActions;
   const { handleToggle, handleSelectAll, handleBulkDeleteConfirm, handleBulkMoveToStage, handleBulkEdit, handleMergeConfirm } = bulkActions;
@@ -79,6 +81,7 @@ export function ApplicationListBody({ d, rowActions, bulkActions, onSelect, sele
   const rowData = {
     applications, onSelect, onArchive: handleArchive, onUnarchive: handleUnarchive,
     onDelete: handleDelete, selectedIds, onToggle: handleToggle, hasSelection, focusedIdx, selectedId,
+    archiveMutationPending: archiveMutation.isPending,
   };
   const rowHeight = useApplicationRowHeight();
   return (

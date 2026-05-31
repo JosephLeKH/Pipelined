@@ -11,8 +11,11 @@ import User from "lucide-react/dist/esm/icons/user";
 import { useState } from "react";
 
 import { useInterviewPrep } from "../hooks/useInterviewPrep";
+import { formatAiFreshness } from "../lib/fitDisplay";
 import AiSection from "./AiSection";
 import { MockInterviewPanel } from "./MockInterviewPanel";
+import { InterviewPrepProcessTab } from "./InterviewPrepProcessTab";
+import { InterviewPrepCompanyTab } from "./InterviewPrepCompanyTab";
 import { Button } from "./ui/button";
 
 // ── Primitives ─────────────────────────────────────────────────────────────────
@@ -163,100 +166,6 @@ function CompTab({ comp }) {
   );
 }
 
-function ProcessTab({ proc }) {
-  return (
-    <div className="flex flex-col gap-4 animate-in fade-in slide-in-from-bottom-1 duration-200">
-      <div className="flex gap-3 text-xs text-muted-foreground">
-        {proc.duration_weeks && <span>{proc.duration_weeks}</span>}
-        {proc.duration_weeks && proc.difficulty && <span>·</span>}
-        {proc.difficulty && (
-          <Tag variant={proc.difficulty === "Hard" ? "danger" : proc.difficulty === "Medium" ? "default" : "success"}>
-            {proc.difficulty}
-          </Tag>
-        )}
-      </div>
-      {proc.rounds?.length > 0 && (
-        <div className="flex flex-col gap-2">
-          <SubLabel>Rounds</SubLabel>
-          <div className="flex flex-col gap-1.5">
-            {proc.rounds.map((round, i) => (
-              <div key={i} className="flex gap-3">
-                <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-muted text-[0.625rem] font-bold text-muted-foreground">
-                  {i + 1}
-                </span>
-                <div className="flex flex-col gap-0.5">
-                  <span className="text-sm font-medium text-foreground">{round.name}</span>
-                  <span className="text-xs text-muted-foreground">{round.what_to_expect}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-      {proc.recent_questions?.length > 0 && (
-        <div className="flex flex-col gap-2">
-          <SubLabel>Questions asked</SubLabel>
-          <RowList items={proc.recent_questions} />
-        </div>
-      )}
-      {proc.tips?.length > 0 && (
-        <div className="flex flex-col gap-2">
-          <SubLabel>Tips</SubLabel>
-          <RowList items={proc.tips} variant="success" />
-        </div>
-      )}
-      {proc.sources?.length > 0 && (
-        <div className="flex flex-wrap gap-1">
-          {proc.sources.map((s) => <Tag key={s} variant="muted">{s}</Tag>)}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function CompanyTab({ intel }) {
-  return (
-    <div className="flex flex-col gap-4 animate-in fade-in slide-in-from-bottom-1 duration-200">
-      {intel.what_theyre_building && (
-        <p className="text-sm text-foreground/85 leading-relaxed">{intel.what_theyre_building}</p>
-      )}
-      {intel.tech_stack?.length > 0 && (
-        <div className="flex flex-col gap-2">
-          <SubLabel>Tech stack</SubLabel>
-          <div className="flex flex-wrap gap-1">{intel.tech_stack.map((t) => <Tag key={t}>{t}</Tag>)}</div>
-        </div>
-      )}
-      {(intel.green_flags?.length > 0 || intel.red_flags?.length > 0) && (
-        <div className="grid grid-cols-2 gap-3">
-          {intel.green_flags?.length > 0 && (
-            <div className="flex flex-col gap-1.5">
-              <SubLabel>Green flags</SubLabel>
-              <RowList items={intel.green_flags} variant="success" />
-            </div>
-          )}
-          {intel.red_flags?.length > 0 && (
-            <div className="flex flex-col gap-1.5">
-              <SubLabel>Red flags</SubLabel>
-              <RowList items={intel.red_flags} variant="danger" />
-            </div>
-          )}
-        </div>
-      )}
-      {intel.recent_news?.length > 0 && (
-        <div className="flex flex-col gap-2">
-          <SubLabel>Recent news</SubLabel>
-          <RowList items={intel.recent_news} />
-        </div>
-      )}
-      {intel.culture_signals?.length > 0 && (
-        <div className="flex flex-col gap-2">
-          <SubLabel>Culture</SubLabel>
-          <div className="flex flex-wrap gap-1">{intel.culture_signals.map((s) => <Tag key={s} variant="muted">{s}</Tag>)}</div>
-        </div>
-      )}
-    </div>
-  );
-}
 
 // ── State views ────────────────────────────────────────────────────────────────
 
@@ -351,8 +260,8 @@ function DoneView({ briefing, onRefresh }) {
       <div className="p-4">
         {tab === "you" && <ForYouTab notes={briefing.personalized} />}
         {tab === "comp" && <CompTab comp={briefing.compensation} />}
-        {tab === "process" && <ProcessTab proc={briefing.interview_process} />}
-        {tab === "company" && <CompanyTab intel={briefing.company_intel} />}
+        {tab === "process" && <InterviewPrepProcessTab proc={briefing.interview_process} />}
+        {tab === "company" && <InterviewPrepCompanyTab intel={briefing.company_intel} />}
       </div>
     </div>
   );
@@ -362,6 +271,7 @@ function DoneView({ briefing, onRefresh }) {
 
 export function InterviewPrepAgent({
   applicationId,
+  application,
   briefing: appBriefing,
   generatedAt,
   prepStatus = null,
@@ -373,8 +283,19 @@ export function InterviewPrepAgent({
   const activeBriefing = briefing ?? appBriefing;
   const isBackgroundGenerating = prepStatus === "generating" && status === STATUS.RUNNING;
 
+  const freshness = generatedAt ? formatAiFreshness(generatedAt) : null;
+
   return (
     <AiSection title="Interview prep" icon={BookOpen} id="interview-prep">
+      {freshness && (
+        <div className="flex flex-col gap-1">
+          <p className="text-xs text-muted-foreground">Generated {freshness}</p>
+          <p className="text-xs text-muted-foreground">Based on company research + job description + your resume</p>
+        </div>
+      )}
+      {!freshness && (
+        <p className="text-xs text-muted-foreground">Based on company research + job description + your resume</p>
+      )}
       {showAutoGeneratedNotice && (
         <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
           <Sparkles className="h-3.5 w-3.5 text-primary" aria-hidden="true" />
@@ -391,7 +312,7 @@ export function InterviewPrepAgent({
       {status === STATUS.DONE && activeBriefing && (
         <DoneView briefing={activeBriefing} onRefresh={refresh} />
       )}
-      <MockInterviewPanel applicationId={applicationId} interviewRound={interviewRound} />
+      <MockInterviewPanel applicationId={applicationId} application={application} interviewRound={interviewRound} />
     </AiSection>
   );
 }

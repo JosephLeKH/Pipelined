@@ -90,6 +90,7 @@ function makeProps(overrides = {}) {
       bulkStageMutation: { isPending: false },
       mergeMutation: { isPending: false },
       bulkEditMutation: { isPending: false },
+      archiveMutation: { isPending: false },
       ...overrides,
     },
     rowActions: {

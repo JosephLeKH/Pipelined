@@ -116,10 +116,15 @@ describe("PRD-08 settings — dark theme", () => {
     });
 
     it("should render Appearance section with semantic text tokens", () => {
+      const queryClient = new QueryClient();
       render(
         withTooltipProvider(
           <ThemeProvider>
-            <SettingsAppearanceSection />
+            <QueryClientProvider client={queryClient}>
+              <AuthProvider>
+                <SettingsAppearanceSection />
+              </AuthProvider>
+            </QueryClientProvider>
           </ThemeProvider>,
         ),
       );

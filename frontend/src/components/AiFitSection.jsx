@@ -19,6 +19,7 @@ import {
   BACKGROUND_SCORE_POLL_MS,
   getUnifiedFitDetail,
   isBackgroundScoringPending,
+  formatAiFreshness,
 } from "../lib/fitDisplay";
 import { trackEvent } from "../lib/analytics";
 import AiSection from "./AiSection";
@@ -37,11 +38,18 @@ function FitScoreSkeleton() {
   );
 }
 
-function FitScoreDetails({ detail }) {
+function FitScoreDetails({ detail, application }) {
   const [showWhy, setShowWhy] = useState(false);
+  const freshness = application
+    ? formatAiFreshness(application.ai_analysis?.scored_at ?? application.fit_score_computed_at)
+    : null;
 
   return (
     <div className="flex flex-col gap-3">
+      {freshness && (
+        <p className="text-xs text-muted-foreground">Generated {freshness}</p>
+      )}
+      <p className="text-xs text-muted-foreground">Based on your resume + this job description</p>
       <div className="flex flex-wrap items-center gap-2">
         <FitBadge score={detail.score} />
         {detail.reason && (
@@ -119,8 +127,9 @@ function AiFitSection({ application, hasResume, aiScoresRemainingToday, onScoreG
   }, [polledApp, onScoreGenerated]);
 
   const detail = localOverride ?? getUnifiedFitDetail(liveApplication);
+  const backgroundError = liveApplication.fit_score_status === "error";
   const quotaExceeded = hasResume && aiScoresRemainingToday === 0 && !detail;
-  const showSkeleton = hasResume && !detail && isPending && !quotaExceeded;
+  const showSkeleton = hasResume && !detail && isPending && !quotaExceeded && !backgroundError;
 
   useEffect(() => {
     if (detail?.score != null) {
@@ -149,18 +158,60 @@ function AiFitSection({ application, hasResume, aiScoresRemainingToday, onScoreG
     }
   }
 
-  if (!hasResume && !detail && !quotaExceeded) {
+  async function handleRetryFitScore() {
+    await handleAnalyzeFit();
+  }
+
+  const elapsedSeconds = application.fit_score_requested_at
+    ? Math.floor((Date.now() - new Date(application.fit_score_requested_at).getTime()) / 1000)
+    : 0;
+  const takingTooLong = !detail && isPending && elapsedSeconds > 60;
+
+  if (!hasResume && !detail && !quotaExceeded && !backgroundError) {
     return null;
   }
 
   return (
     <AiSection title={FIT_SCORE_LABEL} icon={Sparkles} id="ai-fit">
+      <p className="text-xs text-muted-foreground">Based on your resume + this job description</p>
       {quotaExceeded && (
         <p className="text-sm text-amber-600 dark:text-amber-400">{AI_LIMIT_MESSAGE}</p>
       )}
+      {backgroundError && (
+        <div className="flex flex-col gap-2">
+          <p className="text-sm text-destructive">Fit score calculation failed. Please retry.</p>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={handleRetryFitScore}
+            disabled={isLoading}
+            className="w-full min-h-[2.75rem] sm:min-h-0 sm:w-auto"
+          >
+            <Sparkles className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
+            {isLoading ? "Retrying…" : "Retry fit score"}
+          </Button>
+        </div>
+      )}
       {showSkeleton && <FitScoreSkeleton />}
-      {!showSkeleton && detail && <FitScoreDetails detail={detail} />}
-      {!showSkeleton && !detail && hasResume && !quotaExceeded && (
+      {takingTooLong && (
+        <div className="flex flex-col gap-2">
+          <p className="text-sm text-muted-foreground">Taking longer than expected — would you like to retry?</p>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={handleRetryFitScore}
+            disabled={isLoading}
+            className="w-full min-h-[2.75rem] sm:min-h-0 sm:w-auto"
+          >
+            <Sparkles className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
+            {isLoading ? "Retrying…" : "Retry fit score"}
+          </Button>
+        </div>
+      )}
+      {!showSkeleton && !takingTooLong && detail && <FitScoreDetails detail={detail} application={liveApplication} />}
+      {!showSkeleton && !takingTooLong && !detail && hasResume && !quotaExceeded && !backgroundError && (
         <Button
           type="button"
           variant="outline"

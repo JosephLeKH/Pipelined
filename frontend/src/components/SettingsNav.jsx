@@ -9,7 +9,7 @@ const NAV_FOCUS_RING =
 
 function NavRow({ item, isActive }) {
   const baseClass =
-    "relative flex h-8 items-center gap-2 pl-4 pr-3 text-[0.8125rem] motion-reduce:transition-none transition-colors duration-hover ease-out";
+    "relative flex flex-col justify-center gap-1 pl-4 pr-3 py-2 text-[0.8125rem] motion-reduce:transition-none transition-colors duration-hover ease-out";
   const stateClass = isActive
     ? "bg-surface-2 text-brand-600 font-medium"
     : "text-text-2 hover:bg-surface-2 hover:text-text-1";
@@ -22,7 +22,10 @@ function NavRow({ item, isActive }) {
           aria-hidden="true"
         />
       )}
-      {item.label}
+      <span className="font-medium">{item.label}</span>
+      {item.help && (
+        <span className="text-[0.6875rem] text-text-3">{item.help}</span>
+      )}
     </>
   );
 

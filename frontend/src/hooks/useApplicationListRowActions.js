@@ -1,6 +1,7 @@
 /** Single-item action handlers (sort, archive, delete, undo) for ApplicationList. */
 
 import { useCallback } from "react";
+import { toast } from "sonner";
 
 import { KEYS } from "./useApplications";
 
@@ -29,7 +30,10 @@ export function useApplicationListRowActions(data) {
     );
     archiveMutation.mutate(id, {
       onSuccess: () => setUndoAction({ type: "archive", id }),
-      onError: () => queryClient.setQueryData(KEYS.list(queryFilters), previousData),
+      onError: () => {
+        queryClient.setQueryData(KEYS.list(queryFilters), previousData);
+        toast.error("Couldn't archive — undone");
+      },
     });
   }, [archiveMutation, queryClient, queryFilters, setUndoAction]);
 
@@ -42,7 +46,10 @@ export function useApplicationListRowActions(data) {
     );
     deleteMutation.mutate(id, {
       onSuccess: () => setUndoAction({ type: "delete", id }),
-      onError: () => queryClient.setQueryData(KEYS.list(queryFilters), previousData),
+      onError: () => {
+        queryClient.setQueryData(KEYS.list(queryFilters), previousData);
+        toast.error("Couldn't delete — undone");
+      },
     });
   }, [deleteMutation, queryClient, queryFilters, setUndoAction]);
 

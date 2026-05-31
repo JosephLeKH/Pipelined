@@ -100,4 +100,66 @@ describe("MockInterviewPanel", () => {
     expect(screen.getByText(/Strong storytelling/i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /start new session/i })).toBeInTheDocument();
   });
+
+  it("should render saved session view when application.mock_interview is populated", () => {
+    const mockInterview = {
+      completed_at: new Date().toISOString(),
+      debrief: "Good execution, work on follow-ups.",
+      transcript: [
+        { role: "assistant", content: "Describe your recent project." },
+        { role: "user", content: "I led the Pipelined redesign." },
+      ],
+    };
+
+    render(
+      <MockInterviewPanel
+        applicationId="app1"
+        application={{ mock_interview: mockInterview }}
+      />
+    );
+
+    expect(screen.getByText("Last session saved")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /view saved session/i })).toBeInTheDocument();
+  });
+
+  it("should show view saved session button when saved interview exists", async () => {
+    const mockInterview = {
+      completed_at: new Date().toISOString(),
+      debrief: "Good execution, work on follow-ups.",
+      transcript: [
+        { role: "assistant", content: "Describe your recent project." },
+        { role: "user", content: "I led the Pipelined redesign." },
+      ],
+    };
+
+    render(
+      <MockInterviewPanel
+        applicationId="app1"
+        application={{ mock_interview: mockInterview }}
+      />
+    );
+
+    expect(screen.getByRole("button", { name: /view saved session/i })).toBeInTheDocument();
+  });
+
+  it("should allow starting new session from idle state", async () => {
+    const user = userEvent.setup();
+    const mockInterview = {
+      completed_at: new Date().toISOString(),
+      debrief: "Good execution.",
+      transcript: [{ role: "assistant", content: "Question?" }],
+    };
+
+    render(
+      <MockInterviewPanel
+        applicationId="app1"
+        application={{ mock_interview: mockInterview }}
+      />
+    );
+
+    const startButton = screen.getByRole("button", { name: /start mock interview/i });
+    await user.click(startButton);
+
+    expect(mockStartSession).toHaveBeenCalledOnce();
+  });
 });

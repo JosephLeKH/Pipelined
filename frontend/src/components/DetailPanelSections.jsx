@@ -1,6 +1,7 @@
 /** Extracted detail panel sections: fields, tags, follow-up date, prep checklist, stage picker. */
 
 import { useState, useCallback } from "react";
+import { toast } from "sonner";
 
 import AlertTriangle from "lucide-react/dist/esm/icons/alert-triangle";
 import ChevronDown from "lucide-react/dist/esm/icons/chevron-down";
@@ -191,7 +192,13 @@ export function ApplicationPrepSection({ applicationId, initialChecklist }) {
         const updated = prev.map((item) =>
           item.id === itemId ? { ...item, checked: !item.checked } : item
         );
-        updateApp({ id: applicationId, body: { prep_checklist: updated } });
+        const original = prev;
+        updateApp({ id: applicationId, body: { prep_checklist: updated } }, {
+          onError: () => {
+            setChecklist(original);
+            toast.error("Couldn't update checklist");
+          },
+        });
         return updated;
       });
     },
@@ -202,7 +209,13 @@ export function ApplicationPrepSection({ applicationId, initialChecklist }) {
     (text) => {
       setChecklist((prev) => {
         const updated = [...prev, { id: crypto.randomUUID(), text, checked: false }];
-        updateApp({ id: applicationId, body: { prep_checklist: updated } });
+        const original = prev;
+        updateApp({ id: applicationId, body: { prep_checklist: updated } }, {
+          onError: () => {
+            setChecklist(original);
+            toast.error("Couldn't add item");
+          },
+        });
         return updated;
       });
     },
@@ -213,7 +226,13 @@ export function ApplicationPrepSection({ applicationId, initialChecklist }) {
     (itemId) => {
       setChecklist((prev) => {
         const updated = prev.filter((item) => item.id !== itemId);
-        updateApp({ id: applicationId, body: { prep_checklist: updated } });
+        const original = prev;
+        updateApp({ id: applicationId, body: { prep_checklist: updated } }, {
+          onError: () => {
+            setChecklist(original);
+            toast.error("Couldn't delete item");
+          },
+        });
         return updated;
       });
     },

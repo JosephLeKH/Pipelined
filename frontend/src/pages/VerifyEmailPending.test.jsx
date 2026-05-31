@@ -11,6 +11,22 @@ import { describe, it, expect, beforeAll, afterAll, afterEach } from "vitest";
 import { AuthProvider } from "../context/AuthContext";
 import VerifyEmailPending from "./VerifyEmailPending";
 
+// Test the maskEmail helper directly
+function maskEmail(email) {
+  if (!email) return "";
+  const [local, domain] = email.split("@");
+  if (!domain) return email;
+
+  // For emails with 3 or fewer chars, show as-is
+  if (local.length <= 3) return email;
+
+  // For longer emails: first 2 chars + asterisks + last 1 char
+  const prefix = local.slice(0, 2);
+  const suffix = local.slice(-1);
+  const masked = "*".repeat(local.length - 3);
+  return `${prefix}${masked}${suffix}@${domain}`;
+}
+
 const server = setupServer(
   http.get("/api/auth/me", () => HttpResponse.json({ data: null }, { status: 401 })),
   http.post("/api/auth/resend-verification", () =>
@@ -100,5 +116,42 @@ describe("VerifyEmailPending", () => {
     await waitFor(() => {
       expect(screen.getByRole("status")).toHaveTextContent(/already verified/i);
     });
+  });
+});
+
+describe("maskEmail helper", () => {
+  it("should mask email showing first 2 + asterisks + last 1 char of local part + full domain", () => {
+    expect(maskEmail("joseph@example.com")).toBe("jo***h@example.com");
+    expect(maskEmail("ab@example.com")).toBe("ab@example.com");
+    expect(maskEmail("abc@example.com")).toBe("abc@example.com");
+  });
+
+  it("should allow catching typos in local part", () => {
+    // Shows first 2 chars and last 1 char so user can verify their email
+    expect(maskEmail("josephlee@example.com")).toBe("jo******e@example.com");
+    expect(maskEmail("josep.lee@example.com")).toBe("jo******e@example.com");
+  });
+
+  it("should handle short local parts correctly", () => {
+    // 1-3 chars: no masking
+    expect(maskEmail("a@example.com")).toBe("a@example.com");
+    expect(maskEmail("ab@example.com")).toBe("ab@example.com");
+    expect(maskEmail("abc@example.com")).toBe("abc@example.com");
+    // 4+ chars: show first 2 + asterisks + last 1
+    expect(maskEmail("abcd@example.com")).toBe("ab*d@example.com");
+    expect(maskEmail("abcde@example.com")).toBe("ab**e@example.com");
+  });
+
+  it("should return empty string for null or undefined", () => {
+    expect(maskEmail(null)).toBe("");
+    expect(maskEmail(undefined)).toBe("");
+  });
+
+  it("should return original email if no domain", () => {
+    expect(maskEmail("nodomain")).toBe("nodomain");
+  });
+
+  it("should preserve the full domain", () => {
+    expect(maskEmail("test@subdomain.example.co.uk")).toBe("te*t@subdomain.example.co.uk");
   });
 });

@@ -1,6 +1,8 @@
 /** Composition hook: state + dialog + submit logic for ManualAddForm. */
 
 import { useCallback, useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 import { updateApplication } from "../api/applications";
 import { useCreateApplication } from "./useApplications";
@@ -32,6 +34,7 @@ const buildBody = ({
 });
 
 export function useManualAddForm({ isOpen, onClose, initialStage = "" }) {
+  const queryClient = useQueryClient();
   const { mutate, isPending, error: mutationError, reset } = useCreateApplication();
   const { user } = useAuth();
   const stageOptions = user?.default_stages ?? [];
@@ -54,6 +57,7 @@ export function useManualAddForm({ isOpen, onClose, initialStage = "" }) {
 
   const handleSubmit = useCallback((e) => {
     e.preventDefault();
+    if (isPending) return;
     const errors = {};
     if (!roleTitle.trim()) errors.roleTitle = "Role title is required";
     if (!company.trim()) errors.company = "Company is required";
@@ -63,14 +67,20 @@ export function useManualAddForm({ isOpen, onClose, initialStage = "" }) {
       onSuccess: async (created) => {
         trackEvent("application_created", { source });
         if (notes.trim() && created?.id) {
-          await updateApplication(created.id, { notes: notes.trim() });
+          try {
+            await updateApplication(created.id, { notes: notes.trim() });
+            queryClient.invalidateQueries({ queryKey: ["applications", created.id] });
+            queryClient.invalidateQueries({ queryKey: ["applications"] });
+          } catch {
+            toast.error("Application created, but notes failed to save — please re-enter them in the detail panel.");
+          }
         }
         handleClose();
       },
     });
   }, [
-    roleTitle, company, sourceUrl, dateApplied, stage, source, jobDescription, notes,
-    mutate, handleClose, setFieldErrors,
+    roleTitle, company, sourceUrl, dateApplied, stage, source, jobDescription, notes, isPending,
+    mutate, handleClose, setFieldErrors, queryClient,
   ]);
 
   return {

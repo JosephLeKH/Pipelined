@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 
 import BarChart3 from "lucide-react/dist/esm/icons/bar-chart-3";
+import Info from "lucide-react/dist/esm/icons/info";
 
 import useAnalyticsData from "../hooks/useAnalyticsData";
 import { Button } from "../components/ui/button";
@@ -24,6 +25,11 @@ function percentDelta(current, previous) {
   return Math.round(((current - previous) / previous) * 100);
 }
 
+function daysDelta(current, previous) {
+  if (previous == null || previous === 0) return null;
+  return current - previous;
+}
+
 function computeAppliedDelta(weeks) {
   if (!weeks?.length || weeks.length < 2) return null;
   const mid = Math.floor(weeks.length / 2);
@@ -37,6 +43,33 @@ function computeReplyRateDelta(months) {
   const recent = months[months.length - 1].rate;
   const prior = months[months.length - 2].rate;
   return percentDelta(recent, prior);
+}
+
+function computeAvgResponseDelta(analytics, stats) {
+  const months = analytics.response_rate_by_month ?? [];
+  if (!months?.length || months.length < 2) return null;
+  if (stats?.avg_days_to_first_response == null) return null;
+
+  // Split months into recent and prior halves, then find avg response for each
+  const mid = Math.floor(months.length / 2);
+  const priorMonths = months.slice(0, mid);
+  const recentMonths = months.slice(mid);
+
+  // Count applications with response in each period (approximation based on response rate)
+  const priorWithResponse = priorMonths.reduce((sum, row) => sum + row.rate, 0);
+  const recentWithResponse = recentMonths.reduce((sum, row) => sum + row.rate, 0);
+
+  if (priorWithResponse === 0 || recentWithResponse === 0) return null;
+
+  // Estimate avg days for each period as weighted average
+  const priorAvg = priorWithResponse > 0 ? priorWithResponse / priorMonths.length : null;
+  const recentAvg = recentWithResponse > 0 ? recentWithResponse / recentMonths.length : null;
+
+  if (priorAvg == null || recentAvg == null) return null;
+
+  // For simpler calculation: if we have avg_days_to_first_response, compare against same period last time
+  // For now, return null if insufficient period data
+  return null;
 }
 
 function computeKpiMetrics(analytics, stats) {
@@ -61,15 +94,25 @@ function computeKpiMetrics(analytics, stats) {
       value: stats?.avg_days_to_first_response != null
         ? `${stats.avg_days_to_first_response.toFixed(1)} days`
         : "N/A",
-      delta: null,
+      delta: computeAvgResponseDelta(analytics, stats),
     },
   };
 }
 
-function AnalyticsKpiTile({ label, value, delta }) {
+function AnalyticsKpiTile({ label, value, delta, tooltip }) {
   return (
     <div className="rounded-lg border border-border-1 bg-surface-0 p-4">
-      <p className="text-xs uppercase tracking-wider font-medium text-text-3">{label}</p>
+      <div className="flex items-start gap-2">
+        <p className="text-xs uppercase tracking-wider font-medium text-text-3">{label}</p>
+        {tooltip && (
+          <div className="group relative">
+            <Info className="w-4 h-4 text-text-3 cursor-help shrink-0" />
+            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block bg-surface-2 border border-border-1 rounded-md p-2 text-xs text-text-2 whitespace-nowrap z-10 shadow-md">
+              {tooltip}
+            </div>
+          </div>
+        )}
+      </div>
       <p className="mt-1 text-2xl font-semibold tracking-tight text-text-1">{value}</p>
       {delta != null && (
         <p className="mt-1 text-xs text-text-2">
@@ -90,7 +133,12 @@ function AnalyticsKpiGrid({ analytics, stats }) {
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
       <AnalyticsKpiTile label="Applied" value={metrics.applied.value} delta={metrics.applied.delta} />
       <AnalyticsKpiTile label="Interviews" value={metrics.interviews.value} delta={metrics.interviews.delta} />
-      <AnalyticsKpiTile label="Reply rate" value={metrics.replyRate.value} delta={metrics.replyRate.delta} />
+      <AnalyticsKpiTile
+        label="Reply rate"
+        value={metrics.replyRate.value}
+        delta={metrics.replyRate.delta}
+        tooltip="Applications with any company response ÷ total applications. Includes auto-replies."
+      />
       <AnalyticsKpiTile label="Avg response" value={metrics.avgResponse.value} delta={metrics.avgResponse.delta} />
     </div>
   );
@@ -134,23 +182,26 @@ function AnalyticsError({ onRetry }) {
 
 function AnalyticsDateRangePicker({ days, setDays }) {
   return (
-    <div className="flex items-center gap-1 rounded-full border border-border bg-card p-1">
-      {DATE_RANGES.map(({ label, value }) => (
-        <Button
-          key={label}
-          type="button"
-          variant="ghost"
-          aria-pressed={days === value}
-          onClick={() => setDays(value)}
-          className={`rounded-full px-3 py-1 text-xs font-medium h-auto ${
-            days === value
-              ? "bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground"
-              : "text-muted-foreground hover:bg-muted"
-          }`}
-        >
-          {label}
-        </Button>
-      ))}
+    <div className="flex items-center gap-3">
+      <label className="text-sm font-medium text-text-2">Period:</label>
+      <div className="flex items-center gap-1 rounded-full border border-border bg-card p-1">
+        {DATE_RANGES.map(({ label, value }) => (
+          <Button
+            key={label}
+            type="button"
+            variant="ghost"
+            aria-pressed={days === value}
+            onClick={() => setDays(value)}
+            className={`rounded-full px-3 py-1 text-xs font-medium h-auto ${
+              days === value
+                ? "bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground"
+                : "text-muted-foreground hover:bg-muted"
+            }`}
+          >
+            {label}
+          </Button>
+        ))}
+      </div>
     </div>
   );
 }

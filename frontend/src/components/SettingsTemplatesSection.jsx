@@ -10,10 +10,21 @@ import X from "lucide-react/dist/esm/icons/x";
 import { useDeleteTemplate, useTemplates, useUpdateTemplate } from "../hooks/useTemplates";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "./ui/alert-dialog";
 
 function TemplateRow({ template }) {
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(template.name);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const { mutate: updateMutate, isPending: isUpdating } = useUpdateTemplate();
   const { mutate: deleteMutate, isPending: isDeleting } = useDeleteTemplate();
 
@@ -33,6 +44,11 @@ function TemplateRow({ template }) {
   const handleKeyDown = (e) => {
     if (e.key === "Enter") handleRename();
     if (e.key === "Escape") { setName(template.name); setEditing(false); }
+  };
+
+  const handleDeleteConfirm = () => {
+    deleteMutate(template.id);
+    setDeleteDialogOpen(false);
   };
 
   const fieldSummary = [
@@ -113,7 +129,7 @@ function TemplateRow({ template }) {
           type="button"
           variant="ghost"
           size="icon"
-          onClick={() => deleteMutate(template.id)}
+          onClick={() => setDeleteDialogOpen(true)}
           disabled={isDeleting}
           aria-label={`Delete ${template.name}`}
           className="h-7 w-7 text-muted-foreground/50 hover:bg-destructive/10 hover:text-destructive"
@@ -121,6 +137,26 @@ function TemplateRow({ template }) {
           <Trash2 className="h-4 w-4" />
         </Button>
       </div>
+
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete template?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Delete "{template.name}"? This cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteConfirm}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

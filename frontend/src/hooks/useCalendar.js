@@ -1,6 +1,7 @@
 /** React Query hooks for calendar event data. */
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 import { createEvent, deleteEvent, fetchEvents, updateEvent } from "../api/calendar";
 import { CALENDAR_STALE_TIME_MS } from "../lib/constants";
@@ -39,6 +40,10 @@ export function useCreateEvent() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: CALENDAR_KEYS.all });
     },
+    onError: (error) => {
+      const message = error?.message ?? "Couldn't create event";
+      toast.error(message);
+    },
   });
 }
 
@@ -50,6 +55,10 @@ export function useUpdateEvent() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: CALENDAR_KEYS.all });
     },
+    onError: (error) => {
+      const message = error?.message ?? "Couldn't update event";
+      toast.error(message);
+    },
   });
 }
 
@@ -60,6 +69,10 @@ export function useDeleteEvent() {
     mutationFn: (id) => deleteEvent(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: CALENDAR_KEYS.all });
+    },
+    onError: (error) => {
+      const message = error?.message ?? "Couldn't delete event";
+      toast.error(message);
     },
   });
 }

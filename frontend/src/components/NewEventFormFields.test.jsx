@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { NewEventFormFields } from "./NewEventFormFields";
@@ -14,6 +14,16 @@ const BASE_PROPS = {
   setNotes: vi.fn(),
   formError: null,
 };
+
+beforeEach(() => {
+  vi.useFakeTimers({ shouldAdvanceTime: true });
+  // Use a safe local date: new Date(year, month, day) avoids timezone issues
+  vi.setSystemTime(new Date(2026, 4, 30)); // May 30, 2026
+});
+
+afterEach(() => {
+  vi.useRealTimers();
+});
 
 describe("NewEventFormFields", () => {
   it("should render event type select with bound value", () => {
@@ -52,5 +62,32 @@ describe("NewEventFormFields", () => {
     render(<NewEventFormFields {...BASE_PROPS} formError="Date is required" />);
 
     expect(screen.getByText("Date is required")).toBeInTheDocument();
+  });
+
+  it("should set min attribute on date input to today", () => {
+    render(<NewEventFormFields {...BASE_PROPS} />);
+
+    expect(screen.getByLabelText(/^date$/i)).toHaveAttribute("min", "2026-05-30");
+  });
+
+  it("should show past-date validation error when date is before today", () => {
+    render(<NewEventFormFields {...BASE_PROPS} date="2026-05-29" />);
+
+    expect(screen.getByRole("alert")).toHaveTextContent("Date cannot be in the past");
+  });
+
+  it("should not show past-date error when date is today or later", () => {
+    render(<NewEventFormFields {...BASE_PROPS} date="2026-05-30" />);
+
+    expect(screen.queryByText("Date cannot be in the past")).not.toBeInTheDocument();
+  });
+
+  it("should include past-date error in aria-describedby", () => {
+    render(<NewEventFormFields {...BASE_PROPS} date="2026-05-01" />);
+
+    expect(screen.getByLabelText(/^date$/i)).toHaveAttribute(
+      "aria-describedby",
+      expect.stringContaining("event-form-error")
+    );
   });
 });

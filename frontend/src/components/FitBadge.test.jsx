@@ -18,7 +18,7 @@ describe("FitBadge", () => {
     expect(container).toBeEmptyDOMElement();
   });
 
-  it("should show sparkle and text-text-1 for high fit score (70-100)", () => {
+  it("should show sparkle and text-text-1 for strong fit score (80-100)", () => {
     render(<FitBadge score={85} />);
     const badge = screen.getByTestId("fit-badge");
 
@@ -29,15 +29,15 @@ describe("FitBadge", () => {
     expect(badge.querySelector(".text-text-1")).toBeInTheDocument();
   });
 
-  it("should show sparkle at score exactly 70", () => {
-    render(<FitBadge score={70} />);
+  it("should show sparkle at score exactly 80", () => {
+    render(<FitBadge score={80} />);
     const badge = screen.getByTestId("fit-badge");
 
     expect(badge.querySelector("svg")).toBeInTheDocument();
     expect(badge.querySelector(".text-text-1")).toBeInTheDocument();
   });
 
-  it("should not show sparkle for medium fit score (40-69)", () => {
+  it("should not show sparkle for good fit score (60-79)", () => {
     render(<FitBadge score={65} />);
     const badge = screen.getByTestId("fit-badge");
 
@@ -46,8 +46,8 @@ describe("FitBadge", () => {
     expect(badge.querySelector(".text-text-2")).toBeInTheDocument();
   });
 
-  it("should use text-text-2 for score exactly at 40", () => {
-    render(<FitBadge score={40} />);
+  it("should use text-text-2 for score exactly at 60", () => {
+    render(<FitBadge score={60} />);
     const badge = screen.getByTestId("fit-badge");
 
     expect(badge.querySelector(".text-text-2")).toBeInTheDocument();
@@ -70,10 +70,18 @@ describe("FitBadge", () => {
     expect(badge.querySelector(".text-text-3")).toBeInTheDocument();
   });
 
-  it("should have correct aria-label for a numeric score", () => {
+  it("should have correct data-testid for a numeric score", () => {
     render(<FitBadge score={72} />);
     const badge = screen.getByTestId("fit-badge");
 
-    expect(badge).toHaveAttribute("aria-label", "Fit score: 72%");
+    expect(badge).toBeInTheDocument();
+    expect(badge).toHaveTextContent("72%");
+  });
+
+  it("should have tooltip with fit score legend", () => {
+    render(<FitBadge score={72} />);
+    const badge = screen.getByTestId("fit-badge");
+
+    expect(badge).toHaveClass("cursor-help");
   });
 });

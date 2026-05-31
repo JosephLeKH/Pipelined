@@ -2,11 +2,23 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 
+import { toast } from "sonner";
+
 import { useUpdateApplication } from "../hooks/useApplications";
 import { NOTES_MAX_LENGTH } from "../lib/constants";
 import { formatSavedAgo } from "../lib/dateUtils";
 import { cn } from "../lib/utils";
 import MarkdownEditor from "./MarkdownEditor";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "./ui/alert-dialog";
 
 const AMBER_PCT = 0.8;
 const SAVE_STATUS_IDLE = "idle";
@@ -41,6 +53,8 @@ function NotesEditor({ applicationId, initialValue, onDirtyChange }) {
   const [savedAt, setSavedAt] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [, setTick] = useState(0);
+  const [discardDialogOpen, setDiscardDialogOpen] = useState(false);
+  const [pendingDraft, setPendingDraft] = useState(null);
 
   useEffect(() => {
     setSavedValue(initialValue ?? "");
@@ -82,7 +96,46 @@ function NotesEditor({ applicationId, initialValue, onDirtyChange }) {
 
   const handleEditorBlur = (e) => {
     if (containerRef.current?.contains(e.relatedTarget)) return;
-    saveNotes();
+    const isDirty = draft.trim() !== savedValue;
+    if (isDirty) {
+      setPendingDraft(draft);
+      setDiscardDialogOpen(true);
+    } else {
+      saveNotes();
+    }
+  };
+
+  const handleDiscardConfirm = useCallback(() => {
+    setDraft(savedValue);
+    setDiscardDialogOpen(false);
+    const discardedDraft = pendingDraft;
+    const appIdAtDiscard = applicationId;
+    setPendingDraft(null);
+    toast.custom((toastId) => (
+      <div className="rounded-lg border border-border bg-card p-4 text-sm shadow-lg">
+        <p className="mb-2 text-text-1">Notes discarded.</p>
+        <button
+          type="button"
+          onClick={() => {
+            if (appIdAtDiscard !== applicationId) {
+              toast.error("Can't restore notes — different application");
+              toast.dismiss(toastId);
+              return;
+            }
+            setDraft(discardedDraft);
+            toast.dismiss(toastId);
+          }}
+          className="text-brand-600 hover:text-brand-700 font-medium dark:text-brand-400"
+        >
+          Undo
+        </button>
+      </div>
+    ));
+  }, [applicationId, savedValue, pendingDraft]);
+
+  const handleKeepEditing = () => {
+    setDiscardDialogOpen(false);
+    setPendingDraft(null);
   };
 
   const charPct = draft.length / NOTES_MAX_LENGTH;
@@ -93,34 +146,58 @@ function NotesEditor({ applicationId, initialValue, onDirtyChange }) {
       : "text-text-3";
 
   return (
-    <div className="flex flex-col gap-1.5" data-testid="notes-editor">
-      <label className="text-xs font-medium uppercase text-text-3" htmlFor="notes-textarea">
-        Notes
-      </label>
-      {errorMsg && saveStatus === SAVE_STATUS_ERROR && (
-        <p role="alert" className="text-xs text-brand-700">{errorMsg}</p>
-      )}
-      <div
-        ref={containerRef}
-        className={cn(
-          "rounded-md border border-transparent transition-[background-color,border-color]",
-          "duration-hover ease-out motion-safe focus-within:border-border-1 focus-within:bg-surface-1",
+    <>
+      <div className="flex flex-col gap-1.5" data-testid="notes-editor">
+        <label className="text-xs font-medium uppercase text-text-3" htmlFor="notes-textarea">
+          Notes
+        </label>
+        {errorMsg && saveStatus === SAVE_STATUS_ERROR && (
+          <p role="alert" className="text-xs text-brand-700">{errorMsg}</p>
         )}
-      >
-        <MarkdownEditor
-          id="notes-textarea"
-          value={draft}
-          onChange={setDraft}
-          maxLength={NOTES_MAX_LENGTH}
-          className="px-2 pb-2 pt-1"
-          onBlur={handleEditorBlur}
-        />
+        <div
+          ref={containerRef}
+          className={cn(
+            "rounded-md border border-transparent transition-[background-color,border-color]",
+            "duration-hover ease-out motion-safe focus-within:border-border-1 focus-within:bg-surface-1",
+          )}
+        >
+          <MarkdownEditor
+            id="notes-textarea"
+            value={draft}
+            onChange={setDraft}
+            maxLength={NOTES_MAX_LENGTH}
+            className="px-2 pb-2 pt-1"
+            onBlur={handleEditorBlur}
+          />
+        </div>
+        <div className="flex items-center justify-between">
+          <span className={`text-xs ${charCls}`}>{draft.length}/{NOTES_MAX_LENGTH}</span>
+          <NotesSaveStatus saveStatus={saveStatus} savedAt={savedAt} errorMsg={errorMsg} />
+        </div>
       </div>
-      <div className="flex items-center justify-between">
-        <span className={`text-xs ${charCls}`}>{draft.length}/{NOTES_MAX_LENGTH}</span>
-        <NotesSaveStatus saveStatus={saveStatus} savedAt={savedAt} errorMsg={errorMsg} />
-      </div>
-    </div>
+
+      <AlertDialog open={discardDialogOpen} onOpenChange={setDiscardDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Unsaved notes</AlertDialogTitle>
+            <AlertDialogDescription>
+              You have unsaved changes. Keep editing or discard?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={handleKeepEditing}>
+              Keep editing
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDiscardConfirm}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Discard
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }
 

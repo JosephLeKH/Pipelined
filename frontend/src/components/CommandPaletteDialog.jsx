@@ -38,7 +38,7 @@ function CommandPaletteDialog({
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Type a command or search…"
+            placeholder="Type a command or search… (⌘K)"
             aria-label="Search commands"
             className="h-12 w-full rounded-none border-0 bg-transparent px-0 text-base text-text-1 shadow-none focus-visible:ring-0"
           />

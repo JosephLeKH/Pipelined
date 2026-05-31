@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import AiFitSection from "./AiFitSection";
 
@@ -22,6 +23,8 @@ const APPLICATION = {
   fit_score: null,
   fit_score_reason: null,
   ai_analysis: null,
+  fit_score_status: null,
+  fit_score_requested_at: null,
 };
 
 const ANALYSIS_FIXTURE = {
@@ -91,5 +94,76 @@ describe("AiFitSection", () => {
     });
 
     expect(screen.getByRole("button", { name: /analyze fit/i })).toBeInTheDocument();
+  });
+
+  it("should show source attribution line", () => {
+    renderSection({
+      application: { ...APPLICATION, date_applied: "2020-01-01T00:00:00Z" },
+      hasResume: true,
+      aiScoresRemainingToday: 5,
+      onScoreGenerated: vi.fn(),
+    });
+
+    expect(screen.getByText(/based on your resume.*this job description/i)).toBeInTheDocument();
+  });
+
+  it("should show error message and Retry button when fit_score_status === error", async () => {
+    const user = userEvent.setup();
+    const onScoreGenerated = vi.fn();
+    const { generateFitScore } = await import("../api/applications");
+
+    renderSection({
+      application: { ...APPLICATION, fit_score_status: "error" },
+      hasResume: true,
+      aiScoresRemainingToday: 5,
+      onScoreGenerated,
+    });
+
+    expect(screen.getByText(/fit score calculation failed/i)).toBeInTheDocument();
+    const retryButton = screen.getByRole("button", { name: /retry fit score/i });
+    expect(retryButton).toBeInTheDocument();
+
+    // Click retry
+    await user.click(retryButton);
+
+    expect(generateFitScore).toHaveBeenCalledWith("app1");
+  });
+
+  it("should show 'Taking longer than expected' message when pending > 60s", async () => {
+    const now = Date.now();
+    const sixtySecondsAgo = new Date(now - 61000).toISOString();
+
+    renderSection({
+      application: {
+        ...APPLICATION,
+        fit_score_status: "pending",
+        fit_score_requested_at: sixtySecondsAgo,
+      },
+      hasResume: true,
+      aiScoresRemainingToday: 5,
+      onScoreGenerated: vi.fn(),
+    });
+
+    expect(screen.getByText(/taking longer than expected/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /retry fit score/i })).toBeInTheDocument();
+  });
+
+  it("should not show 'Taking longer than expected' when pending < 60s", () => {
+    const now = Date.now();
+    const thirtySecondsAgo = new Date(now - 30000).toISOString();
+
+    renderSection({
+      application: {
+        ...APPLICATION,
+        fit_score_status: "pending",
+        fit_score_requested_at: thirtySecondsAgo,
+      },
+      hasResume: true,
+      aiScoresRemainingToday: 5,
+      onScoreGenerated: vi.fn(),
+    });
+
+    expect(screen.queryByText(/taking longer than expected/i)).not.toBeInTheDocument();
+    expect(screen.getByLabelText("Calculating fit score")).toBeInTheDocument(); // shimmer
   });
 });

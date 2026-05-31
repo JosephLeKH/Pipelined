@@ -74,4 +74,25 @@ describe("useCopilotChat", () => {
     const savedPayload = vi.mocked(saveCopilotSession).mock.calls.at(-1)?.[0] ?? [];
     expect(savedPayload.some((msg) => msg.content === "Hello back")).toBe(true);
   });
+
+  it("should include current messages in history on send", async () => {
+    vi.mocked(streamCopilotChat).mockImplementation(async (_payload, { onDone }) => {
+      onDone({ content: "Response", actions: [] });
+    });
+
+    const { result } = renderHook(() => useCopilotChat(), { wrapper });
+
+    await act(async () => {
+      await result.current.sendMessage("First message");
+    });
+
+    await waitFor(() => {
+      expect(result.current.messages).toHaveLength(2);
+    });
+
+    // Verify message dependency is in closure - history should be built from current messages state
+    expect(result.current.messages).toHaveLength(2);
+    expect(result.current.messages[0].role).toBe("user");
+    expect(result.current.messages[0].content).toBe("First message");
+  });
 });

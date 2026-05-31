@@ -67,12 +67,12 @@ describe("SettingsUsageSection", () => {
     expect(fill).toHaveClass("bg-status-warn");
   });
 
-  it("should use brand-700 fill and Upgrade CTA when usage reaches limit", () => {
+  it("should use brand-700 fill when usage reaches limit and show paid plans message", () => {
     renderSection({ application_count: 100, contact_count: 0, ai_scores_today: 0 });
 
     const fill = barFill(screen.getByRole("progressbar", { name: "Applications" }));
     expect(fill).toHaveClass("bg-brand-700");
-    expect(screen.getByRole("button", { name: "Upgrade" })).toBeInTheDocument();
+    expect(screen.getByText("Paid plans are not yet available.")).toBeInTheDocument();
   });
 
   it("should use brand-600 fill below 80 percent usage", () => {

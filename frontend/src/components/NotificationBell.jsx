@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 import Bell from "lucide-react/dist/esm/icons/bell";
 import BookOpen from "lucide-react/dist/esm/icons/book-open";
@@ -38,22 +39,13 @@ const TYPE_ICON_COLORS = {
 function UnreadIndicator({ unreadCount }) {
   if (unreadCount <= 0) return null;
 
-  if (unreadCount > UNREAD_PILL_THRESHOLD) {
-    return (
-      <span
-        aria-hidden="true"
-        className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-brand-600 px-1 text-[0.625rem] font-semibold leading-none text-white"
-      >
-        9+
-      </span>
-    );
-  }
-
   return (
     <span
       aria-hidden="true"
-      className="absolute right-[0.1875rem] top-[0.1875rem] h-1.5 w-1.5 rounded-full bg-brand-600"
-    />
+      className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-brand-600 px-1 text-[0.625rem] font-semibold leading-none text-white"
+    >
+      {unreadCount > UNREAD_PILL_THRESHOLD ? `${UNREAD_PILL_THRESHOLD}+` : unreadCount}
+    </span>
   );
 }
 
@@ -65,7 +57,9 @@ function NotificationItem({ notification, onNavigate }) {
 
   function handleClick() {
     if (!notification.read) {
-      markRead(notification.id);
+      markRead(notification.id, {
+        onError: () => toast.error("Couldn't mark as read"),
+      });
     }
     if (notification.action_url) {
       onNavigate(notification.action_url);
@@ -77,13 +71,12 @@ function NotificationItem({ notification, onNavigate }) {
       <button
         type="button"
         onClick={handleClick}
-        className="flex h-14 w-full items-center gap-3 border-b border-border-1 bg-surface-0 px-4 text-left hover:bg-surface-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 focus-visible:outline-offset-[-2px] dark:focus-visible:outline-1"
-        style={{ minHeight: `${NOTIFICATION_ROW_HEIGHT_PX}px` }}
+        className="flex h-14 w-full items-start gap-3 border-b border-border-1 bg-surface-0 px-4 py-3 text-left hover:bg-surface-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 focus-visible:outline-offset-[-2px] dark:focus-visible:outline-1"
       >
-        <Icon className={`h-4 w-4 shrink-0 ${iconColor}`} aria-hidden="true" />
+        <Icon className={`h-4 w-4 shrink-0 mt-0.5 ${iconColor}`} aria-hidden="true" />
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-medium text-text-1">{notification.title}</p>
-          <p className="mt-0.5 truncate text-xs text-text-2">{notification.body}</p>
+          <p className="mt-0.5 line-clamp-2 text-xs text-text-2">{notification.body}</p>
         </div>
         <div className="flex shrink-0 items-center gap-2">
           {timeLabel ? (
@@ -119,10 +112,13 @@ function NotificationBell() {
   const navigate = useNavigate();
 
   const { data: unreadData } = useUnreadCount();
-  const { data: notifications = [] } = useNotifications();
+  const { data: notifications = [], realtimeOffline } = useNotifications();
   const { mutate: markAllRead } = useMarkAllRead();
 
   const unreadCount = unreadData?.count ?? 0;
+  const tooltipText = realtimeOffline
+    ? "Live updates offline — refreshing every 60s"
+    : `Notifications${unreadCount > 0 ? `, ${unreadCount} unread` : ""}`;
 
   function handleNotificationNavigate(actionUrl) {
     setOpen(false);
@@ -149,7 +145,8 @@ function NotificationBell() {
         type="button"
         variant="ghost"
         size="icon"
-        aria-label={`Notifications${unreadCount > 0 ? `, ${unreadCount} unread` : ""}`}
+        aria-label={tooltipText}
+        title={tooltipText}
         aria-haspopup="true"
         aria-expanded={open}
         onClick={() => setOpen((prev) => !prev)}
@@ -170,12 +167,16 @@ function NotificationBell() {
           }}
         >
           <div className="flex items-center justify-between border-b border-border-1 px-4 py-2.5">
-            <h3 className="text-sm font-semibold text-text-1">Notifications</h3>
+            <h3 className="text-sm font-semibold text-text-1">
+              Notifications {unreadCount > 0 ? `(${unreadCount} unread)` : ""}
+            </h3>
             {unreadCount > 0 && (
               <Button
                 type="button"
                 variant="link"
-                onClick={() => markAllRead()}
+                onClick={() => markAllRead({}, {
+                  onError: () => toast.error("Couldn't mark all read"),
+                })}
                 className="h-auto p-0 text-xs text-brand-600"
               >
                 Mark all read

@@ -39,9 +39,9 @@ function parseSseChunk(buffer, onEvent) {
  * Stream a mock interview turn or debrief.
  * @param {string} appId
  * @param {{ message?: string, history?: Array<{role:string, content:string}>, end_session?: boolean }} payload
- * @param {{ onToken: Function, onDone: Function, onError: Function, signal?: AbortSignal }} handlers
+ * @param {{ onToken: Function, onDone: Function, onDebrief?: Function, onError: Function, signal?: AbortSignal }} handlers
  */
-export async function streamMockInterview(appId, payload, { onToken, onDone, onError, signal }) {
+export async function streamMockInterview(appId, payload, { onToken, onDone, onDebrief, onError, signal }) {
   const csrf = getCookie(CSRF_COOKIE_NAME);
   const headers = { "Content-Type": "application/json" };
   if (csrf) headers[CSRF_HEADER_NAME] = csrf;
@@ -87,6 +87,7 @@ export async function streamMockInterview(appId, payload, { onToken, onDone, onE
     buffer = parseSseChunk(buffer, (eventType, data) => {
       if (eventType === "token") onToken(data);
       else if (eventType === "done") onDone(data);
+      else if (eventType === "debrief" && onDebrief) onDebrief(data);
       else if (eventType === "error") onError(data);
     });
   }
@@ -94,6 +95,7 @@ export async function streamMockInterview(appId, payload, { onToken, onDone, onE
     parseSseChunk(`${buffer}\n\n`, (eventType, data) => {
       if (eventType === "token") onToken(data);
       else if (eventType === "done") onDone(data);
+      else if (eventType === "debrief" && onDebrief) onDebrief(data);
       else if (eventType === "error") onError(data);
     });
   }

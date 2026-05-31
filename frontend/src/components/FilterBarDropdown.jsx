@@ -41,11 +41,18 @@ export function MultiSelectFilterDropdown({
   allLabel = "All",
 }) {
   const displayValue = formatMultiSelectLabel(selected, allLabel);
+  // Show active state: dot indicator + bold if filter is set
+  const isActive = selected.length > 0;
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger type="button" className={TRIGGER_CLASS}>
-        <TriggerContent label={label} value={displayValue} />
+        <span className="flex items-center gap-1">
+          <TriggerContent label={label} value={displayValue} />
+          {isActive && (
+            <span className="h-1.5 w-1.5 rounded-full bg-brand-600 dark:bg-brand-400" aria-hidden="true" />
+          )}
+        </span>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="max-h-64 overflow-y-auto">
         <DropdownMenuLabel>{label}</DropdownMenuLabel>
@@ -65,11 +72,16 @@ export function MultiSelectFilterDropdown({
   );
 }
 
-export function SingleSelectFilterDropdown({ label, displayValue, children, contentClassName }) {
+export function SingleSelectFilterDropdown({ label, displayValue, children, contentClassName, isActive = false }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger type="button" className={TRIGGER_CLASS}>
-        <TriggerContent label={label} value={displayValue} />
+        <span className="flex items-center gap-1">
+          <TriggerContent label={label} value={displayValue} />
+          {isActive && (
+            <span className="h-1.5 w-1.5 rounded-full bg-brand-600 dark:bg-brand-400" aria-hidden="true" />
+          )}
+        </span>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className={cn("min-w-[10rem]", contentClassName)}>
         {children}

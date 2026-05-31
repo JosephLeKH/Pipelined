@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 import Check from "lucide-react/dist/esm/icons/check";
 import Circle from "lucide-react/dist/esm/icons/circle";
@@ -19,7 +20,7 @@ import {
   ONBOARDING_DISMISSED_KEY,
 } from "../lib/constants";
 
-const ONBOARDING_STEPS = 5;
+const ONBOARDING_STEPS = 4;
 
 function OnboardingStepRow({ label, done, actionLabel, onClick, to, href, external, disabled }) {
   const rowClass = [
@@ -111,16 +112,15 @@ function OnboardingChecklist() {
   const emailDone = user?.email_verified !== false;
   const applicationDone = (stats?.total_applied ?? 0) > 0;
   const gmailDone = Boolean(gmailStatus?.connected);
-  const goalDone = (user?.weekly_goal ?? 0) > 0;
+  const goalDone = typeof user?.weekly_goal === 'number';
   const extensionDone = extensionClicked;
 
   const steps = useMemo(
     () => [
-      { id: "verify_email", label: "Verify your email", done: emailDone },
       { id: "save_application", label: "Save your first application", done: applicationDone },
-      { id: "connect_gmail", label: "Connect Gmail", done: gmailDone },
       { id: "set_weekly_goal", label: "Set a weekly goal", done: goalDone },
-      { id: "install_extension", label: "Install Chrome extension", done: extensionDone },
+      { id: "install_extension", label: "Open extension page", done: extensionDone },
+      { id: "verify_email", label: "Verify your email", done: emailDone },
     ],
     [emailDone, applicationDone, gmailDone, goalDone, extensionDone],
   );
@@ -151,7 +151,7 @@ function OnboardingChecklist() {
     try {
       await resendVerification();
     } catch {
-      /* banner handles errors elsewhere */
+      toast.error("Couldn't send verification email. Try again in a minute.");
     }
   };
 
@@ -191,23 +191,10 @@ function OnboardingChecklist() {
 
         <div className="space-y-1">
           <OnboardingStepRow
-            label="Verify your email"
-            done={emailDone}
-            actionLabel={isResending ? "Sending…" : "→ Resend email"}
-            onClick={handleResendEmail}
-            disabled={isResending}
-          />
-          <OnboardingStepRow
             label="Save your first application"
             done={applicationDone}
             actionLabel="→ Add application"
             onClick={() => navigate("/dashboard")}
-          />
-          <OnboardingStepRow
-            label="Connect Gmail"
-            done={gmailDone}
-            actionLabel="→ Connect"
-            onClick={() => setGmailDialogOpen(true)}
           />
           <OnboardingStepRow
             label="Set a weekly goal"
@@ -216,12 +203,19 @@ function OnboardingChecklist() {
             to="/settings?section=pipeline"
           />
           <OnboardingStepRow
-            label="Install Chrome extension"
+            label="Open extension page"
             done={extensionDone}
-            actionLabel="→ Install"
+            actionLabel="→ Open"
             href={CHROME_EXTENSION_URL}
             external
             onClick={handleInstallExtension}
+          />
+          <OnboardingStepRow
+            label="Verify your email"
+            done={emailDone}
+            actionLabel={isResending ? "Sending…" : "→ Resend email"}
+            onClick={handleResendEmail}
+            disabled={isResending}
           />
         </div>
       </section>

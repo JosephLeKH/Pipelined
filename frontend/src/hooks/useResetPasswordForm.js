@@ -1,12 +1,8 @@
 import { useState, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
 import { useResetPassword } from "./useAuth";
 import { PASSWORD_MIN_LENGTH } from "../lib/constants";
 
-const RESET_SUCCESS_REDIRECT_MS = 2000;
-
 export function useResetPasswordForm() {
-  const navigate = useNavigate();
   const { mutateAsync: doReset, isPending } = useResetPassword();
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -34,7 +30,6 @@ export function useResetPasswordForm() {
       try {
         await doReset({ new_password: newPassword });
         setSuccess(true);
-        setTimeout(() => navigate("/login", { replace: true }), RESET_SUCCESS_REDIRECT_MS);
       } catch (err) {
         const code = err?.response?.data?.detail?.code;
         if (code === "TOKEN_MISSING") {
@@ -48,7 +43,7 @@ export function useResetPasswordForm() {
         }
       }
     },
-    [newPassword, confirmPassword, doReset, navigate]
+    [newPassword, confirmPassword, doReset]
   );
 
   return {

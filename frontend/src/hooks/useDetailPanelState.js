@@ -1,6 +1,7 @@
 /** State management hook for DetailPanel: CRUD, undo/delete, and stage update logic. */
 
 import { useState, useEffect, useCallback } from "react";
+import { toast } from "sonner";
 
 import { useDeleteApplication, useRestoreApplication, useUpdateApplication } from "./useApplications";
 import { trackEvent } from "../lib/analytics";
@@ -33,7 +34,10 @@ function useDetailPanelActions(cachedApp, setCachedApp, notesDirty, setNotesDirt
     const to_stage = e.target.value;
     setCachedApp((prev) => prev ? { ...prev, current_stage: to_stage } : prev);
     updateApp({ id: cachedApp.id, body: { current_stage: to_stage } }, {
-      onError: () => setCachedApp((prev) => prev ? { ...prev, current_stage: from_stage } : prev),
+      onError: () => {
+        setCachedApp((prev) => prev ? { ...prev, current_stage: from_stage } : prev);
+        toast.error("Couldn't update stage — reverted");
+      },
     });
     trackEvent("application_stage_changed", { from_stage, to_stage });
   }, [cachedApp, setCachedApp, updateApp]);
@@ -51,7 +55,10 @@ function useDetailPanelUndo(cachedApp, onClose, deleteApp, restoreApp) {
 
   const handleDelete = useCallback(() => {
     if (!cachedApp) return;
-    deleteApp(cachedApp.id, { onSuccess: () => setUndoPendingId(cachedApp.id) });
+    deleteApp(cachedApp.id, {
+      onSuccess: () => setUndoPendingId(cachedApp.id),
+      onError: () => toast.error("Couldn't delete — undone"),
+    });
   }, [cachedApp, deleteApp]);
 
   const handleUndoDelete = useCallback(() => {

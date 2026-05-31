@@ -16,8 +16,18 @@ function maskEmail(email) {
   if (!email) return "";
   const [local, domain] = email.split("@");
   if (!domain) return email;
+
+  // For emails with local part < 3 chars, show first char + asterisks
+  if (local.length < 3) {
+    const masked = local.charAt(0) + "*".repeat(Math.max(1, local.length - 1));
+    return `${masked}@${domain}`;
+  }
+
+  // For longer emails: first 2 chars + asterisks + last 1 char
   const prefix = local.slice(0, 2);
-  return `${prefix}***@${domain}`;
+  const suffix = local.slice(-1);
+  const masked = "*".repeat(local.length - 3);
+  return `${prefix}${masked}${suffix}@${domain}`;
 }
 
 function ResendStatus({ status }) {

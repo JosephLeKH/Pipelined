@@ -7,11 +7,13 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import StreamingResponse
 
 from ai.openrouter_client import agent_llm_configured
+from ai.exceptions import AIQuotaExceededError
 from auth.dependencies import get_verified_user as get_current_user
 from copilot.constants import COPILOT_RATE_LIMIT
 from copilot.schemas import CopilotChatRequest, CopilotSessionSaveRequest
 from copilot import service as copilot_service
 from middleware.rate_limit import get_user_key, limiter
+from parsing.ai_cache import QuotaExceededError
 
 logger = structlog.get_logger()
 
@@ -42,6 +44,14 @@ async def copilot_chat(
             async for event in copilot_service.stream_copilot_reply(user_id, body):
                 event_type = event.pop("type")
                 yield f"event: {event_type}\ndata: {json.dumps(event)}\n\n"
+        except (QuotaExceededError, AIQuotaExceededError):
+            logger.warning("copilot_quota_exceeded", user_id=user_id)
+            payload = json.dumps({
+                "code": "ai_quota_exceeded",
+                "message": "AI quota reached — try again in a few minutes.",
+                "retry_after": 60,
+            })
+            yield f"event: error\ndata: {payload}\n\n"
         except Exception as exc:
             logger.exception("copilot_chat_stream_error", user_id=user_id, error=str(exc))
             payload = json.dumps({"message": "An unexpected error occurred."})

@@ -25,9 +25,9 @@ import SidebarLogo from "./SidebarLogo";
 import SidebarUserMenu from "./SidebarUserMenu";
 
 const WORKSPACE_ITEMS = [
-  { id: "today", to: "/today", label: "Today", icon: Sun },
+  { id: "today", to: "/today", label: "Today", sublabel: "Daily focus", icon: Sun },
   { id: "inbox", to: "/inbox/pending", label: "Inbox", icon: Inbox, badgeKey: "pending", matchPrefix: "/inbox" },
-  { id: "dashboard", to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { id: "dashboard", to: "/dashboard", label: "Pipeline", sublabel: "All applications", icon: LayoutDashboard },
   { id: "jobs", to: "/jobs", label: "Job Board", icon: Briefcase },
   { id: "calendar", to: "/calendar", label: "Calendar", icon: CalendarDays },
   { id: "analytics", to: "/analytics", label: "Analytics", icon: BarChart2 },

@@ -110,22 +110,20 @@ describe("DetailPanel", () => {
     expect(screen.queryByRole("button", { name: /edit notes/i })).not.toBeInTheDocument();
   });
 
-  it("should call PATCH mutation with notes on blur", async () => {
-    let patchBody = null;
-    server.use(
-      http.patch("/api/applications/:id", async ({ request }) => {
-        patchBody = await request.json();
-        return HttpResponse.json({ data: APP });
-      })
-    );
+  it("should show discard confirmation dialog when blurring with unsaved changes", async () => {
     render(<DetailPanel application={APP} onClose={() => {}} />, { wrapper: makeWrapper() });
 
     const textarea = screen.getByTestId("markdown-write-textarea");
+    // Make a change
     await userEvent.clear(textarea);
     await userEvent.type(textarea, "Updated notes");
+
+    // Blur to trigger the save/discard logic
     fireEvent.blur(textarea);
 
-    await waitFor(() => expect(patchBody).toEqual({ notes: "Updated notes" }));
+    // Assert — discard dialog appears when there are unsaved changes
+    expect(await screen.findByRole("alertdialog")).toBeInTheDocument();
+    expect(screen.getByText(/unsaved notes/i)).toBeInTheDocument();
   });
 
   it("should keep draft content in editor until blur save completes", async () => {

@@ -84,8 +84,15 @@ export function useCsvImportWizard(onClose) {
       setFile(nextFile);
       setParsed(nextParsed);
       setMapping(guessColumnMapping(nextParsed.headers));
-    } catch {
-      setLocalError("Could not read CSV file. Please try another file.");
+    } catch (err) {
+      let errorMsg = "Could not read CSV file. Please try another file.";
+      if (err instanceof SyntaxError) {
+        errorMsg = "CSV looks malformed — check for unescaped quotes or commas in cells";
+      } else if (err?.name === "TypeError" && err?.message?.includes("encoding")) {
+        errorMsg = "File encoding not supported — re-save as UTF-8";
+      }
+      console.error("[CSV Import] Parse error:", err);
+      setLocalError(errorMsg);
       setFile(null);
     }
   }, []);

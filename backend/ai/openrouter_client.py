@@ -11,8 +11,9 @@ import re
 from dataclasses import dataclass
 
 import structlog
-from openai import APIConnectionError, APITimeoutError, AsyncOpenAI, OpenAIError
+from openai import APIConnectionError, APITimeoutError, AsyncOpenAI, OpenAIError, RateLimitError
 
+from ai.exceptions import AIQuotaExceededError
 from config import settings
 
 logger = structlog.get_logger()
@@ -139,6 +140,9 @@ async def _call_provider(
             ),
             timeout=timeout,
         )
+    except RateLimitError as exc:
+        logger.warning("llm_quota_exceeded", provider=provider.name, model=resolved_model, error=str(exc))
+        raise AIQuotaExceededError() from exc
     except _TRANSIENT_ERRORS as exc:
         logger.warning("llm_request_failed", provider=provider.name, model=resolved_model, error=str(exc))
         raise OpenRouterError(str(exc)) from exc
@@ -234,6 +238,9 @@ async def _stream_provider(
             ),
             timeout=timeout,
         )
+    except RateLimitError as exc:
+        logger.warning("llm_stream_quota_exceeded", provider=provider.name, model=resolved_model, error=str(exc))
+        raise AIQuotaExceededError() from exc
     except _TRANSIENT_ERRORS as exc:
         logger.warning("llm_stream_failed", provider=provider.name, model=resolved_model, error=str(exc))
         raise OpenRouterError(str(exc)) from exc

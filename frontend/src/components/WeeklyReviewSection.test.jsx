@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 
@@ -53,6 +53,23 @@ describe("WeeklyReviewSection", () => {
 
     expect(screen.getByLabelText("Weekly review")).toBeInTheDocument();
     expect(screen.queryByText("Response rate")).not.toBeInTheDocument();
+  });
+
+  it("should show 404 empty state when no weekly review exists", () => {
+    const error = { status: 404 };
+    renderSection({ review: null, isLoading: false, error });
+
+    expect(screen.getByText(/No weekly review yet/i)).toBeInTheDocument();
+    expect(screen.getByText(/your first review will appear at the end of the week/i)).toBeInTheDocument();
+  });
+
+  it("should show error state with retry button on non-404 errors", () => {
+    const error = { status: 500 };
+    renderSection({ review: null, isLoading: false, error });
+
+    expect(screen.getByText(/Couldn't load weekly review/i)).toBeInTheDocument();
+    const retryBtn = screen.getByRole("button", { name: /Retry/i });
+    expect(retryBtn).toBeInTheDocument();
   });
 });
 

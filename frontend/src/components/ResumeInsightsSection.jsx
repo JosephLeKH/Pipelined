@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { generateResumeInsights } from "../api/applications";
 import { getAiToastError } from "../lib/aiConstants";
 import { JOB_DESCRIPTION_MAX_LENGTH } from "../lib/constants";
+import { formatAiFreshness } from "../lib/fitDisplay";
 import AiSection from "./AiSection";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
@@ -19,6 +20,7 @@ function ResumeInsightsSection({ application, onUpdate, onInsightsGenerated }) {
   const [isLoading, setIsLoading] = useState(false);
   const jdValue = application.job_description ?? "";
   const hasCached = localInsights != null;
+  const freshness = formatAiFreshness(application.resume_insights_at);
 
   async function handleAnalyze() {
     setIsLoading(true);
@@ -34,7 +36,11 @@ function ResumeInsightsSection({ application, onUpdate, onInsightsGenerated }) {
   }
 
   return (
-    <AiSection title="Resume Insights" icon={Sparkles} id="resume-insights">
+    <AiSection title="Job Match Analysis" icon={Sparkles} id="resume-insights">
+      {freshness && (
+        <p className="text-xs text-muted-foreground">Generated {freshness}</p>
+      )}
+      <p className="text-xs text-muted-foreground">Based on your resume vs. this job description</p>
       <div className="flex items-start gap-2 rounded border border-border bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
         <Info className="h-3.5 w-3.5 shrink-0 mt-0.5" aria-hidden="true" />
         <p>Suggestions only. We never edit your resume file.</p>

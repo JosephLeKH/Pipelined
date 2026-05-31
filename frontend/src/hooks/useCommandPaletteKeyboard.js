@@ -6,7 +6,11 @@ import { useEffect } from "react";
 export function useCommandPaletteKeyboard({ isOpen, setIsOpen, items, idx, setIdx, activate, close }) {
   useEffect(() => {
     const onKey = (e) => {
+      const t = e.target;
+      const inTextInput = ["INPUT", "TEXTAREA", "SELECT"].includes(t.tagName) || t.isContentEditable;
+
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        if (inTextInput) return;
         e.preventDefault();
         setIsOpen((o) => !o);
         return;

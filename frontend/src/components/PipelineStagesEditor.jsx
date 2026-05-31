@@ -21,159 +21,39 @@ import { CSS } from "@dnd-kit/utilities";
 
 import Plus from "lucide-react/dist/esm/icons/plus";
 
+import { useStageColors } from "../hooks/useStageColors";
+import { useStagesEditor } from "../hooks/useStagesEditor";
 import {
   REQUIRED_PIPELINE_STAGES,
   STAGE_COLOR_PICKER_OPTIONS,
 } from "../lib/constants";
-import {
-  persistStageColorOverrides,
-  readStageColorOverrides,
-  resolveStageDotColor,
-  resolveStagePickerKey,
-} from "../lib/stageColorPrefs";
+import { resolveStageDotColor, resolveStagePickerKey } from "../lib/stageColorPrefs";
 import PipelineStageRow from "./PipelineStageRow";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "./ui/alert-dialog";
+import { Tooltip, TooltipTrigger, TooltipContent } from "./ui/tooltip";
 
 const STAGE_NAME_MAX_LENGTH = 40;
 const STAGES_MIN_COUNT = 2;
 const STAGES_MAX_COUNT = 10;
 const REQUIRED_STAGE_SET = new Set(REQUIRED_PIPELINE_STAGES);
 
-function stageNamesEqual(a, b) {
-  if (a.length !== b.length) {
-    return false;
-  }
-  return a.every((name, index) => name === b[index]);
-}
-
-function colorOverridesEqual(a, b) {
-  const aKeys = Object.keys(a);
-  const bKeys = Object.keys(b);
-  if (aKeys.length !== bKeys.length) {
-    return false;
-  }
-  return aKeys.every((key) => a[key] === b[key]);
-}
-
-function buildStageItems(names, colorOverrides) {
-  return names.map((name, index) => ({
-    id: `stage-${index}-${name}`,
-    name,
-    colorKey: resolveStagePickerKey(name, colorOverrides),
-  }));
-}
-
-function useStagesEditor(initialStages, onDirtyChange) {
-  const [baselineNames, setBaselineNames] = useState(() => [...initialStages]);
-  const [baselineColors, setBaselineColors] = useState(() => readStageColorOverrides());
-  const [colorOverrides, setColorOverrides] = useState(() => readStageColorOverrides());
-  const [stages, setStages] = useState(() => buildStageItems(initialStages, readStageColorOverrides()));
-  const [newStageName, setNewStageName] = useState("");
-  const [localError, setLocalError] = useState(null);
-
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
-  );
-
-  const currentNames = useMemo(() => stages.map((stage) => stage.name), [stages]);
-  const dirty = !stageNamesEqual(currentNames, baselineNames) || !colorOverridesEqual(colorOverrides, baselineColors);
-
-  useEffect(() => {
-    onDirtyChange?.(dirty);
-  }, [dirty, onDirtyChange]);
-
-  const handleDragEnd = useCallback((event) => {
-    const { active, over } = event;
-    if (!over || active.id === over.id) {
-      return;
-    }
-    setStages((prev) =>
-      arrayMove(
-        prev,
-        prev.findIndex((stage) => stage.id === active.id),
-        prev.findIndex((stage) => stage.id === over.id)
-      )
-    );
-  }, []);
-
-  const handleRename = useCallback((id, value) => {
-    setStages((prev) => prev.map((stage) => (stage.id === id ? { ...stage, name: value } : stage)));
-  }, []);
-
-  const handleColorChange = useCallback((id, colorKey) => {
-    setStages((prev) => {
-      const target = prev.find((item) => item.id === id);
-      if (target) {
-        setColorOverrides((overrides) => {
-          const next = { ...overrides, [target.name]: colorKey };
-          persistStageColorOverrides(next);
-          return next;
-        });
-      }
-      return prev.map((stage) => (stage.id === id ? { ...stage, colorKey } : stage));
-    });
-  }, []);
-
-  const handleRemove = useCallback((id) => {
-    setStages((prev) => prev.filter((stage) => stage.id !== id));
-  }, []);
-
-  const handleAdd = useCallback(() => {
-    const trimmed = newStageName.trim();
-    if (!trimmed) {
-      return;
-    }
-    if (stages.length >= STAGES_MAX_COUNT) {
-      setLocalError(`Maximum ${STAGES_MAX_COUNT} stages allowed.`);
-      return;
-    }
-    setLocalError(null);
-    setStages((prev) => [
-      ...prev,
-      { id: `stage-new-${Date.now()}`, name: trimmed, colorKey: "neutral" },
-    ]);
-    setNewStageName("");
-  }, [newStageName, stages.length]);
-
-  const resetToBaseline = useCallback(() => {
-    setStages(buildStageItems(baselineNames, baselineColors));
-    setColorOverrides({ ...baselineColors });
-    persistStageColorOverrides(baselineColors);
-    setLocalError(null);
-    setNewStageName("");
-  }, [baselineColors, baselineNames]);
-
-  const commitBaseline = useCallback((names) => {
-    setBaselineNames([...names]);
-    setBaselineColors({ ...colorOverrides });
-  }, [colorOverrides]);
-
-  return {
-    stages,
-    sensors,
-    newStageName,
-    setNewStageName,
-    localError,
-    setLocalError,
-    colorOverrides,
-    handleDragEnd,
-    handleRename,
-    handleColorChange,
-    handleRemove,
-    handleAdd,
-    resetToBaseline,
-    commitBaseline,
-  };
-}
-
 function dotColorForStage(stage) {
   return STAGE_COLOR_PICKER_OPTIONS.find((option) => option.key === stage.colorKey)?.hex
     ?? resolveStageDotColor(stage.name);
 }
 
-function SortablePipelineStageRow({ stage, canRemove, onRename, onColorChange, onRemove }) {
+function SortablePipelineStageRow({ stage, canRemove, onRename, onColorChange, onRemoveClick }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: stage.id,
   });
@@ -186,7 +66,7 @@ function SortablePipelineStageRow({ stage, canRemove, onRename, onColorChange, o
       colorKey={stage.colorKey}
       onRename={onRename}
       onColorChange={onColorChange}
-      onRemove={onRemove}
+      onRemoveClick={onRemoveClick}
       canRemove={canRemove}
       dragAttributes={attributes}
       dragListeners={listeners}
@@ -239,6 +119,7 @@ function PipelineStagesEditor({
   onDirtyChange,
   onCancelRequest,
   saveSignal,
+  applicationsByStage = {},
 }) {
   const {
     stages,
@@ -247,14 +128,18 @@ function PipelineStagesEditor({
     setNewStageName,
     localError,
     setLocalError,
+    deleteDialogOpen,
+    setDeleteDialogOpen,
+    deleteTargetId,
     handleDragEnd,
     handleRename,
     handleColorChange,
-    handleRemove,
+    handleRemoveClick,
+    handleRemoveConfirm,
     handleAdd,
     resetToBaseline,
     commitBaseline,
-  } = useStagesEditor(initialStages, onDirtyChange);
+  } = useStagesEditor(initialStages, onDirtyChange, applicationsByStage);
 
   const performSave = useCallback(async () => {
     const names = stages.map((stage) => stage.name.trim()).filter(Boolean);
@@ -307,7 +192,11 @@ function PipelineStagesEditor({
           <div className="flex flex-col gap-2" aria-label="Pipeline stages list">
             {stages.map((stage) => {
               const isRequired = REQUIRED_STAGE_SET.has(stage.name);
-              const canRemove = !isRequired && stages.length > STAGES_MIN_COUNT;
+              const appCount = applicationsByStage[stage.name] ?? 0;
+              const canRemove = !isRequired && stages.length > STAGES_MIN_COUNT && appCount === 0;
+              const disabledTooltip = appCount > 0
+                ? `Move ${appCount} application${appCount === 1 ? "" : "s"} to another stage first`
+                : null;
               return (
                 <SortablePipelineStageRow
                   key={stage.id}
@@ -315,7 +204,8 @@ function PipelineStagesEditor({
                   canRemove={canRemove}
                   onRename={handleRename}
                   onColorChange={handleColorChange}
-                  onRemove={handleRemove}
+                  onRemoveClick={handleRemoveClick}
+                  disabledTooltip={disabledTooltip}
                 />
               );
             })}
@@ -337,6 +227,44 @@ function PipelineStagesEditor({
         {stages.length} / {STAGES_MAX_COUNT} stages · colors from{" "}
         {STAGE_COLOR_PICKER_OPTIONS.length} presets
       </p>
+
+      {deleteTargetId && stages.find((s) => s.id === deleteTargetId) && (
+        <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete stage?</AlertDialogTitle>
+              <AlertDialogDescription>
+                {(() => {
+                  const targetStage = stages.find((s) => s.id === deleteTargetId);
+                  const appCount = applicationsByStage[targetStage?.name] ?? 0;
+                  if (appCount > 0) {
+                    return `Cannot delete "${targetStage?.name}" — it contains ${appCount} application${appCount === 1 ? "" : "s"}. Move them to another stage first.`;
+                  }
+                  return `Delete "${targetStage?.name}"? This cannot be undone.`;
+                })()}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            {(() => {
+              const appCount = applicationsByStage[stages.find((s) => s.id === deleteTargetId)?.name] ?? 0;
+              return appCount === 0 ? (
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={handleRemoveConfirm}
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  >
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              ) : (
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Close</AlertDialogCancel>
+                </AlertDialogFooter>
+              );
+            })()}
+          </AlertDialogContent>
+        </AlertDialog>
+      )}
     </div>
   );
 }

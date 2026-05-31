@@ -1,5 +1,7 @@
 /** Unified fit score for list/card views — prefer ai_analysis, fall back to fit_score. */
 
+import { formatDistanceToNow } from "date-fns/formatDistanceToNow";
+
 export const BACKGROUND_SCORE_WINDOW_MS = 120_000;
 export const BACKGROUND_SCORE_POLL_MS = 3_000;
 
@@ -43,4 +45,28 @@ export function isBackgroundScoringPending(application, hasResume) {
 
   const ageMs = Date.now() - new Date(timestamp).getTime();
   return ageMs >= 0 && ageMs < BACKGROUND_SCORE_WINDOW_MS;
+}
+
+export function getAiFreshnessTimestamp(application, type) {
+  switch (type) {
+    case "fit_score":
+      return application.ai_analysis?.scored_at ?? application.fit_score_computed_at;
+    case "apply_pack":
+      return application.apply_pack_at;
+    case "resume_insights":
+      return application.resume_insights_at;
+    case "thread_summary":
+      return application.thread_summary_at;
+    default:
+      return null;
+  }
+}
+
+export function formatAiFreshness(timestamp) {
+  if (!timestamp) return null;
+  try {
+    return formatDistanceToNow(new Date(timestamp), { addSuffix: true });
+  } catch {
+    return null;
+  }
 }

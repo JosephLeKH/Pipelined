@@ -1,6 +1,7 @@
 /** Tag management page: view, rename, and delete tags across all applications. */
 
 import { useState, useCallback, useMemo } from "react";
+import { toast } from "sonner";
 
 import TagIcon from "lucide-react/dist/esm/icons/tag";
 import AlertCircle from "lucide-react/dist/esm/icons/alert-circle";
@@ -82,7 +83,16 @@ function Tags() {
 
   const handleDeleteConfirm = useCallback(() => {
     if (deleteTarget) {
-      deleteMutation.mutate(deleteTarget.name, { onSettled: () => setDeleteTarget(null) });
+      deleteMutation.mutate(deleteTarget.name, {
+        onSuccess: () => {
+          toast.success("Tag deleted");
+          setDeleteTarget(null);
+        },
+        onError: (error) => {
+          const msg = error?.response?.data?.detail ?? "Couldn't delete tag — try again";
+          toast.error(msg);
+        },
+      });
     }
   }, [deleteTarget, deleteMutation]);
 

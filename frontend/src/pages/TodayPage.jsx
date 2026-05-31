@@ -64,7 +64,7 @@ function TodayPage() {
   const { data: brief, isLoading, isError } = useMorningBrief();
   const { data: stats } = useApplicationStats();
   const weeklyReviewEnabled = user?.weekly_review_enabled !== false;
-  const { data: weeklyReview, isLoading: isReviewLoading } = useWeeklyReview({
+  const { data: weeklyReview, isLoading: isReviewLoading, error: reviewError } = useWeeklyReview({
     enabled: weeklyReviewEnabled,
   });
   const { snooze, done } = useMissionActions();
@@ -164,7 +164,7 @@ function TodayPage() {
               />
             )}
             {weeklyReviewEnabled && isSunday && weeklyReviewOpen && (
-              <WeeklyReviewSection review={weeklyReview} isLoading={isReviewLoading} />
+              <WeeklyReviewSection review={weeklyReview} isLoading={isReviewLoading} error={reviewError} />
             )}
           </>
         )}

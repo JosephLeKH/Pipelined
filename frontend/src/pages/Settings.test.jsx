@@ -113,6 +113,50 @@ describe("Settings page", () => {
         expect(screen.getByRole("heading", { name: /agent profile/i })).toBeInTheDocument();
       });
     });
+
+    it("should redirect /settings/agent-notifications to /settings/notifications", async () => {
+      render(null, { wrapper: makeWrapper(["/settings/agent-notifications"]) });
+
+      await waitFor(() => {
+        expect(screen.getByRole("heading", { name: /notifications$/i })).toBeInTheDocument();
+      });
+    });
+
+    it("should display Account section in nav with helper text", async () => {
+      render(null, { wrapper: makeWrapper(["/settings/account"]) });
+
+      await waitFor(() => {
+        const accountLink = screen.getByRole("link", { name: /account/i });
+        expect(accountLink).toBeInTheDocument();
+        expect(accountLink.textContent).toContain("Password & deletion");
+      });
+    });
+
+    it("should make password reset accessible from Account section", async () => {
+      render(null, { wrapper: makeWrapper(["/settings/account"]) });
+
+      await waitFor(() => {
+        expect(screen.getByRole("heading", { name: /change password/i })).toBeInTheDocument();
+      });
+    });
+
+    it("should render all 4 previously hidden sections", async () => {
+      const routes = [
+        ["/settings/account", /change password/i, 2],
+        ["/settings/sharing", /sharing/i, 2],
+        ["/settings/reports", /reports/i, 2],
+        ["/settings/agent-activity", /agent activity/i, 2],
+      ];
+
+      for (const [path, headingMatcher, level] of routes) {
+        render(null, { wrapper: makeWrapper([path]) });
+
+        await waitFor(() => {
+          const heading = screen.queryByRole("heading", { name: headingMatcher, level });
+          expect(heading).toBeInTheDocument();
+        });
+      }
+    });
   });
 
   describe("pipeline stages section", () => {

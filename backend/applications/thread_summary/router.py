@@ -3,6 +3,7 @@
 import structlog
 from fastapi import APIRouter, Depends, HTTPException, Request
 
+from ai.exceptions import AIQuotaExceededError
 from ai.openrouter_client import OpenRouterError
 from applications.thread_summary import service as thread_service
 from applications.thread_summary.service import (
@@ -40,6 +41,12 @@ async def generate_thread_summary(
                 "code": "NO_EMAIL_EVENTS",
                 "message": "No email events found for this application.",
             },
+        )
+    except AIQuotaExceededError:
+        raise HTTPException(
+            status_code=429,
+            detail={"code": "ai_quota_exceeded", "message": "AI quota reached — try again in a few minutes."},
+            headers={"Retry-After": "60"},
         )
     except OpenRouterError:
         raise HTTPException(

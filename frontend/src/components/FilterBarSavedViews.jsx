@@ -16,6 +16,16 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "./ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "./ui/alert-dialog";
 import { SingleSelectFilterDropdown } from "./FilterBarDropdown";
 
 const MAX_SAVE_NAME_LENGTH = 100;
@@ -93,15 +103,28 @@ export function SavedViewsDropdown({ currentFilters, hasActiveFilters }) {
   const { data: searches = [] } = useSavedSearches();
   const deleteMutation = useDeleteSavedSearch();
   const [saving, setSaving] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
 
   function handleApply(search) {
     setSearchParams(buildDashboardSavedSearchParams(search), { replace: true });
   }
 
-  function handleDelete(e, id) {
+  function handleDelete(e, id, name) {
     e.stopPropagation();
-    deleteMutation.mutate(id, {
-      onSuccess: () => toast.success("Saved view deleted"),
+    setDeleteConfirm({ id, name });
+  }
+
+  function handleDeleteConfirm() {
+    if (!deleteConfirm) return;
+    deleteMutation.mutate(deleteConfirm.id, {
+      onSuccess: () => {
+        toast.success("Saved view deleted");
+        setDeleteConfirm(null);
+      },
+      onError: (error) => {
+        const msg = error?.response?.data?.detail ?? "Failed to delete view";
+        toast.error(msg);
+      },
     });
   }
 
@@ -135,7 +158,7 @@ export function SavedViewsDropdown({ currentFilters, hasActiveFilters }) {
                   size="icon"
                   aria-label={`Delete saved view: ${s.name}`}
                   className="h-6 w-6 text-text-3 hover:text-danger"
-                  onClick={(e) => handleDelete(e, s.id)}
+                  onClick={(e) => handleDelete(e, s.id, s.name)}
                 >
                   <Trash2 className="h-3 w-3" aria-hidden="true" />
                 </Button>
@@ -158,6 +181,23 @@ export function SavedViewsDropdown({ currentFilters, hasActiveFilters }) {
           Save current as view…
         </DropdownMenuItem>
       )}
+
+      <AlertDialog open={!!deleteConfirm} onOpenChange={(open) => !open && setDeleteConfirm(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete saved view?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete the saved view "{deleteConfirm?.name}". This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteConfirm} disabled={deleteMutation.isPending}>
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </SingleSelectFilterDropdown>
   );
 }

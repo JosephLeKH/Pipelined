@@ -1,6 +1,7 @@
 /** Tests for VerifyEmailConfirm: loading state, success, expired token, invalid token, missing token. */
 
 import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import { http, HttpResponse } from "msw";
@@ -45,7 +46,7 @@ function makeWrapper(token = VALID_TOKEN) {
           <AuthProvider>
             <Routes>
               <Route path="/verify-email" element={children} />
-              <Route path="/dashboard" element={<div>Dashboard</div>} />
+              <Route path="/today" element={<div>Today</div>} />
             </Routes>
           </AuthProvider>
         </MemoryRouter>
@@ -106,5 +107,36 @@ describe("VerifyEmailConfirm", () => {
     render(<VerifyEmailConfirm />, { wrapper: NoTokenWrapper });
 
     expect(screen.getByRole("heading", { name: /missing token/i })).toBeInTheDocument();
+  });
+
+  it("should render Continue button on success and navigate on click", async () => {
+    render(<VerifyEmailConfirm />, { wrapper: makeWrapper(VALID_TOKEN) });
+
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: /continue to today/i })).toBeInTheDocument();
+    });
+
+    await userEvent.click(screen.getByRole("button", { name: /continue to today/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText("Today")).toBeInTheDocument();
+    });
+  });
+
+  it("should not auto-redirect on success", async () => {
+    const { unmount } = render(<VerifyEmailConfirm />, { wrapper: makeWrapper(VALID_TOKEN) });
+
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: /continue to today/i })).toBeInTheDocument();
+    });
+
+    // Wait a bit to ensure no auto-redirect happens
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    // Still should be on verify page with Continue button visible
+    expect(screen.getByRole("button", { name: /continue to today/i })).toBeInTheDocument();
+    expect(screen.queryByText("Today")).not.toBeInTheDocument();
+
+    unmount();
   });
 });

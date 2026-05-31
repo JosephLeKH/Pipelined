@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 import { getCopilotSession, saveCopilotSession, streamCopilotChat } from "../api/copilot";
 import {
@@ -33,9 +34,11 @@ function fromSessionMessages(messages) {
 export function useCopilotChat() {
   const navigate = useNavigate();
   const abortRef = useRef(null);
+  const persistToastRef = useRef(false);
   const [messages, setMessages] = useState([]);
   const [status, setStatus] = useState(STATUS.IDLE);
   const [errorMessage, setErrorMessage] = useState(null);
+  const [hydrationFailed, setHydrationFailed] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -46,8 +49,11 @@ export function useCopilotChat() {
         if (!cancelled && session?.messages?.length) {
           setMessages(fromSessionMessages(session.messages));
         }
-      } catch {
-        // Session hydration is best-effort.
+      } catch (err) {
+        if (!cancelled) {
+          console.error("Failed to hydrate copilot session:", err);
+          setHydrationFailed(true);
+        }
       }
     })();
 
@@ -57,7 +63,13 @@ export function useCopilotChat() {
   }, []);
 
   const persistSession = useCallback((nextMessages) => {
-    saveCopilotSession(toSessionPayload(nextMessages)).catch(() => {});
+    saveCopilotSession(toSessionPayload(nextMessages)).catch((err) => {
+      console.error("Failed to persist copilot session:", err);
+      if (!persistToastRef.current) {
+        persistToastRef.current = true;
+        toast.error("Couldn't save chat — refresh may lose history.");
+      }
+    });
   }, []);
 
   const sendMessage = useCallback(async (text) => {
@@ -141,6 +153,7 @@ export function useCopilotChat() {
     runAction,
     reset,
     isStreaming: status === STATUS.STREAMING,
+    hydrationFailed,
     STATUS,
   };
 }

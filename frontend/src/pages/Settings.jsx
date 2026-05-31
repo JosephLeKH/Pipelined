@@ -39,7 +39,7 @@ function SettingsRoutes() {
         <Route path="autopilot" element={<SettingsAutopilotSection />} />
         <Route path="watchlist" element={<SettingsWatchlistSection />} />
         <Route path="resume" element={<SettingsResumeSection />} />
-        <Route path="agent-notifications" element={<SettingsNotificationsSection />} />
+        <Route path="agent-notifications" element={<Navigate to="/settings/notifications" replace />} />
         <Route path="integrations/gmail" element={<SettingsIntegrationsSection />} />
         <Route path="integrations/github" element={<SettingsGitHubSection />} />
         <Route path="billing" element={<SettingsUsageSection user={user} />} />

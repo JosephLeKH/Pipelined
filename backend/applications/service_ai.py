@@ -1,11 +1,13 @@
 """AI helpers: OpenAI fallback parsing and fit score persistence."""
 
+import asyncio
 from datetime import datetime, timezone
 
 import structlog
 from bson import ObjectId
 
 from ai.agent_log import AGENT_TYPE_FIT, STATUS_FAILED, STATUS_SUCCESS, log_agent_run
+from ai.exceptions import AIQuotaExceededError
 from applications.schemas import ApplicationCreate
 from database import get_collection
 from parsing.ai_cache import QuotaExceededError
@@ -13,6 +15,23 @@ from parsing.fit_scorer import score_fit
 from parsing.openai_client import parse_with_openai
 
 logger = structlog.get_logger()
+
+MAX_BACKGROUND_FIT_SCORE_SECONDS = 90
+
+
+async def _persist_fit_score_error(app_id: str, user_id: str, error_code: str) -> None:
+    """Persist fit_score error state to applications collection."""
+    try:
+        await get_collection("applications").update_one(
+            {"_id": ObjectId(app_id), "user_id": ObjectId(user_id)},
+            {"$set": {
+                "fit_score_status": "error",
+                "fit_score_error_at": datetime.now(timezone.utc),
+                "fit_score_error_code": error_code,
+            }},
+        )
+    except Exception:
+        logger.exception("fit_score_status_persist_failed", app_id=app_id, user_id=user_id)
 
 
 async def _apply_openai_fallback(body: ApplicationCreate) -> tuple[ApplicationCreate, bool]:
@@ -70,32 +89,57 @@ async def _score_and_update(
     company: str = "",
 ) -> None:
     """Score fit in background and persist ai_analysis on the application."""
+    apps = get_collection("applications")
+    now = datetime.now(timezone.utc)
+    error_code: str | None = None
+
     try:
-        result = await score_fit(
-            resume_text,
-            job_description,
-            user_id=user_id,
-            role_title=role_title,
-            company=company,
+        result = await asyncio.wait_for(
+            score_fit(
+                resume_text,
+                job_description,
+                user_id=user_id,
+                role_title=role_title,
+                company=company,
+            ),
+            timeout=MAX_BACKGROUND_FIT_SCORE_SECONDS,
         )
+    except asyncio.TimeoutError:
+        logger.warning("fit_score_timeout", app_id=app_id, user_id=user_id, timeout_sec=MAX_BACKGROUND_FIT_SCORE_SECONDS)
+        await _persist_fit_score_error(app_id, user_id, "timeout")
+        await log_agent_run(
+            user_id, AGENT_TYPE_FIT, STATUS_FAILED, "Fit score timed out", application_id=app_id
+        )
+        return
     except QuotaExceededError as exc:
         logger.info("fit_score_skipped_quota", app_id=app_id, user_id=user_id, limit=exc.limit)
+        await _persist_fit_score_error(app_id, user_id, "quota")
+        return
+    except AIQuotaExceededError:
+        logger.warning("fit_score_openrouter_quota", app_id=app_id, user_id=user_id)
+        await _persist_fit_score_error(app_id, user_id, "quota")
         return
     except Exception:
         logger.error("fit_score_scoring_failed", app_id=app_id, user_id=user_id, exc_info=True)
+        await _persist_fit_score_error(app_id, user_id, "other")
         await log_agent_run(
             user_id, AGENT_TYPE_FIT, STATUS_FAILED, "Fit score failed", application_id=app_id
         )
         return
+
     if result.get("fit_score") is None:
         return
+
     try:
-        apps = get_collection("applications")
         match_reason = result.get("summary") or ""
-        ai_analysis = {**result, "match_reason": match_reason, "scored_at": datetime.now(timezone.utc)}
+        ai_analysis = {**result, "match_reason": match_reason, "scored_at": now}
         update_result = await apps.update_one(
             {"_id": ObjectId(app_id), "user_id": ObjectId(user_id)},
-            {"$set": {"ai_analysis": ai_analysis}},
+            {"$set": {
+                "ai_analysis": ai_analysis,
+                "fit_score_status": "complete",
+                "fit_score_computed_at": now,
+            }},
         )
         if update_result.matched_count == 0:
             logger.warning("fit_score_user_mismatch", app_id=app_id, user_id=user_id)

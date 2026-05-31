@@ -173,6 +173,17 @@ class ApplyPack(BaseModel):
     talking_points: list[str] = Field(default_factory=list)
 
 
+class MockInterviewTurn(BaseModel):
+    role: str = Field(default="user")  # "user" or "assistant"
+    content: str
+
+
+class MockInterviewArtifact(BaseModel):
+    transcript: list[MockInterviewTurn] = Field(default_factory=list)
+    debrief: str | None = None
+    completed_at: datetime | None = None
+
+
 class ApplicationResponse(BaseModel):
     id: str
     role_title: str | None = None
@@ -211,12 +222,17 @@ class ApplicationResponse(BaseModel):
     fit_score: int | None = None
     fit_score_reason: str | None = None
     fit_score_at: datetime | None = None
+    fit_score_status: Literal["pending", "complete", "error"] | None = None
+    fit_score_error_code: str | None = None
+    fit_score_error_at: datetime | None = None
+    fit_score_computed_at: datetime | None = None
     interview_prep_briefing: dict | None = None
     interview_prep_generated_at: datetime | None = None
     interview_prep_status: str | None = None
     interview_prep_triggered_at: datetime | None = None
     interview_round: str | None = None
     parse_enhanced: bool | None = None
+    mock_interview: MockInterviewArtifact | None = None
 
     @classmethod
     def from_doc(cls, doc: dict) -> "ApplicationResponse":

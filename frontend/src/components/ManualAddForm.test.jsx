@@ -7,6 +7,7 @@ import { setupServer } from "msw/node";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter } from "react-router-dom";
 import { describe, it, expect, vi, beforeAll, afterAll, afterEach } from "vitest";
+import { toast } from "sonner";
 
 import { AuthProvider } from "../context/AuthContext";
 import ManualAddForm from "./ManualAddForm";
@@ -40,7 +41,10 @@ const server = setupServer(
 );
 
 beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
-afterEach(() => server.resetHandlers());
+afterEach(() => {
+  server.resetHandlers();
+  vi.clearAllMocks();
+});
 afterAll(() => server.close());
 
 function makeWrapper() {
@@ -250,6 +254,29 @@ describe("ManualAddForm", () => {
     expect(requestBody.company).toBe("Acme Corp");
   });
 
+  it("should not submit twice on rapid cmd+enter presses during pending mutation", async () => {
+    // Arrange — mutation stays pending
+    let callCount = 0;
+    server.use(
+      http.post("/api/applications", async () => {
+        callCount += 1;
+        await new Promise(() => {}); // never resolves
+        return HttpResponse.json({ data: CREATED_APP }, { status: 201 });
+      })
+    );
+    render(<ManualAddForm isOpen onClose={() => {}} />, { wrapper: makeWrapper() });
+
+    // Act
+    await userEvent.type(screen.getByRole("textbox", { name: /role title/i }), "Software Engineer");
+    await userEvent.type(screen.getByRole("textbox", { name: /company/i }), "Acme Corp");
+    const form = document.getElementById("manual-add-form");
+    fireEvent.keyDown(form, { key: "Enter", metaKey: true });
+    fireEvent.keyDown(form, { key: "Enter", metaKey: true });
+
+    // Assert — should only call once even after two keydowns
+    await waitFor(() => expect(callCount).toBe(1));
+  });
+
   it("should render at the configured modal max-width", () => {
     render(<ManualAddForm isOpen onClose={() => {}} />, { wrapper: makeWrapper() });
 
@@ -282,5 +309,41 @@ describe("ManualAddForm", () => {
 
     // Assert — focus wrapped to first element
     expect(document.activeElement).toBe(focusableEls[0]);
+  });
+
+  it("should show error toast when notes update fails after successful application creation", async () => {
+    // Arrange — expand notes section by clicking collapsible, set notes, then trigger update failure
+    const toastErrorSpy = vi.spyOn(toast, "error");
+    let patchCalled = false;
+    server.use(
+      http.post("/api/applications", () =>
+        HttpResponse.json({ data: CREATED_APP }, { status: 201 })
+      ),
+      http.patch("/api/applications/new-app-123", () => {
+        patchCalled = true;
+        return HttpResponse.json({ error: { code: "UPDATE_FAILED" } }, { status: 500 });
+      })
+    );
+    render(<ManualAddForm isOpen onClose={() => {}} />, { wrapper: makeWrapper() });
+
+    // Act
+    await userEvent.type(screen.getByRole("textbox", { name: /role title/i }), "Software Engineer");
+    await userEvent.type(screen.getByRole("textbox", { name: /company/i }), "Acme Corp");
+    // Expand notes by clicking the Notes button
+    const notesButton = screen.getByRole("button", { name: /notes/i });
+    await userEvent.click(notesButton);
+    // Type notes
+    const notesInput = await screen.findByPlaceholderText(/optional notes/i);
+    await userEvent.type(notesInput, "Great opportunity");
+    // Submit form
+    await userEvent.click(screen.getByRole("button", { name: /add application/i }));
+
+    // Assert
+    await waitFor(() => expect(patchCalled).toBe(true));
+    expect(toastErrorSpy).toHaveBeenCalledWith(
+      "Application created, but notes failed to save — please re-enter them in the detail panel."
+    );
+
+    toastErrorSpy.mockRestore();
   });
 });

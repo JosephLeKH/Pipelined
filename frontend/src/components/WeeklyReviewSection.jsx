@@ -60,7 +60,7 @@ export function WeeklyReviewTeaser({ review, isLoading, onReadReview }) {
   );
 }
 
-function WeeklyReviewSection({ review, isLoading }) {
+function WeeklyReviewSection({ review, isLoading, error }) {
   if (isLoading) {
     return (
       <section aria-label="Weekly review" className="animate-pulse rounded-lg border border-border-1 bg-surface-1 p-5">
@@ -69,6 +69,39 @@ function WeeklyReviewSection({ review, isLoading }) {
           <div className="h-20 rounded-lg bg-surface-2" />
           <div className="h-20 rounded-lg bg-surface-2" />
           <div className="h-20 rounded-lg bg-surface-2" />
+        </div>
+      </section>
+    );
+  }
+
+  if (error?.status === 404) {
+    return (
+      <section aria-label="Weekly review" className="rounded-lg border border-border-1 bg-surface-1 p-5">
+        <div className="mb-4">
+          <h2 className="text-xs font-medium uppercase tracking-wider text-text-3">Weekly review</h2>
+        </div>
+        <div className="rounded-lg border border-border-2 bg-surface-1 px-4 py-3">
+          <p className="text-sm text-text-2">No weekly review yet — your first review will appear at the end of the week.</p>
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section aria-label="Weekly review" className="rounded-lg border border-border-1 bg-surface-1 p-5">
+        <div className="mb-4">
+          <h2 className="text-xs font-medium uppercase tracking-wider text-text-3">Weekly review</h2>
+        </div>
+        <div className="flex items-center gap-3 rounded-lg border border-destructive/20 bg-destructive/5 px-4 py-3">
+          <p className="flex-1 text-sm text-destructive">Couldn&apos;t load weekly review — try again</p>
+          <button
+            type="button"
+            onClick={() => window.location.reload()}
+            className="shrink-0 text-sm text-brand-600 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600"
+          >
+            Retry
+          </button>
         </div>
       </section>
     );

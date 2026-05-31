@@ -1,22 +1,12 @@
 /** Hero section for the marketing landing. AI-native positioning with mock product card. */
 
-import { useState } from "react";
 import { Link } from "react-router-dom";
 
-import ArrowUpRight from "lucide-react/dist/esm/icons/arrow-up-right";
 import ArrowRight from "lucide-react/dist/esm/icons/arrow-right";
 import Sparkles from "lucide-react/dist/esm/icons/sparkles";
 import Check from "lucide-react/dist/esm/icons/check";
 import Clock from "lucide-react/dist/esm/icons/clock";
 import Briefcase from "lucide-react/dist/esm/icons/briefcase";
-
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "./ui/dialog";
 
 const MOCK_MISSIONS = [
   {
@@ -116,8 +106,6 @@ function HeroProductCard() {
 }
 
 export default function HeroSection() {
-  const [demoOpen, setDemoOpen] = useState(false);
-
   return (
     <section className="relative isolate overflow-hidden bg-surface-0 pt-20 lg:pt-24">
       <div
@@ -137,11 +125,9 @@ export default function HeroSection() {
           </div>
 
           <h1 className="max-w-[40rem] text-[2.5rem] font-semibold leading-[1.04] tracking-[-0.030em] text-text-1 md:text-[3.25rem] lg:text-[3.75rem]">
-            The pipeline for
-            <br />
-            your job search,{" "}
+            Your job hunt,{" "}
             <span className="bg-gradient-to-br from-brand-700 to-brand-500 bg-clip-text text-transparent">
-              on autopilot.
+              organized.
             </span>
           </h1>
 
@@ -159,14 +145,6 @@ export default function HeroSection() {
               Get started
               <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
             </Link>
-            <button
-              type="button"
-              className="marketing-focus inline-flex h-10 items-center gap-1.5 rounded-md border border-border-2 bg-surface-0 px-4 text-sm font-medium text-text-1 transition-colors duration-120 hover:bg-surface-1"
-              onClick={() => setDemoOpen(true)}
-            >
-              Watch the demo
-              <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
-            </button>
           </div>
 
           <ul className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs font-medium text-text-3">
@@ -189,17 +167,6 @@ export default function HeroSection() {
           <HeroProductCard />
         </div>
       </div>
-
-      <Dialog open={demoOpen} onOpenChange={setDemoOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Demo coming soon</DialogTitle>
-            <DialogDescription>
-              We&apos;re recording a walkthrough of Pipelined. Check back soon.
-            </DialogDescription>
-          </DialogHeader>
-        </DialogContent>
-      </Dialog>
     </section>
   );
 }

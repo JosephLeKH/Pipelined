@@ -156,3 +156,34 @@ async def generate_follow_up_draft(user_id: str, app_id: str, app_doc: dict) -> 
         application_id=app_id,
     )
     return draft
+
+
+async def persist_mock_interview(
+    user_id: str,
+    app_id: str,
+    transcript: list[dict],
+    debrief: str,
+) -> None:
+    """Persist mock interview transcript and debrief to application document."""
+    from datetime import UTC, datetime
+    from bson import ObjectId
+
+    from database import get_collection
+
+    try:
+        uid = ObjectId(user_id)
+        oid = ObjectId(app_id)
+    except Exception:
+        logger.error("persist_mock_interview_invalid_id", user_id=user_id, app_id=app_id)
+        return
+
+    mock_interview_artifact = {
+        "transcript": transcript,
+        "debrief": debrief,
+        "completed_at": datetime.now(UTC),
+    }
+
+    await get_collection("applications").update_one(
+        {"_id": oid, "user_id": uid},
+        {"$set": {"mock_interview": mock_interview_artifact}},
+    )

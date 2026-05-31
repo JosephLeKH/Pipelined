@@ -11,8 +11,6 @@ import AuthLayout from "../components/AuthLayout";
 import { AUTH_HEADLINE, AUTH_SUBHEAD } from "../lib/authFormStyles";
 import { Button } from "../components/ui/button";
 
-const REDIRECT_DELAY_MS = 2000;
-
 function VerifyingState() {
   return (
     <>
@@ -29,10 +27,10 @@ function SuccessState({ onContinue }) {
       <Check className="mb-6 h-6 w-6 text-status-success" aria-hidden="true" />
       <h1 className={AUTH_HEADLINE}>You&apos;re all set.</h1>
       <p className={`${AUTH_SUBHEAD} mb-6`}>
-        Your email is verified. Redirecting to Today…
+        Your email is verified.
       </p>
       <Button type="button" size="lg" className="w-full" onClick={onContinue}>
-        Continue
+        Continue to Today
       </Button>
     </>
   );
@@ -87,11 +85,6 @@ function VerifyEmailConfirm() {
     verify({ token }).catch(() => {});
   }, [token, verify]);
 
-  useEffect(() => {
-    if (!isSuccess) return;
-    const timer = setTimeout(() => navigate("/today", { replace: true }), REDIRECT_DELAY_MS);
-    return () => clearTimeout(timer);
-  }, [isSuccess, navigate]);
 
   const errorCode = error?.code;
 

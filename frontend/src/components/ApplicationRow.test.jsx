@@ -84,6 +84,25 @@ describe("ApplicationRow — desktop interactions", () => {
     expect(screen.queryByTestId("stale-indicator")).not.toBeInTheDocument();
   });
 
+  it("should render exactly ONE stale indicator when stale (not pulsing dot AND clock)", () => {
+    const staleDate = "2026-03-01T00:00:00Z"; // 45 days ago
+    renderRow({ application: { ...APP, updated_at: staleDate, current_stage: "Applied" } });
+
+    const staleIndicators = screen.getAllByRole("img", { hidden: true }).filter(
+      (el) => el.getAttribute("aria-label") === "Stale application"
+    );
+    expect(staleIndicators).toHaveLength(1);
+    // Ensure clock icon does NOT render
+    expect(screen.queryByTestId("stale-clock")).not.toBeInTheDocument();
+  });
+
+  it("should not show stale indicator for terminal stages even if old", () => {
+    const staleDate = "2026-03-01T00:00:00Z"; // 45 days ago
+    renderRow({ application: { ...APP, updated_at: staleDate, current_stage: "Offer" } });
+
+    expect(screen.queryByTestId("stale-indicator")).not.toBeInTheDocument();
+  });
+
   it("should show follow-up bell when follow_up_date is overdue", () => {
     renderRow({ application: { ...APP, follow_up_date: "2026-01-01" } });
 
@@ -201,3 +220,4 @@ describe("ApplicationRow — swipe actions", () => {
     expect(getSwipePanel()).toHaveAttribute("aria-hidden", "true");
   });
 });
+

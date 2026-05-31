@@ -163,6 +163,8 @@ async def stream_mock_interview(
     body: MockInterviewRequest,
 ) -> AsyncGenerator[dict, None]:
     """Yield SSE event dicts for a mock interview turn or debrief."""
+    from . import service as interview_service
+
     if not agent_llm_configured():
         yield {"type": "error", "message": "AI features not configured"}
         return
@@ -182,12 +184,18 @@ async def stream_mock_interview(
         yield {"type": "error", "message": exc.message}
         return
     except QuotaExceededError as exc:
-        yield {"type": "error", "message": str(exc)}
+        yield {
+            "type": "error",
+            "code": "ai_quota_exceeded",
+            "message": "AI quota reached — try again in a few minutes.",
+            "retry_after": 60,
+        }
         return
 
     company: str = app_doc.get("company", "")
     role: str = app_doc.get("role_title", app_doc.get("position", "Software Engineer"))
     interview_round: str | None = app_doc.get("interview_round")
+    app_id: str = str(app_doc.get("_id", ""))
     messages = _history_to_messages(body)
 
     if body.end_session:
@@ -222,14 +230,35 @@ async def stream_mock_interview(
         ):
             parts.append(delta)
             yield {"type": "token", "content": delta}
+    except QuotaExceededError:
+        logger.warning("mock_interview_quota_exceeded", user_id=user_id)
+        yield {
+            "type": "error",
+            "code": "ai_quota_exceeded",
+            "message": "AI quota reached — try again in a few minutes.",
+            "retry_after": 60,
+        }
+        return
     except OpenRouterError as exc:
         logger.warning("mock_interview_stream_error", user_id=user_id, error=str(exc))
         yield {"type": "error", "message": "Mock interview request failed. Please try again."}
         return
 
-    yield {
-        "type": "done",
-        "content": "".join(parts),
-        "turn_count": user_turns,
-        "is_debrief": is_debrief,
-    }
+    content = "".join(parts)
+
+    if is_debrief:
+        transcript = [{"role": item.role, "content": item.content} for item in body.history]
+        await interview_service.persist_mock_interview(user_id, app_id, transcript, content)
+        yield {
+            "type": "debrief",
+            "content": content,
+            "turn_count": user_turns,
+            "is_debrief": True,
+        }
+    else:
+        yield {
+            "type": "done",
+            "content": content,
+            "turn_count": user_turns,
+            "is_debrief": False,
+        }

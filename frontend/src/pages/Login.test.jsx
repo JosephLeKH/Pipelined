@@ -91,14 +91,39 @@ describe("Login", () => {
     expect(await screen.findByRole("alert")).toHaveTextContent("Password must be at least 8 characters.");
   });
 
-  it("should show error message on invalid credentials", async () => {
+  it("should show error message on invalid credentials (401)", async () => {
     render(<Login />, { wrapper: makeWrapper() });
 
     await userEvent.type(screen.getByLabelText("Email"), "wrong@example.com");
     await userEvent.type(screen.getByLabelText("Password"), "wrongpass123");
     await userEvent.click(screen.getByRole("button", { name: "Log in" }));
 
-    expect(await screen.findByRole("alert")).toHaveTextContent("Incorrect email or password.");
+    expect(await screen.findByRole("alert")).toHaveTextContent("Email or password incorrect.");
+  });
+
+  it("should show query param error and dismiss on X click", async () => {
+    const qc = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } });
+    const Wrapper = ({ children }) => (
+      <QueryClientProvider client={qc}>
+        <MemoryRouter initialEntries={["/login?error=github_oauth_denied"]}>
+          <AuthProvider>
+            <Routes>
+              <Route path="/login" element={children} />
+              <Route path="/today" element={<div>Today</div>} />
+            </Routes>
+          </AuthProvider>
+        </MemoryRouter>
+      </QueryClientProvider>
+    );
+
+    render(<Login />, { wrapper: Wrapper });
+
+    const errorText = await screen.findByText("GitHub authentication was denied. Please try again.");
+    expect(errorText).toBeInTheDocument();
+
+    const dismissBtn = screen.getByLabelText("Dismiss error");
+    await userEvent.click(dismissBtn);
+    expect(errorText).not.toBeInTheDocument();
   });
 
   it("should redirect to today on successful login", async () => {

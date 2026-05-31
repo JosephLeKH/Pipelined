@@ -6,19 +6,29 @@ import SidebarNavItem from "./SidebarNavItem";
 import { isRouteActive } from "../../lib/routeMeta";
 
 function SidebarGroup({ label, items, pathname, collapsed, badgeCounts, onOpenCopilot }) {
+  // For Workspace group, insert Co-pilot right after Today (position 1)
+  const displayItems = label === "Workspace"
+    ? [
+        items[0], // Today
+        { id: "copilot", label: "Co-pilot", icon: Bot, onClick: onOpenCopilot, isCopilot: true },
+        ...items.slice(1)
+      ]
+    : items;
+
   return (
     <div className="px-2 py-1">
       {!collapsed && (
-        <p className="px-2 pb-1 pt-2 text-[0.6875rem] font-medium uppercase tracking-[0.06em] text-text-3">
+        <p className="px-2 pb-1 pt-2 text-xs font-semibold uppercase tracking-wider text-text-2">
           {label}
         </p>
       )}
       <div className="flex flex-col gap-0.5">
-        {items.map((item) => (
+        {displayItems.map((item) => (
           <SidebarNavItem
             key={item.id}
             icon={item.icon}
             label={item.label}
+            sublabel={item.sublabel}
             to={item.to}
             onClick={item.onClick}
             badge={item.badgeKey ? badgeCounts[item.badgeKey] : undefined}
@@ -26,15 +36,6 @@ function SidebarGroup({ label, items, pathname, collapsed, badgeCounts, onOpenCo
             collapsed={collapsed}
           />
         ))}
-        {label === "Account" && (
-          <SidebarNavItem
-            icon={Bot}
-            label="Open Co-pilot"
-            onClick={onOpenCopilot}
-            active={false}
-            collapsed={collapsed}
-          />
-        )}
       </div>
     </div>
   );

@@ -80,4 +80,33 @@ describe("MorningBriefHistoryPanel", () => {
       expect(container.firstChild).toBeNull();
     });
   });
+
+  it("should show error message and retry button on fetch failure", async () => {
+    server.use(
+      http.get("/api/brief/history", () => HttpResponse.error())
+    );
+
+    render(
+      <MorningBriefHistoryPanel open onClose={() => {}} />,
+      { wrapper: makeWrapper() },
+    );
+
+    expect(await screen.findByText(/Couldn't load brief history/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Try again/i })).toBeInTheDocument();
+  });
+
+  it("should keep drawer open when error occurs", async () => {
+    server.use(
+      http.get("/api/brief/history", () => HttpResponse.error())
+    );
+
+    render(
+      <MorningBriefHistoryPanel open onClose={() => {}} />,
+      { wrapper: makeWrapper() },
+    );
+
+    await screen.findByText(/Couldn't load brief history/i);
+    const dialog = screen.getByRole("dialog", { name: /previous briefs/i });
+    expect(dialog).toBeVisible();
+  });
 });

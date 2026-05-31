@@ -2,8 +2,8 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { JobBoardContent } from "./JobBoardContent";
 
-vi.mock("./JobRow", () => ({
-  default: ({ job }) => <div data-testid="job-row">{job.id}</div>,
+vi.mock("./JobCard", () => ({
+  default: ({ job }) => <div data-testid="job-card">{job.id}</div>,
 }));
 
 vi.mock("../components/ApiErrorMessage", () => ({
@@ -60,16 +60,10 @@ describe("JobBoardContent", () => {
     expect(onClear).toHaveBeenCalledOnce();
   });
 
-  it("should render a JobRow for each job", () => {
+  it("should render a JobCard for each job", () => {
     render(<JobBoardContent {...DEFAULT_PROPS} />);
 
-    expect(screen.getAllByTestId("job-row")).toHaveLength(2);
-  });
-
-  it("should show All jobs section heading", () => {
-    render(<JobBoardContent {...DEFAULT_PROPS} />);
-
-    expect(screen.getByRole("heading", { name: /all jobs/i })).toBeInTheDocument();
+    expect(screen.getAllByTestId("job-card")).toHaveLength(2);
   });
 
   it("should show Load more button when hasMore is true", () => {

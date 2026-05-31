@@ -13,6 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
+import { Tooltip, TooltipTrigger, TooltipContent } from "./ui/tooltip";
 
 const DRAG_FOCUS =
   "focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 dark:focus-visible:outline-1";
@@ -56,8 +57,9 @@ function PipelineStageRow({
   colorKey,
   onRename,
   onColorChange,
-  onRemove,
+  onRemoveClick,
   canRemove,
+  disabledTooltip,
   dragAttributes,
   dragListeners,
   setNodeRef,
@@ -87,17 +89,22 @@ function PipelineStageRow({
         aria-label={`Stage name: ${name}`}
       />
       <StageColorPicker value={colorKey} onChange={(key) => onColorChange(id, key)} stageName={name} />
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        onClick={() => onRemove(id)}
-        disabled={!canRemove}
-        aria-label={canRemove ? `Remove stage ${name}` : `Cannot remove required stage ${name}`}
-        className="h-7 w-7 shrink-0 text-text-3 hover:text-brand-700 disabled:opacity-30 dark:hover:text-brand-300"
-      >
-        <X className="h-3.5 w-3.5" />
-      </Button>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={() => onRemoveClick(id)}
+            disabled={!canRemove}
+            aria-label={canRemove ? `Remove stage ${name}` : `Cannot remove stage ${name}`}
+            className="h-7 w-7 shrink-0 text-text-3 hover:text-brand-700 disabled:opacity-30 dark:hover:text-brand-300"
+          >
+            <X className="h-3.5 w-3.5" />
+          </Button>
+        </TooltipTrigger>
+        {disabledTooltip && <TooltipContent>{disabledTooltip}</TooltipContent>}
+      </Tooltip>
       <button
         type="button"
         {...dragAttributes}

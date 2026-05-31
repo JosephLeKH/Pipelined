@@ -2,8 +2,6 @@
 
 import { AI_SCORE_LIMIT } from "../lib/constants";
 import SettingsPageShell from "./SettingsPageShell";
-import { Button } from "./ui/button";
-import { Tooltip, TooltipTrigger, TooltipContent } from "./ui/tooltip";
 
 const APP_LIMIT = 100;
 const CONTACT_LIMIT = 50;
@@ -27,24 +25,13 @@ function barFillClass(pct) {
 
 function UsageMeter({ label, used, max }) {
   const pct = usagePercent(used, max);
-  const atLimit = pct >= USAGE_LIMIT_THRESHOLD_PCT;
 
   return (
     <div className="flex flex-col gap-1.5">
       <div className="flex items-center justify-between gap-3">
         <span className="text-[0.8125rem] font-medium text-text-1">{label}</span>
-        <span className="flex items-center gap-2 text-sm text-text-2">
+        <span className="text-sm text-text-2">
           {used} / {max}
-          {atLimit ? (
-            <Button
-              type="button"
-              variant="link"
-              disabled
-              className="h-auto p-0 text-xs font-medium text-brand-600 opacity-60"
-            >
-              Upgrade
-            </Button>
-          ) : null}
         </span>
       </div>
       <div
@@ -79,14 +66,7 @@ function SettingsUsageSection({ user }) {
           <p className="text-[0.8125rem] font-medium text-text-1">Plan</p>
           <p className="mt-1 text-sm text-text-2">Free</p>
         </div>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button type="button" disabled className="cursor-not-allowed opacity-60">
-              Upgrade to Pro
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Coming soon</TooltipContent>
-        </Tooltip>
+        <p className="text-sm italic text-text-3">Paid plans are not yet available.</p>
       </div>
 
       <div className="mt-8 flex flex-col gap-5">

@@ -24,7 +24,7 @@ const MONTH_NAMES = [
 const NAV_BTN =
   "h-8 w-8 p-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 focus-visible:outline-offset-2 dark:focus-visible:outline-1";
 
-function CalendarNav({ onPrev, onNext, onToday }) {
+function CalendarNav({ month, year, onPrev, onNext, onToday }) {
   return (
     <div className="flex items-center gap-2">
       <Button type="button" variant="outline" size="sm" onClick={onToday} aria-label="Jump to today">
@@ -33,6 +33,9 @@ function CalendarNav({ onPrev, onNext, onToday }) {
       <Button type="button" variant="outline" size="icon" onClick={onPrev} aria-label="Previous month" className={NAV_BTN}>
         <ChevronLeft className="h-4 w-4" aria-hidden="true" />
       </Button>
+      <span className="min-w-[120px] text-center text-sm font-medium text-text-2">
+        {MONTH_NAMES[month - 1]} {year}
+      </span>
       <Button type="button" variant="outline" size="icon" onClick={onNext} aria-label="Next month" className={NAV_BTN}>
         <ChevronRight className="h-4 w-4" aria-hidden="true" />
       </Button>
@@ -75,13 +78,8 @@ function CalendarContent({
   return (
     <main className="flex-1 px-4 py-6 sm:px-6">
       <div className="mb-6 flex flex-wrap items-baseline justify-between gap-3">
-        <h1 className="text-2xl font-semibold text-text-1">
-          Calendar
-          <span className="ml-2 text-base font-normal text-text-3">
-            · {MONTH_NAMES[month - 1]} {year}
-          </span>
-        </h1>
-        <CalendarNav onPrev={handlePrev} onNext={handleNext} onToday={handleToday} />
+        <h1 className="text-2xl font-semibold text-text-1">Calendar</h1>
+        <CalendarNav month={month} year={year} onPrev={handlePrev} onNext={handleNext} onToday={handleToday} />
       </div>
 
       {eventsError && <ApiErrorMessage error={eventsError} onRetry={eventsRefetch} />}

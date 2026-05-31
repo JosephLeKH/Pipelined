@@ -1,18 +1,20 @@
 /** Settings appearance — theme, density, font size, and accent preferences. */
 
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
 import { useTheme } from "../context/ThemeContext";
+import { useAppearancePrefs } from "../hooks/useAppearancePrefs";
 import {
   ACCENTS,
   DENSITIES,
   FONT_SIZE_STEPS,
-  persistAccent,
-  persistDensity,
-  persistFontSizeIndex,
-  readAccent,
+  applyDensity,
+  applyFontSizeIndex,
+  applyAccent,
   readDensity,
   readFontSizeIndex,
+  readAccent,
 } from "../lib/appearancePrefs";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 
@@ -69,9 +71,17 @@ function ThemeSwatch({ option, checked, onSelect }) {
 
 function SettingsAppearanceSection() {
   const { theme, setTheme } = useTheme();
-  const [density, setDensity] = useState(() => readDensity());
-  const [fontSizeIndex, setFontSizeIndex] = useState(() => readFontSizeIndex());
-  const [accent, setAccent] = useState(() => readAccent());
+  const { prefs, updatePrefs } = useAppearancePrefs();
+  const [density, setDensity] = useState(() => prefs.density || readDensity());
+  const [fontSizeIndex, setFontSizeIndex] = useState(() => prefs.font_size ?? readFontSizeIndex());
+  const [accent, setAccent] = useState(() => prefs.accent_color || readAccent());
+
+  // Sync local state to server on change.
+  useEffect(() => {
+    if (prefs.density) setDensity(prefs.density);
+    if (prefs.font_size !== undefined && prefs.font_size !== null) setFontSizeIndex(prefs.font_size);
+    if (prefs.accent_color) setAccent(prefs.accent_color);
+  }, [prefs]);
 
   const handleTheme = useCallback(
     (next) => {
@@ -82,19 +92,22 @@ function SettingsAppearanceSection() {
 
   const handleDensity = useCallback((next) => {
     setDensity(next);
-    persistDensity(next);
-  }, []);
+    applyDensity(next);
+    updatePrefs({ density: next });
+  }, [updatePrefs]);
 
   const handleFontSize = useCallback((event) => {
     const index = Number(event.target.value);
     setFontSizeIndex(index);
-    persistFontSizeIndex(index);
-  }, []);
+    applyFontSizeIndex(index);
+    updatePrefs({ font_size: index });
+  }, [updatePrefs]);
 
   const handleAccent = useCallback((next) => {
     setAccent(next);
-    persistAccent(next);
-  }, []);
+    applyAccent(next);
+    updatePrefs({ accent_color: next });
+  }, [updatePrefs]);
 
   return (
     <div>

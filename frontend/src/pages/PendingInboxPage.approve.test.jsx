@@ -94,7 +94,7 @@ describe("PendingInboxPage approve flow", () => {
     render(<PendingInboxPage />, { wrapper: makeWrapper() });
 
     await screen.findByLabelText("Beta Corp · Engineer");
-    await userEvent.click(screen.getByRole("button", { name: /approve beta corp/i }));
+    await userEvent.click(screen.getByRole("button", { name: /add.*beta corp.*to pipeline/i }));
 
     await waitFor(() => {
       expect(screen.getByTestId("location")).toHaveTextContent("/dashboard?selected=app99");

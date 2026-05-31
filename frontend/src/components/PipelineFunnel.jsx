@@ -28,7 +28,8 @@ function dropOffLabel(current, next) {
   if (from <= 0 || to >= from) return null;
   const lost = from - to;
   const pct = Math.round((lost / from) * 100);
-  return `−${pct}% drop-off (${lost} lost)`;
+  const conversionPct = Math.round((to / from) * 100);
+  return `${conversionPct}% → next stage · −${pct}% drop-off (${lost} lost)`;
 }
 
 function FunnelBar({ stage, count, widthPct, dotColor }) {

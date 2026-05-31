@@ -10,11 +10,13 @@ from auth import service as auth_service
 from auth.dependencies import get_current_user
 from auth.email_verification import create_verification_token
 from auth.schemas import (
+    AppearancePrefsRequest,
     ChangePasswordRequest,
     ForgotPasswordRequest,
     GithubAuthRequest,
     GoogleAuthRequest,
     LoginRequest,
+    PipelineStageColorsRequest,
     RegisterRequest,
     ResetPasswordRequest,
     TokenPayload,
@@ -41,6 +43,8 @@ from auth.service import (
     decode_token,
     delete_user,
     reset_password,
+    update_appearance_prefs,
+    update_pipeline_stage_colors,
     update_user_profile,
     verify_password,
 )
@@ -358,5 +362,28 @@ async def reset_password_endpoint(
         raise HTTPException(status_code=400, detail={"code": code, "message": message})
     response.delete_cookie(RESET_TOKEN_COOKIE)
     return {"data": {"message": "Password reset successfully."}}
+
+
+@router.patch("/me/appearance", status_code=200)
+async def update_appearance(
+    body: AppearancePrefsRequest,
+    user: dict = Depends(get_current_user),
+) -> dict:
+    """Update the current user's appearance preferences (theme, density, font size, accent)."""
+    prefs = body.model_dump(exclude_none=True)
+    await update_appearance_prefs(str(user["_id"]), prefs)
+    logger.info("appearance_prefs_updated", user_id=str(user["_id"]))
+    return {"data": UserResponse.from_doc(await auth_service.get_user_by_id(str(user["_id"])))}
+
+
+@router.patch("/me/stage-colors", status_code=200)
+async def update_stage_colors(
+    body: PipelineStageColorsRequest,
+    user: dict = Depends(get_current_user),
+) -> dict:
+    """Update the current user's pipeline stage color overrides."""
+    await update_pipeline_stage_colors(str(user["_id"]), body.colors)
+    logger.info("stage_colors_updated", user_id=str(user["_id"]), color_count=len(body.colors))
+    return {"data": UserResponse.from_doc(await auth_service.get_user_by_id(str(user["_id"])))}
 
 

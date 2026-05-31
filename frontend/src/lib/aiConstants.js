@@ -34,7 +34,7 @@ export function getAiToastError(error, fallback) {
 }
 
 export const COPILOT_TITLE = "Co-pilot";
-export const COPILOT_SUBTITLE = "Grounded in your pipeline. Suggestions only.";
+export const COPILOT_SUBTITLE = "Answers based on your applications, profile, and resume";
 export const COPILOT_PLACEHOLDER = "Ask about priorities, follow-ups, or interview prep…";
 export const COPILOT_ERROR_FALLBACK = "Co-pilot unavailable. Please try again.";
 export const COPILOT_RATE_LIMIT_MESSAGE = "Co-pilot rate limit reached. Try again later.";

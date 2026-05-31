@@ -2,7 +2,10 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
+import { toast } from "sonner";
 import Tags from "./Tags";
+
+vi.mock("sonner");
 
 vi.mock("../hooks/useApplications", () => ({
   useTags: vi.fn(),
@@ -146,5 +149,57 @@ describe("Tags", () => {
     fireEvent.click(screen.getByRole("button", { name: /^delete$/i }));
 
     expect(mockDelete).toHaveBeenCalledWith("frontend", expect.any(Object));
+  });
+
+  it("should show success toast on delete success", async () => {
+    useTags.mockReturnValue({ data: { tags: MOCK_TAGS }, isLoading: false, error: null, refetch: mockRefetch });
+
+    renderPage();
+
+    await userEvent.click(screen.getByRole("button", { name: /actions for tag frontend/i }));
+    await userEvent.click(screen.getByRole("menuitem", { name: /^delete$/i }));
+
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: /^delete$/i }));
+
+    const call = mockDelete.mock.calls[0];
+    call[1].onSuccess();
+
+    expect(toast.success).toHaveBeenCalledWith("Tag deleted");
+  });
+
+  it("should show error toast and keep modal open on delete failure", async () => {
+    useTags.mockReturnValue({ data: { tags: MOCK_TAGS }, isLoading: false, error: null, refetch: mockRefetch });
+
+    renderPage();
+
+    await userEvent.click(screen.getByRole("button", { name: /actions for tag frontend/i }));
+    await userEvent.click(screen.getByRole("menuitem", { name: /^delete$/i }));
+
+    fireEvent.click(screen.getByRole("button", { name: /^delete$/i }));
+
+    const call = mockDelete.mock.calls[0];
+    const error = { response: { data: { detail: "Cannot delete tag with linked apps" } } };
+    call[1].onError(error);
+
+    expect(toast.error).toHaveBeenCalledWith("Cannot delete tag with linked apps");
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+  });
+
+  it("should show fallback error message on delete failure with no detail", async () => {
+    useTags.mockReturnValue({ data: { tags: MOCK_TAGS }, isLoading: false, error: null, refetch: mockRefetch });
+
+    renderPage();
+
+    await userEvent.click(screen.getByRole("button", { name: /actions for tag frontend/i }));
+    await userEvent.click(screen.getByRole("menuitem", { name: /^delete$/i }));
+
+    fireEvent.click(screen.getByRole("button", { name: /^delete$/i }));
+
+    const call = mockDelete.mock.calls[0];
+    call[1].onError({});
+
+    expect(toast.error).toHaveBeenCalledWith("Couldn't delete tag — try again");
   });
 });

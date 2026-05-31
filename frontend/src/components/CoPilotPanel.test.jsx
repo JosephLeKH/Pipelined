@@ -41,7 +41,7 @@ describe("CoPilotPanel", () => {
 
     expect(screen.getByRole("heading", { name: /co-pilot/i })).toBeInTheDocument();
     expect(screen.getByLabelText(/co-pilot message/i)).toBeInTheDocument();
-    expect(screen.getByText(/suggestions only/i)).toBeInTheDocument();
+    expect(screen.getByText(/answers based on your applications/i)).toBeInTheDocument();
   });
 
   it("should render suggested prompt chips when empty", () => {

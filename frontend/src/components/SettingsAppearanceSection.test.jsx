@@ -1,7 +1,11 @@
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { describe, it, expect, beforeEach, afterEach, afterAll } from "vitest";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { http, HttpResponse } from "msw";
+import { setupServer } from "msw/node";
 
+import { AuthProvider } from "../context/AuthContext";
 import { ThemeProvider } from "../context/ThemeContext";
 import SettingsAppearanceSection from "./SettingsAppearanceSection";
 import {
@@ -11,11 +15,33 @@ import {
   initAppearancePrefs,
 } from "../lib/appearancePrefs";
 
+const server = setupServer(
+  http.get("/api/auth/me", () =>
+    HttpResponse.json({
+      data: {
+        id: "u1",
+        email: "test@example.com",
+        default_stages: ["Applied", "Phone Screen", "Offer", "Rejected"],
+        has_resume: false,
+      },
+    })
+  )
+);
+
+beforeEach(() => server.listen());
+afterEach(() => server.resetHandlers());
+afterAll(() => server.close());
+
 function renderSection() {
+  const queryClient = new QueryClient();
   return render(
-    <ThemeProvider>
-      <SettingsAppearanceSection />
-    </ThemeProvider>,
+    <AuthProvider>
+      <ThemeProvider>
+        <QueryClientProvider client={queryClient}>
+          <SettingsAppearanceSection />
+        </QueryClientProvider>
+      </ThemeProvider>
+    </AuthProvider>,
   );
 }
 
@@ -70,15 +96,18 @@ describe("SettingsAppearanceSection", () => {
     expect(document.documentElement.dataset.density).toBe("comfortable");
   });
 
-  it("should persist font size slider selection", () => {
+  it("should persist font size slider selection", async () => {
     renderSection();
 
     const slider = screen.getByRole("slider", { name: /font size/i });
+    // For range inputs, use fireEvent.change instead of userEvent (which doesn't support clear/type for sliders)
     fireEvent.change(slider, { target: { value: "4" } });
 
-    expect(localStorage.getItem(FONT_SIZE_KEY)).toBe("4");
-    expect(document.documentElement.dataset.fontSizeStep).toBe("4");
-    expect(document.documentElement.style.fontSize).toBe("20px");
+    await waitFor(() => {
+      expect(localStorage.getItem(FONT_SIZE_KEY)).toBe("4");
+      expect(document.documentElement.dataset.fontSizeStep).toBe("4");
+      expect(document.documentElement.style.fontSize).toBe("20px");
+    });
   });
 
   it("should persist accent preference", async () => {

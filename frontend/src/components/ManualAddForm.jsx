@@ -20,12 +20,12 @@ function ManualAddForm({ isOpen, onClose, initialStage = "" }) {
 
   const handleFormKeyDown = useCallback(
     (e) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+      if ((e.metaKey || e.ctrlKey) && e.key === "Enter" && !isPending) {
         e.preventDefault();
         handleSubmit(e);
       }
     },
-    [handleSubmit]
+    [handleSubmit, isPending]
   );
 
   return (
@@ -58,8 +58,12 @@ function ManualAddForm({ isOpen, onClose, initialStage = "" }) {
             disabled={isPending}
             aria-busy={isPending}
             aria-keyshortcuts="Meta+Enter"
+            className="inline-flex items-center gap-1.5"
           >
             {isPending ? "Saving…" : "Add application"}
+            <kbd className="hidden rounded bg-black/20 px-1 py-0.5 text-[0.625rem] font-mono sm:inline">
+              ⌘↵
+            </kbd>
           </Button>
         </DialogFooter>
       </DialogContent>

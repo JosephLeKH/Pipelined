@@ -45,7 +45,7 @@ describe("ApplyPackSection", () => {
       />
     );
 
-    expect(screen.getByText(/copy and paste manually/i)).toBeInTheDocument();
+    expect(screen.getByText(/no auto-send — review and send manually/i)).toBeInTheDocument();
     await userEvent.click(screen.getByRole("button", { name: /generate apply pack/i }));
 
     await waitFor(() => {
@@ -89,5 +89,27 @@ describe("ApplyPackSection", () => {
 
     expect(screen.getByText(/Dear hiring team/i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /refresh apply pack/i })).toBeInTheDocument();
+  });
+
+  it("should show source attribution line", () => {
+    render(
+      <ApplyPackSection
+        application={{ id: "app1", job_description: "Role", apply_pack: null }}
+        onPackGenerated={vi.fn()}
+      />
+    );
+
+    expect(screen.getByText(/based on your resume, profile, and this job/i)).toBeInTheDocument();
+  });
+
+  it("should display unified 'no auto-send' message", () => {
+    render(
+      <ApplyPackSection
+        application={{ id: "app1", job_description: "Role", apply_pack: null }}
+        onPackGenerated={vi.fn()}
+      />
+    );
+
+    expect(screen.getByText(/no auto-send — review and send manually/i)).toBeInTheDocument();
   });
 });

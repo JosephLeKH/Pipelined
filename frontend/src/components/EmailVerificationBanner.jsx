@@ -9,7 +9,7 @@ import X from "lucide-react/dist/esm/icons/x";
 
 import { useResendVerification } from "../hooks/useAuth";
 import { useAuth } from "../context/AuthContext";
-import { EMAIL_VERIFICATION_BANNER_DISMISSED_KEY } from "../lib/constants";
+import { EMAIL_VERIFICATION_BANNER_DISMISSED_KEY, BANNER_Z_VERIFY_EMAIL } from "../lib/constants";
 import { dismissBanner, isBannerDismissed } from "../lib/utils";
 import { Button } from "./ui/button";
 
@@ -63,12 +63,13 @@ function EmailVerificationBanner() {
       role="status"
       data-testid="email-verification-banner"
       className="flex h-9 items-center gap-3 border-b border-brand-100 bg-brand-50 px-4 text-xs text-brand-900 dark:border-brand-800 dark:bg-brand-900/30 dark:text-brand-100"
+      style={{ zIndex: BANNER_Z_VERIFY_EMAIL }}
     >
       <AlertTriangle size={15} aria-hidden="true" className="shrink-0 text-brand-700 dark:text-brand-300" />
       <span className="min-w-0 truncate">
         {resendSent
           ? "Verification email sent. Check your inbox."
-          : "Please verify your email to continue."}
+          : "Verify your email to unlock notifications and team features."}
       </span>
       {!resendSent && (
         <Button

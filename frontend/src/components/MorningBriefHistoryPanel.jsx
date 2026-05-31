@@ -13,10 +13,11 @@ const DRAWER_WIDTH_PX = 480;
 
 function MorningBriefHistoryPanel({ open, onClose }) {
   const panelRef = useRef(null);
-  const { data, isLoading, isError } = useBriefHistory(HISTORY_DAYS);
+  const { data, isLoading, isError, refetch } = useBriefHistory(HISTORY_DAYS);
   const briefs = data?.data ?? [];
   const pastBriefs = briefs.slice(1);
   const hasHistory = !isLoading && !isError && pastBriefs.length > 0;
+  const showError = !isLoading && isError;
 
   useEffect(() => {
     if (!open) return undefined;
@@ -33,7 +34,8 @@ function MorningBriefHistoryPanel({ open, onClose }) {
     }
   }, [open]);
 
-  if (!hasHistory) return null;
+  if (!open) return null;
+  if (!hasHistory && !showError) return null;
 
   return (
     <div
@@ -77,14 +79,29 @@ function MorningBriefHistoryPanel({ open, onClose }) {
             <X className="h-4 w-4" aria-hidden="true" />
           </Button>
         </div>
-        <ul className="flex-1 overflow-y-auto divide-y divide-border-1">
-          {pastBriefs.map((brief) => (
-            <li key={brief.date} className="px-4 py-3">
-              <p className="text-sm font-medium text-text-1">{brief.date}</p>
-              <p className="mt-0.5 text-xs text-text-3">{brief.summary_line}</p>
-            </li>
-          ))}
-        </ul>
+        <div className="flex-1 overflow-y-auto">
+          {showError ? (
+            <div className="flex flex-col items-center justify-center gap-2 px-4 py-6">
+              <p className="text-sm text-destructive">Couldn&apos;t load brief history</p>
+              <button
+                type="button"
+                onClick={() => refetch()}
+                className="text-xs text-brand-600 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600"
+              >
+                Try again
+              </button>
+            </div>
+          ) : (
+            <ul className="divide-y divide-border-1">
+              {pastBriefs.map((brief) => (
+                <li key={brief.date} className="px-4 py-3">
+                  <p className="text-sm font-medium text-text-1">{brief.date}</p>
+                  <p className="mt-0.5 text-xs text-text-3">{brief.summary_line}</p>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       </aside>
     </div>
   );

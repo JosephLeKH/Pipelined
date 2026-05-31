@@ -15,6 +15,7 @@ from bson import ObjectId
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import StreamingResponse
 from ai.agent_log import AGENT_TYPE_PREP, STATUS_FAILED, STATUS_SUCCESS, log_agent_run
+from ai.exceptions import AIQuotaExceededError
 from ai.openrouter_client import OpenRouterError, agent_llm_configured, complete_json_with_usage
 from auth.dependencies import get_verified_user as get_current_user
 from config import settings
@@ -118,6 +119,21 @@ async def interview_prep_stream(
                         application_id=app_id,
                     )
                 yield f"event: {event_type}\ndata: {json.dumps(event)}\n\n"
+        except AIQuotaExceededError as e:
+            logger.warning("interview_prep_quota_exceeded", app_id=app_id, error=str(e))
+            await log_agent_run(
+                user_id,
+                AGENT_TYPE_PREP,
+                STATUS_FAILED,
+                f"Interview prep quota exceeded for {company}",
+                application_id=app_id,
+            )
+            payload = json.dumps({
+                "code": "ai_quota_exceeded",
+                "message": "AI quota reached — try again in a few minutes.",
+                "retry_after": 60,
+            })
+            yield f"event: error\ndata: {payload}\n\n"
         except Exception as e:
             logger.exception("interview_prep_stream_error", app_id=app_id, error=str(e))
             await log_agent_run(
@@ -158,7 +174,11 @@ async def generate_follow_up_draft(
         draft = await follow_up_service.generate_follow_up_draft(user_id, app_id, app_doc)
         return {"data": draft}
     except QuotaExceededError as exc:
-        raise HTTPException(status_code=429, detail=str(exc))
+        raise HTTPException(
+            status_code=429,
+            detail={"code": "ai_quota_exceeded", "message": "AI quota reached — try again in a few minutes."},
+            headers={"Retry-After": "60"},
+        )
     except FollowUpBudgetError:
         raise HTTPException(status_code=503, detail="AI budget exceeded")
     except FollowUpDraftError:
@@ -193,8 +213,18 @@ async def generate_fit_score(
         if result is None:
             raise HTTPException(status_code=502, detail="Fit score generation failed")
         return {"data": result}
-    except QuotaExceededError as exc:
-        raise HTTPException(status_code=429, detail=str(exc))
+    except QuotaExceededError:
+        raise HTTPException(
+            status_code=429,
+            detail={"code": "ai_quota_exceeded", "message": "AI quota reached — try again in a few minutes."},
+            headers={"Retry-After": "60"},
+        )
+    except AIQuotaExceededError:
+        raise HTTPException(
+            status_code=429,
+            detail={"code": "ai_quota_exceeded", "message": "AI quota reached — try again in a few minutes."},
+            headers={"Retry-After": "60"},
+        )
     except (asyncio.TimeoutError, json.JSONDecodeError, KeyError, ValueError):
         logger.exception("fit_score_error", app_id=app_id)
         raise HTTPException(status_code=502, detail="Fit score generation failed")
@@ -224,6 +254,14 @@ async def mock_interview_stream(
             async for event in stream_mock_interview(user_id, app_doc, resume_text, body):
                 event_type = event.pop("type")
                 yield f"event: {event_type}\ndata: {json.dumps(event)}\n\n"
+        except QuotaExceededError:
+            logger.warning("mock_interview_quota_exceeded", app_id=app_id)
+            payload = json.dumps({
+                "code": "ai_quota_exceeded",
+                "message": "AI quota reached — try again in a few minutes.",
+                "retry_after": 60,
+            })
+            yield f"event: error\ndata: {payload}\n\n"
         except Exception as exc:
             logger.exception("mock_interview_stream_error", app_id=app_id, error=str(exc))
             payload = json.dumps({"message": "An unexpected error occurred. Please try again."})

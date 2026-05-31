@@ -37,7 +37,19 @@ export function useLoginForm() {
         login(user);
         _identifyLoggedInUser(user);
         navigate("/today", { replace: true });
-      } catch (err) { setError(err?.message ?? "Incorrect email or password."); }
+      } catch (err) {
+        const code = err?.code;
+        const status = err?.response?.status;
+        if (status === 422) {
+          setError("That doesn't look like a valid email.");
+        } else if (status === 429) {
+          setError("Too many attempts. Try again in a minute.");
+        } else if (code === "INVALID_CREDENTIALS" || status === 401) {
+          setError("Email or password incorrect.");
+        } else {
+          setError("Something went wrong. Try again.");
+        }
+      }
     },
     [email, password, signIn, login, navigate]
   );

@@ -274,4 +274,50 @@ describe("Analytics", () => {
     const naTexts = screen.getAllByText("N/A");
     expect(naTexts.length).toBeGreaterThanOrEqual(1);
   });
+
+  it("should display period label in date range picker", async () => {
+    renderAnalytics();
+
+    expect(await screen.findByText("Period:")).toBeInTheDocument();
+  });
+
+  it("should show conversion percentage in funnel drop-off", async () => {
+    renderAnalytics();
+
+    // Applied 10 → Phone Screen 7: 70% conversion rate
+    const dropoff = await screen.findByText(/70% → next stage/);
+    expect(dropoff).toBeInTheDocument();
+  });
+
+  it("should display reply rate tooltip on hover", async () => {
+    const user = userEvent.setup();
+    renderAnalytics();
+
+    await screen.findByText("Reply rate");
+
+    // Find the info icon near Reply rate
+    const infoParts = screen.getAllByText("Reply rate");
+    const replyRateTile = infoParts[0].closest("div");
+    const infoIcon = replyRateTile.querySelector("svg");
+
+    expect(infoIcon).toBeInTheDocument();
+
+    // Hover and check tooltip appears
+    await user.hover(infoIcon);
+
+    // Tooltip should contain explanation
+    expect(
+      await screen.findByText(/Applications with any company response/, { exact: false })
+    ).toBeInTheDocument();
+  });
+
+  it("should hide avg response delta when not available", async () => {
+    renderAnalytics();
+
+    await screen.findByText("Avg response");
+
+    // avg response delta should not show if not computed
+    const avgResponseTile = screen.getByText("4.2 days").closest("div");
+    expect(avgResponseTile).not.toHaveTextContent("vs last period");
+  });
 });

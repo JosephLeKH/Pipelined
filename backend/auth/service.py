@@ -413,3 +413,60 @@ async def delete_user(user_id: str) -> None:
         get_collection("users").delete_one({"_id": oid}),
     )
     logger.info("user_deleted", user_id=user_id)
+
+
+async def update_appearance_prefs(user_id: str, prefs: dict) -> dict:
+    """Update appearance preferences for a user and return the updated prefs.
+
+    Args:
+        user_id: ObjectId string of the user.
+        prefs: Dict with keys 'theme', 'density', 'font_size', 'accent_color'
+               (any/all may be None; only non-None values are merged).
+
+    Returns:
+        The merged appearance_prefs dict.
+    """
+    users = get_collection("users")
+    oid = ObjectId(user_id)
+
+    # Merge incoming prefs with existing (empty dict if unset).
+    existing = await users.find_one(
+        {"_id": oid},
+        projection={"appearance_prefs": 1}
+    )
+    current = (existing or {}).get("appearance_prefs") or {}
+
+    # Only update non-None values.
+    merged = {**current}
+    for key in ("theme", "density", "font_size", "accent_color"):
+        if key in prefs and prefs[key] is not None:
+            merged[key] = prefs[key]
+        elif key in prefs and prefs[key] is None:
+            # Explicitly setting to None removes the key.
+            merged.pop(key, None)
+
+    await users.update_one(
+        {"_id": oid},
+        {"$set": {"appearance_prefs": merged if merged else None}},
+    )
+    return merged
+
+
+async def update_pipeline_stage_colors(user_id: str, colors: dict[str, str]) -> dict[str, str]:
+    """Update pipeline stage color overrides for a user.
+
+    Args:
+        user_id: ObjectId string of the user.
+        colors: Dict mapping stage_name → hex color code.
+
+    Returns:
+        The updated pipeline_stage_colors dict.
+    """
+    users = get_collection("users")
+    oid = ObjectId(user_id)
+
+    await users.update_one(
+        {"_id": oid},
+        {"$set": {"pipeline_stage_colors": colors if colors else None}},
+    )
+    return colors

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import AlertCircle from "lucide-react/dist/esm/icons/alert-circle";
 import Bot from "lucide-react/dist/esm/icons/bot";
 import Send from "lucide-react/dist/esm/icons/send";
 import X from "lucide-react/dist/esm/icons/x";
@@ -83,8 +84,9 @@ function SuggestedPrompts({ onSelect, disabled }) {
 }
 
 function CoPilotPanel({ open, onClose }) {
-  const { messages, errorMessage, sendMessage, runAction, isStreaming } = useCopilotChat();
+  const { messages, errorMessage, sendMessage, runAction, isStreaming, hydrationFailed } = useCopilotChat();
   const [draft, setDraft] = useState("");
+  const [dismissedHydrationAlert, setDismissedHydrationAlert] = useState(false);
   const listRef = useRef(null);
 
   useEffect(() => {
@@ -143,6 +145,22 @@ function CoPilotPanel({ open, onClose }) {
         </header>
 
         <div ref={listRef} className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
+          {hydrationFailed && !dismissedHydrationAlert && (
+            <div className="flex gap-2 rounded-lg border border-status-warn/30 bg-status-warn/10 p-3">
+              <AlertCircle className="h-4 w-4 shrink-0 text-status-warn" aria-hidden="true" />
+              <div className="flex-1">
+                <p className="text-xs text-text-2">Couldn't load past chats — starting fresh.</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setDismissedHydrationAlert(true)}
+                className="text-text-3 hover:text-text-2"
+                aria-label="Dismiss alert"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </div>
+          )}
           {messages.length === 0 && (
             <div className="space-y-3">
               <p className="text-sm text-muted-foreground">

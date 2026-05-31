@@ -13,6 +13,16 @@ import {
   WATCHLIST_COMPANY_NAME_MAX_LENGTH,
 } from "../lib/constants";
 import { BUTTON_PRIMARY, BUTTON_SECONDARY, CARD_BASE } from "../lib/designTokens";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "./ui/alert-dialog";
 
 const WATCHLIST_EXPLAINER =
   "We scan your watchlist career pages nightly and surface new roles that match your profile.";
@@ -27,6 +37,8 @@ function SettingsWatchlistSection() {
   const [careersUrl, setCareersUrl] = useState("");
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteTargetIndex, setDeleteTargetIndex] = useState(null);
 
   const atLimit = companies.length >= WATCHLIST_COMPANIES_MAX;
 
@@ -52,9 +64,18 @@ function SettingsWatchlistSection() {
     setSaved(false);
   };
 
-  const handleRemove = (index) => {
-    setCompanies((prev) => prev.filter((_, idx) => idx !== index));
-    setSaved(false);
+  const handleRemoveClick = (index) => {
+    setDeleteTargetIndex(index);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleRemoveConfirm = () => {
+    if (deleteTargetIndex !== null) {
+      setCompanies((prev) => prev.filter((_, idx) => idx !== deleteTargetIndex));
+      setSaved(false);
+    }
+    setDeleteDialogOpen(false);
+    setDeleteTargetIndex(null);
   };
 
   const handleSave = async () => {
@@ -96,7 +117,7 @@ function SettingsWatchlistSection() {
               </div>
               <button
                 type="button"
-                onClick={() => handleRemove(index)}
+                onClick={() => handleRemoveClick(index)}
                 disabled={isPending}
                 aria-label={`Remove ${company.name}`}
                 className={`${BUTTON_SECONDARY} inline-flex shrink-0 items-center gap-1 px-2 py-1 text-xs`}
@@ -159,6 +180,28 @@ function SettingsWatchlistSection() {
           Save
         </button>
       </div>
+
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove watchlist company?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {deleteTargetIndex !== null && companies[deleteTargetIndex]
+                ? `Remove "${companies[deleteTargetIndex].name}" from your watchlist? This action cannot be undone.`
+                : "Remove this company from your watchlist?"}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleRemoveConfirm}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Remove
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

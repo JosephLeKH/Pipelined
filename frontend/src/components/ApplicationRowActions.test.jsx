@@ -9,6 +9,7 @@ import { setupServer } from "msw/node";
 
 import { ThemeProvider } from "../context/ThemeContext";
 import { AuthProvider } from "../context/AuthContext";
+import { TooltipProvider } from "./ui/tooltip";
 import { BulkActionBar, BulkDeleteConfirmModal } from "./ApplicationRowActions";
 
 const MOCK_ME = {
@@ -35,7 +36,9 @@ function wrap(node) {
   return render(
     <ThemeProvider>
       <QueryClientProvider client={qc}>
-        <AuthProvider>{node}</AuthProvider>
+        <AuthProvider>
+          <TooltipProvider>{node}</TooltipProvider>
+        </AuthProvider>
       </QueryClientProvider>
     </ThemeProvider>
   );
@@ -87,8 +90,8 @@ describe("BulkActionBar", () => {
     expect(onDeleteSelected).toHaveBeenCalledOnce();
   });
 
-  it("should show Merge button only when exactly 2 items selected", () => {
-    const { rerender, unmount } = wrap(
+  it("should render Merge button enabled when exactly 2 items selected", () => {
+    wrap(
       <BulkActionBar
         selectedCount={2}
         onMoveToStage={vi.fn()}
@@ -98,14 +101,15 @@ describe("BulkActionBar", () => {
       />
     );
 
-    expect(screen.getByRole("button", { name: /^merge$/i })).toBeInTheDocument();
-    unmount();
+    const mergeBtn = screen.getByRole("button", { name: /^merge$/i });
+    expect(mergeBtn).toBeInTheDocument();
+    expect(mergeBtn).not.toBeDisabled();
   });
 
-  it("should not show Merge button when more than 2 items selected", () => {
+  it("should render Merge button disabled when 1 item selected", () => {
     wrap(
       <BulkActionBar
-        selectedCount={3}
+        selectedCount={1}
         onMoveToStage={vi.fn()}
         onDeleteSelected={vi.fn()}
         onMerge={vi.fn()}
@@ -113,7 +117,67 @@ describe("BulkActionBar", () => {
       />
     );
 
-    expect(screen.queryByRole("button", { name: /^merge$/i })).not.toBeInTheDocument();
+    const mergeBtn = screen.getByRole("button", { name: /^merge$/i });
+    expect(mergeBtn).toBeDisabled();
+  });
+
+  it("should render Merge button disabled when 3+ items selected", () => {
+    wrap(
+      <BulkActionBar
+        selectedCount={5}
+        onMoveToStage={vi.fn()}
+        onDeleteSelected={vi.fn()}
+        onMerge={vi.fn()}
+        onBulkEdit={vi.fn()}
+      />
+    );
+
+    const mergeBtn = screen.getByRole("button", { name: /^merge$/i });
+    expect(mergeBtn).toBeDisabled();
+  });
+
+  it("should call onMerge when Merge button is clicked with exactly 2 selected", async () => {
+    const onMerge = vi.fn();
+    wrap(
+      <BulkActionBar
+        selectedCount={2}
+        onMoveToStage={vi.fn()}
+        onDeleteSelected={vi.fn()}
+        onMerge={onMerge}
+        onBulkEdit={vi.fn()}
+      />
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: /^merge$/i }));
+    expect(onMerge).toHaveBeenCalledOnce();
+  });
+
+  it("should display 'Change stage' button with clear label", () => {
+    wrap(
+      <BulkActionBar
+        selectedCount={2}
+        onMoveToStage={vi.fn()}
+        onDeleteSelected={vi.fn()}
+        onMerge={vi.fn()}
+        onBulkEdit={vi.fn()}
+      />
+    );
+
+    expect(screen.getByRole("button", { name: /change stage/i })).toBeInTheDocument();
+  });
+
+  it("should display 'Save changes' button for bulk edit", () => {
+    wrap(
+      <BulkActionBar
+        selectedCount={2}
+        onMoveToStage={vi.fn()}
+        onDeleteSelected={vi.fn()}
+        onMerge={vi.fn()}
+        onBulkEdit={vi.fn()}
+      />
+    );
+
+    expect(screen.getByRole("button", { name: /save changes/i })).toBeInTheDocument();
   });
 });
 

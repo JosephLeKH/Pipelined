@@ -63,9 +63,9 @@ describe("AppShell", () => {
     expect(screen.getByText("Pipelined")).toBeInTheDocument();
   });
 
-  it("should mark Dashboard as active on /dashboard", () => {
+  it("should mark Pipeline as active on /dashboard", () => {
     render(<ShellRoutes />, { wrapper: makeWrapper(["/dashboard"]) });
-    const dashLink = screen.getByRole("link", { name: /dashboard/i });
+    const dashLink = screen.getByRole("link", { name: /pipeline/i });
     expect(dashLink).toHaveAttribute("aria-current", "page");
   });
 

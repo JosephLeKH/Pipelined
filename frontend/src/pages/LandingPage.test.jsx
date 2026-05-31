@@ -42,7 +42,7 @@ describe("LandingPage", () => {
   it("should render the hero headline and subhead", () => {
     render(<LandingPage />, { wrapper: makeWrapper() });
 
-    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(/pipeline for/i);
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(/your job hunt/i);
     expect(screen.getByText(/Capture every application from one-click save/i)).toBeInTheDocument();
   });
 

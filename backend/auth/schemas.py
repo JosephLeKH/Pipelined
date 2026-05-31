@@ -1,8 +1,9 @@
 """Pydantic request/response models for auth endpoints."""
 
+import re
 from zoneinfo import available_timezones
 
-from pydantic import BaseModel, ConfigDict, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
 from auth.url_validation import validate_public_http_url
 from auth.constants import (
@@ -123,6 +124,72 @@ def watchlist_companies_from_doc(doc: dict | None) -> list[dict]:
     return items
 
 
+class AppearancePrefs(BaseModel):
+    """User appearance preferences (theme, density, font size, accent)."""
+
+    model_config = ConfigDict(strict=True)
+
+    theme: str | None = Field(None)  # "light", "dark", "system"
+    density: str | None = Field(None)  # "compact", "comfortable"
+    font_size: int | None = Field(None, ge=0)  # font size index
+    accent_color: str | None = Field(None)  # "cardinal", "default", or custom hex
+
+    @field_validator("theme")
+    @classmethod
+    def validate_theme(cls, v: str | None) -> str | None:
+        if v is not None and v not in ("light", "dark", "system"):
+            raise ValueError("theme must be one of: light, dark, system")
+        return v
+
+    @field_validator("density")
+    @classmethod
+    def validate_density(cls, v: str | None) -> str | None:
+        if v is not None and v not in ("compact", "comfortable"):
+            raise ValueError("density must be one of: compact, comfortable")
+        return v
+
+    @field_validator("accent_color")
+    @classmethod
+    def validate_accent_color(cls, v: str | None) -> str | None:
+        if v is not None:
+            if v not in ("cardinal", "default") and not re.match(r"^#[0-9a-fA-F]{6}$", v):
+                raise ValueError("accent_color must be 'cardinal', 'default', or a hex color (#RRGGBB)")
+        return v
+
+
+class AppearancePrefsRequest(BaseModel):
+    """Request model for updating appearance preferences."""
+
+    model_config = ConfigDict(strict=True)
+
+    theme: str | None = None
+    density: str | None = None
+    font_size: int | None = None
+    accent_color: str | None = None
+
+    @field_validator("theme")
+    @classmethod
+    def validate_theme(cls, v: str | None) -> str | None:
+        if v is not None and v not in ("light", "dark", "system"):
+            raise ValueError("theme must be one of: light, dark, system")
+        return v
+
+    @field_validator("density")
+    @classmethod
+    def validate_density(cls, v: str | None) -> str | None:
+        if v is not None and v not in ("compact", "comfortable"):
+            raise ValueError("density must be one of: compact, comfortable")
+        return v
+
+    @field_validator("accent_color")
+    @classmethod
+    def validate_accent_color(cls, v: str | None) -> str | None:
+        if v is not None:
+            if v not in ("cardinal", "default") and not re.match(r"^#[0-9a-fA-F]{6}$", v):
+                raise ValueError("accent_color must be 'cardinal', 'default', or a hex color (#RRGGBB)")
+        return v
+
+
 class AgentProfileResponse(BaseModel):
     target_roles: list[str]
     preferred_locations: list[str]
@@ -198,11 +265,14 @@ class UserResponse(BaseModel):
     autopilot_max_daily: int = DEFAULT_AUTOPILOT_MAX_DAILY
     agent_profile: AgentProfileResponse = Field(default_factory=lambda: AgentProfileResponse(**_default_agent_profile()))
     watchlist_companies: list[WatchlistCompanyResponse] = Field(default_factory=list)
+    appearance_prefs: AppearancePrefs | None = None
+    pipeline_stage_colors: dict[str, str] | None = None
 
     @classmethod
     def from_doc(cls, doc: dict) -> "UserResponse":
         from parsing.ai_cache import get_ai_scores_remaining  # deferred to avoid import cycle
         weekly_digest = _weekly_digest_enabled_from_doc(doc)
+        appearance = doc.get("appearance_prefs")
         return cls(
             id=str(doc["_id"]),
             email=doc.get("email"),
@@ -235,6 +305,8 @@ class UserResponse(BaseModel):
                 WatchlistCompanyResponse(**item)
                 for item in watchlist_companies_from_doc(doc)
             ],
+            appearance_prefs=AppearancePrefs(**appearance) if appearance else None,
+            pipeline_stage_colors=doc.get("pipeline_stage_colors"),
         )
 
 
@@ -275,6 +347,23 @@ STAGES_MAX_COUNT = 10
 STAGE_NAME_MAX_LENGTH = 40
 WEEKLY_GOAL_MIN = 1
 WEEKLY_GOAL_MAX = 50
+
+
+class PipelineStageColorsRequest(BaseModel):
+    model_config = ConfigDict(strict=True)
+
+    colors: dict[str, str] = Field(default_factory=dict)
+
+    @field_validator("colors")
+    @classmethod
+    def _validate_hex(cls, v: dict[str, str]) -> dict[str, str]:
+        pattern = re.compile(r"^#[0-9a-fA-F]{6}$")
+        for stage, color in v.items():
+            if not isinstance(stage, str) or not stage.strip():
+                raise ValueError("Stage name must be a non-empty string")
+            if not pattern.match(color):
+                raise ValueError(f"Invalid hex color for stage '{stage}'")
+        return v
 
 
 class UpdateUserRequest(BaseModel):
