@@ -4,11 +4,8 @@ import { Link } from "react-router-dom";
 import GitBranch from "lucide-react/dist/esm/icons/git-branch";
 
 const LINKS = [
-  { label: "Pricing", to: "/pricing" },
   { label: "Changelog", to: "/#changelog" },
-  { label: "Privacy", to: "/privacy" },
-  { label: "Terms", to: "/terms" },
-  { label: "GitHub", href: "https://github.com", external: true },
+  { label: "GitHub", href: "https://github.com/JosephLeKH/Pipelined", external: true },
 ];
 
 const LINK_CLASS =

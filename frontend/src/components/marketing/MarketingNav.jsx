@@ -17,7 +17,6 @@ const NAV_LINKS = [
   { label: "Product", to: "/#capture" },
   { label: "Autopilot", to: "/#autopilot" },
   { label: "Changelog", to: "/#changelog" },
-  { label: "Pricing", to: "/pricing" },
 ];
 
 function MarketingNavLink({ to, children, onClick, className = "" }) {
