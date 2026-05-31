@@ -71,7 +71,7 @@ function TagDetailPane({ tagName, tagColor, totalCount }) {
   const { data, isLoading, error, refetch } = useApplications({
     tags: tagName ? [tagName] : undefined,
     include_archived: true,
-    limit: 200,
+    limit: 100,
   });
 
   const apps = data?.data ?? [];
