@@ -127,7 +127,13 @@ function TagListRow({ tag, tagColor, selected = false, onSelect, onRename, onDel
           >
             #{tag.name}
           </span>
-          <span className="shrink-0 text-xs text-text-3 tabular-nums">
+          <span
+            className="shrink-0 rounded border border-border-1 bg-surface-0 px-1.5 py-0.5 text-[0.6875rem] font-medium text-text-3 tabular-nums"
+            aria-hidden="true"
+          >
+            {tag.count}
+          </span>
+          <span className="sr-only">
             {tag.count} {tag.count === 1 ? "application" : "applications"}
           </span>
         </>

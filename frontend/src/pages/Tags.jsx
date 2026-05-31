@@ -249,7 +249,7 @@ function Tags() {
           icon={TagIcon}
         />
       ) : (
-        <div className="gap-4 md:grid md:grid-cols-[18rem_1fr]">
+        <div className="gap-4 md:grid md:grid-cols-[13rem_1fr]">
           {/* Left rail: tag list. Hidden on mobile when a tag is selected. */}
           <div className={`min-w-0 ${showDetailOnMobile ? "hidden md:block" : "block"}`}>
             {renderList()}
