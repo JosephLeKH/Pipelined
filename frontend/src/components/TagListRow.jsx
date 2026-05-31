@@ -128,7 +128,7 @@ function TagListRow({ tag, tagColor, selected = false, onSelect, onRename, onDel
             #{tag.name}
           </span>
           <span
-            className="shrink-0 rounded border border-border-1 bg-surface-0 px-1.5 py-0.5 text-right text-[0.6875rem] font-medium text-text-3 tabular-nums min-w-[1.75rem]"
+            className="order-last shrink-0 rounded border border-border-1 bg-surface-0 px-1.5 py-0.5 text-center text-[0.6875rem] font-medium text-text-3 tabular-nums min-w-[1.75rem]"
             aria-hidden="true"
           >
             {tag.count}
