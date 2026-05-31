@@ -61,7 +61,6 @@ export function ApplicationListHeader({ sortBy, sortOrder, onSort, allSelected, 
         </span>
       </div>
       <span className="w-4 shrink-0" aria-hidden="true" />
-      <span className="w-4 shrink-0" aria-hidden="true" />
       <div className="w-20 shrink-0">
         <SortHeader field="updated_at" label="Updated" sortBy={sortBy} sortOrder={sortOrder} onSort={onSort} />
       </div>

@@ -67,7 +67,7 @@ export function PanelBody({
         onDirtyChange={onDirtyChange}
       />
 
-      <AiPanelGroup defaultOpen={false}>
+      <AiPanelGroup defaultOpen={true}>
         <AiFitSection
           application={application}
           hasResume={Boolean(user?.has_resume)}

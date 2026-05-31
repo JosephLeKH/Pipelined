@@ -106,6 +106,7 @@ function AiFitSection({ application, hasResume, aiScoresRemainingToday, onScoreG
   const [localOverride, setLocalOverride] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const queryClient = useQueryClient();
+  const lastSyncedScoreRef = useRef(null);
 
   const isPending = isBackgroundScoringPending(application, hasResume);
   const { data: polledApp } = useQuery({
@@ -121,6 +122,11 @@ function AiFitSection({ application, hasResume, aiScoresRemainingToday, onScoreG
     if (!polledApp) return;
     const polledDetail = getUnifiedFitDetail(polledApp);
     if (!polledDetail) return;
+    // Guard against re-syncing the same score on every render: parent callbacks
+    // change identity each render, which would otherwise loop-PATCH the API.
+    const signature = `${polledApp.fit_score}|${polledApp.fit_score_reason ?? ""}`;
+    if (lastSyncedScoreRef.current === signature) return;
+    lastSyncedScoreRef.current = signature;
     onScoreGenerated({
       fit_score: polledApp.fit_score,
       fit_score_reason: polledApp.fit_score_reason,
