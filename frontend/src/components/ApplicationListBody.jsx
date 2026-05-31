@@ -31,8 +31,8 @@ function useApplicationRowHeight() {
 
 const Row = memo(function Row({ index, style, data }) {
   const {
-    applications, onSelect, onArchive, onUnarchive, onDelete, selectedIds, onToggle,
-    hasSelection, focusedIdx, selectedId, archiveMutationPending,
+    applications, onSelect, onArchive, onUnarchive, onDelete, onSetFollowUp, selectedIds, onToggle,
+    hasSelection, focusedIdx, selectedId,
   } = data;
   const app = applications[index];
   return (
@@ -43,12 +43,12 @@ const Row = memo(function Row({ index, style, data }) {
       onArchive={onArchive}
       onUnarchive={onUnarchive}
       onDelete={onDelete}
+      onSetFollowUp={onSetFollowUp}
       checked={selectedIds.has(app.id)}
       onToggle={onToggle}
       hasSelection={hasSelection}
       isFocused={focusedIdx === index}
       isSelected={selectedId === app.id}
-      archiveActionPending={archiveMutationPending}
     />
   );
 });

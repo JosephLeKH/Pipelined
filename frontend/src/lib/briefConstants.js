@@ -63,14 +63,14 @@ export const MISSION_URGENCY_LABELS = {
 
 export const BRIEF_UNAVAILABLE_MESSAGE = "Brief not available right now. Try again later.";
 
-/** Signals tracked by the morning brief — single source of truth for the info popover. */
+/** Signals tracked by the morning brief, used by the info tooltip. */
 export const BRIEF_SIGNALS = [
-  { label: "Overdue follow-ups", description: "Applications with a follow-up date that's passed" },
-  { label: "Today's interviews", description: "Calendar events in the next 24 hours" },
+  { label: "Overdue follow-ups", description: "Applications past their follow-up date" },
+  { label: "Today's interviews", description: "Events in the next 24 hours" },
   { label: "OA deadlines", description: "Online assessments due soon" },
-  { label: "High-fit roles", description: "Applications scoring 80+ on fit" },
-  { label: "Autopilot approvals", description: "New matches from overnight scans" },
-  { label: "Watchlist finds", description: "Roles from companies you're tracking" },
+  { label: "High-fit roles", description: "Applications scoring 80 or above" },
+  { label: "Autopilot approvals", description: "New matches from the overnight scan" },
+  { label: "Watchlist finds", description: "Roles from companies you track" },
   { label: "Ghosted applications", description: "Past your typical response time" },
 ];
 

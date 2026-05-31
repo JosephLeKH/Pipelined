@@ -11,7 +11,7 @@ import { STAGE_COLORS, DEFAULT_STAGE_COLOR } from "../lib/constants";
 import { Button } from "./ui/button";
 import { formatDate, isFollowUpOverdue } from "../lib/dateUtils";
 import { useSwipeAction } from "../hooks/useSwipeAction";
-import { RowMenu, RowQuickActions } from "./ApplicationRowActions";
+import { RowHoverActions, RowMenu } from "./ApplicationRowActions";
 import CompanyLogo from "./CompanyLogo";
 import FitBadge from "./FitBadge";
 import { getDisplayFitScore } from "../lib/fitDisplay";
@@ -89,7 +89,7 @@ function SwipeActions({ onArchive, onFollowUp, revealed }) {
 
 function ApplicationRow({
   application, onSelect, style, onArchive, onUnarchive, onDelete, onSetFollowUp,
-  checked, onToggle, hasSelection, isFocused = false, isSelected = false, archiveActionPending = false,
+  checked, onToggle, hasSelection, isFocused = false, isSelected = false,
 }) {
   const followUpOverdue = isFollowUpOverdue(application.follow_up_date);
   const dateApplied = formatDate(application.date_applied);
@@ -201,18 +201,21 @@ function ApplicationRow({
           )}
         </span>
         <span className="w-20 shrink-0 text-xs text-text-3" data-testid="row-date">{dateApplied}</span>
-        <RowQuickActions
-          archived={archived}
-          stage={application.current_stage}
-          onArchive={() => onArchive(application.id)}
-          onFollowUp={() => onSetFollowUp?.(application.id)}
-          isActionPending={archiveActionPending}
-        />
-        <RowMenu
+        <div className="md:hidden">
+          <RowMenu
+            application={application}
+            onArchive={onArchive}
+            onUnarchive={onUnarchive}
+            onDelete={onDelete}
+            onSetFollowUp={onSetFollowUp}
+          />
+        </div>
+        <RowHoverActions
           application={application}
           onArchive={onArchive}
           onUnarchive={onUnarchive}
           onDelete={onDelete}
+          onSetFollowUp={onSetFollowUp}
         />
       </div>
     </div>

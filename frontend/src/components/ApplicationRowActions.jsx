@@ -1,10 +1,13 @@
 /** Row-level action menu, delete confirmation modal, and bulk action bar for ApplicationList. */
 
 import { useState } from "react";
-import PropTypes from "prop-types";
 
+import Archive from "lucide-react/dist/esm/icons/archive";
+import ArchiveRestore from "lucide-react/dist/esm/icons/archive-restore";
+import CalendarClock from "lucide-react/dist/esm/icons/calendar-clock";
 import Loader2 from "lucide-react/dist/esm/icons/loader-2";
 import MoreHorizontal from "lucide-react/dist/esm/icons/more-horizontal";
+import Trash2 from "lucide-react/dist/esm/icons/trash-2";
 
 import { useAuth } from "../context/AuthContext";
 import { BULK_EDIT_MAX_IDS } from "../lib/constants";
@@ -35,56 +38,93 @@ import { Tooltip, TooltipTrigger, TooltipContent } from "./ui/tooltip";
 
 const TERMINAL_STAGES = new Set(["Offer", "Rejected", "Withdrawn"]);
 
-export function RowQuickActions({ archived, stage, onArchive, onFollowUp, isActionPending = false }) {
-  if (import.meta.env.DEV && !onFollowUp) {
-    console.error("RowQuickActions: onFollowUp prop is missing. Set follow-up button will not work.");
-  }
-  if (archived) return null;
-  const isTerminal = TERMINAL_STAGES.has(stage);
+/**
+ * Desktop-only hover overlay with icon-button row actions. Absolutely positioned
+ * over the right edge of the row with a gradient mask, so it never shifts the
+ * underlying grid columns. Tooltips supply labels for screen readers.
+ */
+export function RowHoverActions({ application, onArchive, onUnarchive, onDelete, onSetFollowUp }) {
+  const isArchived = Boolean(application.archived);
+  const showFollowUp = !isArchived && !TERMINAL_STAGES.has(application.current_stage);
+
+  const stop = (handler) => (event) => {
+    event.stopPropagation();
+    handler();
+  };
+
   return (
     <div
-      className="hidden items-center gap-1 motion-reduce:transition-none md:group-hover:flex"
+      data-testid="row-hover-actions"
       onClick={(e) => e.stopPropagation()}
+      className="pointer-events-none absolute inset-y-0 right-0 hidden items-center justify-end pl-12 pr-3 opacity-0 transition-opacity duration-100 group-hover:opacity-100 group-focus-within:opacity-100 motion-reduce:transition-none md:flex"
     >
-      {!isTerminal && (
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 bg-gradient-to-r from-transparent via-surface-1 to-surface-1"
+      />
+      <div className="pointer-events-auto relative flex items-center gap-0.5">
+        {showFollowUp && onSetFollowUp && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                aria-label="Set follow-up"
+                onClick={stop(() => onSetFollowUp(application.id))}
+                className="h-7 w-7 rounded text-text-3 hover:bg-surface-2 hover:text-text-1 focus-visible:ring-2 focus-visible:ring-brand-600"
+              >
+                <CalendarClock className="h-3.5 w-3.5" aria-hidden="true" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Set follow-up reminder</TooltipContent>
+          </Tooltip>
+        )}
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
               type="button"
               variant="ghost"
-              size="sm"
-              aria-label="Set follow-up"
-              onClick={onFollowUp}
-              disabled={isActionPending}
-              className="h-6 px-2 text-xs text-text-2 hover:text-text-1 disabled:opacity-60"
+              size="icon"
+              aria-label={isArchived ? "Unarchive application" : "Archive application"}
+              onClick={stop(() =>
+                isArchived ? onUnarchive(application.id) : onArchive(application.id),
+              )}
+              className="h-7 w-7 rounded text-text-3 hover:bg-surface-2 hover:text-text-1 focus-visible:ring-2 focus-visible:ring-brand-600"
             >
-              Set follow-up
+              {isArchived ? (
+                <ArchiveRestore className="h-3.5 w-3.5" aria-hidden="true" />
+              ) : (
+                <Archive className="h-3.5 w-3.5" aria-hidden="true" />
+              )}
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Remind me to check on this application</TooltipContent>
+          <TooltipContent>
+            {isArchived ? "Restore to active list" : "Hide from list (recoverable)"}
+          </TooltipContent>
         </Tooltip>
-      )}
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            aria-label="Archive application"
-            onClick={onArchive}
-            disabled={isActionPending}
-            className="h-6 px-2 text-xs text-text-2 hover:text-text-1 disabled:opacity-60"
-          >
-            Archive
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>Hide from active view. You can restore it from the Archive filter.</TooltipContent>
-      </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              aria-label="Delete application"
+              onClick={stop(() => onDelete(application.id))}
+              className="h-7 w-7 rounded text-text-3 hover:bg-destructive/10 hover:text-destructive focus-visible:ring-2 focus-visible:ring-destructive"
+            >
+              <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Delete permanently (30-day trash)</TooltipContent>
+        </Tooltip>
+      </div>
     </div>
   );
 }
 
-export function RowMenu({ application, onArchive, onUnarchive, onDelete }) {
+export function RowMenu({ application, onArchive, onUnarchive, onDelete, onSetFollowUp }) {
+  const showFollowUp = !application.archived && !TERMINAL_STAGES.has(application.current_stage);
   return (
     <div
       className="relative w-7 shrink-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 motion-reduce:transition-none transition-opacity duration-[120ms]"
@@ -103,6 +143,14 @@ export function RowMenu({ application, onArchive, onUnarchive, onDelete }) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-48">
+          {showFollowUp && onSetFollowUp && (
+            <DropdownMenuItem onClick={() => onSetFollowUp(application.id)}>
+              <div className="flex flex-col gap-1">
+                <span>Set follow-up</span>
+                <span className="text-xs text-text-3">Remind me to check on this</span>
+              </div>
+            </DropdownMenuItem>
+          )}
           {application.archived ? (
             <DropdownMenuItem onClick={() => onUnarchive(application.id)}>
               <div className="flex flex-col gap-1">
@@ -244,14 +292,6 @@ function BulkDangerControls({ selectedCount, isMerging, isDeleting, isBusy, onMe
     </>
   );
 }
-
-RowQuickActions.propTypes = {
-  archived: PropTypes.bool,
-  stage: PropTypes.string.isRequired,
-  onArchive: PropTypes.func.isRequired,
-  onFollowUp: PropTypes.func,
-  isActionPending: PropTypes.bool,
-};
 
 export function BulkActionBar({ selectedCount, onMoveToStage, onDeleteSelected, onMerge, onBulkEdit, isDeleting = false, isMoving = false, isMerging = false, isEditing = false }) {
   const { user } = useAuth();

@@ -10,6 +10,7 @@ import { describe, it, expect, beforeAll, afterAll, afterEach, vi } from "vitest
 
 import { AuthProvider } from "../context/AuthContext";
 import { ThemeProvider } from "../context/ThemeContext";
+import { TooltipProvider } from "../components/ui/tooltip";
 import TodayPage from "./TodayPage";
 import { passthroughHandlers } from "../test/passthroughHandlers";
 
@@ -106,7 +107,9 @@ function makeWrapper() {
       <ThemeProvider>
         <AuthProvider>
           <QueryClientProvider client={queryClient}>
-            <MemoryRouter>{children}</MemoryRouter>
+            <TooltipProvider>
+              <MemoryRouter>{children}</MemoryRouter>
+            </TooltipProvider>
           </QueryClientProvider>
         </AuthProvider>
       </ThemeProvider>
@@ -212,7 +215,9 @@ describe("TodayPage", () => {
         <ThemeProvider>
           <AuthProvider>
             <QueryClientProvider client={queryClient}>
-              <MemoryRouter initialEntries={["/today?brief=open"]}>{children}</MemoryRouter>
+              <TooltipProvider>
+                <MemoryRouter initialEntries={["/today?brief=open"]}>{children}</MemoryRouter>
+              </TooltipProvider>
             </QueryClientProvider>
           </AuthProvider>
         </ThemeProvider>
