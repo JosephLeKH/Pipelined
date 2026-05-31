@@ -1,11 +1,9 @@
 /** Filter state, pagination, job data, and handlers for the JobBoard page. */
 
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 
-import { useJobs } from "../hooks/useJobs";
-
-const DEFAULT_PER_PAGE = 30;
+import { useJobsInfinite } from "../hooks/useJobs";
 
 function buildSavedSearchParams(savedSearch) {
   const next = new URLSearchParams();
@@ -33,7 +31,6 @@ export function useJobBoardState() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedJob, setSelectedJob] = useState(null);
   const [savePopoverOpen, setSavePopoverOpen] = useState(false);
-  const [perPage, setPerPage] = useState(DEFAULT_PER_PAGE);
 
   const q = searchParams.get("q") ?? undefined;
   const roleType = searchParams.get("role_type") ?? undefined;
@@ -48,12 +45,9 @@ export function useJobBoardState() {
   const hasActiveFilters = Boolean(
     q || roleType || experienceLevel || remoteStatus || companyType || salaryMin || salaryMax || dateFrom || sort !== "best_match"
   );
-  const filterKey = [q, roleType, experienceLevel, remoteStatus, companyType, salaryMin, salaryMax, dateFrom, sort].join("|||");
-
-  useEffect(() => { setPerPage(DEFAULT_PER_PAGE); }, [filterKey, setPerPage]);
 
   const filters = useMemo(() => {
-    const f = { page: 1, per_page: perPage };
+    const f = {};
     if (q) f.q = q;
     if (roleType) f.role_type = roleType;
     if (experienceLevel) f.experience_level = experienceLevel;
@@ -63,15 +57,20 @@ export function useJobBoardState() {
     if (salaryMax !== undefined) f.salary_max = salaryMax;
     if (dateFrom) f.date_from = dateFrom;
     return f;
-  }, [q, roleType, experienceLevel, remoteStatus, companyType, salaryMin, salaryMax, dateFrom, perPage]);
+  }, [q, roleType, experienceLevel, remoteStatus, companyType, salaryMin, salaryMax, dateFrom]);
 
-  const { data: envelope, isLoading, error, refetch } = useJobs(filters);
-  const rawJobs = envelope?.data ?? [];
+  const { data, isLoading, error, refetch, fetchNextPage, hasNextPage, isFetchingNextPage } = useJobsInfinite(filters);
+  const rawJobs = useMemo(
+    () => (data?.pages ?? []).flatMap((p) => p?.data ?? []),
+    [data],
+  );
   const jobs = useMemo(() => sortJobs(rawJobs, sort), [rawJobs, sort]);
-  const total = envelope?.meta?.total ?? 0;
-  const hasMore = !isLoading && jobs.length < total;
+  const total = data?.pages?.[0]?.meta?.total ?? 0;
+  const hasMore = Boolean(hasNextPage);
 
-  const handleLoadMore = useCallback(() => setPerPage((p) => p + DEFAULT_PER_PAGE), []);
+  const handleLoadMore = useCallback(() => {
+    if (!isFetchingNextPage && hasNextPage) fetchNextPage();
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
   const handleClearFilters = useCallback(() => setSearchParams(new URLSearchParams(), { replace: true }), [setSearchParams]);
   const handleApplySavedSearch = useCallback((s) => setSearchParams(buildSavedSearchParams(s), { replace: true }), [setSearchParams]);
 

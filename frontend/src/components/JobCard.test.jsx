@@ -99,13 +99,13 @@ describe("JobCard", () => {
 
     render(<JobCard job={{ ...JOB, date_posted: twoDaysAgo.toISOString() }} />);
 
-    expect(screen.getByText("Posted 2d ago")).toBeInTheDocument();
+    expect(screen.getByText("Added 2d ago")).toBeInTheDocument();
   });
 
   it("should omit posted label when date_posted is missing", () => {
     render(<JobCard job={JOB} />);
 
-    expect(screen.queryByText(/^Posted /)).not.toBeInTheDocument();
+    expect(screen.queryByText(/^Added /)).not.toBeInTheDocument();
   });
 
   it("should render fallback text when role and company are null", () => {

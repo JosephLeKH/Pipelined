@@ -103,7 +103,7 @@ function JobCard({ job, score, onSelect }) {
 
       <div className="mt-auto flex items-center justify-between gap-2 pt-2">
         <span className="min-w-0 truncate text-xs text-text-3">
-          {posted ? `Posted ${posted}` : ""}
+          {posted ? `Added ${posted}` : ""}
         </span>
         <Button
           type="button"

@@ -11,11 +11,17 @@ vi.mock("../api/jobs", () => ({
   scoreJobListing: vi.fn().mockResolvedValue({ score: null, reason: null, cached: false }),
 }));
 
+vi.mock("../context/AuthContext", () => ({
+  useAuth: vi.fn(() => ({ user: { has_resume: true }, isInitialized: true })),
+}));
+
 vi.mock("sonner", () => ({
   toast: { success: vi.fn(), error: vi.fn() },
 }));
 
 import { useCreateApplication } from "../hooks/useApplications";
+import { useAuth } from "../context/AuthContext";
+import { scoreJobListing } from "../api/jobs";
 import { toast } from "sonner";
 
 const renderPanel = (props) =>
@@ -147,5 +153,27 @@ describe("JobDetailPanel", () => {
     renderPanel({ job, onClose: vi.fn() });
 
     expect(screen.getByText("May be expired")).toBeInTheDocument();
+  });
+
+  it("should show resume CTA when fit score is null and user has no resume", async () => {
+    useAuth.mockReturnValue({ user: { has_resume: false }, isInitialized: true });
+    const job = { ...JOB_FIXTURE, id: "job-1", score: null, fit_score: null };
+
+    renderPanel({ job, onClose: vi.fn() });
+
+    const link = await screen.findByTestId("job-fit-unavailable");
+    expect(link).toHaveTextContent(/add a resume/i);
+    expect(link).toHaveAttribute("href", "/settings/resume");
+  });
+
+  it("should show unavailable hint when fit score is null and user has a resume", async () => {
+    useAuth.mockReturnValue({ user: { has_resume: true }, isInitialized: true });
+    scoreJobListing.mockResolvedValueOnce({ score: null, reason: null, cached: false });
+    const job = { ...JOB_FIXTURE, id: "job-2", score: null, fit_score: null };
+
+    renderPanel({ job, onClose: vi.fn() });
+
+    const hint = await screen.findByTestId("job-fit-unavailable");
+    expect(hint).toHaveTextContent(/fit score unavailable/i);
   });
 });
