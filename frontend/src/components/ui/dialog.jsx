@@ -13,9 +13,9 @@ function DialogOverlay({ className, ...props }) {
     <DialogPrimitive.Overlay
       data-slot="dialog-overlay"
       className={cn(
-        "fixed inset-0 z-50 bg-black/40 backdrop-blur-[4px]",
+        "fixed inset-0 z-50 bg-black/40 backdrop-blur-sm",
         "dark:bg-black/60",
-        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=open]:duration-180 data-[state=closed]:duration-180",
         className
       )}
       {...props}
@@ -32,8 +32,8 @@ function DialogContent({ className, children, ...props }) {
         className={cn(
           "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4",
           "rounded-xl border border-border-1 bg-surface-0 p-6 text-text-1 shadow-modal",
-          "duration-modal data-[state=open]:animate-in data-[state=closed]:animate-out",
-          "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+          "data-[state=open]:animate-in data-[state=closed]:animate-out",
+          "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=open]:duration-180 data-[state=closed]:duration-180",
           "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
           "data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%]",
           "data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]",
@@ -44,7 +44,7 @@ function DialogContent({ className, children, ...props }) {
         {children}
         <DialogPrimitive.Close
           className={cn(
-            "absolute right-4 top-4 rounded-sm text-text-3 opacity-70 transition-opacity duration-hover ease-out hover:opacity-100",
+            "absolute right-4 top-4 rounded-sm text-text-3 opacity-70 transition-opacity duration-100 ease-out hover:opacity-100",
             "focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 focus-visible:outline-offset-2",
             "dark:focus-visible:outline-1 disabled:pointer-events-none"
           )}

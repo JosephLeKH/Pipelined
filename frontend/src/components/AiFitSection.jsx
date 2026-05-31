@@ -1,13 +1,15 @@
 /** Unified AI fit section — one badge, background scoring skeleton, single analyze CTA. */
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import Sparkles from "lucide-react/dist/esm/icons/sparkles";
+import X from "lucide-react/dist/esm/icons/x";
+import Loader2 from "lucide-react/dist/esm/icons/loader-2";
 import { toast } from "sonner";
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { generateFitScore, fetchApplication } from "../api/applications";
+import { generateFitScore, fetchApplication, streamFitScore } from "../api/applications";
 import { KEYS } from "../hooks/useApplications";
 import { QUERY_STALE_TIME_MS } from "../lib/constants";
 import {
@@ -153,6 +155,43 @@ function AiFitSection({ application, hasResume, aiScoresRemainingToday, onScoreG
       queryClient.invalidateQueries({ queryKey: KEYS.detail(application.id) });
     } catch (error) {
       toast.error(getAiToastError(error, "Could not analyze fit. Try again."));
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function handleShowReasoning() {
+    setIsLoading(true);
+    try {
+      let finalScore = null;
+      let finalReason = null;
+      await streamFitScore(application.id, {
+        signal: undefined,
+        onStep: () => {
+          // Step display would go here in future UI expansion
+        },
+        onToken: () => {
+          // Token display would go here in future UI expansion
+        },
+        onDone: (data) => {
+          finalScore = data?.score;
+          finalReason = data?.reason;
+          if (finalScore != null && finalReason) {
+            const next = {
+              score: finalScore,
+              reason: finalReason,
+              matchedSkills: [],
+              missingSkills: [],
+              source: "fit_score",
+            };
+            setLocalOverride(next);
+            onScoreGenerated({ fit_score: finalScore, fit_score_reason: finalReason });
+          }
+        },
+        onError: (error) => {
+          toast.error(getAiToastError(error, "Could not analyze fit. Try again."));
+        },
+      });
     } finally {
       setIsLoading(false);
     }

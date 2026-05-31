@@ -8,7 +8,9 @@ import structlog
 from bson import ObjectId
 
 from ai.copilot_context import build_copilot_context
+from ai.next_action import NextAction
 from ai.openrouter_client import OpenRouterError, agent_llm_configured, stream_chat
+from config import settings
 from copilot.constants import (
     ALLOWED_ACTION,
     BLOCKED_ACTIONS,
@@ -22,6 +24,7 @@ from copilot.constants import (
     USER_INPUT_OPEN,
 )
 from copilot.schemas import CopilotChatRequest, CopilotSessionSaveRequest
+from copilot.step_parser import StepParser
 from database import get_collection
 
 logger = structlog.get_logger()
@@ -29,10 +32,26 @@ logger = structlog.get_logger()
 COLLECTION_NAME = "copilot_sessions"
 
 _ACTION_PATTERN = re.compile(r'\{"action"\s*:\s*"[^"]+"[^}]*\}', re.DOTALL)
+_NEXT_ACTION_PATTERN = re.compile(r'\{\s*"next_action"\s*:\s*\{[^}]+\}\s*\}', re.DOTALL)
 
 
 def _strip_action_blocks(text: str) -> str:
     return _ACTION_PATTERN.sub("", text).strip()
+
+
+def _extract_next_action(text: str) -> NextAction | None:
+    """Try to extract and validate a next_action JSON block from the text."""
+    match = _NEXT_ACTION_PATTERN.search(text)
+    if not match:
+        return None
+    try:
+        block = json.loads(match.group(0))
+        next_action_data = block.get("next_action")
+        if next_action_data and isinstance(next_action_data, dict):
+            return NextAction.model_validate(next_action_data)
+    except (json.JSONDecodeError, ValueError) as e:
+        logger.debug("copilot_next_action_parse_error", error=str(e))
+    return None
 
 
 def _looks_like_injection_attempt(text: str) -> bool:
@@ -84,7 +103,13 @@ def _build_messages(body: CopilotChatRequest) -> list[dict[str, str]]:
 
 
 async def stream_copilot_reply(user_id: str, body: CopilotChatRequest):
-    """Yield SSE event dicts for a co-pilot chat turn."""
+    """Yield SSE event dicts for a co-pilot chat turn.
+
+    Events:
+    - {type: "step", content: "..."} — reasoning step (if reasoning_enabled)
+    - {type: "token", content: "..."} — response text token
+    - {type: "done", content: "...", actions: [...], next_action?: {...}}
+    """
     if not agent_llm_configured():
         yield {"type": "error", "message": "AI features not configured"}
         return
@@ -99,6 +124,7 @@ async def stream_copilot_reply(user_id: str, body: CopilotChatRequest):
     system = f"{COPILOT_SYSTEM_PROMPT}\n\n# Grounding context (read-only data about this user)\n{context}"
     messages = _build_messages(body)
     parts: list[str] = []
+    parser = StepParser()
 
     try:
         async for delta in stream_chat(
@@ -107,18 +133,36 @@ async def stream_copilot_reply(user_id: str, body: CopilotChatRequest):
             temperature=COPILOT_TEMPERATURE,
             max_tokens=COPILOT_MAX_TOKENS,
             timeout=COPILOT_TIMEOUT_SECONDS,
+            reasoning_enabled=settings.reasoning_enabled,
         ):
             parts.append(delta)
-            yield {"type": "token", "content": delta}
+            # Parse tokens for step tags
+            for event_type, content in parser.feed(delta):
+                if event_type == "step":
+                    yield {"type": "step", "content": content}
+                elif event_type == "token":
+                    yield {"type": "token", "content": content}
     except OpenRouterError as exc:
         logger.warning("copilot_stream_error", user_id=user_id, error=str(exc))
         yield {"type": "error", "message": "Co-pilot request failed. Please try again."}
         return
 
+    # Flush any remaining buffered tokens
+    for event_type, content in parser.flush():
+        if event_type == "token":
+            yield {"type": "token", "content": content}
+
     full_text = "".join(parts)
     actions = parse_copilot_actions(full_text)
+    next_action = _extract_next_action(full_text)
     display_text = _strip_action_blocks(full_text)
-    yield {"type": "done", "content": display_text, "actions": actions}
+    # Also strip next_action block and step tags from display
+    display_text = _NEXT_ACTION_PATTERN.sub("", display_text).strip()
+    display_text = re.sub(r"<step>.*?</step>", "", display_text, flags=re.DOTALL).strip()
+    done_event: dict = {"type": "done", "content": display_text, "actions": actions}
+    if next_action:
+        done_event["next_action"] = next_action.model_dump()
+    yield done_event
 
 
 async def get_copilot_session(user_id: str) -> dict:

@@ -1,0 +1,139 @@
+name: Playwright E2E Tests
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - frontend/**
+      - backend/**
+      - .github/workflows/playwright.yml
+  pull_request:
+    branches:
+      - main
+    paths:
+      - frontend/**
+      - backend/**
+      - .github/workflows/playwright.yml
+
+jobs:
+  e2e:
+    name: Playwright E2E on Chromium
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    services:
+      mongo:
+        image: mongo:7.0.14
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --eval 'db.adminCommand(\"ping\")'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Setup Python for backend
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # Setup Node for frontend
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      # Install backend dependencies
+      - name: Install backend dependencies
+        working-directory: backend
+        run: pip install -r requirements.txt
+
+      # Install Playwright and Chromium
+      - name: Install Playwright browsers
+        working-directory: frontend
+        run: npx playwright install --with-deps chromium
+
+      # Install frontend dependencies
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm install
+
+      # Start backend in background
+      - name: Start backend server
+        working-directory: backend
+        env:
+          MONGO_URI: mongodb://localhost:27017/pipelined-test
+          JWT_SECRET: test-secret-do-not-use-in-production
+          OPENROUTER_API_KEY: test-key-disabled
+          OPENAI_API_KEY: test-key-disabled
+          DEBUG: "true"
+        run: |
+          uvicorn main:app --host 0.0.0.0 --port 8000 > backend.log 2>&1 &
+          echo $! > backend.pid
+          sleep 3
+
+      # Start frontend in background
+      - name: Start frontend dev server
+        working-directory: frontend
+        run: |
+          npm run dev > frontend.log 2>&1 &
+          echo $! > frontend.pid
+          sleep 5
+
+      # Seed E2E test data
+      - name: Seed E2E test data
+        working-directory: backend
+        env:
+          MONGO_URI: mongodb://localhost:27017/pipelined-test
+          JWT_SECRET: test-secret-do-not-use-in-production
+          OPENROUTER_API_KEY: test-key-disabled
+          OPENAI_API_KEY: test-key-disabled
+          DEBUG: "true"
+        run: python -m tests.fixtures.e2e_seed_data --create
+
+      # Run Playwright tests
+      - name: Run Playwright tests
+        working-directory: frontend
+        env:
+          BASE_URL: http://localhost:5173
+        run: npx playwright test --reporter=github
+
+      # Upload test results and artifacts on failure
+      - name: Upload Playwright test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-results
+          path: |
+            frontend/test-results/
+            frontend/playwright-report/
+          retention-days: 30
+
+      # Upload backend and frontend logs on failure
+      - name: Upload server logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: server-logs
+          path: |
+            backend/backend.log
+            frontend/frontend.log
+          retention-days: 7
+
+      # Cleanup: kill background processes
+      - name: Cleanup servers
+        if: always()
+        run: |
+          if [ -f backend/backend.pid ]; then kill $(cat backend/backend.pid) 2>/dev/null || true; fi
+          if [ -f frontend/frontend.pid ]; then kill $(cat frontend/frontend.pid) 2>/dev/null || true; fi
+
+    concurrency:
+      group: playwright-${{ github.ref }}
+      cancel-in-progress: true

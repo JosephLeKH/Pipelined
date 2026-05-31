@@ -134,6 +134,106 @@ export async function generateFitScore(appId) {
   return res.data.data;
 }
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "/api";
+const CSRF_COOKIE_NAME = "pipelined_csrf";
+const CSRF_HEADER_NAME = "X-CSRF-Token";
+
+function getCookie(name) {
+  const match = document.cookie.split("; ").find((row) => row.startsWith(`${name}=`));
+  if (!match) return null;
+  try {
+    return decodeURIComponent(match.split("=")[1]);
+  } catch {
+    return null;
+  }
+}
+
+function parseSseChunk(buffer, onEvent) {
+  const parts = buffer.split("\n\n");
+  const remainder = parts.pop() ?? "";
+  for (const part of parts) {
+    const lines = part.split("\n");
+    let eventType = "message";
+    let dataLine = "";
+    for (const line of lines) {
+      if (line.startsWith("event:")) eventType = line.slice(6).trim();
+      if (line.startsWith("data:")) dataLine += line.slice(5).trim();
+    }
+    if (!dataLine) continue;
+    try {
+      onEvent(eventType, JSON.parse(dataLine));
+    } catch {
+      onEvent(eventType, { message: dataLine });
+    }
+  }
+  return remainder;
+}
+
+/**
+ * Stream fit score generation with reasoning steps.
+ * @param {string} appId
+ * @param {{ onStep?: Function, onToken?: Function, onDone: Function, onError: Function, signal?: AbortSignal }} handlers
+ */
+export async function streamFitScore(appId, { onStep, onToken, onDone, onError, signal }) {
+  const csrf = getCookie(CSRF_COOKIE_NAME);
+  const headers = { "Content-Type": "application/json" };
+  if (csrf) headers[CSRF_HEADER_NAME] = csrf;
+
+  let response;
+  try {
+    response = await fetch(`${API_BASE_URL}/applications/${appId}/fit-score/stream`, {
+      method: "POST",
+      credentials: "include",
+      headers,
+      body: JSON.stringify({}),
+      signal,
+    });
+  } catch (err) {
+    onError({ message: err?.message ?? "Network error" });
+    return;
+  }
+
+  if (!response.ok) {
+    let message = "Fit score generation failed";
+    try {
+      const body = await response.json();
+      message = body?.error?.message ?? body?.detail ?? message;
+    } catch {
+      // ignore parse errors
+    }
+    onError({ message, status: response.status });
+    return;
+  }
+
+  const reader = response.body?.getReader();
+  if (!reader) {
+    onError({ message: "Streaming not supported" });
+    return;
+  }
+
+  const decoder = new TextDecoder();
+  let buffer = "";
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    buffer = parseSseChunk(buffer, (eventType, data) => {
+      if (eventType === "step" && onStep) onStep(data);
+      else if (eventType === "token" && onToken) onToken(data);
+      else if (eventType === "done") onDone(data);
+      else if (eventType === "error") onError(data);
+    });
+  }
+  if (buffer.trim()) {
+    parseSseChunk(`${buffer}\n\n`, (eventType, data) => {
+      if (eventType === "step" && onStep) onStep(data);
+      else if (eventType === "token" && onToken) onToken(data);
+      else if (eventType === "done") onDone(data);
+      else if (eventType === "error") onError(data);
+    });
+  }
+}
+
 /** Rename a tag across all of the current user's applications. */
 export async function renameTag({ oldTag, newTag }) {
   return client.patch("/applications/tags/rename", { old_tag: oldTag, new_tag: newTag });
@@ -177,6 +277,71 @@ export async function generateThreadSummary(appId) {
 /** Generate apply pack materials for an application. */
 export async function generateApplyPack(appId) {
   return client.post(`/applications/${appId}/apply-pack`);
+}
+
+/**
+ * Stream apply pack generation with reasoning steps.
+ * @param {string} appId
+ * @param {{ onStep?: Function, onToken?: Function, onDone: Function, onError: Function, signal?: AbortSignal }} handlers
+ */
+export async function streamApplyPack(appId, { onStep, onToken, onDone, onError, signal }) {
+  const csrf = getCookie(CSRF_COOKIE_NAME);
+  const headers = { "Content-Type": "application/json" };
+  if (csrf) headers[CSRF_HEADER_NAME] = csrf;
+
+  let response;
+  try {
+    response = await fetch(`${API_BASE_URL}/applications/${appId}/apply-pack`, {
+      method: "POST",
+      credentials: "include",
+      headers,
+      body: JSON.stringify({}),
+      signal,
+    });
+  } catch (err) {
+    onError({ message: err?.message ?? "Network error" });
+    return;
+  }
+
+  if (!response.ok) {
+    let message = "Apply pack generation failed";
+    try {
+      const body = await response.json();
+      message = body?.error?.message ?? body?.detail ?? message;
+    } catch {
+      // ignore parse errors
+    }
+    onError({ message, status: response.status });
+    return;
+  }
+
+  const reader = response.body?.getReader();
+  if (!reader) {
+    onError({ message: "Streaming not supported" });
+    return;
+  }
+
+  const decoder = new TextDecoder();
+  let buffer = "";
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    buffer = parseSseChunk(buffer, (eventType, data) => {
+      if (eventType === "step" && onStep) onStep(data);
+      else if (eventType === "token" && onToken) onToken(data);
+      else if (eventType === "done") onDone(data);
+      else if (eventType === "error") onError(data);
+    });
+  }
+  if (buffer.trim()) {
+    parseSseChunk(`${buffer}\n\n`, (eventType, data) => {
+      if (eventType === "step" && onStep) onStep(data);
+      else if (eventType === "token" && onToken) onToken(data);
+      else if (eventType === "done") onDone(data);
+      else if (eventType === "error") onError(data);
+    });
+  }
 }
 
 /** Fetch privacy-safe email events for an application timeline. */

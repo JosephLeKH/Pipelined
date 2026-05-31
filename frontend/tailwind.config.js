@@ -1,6 +1,4 @@
-/** Tailwind CSS configuration for Pipelined frontend. */
-import defaultTheme from "tailwindcss/defaultTheme";
-import colors from "tailwindcss/colors";
+/** Tailwind CSS configuration for Pipelined frontend — Cardinal + Linear redesign */
 import animatePlugin from "tailwindcss-animate";
 
 /** @type {import('tailwindcss').Config} */
@@ -10,121 +8,86 @@ export default {
   theme: {
     extend: {
       colors: {
-        // shadcn CSS variable mappings
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
-        primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
-        },
-        secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
-        },
-        destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
-        },
-        muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
-        },
-        accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
-        },
-        popover: {
-          DEFAULT: "hsl(var(--popover))",
-          foreground: "hsl(var(--popover-foreground))",
-        },
-        card: {
-          DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
-        },
-        // Brand palette — Stanford Cardinal Red (Linear redesign)
+        /* Brand palette — Stanford Cardinal Red #8C1515 + tints/shades */
         brand: {
-          50: "#fdf2f2",
-          100: "#fae0e0",
-          200: "#f4bfbf",
-          500: "#b81e1e",
-          600: "#8c1515",
-          700: "#820000",
-          800: "#6e0f0f",
-          900: "#4f0a0a",
+          50: "var(--brand-50)",
+          100: "var(--brand-100)",
+          200: "var(--brand-200)",
+          500: "var(--brand-500)",
+          600: "var(--brand-600)",
+          700: "var(--brand-700)",
+          800: "var(--brand-800)",
+          900: "var(--brand-900)",
         },
+        /* Surface layers — light mode white, dark mode near-black */
         "surface-0": "var(--surface-0)",
         "surface-1": "var(--surface-1)",
         "surface-2": "var(--surface-2)",
         "surface-3": "var(--surface-3)",
+        /* Text colors — primary, secondary, tertiary, disabled */
         "text-1": "var(--text-1)",
         "text-2": "var(--text-2)",
         "text-3": "var(--text-3)",
         "text-4": "var(--text-4)",
+        /* Borders — default, strong, focus */
         "border-1": "var(--border-1)",
         "border-2": "var(--border-2)",
         "border-3": "var(--border-3)",
-        // Neutral gray palette — cool-shifted for modern SaaS aesthetic
-        gray: {
-          50: "#fafafa",
-          100: "#f5f5f4",
-          200: "#e7e5e4",
-          300: "#d4ccbd",
-          400: "#b0aea5",
-          500: "#6b5f4e",
-          600: "#4a4139",
-          700: "#332d26",
-          800: "#1f1b17",
-          900: "#141413",
-          950: "#0d0c0b",
-        },
-        // Secondary accent colors
-        "accent-blue": "#6a9bcc",
-        "accent-green": "#788c5d",
-        // Semantic tokens — surfaces
-        "surface-primary": "#ffffff",
-        "surface-secondary": "#fafafa",
-        "surface-tertiary": "#e7e5e4",
-        // Semantic tokens — borders
-        "border-default": "rgba(0,0,0,0.08)",
-        "border-strong": "rgba(0,0,0,0.16)",
-        // Dark mode semantic tokens
-        dark: {
-          bg: "#141413",
-          surface: "#1c1c1a",
-          accent: "#d97757",
-          text: "#e8e4de",
-          "text-secondary": "#b0aea5",
-          border: "rgba(255,255,255,0.08)",
-        },
-        // Semantic colors
-        success: colors.emerald[500],
-        warning: colors.amber[500],
-        danger: colors.rose[500],
-        info: "#6a9bcc",
+        /* Status colors — for dots, badges, charts */
+        "status-neutral": "var(--status-neutral)",
+        "status-info": "var(--status-info)",
+        "status-violet": "var(--status-violet)",
+        "status-warn": "var(--status-warn)",
+        "status-orange": "var(--status-orange)",
+        "status-success": "var(--status-success)",
+        "status-muted": "var(--status-muted)",
       },
       fontFamily: {
         sans: ["Inter", "system-ui", "-apple-system", "sans-serif"],
-        display: ["Poppins", "Arial", "sans-serif"],
+        mono: ["JetBrains Mono", "ui-monospace", "SFMono-Regular", "monospace"],
       },
       fontSize: {
-        xs: ["0.875rem", { lineHeight: "1.25rem" }],
-        sm: ["1rem", { lineHeight: "1.5rem" }],
-        base: ["1.125rem", { lineHeight: "1.625rem" }],
-        lg: ["1.25rem", { lineHeight: "1.875rem" }],
-        xl: ["1.375rem", { lineHeight: "2rem" }],
-        "2xl": ["1.75rem", { lineHeight: "2.25rem" }],
-        "3xl": ["2.125rem", { lineHeight: "2.5rem" }],
-        "4xl": ["2.5rem", { lineHeight: "2.75rem" }],
+        /* Typography scale — Linear style, body 13px base */
+        xs: ["0.75rem", { lineHeight: "1.2", fontWeight: "500" }], /* label */
+        sm: ["0.8125rem", { lineHeight: "1.45", fontWeight: "400" }], /* body */
+        base: ["0.75rem", { lineHeight: "1.4", fontWeight: "400" }], /* body-sm */
+        lg: ["0.875rem", { lineHeight: "1.35", fontWeight: "600" }], /* heading-3 */
+        xl: ["1rem", { lineHeight: "1.3", fontWeight: "600" }], /* heading-2 */
+        "2xl": ["1.25rem", { lineHeight: "1.25", fontWeight: "600" }], /* heading-1 */
+        "3xl": ["1.75rem", { lineHeight: "1.15", fontWeight: "600" }], /* display-md */
+        "4xl": ["2.25rem", { lineHeight: "1.1", fontWeight: "600" }], /* display-lg */
+        "5xl": ["3rem", { lineHeight: "1.05", fontWeight: "600" }], /* display-xl */
       },
       boxShadow: {
-        card: "0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06)",
-        "card-hover": "0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04)",
-        modal: "0 20px 60px rgba(0,0,0,0.12)",
+        popover: "var(--shadow-popover)",
+        modal: "var(--shadow-modal)",
+      },
+      borderRadius: {
+        sm: "4px", /* badges, dots */
+        md: "6px", /* buttons, inputs */
+        lg: "8px", /* cards */
+        xl: "12px", /* modals, drawers */
+      },
+      transitionDuration: {
+        "hover-text": "100ms",
+        "hover": "120ms",
+        "modal": "180ms",
+        "drawer": "220ms",
       },
       keyframes: {
+        /* Motion tokens from PRD-00 */
+        slideUp: {
+          from: { transform: "translateY(100%)" },
+          to: { transform: "translateY(0)" },
+        },
+        scaleIn: {
+          from: { opacity: "0", transform: "scale(0.95)" },
+          to: { opacity: "1", transform: "scale(1)" },
+        },
+        fadeIn: {
+          from: { opacity: "0" },
+          to: { opacity: "1" },
+        },
         slideInRight: {
           from: { transform: "translateX(100%)" },
           to: { transform: "translateX(0)" },
@@ -143,19 +106,24 @@ export default {
         },
       },
       animation: {
-        "slide-in-right": "slideInRight 0.25s ease-out",
-        "fade-in-up": "fadeInUp 0.4s ease-out forwards",
+        "slide-up": "slideUp 220ms cubic-bezier(0.22, 0.61, 0.36, 1)",
+        "scale-in": "scaleIn 180ms ease-out",
+        "fade-in": "fadeIn 180ms ease-out",
+        "slide-in-right": "slideInRight 220ms ease-out",
+        "fade-in-up": "fadeInUp 180ms ease-out forwards",
         "mission-complete": "missionComplete 280ms ease-out forwards",
         "pulse-soft": "pulseSoft 1.4s ease-in-out infinite",
       },
-      borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
-        card: "0.75rem",
-        button: "0.5rem",
-        badge: "9999px",
-        input: "0.5rem",
+      spacing: {
+        "0.5": "2px",
+        "1": "4px",
+        "2": "8px",
+        "3": "12px",
+        "4": "16px",
+        "6": "24px",
+        "8": "32px",
+        "12": "48px",
+        "16": "64px",
       },
     },
   },

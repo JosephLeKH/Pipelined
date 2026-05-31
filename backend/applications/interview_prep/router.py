@@ -33,7 +33,8 @@ from parsing.ai_cache import (
 
 from .agent import run_agent
 from .constants import MOCK_INTERVIEW_RATE_LIMIT
-from .fit_score import compute_fit_score
+from .fit_score import compute_fit_score, stream_fit_score_with_steps
+from .fit_score_schemas import FitScoreResponse
 from .mock_interview import stream_mock_interview
 from . import service as follow_up_service
 from .service import FollowUpBudgetError, FollowUpDraftError
@@ -100,6 +101,7 @@ async def interview_prep_stream(
                 resume_text=resume_text,
                 exa_api_key=settings.exa_api_key,
                 interview_round=interview_round,
+                app_id=app_id,
             ):
                 event_type = event.pop("type")
                 if event_type == "done":
@@ -191,7 +193,7 @@ async def generate_fit_score(
     request: Request,  # noqa: ARG001
     app_id: str,
     user: dict = Depends(get_current_user),
-) -> dict:
+) -> dict[str, FitScoreResponse]:
     """Generate a fit score evaluating how well the user's profile matches the applied role."""
     user_id = str(user["_id"])
     app_doc = await _get_application(app_id, user_id)
@@ -212,7 +214,7 @@ async def generate_fit_score(
         result = await compute_fit_score(user_id, app_id, company, role_title, resume_text)
         if result is None:
             raise HTTPException(status_code=502, detail="Fit score generation failed")
-        return {"data": result}
+        return {"data": result.model_dump()}
     except QuotaExceededError:
         raise HTTPException(
             status_code=429,
@@ -231,6 +233,43 @@ async def generate_fit_score(
     except Exception:
         logger.exception("fit_score_error", app_id=app_id)
         raise HTTPException(status_code=502, detail="Fit score generation failed")
+
+
+@router.post("/{app_id}/fit-score/stream")
+@limiter.limit("10/hour")
+async def fit_score_stream(
+    request: Request,  # noqa: ARG001
+    app_id: str,
+    user: dict = Depends(get_current_user),
+) -> StreamingResponse:
+    """Stream fit score computation with reasoning steps as Server-Sent Events."""
+    user_id = str(user["_id"])
+    app_doc = await _get_application(app_id, user_id)
+
+    company: str = app_doc.get("company", "")
+    role_title: str = app_doc.get("role_title", app_doc.get("position", ""))
+    resume_text = await _get_resume_text(user_id)
+    if not resume_text:
+        resume_text = "No resume available"
+
+    if not agent_llm_configured():
+        raise HTTPException(status_code=503, detail="AI features not configured")
+
+    async def event_stream():
+        try:
+            async for event in stream_fit_score_with_steps(
+                user_id, app_id, company, role_title, resume_text
+            ):
+                yield f"data: {json.dumps(event)}\n\n"
+        except Exception as exc:
+            logger.exception("fit_score_stream_error", app_id=app_id, error=str(exc))
+            yield f"data: {json.dumps({'type': 'error', 'message': 'Fit score generation failed'})}\n\n"
+
+    return StreamingResponse(
+        event_stream(),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    )
 
 
 @router.post("/{app_id}/mock-interview")

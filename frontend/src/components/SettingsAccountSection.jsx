@@ -18,7 +18,6 @@ import {
   DialogTitle,
 } from "./ui/dialog";
 import { Input } from "./ui/input";
-import { Label } from "./ui/label";
 
 const ERROR_MESSAGES = {
   CURRENT_PASSWORD_INCORRECT: "Current password is incorrect.",
@@ -28,7 +27,7 @@ const ERROR_MESSAGES = {
 function PasswordField({ id, label, value, onChange }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <Label htmlFor={id}>{label}</Label>
+      <label htmlFor={id} className="text-[0.8125rem] font-medium text-text-1">{label}</label>
       <Input id={id} type="password" value={value} onChange={onChange} />
     </div>
   );
@@ -63,16 +62,16 @@ function ChangePasswordCard() {
   }, [current, newPw, confirm, changePassword]);
 
   return (
-    <div className="rounded-xl bg-card border border-border p-6">
-      <h2 className="mb-1 text-lg font-semibold text-foreground">Change password</h2>
-      <p className="mb-5 text-sm text-muted-foreground">
+    <div className="rounded-lg bg-surface-0 border border-border-1 p-6">
+      <h2 className="mb-1 text-sm font-semibold text-text-1">Change password</h2>
+      <p className="mb-5 text-xs text-text-2">
         Update your account password. Choose a strong password you don&apos;t use elsewhere.
       </p>
       <div className="flex max-w-sm flex-col gap-4">
         <PasswordField id="pw-current" label="Current password" value={current} onChange={(e) => setCurrent(e.target.value)} />
         <PasswordField id="pw-new" label="New password" value={newPw} onChange={(e) => setNewPw(e.target.value)} />
         <PasswordField id="pw-confirm" label="Confirm new password" value={confirm} onChange={(e) => setConfirm(e.target.value)} />
-        {pwError && <p role="alert" className="text-sm text-destructive">{pwError}</p>}
+        {pwError && <p role="alert" className="text-sm text-brand-700">{pwError}</p>}
         <div className="flex justify-end">
           <Button type="button" onClick={handleSubmit} disabled={isPending} aria-busy={isPending} className="flex items-center gap-2">
             {isPending && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
@@ -91,7 +90,7 @@ function DeleteAccountModal({ isOpen, onClose, onConfirm, isPending }) {
         <DialogHeader>
           <DialogTitle>Delete account?</DialogTitle>
         </DialogHeader>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-text-2">
           This will permanently delete your account and all data. This action cannot be undone.
         </p>
         <DialogFooter>
@@ -123,17 +122,17 @@ function DangerZone() {
 
   return (
     <>
-      <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-6">
+      <div className="rounded-lg border border-brand-200/50 bg-brand-50 p-6 dark:border-brand-800/50 dark:bg-brand-950/20">
         <div className="flex items-start gap-3">
-          <TriangleAlert className="mt-0.5 h-5 w-5 shrink-0 text-destructive" aria-hidden="true" />
+          <TriangleAlert className="mt-0.5 h-5 w-5 shrink-0 text-brand-700" aria-hidden="true" />
           <div className="flex-1">
-            <h2 className="text-lg font-semibold text-destructive">Danger zone</h2>
-            <p className="mt-1 text-sm text-destructive">
+            <h2 className="text-sm font-semibold text-brand-900 dark:text-brand-200">Danger zone</h2>
+            <p className="mt-1 text-xs text-brand-800 dark:text-brand-300">
               Permanently delete your account and all associated data: applications, calendar events,
               contacts, and resume. This cannot be undone.
             </p>
             <Button type="button" variant="outline" onClick={() => setShowModal(true)}
-              className="mt-4 border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive focus-visible:ring-destructive/50">
+              className="mt-4 border-brand-300/50 text-brand-700 hover:bg-brand-100/50 dark:border-brand-700 dark:text-brand-300 dark:hover:bg-brand-900/30">
               Delete account
             </Button>
           </div>

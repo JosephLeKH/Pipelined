@@ -14,6 +14,38 @@ import { useBriefHistory } from "../hooks/useBriefHistory";
 import { BRIEF_SECTION_ORDER, formatBriefHour } from "../lib/briefConstants";
 import { getBriefExpandedForDate, setBriefExpandedForDate } from "../lib/todayUtils";
 
+function useBriefExpanded(brief, forceOpen, setSearchParams) {
+  const [expanded, setExpanded] = useState(() => {
+    if (forceOpen) return true;
+    return getBriefExpandedForDate(brief?.date);
+  });
+
+  useEffect(() => {
+    if (forceOpen && brief?.date) {
+      setExpanded(true);
+      setBriefExpandedForDate(brief.date, true);
+      setSearchParams((prev) => {
+        const next = new URLSearchParams(prev);
+        next.delete("brief");
+        return next;
+      }, { replace: true });
+    }
+  }, [forceOpen, brief?.date, setSearchParams]);
+
+  useEffect(() => {
+    if (!brief?.date || forceOpen) return;
+    setExpanded(getBriefExpandedForDate(brief.date));
+  }, [brief?.date, forceOpen]);
+
+  const toggleExpanded = () => {
+    const next = !expanded;
+    setExpanded(next);
+    if (brief?.date) setBriefExpandedForDate(brief.date, next);
+  };
+
+  return { expanded, toggleExpanded };
+}
+
 function BriefSectionHeading({ children }) {
   return (
     <h2 className="mb-2 text-xs font-medium uppercase tracking-wider text-text-3">
@@ -80,6 +112,90 @@ function TodayMorningBriefContent({
   );
 }
 
+function BriefCollapsedButton({ ToggleIcon, onClick }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-expanded={false}
+      className={[
+        "flex h-14 w-full items-center gap-3 rounded-lg border border-border-1",
+        "bg-surface-1 p-4 text-left hover:bg-surface-2",
+        "focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600",
+        "dark:focus-visible:outline-1",
+        "motion-safe:transition-colors motion-safe:duration-hover",
+      ].join(" ")}
+    >
+      <ToggleIcon className="h-4 w-4 shrink-0 text-text-3" aria-hidden="true" />
+      <span className="text-sm text-text-2">Tap to read your morning brief</span>
+    </button>
+  );
+}
+
+function BriefExpandedView({ ToggleIcon, timeLabel, toggleExpanded, brief, emptyMessage, onGenerateBrief, isGenerating, generateError }) {
+  return (
+    <div className="rounded-lg border border-border-1 bg-surface-1 p-4">
+      <button
+        type="button"
+        onClick={toggleExpanded}
+        aria-expanded
+        className={[
+          "mb-2 flex w-full items-center gap-2 text-left text-sm text-text-2",
+          "hover:text-text-1 focus-visible:outline focus-visible:outline-2",
+          "focus-visible:outline-brand-600 dark:focus-visible:outline-1",
+        ].join(" ")}
+      >
+        <ToggleIcon className="h-4 w-4 shrink-0" aria-hidden="true" />
+        <span>Morning brief · {timeLabel}</span>
+      </button>
+      <TodayMorningBriefContent
+        brief={brief}
+        emptyMessage={emptyMessage}
+        onGenerateBrief={onGenerateBrief}
+        isGenerating={isGenerating}
+        generateError={generateError}
+      />
+    </div>
+  );
+}
+
+function BriefHeader({ timeLabel, hasHistory, onHistoryClick }) {
+  return (
+    <div className="mb-2 flex items-center justify-between gap-3">
+      <BriefSectionHeading>Morning brief · {timeLabel}</BriefSectionHeading>
+      {hasHistory && (
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={onHistoryClick}
+          className="h-auto shrink-0 px-2 py-1 text-xs text-brand-600 hover:text-brand-700 hover:underline"
+        >
+          History
+        </Button>
+      )}
+    </div>
+  );
+}
+
+function BriefContent({ expanded, ToggleIcon, toggleExpanded, timeLabel, brief, emptyMessage, onGenerateBrief, isGenerating, generateError }) {
+  if (!expanded) {
+    return <BriefCollapsedButton ToggleIcon={ToggleIcon} onClick={toggleExpanded} />;
+  }
+  return (
+    <BriefExpandedView
+      ToggleIcon={ToggleIcon}
+      timeLabel={timeLabel}
+      toggleExpanded={toggleExpanded}
+      brief={brief}
+      emptyMessage={emptyMessage}
+      onGenerateBrief={onGenerateBrief}
+      isGenerating={isGenerating}
+      generateError={generateError}
+    />
+  );
+}
+
 function TodayMorningBrief({
   brief,
   briefHour,
@@ -92,99 +208,27 @@ function TodayMorningBrief({
   const [searchParams, setSearchParams] = useSearchParams();
   const [historyOpen, setHistoryOpen] = useState(false);
   const { data: historyData } = useBriefHistory(HISTORY_DAYS);
+  const { expanded, toggleExpanded } = useBriefExpanded(brief, forceOpen, setSearchParams);
+
   const pastBriefs = (historyData?.data ?? []).slice(1);
   const hasHistory = pastBriefs.length > 0;
-
-  const briefDate = brief?.date;
-  const [expanded, setExpanded] = useState(() => {
-    if (forceOpen) return true;
-    return getBriefExpandedForDate(briefDate);
-  });
-
-  useEffect(() => {
-    if (forceOpen && briefDate) {
-      setExpanded(true);
-      setBriefExpandedForDate(briefDate, true);
-      setSearchParams((prev) => {
-        const next = new URLSearchParams(prev);
-        next.delete("brief");
-        return next;
-      }, { replace: true });
-    }
-  }, [forceOpen, briefDate, setSearchParams]);
-
-  useEffect(() => {
-    if (!briefDate || forceOpen) return;
-    setExpanded(getBriefExpandedForDate(briefDate));
-  }, [briefDate, forceOpen]);
-
-  const toggleExpanded = () => {
-    const next = !expanded;
-    setExpanded(next);
-    if (briefDate) setBriefExpandedForDate(briefDate, next);
-  };
-
   const ToggleIcon = expanded ? ChevronDown : ChevronRight;
   const timeLabel = formatBriefHour(briefHour);
 
   return (
     <section aria-label="Morning brief">
-      <div className="mb-2 flex items-center justify-between gap-3">
-        <BriefSectionHeading>Morning brief · {timeLabel}</BriefSectionHeading>
-        {hasHistory && (
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={() => setHistoryOpen(true)}
-            className="h-auto shrink-0 px-2 py-1 text-xs text-brand-600 hover:text-brand-700 hover:underline"
-          >
-            History
-          </Button>
-        )}
-      </div>
-
-      {!expanded ? (
-        <button
-          type="button"
-          onClick={toggleExpanded}
-          aria-expanded={false}
-          className={[
-            "flex h-14 w-full items-center gap-3 rounded-lg border border-border-1",
-            "bg-surface-1 p-4 text-left hover:bg-surface-2",
-            "focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600",
-            "dark:focus-visible:outline-1",
-            "motion-safe:transition-colors motion-safe:duration-hover",
-          ].join(" ")}
-        >
-          <ToggleIcon className="h-4 w-4 shrink-0 text-text-3" aria-hidden="true" />
-          <span className="text-sm text-text-2">Tap to read your morning brief</span>
-        </button>
-      ) : (
-        <div className="rounded-lg border border-border-1 bg-surface-1 p-4">
-          <button
-            type="button"
-            onClick={toggleExpanded}
-            aria-expanded
-            className={[
-              "mb-2 flex w-full items-center gap-2 text-left text-sm text-text-2",
-              "hover:text-text-1 focus-visible:outline focus-visible:outline-2",
-              "focus-visible:outline-brand-600 dark:focus-visible:outline-1",
-            ].join(" ")}
-          >
-            <ToggleIcon className="h-4 w-4 shrink-0" aria-hidden="true" />
-            <span>Morning brief · {timeLabel}</span>
-          </button>
-          <TodayMorningBriefContent
-            brief={brief}
-            emptyMessage={emptyMessage}
-            onGenerateBrief={onGenerateBrief}
-            isGenerating={isGenerating}
-            generateError={generateError}
-          />
-        </div>
-      )}
-
+      <BriefHeader timeLabel={timeLabel} hasHistory={hasHistory} onHistoryClick={() => setHistoryOpen(true)} />
+      <BriefContent
+        expanded={expanded}
+        ToggleIcon={ToggleIcon}
+        toggleExpanded={toggleExpanded}
+        timeLabel={timeLabel}
+        brief={brief}
+        emptyMessage={emptyMessage}
+        onGenerateBrief={onGenerateBrief}
+        isGenerating={isGenerating}
+        generateError={generateError}
+      />
       <MorningBriefHistoryPanel open={historyOpen} onClose={() => setHistoryOpen(false)} />
     </section>
   );

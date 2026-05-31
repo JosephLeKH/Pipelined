@@ -1,0 +1,73 @@
+name: Backend Tests
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - backend/**
+      - requirements.txt
+      - .github/workflows/backend-tests.yml
+  pull_request:
+    branches:
+      - main
+    paths:
+      - backend/**
+      - requirements.txt
+      - .github/workflows/backend-tests.yml
+
+jobs:
+  test:
+    name: pytest with MongoDB
+    runs-on: ubuntu-latest
+
+    services:
+      mongo:
+        image: mongo:7.0.14
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --eval 'db.adminCommand(\"ping\")'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('backend/requirements.txt') }}
+          restore-keys: ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        working-directory: backend
+        run: pip install -r requirements.txt
+
+      - name: Run tests with coverage
+        working-directory: backend
+        env:
+          MONGO_URI: mongodb://localhost:27017/pipelined-test
+          OPENAI_API_KEY: test-key-do-not-use-in-production
+          JWT_SECRET: test-secret-do-not-use-in-production
+          DEBUG: "true"
+        run: pytest tests/ -v --cov=. --cov-report=xml --cov-report=term
+
+      - name: Upload coverage artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: backend/coverage.xml
+          retention-days: 30
+
+    concurrency:
+      group: backend-tests-${{ github.ref }}
+      cancel-in-progress: true

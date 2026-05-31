@@ -1,8 +1,10 @@
 """FastAPI application factory with CORS middleware and lifespan management."""
 
+import os
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
+import sentry_sdk
 import structlog
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -10,6 +12,8 @@ from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
+
+from observability.sentry_scrub import scrub_pii
 
 from applications.apply_pack.router import router as apply_pack_router
 from applications.interview_prep.router import router as interview_prep_router
@@ -48,6 +52,30 @@ from middleware.security_headers import SecurityHeadersMiddleware
 logger = structlog.get_logger()
 
 RATE_LIMIT_EXCEEDED_CODE = "RATE_LIMIT_EXCEEDED"
+
+
+def _init_sentry() -> None:
+    """Initialize Sentry SDK for error monitoring.
+
+    Requires SENTRY_DSN_BACKEND env var; no-op if not set.
+    Filters PII (emails, company names, auth headers) before transmission.
+    """
+    dsn = os.getenv("SENTRY_DSN_BACKEND", "")
+    if not dsn:
+        return
+
+    sentry_sdk.init(
+        dsn=dsn,
+        integrations=[
+            sentry_sdk.integrations.fastapi.FastApiIntegration(),
+            sentry_sdk.integrations.asyncio.AsyncioIntegration(),
+        ],
+        traces_sample_rate=0.1,
+        send_default_pii=False,
+        before_send=scrub_pii,
+        environment=os.getenv("ENV", "development"),
+        release=os.getenv("GIT_SHA", "unknown"),
+    )
 
 
 async def _rate_limit_handler(request: Request, exc: RateLimitExceeded) -> JSONResponse:
@@ -172,6 +200,9 @@ def _register_routers(app: FastAPI) -> None:
 
 def create_app(*, testing: bool = False) -> FastAPI:
     """Construct and configure the FastAPI application."""
+    if not testing:
+        _init_sentry()
+
     app = FastAPI(
         title="Pipelined API",
         version="0.1.0",

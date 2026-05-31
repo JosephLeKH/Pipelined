@@ -10,9 +10,9 @@ export default function SettingsReportSection() {
   const { handleDownload, isLoading, error, retryAfter } = useApplicationExport();
 
   return (
-    <div className="rounded-xl bg-card border border-border p-6">
-      <h2 className="mb-1 text-lg font-semibold text-foreground">Reports</h2>
-      <p className="mb-5 text-sm text-muted-foreground">
+    <div className="rounded-lg bg-surface-0 border border-border-1 p-6">
+      <h2 className="mb-1 text-sm font-semibold text-text-1">Reports</h2>
+      <p className="mb-5 text-xs text-text-2">
         Export a PDF summary of your pipeline including stats, stage funnel, and application history.
       </p>
 
@@ -32,12 +32,12 @@ export default function SettingsReportSection() {
       </Button>
 
       {retryAfter !== null && (
-        <p role="alert" className="mt-4 text-sm text-amber-600 dark:text-amber-400">
+        <p role="alert" className="mt-4 text-sm text-status-warn">
           Rate limit reached. Please wait {retryAfter} second{retryAfter !== 1 ? "s" : ""} before trying again.
         </p>
       )}
       {error && (
-        <p role="alert" className="mt-4 text-sm text-destructive">
+        <p role="alert" className="mt-4 text-sm text-brand-700">
           {error}
         </p>
       )}

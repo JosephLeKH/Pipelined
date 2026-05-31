@@ -1,14 +1,18 @@
 """Apply pack generation for job applications via OpenRouter."""
 
+import json
+from collections.abc import AsyncGenerator
 from datetime import datetime, timezone
 
 import structlog
 from bson import ObjectId
 from bson.errors import InvalidId
 
-from ai.openrouter_client import OpenRouterError, complete_json
+from ai.next_action import NextAction
+from ai.openrouter_client import OpenRouterError, complete_json, stream_chat
 from applications.apply_pack.schemas import ApplyPackResponse, ShortAnswer
 from config import settings
+from copilot.step_parser import StepParser
 from database import get_collection
 
 logger = structlog.get_logger()
@@ -80,7 +84,7 @@ def _build_user_message(app_doc: dict, resume_text: str) -> str:
     )
 
 
-def _normalize_apply_pack(raw: dict) -> ApplyPackResponse:
+def _normalize_apply_pack(raw: dict, cover_letter_text: str) -> ApplyPackResponse:
     short_answers: list[ShortAnswer] = []
     for item in raw.get("short_answers") or []:
         if isinstance(item, dict) and item.get("question") and item.get("answer"):
@@ -94,11 +98,20 @@ def _normalize_apply_pack(raw: dict) -> ApplyPackResponse:
         if str(p).strip()
     ][:6]
 
+    next_action = None
+    if cover_letter_text:
+        next_action = NextAction(
+            label="Copy cover letter draft",
+            intent="copy",
+            payload={"text": cover_letter_text},
+        )
+
     return ApplyPackResponse(
         cover_letter=str(raw.get("cover_letter") or "").strip(),
         short_answers=short_answers[:5],
         linkedin_note=str(raw.get("linkedin_note") or "").strip(),
         talking_points=talking_points,
+        next_action=next_action,
     )
 
 
@@ -137,10 +150,89 @@ async def generate_apply_pack(user_id: str, app_id: str) -> ApplyPackResponse:
         max_tokens=APPLY_PACK_MAX_TOKENS,
         timeout=APPLY_PACK_TIMEOUT_SECONDS,
     )
-    pack = _normalize_apply_pack(raw)
+    cover_letter_text = str(raw.get("cover_letter") or "").strip()
+    pack = _normalize_apply_pack(raw, cover_letter_text)
     if not pack.cover_letter:
         raise OpenRouterError("Apply pack generation returned empty cover letter")
 
     await _persist_apply_pack(user_id, app_id, pack)
     logger.info("apply_pack_generated", user_id=user_id, app_id=app_id)
     return pack
+
+
+async def stream_apply_pack_with_steps(
+    user_id: str,
+    app_id: str,
+) -> AsyncGenerator[dict, None]:
+    """Stream apply pack generation with reasoning steps as SSE events.
+
+    Yields:
+    - {type: "step", content: "..."} — reasoning step
+    - {type: "token", content: "..."} — response text token
+    - {type: "done", apply_pack: {...}, next_action: {...}}
+    """
+    app_doc = await _fetch_application(user_id, app_id)
+    job_description = (app_doc.get("job_description") or "").strip()
+    if not job_description:
+        raise MissingJobDescriptionError
+
+    resume_text = (await _fetch_resume_text(user_id)).strip()
+    if not resume_text:
+        raise MissingResumeError
+
+    if not settings.openrouter_api_key:
+        raise OpenRouterError("OpenRouter API key is not configured")
+
+    user_message = _build_user_message(app_doc, resume_text)
+    parser = StepParser()
+    parts: list[str] = []
+
+    try:
+        async for delta in stream_chat(
+            APPLY_PACK_SYSTEM_PROMPT,
+            [{"role": "user", "content": user_message}],
+            model=settings.openrouter_default_model,
+            temperature=0.4,
+            max_tokens=APPLY_PACK_MAX_TOKENS,
+            timeout=APPLY_PACK_TIMEOUT_SECONDS,
+            reasoning_enabled=settings.reasoning_enabled,
+        ):
+            parts.append(delta)
+            for event_type, content in parser.feed(delta):
+                if event_type == "step":
+                    yield {"type": "step", "content": content}
+                elif event_type == "token":
+                    yield {"type": "token", "content": content}
+    except OpenRouterError as exc:
+        logger.warning("apply_pack_stream_error", user_id=user_id, app_id=app_id, error=str(exc))
+        raise
+
+    # Flush remaining tokens
+    for event_type, content in parser.flush():
+        if event_type == "token":
+            yield {"type": "token", "content": content}
+
+    full_text = "".join(parts)
+    # Strip step tags to extract JSON
+    clean_text = full_text
+    import re
+    clean_text = re.sub(r"<step>.*?</step>", "", clean_text, flags=re.DOTALL).strip()
+
+    try:
+        raw = json.loads(clean_text)
+    except json.JSONDecodeError:
+        logger.warning("apply_pack_json_parse_failed", user_id=user_id, app_id=app_id)
+        raise OpenRouterError("Apply pack generation returned invalid JSON")
+
+    cover_letter_text = str(raw.get("cover_letter") or "").strip()
+    pack = _normalize_apply_pack(raw, cover_letter_text)
+    if not pack.cover_letter:
+        raise OpenRouterError("Apply pack generation returned empty cover letter")
+
+    await _persist_apply_pack(user_id, app_id, pack)
+    logger.info("apply_pack_streamed", user_id=user_id, app_id=app_id)
+
+    done_event: dict = {"type": "done", "apply_pack": pack.model_dump()}
+    if pack.next_action:
+        done_event["next_action"] = pack.next_action.model_dump()
+    yield done_event

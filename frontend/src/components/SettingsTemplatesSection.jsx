@@ -62,7 +62,7 @@ function TemplateRow({ template }) {
     .join(" · ");
 
   return (
-    <div className="flex items-center gap-3 py-3 border-b border-border last:border-b-0">
+    <div className="flex items-center gap-3 py-3 border-b border-border-1 last:border-b-0">
       <div className="min-w-0 flex-1">
         {editing ? (
           <Input
@@ -77,11 +77,11 @@ function TemplateRow({ template }) {
           />
         ) : (
           <>
-            <p className="text-sm font-medium text-foreground truncate">
+            <p className="text-sm font-medium text-text-1 truncate">
               {template.name}
             </p>
             {fieldSummary && (
-              <p className="text-xs text-muted-foreground truncate mt-0.5">
+              <p className="text-xs text-text-2 truncate mt-0.5">
                 {fieldSummary}
               </p>
             )}
@@ -98,7 +98,7 @@ function TemplateRow({ template }) {
               onClick={handleRename}
               disabled={isUpdating}
               aria-label="Confirm rename"
-              className="h-7 w-7 text-primary hover:bg-primary/10 hover:text-primary"
+              className="h-7 w-7 text-brand-600 hover:bg-brand-600/10 hover:text-brand-600"
             >
               <Check className="h-4 w-4" />
             </Button>
@@ -108,7 +108,7 @@ function TemplateRow({ template }) {
               size="icon"
               onClick={() => { setName(template.name); setEditing(false); }}
               aria-label="Cancel rename"
-              className="h-7 w-7 text-muted-foreground hover:bg-muted"
+              className="h-7 w-7 text-text-2 hover:bg-surface-1"
             >
               <X className="h-4 w-4" />
             </Button>
@@ -120,7 +120,7 @@ function TemplateRow({ template }) {
             size="icon"
             onClick={() => setEditing(true)}
             aria-label={`Rename ${template.name}`}
-            className="h-7 w-7 text-muted-foreground hover:bg-muted hover:text-foreground"
+            className="h-7 w-7 text-text-2 hover:bg-surface-1 hover:text-text-1"
           >
             <Pencil className="h-4 w-4" />
           </Button>
@@ -132,7 +132,7 @@ function TemplateRow({ template }) {
           onClick={() => setDeleteDialogOpen(true)}
           disabled={isDeleting}
           aria-label={`Delete ${template.name}`}
-          className="h-7 w-7 text-muted-foreground/50 hover:bg-destructive/10 hover:text-destructive"
+          className="h-7 w-7 text-text-3 hover:bg-brand-600/10 hover:text-brand-700"
         >
           <Trash2 className="h-4 w-4" />
         </Button>
@@ -150,7 +150,7 @@ function TemplateRow({ template }) {
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteConfirm}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="bg-brand-700 text-white hover:bg-brand-700/90"
             >
               Delete
             </AlertDialogAction>
@@ -165,18 +165,18 @@ function SettingsTemplatesSection() {
   const { data: templates, isLoading, error, refetch } = useTemplates();
 
   return (
-    <div className="rounded-xl bg-card border border-border p-6">
-      <h2 className="mb-1 text-lg font-semibold text-foreground">Templates</h2>
-      <p className="mb-5 text-sm text-muted-foreground">
+    <div className="rounded-lg bg-surface-0 border border-border-1 p-6">
+      <h2 className="mb-1 text-sm font-semibold text-text-1">Templates</h2>
+      <p className="mb-5 text-xs text-text-2">
         Saved templates prefill fields in the Add Application form. Up to 10 templates.
       </p>
 
       {isLoading && (
-        <p className="text-sm text-muted-foreground">Loading…</p>
+        <p className="text-sm text-text-2">Loading…</p>
       )}
       {error && (
         <div className="flex flex-col gap-2">
-          <p role="alert" className="text-sm text-destructive">
+          <p role="alert" className="text-sm text-brand-700">
             Failed to load templates.
           </p>
           <Button
@@ -192,9 +192,9 @@ function SettingsTemplatesSection() {
         </div>
       )}
       {!isLoading && !error && templates?.length === 0 && (
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-text-2">
           No templates yet. Use the{" "}
-          <span className="font-medium text-foreground">
+          <span className="font-medium text-text-1">
             "Save as template"
           </span>{" "}
           button when adding an application.

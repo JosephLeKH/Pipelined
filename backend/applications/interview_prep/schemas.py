@@ -5,6 +5,8 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
+from ai.next_action import NextAction
+
 
 class CompensationData(BaseModel):
     p25_total_comp: str = Field(description="25th percentile total comp, e.g. '$180k'")
@@ -55,6 +57,7 @@ class InterviewBriefing(BaseModel):
     interview_process: InterviewProcess
     company_intel: CompanyIntel
     personalized: PersonalizedNotes
+    next_action: NextAction | None = None
 
 
 class MockInterviewMessage(BaseModel):

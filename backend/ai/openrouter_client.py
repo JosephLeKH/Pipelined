@@ -262,17 +262,32 @@ async def stream_chat(
     temperature: float = DEFAULT_TEMPERATURE,
     max_tokens: int = DEFAULT_MAX_TOKENS,
     timeout: float = DEFAULT_TIMEOUT_SECONDS,
+    reasoning_enabled: bool = False,
 ):
-    """Yield text deltas. Falls back from DO to OpenRouter only on initial connection failure."""
+    """Yield text deltas. Falls back from DO to OpenRouter only on initial connection failure.
+
+    If reasoning_enabled is True, append an instruction to the system prompt to emit
+    <step>...</step> tags for visible reasoning steps.
+    """
     providers = _ordered_providers()
     if not providers:
         raise OpenRouterError("No LLM provider configured")
+
+    # Augment system prompt with reasoning instruction if enabled and env allows it
+    final_system = system
+    if reasoning_enabled and settings.reasoning_enabled:
+        final_system = (
+            f"{system}\n\n"
+            "Before answering, emit progress markers in the form `<step>Step description here</step>`. "
+            "Examples: `<step>Retrieving your recent applications...</step>`, "
+            "`<step>Analyzing JD requirements...</step>`. Emit at least 2 steps before the final answer."
+        )
 
     last_exc: OpenRouterError | None = None
     for provider in providers:
         try:
             async for delta in _stream_provider(
-                provider, system, messages,
+                provider, final_system, messages,
                 model=model, temperature=temperature, max_tokens=max_tokens, timeout=timeout,
             ):
                 yield delta

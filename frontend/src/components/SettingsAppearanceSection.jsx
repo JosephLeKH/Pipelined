@@ -76,7 +76,6 @@ function SettingsAppearanceSection() {
   const [fontSizeIndex, setFontSizeIndex] = useState(() => prefs.font_size ?? readFontSizeIndex());
   const [accent, setAccent] = useState(() => prefs.accent_color || readAccent());
 
-  // Sync local state to server on change.
   useEffect(() => {
     if (prefs.density) setDensity(prefs.density);
     if (prefs.font_size !== undefined && prefs.font_size !== null) setFontSizeIndex(prefs.font_size);
@@ -116,9 +115,7 @@ function SettingsAppearanceSection() {
         Customize theme, density, font size, and accent color.
       </p>
 
-      <div className="my-8 border-t border-border-1" aria-hidden="true" />
-
-      <div className="flex flex-col gap-6">
+      <div className="mt-8 flex flex-col gap-6">
         <SettingsFieldBlock label="Theme" help="Applies immediately across the app.">
           <div className="flex flex-wrap gap-4" role="radiogroup" aria-label="Theme">
             {THEME_OPTIONS.map((option) => (

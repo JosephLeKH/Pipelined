@@ -12,6 +12,7 @@ import structlog
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.interval import IntervalTrigger
+from bson import ObjectId
 
 from config import settings
 from database import get_collection
@@ -278,6 +279,8 @@ NOTIFICATION_GEN_MINUTE: int = 0
 MORNING_BRIEF_MINUTE_UTC: int = 15
 WEEKLY_REVIEW_MINUTE_UTC: int = 30
 STALE_FOLLOWUP_HOUR_UTC: int = 7
+EMBEDDING_REFRESH_MINUTE_UTC: int = 45
+EMBEDDING_REFRESH_CONCURRENCY: int = 10
 
 
 async def _stale_followup_job() -> None:
@@ -293,6 +296,47 @@ async def _stale_followup_job() -> None:
         except Exception:
             logger.exception("stale_followup_user_failed", user_id=str(user["_id"]))
     logger.info("stale_followup_scan_completed", total=total)
+
+
+async def _embedding_refresh_job() -> None:
+    """Scheduled job: process user embeddings queue with bounded concurrency."""
+    from ai.rag import refresh_user_embeddings  # noqa: PLC0415
+
+    queue_col = get_collection("user_embeddings_queue")
+    logger.info("embedding_refresh_job_started")
+
+    # Fetch all users in queue
+    queue_docs = await queue_col.find({}).to_list(length=None)
+    if not queue_docs:
+        logger.info("embedding_refresh_job_completed", user_count=0)
+        return
+
+    user_ids = [str(doc["user_id"]) for doc in queue_docs]
+    logger.info("embedding_refresh_job_dequeued", user_count=len(user_ids))
+
+    # Process with bounded concurrency using asyncio.Semaphore
+    semaphore = asyncio.Semaphore(EMBEDDING_REFRESH_CONCURRENCY)
+
+    async def _refresh_bounded(uid: str) -> int:
+        async with semaphore:
+            try:
+                return await refresh_user_embeddings(uid)
+            except Exception:
+                logger.exception("embedding_refresh_user_failed", user_id=uid)
+                return 0
+
+    results = await asyncio.gather(*[_refresh_bounded(uid) for uid in user_ids])
+    total_chunks = sum(results)
+
+    # Delete processed users from queue
+    queue_col_ref = get_collection("user_embeddings_queue")
+    await queue_col_ref.delete_many({"user_id": {"$in": [ObjectId(uid) for uid in user_ids]}})
+
+    logger.info(
+        "embedding_refresh_job_completed",
+        user_count=len(user_ids),
+        total_chunks_written=total_chunks,
+    )
 
 
 def create_scheduler() -> AsyncIOScheduler:
@@ -369,6 +413,12 @@ def create_scheduler() -> AsyncIOScheduler:
         _stale_followup_job,
         trigger=CronTrigger(hour=STALE_FOLLOWUP_HOUR_UTC, timezone="UTC"),
         id="stale_followup",
+        replace_existing=True,
+    )
+    scheduler.add_job(
+        _embedding_refresh_job,
+        trigger=CronTrigger(minute=EMBEDDING_REFRESH_MINUTE_UTC, timezone="UTC"),
+        id="embedding_refresh",
         replace_existing=True,
     )
     return scheduler

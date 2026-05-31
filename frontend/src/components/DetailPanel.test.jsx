@@ -306,15 +306,17 @@ describe("DetailPanel", () => {
     render(<DetailPanel application={APP} onClose={() => {}} />, { wrapper: makeWrapper() });
 
     const panel = screen.getByTestId("detail-panel");
-    expect(panel).toHaveStyle({ width: `${DETAIL_PANEL_WIDTH_PX}px` });
+    // Width is now a Tailwind class (md:max-w-[520px]) for responsive behavior
+    expect(panel).toHaveClass("md:max-w-[520px]");
     expect(panel.style.transitionDuration).toBe("220ms");
     expect(panel).toHaveClass("motion-safe-drawer");
   });
 
-  it("should position overlay below the top header", () => {
+  it("should position overlay to cover full viewport", () => {
     render(<DetailPanel application={APP} onClose={() => {}} />, { wrapper: makeWrapper() });
 
-    expect(screen.getByTestId("panel-overlay")).toHaveClass("top-11");
+    // Overlay now uses inset-0 to cover entire viewport, with drawer positioned at top-11 on the right
+    expect(screen.getByTestId("panel-overlay")).toHaveClass("inset-0");
   });
 
   it("should revert stage optimistically when stage update fails", async () => {

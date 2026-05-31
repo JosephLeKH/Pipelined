@@ -9,7 +9,7 @@ const FOCUS_RING =
 const buttonVariants = cva(
   [
     "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium",
-    "transition-[background-color,color] duration-hover ease-out",
+    "transition-[background-color,color] duration-120 ease-out",
     "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
     "[&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
     FOCUS_RING,
@@ -28,7 +28,7 @@ const buttonVariants = cva(
         destructive:
           "bg-transparent text-brand-700 hover:bg-brand-50",
         link:
-          "bg-transparent text-brand-600 underline-offset-2 hover:underline dark:text-brand-300",
+          "bg-transparent text-brand-600 underline-offset-2 hover:underline",
       },
       size: {
         sm: "h-7 px-2.5 text-xs",

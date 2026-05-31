@@ -61,19 +61,19 @@ function useResumeUpload() {
 
 function ResumeFileCard({ uploadedFile, isDeleting, isUploading, onDelete }) {
   return (
-    <div className="flex items-center justify-between rounded-lg border border-border bg-muted/50 px-4 py-3">
+    <div className="flex items-center justify-between rounded-lg border border-border-1 bg-surface-1 px-4 py-3">
       <div className="flex items-center gap-3">
-        <FileText className="h-5 w-5 text-primary shrink-0" aria-hidden="true" />
+        <FileText className="h-5 w-5 text-brand-600 shrink-0" aria-hidden="true" />
         <div>
-          <p className="text-sm font-medium text-foreground">
+          <p className="text-sm font-medium text-text-1">
             {uploadedFile?.name ?? "resume.pdf"}
           </p>
           {uploadedFile?.size && (
-            <p className="text-xs text-muted-foreground">{formatBytes(uploadedFile.size)}</p>
+            <p className="text-xs text-text-3">{formatBytes(uploadedFile.size)}</p>
           )}
         </div>
       </div>
-      <Button type="button" variant="ghost" size="sm" onClick={onDelete} disabled={isDeleting || isUploading} aria-label="Remove resume" className="text-destructive hover:bg-destructive/10 hover:text-destructive">
+      <Button type="button" variant="ghost" size="sm" onClick={onDelete} disabled={isDeleting || isUploading} aria-label="Remove resume" className="text-brand-700 hover:bg-brand-50 dark:hover:bg-brand-950/30">
         {isDeleting
           ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
           : <X className="h-4 w-4" aria-hidden="true" />}
@@ -92,21 +92,21 @@ function ResumeDropZone({ isDragOver, setIsDragOver, isUploading, fileInputRef, 
         onDrop={onDrop}
         onClick={() => fileInputRef.current?.click()}
         onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") fileInputRef.current?.click(); }}
-        className={`flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed p-8 text-center transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+        className={`flex cursor-pointer flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed p-8 text-center transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-600 ${
           isDragOver
-            ? "border-primary bg-primary/10"
-            : "border-border hover:border-primary"
+            ? "border-brand-600 bg-brand-50 dark:bg-brand-950/20"
+            : "border-border-1 hover:border-brand-600"
         }`}
         aria-label="Upload resume: drag and drop or click to browse"
       >
         {isUploading
-          ? <Loader2 className="h-8 w-8 animate-spin text-primary" aria-hidden="true" />
-          : <UploadCloud className={`h-8 w-8 ${isDragOver ? "text-primary" : "text-muted-foreground"}`} aria-hidden="true" />}
+          ? <Loader2 className="h-8 w-8 animate-spin text-brand-600" aria-hidden="true" />
+          : <UploadCloud className={`h-8 w-8 ${isDragOver ? "text-brand-600" : "text-text-3"}`} aria-hidden="true" />}
         <div>
-          <p className="text-sm font-medium text-foreground">
+          <p className="text-sm font-medium text-text-1">
             {isUploading ? "Uploading…" : "Drop your resume here or click to browse"}
           </p>
-          <p className="mt-0.5 text-xs text-muted-foreground">PDF only · max {RESUME_MAX_MB} MB</p>
+          <p className="mt-0.5 text-xs text-text-3">PDF only · max {RESUME_MAX_MB} MB</p>
         </div>
       </div>
       <input ref={fileInputRef} type="file" accept={RESUME_ACCEPT} className="sr-only"
@@ -122,18 +122,18 @@ function SettingsResumeSection() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="rounded-xl bg-card border border-border p-6">
-        <h2 className=" mb-1 text-lg font-semibold text-foreground">Resume & AI</h2>
-        <p className="mb-5 text-sm text-muted-foreground">
+      <div className="rounded-lg bg-surface-0 border border-border-1 p-6">
+        <h2 className="mb-1 text-sm font-semibold text-text-1">Resume & AI</h2>
+        <p className="mb-5 text-xs text-text-2">
           Upload your resume to enable AI fit scoring on new applications.
         </p>
         {resumeSuccess && (
-          <p role="alert" className="mb-4 rounded-lg bg-primary/10 border border-primary/20 px-3 py-3 text-sm text-primary">
+          <p role="alert" className="mb-4 rounded-lg bg-brand-50 border border-brand-200 px-3 py-3 text-sm text-brand-900 dark:bg-brand-950/20 dark:border-brand-800 dark:text-brand-200">
             Resume uploaded successfully.
           </p>
         )}
         {resumeError && (
-          <p role="alert" className="mb-4 text-sm text-destructive">{resumeError}</p>
+          <p role="alert" className="mb-4 text-sm text-brand-700">{resumeError}</p>
         )}
         {hasResume ? (
           <ResumeFileCard uploadedFile={uploadedFile} isDeleting={isDeleting} isUploading={isUploading} onDelete={handleDelete} />

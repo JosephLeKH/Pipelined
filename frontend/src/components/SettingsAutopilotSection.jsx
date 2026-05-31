@@ -23,9 +23,9 @@ function ToggleSwitch({ checked, onChange, disabled, label, description, id }) {
   return (
     <div className="flex items-start justify-between gap-4 py-3.5">
       <div>
-        <p id={id} className="text-sm font-medium text-foreground">{label}</p>
+        <p id={id} className="text-sm font-medium text-text-1">{label}</p>
         {description && (
-          <p className="mt-0.5 text-sm text-muted-foreground">{description}</p>
+          <p className="mt-0.5 text-sm text-text-2">{description}</p>
         )}
       </div>
       <button
@@ -35,12 +35,12 @@ function ToggleSwitch({ checked, onChange, disabled, label, description, id }) {
         aria-labelledby={id}
         disabled={disabled}
         onClick={() => onChange(!checked)}
-        className={`relative mt-0.5 inline-flex h-6 w-10 shrink-0 cursor-pointer items-center rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 ${
-          checked ? "bg-brand-500" : "bg-muted"
+        className={`relative mt-0.5 inline-flex h-6 w-10 shrink-0 cursor-pointer items-center rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-600/30 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 ${
+          checked ? "bg-brand-600" : "bg-surface-2"
         }`}
       >
         <span
-          className={`inline-block h-4 w-4 transform rounded-full bg-white dark:bg-gray-100 shadow transition-transform ${
+          className={`inline-block h-4 w-4 transform rounded-full bg-white dark:bg-surface-0 shadow transition-transform ${
             checked ? "translate-x-5" : "translate-x-1"
           }`}
         />
@@ -85,29 +85,29 @@ function SettingsAutopilotSection() {
   return (
     <div className="flex flex-col gap-4">
       <div className={`${CARD_BASE} p-6`}>
-        <h2 className=" mb-1 text-lg font-semibold text-foreground">Autopilot</h2>
-        <p className="mb-5 text-sm text-muted-foreground">{AUTOPILOT_EXPLAINER}</p>
+        <h2 className="mb-1 text-sm font-semibold text-text-1">Autopilot</h2>
+        <p className="mb-5 text-xs text-text-2">{AUTOPILOT_EXPLAINER}</p>
 
         {needsResume && (
           <div
             role="alert"
-            className="mb-5 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-200"
+            className="mb-5 rounded-lg border border-status-warn/30 bg-status-warn/10 px-4 py-3 text-sm text-status-warn"
           >
             Upload a resume to enable autopilot.{" "}
-            <Link to="/settings?section=resume" className="font-medium underline">
+            <Link to="/settings/resume" className="font-medium underline">
               Go to Resume & AI
             </Link>
           </div>
         )}
 
-        {error && <p role="alert" className="mb-4 text-sm text-destructive">{error}</p>}
+        {error && <p role="alert" className="mb-4 text-sm text-brand-700">{error}</p>}
         {saved && !error && (
-          <p role="status" className="mb-4 rounded-lg border border-brand-200 bg-brand-50 px-3 py-3 text-sm text-brand-800 dark:border-brand-800 dark:bg-brand-900/20 dark:text-brand-300">
+          <p role="status" className="mb-4 rounded-lg border border-brand-200 bg-brand-50 px-3 py-3 text-sm text-brand-900 dark:border-brand-800 dark:bg-brand-950/20 dark:text-brand-200">
             Autopilot settings saved.
           </p>
         )}
 
-        <p className="mb-4 text-sm text-muted-foreground">
+        <p className="mb-4 text-sm text-text-2">
           Next scan: {nextScanPreview} ({timezone})
         </p>
 
@@ -120,11 +120,11 @@ function SettingsAutopilotSection() {
           disabled={isPending || needsResume}
         />
 
-        <div className="border-t border-border py-4">
-          <label htmlFor="autopilot-min-score" className="text-sm font-medium text-foreground">
+        <div className="border-t border-border-1 py-4">
+          <label htmlFor="autopilot-min-score" className="text-sm font-medium text-text-1">
             {MIN_FIT_SCORE_LABEL} ({minScore})
           </label>
-          <p className="mt-0.5 text-sm text-muted-foreground">
+          <p className="mt-0.5 text-sm text-text-2">
             Only queue jobs scoring at or above this threshold.
           </p>
           <input
@@ -134,18 +134,18 @@ function SettingsAutopilotSection() {
             max={AUTOPILOT_MIN_SCORE_MAX}
             value={minScore}
             onChange={(e) => setMinScore(Number(e.target.value))}
-            className="mt-3 w-full accent-brand-500"
+            className="mt-3 w-full accent-brand-600"
             aria-valuemin={AUTOPILOT_MIN_SCORE_MIN}
             aria-valuemax={AUTOPILOT_MIN_SCORE_MAX}
             aria-valuenow={minScore}
           />
         </div>
 
-        <div className="border-t border-border py-4">
-          <label htmlFor="autopilot-max-daily" className="text-sm font-medium text-foreground">
+        <div className="border-t border-border-1 py-4">
+          <label htmlFor="autopilot-max-daily" className="text-sm font-medium text-text-1">
             Max matches per day ({maxDaily})
           </label>
-          <p className="mt-0.5 text-sm text-muted-foreground">
+          <p className="mt-0.5 text-sm text-text-2">
             Cap how many opportunities autopilot queues each night.
           </p>
           <input
@@ -155,7 +155,7 @@ function SettingsAutopilotSection() {
             max={AUTOPILOT_MAX_DAILY_MAX}
             value={maxDaily}
             onChange={(e) => setMaxDaily(Number(e.target.value))}
-            className="mt-3 w-full accent-brand-500"
+            className="mt-3 w-full accent-brand-600"
             aria-valuemin={AUTOPILOT_MAX_DAILY_MIN}
             aria-valuemax={AUTOPILOT_MAX_DAILY_MAX}
             aria-valuenow={maxDaily}

@@ -160,28 +160,23 @@ function DetailPanel({ application, onClose, onAddEvent, expandFollowUpDraft = f
     <div
       ref={overlayRef}
       data-testid="panel-overlay"
-      className={`fixed inset-x-0 bottom-0 top-11 z-40 transition-opacity motion-reduce:transition-none md:bottom-0 ${
+      className={`fixed inset-0 z-40 transition-opacity motion-reduce:transition-none ${
         isOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
       }`}
       style={{ transitionDuration: `${DRAWER_ANIMATION_MS}ms` }}
       onClick={handleOverlayClick}
     >
       <div
-        className="pointer-events-none absolute inset-0 bg-black/30 motion-reduce:backdrop-blur-none md:hidden"
-        aria-hidden="true"
-      />
-      <div
-        className="pointer-events-none absolute inset-y-0 right-0 hidden bg-black/30 motion-reduce:backdrop-blur-none md:block md:backdrop-blur-sm"
-        style={{ left: sidebarWidth }}
+        className="pointer-events-none absolute inset-0 bg-black/30 motion-reduce:backdrop-blur-none"
         aria-hidden="true"
       />
       <div
         ref={panelRef}
         data-testid="detail-panel"
-        className={`fixed inset-x-0 bottom-0 flex h-[90vh] flex-col rounded-t-xl border-l border-border-1 bg-surface-0 shadow-modal motion-safe-drawer md:inset-x-auto md:bottom-0 md:right-0 md:top-11 md:h-[calc(100vh-2.75rem)] md:rounded-none ${
-          isOpen ? "translate-y-0 md:translate-x-0" : "translate-y-full md:translate-y-0 md:translate-x-full"
+        className={`fixed inset-y-0 right-0 top-11 flex w-full flex-col border-l border-border-1 bg-surface-0 shadow-modal motion-safe-drawer md:max-w-[520px] ${
+          isOpen ? "translate-x-0" : "translate-x-full"
         }`}
-        style={{ ...panelStyle, width: DETAIL_PANEL_WIDTH_PX, maxWidth: "100%" }}
+        style={{ ...panelStyle }}
         role={isOpen ? "dialog" : undefined}
         aria-modal={isOpen ? true : undefined}
         aria-labelledby={isOpen ? "detail-panel-heading" : undefined}

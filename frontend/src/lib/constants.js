@@ -149,8 +149,8 @@ export const SIDEBAR_ANIMATION_MS = 200;
 export const DRAWER_ANIMATION_MS = 220;
 export const SIDEBAR_TOOLTIP_DELAY_MS = 400;
 export const TOP_BAR_HEIGHT_PX = 48;            /* was 44,  ×1.1 */
-export const DETAIL_PANEL_WIDTH_PX = 572;       /* was 520, ×1.1 */
-export const MANUAL_ADD_FORM_WIDTH_PX = 572;    /* was 520, ×1.1 */
+export const DETAIL_PANEL_WIDTH_PX = 520;       /* PRD-04 §9.1 */
+export const MANUAL_ADD_FORM_WIDTH_PX = 520;    /* PRD-04 §10.1 */
 
 /** Banner z-index layering strategy — stacks vertically, not overlapping. */
 export const BANNER_Z_OFFLINE = 50;             /* Connectivity issues (highest priority) */

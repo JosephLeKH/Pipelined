@@ -40,9 +40,9 @@ function parseSseChunk(buffer, onEvent) {
 /**
  * Stream a co-pilot chat turn.
  * @param {{ message: string, history: Array<{role:string, content:string}> }} payload
- * @param {{ onToken: Function, onDone: Function, onError: Function, signal?: AbortSignal }} handlers
+ * @param {{ onStep?: Function, onToken: Function, onDone: Function, onError: Function, signal?: AbortSignal }} handlers
  */
-export async function streamCopilotChat(payload, { onToken, onDone, onError, signal }) {
+export async function streamCopilotChat(payload, { onStep, onToken, onDone, onError, signal }) {
   const csrf = getCookie(CSRF_COOKIE_NAME);
   const headers = { "Content-Type": "application/json" };
   if (csrf) headers[CSRF_HEADER_NAME] = csrf;
@@ -86,14 +86,16 @@ export async function streamCopilotChat(payload, { onToken, onDone, onError, sig
     if (done) break;
     buffer += decoder.decode(value, { stream: true });
     buffer = parseSseChunk(buffer, (eventType, data) => {
-      if (eventType === "token") onToken(data);
+      if (eventType === "step" && onStep) onStep(data);
+      else if (eventType === "token") onToken(data);
       else if (eventType === "done") onDone(data);
       else if (eventType === "error") onError(data);
     });
   }
   if (buffer.trim()) {
     parseSseChunk(`${buffer}\n\n`, (eventType, data) => {
-      if (eventType === "token") onToken(data);
+      if (eventType === "step" && onStep) onStep(data);
+      else if (eventType === "token") onToken(data);
       else if (eventType === "done") onDone(data);
       else if (eventType === "error") onError(data);
     });

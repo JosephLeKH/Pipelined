@@ -17,8 +17,8 @@ function SelectTrigger({ className, children, ...props }) {
     <SelectPrimitive.Trigger
       data-slot="select-trigger"
       className={cn(
-        "flex h-8 w-full items-center justify-between whitespace-nowrap rounded-md border border-border-1 bg-transparent px-3 py-1 text-sm text-text-1 shadow-none",
-        "transition-[border-color,outline] duration-hover ease-out",
+        "flex h-8 w-full items-center justify-between whitespace-nowrap rounded-md border border-border-1 bg-surface-0 px-3 py-1 text-sm text-text-1 shadow-none",
+        "transition-[border-color,outline] duration-120 ease-out",
         "placeholder:text-text-3 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
         SELECT_FOCUS,
         className
@@ -106,8 +106,8 @@ function SelectItem({ className, children, ...props }) {
     <SelectPrimitive.Item
       data-slot="select-item"
       className={cn(
-        "relative flex w-full cursor-default select-none items-center rounded-sm py-1 pl-2 pr-8 text-sm text-text-1 outline-none",
-        "transition-[background-color,color] duration-hover ease-out",
+        "relative flex w-full cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm text-text-1 outline-none",
+        "transition-[background-color,color] duration-120 ease-out",
         "focus:bg-surface-2 data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
         className
       )}

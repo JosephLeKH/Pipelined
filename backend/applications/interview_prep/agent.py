@@ -11,6 +11,7 @@ from typing import Any
 
 import structlog
 
+from ai.next_action import NextAction
 from ai.openrouter_client import get_openrouter_client
 from config import settings
 
@@ -193,6 +194,7 @@ async def run_agent(
     resume_text: str,
     exa_api_key: str,
     interview_round: str | None = None,
+    app_id: str | None = None,
 ) -> AsyncGenerator[ProgressEvent, None]:
     """Run the interview prep agent loop, yielding progress events then the final briefing.
 
@@ -303,6 +305,12 @@ async def run_agent(
                 briefing_result["company"] = company
                 briefing_result["role"] = role
                 briefing_result["generated_at"] = datetime.now(UTC).isoformat()
+                if app_id:
+                    briefing_result["next_action"] = NextAction(
+                        label="Start mock interview",
+                        intent="navigate",
+                        payload={"to": f"/dashboard/{app_id}?tab=mock-interview"},
+                    ).model_dump()
                 validated = InterviewBriefing.model_validate(briefing_result)
                 yield {"type": "done", "briefing": validated.model_dump(mode="json")}
             except Exception as e:

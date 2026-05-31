@@ -124,7 +124,7 @@ describe("ApplicationRow — desktop interactions", () => {
   it("should use density row-height token on desktop viewport", () => {
     renderRow();
 
-    expect(screen.getByRole("listitem")).toHaveClass("md:h-[var(--row-height)]");
+    expect(screen.getByRole("listitem")).toHaveClass("md:h-10");
   });
 
   it("should apply selected styling when isSelected is true", () => {

@@ -129,6 +129,10 @@ class Settings(BaseSettings):
     # Tier limits — set to True in tests to bypass enforcement
     disable_tier_limits: bool = False
 
+    # AI Reasoning / Step Streaming
+    reasoning_enabled: bool = True
+    reasoning_streaming: bool = True
+
     model_config = {"env_file": ".env"}
 
 

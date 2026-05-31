@@ -165,11 +165,6 @@ describe("TodayPage", () => {
     expect(screen.queryByText("Acme · follow-up overdue")).not.toBeInTheDocument();
   });
 
-  it("should show mission progress strip", async () => {
-    render(<TodayPage />, { wrapper: makeWrapper() });
-
-    expect(await screen.findByLabelText("0 of 1 missions cleared today")).toBeInTheDocument();
-  });
 
   it("should show empty state when there are no missions", async () => {
     server.use(

@@ -129,6 +129,8 @@ async def ensure_indexes() -> None:
     agent_runs = get_collection("agent_runs")
     weekly_reviews = get_collection("weekly_reviews")
     copilot_sessions = get_collection("copilot_sessions")
+    user_embeddings = get_collection("user_embeddings")
+    user_embeddings_queue = get_collection("user_embeddings_queue")
 
     await asyncio.gather(
         _ensure_app_event_listing_indexes(apps, events, listings),
@@ -170,4 +172,14 @@ async def ensure_indexes() -> None:
             partialFilterExpression={"status": "pending"},
             name="recruiter_leads_user_company_unique",
         ),
+        user_embeddings.create_index(
+            [("user_id", 1), ("source_type", 1)],
+            name="user_embeddings_user_source",
+        ),
+        user_embeddings.create_index(
+            "updated_at",
+            expireAfterSeconds=7776000,
+            name="user_embeddings_ttl",
+        ),
+        user_embeddings_queue.create_index("user_id", unique=True, name="queue_user_unique"),
     )

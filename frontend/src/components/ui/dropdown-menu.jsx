@@ -6,7 +6,7 @@ import Circle from "lucide-react/dist/esm/icons/circle";
 import { cn } from "@/lib/utils";
 
 const MENU_ITEM =
-  "relative flex cursor-default select-none items-center gap-2 rounded-sm px-1 py-1 text-sm text-text-1 outline-none transition-[background-color,color] duration-hover ease-out focus:bg-surface-2 data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0";
+  "relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm text-text-1 outline-none transition-[background-color,color] duration-120 ease-out focus:bg-surface-2 data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0";
 
 const MENU_SURFACE =
   "z-50 min-w-[8rem] overflow-hidden rounded-md border border-border-1 bg-surface-0 p-1 text-text-1 shadow-popover";

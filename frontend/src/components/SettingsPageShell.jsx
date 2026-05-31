@@ -1,6 +1,8 @@
 /** Settings sub-page shell — title, field blocks, sticky save footer when dirty. */
 
+import { useEffect } from "react";
 import Loader2 from "lucide-react/dist/esm/icons/loader-2";
+import { toast } from "sonner";
 
 import { Button } from "./ui/button";
 
@@ -28,6 +30,13 @@ function SettingsSaveFooter({ dirty, isSaving, savedAck, onSave, onCancel }) {
   }
 
   const showSaved = savedAck && !isSaving;
+
+  useEffect(() => {
+    if (showSaved) {
+      const timer = setTimeout(() => {}, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [showSaved]);
 
   return (
     <footer

@@ -91,29 +91,29 @@ function SettingsWatchlistSection() {
 
   return (
     <div className={`${CARD_BASE} p-6`}>
-      <h2 className=" mb-1 text-lg font-semibold text-foreground">Company watchlist</h2>
-      <p className="mb-5 text-sm text-muted-foreground">{WATCHLIST_EXPLAINER}</p>
+      <h2 className="mb-1 text-sm font-semibold text-text-1">Company watchlist</h2>
+      <p className="mb-5 text-xs text-text-2">{WATCHLIST_EXPLAINER}</p>
 
-      {error && <p role="alert" className="mb-4 text-sm text-destructive">{error}</p>}
+      {error && <p role="alert" className="mb-4 text-sm text-brand-700">{error}</p>}
       {saved && !error && (
         <p
           role="status"
-          className="mb-4 rounded-lg border border-brand-200 bg-brand-50 px-3 py-3 text-sm text-brand-800 dark:border-brand-800 dark:bg-brand-900/20 dark:text-brand-300"
+          className="mb-4 rounded-lg border border-brand-200 bg-brand-50 px-3 py-3 text-sm text-brand-900 dark:border-brand-800 dark:bg-brand-950/20 dark:text-brand-200"
         >
           Watchlist saved.
         </p>
       )}
 
       {companies.length > 0 && (
-        <ul className="mb-5 divide-y divide-border rounded-lg border border-border">
+        <ul className="mb-5 divide-y divide-border-1 rounded-lg border border-border-1">
           {companies.map((company, index) => (
             <li
               key={`${company.name}-${company.careers_url}`}
               className="flex items-start justify-between gap-3 px-4 py-3"
             >
               <div className="min-w-0">
-                <p className="text-sm font-medium text-foreground">{company.name}</p>
-                <p className="truncate text-xs text-muted-foreground">{company.careers_url}</p>
+                <p className="text-sm font-medium text-text-1">{company.name}</p>
+                <p className="truncate text-xs text-text-3">{company.careers_url}</p>
               </div>
               <button
                 type="button"
@@ -130,12 +130,12 @@ function SettingsWatchlistSection() {
         </ul>
       )}
 
-      <div className="space-y-3 border-t border-border pt-4">
-        <p className="text-sm text-muted-foreground">
+      <div className="space-y-3 border-t border-border-1 pt-4">
+        <p className="text-sm text-text-2">
           {companies.length} of {WATCHLIST_COMPANIES_MAX} companies
         </p>
         <div>
-          <label htmlFor="watchlist-name" className="text-sm font-medium text-foreground">
+          <label htmlFor="watchlist-name" className="text-[0.8125rem] font-medium text-text-1">
             Company name
           </label>
           <input
@@ -145,12 +145,12 @@ function SettingsWatchlistSection() {
             maxLength={WATCHLIST_COMPANY_NAME_MAX_LENGTH}
             onChange={(e) => setName(e.target.value)}
             disabled={isPending || atLimit}
-            className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-md border border-border-1 bg-surface-0 px-3 py-2 text-sm text-text-1 placeholder:text-text-3"
             placeholder="Acme Corp"
           />
         </div>
         <div>
-          <label htmlFor="watchlist-url" className="text-sm font-medium text-foreground">
+          <label htmlFor="watchlist-url" className="text-[0.8125rem] font-medium text-text-1">
             Careers page URL
           </label>
           <input
@@ -160,7 +160,7 @@ function SettingsWatchlistSection() {
             maxLength={WATCHLIST_CAREERS_URL_MAX_LENGTH}
             onChange={(e) => setCareersUrl(e.target.value)}
             disabled={isPending || atLimit}
-            className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-md border border-border-1 bg-surface-0 px-3 py-2 text-sm text-text-1 placeholder:text-text-3"
             placeholder="https://boards.greenhouse.io/acme"
           />
         </div>
@@ -195,7 +195,7 @@ function SettingsWatchlistSection() {
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleRemoveConfirm}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="bg-brand-600 text-white hover:bg-brand-700"
             >
               Remove
             </AlertDialogAction>

@@ -1,6 +1,7 @@
-/** Settings notifications section — timezone and morning brief preferences. */
+/** Settings notifications section — timezone and morning brief preferences (auto-save). */
 
 import { useState, useCallback } from "react";
+import { toast } from "sonner";
 
 import { useAuth } from "../context/AuthContext";
 import { useUpdateUser } from "../hooks/useAuth";
@@ -17,9 +18,9 @@ function ToggleSwitch({ checked, onChange, disabled, label, description, id }) {
   return (
     <div className="flex items-start justify-between gap-4 py-3.5">
       <div>
-        <p id={id} className="text-sm font-medium text-foreground">{label}</p>
+        <p id={id} className="text-sm font-medium text-text-1">{label}</p>
         {description && (
-          <p className="mt-0.5 text-sm text-muted-foreground">{description}</p>
+          <p className="mt-0.5 text-sm text-text-2">{description}</p>
         )}
       </div>
       <button
@@ -29,12 +30,12 @@ function ToggleSwitch({ checked, onChange, disabled, label, description, id }) {
         aria-labelledby={id}
         disabled={disabled}
         onClick={() => onChange(!checked)}
-        className={`relative mt-0.5 inline-flex h-6 w-10 shrink-0 cursor-pointer items-center rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 ${
-          checked ? "bg-primary" : "bg-muted"
+        className={`relative mt-0.5 inline-flex h-6 w-10 shrink-0 cursor-pointer items-center rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-600 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 ${
+          checked ? "bg-brand-600" : "bg-surface-2"
         }`}
       >
         <span
-          className={`inline-block h-4 w-4 transform rounded-full bg-white dark:bg-gray-100 shadow transition-transform ${
+          className={`inline-block h-4 w-4 transform rounded-full bg-white dark:bg-surface-1 shadow transition-transform ${
             checked ? "translate-x-5" : "translate-x-1"
           }`}
         />
@@ -78,7 +79,8 @@ const TOGGLES = [
 
 function SettingsNotificationsSection() {
   const { user } = useAuth();
-  const { mutateAsync, isPending } = useUpdateUser();
+  const { mutateAsync } = useUpdateUser();
+  const [error, setError] = useState(null);
 
   const [timezone, setTimezone] = useState(
     () => user?.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone ?? "America/New_York"
@@ -89,17 +91,18 @@ function SettingsNotificationsSection() {
   const [values, setValues] = useState(() =>
     Object.fromEntries(TOGGLES.map((t) => [t.field, user?.[t.field] ?? t.defaultVal]))
   );
-  const [saveError, setSaveError] = useState(null);
 
   const handleToggle = useCallback(
     async (field, next) => {
+      setError(null);
       setValues((prev) => ({ ...prev, [field]: next }));
-      setSaveError(null);
       try {
         await mutateAsync({ [field]: next });
+        toast.success("Saved");
       } catch {
         setValues((prev) => ({ ...prev, [field]: !next }));
-        setSaveError("Failed to save. Please try again.");
+        setError("Failed to save. Please try again.");
+        toast.error("Failed to save. Please try again.");
       }
     },
     [mutateAsync]
@@ -108,11 +111,11 @@ function SettingsNotificationsSection() {
   const handleTimezoneChange = useCallback(
     async (nextTimezone) => {
       setTimezone(nextTimezone);
-      setSaveError(null);
       try {
         await mutateAsync({ timezone: nextTimezone });
+        toast.success("Saved");
       } catch {
-        setSaveError("Failed to save timezone. Please try again.");
+        toast.error("Failed to save timezone. Please try again.");
       }
     },
     [mutateAsync]
@@ -122,48 +125,48 @@ function SettingsNotificationsSection() {
     async (event) => {
       const nextHour = Number(event.target.value);
       setBriefHour(nextHour);
-      setSaveError(null);
       try {
         await mutateAsync({ morning_brief_hour: nextHour });
+        toast.success("Saved");
       } catch {
         setBriefHour(user?.morning_brief_hour ?? DEFAULT_MORNING_BRIEF_HOUR);
-        setSaveError("Failed to save delivery hour. Please try again.");
+        toast.error("Failed to save delivery hour. Please try again.");
       }
     },
     [mutateAsync, user?.morning_brief_hour]
   );
 
   return (
-    <div className="rounded-xl bg-card border border-border p-6">
-      <h2 className="mb-1 text-lg font-semibold text-foreground">
-        Notifications
-      </h2>
-      <p className="mb-4 text-sm text-muted-foreground">
+    <div>
+      <h2 className="text-display-md text-text-1">Notifications</h2>
+      <p className="mt-6 text-sm text-text-2">
         Control your daily morning brief, timezone, and weekly digest.
       </p>
-      {saveError && (
-        <p role="alert" className="mb-3 text-sm text-destructive">{saveError}</p>
-      )}
-      <div className="mb-6 space-y-6">
+
+      {error && <p role="alert" className="mt-4 text-sm text-brand-700">{error}</p>}
+
+      <div className="mt-8 flex flex-col gap-6">
         <div>
-          <p className="mb-2 text-sm font-medium text-foreground">Timezone</p>
-          <p className="mb-3 text-sm text-muted-foreground">
+          <p className="mb-2 text-sm font-medium text-text-1">Timezone</p>
+          <p className="mb-3 text-xs text-text-3">
             Your morning brief uses this timezone for delivery scheduling.
           </p>
           <TimezoneSelector value={timezone} onChange={handleTimezoneChange} />
         </div>
+
+        <div className="border-t border-border-1 pt-8" />
+
         <div>
           <label htmlFor="morning-brief-hour" className={INPUT_LABEL}>
             Morning brief delivery hour
           </label>
-          <p className="mb-2 text-sm text-muted-foreground">
+          <p className="mb-2 text-xs text-text-3">
             Currently set to {formatBriefHour(briefHour)} in {timezone}.
           </p>
           <select
             id="morning-brief-hour"
             value={briefHour}
             onChange={handleBriefHourChange}
-            disabled={isPending}
             className={INPUT_BASE}
           >
             {HOUR_OPTIONS.map((hour) => (
@@ -173,19 +176,24 @@ function SettingsNotificationsSection() {
             ))}
           </select>
         </div>
-      </div>
-      <div className="divide-y divide-border">
-        {TOGGLES.map((t) => (
-          <ToggleSwitch
-            key={t.field}
-            id={`notif-${t.field}`}
-            checked={values[t.field]}
-            onChange={(v) => handleToggle(t.field, v)}
-            disabled={isPending}
-            label={t.label}
-            description={t.description}
-          />
-        ))}
+
+        <div className="border-t border-border-1 pt-8" />
+
+        <div className="flex flex-col">
+          <p className="mb-4 text-sm font-medium text-text-1">Notification channels</p>
+          <div className="divide-y divide-border-1">
+            {TOGGLES.map((t) => (
+              <ToggleSwitch
+                key={t.field}
+                id={`notif-${t.field}`}
+                checked={values[t.field]}
+                onChange={(v) => handleToggle(t.field, v)}
+                label={t.label}
+                description={t.description}
+              />
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

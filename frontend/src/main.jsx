@@ -4,6 +4,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import * as Sentry from "@sentry/react";
 
 import { Toaster } from "sonner";
 
@@ -15,9 +16,23 @@ import App from "./App";
 import { QUERY_STALE_TIME_MS } from "./lib/constants";
 import { initAnalytics } from "./lib/analytics";
 import { initAppearancePrefs } from "./lib/appearancePrefs";
+import { scrubPii } from "./lib/sentryScrub";
 import "./index.css";
 import "./styles/animations.css";
 import "./styles/marketing.css";
+
+// Initialize Sentry before any other setup
+if (import.meta.env.PROD && import.meta.env.VITE_SENTRY_DSN) {
+  Sentry.init({
+    dsn: import.meta.env.VITE_SENTRY_DSN,
+    integrations: [Sentry.browserTracingIntegration()],
+    tracesSampleRate: 0.1,
+    beforeSend(event) {
+      return scrubPii(event);
+    },
+    environment: import.meta.env.MODE,
+  });
+}
 
 if (import.meta.env.VITE_POSTHOG_KEY) {
   initAnalytics();

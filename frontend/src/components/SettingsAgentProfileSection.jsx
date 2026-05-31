@@ -43,14 +43,14 @@ function TagInput({ id, label, helper, values, onChange, placeholder }) {
         {values.map((tag) => (
           <span
             key={tag}
-            className="inline-flex items-center gap-1 rounded-full bg-surface-1 px-2.5 py-1 text-xs text-foreground"
+            className="inline-flex items-center gap-1 rounded-full bg-surface-1 px-2.5 py-1 text-xs text-text-1"
           >
             {tag}
             <button
               type="button"
               aria-label={`Remove ${tag}`}
               onClick={() => removeTag(tag)}
-              className="text-muted-foreground hover:text-foreground"
+              className="text-text-3 hover:text-text-1"
             >
               ×
             </button>
@@ -72,7 +72,7 @@ function TagInput({ id, label, helper, values, onChange, placeholder }) {
           placeholder={placeholder}
           className={INPUT_BASE}
         />
-        <button type="button" onClick={addTag} className="shrink-0 rounded-md border border-border px-3 text-sm">
+        <button type="button" onClick={addTag} className="shrink-0 rounded-md border border-border-1 bg-surface-0 px-3 text-sm text-text-1 hover:bg-surface-2">
           Add
         </button>
       </div>
@@ -116,11 +116,11 @@ function SettingsAgentProfileSection() {
 
   return (
     <div className={`${CARD_BASE} p-6`}>
-      <h2 className="mb-1 text-lg font-semibold text-foreground">Agent Profile</h2>
-      <p className="mb-5 text-sm text-muted-foreground">
+      <h2 className="mb-1 text-sm font-semibold text-text-1">Agent Profile</h2>
+      <p className="mb-5 text-xs text-text-2">
         Teach the co-pilot about your goals so answers stay grounded in your pipeline.
       </p>
-      <p className="mb-5 rounded-lg border border-border bg-surface-1 px-3 py-2 text-sm text-muted-foreground">
+      <p className="mb-5 rounded-lg border border-border-1 bg-surface-1 px-3 py-2 text-xs text-text-2">
         {COPILOT_POLICY_NOTE}
       </p>
 
@@ -161,7 +161,7 @@ function SettingsAgentProfileSection() {
             {COMMUNICATION_STYLES.map(({ value, label, description }) => (
               <label
                 key={value}
-                className="flex cursor-pointer items-start gap-3 rounded-lg border border-border px-3 py-2"
+                className="flex cursor-pointer items-start gap-3 rounded-lg border border-border-1 px-3 py-2"
               >
                 <input
                   type="radio"
@@ -169,11 +169,11 @@ function SettingsAgentProfileSection() {
                   value={value}
                   checked={communicationStyle === value}
                   onChange={() => setCommunicationStyle(value)}
-                  className="mt-1 accent-brand-500"
+                  className="mt-1 accent-brand-600"
                 />
                 <span>
-                  <span className="block text-sm font-medium text-foreground">{label}</span>
-                  <span className="block text-xs text-muted-foreground">{description}</span>
+                  <span className="block text-sm font-medium text-text-1">{label}</span>
+                  <span className="block text-xs text-text-2">{description}</span>
                 </span>
               </label>
             ))}
@@ -195,11 +195,11 @@ function SettingsAgentProfileSection() {
       </div>
 
       {saved && !error && (
-        <p role="status" className="mt-4 rounded-lg border border-brand-200 bg-brand-50 px-3 py-3 text-sm text-brand-800 dark:border-brand-800 dark:bg-brand-900/20 dark:text-brand-300">
+        <p role="status" className="mt-4 rounded-lg border border-brand-200 bg-brand-50 px-3 py-3 text-sm text-brand-900 dark:border-brand-800 dark:bg-brand-950/20 dark:text-brand-200">
           Agent profile saved.
         </p>
       )}
-      {error && <p role="alert" className="mt-4 text-sm text-destructive">{error}</p>}
+      {error && <p role="alert" className="mt-4 text-sm text-brand-700">{error}</p>}
 
       <div className="mt-5 flex justify-end">
         <button type="button" onClick={handleSave} disabled={isPending} className={BUTTON_PRIMARY}>

@@ -43,8 +43,8 @@ export function StagePill({ stage }) {
 
 function rowClassName({ archived, isFocused, isSelected }) {
   const classes = [
-    "group flex h-14 cursor-pointer items-center gap-3 border-b border-border-1 px-4 md:h-[var(--row-height)]",
-    "hover:bg-surface-1 motion-reduce:transition-none transition-colors duration-[120ms] ease-out",
+    "group flex h-14 cursor-pointer items-center gap-2 border-b border-border-1 px-4 md:h-10",
+    "hover:bg-surface-1 motion-reduce:transition-none transition-colors duration-hover ease-out",
     "focus:outline-none focus-visible:border-l-2 focus-visible:border-l-brand-600",
   ];
   if (archived) classes.push("opacity-60");
@@ -153,10 +153,10 @@ function ApplicationRow({
           company={application.company ?? ""}
           size={18}
         />
-        <span className={`w-40 shrink-0 truncate text-[0.8125rem] font-medium ${archived ? "text-text-3 line-through" : "text-text-1"}`}>
+        <span className={`w-40 shrink-0 truncate text-sm font-medium ${archived ? "text-text-3 line-through" : "text-text-1"}`}>
           {application.company}
         </span>
-        <span className={`min-w-0 flex-1 truncate text-[0.8125rem] ${archived ? "text-text-3" : "text-text-2"}`}>
+        <span className={`min-w-0 flex-1 truncate text-sm ${archived ? "text-text-3" : "text-text-2"}`}>
           {application.role_title}
         </span>
         <StagePill stage={application.current_stage} />
@@ -198,7 +198,7 @@ function ApplicationRow({
             </Tooltip>
           )}
         </span>
-        <span className="w-20 shrink-0 text-xs text-text-3">{dateApplied}</span>
+        <span className="w-20 shrink-0 text-xs text-text-3" data-testid="row-date">{dateApplied}</span>
         <RowQuickActions
           archived={archived}
           stage={application.current_stage}

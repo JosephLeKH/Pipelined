@@ -25,8 +25,8 @@ const Checkbox = React.forwardRef(function Checkbox(
         else if (ref) ref.current = node;
       }}
       className={cn(
-        "peer h-3.5 w-3.5 shrink-0 rounded-sm border border-border-2 accent-brand-600",
-        "bg-surface-0 transition-[border-color,background-color] duration-hover ease-out",
+        "peer h-3.5 w-3.5 shrink-0 rounded-sm border border-border-1 accent-brand-600",
+        "bg-surface-0 transition-[border-color,background-color] duration-120 ease-out",
         CHECKBOX_FOCUS,
         "disabled:cursor-not-allowed disabled:opacity-50",
         className

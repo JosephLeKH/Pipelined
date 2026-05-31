@@ -2,6 +2,8 @@
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from ai.next_action import NextAction
+
 MAX_MESSAGE_LENGTH = 4000
 MAX_HISTORY_MESSAGES = 12
 

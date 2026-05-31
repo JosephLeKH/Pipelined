@@ -2,6 +2,7 @@
 
 import { Component } from "react";
 import { Link } from "react-router-dom";
+import * as Sentry from "@sentry/react";
 
 import AlertCircle from "lucide-react/dist/esm/icons/alert-circle";
 import { Button } from "./ui/button";
@@ -56,6 +57,13 @@ class ErrorBoundary extends Component {
 
   componentDidCatch(error, info) {
     console.error("ErrorBoundary caught an error:", error, info);
+    Sentry.captureException(error, {
+      contexts: {
+        react: {
+          componentStack: info.componentStack,
+        },
+      },
+    });
   }
 
   handleReset() {

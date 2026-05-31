@@ -1,7 +1,8 @@
 /**
  * Design token class strings for Pipelined UI components.
  * Import these constants instead of duplicating Tailwind class strings.
- * Every token must use the brand palette and custom theme tokens from tailwind.config.js.
+ * Every token uses the brand palette and custom theme tokens from tailwind.config.js.
+ * Tokens follow PRD-00 design system: Cardinal Red (#8C1515) + Linear-inspired neutral palette.
  */
 
 /** Card container — surface bg, rounded-lg, border-defined (no shadow). */
@@ -9,43 +10,43 @@ export const CARD_BASE =
   "bg-surface-0 rounded-lg border border-border-1 dark:bg-surface-0 dark:border-border-1";
 
 /** Card hover state — stronger border, no shadow. */
-export const CARD_HOVER = "border-border-2 transition-[border-color] duration-hover ease-out";
+export const CARD_HOVER = "border-border-2 transition-[border-color] duration-120 ease-out";
 
 /** Primary action button — Cardinal Red, white text. */
 export const BUTTON_PRIMARY =
   "bg-brand-600 hover:bg-brand-700 active:bg-brand-800 text-white font-medium rounded-md px-4 py-2 text-sm " +
-  "transition-[background-color,color] duration-hover ease-out focus:outline-none focus-visible:outline focus-visible:outline-2 " +
+  "transition-[background-color,color] duration-120 ease-out focus:outline-none focus-visible:outline focus-visible:outline-2 " +
   "focus-visible:outline-brand-600 focus-visible:outline-offset-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none";
 
 /** Secondary button — surface-2 bg, border, primary text. */
 export const BUTTON_SECONDARY =
   "bg-surface-2 border border-border-1 hover:bg-surface-3 text-text-1 " +
   "font-medium rounded-md px-4 py-2 text-sm " +
-  "transition-[background-color,color] duration-hover ease-out focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 focus-visible:outline-offset-2 " +
+  "transition-[background-color,color] duration-120 ease-out focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 focus-visible:outline-offset-2 " +
   "disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none";
 
 /** Ghost button — transparent bg, muted text, surface hover. */
 export const BUTTON_GHOST =
   "bg-transparent text-text-2 hover:text-text-1 hover:bg-surface-2 " +
-  "rounded-md px-3 py-2 text-sm transition-[background-color,color] duration-hover ease-out focus:outline-none " +
+  "rounded-md px-3 py-2 text-sm transition-[background-color,color] duration-120 ease-out focus:outline-none " +
   "focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 focus-visible:outline-offset-2 disabled:opacity-50 disabled:cursor-not-allowed " +
   "disabled:pointer-events-none";
 
 /** Danger button — subtle red text on transparent (Linear pattern). */
 export const BUTTON_DANGER =
   "bg-transparent hover:bg-brand-50 text-brand-700 font-medium rounded-md px-4 py-2 text-sm " +
-  "transition-[background-color,color] duration-hover ease-out focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 focus-visible:outline-offset-2 " +
+  "transition-[background-color,color] duration-120 ease-out focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 focus-visible:outline-offset-2 " +
   "disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none";
 
-/** Text input, select, textarea base styles — semantic palette, Inter body text. */
+/** Text input, select, textarea base styles — semantic palette, Inter 13px body. */
 export const INPUT_BASE =
   "border border-border-1 rounded-md bg-surface-0 text-text-1 " +
   "placeholder:text-text-3 focus:border-border-3 focus-visible:outline focus-visible:outline-1 focus-visible:outline-brand-600 " +
-  "focus:outline-none transition-[border-color,outline] duration-hover ease-out text-sm px-3 py-2 font-sans w-full " +
+  "focus:outline-none transition-[border-color,outline] duration-120 ease-out text-sm px-3 py-2 font-sans w-full " +
   "disabled:opacity-50 disabled:cursor-not-allowed";
 
-/** Form field label — Inter medium, foreground color. */
-export const INPUT_LABEL = "text-sm font-medium text-text-1 mb-1.5";
+/** Form field label — Inter 12px medium, foreground color. */
+export const INPUT_LABEL = "text-xs font-medium text-text-1 mb-1.5";
 
 /** Helper text below a form field. */
 export const INPUT_HELPER = "text-xs text-text-3 mt-1";
@@ -58,11 +59,11 @@ export const BADGE_BASE = "rounded-sm text-xs font-medium px-2.5 py-1 inline-fle
 
 /** Modal backdrop — semi-transparent black with blur; fades in on mount. */
 export const MODAL_BACKDROP =
-  "fixed inset-0 bg-black/40 backdrop-blur-[4px] dark:bg-black/60 z-50 flex items-center justify-center p-4 animate-fadeIn";
+  "fixed inset-0 bg-black/40 backdrop-blur-sm dark:bg-black/60 z-50 flex items-center justify-center p-4 animate-fade-in";
 
 /** Modal card — xl rounded, border-defined, surface bg; scales in on mount. */
 export const MODAL_CARD =
-  "bg-surface-0 rounded-xl border border-border-1 shadow-modal w-full max-w-lg mx-auto relative animate-scaleIn " +
+  "bg-surface-0 rounded-xl border border-border-1 shadow-modal w-full max-w-lg mx-auto relative animate-scale-in " +
   "dark:bg-surface-0 dark:border-border-1";
 
 /** Nav container — surface bg, bottom border, no gradient. */
@@ -70,7 +71,7 @@ export const NAV_CONTAINER = "bg-surface-0 border-b border-border-1 dark:bg-surf
 
 /** Nav link — muted text, warms on hover, no background. */
 export const NAV_LINK =
-  "text-text-2 hover:text-text-1 text-sm font-medium transition-[color] duration-hover-text ease-out px-3 py-2 rounded-md";
+  "text-text-2 hover:text-text-1 text-sm font-medium transition-[color] duration-100 ease-out px-3 py-2 rounded-md";
 
 /** Active nav link — brand text, semibold, no background. */
 export const NAV_LINK_ACTIVE =
@@ -101,7 +102,7 @@ export const BADGE_INFO =
 
 /** Tag / filter chip — surface bg, muted text, subtle hover. */
 export const TAG =
-  "bg-surface-1 text-text-2 text-xs px-2 py-1 rounded-sm hover:bg-surface-2 transition-[background-color] duration-hover ease-out";
+  "bg-surface-1 text-text-2 text-xs px-2 py-1 rounded-sm hover:bg-surface-2 transition-[background-color] duration-120 ease-out";
 
 /** Success banner — brand-tinted bg, border-defined. */
 export const SUCCESS_BANNER =
@@ -113,22 +114,22 @@ export const INPUT_READONLY =
 
 /** Toggle button — active state (solid brand). */
 export const BUTTON_TOGGLE_ACTIVE =
-  "bg-brand-600 text-white rounded-md transition-[background-color] duration-hover ease-out";
+  "bg-brand-600 text-white rounded-md transition-[background-color] duration-120 ease-out";
 
 /** Toggle button — inactive state (neutral surface). */
 export const BUTTON_TOGGLE_INACTIVE =
-  "bg-surface-0 text-text-2 hover:bg-surface-2 rounded-md transition-[background-color] duration-hover ease-out";
+  "bg-surface-0 text-text-2 hover:bg-surface-2 rounded-md transition-[background-color] duration-120 ease-out";
 
 /** Tooltip — small text, opacity-based show/hide via group-hover. */
 export const TOOLTIP =
-  "absolute z-10 whitespace-nowrap rounded-md bg-text-1 px-2 py-1 text-[0.6875rem] text-surface-0 opacity-0 transition-opacity pointer-events-none group-hover:opacity-100 dark:bg-surface-2 dark:text-text-1";
+  "absolute z-10 whitespace-nowrap rounded-md bg-text-1 px-2 py-1 text-xs text-surface-0 opacity-0 transition-opacity pointer-events-none group-hover:opacity-100 dark:bg-surface-2 dark:text-text-1";
 
 /** Icon-only button base — rounded-md, padding, hover states, focus ring. */
 export const ICON_BUTTON =
-  "rounded-md p-1.5 text-text-2 hover:bg-surface-2 hover:text-text-1 transition-[background-color,color] duration-hover ease-out focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 focus-visible:outline-offset-2";
+  "rounded-md p-1.5 text-text-2 hover:bg-surface-2 hover:text-text-1 transition-[background-color,color] duration-120 ease-out focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 focus-visible:outline-offset-2";
 
 /** Menu item — full-width, padding, text alignment, transition. */
-export const MENU_ITEM = "w-full px-4 py-2 text-left text-sm transition-[background-color,color] duration-hover ease-out";
+export const MENU_ITEM = "w-full px-4 py-2 text-left text-sm transition-[background-color,color] duration-120 ease-out";
 
 /** Small loading spinner — 24px, brand-600 color. */
 export const SPINNER_SM = "h-6 w-6 animate-spin rounded-full border-2 border-brand-600 border-t-transparent";

@@ -28,6 +28,7 @@ function fromSessionMessages(messages) {
     role: msg.role,
     content: msg.content,
     actions: msg.actions ?? [],
+    reasoningSteps: msg.reasoningSteps ?? [],
   }));
 }
 
@@ -81,7 +82,7 @@ export function useCopilotChat() {
     setMessages((prev) => [
       ...prev,
       userMessage,
-      { id: assistantId, role: "assistant", content: "", actions: [] },
+      { id: assistantId, role: "assistant", content: "", actions: [], reasoningSteps: [] },
     ]);
     setStatus(STATUS.STREAMING);
     setErrorMessage(null);
@@ -94,6 +95,15 @@ export function useCopilotChat() {
       { message: trimmed, history },
       {
         signal: controller.signal,
+        onStep: (data) => {
+          const step = data?.content ?? "";
+          if (!step) return;
+          setMessages((prev) => prev.map((msg) => (
+            msg.id === assistantId
+              ? { ...msg, reasoningSteps: [...(msg.reasoningSteps ?? []), step] }
+              : msg
+          )));
+        },
         onToken: (data) => {
           const chunk = data?.content ?? "";
           if (!chunk) return;

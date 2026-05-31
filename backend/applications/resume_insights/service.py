@@ -6,6 +6,7 @@ import structlog
 from bson import ObjectId
 from bson.errors import InvalidId
 
+from ai.next_action import NextAction
 from ai.openrouter_client import OpenRouterError, complete_json
 from applications.resume_insights.schemas import ResumeInsightsResponse
 from config import settings
@@ -85,6 +86,11 @@ def _normalize_insights(raw: dict) -> ResumeInsightsResponse:
         section_suggestions=[str(s) for s in (raw.get("section_suggestions") or [])[:5]],
         bullet_rewrites=bullet_rewrites[:5],
         overall_summary=str(raw.get("overall_summary") or "") or None,
+        next_action=NextAction(
+            label="Open in editor",
+            intent="navigate",
+            payload={"to": "/settings/resume"},
+        ),
     )
 
 

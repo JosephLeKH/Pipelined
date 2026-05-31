@@ -10,8 +10,8 @@ function Input({ className, type, ...props }) {
       type={type}
       data-slot="input"
       className={cn(
-        "flex h-8 w-full rounded-md border border-border-1 bg-transparent px-3 py-1 text-sm text-text-1 shadow-none",
-        "transition-[border-color,outline] duration-hover ease-out",
+        "flex h-8 w-full rounded-md border border-border-1 bg-surface-0 px-3 py-1 text-sm text-text-1 shadow-none",
+        "transition-[border-color,outline] duration-120 ease-out",
         "file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-text-1",
         "placeholder:text-text-3",
         INPUT_FOCUS,

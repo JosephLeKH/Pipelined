@@ -2,6 +2,7 @@
 
 import asyncio
 import datetime as dt
+import os
 from zoneinfo import ZoneInfo
 
 import structlog
@@ -12,6 +13,9 @@ from auth.schemas import agent_profile_from_doc
 from database import get_collection
 
 logger = structlog.get_logger()
+
+RAG_ENABLED = os.getenv("RAG_ENABLED", "true").lower() == "true"
+RAG_TOP_K = int(os.getenv("RAG_TOP_K", "5"))
 
 MAX_CONTEXT_TOKENS = 8000
 CHARS_PER_TOKEN = 4
@@ -113,6 +117,19 @@ def _build_calendar_section(events: list[dict]) -> str:
     return "\n".join(lines)
 
 
+def _build_rag_section(chunks: list[dict]) -> str:
+    """Format RAG-retrieved chunks for context section."""
+    if not chunks:
+        return ""
+    lines = ["## Relevant context from your pipeline"]
+    for chunk in chunks:
+        source_type = chunk.get("source_type", "unknown")
+        chunk_text = chunk.get("chunk_text", "").strip()
+        if chunk_text:
+            lines.append(f"[{source_type}] {chunk_text}")
+    return "\n".join(lines) if len(lines) > 1 else ""
+
+
 async def build_copilot_context(user_id: str) -> str:
     """Assemble user-scoped pipeline context capped at MAX_CONTEXT_TOKENS."""
     user_oid = ObjectId(user_id)
@@ -135,6 +152,26 @@ async def build_copilot_context(user_id: str) -> str:
         _build_pipeline_section(applications),
         _build_calendar_section(events),
     ]
+
+    # Retrieve RAG context if enabled
+    rag_chunks: list[dict] = []
+    if RAG_ENABLED:
+        try:
+            from ai.rag import retrieve_chunks  # noqa: PLC0415
+            # Use last application as query proxy (real system would use latest user message)
+            query_text = " ".join(filter(None, [
+                applications[0].get("role_title"),
+                applications[0].get("company"),
+            ])) if applications else "pipeline context"
+            rag_chunks = await retrieve_chunks(user_id, query_text, top_k=RAG_TOP_K)
+            logger.info("rag.retrieved_chunks", user_id=user_id, count=len(rag_chunks))
+        except Exception as e:
+            logger.warning("rag.retrieval_failed", user_id=user_id, error=str(e))
+
+    rag_section = _build_rag_section(rag_chunks)
+    if rag_section:
+        sections.append(rag_section)
+
     context = "\n\n".join(sections)
     trimmed = truncate_context(context)
     logger.info(
@@ -142,6 +179,7 @@ async def build_copilot_context(user_id: str) -> str:
         user_id=user_id,
         apps=len(applications),
         events=len(events),
+        rag_chunks=len(rag_chunks),
         chars=len(trimmed),
         est_tokens=estimate_tokens(trimmed),
     )

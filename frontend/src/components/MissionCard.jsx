@@ -56,22 +56,45 @@ function MissionSubtitle({ mission, dueLabel }) {
   );
 }
 
-function MissionCard({
-  mission,
-  onSnooze,
-  onDone,
-  isSnoozing,
-  isCompleting,
-  completed = false,
-}) {
-  const navigate = useNavigate();
-  const tier = getMissionUrgencyTier(mission.priority);
-  const dotClass = MISSION_PRIORITY_DOT_CLASSES[tier];
-  const dueLabel = mission.section === "oa_deadlines"
-    ? parseDeadlineLabel(mission.body)?.label
-    : null;
-  const busy = isSnoozing || isCompleting;
+function MissionActionButtons({ mission, busy, onSnooze, onDone }) {
+  return (
+    <div
+      className={[
+        "flex items-center gap-1",
+        "opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100",
+        "motion-safe:transition-opacity motion-safe:duration-hover",
+      ].join(" ")}
+      onClick={(e) => e.stopPropagation()}
+    >
+      <Button
+        type="button"
+        variant="ghost"
+        size="sm"
+        aria-label="Complete"
+        disabled={busy}
+        onClick={() => onDone(mission.id)}
+      >
+        <Check className="h-3.5 w-3.5" aria-hidden="true" />
+      </Button>
+      <Button
+        type="button"
+        variant="ghost"
+        size="sm"
+        aria-label="Snooze"
+        disabled={busy}
+        onClick={() => onSnooze(mission.id)}
+      >
+        <Clock className="h-3.5 w-3.5" aria-hidden="true" />
+      </Button>
+      <MissionRowMenu
+        actionUrl={mission.action_url}
+        onSnooze={() => onSnooze(mission.id)}
+      />
+    </div>
+  );
+}
 
+function useMissionHandlers(mission, navigate, onSnooze, onDone, completed, busy) {
   const handleRowClick = (event) => {
     if (event.target.closest("button, a, [role='menu']")) return;
     navigate(mission.action_url);
@@ -80,7 +103,6 @@ function MissionCard({
   const handleRowKeyDown = (event) => {
     if (completed || busy) return;
     if (event.target.closest("button, a, [role='menu']")) return;
-
     const key = event.key.toLowerCase();
     if (key === "enter") {
       event.preventDefault();
@@ -98,23 +120,24 @@ function MissionCard({
     }
   };
 
+  return { handleRowClick, handleRowKeyDown };
+}
+
+function getMissionRowClasses(completed, isCompleting) {
+  return [
+    "group flex items-center gap-3 border-b border-border-1 px-3 py-3",
+    "hover:bg-surface-1 focus-visible:outline focus-visible:outline-2",
+    "focus-visible:outline-brand-600 focus-visible:outline-offset-[-2px]",
+    "dark:focus-visible:outline-1",
+    "motion-safe:transition-colors motion-safe:duration-hover",
+    completed ? "opacity-50" : "",
+    isCompleting ? "motion-safe:animate-mission-complete" : "",
+  ].join(" ");
+}
+
+function MissionContent({ mission, completed, isCompleting, dueLabel, busy, onSnooze, onDone, dotClass }) {
   return (
-    <li
-      role="button"
-      tabIndex={0}
-      onClick={handleRowClick}
-      onKeyDown={handleRowKeyDown}
-      aria-label={mission.title}
-      className={[
-        "group flex items-center gap-3 border-b border-border-1 px-3 py-3",
-        "hover:bg-surface-1 focus-visible:outline focus-visible:outline-2",
-        "focus-visible:outline-brand-600 focus-visible:outline-offset-[-2px]",
-        "dark:focus-visible:outline-1",
-        "motion-safe:transition-colors motion-safe:duration-hover",
-        completed ? "opacity-50" : "",
-        isCompleting ? "motion-safe:animate-mission-complete" : "",
-      ].join(" ")}
-    >
+    <>
       <span
         className={`h-1.5 w-1.5 shrink-0 rounded-full ${dotClass}`}
         aria-hidden="true"
@@ -131,40 +154,46 @@ function MissionCard({
         {!completed && !isCompleting && <MissionSubtitle mission={mission} dueLabel={dueLabel} />}
       </div>
       {!completed && !isCompleting && (
-        <div
-          className={[
-            "flex items-center gap-1",
-            "opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100",
-            "motion-safe:transition-opacity motion-safe:duration-hover",
-          ].join(" ")}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            aria-label="Complete"
-            disabled={busy}
-            onClick={() => onDone(mission.id)}
-          >
-            <Check className="h-3.5 w-3.5" aria-hidden="true" />
-          </Button>
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            aria-label="Snooze"
-            disabled={busy}
-            onClick={() => onSnooze(mission.id)}
-          >
-            <Clock className="h-3.5 w-3.5" aria-hidden="true" />
-          </Button>
-          <MissionRowMenu
-            actionUrl={mission.action_url}
-            onSnooze={() => onSnooze(mission.id)}
-          />
-        </div>
+        <MissionActionButtons mission={mission} busy={busy} onSnooze={onSnooze} onDone={onDone} />
       )}
+    </>
+  );
+}
+
+function MissionCard({
+  mission,
+  onSnooze,
+  onDone,
+  isSnoozing,
+  isCompleting,
+  completed = false,
+}) {
+  const navigate = useNavigate();
+  const tier = getMissionUrgencyTier(mission.priority);
+  const dotClass = MISSION_PRIORITY_DOT_CLASSES[tier];
+  const dueLabel = mission.section === "oa_deadlines" ? parseDeadlineLabel(mission.body)?.label : null;
+  const busy = isSnoozing || isCompleting;
+  const { handleRowClick, handleRowKeyDown } = useMissionHandlers(mission, navigate, onSnooze, onDone, completed, busy);
+
+  return (
+    <li
+      role="button"
+      tabIndex={0}
+      onClick={handleRowClick}
+      onKeyDown={handleRowKeyDown}
+      aria-label={mission.title}
+      className={getMissionRowClasses(completed, isCompleting)}
+    >
+      <MissionContent
+        mission={mission}
+        completed={completed}
+        isCompleting={isCompleting}
+        dueLabel={dueLabel}
+        busy={busy}
+        onSnooze={onSnooze}
+        onDone={onDone}
+        dotClass={dotClass}
+      />
     </li>
   );
 }

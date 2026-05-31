@@ -19,6 +19,7 @@ from ai.agent_log import (
     STATUS_SUCCESS,
     log_agent_run,
 )
+from ai.embedding_queue import enqueue_embedding_refresh
 from applications.interview_prep.agent import run_agent
 from applications.schemas import ApplicationCreate, ApplicationUpdate, OfferDetails
 from applications.service import DuplicateApplicationError
@@ -814,6 +815,11 @@ async def sync_emails(user: dict) -> dict:
             {"_id": user["_id"]},
             {"$push": {"gmail_processed_ids": {"$each": new_ids, "$slice": -PROCESSED_IDS_LIMIT}}},
         )
+        # Enqueue for RAG embedding refresh if new messages were processed
+        try:
+            await enqueue_embedding_refresh(user_id)
+        except Exception as e:
+            logger.warning("enqueue_embedding_refresh_failed_in_email_sync", user_id=user_id, error=str(e))
 
     await users.update_one(
         {"_id": user["_id"]},

@@ -3,47 +3,18 @@
 @tailwind utilities;
 
 :root {
-  /* shadcn/ui design tokens — mapped to Pipelined brand */
-  --background: 0 0% 98%;           /* #fafafa surface */
-  --foreground: 30 5% 8%;           /* #141413 gray-900 */
-  --card: 0 0% 100%;                /* white */
-  --card-foreground: 30 5% 8%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 30 5% 8%;
-  --primary: 15 63% 60%;            /* #d97757 brand-500 */
-  --primary-foreground: 0 0% 100%;  /* white on brand */
-  --secondary: 30 5% 96%;           /* #f5f5f4 gray-100 */
-  --secondary-foreground: 30 5% 20%;
-  --muted: 30 5% 96%;
-  --muted-foreground: 28 16% 36%;   /* #6b5f4e gray-500 */
-  --accent: 19 80% 90%;             /* #fae4d4 brand-100 */
-  --accent-foreground: 18 50% 32%;  /* #7d4127 brand-800 */
-  --destructive: 0 84% 60%;         /* rose-500 */
-  --destructive-foreground: 0 0% 100%;
-  --border: 30 10% 88%;             /* ~gray-200 */
-  --input: 30 10% 88%;
-  --ring: 15 63% 60%;               /* brand-500 focus ring */
-  --radius: 0.5rem;
+  /* Linear redesign tokens — Stanford Cardinal Red accent */
+  /* Brand palette: Cardinal Red #8C1515 */
+  --brand-50: #fdf2f2;
+  --brand-100: #fae0e0;
+  --brand-200: #f4bfbf;
+  --brand-500: #b81e1e;
+  --brand-600: #8c1515;
+  --brand-700: #820000;
+  --brand-800: #6e0f0f;
+  --brand-900: #4f0a0a;
 
-  /* Chart palette */
-  --chart-1: 15 63% 60%;            /* #d97757 brand-500 */
-  --chart-2: 210 49% 61%;           /* #6a9bcc accent-blue */
-  --chart-3: 85 20% 46%;            /* #788c5d accent-green */
-  --chart-4: 218 11% 65%;           /* #9ca3af muted gray */
-  --chart-5: 217 12% 84%;           /* #d1d5db light gray */
-
-  /* Legacy custom tokens */
-  --color-body-bg: #fafafa;
-  --color-body-text: #141413;
-  --color-prose-blockquote-border: #d4ccbd;
-  --color-prose-blockquote-text: #6b5f4e;
-  --color-prose-link: #6a9bcc;
-  --color-shimmer-base: #e8e6dc;
-  --color-shimmer-highlight: #f5f4f0;
-  --color-shimmer-dark-base: #374151;
-  --color-shimmer-dark-highlight: #4b5563;
-
-  /* Linear redesign tokens — Stanford Cardinal accent */
+  /* Light mode surfaces + text */
   --surface-0: #ffffff;
   --surface-1: #fafafa;
   --surface-2: #f4f4f5;
@@ -55,10 +26,22 @@
   --border-1: rgba(0, 0, 0, 0.06);
   --border-2: rgba(0, 0, 0, 0.1);
   --border-3: rgba(0, 0, 0, 0.16);
-  --shadow-modal: 0 20px 60px rgba(0, 0, 0, 0.12);
 
-  /* Appearance prefs — compact default (PRD-08). Expressed in rem so the
-     row height scales with `html { font-size }` like everything else. */
+  /* Status dot palette — for pipeline stage indicators, charts, badges */
+  --status-neutral: #71717a;
+  --status-info: #3b82f6;
+  --status-violet: #8b5cf6;
+  --status-warn: #f59e0b;
+  --status-orange: #f97316;
+  --status-success: #175e54;
+  --status-muted: #71717a;
+
+  /* Shadows */
+  --shadow-popover: 0 1px 2px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-modal: 0 20px 60px rgba(0, 0, 0, 0.18);
+
+  /* Spacing tokens (rem-based) — defined in tailwind extend */
+  /* Appearance prefs — compact default (PRD-08). Expressed in rem. */
   --row-height: 2.25rem; /* 36px @ root 16 / 39.6px @ root 17.6 */
 }
 
@@ -67,48 +50,21 @@
 }
 
 .dark {
-  --background: 30 5% 8%;           /* #141413 */
-  --foreground: 30 14% 89%;         /* #e8e4de */
-  --card: 30 3% 11%;                /* #1c1c1a dark-surface */
-  --card-foreground: 30 14% 89%;
-  --popover: 30 3% 11%;
-  --popover-foreground: 30 14% 89%;
-  --primary: 15 63% 60%;            /* brand-500 stays same in dark */
-  --primary-foreground: 0 0% 100%;
-  --secondary: 30 5% 16%;           /* dark secondary surface */
-  --secondary-foreground: 30 14% 89%;
-  --muted: 30 5% 16%;
-  --muted-foreground: 30 10% 65%;   /* #b0aea5 */
-  --accent: 18 25% 22%;             /* dark accent */
-  --accent-foreground: 19 80% 75%;
-  --destructive: 0 63% 31%;
-  --destructive-foreground: 0 0% 100%;
-  --border: 30 5% 20%;              /* rgba(255,255,255,0.08) approx */
-  --input: 30 5% 20%;
-  --ring: 15 63% 60%;
-
-  /* Chart palette (unchanged in dark — charts need stable colors) */
-  --chart-1: 15 63% 60%;
-  --chart-2: 210 49% 61%;
-  --chart-3: 85 20% 46%;
-  --chart-4: 218 11% 65%;
-  --chart-5: 217 12% 84%;
-
-  /* Legacy dark custom tokens */
-  --color-prose-blockquote-border: #4a4139;
-  --color-prose-blockquote-text: #b0aea5;
-
+  /* Dark mode surfaces + text (Cardinal Red stays same hex) */
   --surface-0: #08090a;
   --surface-1: #0f1011;
   --surface-2: #1a1b1e;
   --surface-3: #212226;
   --text-1: #f4f4f5;
   --text-2: #a1a1aa;
-  --text-3: #858589;
+  --text-3: #71717a;
   --text-4: #52525b;
   --border-1: rgba(255, 255, 255, 0.06);
   --border-2: rgba(255, 255, 255, 0.1);
   --border-3: rgba(255, 255, 255, 0.16);
+
+  /* Status dots unchanged in dark (need stable colors for charts) */
+  --shadow-popover: 0 1px 2px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.12);
   --shadow-modal: 0 20px 60px rgba(0, 0, 0, 0.4);
 }
 
@@ -125,146 +81,218 @@
 
   body {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    font-size: 1rem;
-    line-height: 1.6;
-    letter-spacing: -0.01em;
-    color: var(--color-body-text);
-    background-color: var(--color-body-bg);
+    font-size: 0.8125rem; /* 13px @ root 16 */
+    line-height: 1.45;
+    letter-spacing: -0.011em;
+    color: var(--text-1);
+    background-color: var(--surface-0);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
   .dark body {
-    background-color: var(--color-body-text);
+    background-color: var(--surface-0);
+    color: var(--text-1);
   }
 
   ::selection {
-    background-color: rgba(217, 119, 87, 0.2);
+    background-color: rgba(140, 21, 21, 0.2);
   }
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    font-family: 'Poppins', Arial, sans-serif;
+  /* Typography scale — Linear style, Inter only */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
   }
 
   h1 {
     font-weight: 600;
-    font-size: 1.5rem;
-    letter-spacing: -0.02em;
+    font-size: 1.25rem; /* 20px */
+    letter-spacing: -0.018em;
+    line-height: 1.25;
   }
 
   h2 {
     font-weight: 600;
-    font-size: 1.25rem;
-    letter-spacing: -0.025em;
+    font-size: 1rem; /* 16px */
+    letter-spacing: -0.014em;
+    line-height: 1.3;
   }
 
   h3 {
-    font-weight: 500;
-    font-size: 1.125rem;
+    font-weight: 600;
+    font-size: 0.875rem; /* 14px */
+    letter-spacing: -0.010em;
+    line-height: 1.35;
   }
 }
 
 @layer utilities {
-  .font-display {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  /* Typography utility classes — from PRD-00 Section 3.5 */
+  .text-display-xl {
+    font-size: 3rem; /* 48px */
+    font-weight: 600;
+    letter-spacing: -0.030em;
+    line-height: 1.05;
+  }
+
+  .text-display-lg {
+    font-size: 2.25rem; /* 36px */
+    font-weight: 600;
+    letter-spacing: -0.024em;
+    line-height: 1.1;
+  }
+
+  .text-display-md {
+    font-size: 1.75rem; /* 28px */
+    font-weight: 600;
+    letter-spacing: -0.022em;
+    line-height: 1.15;
+  }
+
+  .text-heading-1 {
+    font-size: 1.25rem; /* 20px */
+    font-weight: 600;
+    letter-spacing: -0.018em;
+    line-height: 1.25;
+  }
+
+  .text-heading-2 {
+    font-size: 1rem; /* 16px */
+    font-weight: 600;
+    letter-spacing: -0.014em;
+    line-height: 1.3;
+  }
+
+  .text-heading-3 {
+    font-size: 0.875rem; /* 14px */
+    font-weight: 600;
+    letter-spacing: -0.010em;
+    line-height: 1.35;
+  }
+
+  .text-body {
+    font-size: 0.8125rem; /* 13px */
+    font-weight: 400;
+    letter-spacing: -0.011em;
+    line-height: 1.45;
+  }
+
+  .text-body-sm {
+    font-size: 0.75rem; /* 12px */
+    font-weight: 400;
+    letter-spacing: -0.005em;
+    line-height: 1.4;
+  }
+
+  .text-label {
+    font-size: 0.75rem; /* 12px */
+    font-weight: 500;
+    letter-spacing: -0.005em;
+    line-height: 1.2;
+  }
+
+  .text-mono {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.75rem; /* 12px */
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 1.4;
+  }
+
+  /* Shadow utilities */
+  .shadow-popover {
+    box-shadow: var(--shadow-popover);
   }
 
   .shadow-modal {
     box-shadow: var(--shadow-modal);
   }
 
+  /* Motion utilities */
   .motion-safe-sidebar {
     transition: width 200ms ease-out;
   }
 
   .motion-safe-drawer {
-    transition: transform 220ms ease-out;
+    transition: transform 220ms cubic-bezier(0.22, 0.61, 0.36, 1);
   }
 
   @media (prefers-reduced-motion: reduce) {
     .motion-safe-sidebar,
-    .motion-safe-drawer {
-      transition: none;
+    .motion-safe-drawer,
+    [class*="transition-"] {
+      transition: none !important;
+      animation: none !important;
     }
   }
 }
 
-/* Prose styles for markdown-preview container (no @tailwindcss/typography dependency) */
+/* Prose styles for markdown-preview container */
 .markdown-preview h1,
 .markdown-preview h2,
-.markdown-preview h3,
-.markdown-preview h4,
-.markdown-preview h5,
-.markdown-preview h6 {
+.markdown-preview h3 {
   font-weight: 600;
   line-height: 1.25;
   margin-top: 1em;
   margin-bottom: 0.5em;
-  color: inherit;
+  color: var(--text-1);
 }
-.markdown-preview h1 { font-size: 1.25rem; }
-.markdown-preview h2 { font-size: 1.125rem; }
-.markdown-preview h3 { font-size: 1rem; }
+.markdown-preview h1 { font-size: 1.25rem; letter-spacing: -0.018em; }
+.markdown-preview h2 { font-size: 1rem; letter-spacing: -0.014em; }
+.markdown-preview h3 { font-size: 0.875rem; letter-spacing: -0.010em; }
 
 .markdown-preview p {
   margin-top: 0;
   margin-bottom: 0.75em;
+  color: var(--text-1);
 }
 
 .markdown-preview ul,
 .markdown-preview ol {
   padding-left: 1.5em;
   margin-bottom: 0.75em;
+  color: var(--text-2);
 }
 .markdown-preview ul { list-style-type: disc; }
 .markdown-preview ol { list-style-type: decimal; }
 .markdown-preview li { margin-bottom: 0.25em; }
 
 .markdown-preview code {
-  font-family: ui-monospace, monospace;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
   font-size: 0.85em;
-  background-color: rgba(0, 0, 0, 0.06);
+  background-color: var(--surface-2);
+  color: var(--text-1);
   padding: 0.1em 0.35em;
-  border-radius: 3px;
+  border-radius: 4px;
 }
 .markdown-preview pre {
-  background-color: rgba(0, 0, 0, 0.06);
+  background-color: var(--surface-1);
+  border: 1px solid var(--border-1);
   border-radius: 6px;
-  padding: 0.75em 1em;
+  padding: 1em;
   overflow-x: auto;
   margin-bottom: 0.75em;
 }
 .markdown-preview pre code {
   background: none;
   padding: 0;
+  color: var(--text-1);
 }
 
 .markdown-preview blockquote {
-  border-left: 3px solid var(--color-prose-blockquote-border);
+  border-left: 3px solid var(--border-2);
   padding-left: 1em;
   margin-left: 0;
-  color: var(--color-prose-blockquote-text);
+  color: var(--text-2);
   margin-bottom: 0.75em;
 }
 
 .markdown-preview a {
-  color: var(--color-prose-link);
+  color: var(--brand-600);
   text-decoration: underline;
+  text-decoration-offset: 0.25em;
 }
 
-.dark .markdown-preview code,
-.dark .markdown-preview pre {
-  background-color: rgba(255, 255, 255, 0.08);
-}
-.dark .markdown-preview blockquote {
-  border-left-color: var(--color-prose-blockquote-border);
-  color: var(--color-prose-blockquote-text);
-}
 .dark .markdown-preview a {
-  color: var(--color-prose-link);
+  color: var(--brand-500);
 }

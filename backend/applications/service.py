@@ -10,6 +10,7 @@ from motor.motor_asyncio import AsyncIOMotorCollection
 from pymongo import ReturnDocument
 from pymongo.errors import DuplicateKeyError
 
+from ai.embedding_queue import enqueue_embedding_refresh
 from applications.schemas import ApplicationCreate, ApplicationListQuery, ApplicationUpdate
 from applications.service_ai import _apply_openai_fallback, _derive_company_domain, _score_and_update
 from applications.service_constants import INITIAL_STAGE, LIST_PROJECTION
@@ -195,6 +196,8 @@ async def create(user_id: str, body: ApplicationCreate) -> dict:
             str(inserted_id), user_id, resume_text, job_desc,
             role_title=body.role_title or "", company=body.company or "",
         ))
+    # Enqueue for RAG embedding refresh (non-blocking, failure doesn't break create)
+    asyncio.create_task(enqueue_embedding_refresh(user_id))
     return doc
 
 
@@ -253,6 +256,8 @@ async def update(user_id: str, app_id: str, updates: ApplicationUpdate) -> dict 
     )
     if result:
         logger.info("application_updated", user_id=user_id, app_id=app_id)
+        # Enqueue for RAG embedding refresh (non-blocking, failure doesn't break update)
+        asyncio.create_task(enqueue_embedding_refresh(user_id))
     return result
 
 

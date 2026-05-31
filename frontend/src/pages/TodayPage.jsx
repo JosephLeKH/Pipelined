@@ -5,7 +5,6 @@ import { useSearchParams } from "react-router-dom";
 
 import Sun from "lucide-react/dist/esm/icons/sun";
 
-import MissionProgressStrip from "../components/MissionProgressStrip";
 import MorningBriefSkeleton from "../components/MorningBriefSkeleton";
 import OnboardingChecklist from "../components/OnboardingChecklist";
 import TodayMorningBrief from "../components/TodayMorningBrief";
@@ -51,6 +50,104 @@ function TodayBriefUnavailable() {
   );
 }
 
+function TodayEmptyBriefState({ user, briefHour, emptyMessage, generateBrief, isGenerating, generateError }) {
+  return (
+    <>
+      <TodayGreeting user={user} briefDate={null} missionCount={0} />
+      <TodayMorningBrief
+        brief={null}
+        briefHour={briefHour}
+        emptyMessage={emptyMessage}
+        forceOpen
+        onGenerateBrief={() => generateBrief.mutate()}
+        isGenerating={isGenerating}
+        generateError={generateError}
+      />
+    </>
+  );
+}
+
+function TodayWeeklyReviewArea({ weeklyReviewEnabled, isSunday, weeklyReview, isReviewLoading, reviewError }) {
+  const [weeklyReviewOpen, setWeeklyReviewOpen] = useState(false);
+
+  if (!weeklyReviewEnabled || !isSunday) return null;
+
+  return weeklyReviewOpen ? (
+    <WeeklyReviewSection review={weeklyReview} isLoading={isReviewLoading} error={reviewError} />
+  ) : (
+    <WeeklyReviewTeaser
+      review={weeklyReview}
+      isLoading={isReviewLoading}
+      onReadReview={() => setWeeklyReviewOpen(true)}
+    />
+  );
+}
+
+function TodayLoadedContent({
+  user,
+  brief,
+  missions,
+  progress,
+  appliedThisWeek,
+  weeklyGoal,
+  timezone,
+  briefHour,
+  emptyMessage,
+  forceBriefOpen,
+  generateBrief,
+  isGenerating,
+  generateError,
+  handleSnooze,
+  handleDone,
+  snoozeIsPending,
+  snoozeVariables,
+  doneIsPending,
+  doneVariables,
+  weeklyReviewEnabled,
+  isSunday,
+  weeklyReview,
+  isReviewLoading,
+  reviewError,
+}) {
+  return (
+    <>
+      <TodayGreeting user={user} briefDate={brief.date} missionCount={missions.length} />
+      <WeeklyGoalSection
+        compact
+        appliedThisWeek={appliedThisWeek}
+        weeklyGoal={weeklyGoal}
+        timezone={timezone}
+      />
+      <OnboardingChecklist />
+      <TodayMissionsList
+        missions={missions}
+        briefDate={brief.date}
+        clearedCount={progress.cleared}
+        onSnooze={handleSnooze}
+        onDone={handleDone}
+        snoozePendingId={snoozeIsPending ? snoozeVariables : null}
+        donePendingId={doneIsPending ? doneVariables : null}
+      />
+      <TodayMorningBrief
+        brief={brief}
+        briefHour={briefHour}
+        emptyMessage={emptyMessage}
+        forceOpen={forceBriefOpen}
+        onGenerateBrief={() => generateBrief.mutate()}
+        isGenerating={isGenerating}
+        generateError={generateError}
+      />
+      <TodayWeeklyReviewArea
+        weeklyReviewEnabled={weeklyReviewEnabled}
+        isSunday={isSunday}
+        weeklyReview={weeklyReview}
+        isReviewLoading={isReviewLoading}
+        reviewError={reviewError}
+      />
+    </>
+  );
+}
+
 function TodayPage() {
   useEffect(() => {
     localStorage.setItem(TODAY_VISITED_KEY, "true");
@@ -58,7 +155,6 @@ function TodayPage() {
 
   const [searchParams] = useSearchParams();
   const forceBriefOpen = searchParams.get("brief") === "open";
-  const [weeklyReviewOpen, setWeeklyReviewOpen] = useState(false);
 
   const { user } = useAuth();
   const { data: brief, isLoading, isError } = useMorningBrief();
@@ -106,67 +202,43 @@ function TodayPage() {
         )}
 
         {!isLoading && !isError && !brief && (
-          <>
-            <TodayGreeting user={user} briefDate={null} missionCount={0} />
-            <TodayMorningBrief
-              brief={null}
-              briefHour={briefHour}
-              emptyMessage={emptyMessage}
-              forceOpen
-              onGenerateBrief={() => generateBrief.mutate()}
-              isGenerating={generateBrief.isPending}
-              generateError={generateBrief.error}
-            />
-          </>
+          <TodayEmptyBriefState
+            user={user}
+            briefHour={briefHour}
+            emptyMessage={emptyMessage}
+            generateBrief={generateBrief}
+            isGenerating={generateBrief.isPending}
+            generateError={generateBrief.error}
+          />
         )}
 
         {!isLoading && !isError && brief && (
-          <>
-            <TodayGreeting
-              user={user}
-              briefDate={brief.date}
-              missionCount={missions.length}
-            />
-            <WeeklyGoalSection
-              compact
-              appliedThisWeek={appliedThisWeek}
-              weeklyGoal={weeklyGoal}
-              timezone={timezone}
-            />
-            <OnboardingChecklist />
-            <TodayMissionsList
-              missions={missions}
-              briefDate={brief.date}
-              clearedCount={progress.cleared}
-              onSnooze={handleSnooze}
-              onDone={handleDone}
-              snoozePendingId={snooze.isPending ? snooze.variables : null}
-              donePendingId={done.isPending ? done.variables : null}
-            />
-            {!missions.length && emptyMessage && (
-              <p className="text-center text-sm text-text-3">{emptyMessage}</p>
-            )}
-            <TodayMorningBrief
-              brief={brief}
-              briefHour={briefHour}
-              emptyMessage={emptyMessage}
-              forceOpen={forceBriefOpen}
-              onGenerateBrief={() => generateBrief.mutate()}
-              isGenerating={generateBrief.isPending}
-              generateError={generateBrief.error}
-            />
-            <MissionProgressStrip cleared={progress.cleared} total={progress.total} />
-            {weeklyReviewEnabled && isSunday && !weeklyReviewOpen && (
-              <WeeklyReviewTeaser
-                review={weeklyReview}
-                isLoading={isReviewLoading}
-                onReadReview={() => setWeeklyReviewOpen(true)}
-              />
-            )}
-            {weeklyReviewEnabled && isSunday && weeklyReviewOpen && (
-              <WeeklyReviewSection review={weeklyReview} isLoading={isReviewLoading} error={reviewError} />
-            )}
-          </>
+          <TodayLoadedContent
+            user={user}
+            brief={brief}
+            missions={missions}
+            progress={progress}
+            appliedThisWeek={appliedThisWeek}
+            weeklyGoal={weeklyGoal}
+            timezone={timezone}
+            briefHour={briefHour}
+            emptyMessage={emptyMessage}
+            forceBriefOpen={forceBriefOpen}
+            generateBrief={generateBrief}
+            isGenerating={generateBrief.isPending}
+            generateError={generateBrief.error}
+            handleSnooze={handleSnooze}
+            handleDone={handleDone}
+            snoozeIsPending={snooze.isPending}
+            snoozeVariables={snooze.variables}
+            doneIsPending={done.isPending}
+            doneVariables={done.variables}
+            weeklyReviewEnabled={weeklyReviewEnabled}
+            isSunday={isSunday}
+            weeklyReview={weeklyReview}
+            isReviewLoading={isReviewLoading}
+            reviewError={reviewError}
+          />
         )}
       </div>
     </main>
