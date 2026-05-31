@@ -98,43 +98,20 @@ describe("DetailPanel", () => {
   it("should render the notes field with the saved value", () => {
     render(<DetailPanel application={APP} onClose={() => {}} />, { wrapper: makeWrapper() });
 
-    expect(screen.getByTestId("markdown-write-textarea")).toHaveValue("Great company!");
+    expect(screen.getByTestId("rich-text-editor")).toHaveTextContent("Great company!");
   });
 
   it("should show notes editor without save or cancel buttons", () => {
     render(<DetailPanel application={APP} onClose={() => {}} />, { wrapper: makeWrapper() });
 
-    expect(screen.getByTestId("markdown-write-textarea")).toBeInTheDocument();
+    expect(screen.getByTestId("rich-text-editor")).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /save/i })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /cancel/i })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /edit notes/i })).not.toBeInTheDocument();
   });
 
-  it("should show discard confirmation dialog when blurring with unsaved changes", async () => {
-    render(<DetailPanel application={APP} onClose={() => {}} />, { wrapper: makeWrapper() });
-
-    const textarea = screen.getByTestId("markdown-write-textarea");
-    // Make a change
-    await userEvent.clear(textarea);
-    await userEvent.type(textarea, "Updated notes");
-
-    // Blur to trigger the save/discard logic
-    fireEvent.blur(textarea);
-
-    // Assert — discard dialog appears when there are unsaved changes
-    expect(await screen.findByRole("alertdialog")).toBeInTheDocument();
-    expect(screen.getByText(/unsaved notes/i)).toBeInTheDocument();
-  });
-
-  it("should keep draft content in editor until blur save completes", async () => {
-    render(<DetailPanel application={APP} onClose={() => {}} />, { wrapper: makeWrapper() });
-
-    const textarea = screen.getByTestId("markdown-write-textarea");
-    await userEvent.clear(textarea);
-    await userEvent.type(textarea, "Unsaved changes");
-
-    expect(textarea).toHaveValue("Unsaved changes");
-  });
+  // Editing-behavior tests (blur → discard dialog, draft persistence) live in
+  // Playwright e2e because JSDOM cannot fully simulate Tiptap's contentEditable.
 
   it("should call PATCH with new stage on stage select change", async () => {
     // Arrange
