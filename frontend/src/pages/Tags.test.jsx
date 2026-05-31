@@ -11,9 +11,15 @@ vi.mock("../hooks/useApplications", () => ({
   useTags: vi.fn(),
   useRenameTag: vi.fn(),
   useDeleteTag: vi.fn(),
+  useApplications: vi.fn(),
 }));
 
-import { useTags, useRenameTag, useDeleteTag } from "../hooks/useApplications";
+import {
+  useTags,
+  useRenameTag,
+  useDeleteTag,
+  useApplications,
+} from "../hooks/useApplications";
 import { TAG_COLOR_SWATCHES } from "../lib/constants";
 import { defaultTagColor } from "../lib/tagUtils";
 
@@ -40,6 +46,12 @@ describe("Tags", () => {
     localStorage.clear();
     useRenameTag.mockReturnValue({ mutate: mockRename, error: null });
     useDeleteTag.mockReturnValue({ mutate: mockDelete, error: null, isPending: false });
+    useApplications.mockReturnValue({
+      data: { data: [] },
+      isLoading: false,
+      error: null,
+      refetch: vi.fn(),
+    });
   });
 
   it("should show loading spinner while tags are fetching", () => {

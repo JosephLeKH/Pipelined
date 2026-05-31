@@ -63,7 +63,7 @@ function TagNameEditor({ name, onSave, onCancel }) {
   );
 }
 
-function TagListRow({ tag, tagColor, onRename, onDelete, onColorChange }) {
+function TagListRow({ tag, tagColor, selected = false, onSelect, onRename, onDelete, onColorChange }) {
   const [editing, setEditing] = useState(false);
   const navigate = useNavigate();
 
@@ -76,11 +76,37 @@ function TagListRow({ tag, tagColor, onRename, onDelete, onColorChange }) {
     onColorChange?.();
   };
 
+  const handleRowClick = () => {
+    if (!editing) onSelect?.(tag);
+  };
+
+  const handleRowKey = (e) => {
+    if (editing) return;
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      onSelect?.(tag);
+    }
+  };
+
   return (
     <div
-      className="group flex h-10 items-center gap-3 border-b border-border-1 px-3 last:border-b-0 motion-safe:transition-colors motion-reduce:transition-none hover:bg-surface-1"
+      role={onSelect ? "button" : undefined}
+      tabIndex={onSelect && !editing ? 0 : undefined}
+      aria-pressed={onSelect ? selected : undefined}
+      onClick={onSelect ? handleRowClick : undefined}
+      onKeyDown={onSelect ? handleRowKey : undefined}
+      className={`group relative flex h-10 items-center gap-3 border-b border-border-1 px-3 last:border-b-0 motion-safe:transition-colors motion-reduce:transition-none ${
+        selected ? "bg-surface-1" : "hover:bg-surface-1"
+      } ${onSelect && !editing ? "cursor-pointer" : ""} focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 focus-visible:outline-offset-[-2px] dark:focus-visible:outline-1`}
       data-testid="tag-list-row"
+      data-selected={selected ? "true" : undefined}
     >
+      {selected && (
+        <span
+          aria-hidden="true"
+          className="absolute left-0 top-1/2 h-4 w-0.5 -translate-y-1/2 rounded-full bg-brand-600"
+        />
+      )}
       <TagDot color={tagColor} />
 
       {editing ? (
@@ -94,7 +120,11 @@ function TagListRow({ tag, tagColor, onRename, onDelete, onColorChange }) {
         />
       ) : (
         <>
-          <span className="min-w-0 flex-1 truncate text-[0.8125rem] font-medium text-text-1">
+          <span
+            className={`min-w-0 flex-1 truncate text-[0.8125rem] font-medium ${
+              selected ? "text-brand-700" : "text-text-1"
+            }`}
+          >
             #{tag.name}
           </span>
           <span className="shrink-0 text-xs text-text-3 tabular-nums">
@@ -111,6 +141,8 @@ function TagListRow({ tag, tagColor, onRename, onDelete, onColorChange }) {
               variant="ghost"
               size="icon"
               aria-label={`Actions for tag ${tag.name}`}
+              onClick={(e) => e.stopPropagation()}
+              onKeyDown={(e) => e.stopPropagation()}
               className="h-7 w-7 shrink-0 text-text-3 opacity-0 focus-visible:opacity-100 group-hover:opacity-100 motion-safe:transition-opacity motion-reduce:transition-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 focus-visible:outline-offset-1 dark:focus-visible:outline-1"
             >
               <MoreHorizontal className="h-4 w-4" aria-hidden="true" />
