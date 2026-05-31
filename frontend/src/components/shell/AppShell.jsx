@@ -30,7 +30,6 @@ function AppShell() {
   const { width: copilotWidth, setWidth: setCopilotWidth } = useCopilotWidth();
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const openCopilot = useCallback(() => setCopilotOpen(true), [setCopilotOpen]);
   const closeCopilot = useCallback(() => setCopilotOpen(false), [setCopilotOpen]);
 
   useEffect(() => {
@@ -58,7 +57,7 @@ function AppShell() {
   return (
     <>
       <div className="flex h-dvh overflow-hidden bg-surface-0">
-        <Sidebar collapsed={collapsed} width={width} onOpenCopilot={openCopilot} />
+        <Sidebar collapsed={collapsed} width={width} onOpenCopilot={toggleCopilot} />
         {!collapsed && <SidebarResizeHandle width={width} onResize={setWidth} />}
         <div className="flex min-w-0 flex-1 flex-col">
           <EmailVerificationBanner />
@@ -78,7 +77,7 @@ function AppShell() {
         <CoPilotPanel open={copilotOpen} onClose={closeCopilot} width={copilotWidth} />
         <CopilotDockTab open={copilotOpen} onToggle={toggleCopilot} />
       </div>
-      <MobileSidebar open={mobileOpen} onOpenChange={setMobileOpen} onOpenCopilot={openCopilot} />
+      <MobileSidebar open={mobileOpen} onOpenChange={setMobileOpen} onOpenCopilot={toggleCopilot} />
       <CommandPalette />
       <ShortcutHelp />
       <UpgradePlanModal />

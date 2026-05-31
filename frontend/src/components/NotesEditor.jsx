@@ -148,7 +148,7 @@ function NotesEditor({ applicationId, initialValue, onDirtyChange }) {
   return (
     <>
       <div className="flex flex-col gap-1.5" data-testid="notes-editor">
-        <label className="text-xs font-medium uppercase text-text-3" htmlFor="notes-textarea">
+        <label className="sr-only" htmlFor="notes-textarea">
           Notes
         </label>
         {errorMsg && saveStatus === SAVE_STATUS_ERROR && (
@@ -157,8 +157,8 @@ function NotesEditor({ applicationId, initialValue, onDirtyChange }) {
         <div
           ref={containerRef}
           className={cn(
-            "rounded-md border border-transparent transition-[background-color,border-color]",
-            "duration-hover ease-out motion-safe focus-within:border-border-1 focus-within:bg-surface-1",
+            "rounded-md border border-border-1 bg-surface-0 transition-[background-color,border-color]",
+            "duration-hover ease-out motion-safe focus-within:border-brand-500 focus-within:bg-surface-1",
           )}
         >
           <MarkdownEditor

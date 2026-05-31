@@ -210,6 +210,7 @@ function ApplicationRow({
             onSetFollowUp={onSetFollowUp}
           />
         </div>
+        <span className="hidden w-7 shrink-0 md:block" aria-hidden="true" />
         <RowHoverActions
           application={application}
           onArchive={onArchive}
