@@ -145,6 +145,9 @@ export const SIDEBAR_COLLAPSED_STORAGE_KEY = "pipelined_sidebar_collapsed";
    needed where the values are passed through inline styles or JS arithmetic. */
 export const SIDEBAR_WIDTH_PX = 264;            /* was 240, ×1.1 */
 export const SIDEBAR_COLLAPSED_WIDTH_PX = 62;   /* was 56,  ×1.1 */
+export const SIDEBAR_WIDTH_STORAGE_KEY = "pipelined_sidebar_width";
+export const SIDEBAR_WIDTH_MIN_PX = 200;
+export const SIDEBAR_WIDTH_MAX_PX = 420;
 export const SIDEBAR_ANIMATION_MS = 200;
 export const DRAWER_ANIMATION_MS = 220;
 export const SIDEBAR_TOOLTIP_DELAY_MS = 400;

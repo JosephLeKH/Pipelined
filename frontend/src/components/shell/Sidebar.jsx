@@ -39,7 +39,7 @@ const ACCOUNT_ITEMS = [
   { id: "settings", to: "/settings", label: "Settings", icon: Settings },
 ];
 
-function Sidebar({ collapsed, onOpenCopilot, mobile = false }) {
+function Sidebar({ collapsed, onOpenCopilot, mobile = false, width }) {
   const { pathname } = useLocation();
   const { user, logout } = useAuth();
   const { data: offersData } = useApplications({ stage: OFFER_STAGE, limit: 1 });
@@ -63,11 +63,12 @@ function Sidebar({ collapsed, onOpenCopilot, mobile = false }) {
     <aside
       aria-label="Main navigation"
       data-collapsed={collapsed}
+      style={!mobile && !collapsed && width ? { width } : undefined}
       className={cn(
         "grid shrink-0 overflow-hidden border-r border-border-1 bg-surface-1",
         "grid-rows-[auto_minmax(0,1fr)_auto]",
         mobile ? "h-full w-full" : "hidden motion-safe-sidebar h-dvh md:grid",
-        !mobile && (collapsed ? "w-14" : "w-60"),
+        !mobile && collapsed && "w-14",
       )}
     >
       <SidebarLogo collapsed={collapsed} user={user} onLogout={handleLogout} />

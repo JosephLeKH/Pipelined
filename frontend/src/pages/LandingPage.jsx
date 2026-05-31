@@ -11,8 +11,6 @@ import AutopilotFlow from "../components/marketing/AutopilotFlow";
 import FeatureBento from "../components/marketing/FeatureBento";
 import NumberedSection from "../components/marketing/NumberedSection";
 import LandingChangelog from "../components/marketing/LandingChangelog";
-import TestimonialGrid from "../components/marketing/TestimonialGrid";
-import FinalCTA from "../components/marketing/FinalCTA";
 import { LANDING_SECTIONS } from "../components/marketing/landingSections";
 
 function LandingPage() {
@@ -31,8 +29,6 @@ function LandingPage() {
           <NumberedSection key={section.id} {...section} />
         ))}
         <LandingChangelog />
-        <TestimonialGrid />
-        <FinalCTA />
       </main>
       <MarketingFooter />
     </div>

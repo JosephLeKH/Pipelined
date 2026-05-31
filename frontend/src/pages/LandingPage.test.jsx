@@ -60,7 +60,6 @@ describe("LandingPage", () => {
     render(<LandingPage />, { wrapper: makeWrapper() });
 
     expect(screen.getByText(/No auto-send\. You copy, you send\./i)).toBeInTheDocument();
-    expect(screen.getByText(/Loved by students at top CS programs/i)).toBeInTheDocument();
   });
 
   it("should render Sign Up CTA links", () => {

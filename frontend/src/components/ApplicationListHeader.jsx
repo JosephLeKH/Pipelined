@@ -32,7 +32,7 @@ function SortHeader({ field, label, sortBy, sortOrder, onSort }) {
 export function ApplicationListHeader({ sortBy, sortOrder, onSort, allSelected, onSelectAll }) {
   return (
     <div
-      className="hidden h-8 items-center gap-3 border-b border-border-2 bg-surface-1 px-4 md:flex"
+      className="hidden h-8 items-center gap-2 border-b border-border-2 bg-surface-1 px-4 md:flex"
       data-testid="application-list-header"
     >
       <span className="w-4 shrink-0" onClick={(e) => e.stopPropagation()}>
@@ -44,14 +44,14 @@ export function ApplicationListHeader({ sortBy, sortOrder, onSort, allSelected, 
         />
       </span>
       <span className="w-2 shrink-0" aria-hidden="true" />
-      <span className="w-4 shrink-0" aria-hidden="true" />
+      <span className="w-[18px] shrink-0" aria-hidden="true" />
       <div className="w-40 shrink-0">
         <SortHeader field="company" label="Company" sortBy={sortBy} sortOrder={sortOrder} onSort={onSort} />
       </div>
       <div className="min-w-0 flex-1">
         <SortHeader field="role_title" label="Role" sortBy={sortBy} sortOrder={sortOrder} onSort={onSort} />
       </div>
-      <div className="shrink-0">
+      <div className="w-24 shrink-0">
         <SortHeader field="current_stage" label="Stage" sortBy={sortBy} sortOrder={sortOrder} onSort={onSort} />
       </div>
       <span className="w-4 shrink-0" aria-hidden="true" />

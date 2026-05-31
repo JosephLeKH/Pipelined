@@ -13,12 +13,15 @@ import UpgradePlanModal from "../UpgradePlanModal";
 import { OPEN_COPILOT_EVENT, OPEN_COMMAND_PALETTE_EVENT } from "../../lib/constants";
 import { useHotkeys } from "../../hooks/useHotkeys";
 import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
+import { useSidebarWidth } from "../../hooks/useSidebarWidth";
 import MobileSidebar from "./MobileSidebar";
 import Sidebar from "./Sidebar";
+import SidebarResizeHandle from "./SidebarResizeHandle";
 import TopBar from "./TopBar";
 
 function AppShell() {
   const { collapsed } = useSidebarCollapsed();
+  const { width, setWidth } = useSidebarWidth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [copilotOpen, setCopilotOpen] = useState(false);
 
@@ -50,7 +53,8 @@ function AppShell() {
   return (
     <>
       <div className="flex h-dvh overflow-hidden bg-surface-0">
-        <Sidebar collapsed={collapsed} onOpenCopilot={openCopilot} />
+        <Sidebar collapsed={collapsed} width={width} onOpenCopilot={openCopilot} />
+        {!collapsed && <SidebarResizeHandle width={width} onResize={setWidth} />}
         <div className="flex min-w-0 flex-1 flex-col">
           <EmailVerificationBanner />
           <OfflineBanner />

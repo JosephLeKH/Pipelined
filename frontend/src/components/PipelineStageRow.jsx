@@ -23,13 +23,8 @@ function StageColorPicker({ value, onChange, stageName }) {
     <Select value={value} onValueChange={onChange}>
       <SelectTrigger
         aria-label={`Color for ${stageName}`}
-        className="h-8 w-[5.5rem] gap-1.5 px-2 text-xs text-text-2"
+        className="h-8 w-[7rem] gap-1.5 px-2 text-xs text-text-2"
       >
-        <span
-          className="h-2.5 w-2.5 shrink-0 rounded-full"
-          style={{ backgroundColor: STAGE_COLOR_PICKER_OPTIONS.find((o) => o.key === value)?.hex }}
-          aria-hidden="true"
-        />
         <SelectValue placeholder="Color" />
       </SelectTrigger>
       <SelectContent>
@@ -37,7 +32,7 @@ function StageColorPicker({ value, onChange, stageName }) {
           <SelectItem key={option.key} value={option.key}>
             <span className="flex items-center gap-2">
               <span
-                className="h-2.5 w-2.5 rounded-full"
+                className="h-2.5 w-2.5 shrink-0 rounded-full"
                 style={{ backgroundColor: option.hex }}
                 aria-hidden="true"
               />

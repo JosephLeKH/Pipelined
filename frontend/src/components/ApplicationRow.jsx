@@ -159,7 +159,9 @@ function ApplicationRow({
         <span className={`min-w-0 flex-1 truncate text-sm ${archived ? "text-text-3" : "text-text-2"}`}>
           {application.role_title}
         </span>
-        <StagePill stage={application.current_stage} />
+        <div className="w-24 shrink-0">
+          <StagePill stage={application.current_stage} />
+        </div>
         <span className="inline-flex w-4 shrink-0 items-center justify-center">
           {application.interview_prep_briefing && (
             <Tooltip>

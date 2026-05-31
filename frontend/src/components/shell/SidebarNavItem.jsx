@@ -24,11 +24,10 @@ function SidebarBadge({ count }) {
 
 function SidebarNavItemInner({ icon: Icon, label, sublabel, badge, active, collapsed, onClick, to }) {
   const rowClass = cn(
-    "group/nav relative flex min-h-8 w-full flex-col justify-center gap-1 rounded-md px-2 text-[0.8125rem] text-text-2",
+    "group/nav relative flex min-h-8 w-full items-center gap-2 rounded-md px-2 py-1 text-[0.8125rem] text-text-2",
     "hover:bg-surface-2 hover:text-text-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600 dark:focus-visible:ring-1",
     active && "bg-surface-2 text-brand-600",
-    collapsed && "h-8 flex-row justify-center gap-2",
-    !sublabel && "justify-center",
+    collapsed && "h-8 justify-center",
   );
 
   const content = (

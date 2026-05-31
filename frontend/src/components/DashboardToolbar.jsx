@@ -87,9 +87,9 @@ export function DashboardToolbar({
         <Tooltip>
           <TooltipTrigger asChild>
             <Button type="button" variant="default" size="sm" onClick={onAdd} aria-keyshortcuts="a" className="whitespace-nowrap">
-              + Add
-              <span className="hidden sm:inline"> application</span>
-              <kbd className="ml-1 hidden rounded bg-white/20 px-1 py-0.5 text-[0.625rem] sm:inline">
+              <span>+ Add</span>
+              <span className="hidden sm:inline">application</span>
+              <kbd className="hidden rounded bg-white/20 px-1 py-0.5 text-[0.625rem] sm:inline">
                 A
               </kbd>
             </Button>
