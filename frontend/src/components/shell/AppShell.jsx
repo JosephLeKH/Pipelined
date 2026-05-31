@@ -13,9 +13,11 @@ import UpgradePlanModal from "../UpgradePlanModal";
 import { OPEN_COPILOT_EVENT, OPEN_COMMAND_PALETTE_EVENT } from "../../lib/constants";
 import { useHotkeys } from "../../hooks/useHotkeys";
 import { useCopilotDocked } from "../../hooks/useCopilotDocked";
+import { useCopilotWidth } from "../../hooks/useCopilotWidth";
 import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
 import { useSidebarWidth } from "../../hooks/useSidebarWidth";
 import CopilotDockTab from "./CopilotDockTab";
+import CopilotResizeHandle from "./CopilotResizeHandle";
 import MobileSidebar from "./MobileSidebar";
 import Sidebar from "./Sidebar";
 import SidebarResizeHandle from "./SidebarResizeHandle";
@@ -25,6 +27,7 @@ function AppShell() {
   const { collapsed } = useSidebarCollapsed();
   const { width, setWidth } = useSidebarWidth();
   const { open: copilotOpen, setOpen: setCopilotOpen, toggle: toggleCopilot } = useCopilotDocked();
+  const { width: copilotWidth, setWidth: setCopilotWidth } = useCopilotWidth();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const openCopilot = useCallback(() => setCopilotOpen(true), [setCopilotOpen]);
@@ -65,7 +68,14 @@ function AppShell() {
             <Outlet />
           </div>
         </div>
-        <CoPilotPanel open={copilotOpen} onClose={closeCopilot} />
+        {copilotOpen && (
+          <CopilotResizeHandle
+            width={copilotWidth}
+            onResize={setCopilotWidth}
+            onCloseRequest={closeCopilot}
+          />
+        )}
+        <CoPilotPanel open={copilotOpen} onClose={closeCopilot} width={copilotWidth} />
         <CopilotDockTab open={copilotOpen} onToggle={toggleCopilot} />
       </div>
       <MobileSidebar open={mobileOpen} onOpenChange={setMobileOpen} onOpenCopilot={openCopilot} />

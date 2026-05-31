@@ -162,6 +162,11 @@ export const BANNER_Z_VERIFY_EMAIL = 40;        /* Email verification */
 export const BANNER_Z_AUTO_RESUME = 30;         /* Autopilot resume suggestions */
 export const MANUAL_ADD_VISIBLE_STAGES = 4;
 export const COPILOT_DRAWER_WIDTH_PX = 528;     /* was 480, ×1.1 */
+export const COPILOT_DRAWER_WIDTH_MIN_PX = 360;
+export const COPILOT_DRAWER_WIDTH_MAX_PX = 720;
+/** Dragging the drawer narrower than this snaps it closed. */
+export const COPILOT_DRAWER_CLOSE_THRESHOLD_PX = 280;
+export const COPILOT_WIDTH_STORAGE_KEY = "pipelined_copilot_width";
 export const CALENDAR_EVENT_DRAWER_WIDTH_PX = 528; /* was 480, ×1.1 */
 export const CALENDAR_EVENT_MODAL_WIDTH_PX = 528;  /* was 480, ×1.1 */
 export const CALENDAR_EVENT_DOT_MAX = 3;

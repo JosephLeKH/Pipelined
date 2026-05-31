@@ -116,7 +116,7 @@ function SuggestedPrompts({ onSelect, disabled }) {
   );
 }
 
-function CoPilotPanel({ open, onClose }) {
+function CoPilotPanel({ open, onClose, width = COPILOT_DRAWER_WIDTH_PX }) {
   const { messages, errorMessage, sendMessage, runAction, isStreaming, hydrationFailed } = useCopilotChat();
   const [draft, setDraft] = useState("");
   const [dismissedHydrationAlert, setDismissedHydrationAlert] = useState(false);
@@ -154,7 +154,7 @@ function CoPilotPanel({ open, onClose }) {
   return (
     <aside
       aria-label="Co-pilot chat"
-      style={{ width: COPILOT_DRAWER_WIDTH_PX }}
+      style={{ width }}
       className="flex h-full shrink-0 flex-col border-l border-border-1 bg-surface-0"
     >
         <header className="flex items-start justify-between border-b border-border-1 px-4 py-3">
