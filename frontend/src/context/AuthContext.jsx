@@ -11,10 +11,14 @@ export function AuthProvider({ children }) {
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
+    let cancelled = false;
     fetchCurrentUser()
-      .then(setUser)
-      .catch((err) => console.error("[auth] Failed to fetch current user:", err.message))
-      .finally(() => setIsInitialized(true));
+      .then((u) => { if (!cancelled) setUser(u); })
+      .catch((err) => {
+        if (!cancelled) console.error("[auth] Failed to fetch current user:", err.message);
+      })
+      .finally(() => { if (!cancelled) setIsInitialized(true); });
+    return () => { cancelled = true; };
   }, []);
 
   const login = useCallback((userData) => {

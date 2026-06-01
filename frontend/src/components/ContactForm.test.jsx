@@ -117,7 +117,7 @@ describe("ContactForm", () => {
         http.post("/api/contacts", () =>
           HttpResponse.json({ data: { id: contactId, name: "John Doe" } }, { status: 201 })
         ),
-        http.post("/api/contacts/:contactId/link", () =>
+        http.patch("/api/contacts/:contactId/link", () =>
           HttpResponse.json({ data: { success: true } }, { status: 200 })
         )
       );
@@ -134,7 +134,7 @@ describe("ContactForm", () => {
       });
     });
 
-    it("should still call onDone if linking fails", async () => {
+    it("should surface an error and keep the form open when linking fails", async () => {
       const user = userEvent.setup();
       const onDone = vi.fn();
       const contactId = "contact1";
@@ -144,8 +144,11 @@ describe("ContactForm", () => {
         http.post("/api/contacts", () =>
           HttpResponse.json({ data: { id: contactId, name: "John Doe" } }, { status: 201 })
         ),
-        http.post("/api/contacts/:contactId/link", () =>
-          HttpResponse.json({ error: { code: "LINK_FAILED" } }, { status: 400 })
+        http.patch("/api/contacts/:contactId/link", () =>
+          HttpResponse.json(
+            { error: { code: "LINK_FAILED", message: "Couldn't link" } },
+            { status: 400 }
+          )
         )
       );
 
@@ -156,9 +159,9 @@ describe("ContactForm", () => {
       const submitBtn = screen.getByRole("button", { name: /Add Contact/i });
       await user.click(submitBtn);
 
-      await waitFor(() => {
-        expect(onDone).toHaveBeenCalled();
-      });
+      const alert = await screen.findByRole("alert");
+      expect(alert).toHaveTextContent(/Couldn't link|couldn't link it/i);
+      expect(onDone).not.toHaveBeenCalled();
     });
 
     it("should clear form fields after successful submission", async () => {

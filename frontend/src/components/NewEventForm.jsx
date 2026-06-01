@@ -105,7 +105,7 @@ function NewEventForm({ initialDate, initialApplicationId, onClose }) {
             type="submit"
             form="new-event-form"
             size="sm"
-            disabled={hook.isPending}
+            disabled={hook.isPending || !hook.canSubmit}
             className={`${BUTTON_PRIMARY} dark:focus-visible:outline-1`}
           >
             {hook.isPending ? "Adding…" : "Add event"}

@@ -131,6 +131,10 @@ function Tags() {
             setSearchParams(next, { replace: true });
           }
         },
+        onError: (error) => {
+          const msg = error?.response?.data?.detail ?? "Couldn't rename tag — try again";
+          toast.error(msg);
+        },
       });
     },
     [renameMutation, selectedName, searchParams, setSearchParams],

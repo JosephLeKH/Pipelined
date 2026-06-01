@@ -37,7 +37,13 @@ export function useApplicationListRowActions(data) {
     });
   }, [archiveMutation, queryClient, queryFilters, setUndoAction]);
 
-  const handleUnarchive = useCallback((id) => unarchiveMutation.mutate(id), [unarchiveMutation]);
+  const handleUnarchive = useCallback(
+    (id) =>
+      unarchiveMutation.mutate(id, {
+        onError: () => toast.error("Couldn't unarchive. Try again."),
+      }),
+    [unarchiveMutation],
+  );
 
   const handleDelete = useCallback((id) => {
     const previousData = queryClient.getQueryData(KEYS.list(queryFilters));
@@ -55,9 +61,10 @@ export function useApplicationListRowActions(data) {
 
   const handleUndo = useCallback(() => {
     if (!undoAction) return;
-    if (undoAction.type === "bulk_delete") undoBulkMutation.mutate(undoAction.stackId);
-    else if (undoAction.type === "delete") restoreMutation.mutate(undoAction.id);
-    else unarchiveMutation.mutate(undoAction.id);
+    const onError = () => toast.error("Undo failed. Try again.");
+    if (undoAction.type === "bulk_delete") undoBulkMutation.mutate(undoAction.stackId, { onError });
+    else if (undoAction.type === "delete") restoreMutation.mutate(undoAction.id, { onError });
+    else unarchiveMutation.mutate(undoAction.id, { onError });
     setUndoAction(null);
   }, [undoAction, restoreMutation, unarchiveMutation, undoBulkMutation, setUndoAction]);
 

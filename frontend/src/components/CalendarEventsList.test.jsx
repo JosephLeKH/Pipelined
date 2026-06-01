@@ -75,7 +75,10 @@ describe("CalendarEventsList application variant", () => {
     renderApplicationList();
     const deleteBtn = screen.getByRole("button", { name: /delete event: phone screen on/i });
     await userEvent.click(deleteBtn);
-    expect(mockDeleteEvent).toHaveBeenCalledWith("ev1");
+    expect(mockDeleteEvent).toHaveBeenCalledWith(
+      "ev1",
+      expect.objectContaining({ onError: expect.any(Function) }),
+    );
   });
 
   it("should call onAddEvent with applicationId when Add Event is clicked", async () => {

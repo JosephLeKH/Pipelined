@@ -2,6 +2,7 @@
 
 import Plus from "lucide-react/dist/esm/icons/plus";
 import Trash2 from "lucide-react/dist/esm/icons/trash-2";
+import { toast } from "sonner";
 
 import { useApplicationEvents, useDeleteEvent } from "../hooks/useCalendar";
 import {
@@ -207,7 +208,11 @@ function ApplicationCalendarEventsList({ applicationId, onAddEvent }) {
                 type="button"
                 variant="ghost"
                 size="icon"
-                onClick={() => deleteEvent(ev.id)}
+                onClick={() =>
+                  deleteEvent(ev.id, {
+                    onError: () => toast.error("Couldn't delete event. Try again."),
+                  })
+                }
                 className="h-7 w-7 text-text-3 hover:bg-brand-50 hover:text-brand-700"
                 aria-label={`Delete event: ${ev.event_type.replace("_", " ")} on ${ev.date}`}
               >

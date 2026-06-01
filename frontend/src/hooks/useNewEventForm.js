@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+import { toast } from "sonner";
+
 import { useApplications } from "./useApplications";
 import { useCreateEvent } from "./useCalendar";
 import { EVENT_TYPE_OPTIONS } from "../lib/constants";
@@ -14,6 +16,10 @@ function normalizeInitialDate(value) {
   if (typeof value === "string") return ISO_DATE_RE.test(value) ? value : "";
   if (value instanceof Date && !Number.isNaN(value.getTime())) return toISODate(value);
   return "";
+}
+
+function extractErrorMessage(err, fallback) {
+  return err?.response?.data?.error?.message || err?.message || fallback;
 }
 
 export function useNewEventForm({ initialDate, initialApplicationId, onClose }) {
@@ -29,18 +35,29 @@ export function useNewEventForm({ initialDate, initialApplicationId, onClose }) 
   const [time, setTime] = useState("");
   const [notes, setNotes] = useState("");
   const [formError, setFormError] = useState(null);
+  const today = useMemo(() => toISODate(new Date()), []);
+  const isPastDate = Boolean(date) && date < today;
+  const canSubmit = Boolean(applicationId) && Boolean(date) && !isPastDate;
   const handleSubmit = useCallback(
     (e) => {
       e.preventDefault();
       if (!applicationId) { setFormError("Please select an application."); return; }
       if (!date) { setFormError("Please select a date."); return; }
+      if (date < today) { setFormError("Date cannot be in the past."); return; }
       setFormError(null);
       createEvent(
         { application_id: applicationId, event_type: eventType, date, time: time || null, notes: notes || null },
-        { onSuccess: onClose }
+        {
+          onSuccess: onClose,
+          onError: (err) => {
+            const message = extractErrorMessage(err, "Couldn't add event. Try again.");
+            setFormError(message);
+            toast.error(message);
+          },
+        }
       );
     },
-    [applicationId, date, eventType, time, notes, createEvent, onClose]
+    [applicationId, date, today, eventType, time, notes, createEvent, onClose]
   );
   useEffect(() => {
     const handler = (e) => { if (e.key === "Escape") onClose(); };
@@ -55,5 +72,6 @@ export function useNewEventForm({ initialDate, initialApplicationId, onClose }) 
     apps, applicationId, setApplicationId, eventType, setEventType,
     date, setDate, time, setTime, notes, setNotes,
     formError, handleSubmit, handleOverlayClick, isPending,
+    canSubmit, isPastDate,
   };
 }

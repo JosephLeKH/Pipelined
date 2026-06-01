@@ -18,6 +18,7 @@ export default function SavedSearchesSidebar({ onApply }) {
     e.stopPropagation();
     deleteMutation.mutate(id, {
       onSuccess: () => toast.success("Saved search deleted"),
+      onError: () => toast.error("Couldn't delete saved search. Try again."),
     });
   }
 

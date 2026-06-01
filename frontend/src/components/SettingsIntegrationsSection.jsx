@@ -1,6 +1,7 @@
 /** Settings — Integrations tab: manage the connected job-search Gmail inbox. */
 
 import { useState } from "react";
+import { toast } from "sonner";
 
 import CheckCircle from "lucide-react/dist/esm/icons/check-circle";
 import Mail from "lucide-react/dist/esm/icons/mail";
@@ -145,7 +146,10 @@ function ConnectedState({ status, onDisconnect }) {
   const syncMutation = useGmailSyncMutation();
 
   const handleToggle = (key) => (val) => {
-    settingsMutation.mutate({ [key]: val });
+    settingsMutation.mutate(
+      { [key]: val },
+      { onError: () => toast.error("Couldn't update Gmail settings. Try again.") },
+    );
   };
 
   return (
@@ -271,7 +275,12 @@ function ConnectedState({ status, onDisconnect }) {
             className="gap-1.5 text-xs"
             aria-busy={syncMutation.isPending}
             disabled={syncMutation.isPending}
-            onClick={() => syncMutation.mutate()}
+            onClick={() =>
+              syncMutation.mutate(undefined, {
+                onSuccess: () => toast.success("Gmail sync started"),
+                onError: () => toast.error("Couldn't sync Gmail. Try again."),
+              })
+            }
           >
             <RefreshCw className="h-3.5 w-3.5" aria-hidden="true" />
             Sync Now
@@ -346,7 +355,11 @@ function SettingsIntegrationsSection() {
       {connected ? (
         <ConnectedState
           status={status}
-          onDisconnect={() => disconnectMutation.mutate()}
+          onDisconnect={() =>
+            disconnectMutation.mutate(undefined, {
+              onError: () => toast.error("Couldn't disconnect Gmail. Try again."),
+            })
+          }
         />
       ) : (
         <>

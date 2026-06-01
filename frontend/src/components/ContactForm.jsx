@@ -113,7 +113,18 @@ function ContactForm({ applicationId, onDone }) {
       onSuccess: (res) => {
         const newId = res?.data?.id ?? res?.id;
         if (applicationId && newId) {
-          linkContact({ contactId: newId, applicationId }, { onSuccess: () => onDone?.(), onError: () => onDone?.() });
+          linkContact(
+            { contactId: newId, applicationId },
+            {
+              onSuccess: () => onDone?.(),
+              onError: (err) => {
+                const msg =
+                  err?.response?.data?.error?.message ||
+                  "Contact created, but couldn't link it to this application.";
+                setError(msg);
+              },
+            },
+          );
         } else {
           onDone?.();
         }
