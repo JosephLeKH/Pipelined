@@ -7,6 +7,15 @@ import { useCreateEvent } from "./useCalendar";
 import { EVENT_TYPE_OPTIONS } from "../lib/constants";
 import { toISODate } from "../lib/dateUtils";
 
+const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+function normalizeInitialDate(value) {
+  if (!value) return "";
+  if (typeof value === "string") return ISO_DATE_RE.test(value) ? value : "";
+  if (value instanceof Date && !Number.isNaN(value.getTime())) return toISODate(value);
+  return "";
+}
+
 export function useNewEventForm({ initialDate, initialApplicationId, onClose }) {
   const { data: appsEnvelope } = useApplications();
   const { mutate: createEvent, isPending } = useCreateEvent();
@@ -16,7 +25,7 @@ export function useNewEventForm({ initialDate, initialApplicationId, onClose }) 
   );
   const [applicationId, setApplicationId] = useState(initialApplicationId ?? "");
   const [eventType, setEventType] = useState(EVENT_TYPE_OPTIONS[0].value);
-  const [date, setDate] = useState(() => (initialDate ? toISODate(initialDate) : ""));
+  const [date, setDate] = useState(() => normalizeInitialDate(initialDate));
   const [time, setTime] = useState("");
   const [notes, setNotes] = useState("");
   const [formError, setFormError] = useState(null);

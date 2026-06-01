@@ -34,6 +34,11 @@ self.addEventListener("fetch", (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
+  // Don't intercept cross-origin requests (e.g. logo.clearbit.com). Letting them
+  // bubble up to the browser avoids "Uncaught (in promise) TypeError: Failed to
+  // fetch" noise when those hosts 404 or block CORS.
+  if (url.origin !== location.origin) return;
+
   // Network-only for all API requests — never serve stale data
   if (url.pathname.startsWith("/api/")) return;
 
