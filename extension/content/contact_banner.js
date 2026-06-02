@@ -67,7 +67,7 @@ async function handleContactSave(shadow, host, fields) {
 
 function showContactSuccess(shadow, host) {
   showBannerSuccess(shadow, host, {
-    headline: "Saved contact \u2014 added to your network",
+    headline: "Scout saved this contact",
     icon: "user",
   });
 }

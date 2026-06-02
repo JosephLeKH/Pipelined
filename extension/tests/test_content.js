@@ -307,3 +307,99 @@ describe("auth-aware banner", () => {
     expect(shadow.querySelector("[data-action='save']")).toBeNull();
   });
 });
+
+// ── Scout-narrated banner ─────────────────────────────────────────────────────
+
+describe("Scout-narrated banner", () => {
+  it("renders 'Scout is scoring…' working state after a successful save", async () => {
+    jest.useRealTimers();
+    setupDOM();
+    spyOnAttachShadow();
+
+    chrome.runtime.sendMessage.mockImplementation((msg) => {
+      if (msg.type === "GET_AUTH_STATUS") return Promise.resolve({ authenticated: true });
+      if (msg.type === "SAVE_APPLICATION") return Promise.resolve({
+        status: "success",
+        application: { id: "1", company: "Acme", role_title: "SWE" },
+        parseEnhanced: false,
+      });
+      return Promise.resolve({});
+    });
+    // Empty cache — score has not arrived yet
+    chrome.storage.local.get.mockImplementation(async (key) => {
+      if (key === "recent_saves") return { recent_saves: [] };
+      return {};
+    });
+
+    document.body.innerHTML = `
+      <div class="job-details-jobs-unified-top-card__job-title">SWE</div>
+      <div class="job-details-jobs-unified-top-card__company-name">Acme</div>
+    `;
+
+    await init();
+
+    const host = document.querySelector("pipelined-banner");
+    expect(host).not.toBeNull();
+    const saveButton = host.shadowRoot.querySelector("[data-action='save']");
+    expect(saveButton).not.toBeNull();
+    saveButton.click();
+
+    // Allow the click handler's awaits to resolve
+    await new Promise((r) => setTimeout(r, 50));
+
+    const shadow = host.shadowRoot;
+    expect(shadow.textContent).toMatch(/Scout is scoring/i);
+    expect(shadow.querySelector(".pipelined-scout-glyph--working")).not.toBeNull();
+  });
+
+  it("upgrades to 'Saved · Scout: NN' when fit_score arrives in cache", async () => {
+    jest.useRealTimers();
+    setupDOM();
+    spyOnAttachShadow();
+
+    chrome.runtime.sendMessage.mockImplementation((msg) => {
+      if (msg.type === "GET_AUTH_STATUS") return Promise.resolve({ authenticated: true });
+      if (msg.type === "SAVE_APPLICATION") return Promise.resolve({
+        status: "success",
+        application: { id: "abc", company: "Acme", role_title: "SWE" },
+        parseEnhanced: false,
+      });
+      return Promise.resolve({});
+    });
+
+    // Score appears in cache shortly after save
+    let pollCount = 0;
+    chrome.storage.local.get.mockImplementation(async (key) => {
+      if (key === "recent_saves") {
+        pollCount += 1;
+        if (pollCount >= 2) {
+          return {
+            recent_saves: [{
+              id: "abc",
+              fit_score: 78,
+              fit_score_summary: "Strong infra signal.",
+            }],
+          };
+        }
+        return { recent_saves: [] };
+      }
+      return {};
+    });
+
+    document.body.innerHTML = `
+      <div class="job-details-jobs-unified-top-card__job-title">SWE</div>
+      <div class="job-details-jobs-unified-top-card__company-name">Acme</div>
+    `;
+
+    await init();
+    const host = document.querySelector("pipelined-banner");
+    host.shadowRoot.querySelector("[data-action='save']").click();
+
+    // Allow polling to find the score (poll interval is 400ms; give it 1500ms total)
+    await new Promise((r) => setTimeout(r, 1500));
+
+    const shadow = host.shadowRoot;
+    expect(shadow.textContent).toMatch(/Saved · Scout: 78/);
+    expect(shadow.textContent).toMatch(/Strong infra signal/);
+  });
+});

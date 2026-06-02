@@ -84,11 +84,40 @@ export const BANNER_CSS = `
 @media (prefers-reduced-motion: reduce) {
   .pipelined-banner, .pipelined-cta { transition: none !important; }
 }
+.pipelined-scout-glyph {
+  width: 16px; height: 16px;
+  border-radius: 9999px;
+  background: var(--brand-600);
+  color: var(--surface-0);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.pipelined-scout-glyph svg { width: 60%; height: 60%; }
+@media (prefers-reduced-motion: no-preference) {
+  .pipelined-scout-glyph--working {
+    box-shadow: 0 0 0 0 rgba(255,255,255,0.4);
+    animation: pipelined-scout-ring 1.4s ease-in-out infinite;
+  }
+}
+@keyframes pipelined-scout-ring {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255,255,255,0.35); }
+  50%      { box-shadow: 0 0 0 4px rgba(255,255,255,0); }
+}
+.pipelined-score-line {
+  font-size: 12px;
+  color: rgba(255,255,255,0.85);
+  margin: 0;
+}
+.pipelined-score-line strong { color: var(--surface-0); font-weight: 600; }
 `;
 
 const CHECK_ICON_SVG = `<svg class="pipelined-check-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>`;
 
 const USER_ICON_SVG = `<svg class="pipelined-user-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
+
+const SCOUT_GLYPH_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>`;
 
 /**
  * Creates a fixed-position shadow-DOM host with BANNER_CSS and a .pipelined-text span.
@@ -240,4 +269,77 @@ export function showBannerUnauth(shadow, host, onSignIn) {
   if (row) row.appendChild(button);
 
   setTimeout(() => dismiss(host), BANNER_AUTO_DISMISS_MS);
+}
+
+/**
+ * Show a working 'Scout is scoring\u2026' state right after a successful save.
+ * Caller is responsible for upgrading to scored state OR letting the
+ * 4-second auto-dismiss fire.
+ * @param {ShadowRoot} shadow
+ * @param {{ company?: string, role_title?: string }} app
+ */
+export function showBannerScoring(shadow, app) {
+  const container = shadow.querySelector(".pipelined-banner");
+  if (!container) return;
+  container.replaceChildren();
+
+  const header = document.createElement("div");
+  header.className = "pipelined-success-header";
+  header.innerHTML = `<span class="pipelined-scout-glyph pipelined-scout-glyph--working">${SCOUT_GLYPH_SVG}</span>`;
+  const title = document.createElement("span");
+  title.textContent = "Scout is scoring\u2026";
+  header.appendChild(title);
+  container.appendChild(header);
+
+  if (app?.company || app?.role_title) {
+    const detail = document.createElement("p");
+    detail.className = "pipelined-detail";
+    const company = app.company || "";
+    const role = app.role_title || "";
+    detail.textContent = company && role ? `${company} \u00b7 ${role}` : company || role;
+    container.appendChild(detail);
+  }
+}
+
+/**
+ * Upgrade a 'scoring' banner to the final scored state.
+ * @param {ShadowRoot} shadow
+ * @param {HTMLElement} host
+ * @param {{ id?: string, company?: string, role_title?: string, fit_score?: number|null, fit_score_summary?: string|null }} app
+ */
+export function showBannerScoutScored(shadow, host, app) {
+  const container = shadow.querySelector(".pipelined-banner");
+  if (!container) return;
+  container.replaceChildren();
+
+  const header = document.createElement("div");
+  header.className = "pipelined-success-header";
+  header.innerHTML = `<span class="pipelined-scout-glyph">${SCOUT_GLYPH_SVG}</span>`;
+  const title = document.createElement("span");
+  title.textContent = app.fit_score != null ? `Saved \u00b7 Scout: ${app.fit_score}` : "Saved to Pipelined";
+  header.appendChild(title);
+  container.appendChild(header);
+
+  if (app.company || app.role_title) {
+    const detail = document.createElement("p");
+    detail.className = "pipelined-detail";
+    detail.textContent = [app.company, app.role_title].filter(Boolean).join(" \u00b7 ");
+    container.appendChild(detail);
+  }
+  if (app.fit_score_summary) {
+    const line = document.createElement("p");
+    line.className = "pipelined-score-line";
+    line.textContent = app.fit_score_summary;
+    container.appendChild(line);
+  }
+  if (app.id) {
+    const link = document.createElement("a");
+    link.className = "pipelined-dashboard-link";
+    link.href = `${APP_DASHBOARD_URL}?highlight=${encodeURIComponent(app.id)}`;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.textContent = "Open in dashboard \u2192";
+    container.appendChild(link);
+  }
+  setTimeout(() => dismiss(host), BANNER_SUCCESS_DISMISS_MS);
 }

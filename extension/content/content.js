@@ -21,6 +21,8 @@ import {
   showBannerError,
   showBannerDuplicate,
   showBannerUnauth,
+  showBannerScoring,
+  showBannerScoutScored,
 } from "./banner_helpers.js";
 import { injectContactBanner } from "./contact_banner.js";
 import { MSG, PAGE_TEXT_MAX_CHARS } from "../shared/constants.js";
@@ -45,6 +47,37 @@ async function sendToBackground(type, payload) {
     console.error("[content] sendMessage failed:", err);
     return { status: "error" };
   }
+}
+
+/**
+ * Polls chrome.storage.local for the cached fit_score of a recently-saved app.
+ * Calls onArrival once when the score lands; calls onTimeout if 4s elapses
+ * with no score. Whichever fires first wins.
+ */
+function pollCachedFitScore(appId, onArrival, onTimeout) {
+  if (!appId) {
+    onTimeout?.();
+    return;
+  }
+  const startedAt = Date.now();
+  const interval = setInterval(async () => {
+    try {
+      const { recent_saves = [] } = await chrome.storage.local.get("recent_saves");
+      const found = recent_saves.find((s) => s.id === appId);
+      if (found && found.fit_score != null) {
+        clearInterval(interval);
+        onArrival(found.fit_score, found.fit_score_summary ?? null);
+        return;
+      }
+      if (Date.now() - startedAt > 4000) {
+        clearInterval(interval);
+        onTimeout?.();
+      }
+    } catch {
+      clearInterval(interval);
+      onTimeout?.();
+    }
+  }, 400);
 }
 
 async function init() {
@@ -138,10 +171,20 @@ async function handleSave(shadow, host, fields, boardId) {
   const result = await sendToBackground(MSG.SAVE_APPLICATION, payload);
 
   if (result.status === "success") {
-    showBannerSuccess(shadow, host, {
-      aiEnhanced: Boolean(result.parseEnhanced),
-      application: result.application || null,
-    });
+    const app = result.application || {};
+    if (app.fit_score != null) {
+      // Score already arrived (cache hit on backend) — render scored state directly
+      showBannerScoutScored(shadow, host, app);
+    } else {
+      // Show working state and poll cached fit-score for up to 4s
+      showBannerScoring(shadow, { company: app.company, role_title: app.role_title });
+      pollCachedFitScore(app.id, (score, summary) => {
+        showBannerScoutScored(shadow, host, { ...app, fit_score: score, fit_score_summary: summary });
+      }, () => {
+        // Timeout — fall back to scored state with no score
+        showBannerScoutScored(shadow, host, app);
+      });
+    }
   } else if (result.status === "duplicate") {
     showBannerDuplicate(shadow, host, result.existingId);
   } else {
