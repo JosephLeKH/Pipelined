@@ -112,11 +112,14 @@ function PageWrapper({ children }) {
   return <div className="animate-fadeIn">{children}</div>;
 }
 
-/** Fires a page_viewed event on every route change. */
+/** Fires a page_viewed event on every route change and resets scroll position. */
 function PageTracker() {
   const { pathname } = useLocation();
   useEffect(() => {
     trackEvent("page_viewed", { page_name: pathname });
+    if (typeof window !== "undefined") {
+      window.scrollTo(0, 0);
+    }
   }, [pathname]);
   return null;
 }
