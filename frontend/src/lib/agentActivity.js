@@ -37,8 +37,22 @@ export function getAgentDotColor(agentType) {
   return AGENT_DOT_COLORS[agentType] ?? AGENT_DOT_COLOR_DEFAULT;
 }
 
+// Server datetimes are always UTC, but legacy responses may omit the timezone
+// suffix. JS's Date constructor parses unsuffixed ISO 8601 as local time, which
+// would shift display by the user's offset. Force-interpret as UTC if needed.
+const TIMEZONE_SUFFIX_RE = /(Z|[+-]\d{2}:?\d{2})$/;
+
+function parseServerTimestamp(timestamp) {
+  if (!timestamp) return null;
+  const hasTz = typeof timestamp === "string" && TIMEZONE_SUFFIX_RE.test(timestamp);
+  return new Date(hasTz ? timestamp : `${timestamp}Z`);
+}
+
 function toDateKey(timestamp) {
-  const d = new Date(timestamp);
+  const d =
+    timestamp instanceof Date || typeof timestamp === "number"
+      ? new Date(timestamp)
+      : parseServerTimestamp(timestamp);
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
@@ -73,8 +87,8 @@ export function groupAgentEntriesByDate(entries) {
 }
 
 export function formatActivityTimestamp(isoString) {
-  if (!isoString) return "";
-  const ts = new Date(isoString);
+  const ts = parseServerTimestamp(isoString);
+  if (!ts) return "";
   return ts.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
 }
 

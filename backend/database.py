@@ -23,6 +23,7 @@ async def connect() -> None:
         retryWrites=True,
         retryReads=True,
         serverSelectionTimeoutMS=SERVER_SELECTION_TIMEOUT_MS,
+        tz_aware=True,
     )
     db = client[settings.mongo_db_name]
 
