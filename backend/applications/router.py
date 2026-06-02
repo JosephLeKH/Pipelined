@@ -3,7 +3,7 @@
 from datetime import datetime
 
 import structlog
-from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, Request, Response
 from pydantic import ValidationError
 
 from applications import service as app_service
@@ -24,6 +24,7 @@ from applications.schemas import (
     MAX_QUERY_LIMIT,
 )
 from applications.service import DuplicateApplicationError, InvalidCursorError
+from applications.service_ai import auto_score_fit
 from auth.dependencies import get_verified_user as get_current_user
 from config import settings
 from email_integration.email_events import list_email_events_for_application
@@ -51,6 +52,7 @@ TIER_LIMIT_EXCEEDED_DETAIL = {
 async def create_application(
     request: Request,
     body: ApplicationCreate,
+    background_tasks: BackgroundTasks,
     user: dict = Depends(get_current_user),
 ) -> dict:
     """Create a new application for the current user."""
@@ -78,6 +80,11 @@ async def create_application(
         )
     parse_enhanced = bool(doc.pop("_parse_enhanced", False))
     response = ApplicationResponse.from_doc(doc)
+
+    # Schedule auto-score fit in background after successful creation
+    app_id = str(doc["_id"])
+    background_tasks.add_task(auto_score_fit, user_id=user_id, application_id=app_id)
+
     return {"data": response.model_copy(update={"parse_enhanced": parse_enhanced})}
 
 

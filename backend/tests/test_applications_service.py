@@ -400,3 +400,45 @@ async def test_score_update_rejects_wrong_user(app):
     stored = await get_collection("applications").find_one({"_id": app_doc["_id"]})
     assert stored is not None
     assert stored.get("ai_analysis") is None
+
+
+# ---------------------------------------------------------------------------
+# Router tests (require client fixture)
+# ---------------------------------------------------------------------------
+
+
+async def test_create_application_schedules_auto_score_fit(client, app):
+    """POST /api/applications should schedule auto_score_fit via BackgroundTasks."""
+    # Arrange — create and register a user
+    resp = await client.post("/api/auth/register", json={
+        "email": "router_test@example.com",
+        "password": "TestPass123!",
+        "display_name": "Router Test User",
+    })
+    assert resp.status_code == 201
+    cookies = dict(resp.cookies)
+
+    # Verify the user so they can access protected endpoints
+    from tests.conftest import verify_user_by_id  # noqa: PLC0415
+    user_id = resp.json()["data"]["id"]
+    await verify_user_by_id(user_id)
+
+    # Act — POST to create application with auto_score_fit mocked
+    with patch("applications.router.auto_score_fit", new=AsyncMock()) as mock_auto:
+        response = await client.post(
+            "/api/applications",
+            json={"company": "ACME", "role_title": "SWE"},
+            cookies=cookies,
+        )
+
+    # Assert
+    assert response.status_code == 201
+    data = response.json()["data"]
+    assert data["company"] == "ACME"
+    assert data["role_title"] == "SWE"
+    # FastAPI's TestClient runs background tasks synchronously after the response is returned.
+    mock_auto.assert_awaited_once()
+    call_args = mock_auto.await_args
+    assert call_args is not None
+    assert call_args.kwargs["user_id"] == user_id
+    assert "application_id" in call_args.kwargs
