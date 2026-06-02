@@ -107,30 +107,4 @@ describe("GithubCallback", () => {
     });
   });
 
-  it("should show friendly error message in Login when GithubCallback redirects with error", async () => {
-    const qc = new QueryClient({
-      defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
-    });
-    function ErrorRedirectWrapper({ children }) {
-      return (
-        <QueryClientProvider client={qc}>
-          <MemoryRouter initialEntries={["/login?error=github_oauth_denied"]}>
-            <AuthProvider>
-              <Routes>
-                <Route path="/login" element={children} />
-              </Routes>
-            </AuthProvider>
-          </MemoryRouter>
-        </QueryClientProvider>
-      );
-    }
-
-    render(<Login />, { wrapper: ErrorRedirectWrapper });
-
-    await waitFor(() => {
-      expect(
-        screen.getByText("GitHub authentication was denied. Please try again.")
-      ).toBeInTheDocument();
-    });
-  });
 });

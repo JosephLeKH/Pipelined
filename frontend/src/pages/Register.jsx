@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 
 import AuthLayout from "../components/AuthLayout";
 import GoogleAuthButton from "../components/GoogleAuthButton";
-import GithubAuthButton from "../components/GithubAuthButton";
 import { RegisterForm } from "../components/RegisterForm";
 import { useRegisterForm } from "../hooks/useRegisterForm";
 import { AUTH_HEADLINE, AUTH_SUBHEAD } from "../lib/authFormStyles";
@@ -32,9 +31,8 @@ function Register() {
           />
         </div>
 
-        <div className="order-2 space-y-2">
+        <div className="order-2">
           <GoogleAuthButton label="Continue with Google" onSuccess={handleGoogleSuccess} onError={handleGoogleError} />
-          <GithubAuthButton label="Continue with GitHub" />
         </div>
 
         <div className="order-3 my-6 flex items-center gap-3">

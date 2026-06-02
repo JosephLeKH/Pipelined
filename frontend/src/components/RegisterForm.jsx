@@ -92,7 +92,7 @@ export function RegisterForm({ displayName, setDisplayName, email, setEmail, pas
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           onBlur={() => setEmailTouched(true)}
-          placeholder="you@example.com"
+          placeholder="you@stanford.edu"
           aria-describedby={emailError ? "email-error" : undefined}
           aria-invalid={emailError ? true : false}
         />

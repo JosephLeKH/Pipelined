@@ -34,3 +34,13 @@ AGENT_MEMORY_NOTES_MAX_LENGTH = 2000
 WATCHLIST_COMPANIES_MAX = 25
 WATCHLIST_COMPANY_NAME_MAX_LENGTH = 100
 WATCHLIST_CAREERS_URL_MAX_LENGTH = 500
+
+ALLOWED_EMAIL_DOMAINS: frozenset[str] = frozenset({"stanford.edu"})
+
+
+def is_email_domain_allowed(email: str) -> bool:
+    """True if the email's domain is in the allow-list (case-insensitive)."""
+    if "@" not in email:
+        return False
+    domain = email.rsplit("@", 1)[1].lower()
+    return domain in ALLOWED_EMAIL_DOMAINS

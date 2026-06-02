@@ -42,7 +42,8 @@ function GoogleAuthButton({ label = "Continue with Google", onSuccess, onError }
         login(user);
         onSuccess(user);
       } catch (err) {
-        onError(err?.message ?? "Google sign-in failed.");
+        const serverMessage = err?.response?.data?.detail?.message;
+        onError(serverMessage ?? err?.message ?? "Google sign-in failed.");
       }
     },
     [googleSignIn, login, onSuccess, onError]

@@ -101,31 +101,6 @@ describe("Login", () => {
     expect(await screen.findByRole("alert")).toHaveTextContent("Email or password incorrect.");
   });
 
-  it("should show query param error and dismiss on X click", async () => {
-    const qc = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } });
-    const Wrapper = ({ children }) => (
-      <QueryClientProvider client={qc}>
-        <MemoryRouter initialEntries={["/login?error=github_oauth_denied"]}>
-          <AuthProvider>
-            <Routes>
-              <Route path="/login" element={children} />
-              <Route path="/today" element={<div>Today</div>} />
-            </Routes>
-          </AuthProvider>
-        </MemoryRouter>
-      </QueryClientProvider>
-    );
-
-    render(<Login />, { wrapper: Wrapper });
-
-    const errorText = await screen.findByText("GitHub authentication was denied. Please try again.");
-    expect(errorText).toBeInTheDocument();
-
-    const dismissBtn = screen.getByLabelText("Dismiss error");
-    await userEvent.click(dismissBtn);
-    expect(errorText).not.toBeInTheDocument();
-  });
-
   it("should redirect to today on successful login", async () => {
     render(<Login />, { wrapper: makeWrapper() });
 

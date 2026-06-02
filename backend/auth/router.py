@@ -7,6 +7,7 @@ import structlog
 from fastapi import APIRouter, Cookie, Depends, HTTPException, Request, Response
 
 from auth import service as auth_service
+from auth.constants import is_email_domain_allowed
 from auth.dependencies import get_current_user
 from auth.email_verification import create_verification_token
 from auth.schemas import (
@@ -64,6 +65,17 @@ ACCESS_MAX_AGE = settings.jwt_access_ttl_minutes * 60
 REFRESH_MAX_AGE = settings.jwt_refresh_ttl_days * 24 * 60 * 60
 RESET_TOKEN_MAX_AGE = RESET_TOKEN_TTL_HOURS * 3600
 
+EMAIL_DOMAIN_NOT_ALLOWED_DETAIL = {
+    "code": "EMAIL_DOMAIN_NOT_ALLOWED",
+    "message": "Only @stanford.edu emails are allowed.",
+}
+
+
+def _require_allowed_email_domain(email: str) -> None:
+    """Raise 403 if the email's domain is not in the allow-list."""
+    if not is_email_domain_allowed(email):
+        raise HTTPException(status_code=403, detail=EMAIL_DOMAIN_NOT_ALLOWED_DETAIL)
+
 
 def _set_cookie(response: Response, key: str, value: str, max_age: int) -> None:
     """Set an httpOnly cookie. secure=True in prod; False when DEBUG=True."""
@@ -101,6 +113,7 @@ async def register(
     response: Response,
 ) -> dict:
     """Register a new user, send verification email, and set auth cookies."""
+    _require_allowed_email_domain(body.email)
     try:
         user = await auth_service.create_user(body.email, body.password, body.display_name, body.referral_code)
     except DuplicateEmailError as exc:
@@ -261,6 +274,7 @@ async def google_auth(body: GoogleAuthRequest, response: Response) -> dict:
 
     google_id: str = claims["sub"]
     email: str = claims["email"]
+    _require_allowed_email_domain(email)
     display_name: str = claims.get("name") or email.split("@")[0]
 
     user = await auth_service.get_or_create_google_user(google_id, email, display_name)

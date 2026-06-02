@@ -11,15 +11,15 @@ import { describe, it, expect, beforeAll, afterAll, afterEach } from "vitest";
 import { AuthProvider } from "../context/AuthContext";
 import Register from "./Register";
 
-const MOCK_USER = { id: "u2", email: "bob@example.com", display_name: "Bob", default_stages: [] };
+const MOCK_USER = { id: "u2", email: "bob@stanford.edu", display_name: "Bob", default_stages: [] };
 
 const server = setupServer(
   http.get("/api/auth/me", () => HttpResponse.json({ data: null }, { status: 401 })),
   http.post("/api/auth/register", async ({ request }) => {
     const body = await request.json();
-    if (body.email === "taken@example.com") {
+    if (body.email === "taken@stanford.edu") {
       return HttpResponse.json(
-        { error: { code: "DUPLICATE_EMAIL", message: "An account with taken@example.com already exists." } },
+        { error: { code: "DUPLICATE_EMAIL", message: "An account with taken@stanford.edu already exists." } },
         { status: 409 }
       );
     }
@@ -75,7 +75,7 @@ describe("Register", () => {
     // Client-side validation requires valid email + strong password before submit is enabled.
     render(<Register />, { wrapper: makeWrapper() });
 
-    await userEvent.type(screen.getByLabelText("Email"), "bob@example.com");
+    await userEvent.type(screen.getByLabelText("Email"), "bob@stanford.edu");
     await userEvent.type(screen.getByLabelText("Password"), "Password1");
     await userEvent.click(screen.getByRole("button", { name: "Create account" }));
 
@@ -100,12 +100,12 @@ describe("Register", () => {
     render(<Register />, { wrapper: makeWrapper() });
 
     await userEvent.type(screen.getByLabelText("Name"), "Taken");
-    await userEvent.type(screen.getByLabelText("Email"), "taken@example.com");
+    await userEvent.type(screen.getByLabelText("Email"), "taken@stanford.edu");
     await userEvent.type(screen.getByLabelText("Password"), "Password1");
     await userEvent.click(screen.getByRole("button", { name: "Create account" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent(
-      "An account with taken@example.com already exists."
+      "An account with taken@stanford.edu already exists."
     );
   });
 
@@ -129,7 +129,7 @@ describe("Register", () => {
     render(<Register />, { wrapper: WrapperWithVerify });
 
     await userEvent.type(screen.getByLabelText("Name"), "Bob");
-    await userEvent.type(screen.getByLabelText("Email"), "bob@example.com");
+    await userEvent.type(screen.getByLabelText("Email"), "bob@stanford.edu");
     await userEvent.type(screen.getByLabelText("Password"), "Password1");
     await userEvent.click(screen.getByRole("button", { name: "Create account" }));
 

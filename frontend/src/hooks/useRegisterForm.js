@@ -9,9 +9,15 @@ import { useRegister } from "../hooks/useAuth";
 import { identifyUser, trackEvent } from "../lib/analytics";
 import { PASSWORD_MIN_LENGTH } from "../lib/constants";
 
+const ALLOWED_EMAIL_DOMAIN = "@stanford.edu";
+
 function validateRegisterForm({ displayName, email, password }) {
   if (!displayName.trim()) return "Name is required.";
-  if (!email.trim()) return "Email is required.";
+  const trimmedEmail = email.trim();
+  if (!trimmedEmail) return "Email is required.";
+  if (!trimmedEmail.toLowerCase().endsWith(ALLOWED_EMAIL_DOMAIN)) {
+    return "Only @stanford.edu emails are allowed.";
+  }
   if (password.length < PASSWORD_MIN_LENGTH) {
     return `Password must be at least ${PASSWORD_MIN_LENGTH} characters.`;
   }
