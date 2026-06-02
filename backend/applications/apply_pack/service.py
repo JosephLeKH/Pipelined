@@ -9,7 +9,7 @@ from bson import ObjectId
 from bson.errors import InvalidId
 
 from ai.next_action import NextAction
-from ai.openrouter_client import OpenRouterError, complete_json, stream_chat
+from ai.openrouter_client import OpenRouterError, agent_llm_configured, complete_json, stream_chat
 from applications.apply_pack.schemas import ApplyPackResponse, ShortAnswer
 from config import settings
 from copilot.step_parser import StepParser
@@ -138,8 +138,8 @@ async def generate_apply_pack(user_id: str, app_id: str) -> ApplyPackResponse:
     if not resume_text:
         raise MissingResumeError
 
-    if not settings.openrouter_api_key:
-        raise OpenRouterError("OpenRouter API key is not configured")
+    if not agent_llm_configured():
+        raise OpenRouterError("No LLM provider configured")
 
     user_message = _build_user_message(app_doc, resume_text)
     raw = await complete_json(
@@ -179,8 +179,8 @@ async def stream_apply_pack_with_steps(
     if not resume_text:
         raise MissingResumeError
 
-    if not settings.openrouter_api_key:
-        raise OpenRouterError("OpenRouter API key is not configured")
+    if not agent_llm_configured():
+        raise OpenRouterError("No LLM provider configured")
 
     user_message = _build_user_message(app_doc, resume_text)
     parser = StepParser()

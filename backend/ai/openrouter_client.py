@@ -199,6 +199,9 @@ async def _call_provider(
     resolved_model = model or provider.model
     client = _client_for(provider)
 
+    # response_format=json_object forces the model to emit syntactically valid
+    # JSON. Supported by OpenAI, OpenRouter (with fallback prompting on models
+    # that don't natively support it), and DO GenAI's Llama family.
     try:
         response = await asyncio.wait_for(
             client.chat.completions.create(
@@ -209,6 +212,7 @@ async def _call_provider(
                 ],
                 temperature=temperature,
                 max_tokens=max_tokens,
+                response_format={"type": "json_object"},
             ),
             timeout=timeout,
         )

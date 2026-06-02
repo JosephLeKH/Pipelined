@@ -7,7 +7,7 @@ from bson import ObjectId
 from bson.errors import InvalidId
 
 from ai.next_action import NextAction
-from ai.openrouter_client import OpenRouterError, complete_json
+from ai.openrouter_client import OpenRouterError, agent_llm_configured, complete_json
 from applications.resume_insights.schemas import ResumeInsightsResponse
 from config import settings
 from database import get_collection
@@ -117,8 +117,8 @@ async def generate_resume_insights(user_id: str, app_id: str) -> ResumeInsightsR
     if not resume_text:
         raise MissingResumeError
 
-    if not settings.openrouter_api_key:
-        raise OpenRouterError("OpenRouter API key is not configured")
+    if not agent_llm_configured():
+        raise OpenRouterError("No LLM provider configured")
 
     user_message = _build_user_message(resume_text, job_description)
     raw = await complete_json(

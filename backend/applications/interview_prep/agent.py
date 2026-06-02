@@ -10,10 +10,13 @@ from datetime import UTC, datetime
 from typing import Any
 
 import structlog
+from pydantic import ValidationError
 
 from ai.next_action import NextAction
 from ai.openrouter_client import chat_completion_with_fallback
 
+from ._finish_schema import format_validation_errors
+from ._tool_defs import TOOL_DEFS
 from .constants import INTERVIEW_ROUND_FOCUS
 from .schemas import InterviewBriefing
 from .tools import fetch_page, get_levels_data, search_reddit, web_search
@@ -21,121 +24,7 @@ from .tools import fetch_page, get_levels_data, search_reddit, web_search
 logger = structlog.get_logger()
 
 _MAX_ITERATIONS = 12
-
-# Fields the agent does NOT fill — the loop populates them post-hoc.
-_AUTO_BRIEFING_FIELDS = ("company", "role", "generated_at", "next_action")
-
-
-def _build_briefing_schema() -> dict[str, Any]:
-    """Pydantic schema for InterviewBriefing minus fields the loop fills itself.
-
-    Keeps $defs at the top level so $refs resolve when this dict is the tool's
-    `parameters` object.
-    """
-    schema = InterviewBriefing.model_json_schema()
-    props = schema.get("properties", {})
-    for field in _AUTO_BRIEFING_FIELDS:
-        props.pop(field, None)
-    schema["required"] = [
-        r for r in schema.get("required", []) if r not in _AUTO_BRIEFING_FIELDS
-    ]
-    schema["additionalProperties"] = False
-    return schema
-
-
-_BRIEFING_SCHEMA = _build_briefing_schema()
-
-TOOL_DEFS: list[dict[str, Any]] = [
-    {
-        "type": "function",
-        "function": {
-            "name": "web_search",
-            "description": (
-                "Search the web for any topic. Use for: company culture, interview experiences, "
-                "Glassdoor/Blind snippets, engineering blogs, funding news, LeetCode discussion threads. "
-                "Examples: '{company} software engineer interview experience 2024', "
-                "'{company} engineering blog', '{company} layoffs OR acquisition 2024'."
-            ),
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "query": {"type": "string", "description": "The search query"}
-                },
-                "required": ["query"],
-            },
-        },
-    },
-    {
-        "type": "function",
-        "function": {
-            "name": "get_levels_data",
-            "description": (
-                "Get compensation data from Levels.fyi for a specific company and role. "
-                "Returns total comp percentiles filtered to the candidate's experience level."
-            ),
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "company": {"type": "string"},
-                    "role": {"type": "string"},
-                    "location": {"type": "string", "description": "e.g. 'San Francisco, CA' or 'Remote'"},
-                    "yoe": {"type": "integer", "description": "Years of experience"},
-                },
-                "required": ["company", "role", "location", "yoe"],
-            },
-        },
-    },
-    {
-        "type": "function",
-        "function": {
-            "name": "search_reddit",
-            "description": (
-                "Search Reddit for interview reports. Good subreddits: "
-                "cscareerquestions, leetcode, ExperiencedDevs, cscareeradvice. "
-                "Use for: recent interview experiences, actual questions asked, process specifics."
-            ),
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "subreddit": {"type": "string", "description": "Subreddit name without r/"},
-                    "query": {"type": "string", "description": "Search query"},
-                },
-                "required": ["subreddit", "query"],
-            },
-        },
-    },
-    {
-        "type": "function",
-        "function": {
-            "name": "fetch_page",
-            "description": (
-                "Fetch and read the text content of a specific URL. "
-                "Use when a search result points to a high-value page worth reading in full "
-                "(e.g., company engineering blog post, public Glassdoor page, StackShare profile)."
-            ),
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "url": {"type": "string", "description": "Full URL to fetch"}
-                },
-                "required": ["url"],
-            },
-        },
-    },
-    {
-        "type": "function",
-        "function": {
-            "name": "finish",
-            "description": (
-                "Call this when you have data for ALL four sections "
-                "(compensation, interview_process, company_intel, personalized). "
-                "Fill EVERY field per the parameters schema — no shortcuts, no extra keys. "
-                "`rounds` must be a list of objects (name/description/what_to_expect), not strings."
-            ),
-            "parameters": _BRIEFING_SCHEMA,
-        },
-    },
-]
+_MAX_VALIDATION_RETRIES = 2
 
 
 def _round_focus_section(interview_round: str | None) -> str:
@@ -234,6 +123,8 @@ async def run_agent(
         },
     ]
 
+    validation_retries = 0
+
     for iteration in range(_MAX_ITERATIONS):
         response = await chat_completion_with_fallback(
             messages=messages,
@@ -324,13 +215,48 @@ async def run_agent(
                     ).model_dump()
                 validated = InterviewBriefing.model_validate(briefing_result)
                 yield {"type": "done", "briefing": validated.model_dump(mode="json")}
-            except Exception as e:
-                logger.exception("briefing_validation_error", error=str(e))
+                return
+            except ValidationError as exc:
+                validation_retries += 1
+                if validation_retries > _MAX_VALIDATION_RETRIES:
+                    logger.warning(
+                        "briefing_validation_giving_up",
+                        attempts=validation_retries,
+                        error_count=exc.error_count(),
+                    )
+                    yield {
+                        "type": "error",
+                        "message": (
+                            f"Couldn't assemble a valid briefing after {validation_retries} attempts. "
+                            "Please try again."
+                        ),
+                    }
+                    return
+                feedback = format_validation_errors(exc)
+                logger.info(
+                    "briefing_validation_retry",
+                    attempt=validation_retries,
+                    error_count=exc.error_count(),
+                )
+                messages.append(
+                    {
+                        "role": "user",
+                        "content": (
+                            "Your finish() call did not match the required schema. "
+                            "Fix these errors and call finish() again — every required field "
+                            "must be present with the correct type:\n\n"
+                            f"{feedback}"
+                        ),
+                    }
+                )
+                # Fall through to next loop iteration — do not return.
+            except Exception as exc:
+                logger.exception("briefing_validation_error", error=str(exc))
                 yield {
                     "type": "error",
-                    "message": f"Briefing data was malformed: {e}. Please try again.",
+                    "message": f"Briefing data was malformed: {exc}. Please try again.",
                 }
-            return
+                return
 
     yield {
         "type": "error",

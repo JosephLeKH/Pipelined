@@ -6,7 +6,7 @@ import structlog
 from bson import ObjectId
 from bson.errors import InvalidId
 
-from ai.openrouter_client import OpenRouterError, complete_json
+from ai.openrouter_client import OpenRouterError, agent_llm_configured, complete_json
 from applications.thread_summary.schemas import ThreadSummaryResponse
 from config import settings
 from database import get_collection
@@ -99,8 +99,8 @@ async def generate_thread_summary(user_id: str, app_id: str) -> ThreadSummaryRes
     if not events:
         raise MissingEmailEventsError
 
-    if not settings.openrouter_api_key:
-        raise OpenRouterError("OpenRouter API key is not configured")
+    if not agent_llm_configured():
+        raise OpenRouterError("No LLM provider configured")
 
     company = app_doc.get("company", "")
     role_title = app_doc.get("role_title", app_doc.get("position", ""))

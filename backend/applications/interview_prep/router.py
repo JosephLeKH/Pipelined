@@ -87,10 +87,10 @@ async def interview_prep_stream(
     if not company:
         raise HTTPException(status_code=422, detail="Application has no company name")
 
-    if not settings.openrouter_api_key:
+    if not agent_llm_configured():
         raise HTTPException(
             status_code=503,
-            detail="Interview prep is not configured (missing OPENROUTER_API_KEY)",
+            detail="Interview prep is not configured (no LLM provider available)",
         )
 
     async def event_stream():
