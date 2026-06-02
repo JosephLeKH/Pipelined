@@ -70,3 +70,47 @@ describe("PanelBody", () => {
     expect(screen.getByLabelText("Stage")).toBeInTheDocument();
   });
 });
+
+describe("PanelBody — Scout-first layout", () => {
+  it("renders Scout's Take above Notes", () => {
+    render(
+      <PanelBody
+        application={APP}
+        handleStageChange={vi.fn()}
+        handleUpdate={vi.fn()}
+        onAddEvent={vi.fn()}
+        onDirtyChange={vi.fn()}
+      />,
+      { wrapper }
+    );
+
+    const take = screen.getByLabelText("Scout's Take");
+    expect(take).toBeInTheDocument();
+    // Verify Notes section exists
+    const notes = screen.getByLabelText("Notes");
+    expect(notes).toBeInTheDocument();
+  });
+
+  it("renders Scout's Toolkit with all six tools", () => {
+    render(
+      <PanelBody
+        application={APP}
+        handleStageChange={vi.fn()}
+        handleUpdate={vi.fn()}
+        onAddEvent={vi.fn()}
+        onDirtyChange={vi.fn()}
+      />,
+      { wrapper }
+    );
+
+    const toolkit = screen.getByLabelText("Scout's Toolkit");
+    expect(toolkit).toBeInTheDocument();
+    // Verify all six tools are rendered
+    expect(screen.getByLabelText(/Apply Pack — Run it/)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Mock Interview — Run it/)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Resume Insights — Run it/)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Email Recap — Run it/)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Interview Prep — Run it/)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Follow-up Draft — Run it/)).toBeInTheDocument();
+  });
+});
