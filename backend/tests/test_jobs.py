@@ -242,44 +242,65 @@ async def test_get_job_returns_404_for_invalid_id(client):
     assert response.status_code == 404
 
 
-async def test_list_jobs_sort_newest_orders_by_ingested_desc(client):
-    """sort=newest returns most-recently-ingested first regardless of date_posted."""
-    # Arrange — listings ingested in known order; pick deliberately scrambled date_posted
+async def test_list_jobs_sort_newest_orders_by_date_posted_desc(client):
+    """sort=newest orders by date_posted (the date shown on cards), not ingested_at."""
+    # Arrange — listings with scrambled ingested_at so the test fails if backend
+    # falls back to ingested_at instead of using the user-visible date_posted.
     from datetime import timedelta
     base = datetime(2026, 5, 1, tzinfo=timezone.utc)
     await _insert_listing({
-        "company": "Old Co", "apply_url": "https://old.example.com/jobs/a",
+        "company": "Newer Posted", "apply_url": "https://newer.example.com/jobs/a",
         "ingested_at": base, "date_posted": base + timedelta(days=10),
     })
     await _insert_listing({
-        "company": "New Co", "apply_url": "https://new.example.com/jobs/a",
+        "company": "Older Posted", "apply_url": "https://older.example.com/jobs/a",
         "ingested_at": base + timedelta(days=5), "date_posted": base,
     })
 
     # Act
     response = await client.get("/api/jobs?sort=newest")
 
-    # Assert — newest ingested first
+    # Assert — newest by date_posted first
     assert response.status_code == 200
     companies = [j["company"] for j in response.json()["data"]]
-    assert companies == ["New Co", "Old Co"]
+    assert companies == ["Newer Posted", "Older Posted"]
 
 
-async def test_list_jobs_sort_oldest_orders_by_ingested_asc(client):
-    """sort=oldest returns oldest-ingested first; pagination stays consistent."""
+async def test_list_jobs_sort_newest_ingested_at_tiebreaker(client):
+    """When date_posted ties, ingested_at breaks the tie (most recently ingested first)."""
+    from datetime import timedelta
+    posted = datetime(2026, 5, 1, tzinfo=timezone.utc)
+    await _insert_listing({
+        "company": "Older Ingest", "apply_url": "https://older-ingest.example.com/jobs/a",
+        "date_posted": posted, "ingested_at": posted,
+    })
+    await _insert_listing({
+        "company": "Newer Ingest", "apply_url": "https://newer-ingest.example.com/jobs/a",
+        "date_posted": posted, "ingested_at": posted + timedelta(days=3),
+    })
+
+    response = await client.get("/api/jobs?sort=newest")
+
+    assert response.status_code == 200
+    companies = [j["company"] for j in response.json()["data"]]
+    assert companies == ["Newer Ingest", "Older Ingest"]
+
+
+async def test_list_jobs_sort_oldest_orders_by_date_posted_asc(client):
+    """sort=oldest returns earliest-posted first; pagination stays consistent."""
     from datetime import timedelta
     base = datetime(2026, 5, 1, tzinfo=timezone.utc)
     await _insert_listing({
         "company": "First", "apply_url": "https://first.example.com/jobs/a",
-        "ingested_at": base,
+        "date_posted": base, "ingested_at": base + timedelta(days=10),
     })
     await _insert_listing({
         "company": "Second", "apply_url": "https://second.example.com/jobs/a",
-        "ingested_at": base + timedelta(days=1),
+        "date_posted": base + timedelta(days=1), "ingested_at": base + timedelta(days=5),
     })
     await _insert_listing({
         "company": "Third", "apply_url": "https://third.example.com/jobs/a",
-        "ingested_at": base + timedelta(days=2),
+        "date_posted": base + timedelta(days=2), "ingested_at": base,
     })
 
     # Act
@@ -298,15 +319,15 @@ async def test_list_jobs_sort_overrides_text_score(client):
     await _insert_listing({
         "company": "Match A", "role": "Engineer Engineer Engineer",  # higher text score
         "apply_url": "https://a.example.com/jobs/a",
-        "ingested_at": base,
+        "date_posted": base, "ingested_at": base,
     })
     await _insert_listing({
         "company": "Match B", "role": "Engineer",  # lower text score
         "apply_url": "https://b.example.com/jobs/a",
-        "ingested_at": base + timedelta(days=5),
+        "date_posted": base + timedelta(days=5), "ingested_at": base + timedelta(days=5),
     })
 
-    # Act — with sort=newest, B (newer) should come first even though A has higher text score
+    # Act — with sort=newest, B (newer posted) should come first even though A has higher text score
     response = await client.get("/api/jobs?q=Engineer&sort=newest")
 
     # Assert

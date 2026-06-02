@@ -93,8 +93,10 @@ async def _fetch_listings_and_count(
     """Run count and paginated find in parallel.
 
     Sort precedence: explicit `sort` (newest/oldest) overrides text score so users
-    who pick a sort always get a date-ordered, paginatable result. With no explicit
-    sort and a text query, results rank by text score; otherwise newest ingested first.
+    who pick a sort always get a date-ordered, paginatable result. Newest/oldest
+    use `date_posted` (the date shown on the card) so the visible order matches the
+    user's selection, with `ingested_at` as tiebreaker. With no explicit sort and a
+    text query, results rank by text score; otherwise newest posted first.
     """
     import asyncio
 
@@ -105,9 +107,9 @@ async def _fetch_listings_and_count(
     if use_text_score:
         sort_spec: list | str = [("score", {"$meta": "textScore"})]
     elif sort == "oldest":
-        sort_spec = [("ingested_at", 1)]
+        sort_spec = [("date_posted", 1), ("ingested_at", 1)]
     else:
-        sort_spec = [("ingested_at", -1)]
+        sort_spec = [("date_posted", -1), ("ingested_at", -1)]
 
     total_coro = col.count_documents(mongo_filter)
     docs_coro = find_cursor.sort(sort_spec).skip(skip).limit(limit).to_list(length=limit)
