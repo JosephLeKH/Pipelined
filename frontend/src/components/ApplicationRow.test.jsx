@@ -132,6 +132,16 @@ describe("ApplicationRow — desktop interactions", () => {
 
     expect(screen.getByRole("listitem")).toHaveClass("border-l-brand-600");
   });
+
+  it("renders a Scout ghost-risk signal when application is stale and not terminal", () => {
+    const staleApp = {
+      ...APP,
+      updated_at: "2026-03-01T00:00:00Z", // 45 days ago
+    };
+    renderRow({ application: staleApp });
+
+    expect(screen.getByLabelText(/Ghost risk/)).toBeInTheDocument();
+  });
 });
 
 describe("ApplicationRow — swipe actions", () => {

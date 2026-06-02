@@ -11,6 +11,7 @@ import { STAGE_COLORS, DEFAULT_STAGE_COLOR } from "../lib/constants";
 import { Button } from "./ui/button";
 import { formatDate, isFollowUpOverdue } from "../lib/dateUtils";
 import { useSwipeAction } from "../hooks/useSwipeAction";
+import { useScoutSignal } from "../hooks/useScoutSignal";
 import { RowHoverActions, RowMenu } from "./ApplicationRowActions";
 import CompanyLogo from "./CompanyLogo";
 import FitBadge from "./FitBadge";
@@ -104,6 +105,7 @@ function ApplicationRow({
 
   const { offset, revealed, handlers, handleAction } = useSwipeAction();
   const fitScore = getDisplayFitScore(application);
+  const signal = useScoutSignal(application, []);
 
   return (
     <div style={style} className="relative overflow-hidden" data-testid="application-row-wrapper">
@@ -210,7 +212,21 @@ function ApplicationRow({
             onSetFollowUp={onSetFollowUp}
           />
         </div>
-        <span className="hidden w-7 shrink-0 md:block" aria-hidden="true" />
+        {signal ? (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span
+                aria-label={signal.label}
+                className="hidden w-7 shrink-0 items-center justify-center text-text-2 md:flex"
+              >
+                <span aria-hidden="true">{signal.icon}</span>
+              </span>
+            </TooltipTrigger>
+            <TooltipContent side="top">{signal.tooltip}</TooltipContent>
+          </Tooltip>
+        ) : (
+          <span className="hidden w-7 shrink-0 md:block" aria-hidden="true" />
+        )}
         <RowHoverActions
           application={application}
           onArchive={onArchive}
