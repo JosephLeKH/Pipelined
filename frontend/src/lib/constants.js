@@ -132,6 +132,7 @@ export const UNDO_TOAST_DURATION_MS = 10000;
 export const COPILOT_TRIED_KEY = "pipelined_copilot_tried";
 export const COPILOT_DOCKED_OPEN_KEY = "pipelined_copilot_docked_open";
 export const TODAY_VISITED_KEY = "pipelined_today_visited";
+export const QUICK_TOUR_DISMISSED_KEY = "pipelined_quick_tour_dismissed";
 export const MORNING_BRIEF_EXPANDED_KEY = "pipelined_brief_expanded_by_date";
 export const COMPLETED_MISSIONS_BY_DATE_KEY = "pipelined_completed_missions_by_date";
 export const MISSION_COMPLETE_ANIM_MS = 280;
@@ -211,7 +212,17 @@ export const STALE_CONTACT_DAYS = 14;
 
 export const RELATIONSHIP_OPTIONS = ["recruiter", "referral", "mentor", "peer", "hiring_manager", "other"];
 
-export const CLEARBIT_LOGO_BASE_URL = "https://logo.clearbit.com";
+// DuckDuckGo's icon API — privacy-respecting, not on common ad-blocker lists
+// (logo.clearbit.com gets blocked by uBlock/Privacy Badger as a tracking domain).
+export const CLEARBIT_LOGO_BASE_URL = "https://icons.duckduckgo.com/ip3";
+
+function ddgIconSuffix(domain) {
+  return domain.endsWith(".ico") ? domain : `${domain}.ico`;
+}
+
+export function companyLogoUrl(domain) {
+  return `${CLEARBIT_LOGO_BASE_URL}/${ddgIconSuffix(domain)}`;
+}
 
 export const COMPANY_LOGO_FALLBACK_COLORS = [
   "bg-brand-500",

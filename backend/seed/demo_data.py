@@ -8,12 +8,14 @@ skip users who already have seeded apps.
 import structlog
 from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorCollection
+from pymongo import ReturnDocument
 
 from auth.constants import DEFAULT_STAGES
 from database import get_collection
 from seed.applications import DEMO_MARKER, build_demo_applications
 from seed.events import build_demo_events
 from seed.notifications import build_demo_notifications
+from seed.pending import build_demo_job_listings, build_demo_pending_opportunities
 
 logger = structlog.get_logger()
 
@@ -61,18 +63,48 @@ async def seed_demo_data_for_user(user_id: str, stages: list[str]) -> int:
         if notification_docs:
             await notifications.insert_many(notification_docs)
 
+        pending_count = await _seed_pending_opportunities(uid)
+
         logger.info(
             "demo_seed_complete",
             user_id=user_id,
             app_count=len(app_docs),
             event_count=len(event_docs),
             notification_count=len(notification_docs),
+            pending_count=pending_count,
         )
         return len(app_docs)
     except Exception as exc:
         # Demo seed is never load-bearing — log and continue so signup succeeds.
         logger.warning("demo_seed_failed", user_id=user_id, error=str(exc))
         return 0
+
+
+async def _seed_pending_opportunities(uid: ObjectId) -> int:
+    """Insert paired job_listings + pending_opportunities for this user.
+
+    Listings are upserted on url_hash so reseeding doesn't duplicate them
+    in the global listings collection. Pending opportunities are inserted
+    fresh per user.
+    """
+    listings = get_collection("job_listings")
+    pending = get_collection("pending_opportunities")
+
+    listing_docs = build_demo_job_listings(uid)
+    listing_ids_by_company: dict[str, ObjectId] = {}
+    for doc in listing_docs:
+        result = await listings.find_one_and_update(
+            {"url_hash": doc["url_hash"]},
+            {"$setOnInsert": doc},
+            upsert=True,
+            return_document=ReturnDocument.AFTER,
+        )
+        listing_ids_by_company[doc["company"]] = result["_id"]
+
+    pending_docs = build_demo_pending_opportunities(uid, listing_ids_by_company)
+    if pending_docs:
+        await pending.insert_many(pending_docs)
+    return len(pending_docs)
 
 
 async def backfill_demo_for_all_users() -> dict[str, int]:

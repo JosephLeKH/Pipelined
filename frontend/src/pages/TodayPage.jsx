@@ -7,6 +7,8 @@ import Sun from "lucide-react/dist/esm/icons/sun";
 
 import MorningBriefSkeleton from "../components/MorningBriefSkeleton";
 import OnboardingChecklist from "../components/OnboardingChecklist";
+import QuickTourBanner from "../components/QuickTourBanner";
+import TodayFollowUps from "../components/TodayFollowUps";
 import TodayMorningBrief from "../components/TodayMorningBrief";
 import TodayMissionsList from "../components/TodayMissionsList";
 import WeeklyGoalSection from "../components/WeeklyGoalSection";
@@ -54,6 +56,7 @@ function TodayEmptyBriefState({ user, briefHour, emptyMessage, generateBrief, is
   return (
     <>
       <TodayGreeting user={user} briefDate={null} missionCount={0} />
+      <TodayFollowUps />
       <TodayMorningBrief
         brief={null}
         briefHour={briefHour}
@@ -187,6 +190,7 @@ function TodayPage() {
   return (
     <main className="flex-1 px-4 py-8 sm:px-6">
       <div className="mx-auto max-w-2xl space-y-8">
+        <QuickTourBanner />
         {isLoading && (
           <>
             <TodayGreeting user={user} briefDate={null} missionCount={0} />
