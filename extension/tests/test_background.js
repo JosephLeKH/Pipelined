@@ -10,10 +10,16 @@ const TOKEN_KEY = "pipelined_auth_token";
 
 let handleSave;
 let fetchFitScoreInBackground;
+let onInstalledListener;
+let onMessageListener;
 
 beforeAll(async () => {
   global.chrome = {
-    runtime: { onMessage: { addListener: jest.fn() } },
+    runtime: {
+      id: "pipelined-test-id",
+      onMessage: { addListener: jest.fn() },
+      onInstalled: { addListener: jest.fn() },
+    },
     storage: {
       session: {
         get: jest.fn(),
@@ -23,6 +29,7 @@ beforeAll(async () => {
       local: {
         get: jest.fn(),
         set: jest.fn().mockResolvedValue(undefined),
+        remove: jest.fn().mockResolvedValue(undefined),
       },
     },
   };
@@ -31,6 +38,8 @@ beforeAll(async () => {
   const mod = await import("../background/background.js");
   handleSave = mod.handleSave;
   fetchFitScoreInBackground = mod.fetchFitScoreInBackground;
+  onMessageListener = chrome.runtime.onMessage.addListener.mock.calls[0]?.[0];
+  onInstalledListener = chrome.runtime.onInstalled.addListener.mock.calls[0]?.[0];
 });
 
 beforeEach(() => {
@@ -185,5 +194,63 @@ describe("handleSave() queue recovery", () => {
     expect(chrome.storage.local.set).toHaveBeenLastCalledWith({
       recent_saves: [{ ...cachedSave, fit_score: 82 }],
     });
+  });
+});
+
+// ── Auth bootstrap ────────────────────────────────────────────────────────────
+
+describe("auth bootstrap", () => {
+  it("refreshes the token when chrome.runtime.onInstalled fires", async () => {
+    chrome.storage.session.get.mockResolvedValue({});  // no cached token
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: () =>
+        Promise.resolve({ data: { token: "boot-token", display_name: "Joseph" } }),
+    });
+
+    expect(onInstalledListener).toBeDefined();
+    await onInstalledListener({ reason: "install" });
+
+    expect(fetch).toHaveBeenCalledWith(
+      expect.stringContaining("/api/auth/extension-token"),
+      expect.objectContaining({ credentials: "include" }),
+    );
+    expect(chrome.storage.session.set).toHaveBeenCalledWith({
+      pipelined_auth_token: "boot-token",
+    });
+  });
+
+  it("triggers refresh when GET_AUTH_STATUS has no cached token", async () => {
+    chrome.storage.session.get.mockResolvedValueOnce({});  // first call (cache miss)
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: () =>
+        Promise.resolve({ data: { token: "lazy-token", display_name: "Joseph" } }),
+    });
+    // After refresh succeeds, the second read returns the token
+    chrome.storage.session.get.mockResolvedValueOnce({
+      pipelined_auth_token: "lazy-token",
+    });
+    chrome.storage.local.get.mockResolvedValueOnce({ display_name: "Joseph" });
+
+    expect(onMessageListener).toBeDefined();
+    const sendResponse = jest.fn();
+    const kept = onMessageListener(
+      { type: "GET_AUTH_STATUS" },
+      { id: "pipelined-test-id" },
+      sendResponse,
+    );
+    expect(kept).toBe(true);
+    // Let the async promise chain settle
+    await new Promise((r) => setTimeout(r, 0));
+    await new Promise((r) => setTimeout(r, 0));
+
+    expect(fetch).toHaveBeenCalledWith(
+      expect.stringContaining("/api/auth/extension-token"),
+      expect.anything(),
+    );
+    expect(sendResponse).toHaveBeenCalledWith(
+      expect.objectContaining({ authenticated: true, display_name: "Joseph" }),
+    );
   });
 });
