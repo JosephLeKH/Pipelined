@@ -70,6 +70,7 @@ ALLOWED_NOTIFICATION_TYPES: frozenset[str] = frozenset({
     "morning_brief_ready",
     "interview_prep_ready",
     "saved_search_match",
+    "welcome",
 })
 
 
