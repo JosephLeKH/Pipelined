@@ -1,7 +1,7 @@
-/** Company logo via Clearbit favicon API with letter-circle fallback. */
+/** Company logo via DuckDuckGo icon API with letter-circle fallback. */
 
 import { useState } from "react";
-import { CLEARBIT_LOGO_BASE_URL } from "../lib/constants";
+import { companyLogoUrl } from "../lib/constants";
 
 function CompanyLogo({ company_domain, company, size = 16 }) {
   const [hasError, setHasError] = useState(false);
@@ -22,7 +22,7 @@ function CompanyLogo({ company_domain, company, size = 16 }) {
 
   return (
     <img
-      src={`${CLEARBIT_LOGO_BASE_URL}/${company_domain}`}
+      src={companyLogoUrl(company_domain)}
       alt={company}
       width={size}
       height={size}
