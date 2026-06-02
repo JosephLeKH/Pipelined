@@ -7,6 +7,11 @@ import ArrowRight from "lucide-react/dist/esm/icons/arrow-right";
 import { useMarketingReveal } from "./useMarketingReveal";
 
 const CHANGELOG_ENTRIES = [
+  { title: "Scout AI Assistant", description: "Take, Toolkit, signals, and avatar", date: "Jun 01" },
+  { title: "Interview Prep Agent", description: "Live Exa + Gemini research", date: "May 31" },
+  { title: "Auto Fit Score", description: "Scored at create + on click", date: "May 30" },
+  { title: "Demo Seed on Signup", description: "7 apps + 2 events out of the box", date: "May 30" },
+  { title: "SimplifyJobs Sources", description: "More curated job listings", date: "May 30" },
   { title: "Resizable Sidebar", description: "Drag to fit your screen", date: "May 31" },
   { title: "Notes WYSIWYG", description: "Inline bold, italic, lists", date: "May 30" },
   { title: "Faster Job Board", description: "4× daily GitHub sync", date: "May 30" },
