@@ -1,104 +1,110 @@
-/** Hero section for the marketing landing. AI-native positioning with mock product card. */
+/** Hero section for the marketing landing. AI-native positioning with mock extension capture. */
 
 import { Link } from "react-router-dom";
 
 import ArrowRight from "lucide-react/dist/esm/icons/arrow-right";
 import Sparkles from "lucide-react/dist/esm/icons/sparkles";
 import Check from "lucide-react/dist/esm/icons/check";
-import Clock from "lucide-react/dist/esm/icons/clock";
-import Briefcase from "lucide-react/dist/esm/icons/briefcase";
+import GitBranch from "lucide-react/dist/esm/icons/git-branch";
+import MapPin from "lucide-react/dist/esm/icons/map-pin";
+import Lock from "lucide-react/dist/esm/icons/lock";
+import X from "lucide-react/dist/esm/icons/x";
 
-const MOCK_MISSIONS = [
-  {
-    icon: Briefcase,
-    title: "Follow up with Stripe recruiter",
-    meta: "Sent a week ago · No reply",
-    accent: true,
-  },
-  {
-    icon: Clock,
-    title: "Confirm Linear loop, Thursday at 2 PM",
-    meta: "Interview · 2 days",
-    accent: false,
-  },
-  {
-    icon: Check,
-    title: "Apply: Anthropic, SWE Intern",
-    meta: "Apply Pack draft ready",
-    accent: false,
-  },
+const CAPTURED_FIELDS = [
+  ["Company", "Anthropic"],
+  ["Role", "Software Engineer Intern"],
+  ["Location", "San Francisco · Hybrid"],
 ];
 
-function HeroProductCard() {
+function ExtensionSaveBanner() {
+  return (
+    <div className="absolute right-4 top-4 w-[14.75rem] rounded-xl border border-border-2 bg-surface-0 p-3 shadow-[0_14px_38px_-12px_rgba(140,21,21,0.28),0_2px_4px_-1px_rgba(0,0,0,0.06)]">
+      <div className="mb-3 flex items-center justify-between">
+        <div className="flex items-center gap-1.5">
+          <GitBranch className="h-3.5 w-3.5 text-brand-600" aria-hidden="true" />
+          <span className="text-[0.6875rem] font-semibold text-text-1">Pipelined</span>
+          <span className="inline-flex items-center gap-1 rounded-full bg-brand-50 px-1.5 py-0.5 text-[0.5625rem] font-medium text-brand-700">
+            <Sparkles className="h-2.5 w-2.5" aria-hidden="true" />
+            Detected
+          </span>
+        </div>
+        <X className="h-3.5 w-3.5 text-text-4" aria-hidden="true" />
+      </div>
+      <dl className="space-y-2">
+        {CAPTURED_FIELDS.map(([label, value]) => (
+          <div key={label}>
+            <dt className="text-[0.5625rem] font-medium uppercase tracking-[0.08em] text-text-3">{label}</dt>
+            <dd className="truncate text-sm font-medium text-text-1">{value}</dd>
+          </div>
+        ))}
+      </dl>
+      <button
+        type="button"
+        className="mt-3 flex h-8 w-full items-center justify-center gap-1 rounded-md bg-brand-700 text-xs font-medium text-white shadow-sm"
+      >
+        Save to Pipelined
+        <ArrowRight className="h-3 w-3" aria-hidden="true" />
+      </button>
+    </div>
+  );
+}
+
+function HeroExtensionMock() {
   return (
     <div className="relative">
       <div
         aria-hidden="true"
         className="absolute -inset-x-8 -inset-y-6 -z-10 rounded-[2.25rem] bg-gradient-to-br from-brand-100/40 via-transparent to-brand-50/0 blur-2xl"
       />
-      <div className="rounded-2xl border border-border-2 bg-surface-0 shadow-[0_24px_70px_-30px_rgba(140,21,21,0.18),0_2px_6px_-1px_rgba(0,0,0,0.04)]">
-        <div className="flex items-center gap-1.5 border-b border-border-1 px-4 py-3">
+      <div className="overflow-hidden rounded-2xl border border-border-2 bg-surface-0 shadow-[0_24px_70px_-30px_rgba(140,21,21,0.18),0_2px_6px_-1px_rgba(0,0,0,0.04)]">
+        <div className="flex items-center gap-1.5 border-b border-border-1 bg-surface-1 px-4 py-3">
           <span className="h-2.5 w-2.5 rounded-full bg-border-3" aria-hidden="true" />
           <span className="h-2.5 w-2.5 rounded-full bg-border-3" aria-hidden="true" />
           <span className="h-2.5 w-2.5 rounded-full bg-border-3" aria-hidden="true" />
-          <span className="ml-3 text-[0.6875rem] font-medium text-text-3">
-            pipelined.app / today
-          </span>
+          <div className="ml-3 flex min-w-0 flex-1 items-center gap-1.5 rounded-md border border-border-1 bg-surface-0 px-2.5 py-1 text-[0.6875rem] font-medium text-text-3">
+            <Lock className="h-3 w-3 shrink-0 text-text-4" aria-hidden="true" />
+            <span className="truncate">boards.greenhouse.io/anthropic/swe-intern</span>
+          </div>
         </div>
-
-        <div className="px-6 pb-6 pt-5">
-          <div className="mb-4 flex items-center justify-between">
-            <div>
-              <p className="text-[0.6875rem] font-medium uppercase tracking-[0.08em] text-text-3">
-                Today
-              </p>
-              <h3 className="mt-1 text-lg font-semibold text-text-1">
-                Your missions, ranked
-              </h3>
-            </div>
-            <span className="inline-flex items-center gap-1 rounded-full border border-brand-100 bg-brand-50 px-2.5 py-1 text-[0.6875rem] font-medium text-brand-700">
-              <Sparkles className="h-3 w-3" aria-hidden="true" />
-              AI ranked
+        <div className="relative px-6 pb-6 pt-5">
+          <div className="flex items-center gap-3">
+            <span
+              className="flex h-9 w-9 items-center justify-center rounded-md bg-text-1 text-sm font-semibold text-white"
+              aria-hidden="true"
+            >
+              A
             </span>
+            <div className="min-w-0">
+              <p className="text-[0.6875rem] font-medium text-text-3">Anthropic</p>
+              <h4 className="truncate text-base font-semibold text-text-1">
+                Software Engineer Intern, Summer 2026
+              </h4>
+            </div>
           </div>
-
-          <ul className="flex flex-col gap-2">
-            {MOCK_MISSIONS.map(({ icon: Icon, title, meta, accent }) => (
-              <li
-                key={title}
-                className={[
-                  "flex items-center gap-3 rounded-lg border px-3 py-2.5",
-                  accent
-                    ? "border-brand-100 bg-brand-50/60"
-                    : "border-border-1 bg-surface-0",
-                ].join(" ")}
-              >
-                <span
-                  className={[
-                    "flex h-7 w-7 shrink-0 items-center justify-center rounded-md",
-                    accent ? "bg-brand-700 text-white" : "bg-surface-2 text-text-2",
-                  ].join(" ")}
-                  aria-hidden="true"
-                >
-                  <Icon className="h-3.5 w-3.5" />
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium text-text-1">{title}</p>
-                  <p className="truncate text-xs text-text-3">{meta}</p>
-                </div>
-                <span aria-hidden="true" className="text-text-4">
-                  <ArrowRight className="h-3.5 w-3.5" />
-                </span>
-              </li>
+          <p className="mt-2 inline-flex items-center gap-1.5 text-[0.6875rem] text-text-3">
+            <MapPin className="h-3 w-3" aria-hidden="true" />
+            San Francisco, CA · Hybrid · Internship
+          </p>
+          <div className="mt-5 space-y-2">
+            <div className="h-2 w-full rounded bg-surface-2" />
+            <div className="h-2 w-11/12 rounded bg-surface-2" />
+            <div className="h-2 w-2/3 rounded bg-surface-2" />
+          </div>
+          <div className="mt-5 space-y-2">
+            <div className="h-2.5 w-24 rounded bg-surface-2" />
+            <div className="h-2 w-full rounded bg-surface-2" />
+            <div className="h-2 w-3/4 rounded bg-surface-2" />
+          </div>
+          <div className="mt-5 space-y-2.5">
+            <div className="h-2.5 w-28 rounded bg-surface-2" />
+            {["w-3/4", "w-4/5", "w-2/3"].map((width) => (
+              <div key={width} className="flex items-center gap-2">
+                <div className="h-1 w-1 shrink-0 rounded-full bg-text-4" />
+                <div className={`h-2 rounded bg-surface-2 ${width}`} />
+              </div>
             ))}
-          </ul>
-
-          <div className="mt-5 flex items-center gap-2 rounded-lg border border-dashed border-border-2 bg-surface-1 px-3 py-2.5">
-            <span className="inline-flex h-1.5 w-1.5 animate-pulse-soft rounded-full bg-brand-600" aria-hidden="true" />
-            <p className="text-xs text-text-2">
-              <span className="font-medium text-text-1">Autopilot</span> is watching your top companies overnight.
-            </p>
           </div>
+          <ExtensionSaveBanner />
         </div>
       </div>
     </div>
@@ -119,11 +125,6 @@ export default function HeroSection() {
 
       <div className="mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-12 px-6 pb-20 lg:grid-cols-[1.05fr_1fr] lg:gap-16 lg:pb-28">
         <div>
-          <div className="mb-5 inline-flex h-7 items-center gap-2 rounded-full border border-brand-100 bg-brand-50 px-3 text-xs font-medium text-brand-700">
-            <Sparkles className="h-3 w-3" aria-hidden="true" />
-            AI-native job search. Built at Stanford.
-          </div>
-
           <h1 className="max-w-[40rem] text-[2.5rem] font-semibold leading-[1.04] tracking-[-0.030em] text-text-1 md:text-[3.25rem] lg:text-[3.75rem]">
             Your job hunt,{" "}
             <span className="bg-gradient-to-br from-brand-700 to-brand-500 bg-clip-text text-transparent">
@@ -132,9 +133,9 @@ export default function HeroSection() {
           </h1>
 
           <p className="mt-6 max-w-[33.75rem] text-lg leading-[1.55] text-text-2">
-            Capture every application from one-click save to signed offer. Pipelined is your
-            agentic copilot. It ranks today&apos;s missions, drafts your Apply Pack, rehearses
-            interview loops, and tells you what to do next.
+            Pipelined tracks every application from save to signed offer. It ranks
+            today&apos;s priorities, drafts your Apply Pack, runs mock interviews, and
+            shows you what to do next.
           </p>
 
           <div className="mt-8 flex flex-wrap items-center gap-3">
@@ -164,7 +165,7 @@ export default function HeroSection() {
         </div>
 
         <div className="lg:pl-4">
-          <HeroProductCard />
+          <HeroExtensionMock />
         </div>
       </div>
     </section>
