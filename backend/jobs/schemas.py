@@ -9,6 +9,7 @@ ValidExperienceLevel = Literal["internship", "entry", "mid", "senior", "staff", 
 ValidRoleType = Literal["full_time", "part_time", "contract", "internship", "any"]
 ValidCompanyType = Literal["startup", "mid", "enterprise", "gov", "nonprofit", "other"]
 ValidRemoteStatus = Literal["remote", "hybrid", "onsite", "unknown"]
+ValidJobSort = Literal["newest", "oldest"]
 
 DEFAULT_PAGE_SIZE = 30
 MAX_PAGE_SIZE = 100
@@ -53,6 +54,7 @@ class JobListQuery(BaseModel):
     date_from: datetime | None = None
     salary_min: int | None = Field(None, ge=MIN_SALARY)
     salary_max: int | None = Field(None, ge=MIN_SALARY)
+    sort: ValidJobSort | None = None
     hide_applied: bool = False
     page: int = Field(1, ge=1)
     per_page: int = Field(DEFAULT_PAGE_SIZE, ge=1, le=MAX_PAGE_SIZE)

@@ -75,25 +75,42 @@ async def list_listings(
     mongo_filter = _build_filter(query, excluded_urls)
     skip = (query.page - 1) * query.per_page
 
-    total, docs = await _fetch_listings_and_count(col, mongo_filter, skip, query.per_page, bool(query.q))
-    logger.info("job_listings_fetched", total=total, page=query.page)
+    total, docs = await _fetch_listings_and_count(
+        col, mongo_filter, skip, query.per_page, bool(query.q), query.sort
+    )
+    logger.info("job_listings_fetched", total=total, page=query.page, sort=query.sort)
     return docs, total
 
 
 async def _fetch_listings_and_count(
-    col: AsyncIOMotorCollection, mongo_filter: dict, skip: int, limit: int, text_search: bool
+    col: AsyncIOMotorCollection,
+    mongo_filter: dict,
+    skip: int,
+    limit: int,
+    text_search: bool,
+    sort: str | None,
 ) -> tuple[int, list[dict]]:
-    """Run count and paginated find in parallel."""
+    """Run count and paginated find in parallel.
+
+    Sort precedence: explicit `sort` (newest/oldest) overrides text score so users
+    who pick a sort always get a date-ordered, paginatable result. With no explicit
+    sort and a text query, results rank by text score; otherwise newest ingested first.
+    """
     import asyncio
 
-    projection = {"score": {"$meta": "textScore"}} if text_search else None
+    use_text_score = text_search and sort is None
+    projection = {"score": {"$meta": "textScore"}} if use_text_score else None
+
+    find_cursor = col.find(mongo_filter, projection) if projection else col.find(mongo_filter)
+    if use_text_score:
+        sort_spec: list | str = [("score", {"$meta": "textScore"})]
+    elif sort == "oldest":
+        sort_spec = [("ingested_at", 1)]
+    else:
+        sort_spec = [("ingested_at", -1)]
 
     total_coro = col.count_documents(mongo_filter)
-    find_cursor = col.find(mongo_filter, projection) if projection else col.find(mongo_filter)
-    if text_search:
-        docs_coro = find_cursor.sort([("score", {"$meta": "textScore"})]).skip(skip).limit(limit).to_list(length=limit)
-    else:
-        docs_coro = find_cursor.sort("ingested_at", -1).skip(skip).limit(limit).to_list(length=limit)
+    docs_coro = find_cursor.sort(sort_spec).skip(skip).limit(limit).to_list(length=limit)
     total, docs = await asyncio.gather(total_coro, docs_coro)
     return total, docs
 

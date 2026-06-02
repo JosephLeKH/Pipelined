@@ -1,16 +1,30 @@
 """Pydantic request/response models for saved searches endpoints."""
 
 from datetime import datetime
+from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import AliasChoices, BaseModel, ConfigDict, Field
+
+
+SavedSearchSort = Literal["newest", "oldest"]
 
 
 class SavedSearchFilters(BaseModel):
+    # populate_by_name lets us accept the canonical name AND the legacy alias on input,
+    # so existing DB docs that wrote `min_salary` still load.
+    model_config = ConfigDict(populate_by_name=True)
+
     role_type: str | None = None
     experience_level: str | None = None
     remote_status: str | None = None
     company_type: str | None = None
-    min_salary: int | None = None
+    salary_min: int | None = Field(
+        default=None,
+        validation_alias=AliasChoices("salary_min", "min_salary"),
+    )
+    salary_max: int | None = None
+    date_from: str | None = None
+    sort: SavedSearchSort | None = None
 
 
 class SavedSearchCreate(BaseModel):

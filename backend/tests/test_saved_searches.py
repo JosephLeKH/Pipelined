@@ -2,6 +2,7 @@
 
 import pytest
 
+from database import get_collection
 from tests.conftest import verify_user_by_id
 
 pytestmark = pytest.mark.asyncio(loop_scope="session")
@@ -219,3 +220,57 @@ async def test_get_saved_search_results_returns_404_for_missing(client, test_use
 
     # Assert
     assert response.status_code == 404
+
+
+async def test_create_saved_search_persists_salary_min_and_sort(client, test_user):
+    """Regression: salary_min, salary_max, and sort used to be silently dropped on save."""
+    # Arrange
+    _, cookies = test_user
+    payload = {
+        "name": "Comp roles",
+        "query": "",
+        "filters": {
+            "salary_min": 120000,
+            "salary_max": 250000,
+            "sort": "oldest",
+            "date_from": "2026-01-01",
+        },
+    }
+
+    # Act
+    resp = await client.post("/api/saved-searches", json=payload, cookies=cookies)
+
+    # Assert — filters survive a round trip
+    assert resp.status_code == 201
+    saved_filters = resp.json()["data"]["filters"]
+    assert saved_filters["salary_min"] == 120000
+    assert saved_filters["salary_max"] == 250000
+    assert saved_filters["sort"] == "oldest"
+    assert saved_filters["date_from"] == "2026-01-01"
+
+
+async def test_saved_search_accepts_legacy_min_salary_alias(client, test_user):
+    """Legacy DB docs wrote min_salary; load must still surface it as salary_min."""
+    # Arrange — write a doc directly with the legacy key
+    from bson import ObjectId
+    from datetime import datetime, timezone
+    user, cookies = test_user
+    col = get_collection("saved_searches")
+    await col.insert_one({
+        "user_id": ObjectId(str(user["_id"])),
+        "name": "Legacy",
+        "query": "",
+        "filters": {"min_salary": 90000, "remote_status": "remote"},
+        "last_checked_at": None,
+        "new_matches_count": 0,
+        "created_at": datetime.now(timezone.utc),
+    })
+
+    # Act
+    resp = await client.get("/api/saved-searches", cookies=cookies)
+
+    # Assert — alias translates to the canonical field
+    assert resp.status_code == 200
+    legacy = next(d for d in resp.json()["data"] if d["name"] == "Legacy")
+    assert legacy["filters"]["salary_min"] == 90000
+    assert legacy["filters"]["remote_status"] == "remote"

@@ -242,6 +242,79 @@ async def test_get_job_returns_404_for_invalid_id(client):
     assert response.status_code == 404
 
 
+async def test_list_jobs_sort_newest_orders_by_ingested_desc(client):
+    """sort=newest returns most-recently-ingested first regardless of date_posted."""
+    # Arrange — listings ingested in known order; pick deliberately scrambled date_posted
+    from datetime import timedelta
+    base = datetime(2026, 5, 1, tzinfo=timezone.utc)
+    await _insert_listing({
+        "company": "Old Co", "apply_url": "https://old.example.com/jobs/a",
+        "ingested_at": base, "date_posted": base + timedelta(days=10),
+    })
+    await _insert_listing({
+        "company": "New Co", "apply_url": "https://new.example.com/jobs/a",
+        "ingested_at": base + timedelta(days=5), "date_posted": base,
+    })
+
+    # Act
+    response = await client.get("/api/jobs?sort=newest")
+
+    # Assert — newest ingested first
+    assert response.status_code == 200
+    companies = [j["company"] for j in response.json()["data"]]
+    assert companies == ["New Co", "Old Co"]
+
+
+async def test_list_jobs_sort_oldest_orders_by_ingested_asc(client):
+    """sort=oldest returns oldest-ingested first; pagination stays consistent."""
+    from datetime import timedelta
+    base = datetime(2026, 5, 1, tzinfo=timezone.utc)
+    await _insert_listing({
+        "company": "First", "apply_url": "https://first.example.com/jobs/a",
+        "ingested_at": base,
+    })
+    await _insert_listing({
+        "company": "Second", "apply_url": "https://second.example.com/jobs/a",
+        "ingested_at": base + timedelta(days=1),
+    })
+    await _insert_listing({
+        "company": "Third", "apply_url": "https://third.example.com/jobs/a",
+        "ingested_at": base + timedelta(days=2),
+    })
+
+    # Act
+    response = await client.get("/api/jobs?sort=oldest")
+
+    # Assert
+    assert response.status_code == 200
+    companies = [j["company"] for j in response.json()["data"]]
+    assert companies == ["First", "Second", "Third"]
+
+
+async def test_list_jobs_sort_overrides_text_score(client):
+    """Explicit sort overrides text score sort so users always get date order when they pick it."""
+    from datetime import timedelta
+    base = datetime(2026, 5, 1, tzinfo=timezone.utc)
+    await _insert_listing({
+        "company": "Match A", "role": "Engineer Engineer Engineer",  # higher text score
+        "apply_url": "https://a.example.com/jobs/a",
+        "ingested_at": base,
+    })
+    await _insert_listing({
+        "company": "Match B", "role": "Engineer",  # lower text score
+        "apply_url": "https://b.example.com/jobs/a",
+        "ingested_at": base + timedelta(days=5),
+    })
+
+    # Act — with sort=newest, B (newer) should come first even though A has higher text score
+    response = await client.get("/api/jobs?q=Engineer&sort=newest")
+
+    # Assert
+    assert response.status_code == 200
+    companies = [j["company"] for j in response.json()["data"]]
+    assert companies[0] == "Match B"
+
+
 async def test_list_jobs_filters_by_salary_range(client):
     """salary_min and salary_max should filter by salary_min_value field."""
     # Arrange — one low-salary, one high-salary listing with distinct apply_urls

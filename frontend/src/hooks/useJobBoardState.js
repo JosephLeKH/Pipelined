@@ -5,6 +5,8 @@ import { useSearchParams } from "react-router-dom";
 
 import { useJobsInfinite } from "../hooks/useJobs";
 
+const DEFAULT_SORT = "best_match";
+
 function buildSavedSearchParams(savedSearch) {
   const next = new URLSearchParams();
   if (savedSearch.query) next.set("q", savedSearch.query);
@@ -14,17 +16,12 @@ function buildSavedSearchParams(savedSearch) {
   if (f.remote_status) next.set("remote_status", f.remote_status);
   if (f.company_type) next.set("company_type", f.company_type);
   if (f.date_from) next.set("date_from", f.date_from);
-  if (f.min_salary != null) next.set("salary_min", String(f.min_salary));
+  // Legacy docs may have written `min_salary`; new schema uses `salary_min`.
+  const salaryMin = f.salary_min ?? f.min_salary;
+  if (salaryMin != null) next.set("salary_min", String(salaryMin));
+  if (f.salary_max != null) next.set("salary_max", String(f.salary_max));
+  if (f.sort && f.sort !== DEFAULT_SORT) next.set("sort", f.sort);
   return next;
-}
-
-function sortJobs(jobs, sort) {
-  if (sort !== "oldest") return jobs;
-  return [...jobs].sort((a, b) => {
-    const da = a.date_posted ? new Date(a.date_posted).getTime() : 0;
-    const db = b.date_posted ? new Date(b.date_posted).getTime() : 0;
-    return da - db;
-  });
 }
 
 export function useJobBoardState() {
@@ -40,10 +37,12 @@ export function useJobBoardState() {
   const salaryMin = searchParams.get("salary_min") ? Number(searchParams.get("salary_min")) : undefined;
   const salaryMax = searchParams.get("salary_max") ? Number(searchParams.get("salary_max")) : undefined;
   const dateFrom = searchParams.get("date_from") ?? undefined;
-  const sort = searchParams.get("sort") ?? "best_match";
+  const sort = searchParams.get("sort") ?? DEFAULT_SORT;
 
+  // Sort is presentation, not a filter — changing it shouldn't toggle the
+  // "Save this search" CTA or hide the recommendations carousel.
   const hasActiveFilters = Boolean(
-    q || roleType || experienceLevel || remoteStatus || companyType || salaryMin || salaryMax || dateFrom || sort !== "best_match"
+    q || roleType || experienceLevel || remoteStatus || companyType || salaryMin || salaryMax || dateFrom
   );
 
   const filters = useMemo(() => {
@@ -56,15 +55,16 @@ export function useJobBoardState() {
     if (salaryMin !== undefined) f.salary_min = salaryMin;
     if (salaryMax !== undefined) f.salary_max = salaryMax;
     if (dateFrom) f.date_from = dateFrom;
+    // best_match is the implicit server default — only forward explicit sorts.
+    if (sort && sort !== DEFAULT_SORT) f.sort = sort;
     return f;
-  }, [q, roleType, experienceLevel, remoteStatus, companyType, salaryMin, salaryMax, dateFrom]);
+  }, [q, roleType, experienceLevel, remoteStatus, companyType, salaryMin, salaryMax, dateFrom, sort]);
 
   const { data, isLoading, error, refetch, fetchNextPage, hasNextPage, isFetchingNextPage } = useJobsInfinite(filters);
-  const rawJobs = useMemo(
+  const jobs = useMemo(
     () => (data?.pages ?? []).flatMap((p) => p?.data ?? []),
     [data],
   );
-  const jobs = useMemo(() => sortJobs(rawJobs, sort), [rawJobs, sort]);
   const total = data?.pages?.[0]?.meta?.total ?? 0;
   const hasMore = Boolean(hasNextPage);
 

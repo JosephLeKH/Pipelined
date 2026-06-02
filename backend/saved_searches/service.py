@@ -70,18 +70,32 @@ async def delete_saved_search(user_id: str, search_id: str) -> None:
 
 
 def _build_jobs_filter(search: dict) -> dict:
-    """Build a MongoDB job_listings filter from a saved search document."""
+    """Build a MongoDB job_listings filter from a saved search document.
+
+    Uses SavedSearchFilters so legacy `min_salary` keys still load (via alias) and
+    every filter (date_from, salary_max) is honored — not just remote/role.
+    """
     from jobs.service import _build_filter  # noqa: PLC0415
     from jobs.schemas import JobListQuery  # noqa: PLC0415
+    from saved_searches.schemas import SavedSearchFilters  # noqa: PLC0415
 
-    filters = search.get("filters", {})
+    parsed = SavedSearchFilters(**search.get("filters", {}))
+    date_from_dt: datetime | None = None
+    if parsed.date_from:
+        try:
+            date_from_dt = datetime.fromisoformat(parsed.date_from)
+        except ValueError:
+            logger.warning("saved_search_invalid_date_from", value=parsed.date_from)
+
     jq = JobListQuery(
         q=search.get("query") or None,
-        role_type=filters.get("role_type"),
-        experience_level=filters.get("experience_level"),
-        remote_status=filters.get("remote_status"),
-        company_type=filters.get("company_type"),
-        salary_min=filters.get("min_salary"),
+        role_type=parsed.role_type,
+        experience_level=parsed.experience_level,
+        remote_status=parsed.remote_status,
+        company_type=parsed.company_type,
+        salary_min=parsed.salary_min,
+        salary_max=parsed.salary_max,
+        date_from=date_from_dt,
     )
     return _build_filter(jq, [])
 

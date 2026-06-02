@@ -19,6 +19,7 @@ from jobs.schemas import (
     JobRecommendationResponse,
     ValidCompanyType,
     ValidExperienceLevel,
+    ValidJobSort,
     ValidRemoteStatus,
     ValidRoleType,
 )
@@ -65,6 +66,7 @@ async def list_jobs(
     date_from: str | None = Query(default=None),
     salary_min: int | None = Query(default=None, ge=0),
     salary_max: int | None = Query(default=None, ge=0),
+    sort: ValidJobSort | None = Query(default=None),
     hide_applied: bool = Query(default=False),
     page: int = Query(default=1, ge=1),
     per_page: int = Query(default=DEFAULT_PAGE_SIZE, ge=1, le=MAX_PAGE_SIZE),
@@ -80,6 +82,7 @@ async def list_jobs(
         date_from=_parse_date(date_from),
         salary_min=salary_min,
         salary_max=salary_max,
+        sort=sort,
         hide_applied=hide_applied,
         page=page,
         per_page=per_page,
