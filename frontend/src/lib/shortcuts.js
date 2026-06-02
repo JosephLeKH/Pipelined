@@ -26,7 +26,7 @@ export const SHORTCUTS = [
   { key: "g s",   label: "g → s", description: "Go to Settings",          scope: "Navigation" },
   // Actions
   { key: "i",     label: "i",     description: "Import CSV",              scope: "Actions" },
-  { key: "o",     label: "o",     description: "Open co-pilot",           scope: "Actions" },
+  { key: "o",     label: "o",     description: "Open Scout",           scope: "Actions" },
   { key: "/",     label: "/",     description: "Focus search / palette",  scope: "Actions" },
   { key: "?",     label: "?",     description: "Show keyboard shortcuts", scope: "Actions" },
   { key: "Cmd+K", label: "⌘K",    description: "Open command palette",    scope: "Actions" },

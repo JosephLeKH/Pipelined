@@ -27,7 +27,7 @@ export function useCommandPaletteActions({ setFormOpen, setImportOpen }) {
     () => [
       { id: "action-add", type: "action", label: "Add Application", fn: () => setFormOpen(true) },
       { id: "action-import", type: "action", label: "Import CSV", fn: () => setImportOpen(true) },
-      { id: "action-copilot", type: "action", label: "Open co-pilot", fn: openCopilot },
+      { id: "action-copilot", type: "action", label: "Open Scout", fn: openCopilot },
       {
         id: "action-mock",
         type: "action",

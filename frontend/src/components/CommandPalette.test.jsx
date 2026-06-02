@@ -94,7 +94,7 @@ describe("CommandPalette", () => {
     const palette = screen.getByRole("dialog", { name: "Command palette" });
     expect(within(palette).getByText("Add Application")).toBeInTheDocument();
     expect(within(palette).getByText("Import CSV")).toBeInTheDocument();
-    expect(within(palette).getByText("Open co-pilot")).toBeInTheDocument();
+    expect(within(palette).getByText("Open Scout")).toBeInTheDocument();
     expect(within(palette).getByText("Start mock interview")).toBeInTheDocument();
   });
 
