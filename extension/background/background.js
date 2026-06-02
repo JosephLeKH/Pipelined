@@ -115,6 +115,10 @@ async function cacheRecentSave(application) {
       role_title: application.role_title ?? "",
       stage: application.current_stage ?? application.stage ?? "Applied",
       date_applied: application.date_applied,
+      updated_at: application.updated_at ?? application.date_applied,
+      viewed_at: application.viewed_at ?? null,
+      apply_pack_ready: Boolean(application.apply_pack),
+      interview_prep_ready: Boolean(application.interview_prep_briefing),
       talking_points: application.apply_pack?.talking_points ?? application.talking_points ?? [],
       fit_score: application.fit_score ?? application.ai_analysis?.fit_score ?? null,
     };
