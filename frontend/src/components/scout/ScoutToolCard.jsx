@@ -30,7 +30,7 @@ function VariantIcon({ variant }) {
 
 function ScoutToolCard({ variant = "runIt", title, summary, ctaLabel, onClick, onRetry }) {
   const disabled = variant === "working";
-  const handler = variant === "error" ? onRetry : onClick;
+  const handler = variant === "error" ? (onRetry ?? (() => {})) : onClick;
   const accessibleCta = variant === "error" ? "Retry" : ctaLabel ?? VARIANT_LABEL[variant];
   return (
     <button

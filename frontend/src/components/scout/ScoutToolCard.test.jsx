@@ -62,4 +62,11 @@ describe("ScoutToolCard", () => {
     await userEvent.click(screen.getByRole("button", { name: /Apply Pack — Error/i }));
     expect(onRetry).toHaveBeenCalledOnce();
   });
+
+  it("does not throw when error variant clicked without onRetry handler", async () => {
+    render(<ScoutToolCard variant="error" title="Apply Pack" summary="Failed" />);
+    const btn = screen.getByRole("button", { name: /Apply Pack — Error/i });
+    await userEvent.click(btn);  // should not throw
+    expect(btn).toBeInTheDocument();
+  });
 });
