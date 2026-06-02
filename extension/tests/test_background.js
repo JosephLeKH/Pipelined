@@ -160,6 +160,7 @@ describe("handleSave() queue recovery", () => {
         interview_prep_ready: false,
         talking_points: ["Payments experience", "Python backend"],
         fit_score: null,
+        fit_score_reason: null,
       }],
     });
   });
@@ -200,7 +201,7 @@ describe("handleSave() queue recovery", () => {
     expect(fetch).toHaveBeenCalledTimes(2);
     expect(fetch.mock.calls[1][0]).toContain("/api/applications/app456/fit-score");
     expect(chrome.storage.local.set).toHaveBeenLastCalledWith({
-      recent_saves: [{ ...cachedSave, fit_score: 82 }],
+      recent_saves: [{ ...cachedSave, fit_score: 82, fit_score_reason: "Strong match" }],
     });
   });
 });

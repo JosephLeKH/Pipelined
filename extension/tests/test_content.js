@@ -377,7 +377,7 @@ describe("Scout-narrated banner", () => {
             recent_saves: [{
               id: "abc",
               fit_score: 78,
-              fit_score_summary: "Strong infra signal.",
+              fit_score_reason: "Strong infra signal.",
             }],
           };
         }

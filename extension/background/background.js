@@ -121,6 +121,7 @@ async function cacheRecentSave(application) {
       interview_prep_ready: Boolean(application.interview_prep_briefing),
       talking_points: application.apply_pack?.talking_points ?? application.talking_points ?? [],
       fit_score: application.fit_score ?? application.ai_analysis?.fit_score ?? null,
+      fit_score_reason: application.fit_score_reason ?? application.ai_analysis?.summary ?? null,
     };
     const { recent_saves = [] } = await chrome.storage.local.get("recent_saves");
     const updated = [entry, ...recent_saves.filter((s) => s.id !== entry.id)].slice(0, MAX_RECENT);
@@ -130,11 +131,11 @@ async function cacheRecentSave(application) {
   }
 }
 
-async function updateCachedFitScore(appId, score) {
+async function updateCachedFitScore(appId, score, reason) {
   try {
     const { recent_saves = [] } = await chrome.storage.local.get("recent_saves");
     const updated = recent_saves.map((save) =>
-      save.id === appId ? { ...save, fit_score: score } : save
+      save.id === appId ? { ...save, fit_score: score, fit_score_reason: reason ?? null } : save
     );
     await chrome.storage.local.set({ recent_saves: updated });
   } catch (err) {
@@ -148,7 +149,8 @@ async function fetchFitScoreInBackground(appId) {
   });
   const score = response.data?.score;
   if (score == null) return;
-  await updateCachedFitScore(appId, score);
+  const reason = response.data?.reason ?? null;
+  await updateCachedFitScore(appId, score, reason);
 }
 
 async function executeSave(payload) {

@@ -305,7 +305,7 @@ export function showBannerScoring(shadow, app) {
  * Upgrade a 'scoring' banner to the final scored state.
  * @param {ShadowRoot} shadow
  * @param {HTMLElement} host
- * @param {{ id?: string, company?: string, role_title?: string, fit_score?: number|null, fit_score_summary?: string|null }} app
+ * @param {{ id?: string, company?: string, role_title?: string, fit_score?: number|null, fit_score_reason?: string|null }} app
  */
 export function showBannerScoutScored(shadow, host, app) {
   const container = shadow.querySelector(".pipelined-banner");
@@ -326,10 +326,10 @@ export function showBannerScoutScored(shadow, host, app) {
     detail.textContent = [app.company, app.role_title].filter(Boolean).join(" \u00b7 ");
     container.appendChild(detail);
   }
-  if (app.fit_score_summary) {
+  if (app.fit_score_reason) {
     const line = document.createElement("p");
     line.className = "pipelined-score-line";
-    line.textContent = app.fit_score_summary;
+    line.textContent = app.fit_score_reason;
     container.appendChild(line);
   }
   if (app.id) {

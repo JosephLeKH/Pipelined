@@ -66,7 +66,7 @@ function pollCachedFitScore(appId, onArrival, onTimeout) {
       const found = recent_saves.find((s) => s.id === appId);
       if (found && found.fit_score != null) {
         clearInterval(interval);
-        onArrival(found.fit_score, found.fit_score_summary ?? null);
+        onArrival(found.fit_score, found.fit_score_reason ?? null);
         return;
       }
       if (Date.now() - startedAt > 4000) {
@@ -178,8 +178,8 @@ async function handleSave(shadow, host, fields, boardId) {
     } else {
       // Show working state and poll cached fit-score for up to 4s
       showBannerScoring(shadow, { company: app.company, role_title: app.role_title });
-      pollCachedFitScore(app.id, (score, summary) => {
-        showBannerScoutScored(shadow, host, { ...app, fit_score: score, fit_score_summary: summary });
+      pollCachedFitScore(app.id, (score, reason) => {
+        showBannerScoutScored(shadow, host, { ...app, fit_score: score, fit_score_reason: reason });
       }, () => {
         // Timeout — fall back to scored state with no score
         showBannerScoutScored(shadow, host, app);
