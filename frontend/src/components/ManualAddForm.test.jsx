@@ -311,17 +311,18 @@ describe("ManualAddForm", () => {
     expect(document.activeElement).toBe(focusableEls[0]);
   });
 
-  it("should show error toast when notes update fails after successful application creation", async () => {
-    // Arrange — expand notes section by clicking collapsible, set notes, then trigger update failure
-    const toastErrorSpy = vi.spyOn(toast, "error");
+  it("should send notes in the initial create POST so they cannot be lost by a failed follow-up", async () => {
+    // Arrange — capture the create body; assert no PATCH is issued.
+    let createBody = null;
     let patchCalled = false;
     server.use(
-      http.post("/api/applications", () =>
-        HttpResponse.json({ data: CREATED_APP }, { status: 201 })
-      ),
+      http.post("/api/applications", async ({ request }) => {
+        createBody = await request.json();
+        return HttpResponse.json({ data: CREATED_APP }, { status: 201 });
+      }),
       http.patch("/api/applications/new-app-123", () => {
         patchCalled = true;
-        return HttpResponse.json({ error: { code: "UPDATE_FAILED" } }, { status: 500 });
+        return HttpResponse.json({ data: CREATED_APP });
       })
     );
     render(<ManualAddForm isOpen onClose={() => {}} />, { wrapper: makeWrapper() });
@@ -329,21 +330,15 @@ describe("ManualAddForm", () => {
     // Act
     await userEvent.type(screen.getByRole("textbox", { name: /role title/i }), "Software Engineer");
     await userEvent.type(screen.getByRole("textbox", { name: /company/i }), "Acme Corp");
-    // Expand notes by clicking the Notes button
     const notesButton = screen.getByRole("button", { name: /notes/i });
     await userEvent.click(notesButton);
-    // Type notes
     const notesInput = await screen.findByPlaceholderText(/optional notes/i);
     await userEvent.type(notesInput, "Great opportunity");
-    // Submit form
     await userEvent.click(screen.getByRole("button", { name: /add application/i }));
 
     // Assert
-    await waitFor(() => expect(patchCalled).toBe(true));
-    expect(toastErrorSpy).toHaveBeenCalledWith(
-      "Application created, but notes failed to save — please re-enter them in the detail panel."
-    );
-
-    toastErrorSpy.mockRestore();
+    await waitFor(() => expect(createBody).not.toBeNull());
+    expect(createBody.notes).toBe("Great opportunity");
+    expect(patchCalled).toBe(false);
   });
 });

@@ -28,6 +28,24 @@ def _coerce_iso_datetime(value: object) -> object:
 
 FlexibleDatetime = Annotated[datetime | None, BeforeValidator(_coerce_iso_datetime)]
 
+
+def _normalize_tags(value: object) -> object:
+    """Lowercase, trim, and dedupe tags so reads/writes/filters are case-consistent."""
+    if not isinstance(value, list):
+        return value
+    seen: set[str] = set()
+    out: list[str] = []
+    for item in value:
+        if not isinstance(item, str):
+            out.append(item)  # let the strict validator surface the type error
+            continue
+        normalized = item.strip().lower()
+        if not normalized or normalized in seen:
+            continue
+        seen.add(normalized)
+        out.append(normalized)
+    return out
+
 ValidSource = Literal["extension", "board", "manual", "email", "autopilot"]
 ValidCompanyType = Literal["startup", "mid", "enterprise", "gov", "nonprofit", "other"]
 ValidRemoteStatus = Literal["remote", "hybrid", "onsite", "unknown"]
@@ -83,9 +101,12 @@ class ApplicationCreate(BaseModel):
     location: str | None = Field(None, max_length=MAX_LOCATION_LENGTH)
     remote_status: ValidRemoteStatus | None = None
     date_applied: FlexibleDatetime = None
-    tags: list[str] = Field(default_factory=list, max_length=MAX_TAG_COUNT)
+    tags: Annotated[list[str], BeforeValidator(_normalize_tags)] = Field(
+        default_factory=list, max_length=MAX_TAG_COUNT
+    )
     page_text: str | None = Field(None, max_length=MAX_PAGE_TEXT_LENGTH)
     job_description: str | None = Field(None, max_length=MAX_JOB_DESCRIPTION_LENGTH)
+    notes: str | None = Field(None, max_length=MAX_NOTES_LENGTH)
     custom_fields: dict[str, str | int | bool | list[str]] | None = None
     interview_round: ValidInterviewRound | None = None
 
@@ -137,7 +158,7 @@ class ApplicationUpdate(BaseModel):
     location: str | None = Field(None, max_length=MAX_LOCATION_LENGTH)
     remote_status: ValidRemoteStatus | None = None
     date_applied: datetime | None = Field(None, strict=False)
-    tags: list[str] | None = None
+    tags: Annotated[list[str] | None, BeforeValidator(_normalize_tags)] = None
     follow_up_date: datetime | None = Field(None, strict=False)
     notes: str | None = Field(None, max_length=MAX_NOTES_LENGTH)
     job_description: str | None = Field(None, max_length=MAX_JOB_DESCRIPTION_LENGTH)
@@ -242,13 +263,18 @@ class ApplicationResponse(BaseModel):
         )
 
 
+MAX_LIST_FILTER_ITEMS = 50
+
+
 class ApplicationListQuery(BaseModel):
     sort_by: ValidSortField = "date_applied"
     sort_order: ValidSortOrder = "desc"
-    stage: str | None = None
-    company_type: ValidCompanyType | None = None
-    remote_status: ValidRemoteStatus | None = None
-    tags: list[str] | None = None
+    stage: list[str] | None = Field(None, max_length=MAX_LIST_FILTER_ITEMS)
+    company_type: list[ValidCompanyType] | None = Field(None, max_length=MAX_LIST_FILTER_ITEMS)
+    remote_status: list[ValidRemoteStatus] | None = Field(None, max_length=MAX_LIST_FILTER_ITEMS)
+    tags: Annotated[list[str] | None, BeforeValidator(_normalize_tags)] = Field(
+        None, max_length=MAX_LIST_FILTER_ITEMS
+    )
     date_from: datetime | None = None
     date_to: datetime | None = None
     q: str | None = None
@@ -256,11 +282,13 @@ class ApplicationListQuery(BaseModel):
     limit: int = Field(DEFAULT_QUERY_LIMIT, ge=1, le=MAX_QUERY_LIMIT)
     include_archived: bool = False
 
-    @field_validator("stage")
+    @field_validator("stage", mode="before")
     @classmethod
-    def stage_no_operator_injection(cls, v: str | None) -> str | None:
-        if v is not None and v.startswith("$"):
-            raise ValueError("Field value must not start with '$'")
+    def stage_no_operator_injection(cls, v: list[str] | None) -> list[str] | None:
+        if v is not None:
+            for item in v:
+                if isinstance(item, str) and item.startswith("$"):
+                    raise ValueError("Field value must not start with '$'")
         return v
 
     @field_validator("tags", mode="before")
@@ -322,8 +350,8 @@ class BulkEditUpdate(BaseModel):
 
     current_stage: str | None = Field(None, min_length=1, max_length=MAX_STAGE_LENGTH)
     follow_up_date: datetime | None = Field(None, strict=False)
-    tags_add: list[str] | None = None
-    tags_remove: list[str] | None = None
+    tags_add: Annotated[list[str] | None, BeforeValidator(_normalize_tags)] = None
+    tags_remove: Annotated[list[str] | None, BeforeValidator(_normalize_tags)] = None
 
 
 class BulkEditRequest(BaseModel):

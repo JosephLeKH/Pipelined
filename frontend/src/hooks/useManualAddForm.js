@@ -1,10 +1,7 @@
 /** Composition hook: state + dialog + submit logic for ManualAddForm. */
 
 import { useCallback, useEffect } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
 
-import { updateApplication } from "../api/applications";
 import { useCreateApplication } from "./useApplications";
 import { useAuth } from "../context/AuthContext";
 import { trackEvent } from "../lib/analytics";
@@ -22,7 +19,7 @@ const toIsoDatetime = (dateStr) => {
 };
 
 const buildBody = ({
-  roleTitle, company, sourceUrl, dateApplied, stage, source, jobDescription,
+  roleTitle, company, sourceUrl, dateApplied, stage, source, jobDescription, notes,
 }) => ({
   role_title: roleTitle.trim(),
   company: company.trim(),
@@ -31,10 +28,10 @@ const buildBody = ({
   ...(stage && { current_stage: stage }),
   ...(sourceUrl.trim() && { source_url: sourceUrl.trim() }),
   ...(jobDescription.trim() && { job_description: jobDescription.trim() }),
+  ...(notes.trim() && { notes: notes.trim() }),
 });
 
 export function useManualAddForm({ isOpen, onClose, initialStage = "" }) {
-  const queryClient = useQueryClient();
   const { mutate, isPending, error: mutationError, reset } = useCreateApplication();
   const { user } = useAuth();
   const stageOptions = user?.default_stages ?? [];
@@ -63,24 +60,15 @@ export function useManualAddForm({ isOpen, onClose, initialStage = "" }) {
     if (!company.trim()) errors.company = "Company is required";
     if (Object.keys(errors).length > 0) { setFieldErrors(errors); return; }
     setFieldErrors({});
-    mutate(buildBody({ roleTitle, company, sourceUrl, dateApplied, stage, source, jobDescription }), {
-      onSuccess: async (created) => {
+    mutate(buildBody({ roleTitle, company, sourceUrl, dateApplied, stage, source, jobDescription, notes }), {
+      onSuccess: () => {
         trackEvent("application_created", { source });
-        if (notes.trim() && created?.id) {
-          try {
-            await updateApplication(created.id, { notes: notes.trim() });
-            queryClient.invalidateQueries({ queryKey: ["applications", created.id] });
-            queryClient.invalidateQueries({ queryKey: ["applications"] });
-          } catch {
-            toast.error("Application created, but notes failed to save — please re-enter them in the detail panel.");
-          }
-        }
         handleClose();
       },
     });
   }, [
     roleTitle, company, sourceUrl, dateApplied, stage, source, jobDescription, notes, isPending,
-    mutate, handleClose, setFieldErrors, queryClient,
+    mutate, handleClose, setFieldErrors,
   ]);
 
   return {
