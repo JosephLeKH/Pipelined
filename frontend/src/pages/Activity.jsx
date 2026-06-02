@@ -13,7 +13,7 @@ const ACTIVITY_FEED_LIMIT = 50;
 
 const FILTERS = [
   { id: "all", label: "All", types: null },
-  { id: "scored", label: "Scored", types: ["fit_score", "fit_score_auto"] },
+  { id: "scored", label: "Scored", types: ["fit", "fit_score_auto"] },
   { id: "drafted", label: "Drafted", types: ["apply_pack_generated", "follow_up_drafted"] },
   { id: "found", label: "Found", types: ["autopilot_match", "watchlist_match"] },
   { id: "flagged", label: "Flagged", types: ["ghost_detected", "stale_app"] },

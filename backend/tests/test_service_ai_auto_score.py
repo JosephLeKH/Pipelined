@@ -194,3 +194,33 @@ async def test_auto_score_fit_is_idempotent(app) -> None:  # noqa: ARG001
 
     # Assert: Second call should not invoke _score_and_update due to idempotency check
     mock_score.assert_not_called()
+
+
+async def test_auto_score_fit_logs_with_fit_auto_agent_type(app) -> None:  # noqa: ARG001
+    """Verify auto_score_fit passes agent_type=fit_score_auto to _score_and_update."""
+    # Arrange: Create user with resume and application
+    user = await create_user("fitauto@example.com", "TestPass123!", "Fit Auto User")
+    user_id = str(user["_id"])
+
+    users = database.db["users"]
+    await users.update_one(
+        {"_id": ObjectId(user_id)},
+        {"$set": {"resume_text": "Python, JavaScript, React"}}
+    )
+
+    app_doc = await create(user_id, ApplicationCreate(
+        role_title="Frontend Engineer",
+        company="TestCo",
+        job_description="React frontend role",
+        source="manual",
+    ))
+    app_id = str(app_doc["_id"])
+
+    # Act: Patch _score_and_update and call auto_score_fit
+    with patch("applications.service_ai._score_and_update", new_callable=AsyncMock) as mock_score:
+        await auto_score_fit(user_id, app_id)
+
+    # Assert: _score_and_update should be called with agent_type kwarg set to fit_score_auto
+    mock_score.assert_awaited_once()
+    kwargs = mock_score.call_args.kwargs
+    assert kwargs.get("agent_type") == "fit_score_auto"

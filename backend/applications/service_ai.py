@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 import structlog
 from bson import ObjectId
 
-from ai.agent_log import AGENT_TYPE_FIT, STATUS_FAILED, STATUS_SUCCESS, log_agent_run
+from ai.agent_log import AGENT_TYPE_FIT, AGENT_TYPE_FIT_AUTO, STATUS_FAILED, STATUS_SUCCESS, log_agent_run
 from ai.exceptions import AIQuotaExceededError
 from applications.schemas import ApplicationCreate
 from database import get_collection
@@ -87,6 +87,7 @@ async def _score_and_update(
     job_description: str,
     role_title: str = "",
     company: str = "",
+    agent_type: str = AGENT_TYPE_FIT,
 ) -> None:
     """Score fit in background and persist ai_analysis on the application."""
     apps = get_collection("applications")
@@ -108,7 +109,7 @@ async def _score_and_update(
         logger.warning("fit_score_timeout", app_id=app_id, user_id=user_id, timeout_sec=MAX_BACKGROUND_FIT_SCORE_SECONDS)
         await _persist_fit_score_error(app_id, user_id, "timeout")
         await log_agent_run(
-            user_id, AGENT_TYPE_FIT, STATUS_FAILED, "Fit score timed out", application_id=app_id
+            user_id, agent_type, STATUS_FAILED, "Fit score timed out", application_id=app_id
         )
         return
     except QuotaExceededError as exc:
@@ -123,7 +124,7 @@ async def _score_and_update(
         logger.error("fit_score_scoring_failed", app_id=app_id, user_id=user_id, exc_info=True)
         await _persist_fit_score_error(app_id, user_id, "other")
         await log_agent_run(
-            user_id, AGENT_TYPE_FIT, STATUS_FAILED, "Fit score failed", application_id=app_id
+            user_id, agent_type, STATUS_FAILED, "Fit score failed", application_id=app_id
         )
         return
 
@@ -147,7 +148,7 @@ async def _score_and_update(
         logger.info("fit_score_saved", app_id=app_id, fit_score=result["fit_score"])
         await log_agent_run(
             user_id,
-            AGENT_TYPE_FIT,
+            agent_type,
             STATUS_SUCCESS,
             f"Fit score {result['fit_score']}: {match_reason[:120]}",
             application_id=app_id,
@@ -198,6 +199,7 @@ async def auto_score_fit(user_id: str, application_id: str) -> None:
             job_description=app.get("job_description", "") or "",
             role_title=app.get("role_title", "") or "",
             company=app.get("company", "") or "",
+            agent_type=AGENT_TYPE_FIT_AUTO,
         )
     except Exception:
         logger.exception("auto_score_fit_failed", app_id=application_id, user_id=user_id)

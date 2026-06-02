@@ -11,6 +11,7 @@ logger = structlog.get_logger()
 
 AGENT_TYPE_PREP = "prep"
 AGENT_TYPE_FIT = "fit"
+AGENT_TYPE_FIT_AUTO = "fit_score_auto"
 AGENT_TYPE_AUTOPILOT = "autopilot"
 AGENT_TYPE_CLASSIFY = "classify"
 AGENT_TYPE_BRIEF = "brief"
