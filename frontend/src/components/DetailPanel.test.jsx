@@ -95,14 +95,18 @@ describe("DetailPanel", () => {
     expect(link).toHaveAttribute("href", "https://example.com/job/123");
   });
 
-  it("should render the notes field with the saved value", () => {
+  it("should render the notes field with the saved value", async () => {
     render(<DetailPanel application={APP} onClose={() => {}} />, { wrapper: makeWrapper() });
+
+    await userEvent.click(screen.getByRole("tab", { name: /notes/i }));
 
     expect(screen.getByTestId("rich-text-editor")).toHaveTextContent("Great company!");
   });
 
-  it("should show notes editor without save or cancel buttons", () => {
+  it("should show notes editor without save or cancel buttons", async () => {
     render(<DetailPanel application={APP} onClose={() => {}} />, { wrapper: makeWrapper() });
+
+    await userEvent.click(screen.getByRole("tab", { name: /notes/i }));
 
     expect(screen.getByTestId("rich-text-editor")).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /save/i })).not.toBeInTheDocument();
@@ -135,10 +139,10 @@ describe("DetailPanel", () => {
   });
 
   it("should render timeline stage entries in chronological order", async () => {
-    // Arrange / Act
     render(<DetailPanel application={APP} onClose={() => {}} />, { wrapper: makeWrapper() });
 
-    // Assert — first entry is the initial stage, second is the transition
+    await userEvent.click(screen.getByRole("tab", { name: /activity/i }));
+
     const timeline = await screen.findByTestId("timeline");
     const stageNodes = timeline.querySelectorAll("[data-testid='timeline-stage-node']");
     expect(stageNodes).toHaveLength(2);
@@ -147,7 +151,6 @@ describe("DetailPanel", () => {
   });
 
   it("should show calendar events at correct chronological positions in timeline", async () => {
-    // Arrange — event on Jan 18 falls between Applied (Jan 15) and Phone Screen (Jan 20)
     server.use(
       http.get("/api/calendar/events", () =>
         HttpResponse.json({
@@ -167,7 +170,7 @@ describe("DetailPanel", () => {
     );
     render(<DetailPanel application={APP} onClose={() => {}} />, { wrapper: makeWrapper() });
 
-    // Wait for event to load, then verify chronological order
+    await userEvent.click(screen.getByRole("tab", { name: /activity/i }));
     await screen.findByText("HR Call");
 
     const timeline = screen.getByTestId("timeline");
@@ -179,11 +182,11 @@ describe("DetailPanel", () => {
   });
 
   it("should show 'No activity yet' when stage_history is empty and no events exist", async () => {
-    // Arrange — app with no stage history (server returns empty events by default)
     const emptyApp = { ...APP, stage_history: [] };
     render(<DetailPanel application={emptyApp} onClose={() => {}} />, { wrapper: makeWrapper() });
 
-    // Assert
+    await userEvent.click(screen.getByRole("tab", { name: /activity/i }));
+
     expect(await screen.findByTestId("timeline-empty")).toHaveTextContent("No activity yet");
   });
 

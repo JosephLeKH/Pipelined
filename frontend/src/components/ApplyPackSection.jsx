@@ -64,7 +64,7 @@ function ApplyPackField({ label, text, children }) {
   );
 }
 
-function ApplyPackSection({ application, onPackGenerated }) {
+function ApplyPackSection({ application, onPackGenerated, bare = false }) {
   const [localPack, setLocalPack] = useState(application.apply_pack ?? null);
   const [isLoading, setIsLoading] = useState(false);
   const hasCached = localPack != null;
@@ -89,7 +89,7 @@ function ApplyPackSection({ application, onPackGenerated }) {
     : "";
 
   return (
-    <AiSection title="Apply pack" icon={Sparkles} id="apply-pack">
+    <AiSection title="Apply pack" icon={Sparkles} id="apply-pack" bare={bare}>
       {freshness && (
         <p className="text-xs text-muted-foreground">Generated {freshness}</p>
       )}

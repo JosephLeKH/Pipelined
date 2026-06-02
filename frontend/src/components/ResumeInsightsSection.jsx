@@ -15,7 +15,7 @@ import AiSection from "./AiSection";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 
-function ResumeInsightsSection({ application, onUpdate, onInsightsGenerated }) {
+function ResumeInsightsSection({ application, onUpdate, onInsightsGenerated, bare = false }) {
   const [localInsights, setLocalInsights] = useState(application.resume_insights ?? null);
   const [isLoading, setIsLoading] = useState(false);
   const jdValue = application.job_description ?? "";
@@ -36,7 +36,7 @@ function ResumeInsightsSection({ application, onUpdate, onInsightsGenerated }) {
   }
 
   return (
-    <AiSection title="Job Match Analysis" icon={Sparkles} id="resume-insights">
+    <AiSection title="Job Match Analysis" icon={Sparkles} id="resume-insights" bare={bare}>
       {freshness && (
         <p className="text-xs text-muted-foreground">Generated {freshness}</p>
       )}

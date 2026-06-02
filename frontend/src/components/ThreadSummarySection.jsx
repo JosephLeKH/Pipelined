@@ -12,7 +12,7 @@ import { useEmailEvents } from "../hooks/useApplications";
 import AiSection from "./AiSection";
 import { Button } from "./ui/button";
 
-function ThreadSummarySection({ application, onSummaryGenerated }) {
+function ThreadSummarySection({ application, onSummaryGenerated, bare = false }) {
   const [localSummary, setLocalSummary] = useState(application.thread_summary ?? null);
   const [isLoading, setIsLoading] = useState(false);
   const { data: emailEvents = [], isLoading: eventsLoading } = useEmailEvents(application.id);
@@ -20,7 +20,7 @@ function ThreadSummarySection({ application, onSummaryGenerated }) {
   const hasCached = localSummary != null;
   const hasEmailEvents = emailEvents.length > 0;
 
-  if (eventsLoading || !hasEmailEvents) {
+  if (!bare && (eventsLoading || !hasEmailEvents)) {
     return null;
   }
 
@@ -57,16 +57,21 @@ function ThreadSummarySection({ application, onSummaryGenerated }) {
   }
 
   return (
-    <AiSection title="Thread summary" icon={MessageSquare} id="thread-summary">
+    <AiSection title="Thread summary" icon={MessageSquare} id="thread-summary" bare={bare}>
       <p className="text-xs text-muted-foreground">
         Summarized from email metadata only. Nothing is sent automatically.
       </p>
+      {!hasEmailEvents && !eventsLoading && (
+        <p className="text-xs text-muted-foreground">
+          No emails synced yet for this application. Connect Gmail in Settings or wait for a recruiter reply.
+        </p>
+      )}
       <Button
         type="button"
         variant="outline"
         size="sm"
         onClick={handleGenerate}
-        disabled={isLoading}
+        disabled={isLoading || !hasEmailEvents}
         className="w-full min-h-[2.75rem] sm:min-h-0 sm:w-auto"
       >
         {hasCached ? (

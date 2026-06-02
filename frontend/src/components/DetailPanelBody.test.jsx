@@ -1,6 +1,7 @@
-/** Smoke test: PanelBody renders without crash. */
+/** Tests for the redesigned PanelBody: overview rail, tabs, and tab content. */
 
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter } from "react-router-dom";
 import { http, HttpResponse } from "msw";
@@ -36,10 +37,12 @@ const server = setupServer(
     })
   ),
   http.get("/api/applications/:id/contacts", () => HttpResponse.json({ data: [] })),
-  http.get("/api/calendar/events", () => HttpResponse.json({ data: [], meta: { count: 0 } }))
+  http.get("/api/applications/:id/email-events", () => HttpResponse.json({ data: [] })),
+  http.get("/api/calendar/events", () => HttpResponse.json({ data: [], meta: { count: 0 } })),
+  http.get("/api/agent/activity", () => HttpResponse.json({ data: [] }))
 );
 
-beforeAll(() => server.listen());
+beforeAll(() => server.listen({ onUnhandledRequest: "bypass" }));
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
@@ -54,61 +57,51 @@ function wrapper({ children }) {
   );
 }
 
-describe("PanelBody", () => {
-  it("should render without crashing", () => {
-    render(
-      <PanelBody
-        application={APP}
-        handleStageChange={vi.fn()}
-        handleUpdate={vi.fn()}
-        onAddEvent={vi.fn()}
-        onDirtyChange={vi.fn()}
-      />,
-      { wrapper }
-    );
+function renderBody(overrides = {}) {
+  const props = {
+    application: APP,
+    handleStageChange: vi.fn(),
+    handleUpdate: vi.fn(),
+    onAddEvent: vi.fn(),
+    onDirtyChange: vi.fn(),
+    ...overrides,
+  };
+  return render(<PanelBody {...props} />, { wrapper });
+}
+
+describe("PanelBody — overview rail", () => {
+  it("renders the stage selector and Scout's Take in the rail", () => {
+    renderBody();
 
     expect(screen.getByLabelText("Stage")).toBeInTheDocument();
+    expect(screen.getByLabelText("Scout's Take")).toBeInTheDocument();
   });
 });
 
-describe("PanelBody — Scout-first layout", () => {
-  it("renders Scout's Take above Notes", () => {
-    render(
-      <PanelBody
-        application={APP}
-        handleStageChange={vi.fn()}
-        handleUpdate={vi.fn()}
-        onAddEvent={vi.fn()}
-        onDirtyChange={vi.fn()}
-      />,
-      { wrapper }
-    );
+describe("PanelBody — tabs", () => {
+  it("renders all four tabs and defaults to Overview", () => {
+    renderBody();
 
-    const take = screen.getByLabelText("Scout's Take");
-    const notes = screen.getByLabelText("Notes");
-    expect(take.compareDocumentPosition(notes) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(screen.getByRole("tab", { name: /overview/i })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByRole("tab", { name: /agents/i })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: /activity/i })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: /notes/i })).toBeInTheDocument();
   });
 
-  it("renders Scout's Toolkit with all six tools", () => {
-    render(
-      <PanelBody
-        application={APP}
-        handleStageChange={vi.fn()}
-        handleUpdate={vi.fn()}
-        onAddEvent={vi.fn()}
-        onDirtyChange={vi.fn()}
-      />,
-      { wrapper }
-    );
+  it("switches to Agents tab on click and reveals the agent rows", async () => {
+    const user = userEvent.setup();
+    renderBody();
 
-    const toolkit = screen.getByLabelText("Scout's Toolkit");
-    expect(toolkit).toBeInTheDocument();
-    // Verify all six tools are rendered
-    expect(screen.getByLabelText(/Apply Pack — Run it/)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Mock Interview — Run it/)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Resume Insights — Run it/)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Email Recap — Run it/)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Interview Prep — Run it/)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Follow-up Draft — Run it/)).toBeInTheDocument();
+    await user.click(screen.getByRole("tab", { name: /agents/i }));
+
+    expect(screen.getByText(/Apply Pack/i)).toBeInTheDocument();
+    expect(screen.getByText(/Interview Prep/i)).toBeInTheDocument();
+    expect(screen.getByText(/Follow-up Draft/i)).toBeInTheDocument();
+  });
+
+  it("opens on Agents tab when expandFollowUpDraft is true", () => {
+    renderBody({ expandFollowUpDraft: true });
+
+    expect(screen.getByRole("tab", { name: /agents/i })).toHaveAttribute("aria-selected", "true");
   });
 });

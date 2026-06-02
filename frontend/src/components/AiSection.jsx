@@ -1,8 +1,17 @@
-/** Shared shell for AI feature sections — brand left border and icon circle header. */
+/** Shared shell for AI feature sections — brand left border and icon circle header.
+ *  Pass `bare` when hosted inside AgentRow to skip the duplicate header + framing. */
 
 import { CARD_BASE } from "../lib/designTokens";
 
-function AiSection({ title, icon: Icon, children, className = "", id, headerExtra }) {
+function AiSection({ title, icon: Icon, children, className = "", id, headerExtra, bare = false }) {
+  if (bare) {
+    return (
+      <div id={id} className={`flex flex-col gap-3 ${className}`}>
+        {children}
+      </div>
+    );
+  }
+
   return (
     <section
       id={id}

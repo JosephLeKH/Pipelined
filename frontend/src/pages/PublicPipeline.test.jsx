@@ -67,7 +67,7 @@ describe("PublicPipeline", () => {
 
     expect(screen.getByRole("navigation", { name: /primary/i })).toBeInTheDocument();
     expect(screen.getAllByText("Pipelined").length).toBeGreaterThan(0);
-    expect(screen.getByText(/built by a stanford cs student/i)).toBeInTheDocument();
+    expect(screen.getByText(/built by joseph le/i)).toBeInTheDocument();
   });
 
   it("should render the pipeline owner display name in metadata", () => {

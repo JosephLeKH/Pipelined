@@ -55,7 +55,7 @@ describe("PublicTimeline", () => {
     expect(screen.getByText(/1 applications/)).toBeInTheDocument();
     expect(screen.getByText(/1 interviews/)).toBeInTheDocument();
     expect(screen.getAllByText("Pipelined").length).toBeGreaterThan(0);
-    expect(screen.getByText(/built by a stanford cs student/i)).toBeInTheDocument();
+    expect(screen.getByText(/built by joseph le/i)).toBeInTheDocument();
   });
 
   it("should render application rows in read-only timeline", async () => {

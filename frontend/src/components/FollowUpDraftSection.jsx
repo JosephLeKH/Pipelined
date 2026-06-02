@@ -14,10 +14,10 @@ import { getAiToastError } from "../lib/aiConstants";
 import AiSection from "./AiSection";
 import { Button } from "./ui/button";
 
-function FollowUpDraftSection({ application, autoExpand = false }) {
-  const [draft, setDraft] = useState(null);
+function FollowUpDraftSection({ application, autoExpand = false, bare = false }) {
+  const [draft, setDraft] = useState(application.follow_up_draft ?? null);
   const [isLoading, setIsLoading] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(Boolean(application.follow_up_draft) || autoExpand);
   const [autoGenerateAttempted, setAutoGenerateAttempted] = useState(false);
   const sectionRef = useRef(null);
 
@@ -25,7 +25,7 @@ function FollowUpDraftSection({ application, autoExpand = false }) {
     ? differenceInDays(new Date(), new Date(application.updated_at))
     : 0;
   const isStale = daysSinceUpdate >= 14;
-  const shouldShow = autoExpand || (isStale && ["Applied", "Phone Screen"].includes(application.current_stage));
+  const shouldShow = bare || autoExpand || (isStale && ["Applied", "Phone Screen"].includes(application.current_stage));
 
   const handleGenerateDraft = useCallback(async () => {
     setIsLoading(true);
@@ -70,6 +70,7 @@ function FollowUpDraftSection({ application, autoExpand = false }) {
         title="Follow-up draft"
         icon={Mail}
         id="follow-up-draft"
+        bare={bare}
         className={autoExpand ? "ring-2 ring-primary/40" : ""}
       >
         {!draft && (

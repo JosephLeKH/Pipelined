@@ -276,6 +276,7 @@ export function InterviewPrepAgent({
   generatedAt,
   prepStatus = null,
   interviewRound = null,
+  bare = false,
 }) {
   const { status, progressSteps, briefing, errorMessage, start, refresh, STATUS } =
     useInterviewPrep(applicationId, appBriefing, prepStatus);
@@ -286,7 +287,7 @@ export function InterviewPrepAgent({
   const freshness = generatedAt ? formatAiFreshness(generatedAt) : null;
 
   return (
-    <AiSection title="Interview prep" icon={BookOpen} id="interview-prep">
+    <AiSection title="Interview prep" icon={BookOpen} id="interview-prep" bare={bare}>
       {freshness && (
         <div className="flex flex-col gap-1">
           <p className="text-xs text-muted-foreground">Generated {freshness}</p>

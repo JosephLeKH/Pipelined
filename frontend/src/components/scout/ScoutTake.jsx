@@ -1,4 +1,4 @@
-/** Scout's Take — top-of-panel score + rationale + suggested next step. */
+/** Scout's Take — full card (legacy) and compact strip (overview rail) variants. */
 
 import ScoutAvatar from "./ScoutAvatar";
 
@@ -20,7 +20,41 @@ function scoreColor(score) {
   return "text-text-2";
 }
 
-function ScoutTake({ application, onAskScout, onPrimaryAction }) {
+function ScoutTakeStrip({ application, onAskScout, onPrimaryAction }) {
+  const next = suggestedNextStep(application);
+  return (
+    <section
+      aria-label="Scout's Take"
+      className="flex items-center gap-3 rounded-md border border-brand-100 bg-brand-50/40 px-3 py-2 dark:border-brand-900/40 dark:bg-brand-900/10"
+    >
+      <ScoutAvatar size="sm" state="idle" />
+      <p className="min-w-0 flex-1 truncate text-xs text-text-2">
+        <span className="font-medium text-text-1">Scout</span> · Next:{" "}
+        <span className="text-text-1">{next}</span>
+      </p>
+      <div className="flex shrink-0 items-center gap-1">
+        {onPrimaryAction && (
+          <button
+            type="button"
+            onClick={onPrimaryAction}
+            className="rounded-md bg-brand-600 px-2 py-1 text-xs font-medium text-white hover:bg-brand-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 focus-visible:outline-offset-2"
+          >
+            Take action
+          </button>
+        )}
+        <button
+          type="button"
+          onClick={onAskScout}
+          className="rounded-md border border-border-1 bg-surface-0 px-2 py-1 text-xs text-text-1 hover:bg-surface-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 focus-visible:outline-offset-2"
+        >
+          Ask →
+        </button>
+      </div>
+    </section>
+  );
+}
+
+function ScoutTakeCard({ application, onAskScout, onPrimaryAction }) {
   const scoring = application.fit_score == null && application.fit_score_status !== "no_resume";
   const noResume = application.fit_score_status === "no_resume";
 
@@ -89,6 +123,25 @@ function ScoutTake({ application, onAskScout, onPrimaryAction }) {
         </div>
       )}
     </section>
+  );
+}
+
+function ScoutTake({ application, onAskScout, onPrimaryAction, variant = "card" }) {
+  if (variant === "strip") {
+    return (
+      <ScoutTakeStrip
+        application={application}
+        onAskScout={onAskScout}
+        onPrimaryAction={onPrimaryAction}
+      />
+    );
+  }
+  return (
+    <ScoutTakeCard
+      application={application}
+      onAskScout={onAskScout}
+      onPrimaryAction={onPrimaryAction}
+    />
   );
 }
 

@@ -61,7 +61,7 @@ function PanelContent({
         </h2>
       )}
       {displayApp && (
-        <div key={displayApp.id} className="flex h-full flex-col overflow-y-auto bg-surface-0">
+        <div key={displayApp.id} className="flex h-full min-h-0 flex-col bg-surface-0">
           <div
             className="flex w-full shrink-0 touch-none items-center justify-center py-3 md:hidden"
             aria-hidden="true"
