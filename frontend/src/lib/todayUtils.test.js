@@ -41,9 +41,9 @@ describe("todayUtils", () => {
   it("should format greeting with time of day", () => {
     const greeting = formatTodayGreeting(
       { display_name: "Joseph" },
-      new Date("2026-05-23T09:00:00"),
+      "2026-05-23",
     );
-    expect(greeting).toBe("Good morning, Joseph.");
+    expect(greeting).toContain("Scout's briefing for May 23");
   });
 
   it("should format date row with mission count", () => {

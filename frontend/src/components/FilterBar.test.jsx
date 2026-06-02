@@ -7,7 +7,7 @@ import { MemoryRouter } from "react-router-dom";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import FilterBar from "./FilterBar";
-import { isoDateDaysAgo } from "../hooks/useFilterBarParams";
+import { isoDateDaysAgo, todayLocalIso } from "../hooks/useFilterBarParams";
 
 vi.mock("../hooks/useSavedSearches", () => ({
   useSavedSearches: vi.fn(() => ({ data: [] })),
@@ -48,7 +48,7 @@ describe("FilterBar", () => {
 
   it("should show Last 30 days in trigger when URL matches the preset", () => {
     const from = isoDateDaysAgo(30);
-    const to = new Date().toISOString().slice(0, 10);
+    const to = todayLocalIso();
     render(<FilterBar />, { wrapper: makeWrapper([`/?date_from=${from}&date_to=${to}`]) });
 
     expect(screen.getByRole("button", { name: /Updated: Last 30 days/i })).toBeInTheDocument();
@@ -108,7 +108,7 @@ describe("FilterBar", () => {
 
   it("should show active indicator dot on Updated filter when date preset is set", async () => {
     const from = isoDateDaysAgo(30);
-    const to = new Date().toISOString().slice(0, 10);
+    const to = todayLocalIso();
     render(<FilterBar />, { wrapper: makeWrapper([`/?date_from=${from}&date_to=${to}`]) });
 
     const updatedBtn = screen.getByRole("button", { name: /Updated: Last 30 days/i });

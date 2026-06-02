@@ -56,7 +56,7 @@ describe("PendingOpportunityCard", () => {
 
   it("should label the primary button as 'Add to pipeline'", () => {
     renderCard();
-    expect(screen.getByRole("button", { name: /add acme · backend engineer to pipeline/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /add to pipeline as 'to apply'/i })).toBeInTheDocument();
     expect(screen.getByText("Add to pipeline")).toBeInTheDocument();
   });
 
