@@ -44,6 +44,7 @@ from review.router import router as review_router
 from jobs.sync import create_scheduler, sync_github_repos
 from config import settings, validate_production_secrets
 from database import connect, disconnect, ensure_indexes, get_collection
+from seed.demo_data import backfill_demo_for_all_users
 from middleware.cache_control import CacheControlMiddleware
 from middleware.csrf import CSRFMiddleware
 from middleware.rate_limit import limiter
@@ -131,6 +132,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     scheduler.start()
     logger.info("scheduler_started")
     asyncio.create_task(_seed_job_listings_if_empty())
+    asyncio.create_task(backfill_demo_for_all_users())
     yield
     scheduler.shutdown()
     logger.info("scheduler_stopped")

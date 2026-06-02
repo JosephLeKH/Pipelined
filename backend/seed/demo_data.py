@@ -9,12 +9,17 @@ import structlog
 from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorCollection
 
+from auth.constants import DEFAULT_STAGES
 from database import get_collection
 from seed.applications import DEMO_MARKER, build_demo_applications
 from seed.events import build_demo_events
 from seed.notifications import build_demo_notifications
 
 logger = structlog.get_logger()
+
+# Cap the per-startup backfill scan so a huge users collection never blocks
+# startup. Idempotent — subsequent restarts pick up where this left off.
+BACKFILL_BATCH_SIZE = 1000
 
 
 async def _already_seeded(apps: AsyncIOMotorCollection, uid: ObjectId) -> bool:
@@ -68,3 +73,33 @@ async def seed_demo_data_for_user(user_id: str, stages: list[str]) -> int:
         # Demo seed is never load-bearing — log and continue so signup succeeds.
         logger.warning("demo_seed_failed", user_id=user_id, error=str(exc))
         return 0
+
+
+async def backfill_demo_for_all_users() -> dict[str, int]:
+    """Seed every existing user that doesn't already have demo data.
+
+    Idempotent. Safe to call on every startup. Returns a summary dict:
+    {"scanned": N, "seeded": M, "skipped": N-M-errors, "errors": E}.
+    """
+    users = get_collection("users")
+    summary = {"scanned": 0, "seeded": 0, "skipped": 0, "errors": 0}
+
+    cursor = users.find(
+        {}, projection={"_id": 1, "default_stages": 1}
+    ).limit(BACKFILL_BATCH_SIZE)
+
+    async for user in cursor:
+        summary["scanned"] += 1
+        stages = user.get("default_stages") or DEFAULT_STAGES
+        try:
+            inserted = await seed_demo_data_for_user(str(user["_id"]), stages)
+            if inserted > 0:
+                summary["seeded"] += 1
+            else:
+                summary["skipped"] += 1
+        except Exception:
+            summary["errors"] += 1
+            logger.exception("backfill_user_failed", user_id=str(user["_id"]))
+
+    logger.info("demo_backfill_complete", **summary)
+    return summary
