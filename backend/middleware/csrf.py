@@ -132,6 +132,7 @@ class CSRFMiddleware:
                 # Bearer-authenticated requests are not vulnerable to CSRF and
                 # have no opportunity to acquire a double-submit cookie. Allow
                 # through; auth/expiry checks happen downstream.
+                logger.debug("csrf_bypassed_via_bearer", path=path, method=scope.get("method"))
                 await self.app(scope, receive, send)
                 return
             cookie_token = _get_cookie(headers, CSRF_COOKIE_NAME)
