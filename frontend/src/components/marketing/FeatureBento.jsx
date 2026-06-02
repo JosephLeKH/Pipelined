@@ -135,11 +135,11 @@ export default function FeatureBento() {
           <BentoCard>
             <FeatureLabel icon={Target} label="Fit scoring" />
             <h3 className="text-base font-semibold leading-snug text-text-1">
-              Know which apps are worth your time.
+              Know which applications are worth your time.
             </h3>
             <p className="mt-2 text-sm leading-relaxed text-text-2">
-              Per-application fit scores against your résumé and target stack. Spend the
-              hour on the right job.
+              Per-application fit scores against your résumé and target stack. Focus on
+              the roles worth pursuing.
             </p>
           </BentoCard>
 

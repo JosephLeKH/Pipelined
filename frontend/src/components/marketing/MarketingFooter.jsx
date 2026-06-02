@@ -2,14 +2,26 @@
 
 import { Link } from "react-router-dom";
 import GitBranch from "lucide-react/dist/esm/icons/git-branch";
+import Github from "lucide-react/dist/esm/icons/github";
+import Linkedin from "lucide-react/dist/esm/icons/linkedin";
+import Globe from "lucide-react/dist/esm/icons/globe";
 
 const LINKS = [
   { label: "Changelog", to: "/#changelog" },
   { label: "GitHub", href: "https://github.com/JosephLeKH/Pipelined", external: true },
 ];
 
+const AUTHOR_LINKS = [
+  { label: "Joseph Le on GitHub", href: "https://github.com/JosephLeKH", Icon: Github },
+  { label: "Joseph Le on LinkedIn", href: "https://www.linkedin.com/in/hung-le-", Icon: Linkedin },
+  { label: "josephle.dev", href: "https://josephle.dev", Icon: Globe },
+];
+
 const LINK_CLASS =
   "marketing-focus rounded-sm text-[0.8125rem] text-text-2 transition-colors duration-150 hover:text-brand-700 motion-reduce:transition-none";
+
+const AUTHOR_ICON_CLASS =
+  "marketing-focus inline-flex h-6 w-6 items-center justify-center rounded text-text-3 transition-colors duration-150 hover:text-brand-700 motion-reduce:transition-none";
 
 function FooterLink({ label, to, href, external }) {
   if (external) {
@@ -56,9 +68,25 @@ export default function MarketingFooter() {
         </nav>
       </div>
       <div className="border-t border-border-1">
-        <p className="mx-auto max-w-6xl px-6 py-4 text-center text-xs text-text-3">
-          © {new Date().getFullYear()} Pipelined · Built by a Stanford CS student
-        </p>
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-2 gap-y-1 px-6 py-4 text-xs text-text-3">
+          <span>© {new Date().getFullYear()} Pipelined</span>
+          <span aria-hidden="true">·</span>
+          <span>Built by Joseph Le, Stanford CS &apos;28</span>
+          <span className="ml-1 inline-flex items-center gap-0.5">
+            {AUTHOR_LINKS.map(({ label, href, Icon }) => (
+              <a
+                key={href}
+                href={href}
+                target="_blank"
+                rel="noreferrer noopener"
+                aria-label={label}
+                className={AUTHOR_ICON_CLASS}
+              >
+                <Icon className="h-3.5 w-3.5" aria-hidden="true" />
+              </a>
+            ))}
+          </span>
+        </div>
       </div>
     </footer>
   );

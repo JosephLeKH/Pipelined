@@ -30,7 +30,7 @@ export const LANDING_SECTIONS = [
     eyebrow: "PLAN",
     headline: "Know what to do this morning.",
     subhead:
-      "Today ranks every open thread. Interviews to confirm, follow-ups to send, applications to write, all landing in one calm list. Morning Brief shows up in your inbox by 8 AM.",
+      "Today ranks every open thread. Interviews to confirm, follow-ups to send, applications to write, all in a single ranked list. Morning Brief arrives in your inbox by 8 AM.",
     bullets: [
       "Mission scorer ranks what matters today",
       "Snooze, complete, or open with j/k/Enter",
@@ -74,9 +74,9 @@ export const LANDING_SECTIONS = [
     id: "prep",
     number: "4.0",
     eyebrow: "PREP",
-    headline: "Rehearse before the real call.",
+    headline: "Rehearse before the interview.",
     subhead:
-      "Mock Interview runs a live session in your browser. Behavioural or technical, scored against the role. The debrief tells you what to fix before the recruiter calls.",
+      "Mock Interview runs a live session in your browser. Behavioural or technical, scored against the role. The debrief shows what to fix before the recruiter calls.",
     bullets: [
       "Behavioural and technical banks per role",
       "Real conversation feel, not a static quiz",
@@ -97,9 +97,9 @@ export const LANDING_SECTIONS = [
     id: "review",
     number: "5.0",
     eyebrow: "REVIEW",
-    headline: "See where time goes.",
+    headline: "See where your time goes.",
     subhead:
-      "Pipeline funnel, ghost rate per company, response time trends. A Weekly Review email shows up every Monday with what moved and what stalled.",
+      "Pipeline funnel, ghost rate per company, response time trends. A Weekly Review email arrives every Monday with what moved and what stalled.",
     bullets: [
       "Pipeline funnel with stage drop-off",
       "Ghost-rate ranking per company",

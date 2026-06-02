@@ -13,7 +13,7 @@ const FLOW_STEPS = [
     label: "01 · Scan",
     title: "Watchlist scans the major boards nightly.",
     description:
-      "While you sleep, Autopilot crawls LinkedIn, Greenhouse, Lever, Workday and more. It filters by your profile, tags, and salary band.",
+      "Autopilot scans LinkedIn, Greenhouse, Lever, Workday, and more on a nightly schedule. Results are filtered by your profile, tags, and salary band.",
   },
   {
     icon: FileText,
@@ -27,7 +27,7 @@ const FLOW_STEPS = [
     label: "03 · Rehearse",
     title: "Mock Interview runs in your browser.",
     description:
-      "Behavioural or technical, scored against the actual role. Live conversation feel. The debrief tells you exactly what to fix.",
+      "Behavioural or technical, scored against the actual role. A live conversation, not a static quiz. The debrief shows what to fix.",
   },
   {
     icon: LineChart,
@@ -57,12 +57,12 @@ export default function AutopilotFlow() {
             Agentic by design
           </p>
           <h2 className="mt-4 text-display-lg tracking-[-0.025em] text-text-1">
-            An AI-native loop, working in the background.
+            Agents that work in the background.
           </h2>
           <p className="mt-4 text-base leading-[1.6] text-text-2">
-            Pipelined isn&apos;t a spreadsheet with autocomplete. It&apos;s a system of agents
-            that scout, draft, rehearse, and review. Your job search compounds while you
-            sleep.
+            A system of agents that scout, draft, rehearse, and review your job search.
+            Each step runs on a schedule or on demand. You approve every output before
+            anything leaves your machine.
           </p>
         </div>
 
@@ -98,13 +98,6 @@ export default function AutopilotFlow() {
           </ol>
         </div>
 
-        <div className="mx-auto mt-16 max-w-3xl rounded-2xl border border-border-1 bg-surface-1 p-6 md:p-7">
-          <p className="text-center text-sm leading-relaxed text-text-2">
-            <span className="font-semibold text-text-1">Suggest-only by policy.</span>{" "}
-            Autopilot drafts and Mock Interviews <em>never</em> auto-send. You review, edit,
-            and ship. Pipelined just removes the friction in between.
-          </p>
-        </div>
       </div>
     </section>
   );

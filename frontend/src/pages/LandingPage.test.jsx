@@ -43,7 +43,7 @@ describe("LandingPage", () => {
     render(<LandingPage />, { wrapper: makeWrapper() });
 
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(/your job hunt/i);
-    expect(screen.getByText(/Capture every application from one-click save/i)).toBeInTheDocument();
+    expect(screen.getByText(/Pipelined tracks every application from save to signed offer/i)).toBeInTheDocument();
   });
 
   it("should render numbered product sections", () => {
@@ -52,8 +52,8 @@ describe("LandingPage", () => {
     expect(screen.getByRole("heading", { name: /capture every job in one click/i })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: /know what to do this morning/i })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: /draft a great application/i })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: /rehearse before the real call/i })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: /see where time goes/i })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /rehearse before the interview/i })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /see where your time goes/i })).toBeInTheDocument();
   });
 
   it("should render trust and compliance copy", () => {
