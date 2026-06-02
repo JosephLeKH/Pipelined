@@ -156,6 +156,7 @@ function PendingOpportunityCard({
               className="h-2 w-2 shrink-0 rounded-full bg-brand-600"
               aria-hidden="true"
             />
+            <span className="text-sm text-text-3">Scout found:</span>
             <span className="font-semibold text-text-1">{company}</span>
             <span aria-hidden="true" className="text-sm text-text-3">·</span>
             <span className="text-sm text-text-2">{role}</span>
@@ -237,7 +238,7 @@ function PendingOpportunityCard({
           size="sm"
           onClick={() => onApprove(opportunity.id)}
           disabled={isBusy}
-          aria-label={`Add ${company} · ${role} to pipeline`}
+          aria-label={`Add to pipeline as 'To Apply' (Scout drafts the cover letter).`}
         >
           {isApproving ? (
             "Adding…"

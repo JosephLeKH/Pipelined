@@ -136,7 +136,7 @@ describe("PendingInboxPage", () => {
 
     await waitFor(() => {
       expect(screen.getByText("No pending matches")).toBeInTheDocument();
-      expect(screen.getByText(/check back tomorrow at 5 am utc/i)).toBeInTheDocument();
+      expect(screen.getByText(/scout hasn't queued anything yet/i)).toBeInTheDocument();
     });
   });
 });

@@ -16,7 +16,7 @@ import {
 
 const APPROVE_TOAST = "Added to pipeline. Apply when ready.";
 const EMPTY_DESCRIPTION =
-  "Autopilot hasn't found any new matches. Check back tomorrow at 5 AM UTC.";
+  "Scout hasn't queued anything yet. Configure Autopilot in Settings → Scout → Autopilot.";
 
 function PendingInboxLoading() {
   return (
@@ -66,13 +66,13 @@ function PendingInboxPage() {
         <header className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <h1 className="text-2xl font-semibold text-text-1">
-              Pending opportunities
+              Scout's Drafts
               {reviewCount > 0 && (
                 <span className="font-normal text-text-2">{` · ${reviewCount} to review`}</span>
               )}
             </h1>
             <p className="mt-1 text-sm text-text-2">
-              Review overnight matches. We never submit applications for you.
+              Roles Scout found and cover letters Scout drafted. Approve to add them to your pipeline.
             </p>
           </div>
           {reviewCount > 0 && (
