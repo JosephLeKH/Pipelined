@@ -25,7 +25,7 @@ import {
 
 function TypingIndicator() {
   return (
-    <div className="flex justify-start" aria-live="polite" aria-label="Co-pilot is typing">
+    <div className="flex justify-start" aria-live="polite" aria-label="Scout is typing">
       <div className="flex items-center gap-1.5 rounded-xl border border-border-1 bg-surface-1 px-3 py-2.5">
         <span className="h-1.5 w-1.5 animate-pulse-soft rounded-full bg-brand-500 [animation-delay:0ms]" />
         <span className="h-1.5 w-1.5 animate-pulse-soft rounded-full bg-brand-500 [animation-delay:200ms]" />
@@ -153,7 +153,7 @@ function CoPilotPanel({ open, onClose, width = COPILOT_DRAWER_WIDTH_PX }) {
 
   return (
     <aside
-      aria-label="Co-pilot chat"
+      aria-label="Scout chat"
       style={{ width }}
       className="flex h-full shrink-0 flex-col border-l border-border-1 bg-surface-0"
     >
@@ -218,7 +218,7 @@ function CoPilotPanel({ open, onClose, width = COPILOT_DRAWER_WIDTH_PX }) {
               placeholder={COPILOT_PLACEHOLDER}
               disabled={isStreaming}
               className={INPUT_BASE}
-              aria-label="Co-pilot message"
+              aria-label="Scout message"
             />
             <button
               type="submit"

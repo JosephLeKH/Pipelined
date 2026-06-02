@@ -36,11 +36,11 @@ describe("CoPilotPanel", () => {
     });
   });
 
-  it("should render co-pilot header and input when open", () => {
+  it("should render scout header and input when open", () => {
     renderPanel();
 
-    expect(screen.getByRole("heading", { name: /co-pilot/i })).toBeInTheDocument();
-    expect(screen.getByLabelText(/co-pilot message/i)).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /scout/i })).toBeInTheDocument();
+    expect(screen.getByLabelText(/scout message/i)).toBeInTheDocument();
     expect(screen.getByText(/answers based on your applications/i)).toBeInTheDocument();
   });
 
@@ -71,13 +71,13 @@ describe("CoPilotPanel", () => {
 
     renderPanel();
 
-    expect(screen.getByLabelText(/co-pilot is typing/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/scout is typing/i)).toBeInTheDocument();
   });
 
   it("should send a message on submit", async () => {
     renderPanel();
 
-    await userEvent.type(screen.getByLabelText(/co-pilot message/i), "What is stale?");
+    await userEvent.type(screen.getByLabelText(/scout message/i), "What is stale?");
     await userEvent.click(screen.getByRole("button", { name: /send/i }));
 
     expect(mockSendMessage).toHaveBeenCalledWith("What is stale?");

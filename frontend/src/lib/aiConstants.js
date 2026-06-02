@@ -33,11 +33,11 @@ export function getAiToastError(error, fallback) {
   return isAiLimitError(error) ? AI_LIMIT_MESSAGE : fallback;
 }
 
-export const COPILOT_TITLE = "Co-pilot";
+export const COPILOT_TITLE = "Scout";
 export const COPILOT_SUBTITLE = "Answers based on your applications, profile, and resume";
-export const COPILOT_PLACEHOLDER = "Ask about priorities, follow-ups, or interview prep…";
-export const COPILOT_ERROR_FALLBACK = "Co-pilot unavailable. Please try again.";
-export const COPILOT_RATE_LIMIT_MESSAGE = "Co-pilot rate limit reached. Try again later.";
+export const COPILOT_PLACEHOLDER = "Ask Scout anything…";
+export const COPILOT_ERROR_FALLBACK = "Scout unavailable. Please try again.";
+export const COPILOT_RATE_LIMIT_MESSAGE = "Scout rate limit reached. Try again later.";
 
 export const COPILOT_SUGGESTED_PROMPTS = [
   "What should I prioritize today?",
