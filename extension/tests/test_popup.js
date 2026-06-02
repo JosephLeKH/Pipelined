@@ -371,6 +371,16 @@ describe("signOut()", () => {
     expect(document.getElementById("unauthenticated").classList.contains("hidden")).toBe(false);
     expect(document.getElementById("authenticated").classList.contains("hidden")).toBe(true);
   });
+
+  it("sends MSG.LOGOUT to the background service worker", async () => {
+    chrome.runtime.sendMessage.mockResolvedValue({ ok: true });
+
+    await signOut();
+
+    expect(chrome.runtime.sendMessage).toHaveBeenCalledWith(
+      expect.objectContaining({ type: "LOGOUT" }),
+    );
+  });
 });
 
 // ── relativeTime() ────────────────────────────────────────────────────────────
