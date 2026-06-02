@@ -59,7 +59,7 @@ class Settings(BaseSettings):
     # OpenRouter — fallback LLM provider when DO is unavailable
     openrouter_api_key: str = ""
     openrouter_base_url: str = "https://openrouter.ai/api/v1"
-    openrouter_default_model: str = "google/gemini-2.0-flash-001"
+    openrouter_default_model: str = "google/gemini-2.5-flash"
 
     # DigitalOcean Spaces — S3-compatible blob storage for resume PDFs
     spaces_access_key: str = ""
