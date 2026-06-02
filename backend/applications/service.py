@@ -54,13 +54,13 @@ def _build_filter(uid: ObjectId, query: ApplicationListQuery) -> dict:
     if not query.include_archived:
         f["archived"] = {"$ne": True}
     if query.stage:
-        f["current_stage"] = query.stage
+        f["current_stage"] = {"$in": query.stage}
     if query.company_type:
-        f["company_type"] = query.company_type
+        f["company_type"] = {"$in": query.company_type}
     if query.remote_status:
-        f["remote_status"] = query.remote_status
+        f["remote_status"] = {"$in": query.remote_status}
     if query.tags:
-        f["tags"] = {"$all": query.tags}
+        f["tags"] = {"$in": query.tags}
     if query.date_from or query.date_to:
         date_range: dict = {}
         if query.date_from:

@@ -155,9 +155,10 @@ function FilterBar() {
           <button
             type="button"
             onClick={clearAll}
+            aria-label={`Clear ${activeFilterCount} filter${activeFilterCount !== 1 ? "s" : ""}`}
             className="shrink-0 text-xs text-text-3 hover:text-brand-700 dark:hover:text-brand-300 motion-reduce:transition-none transition-colors duration-hover ease-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 focus-visible:outline-offset-2 dark:focus-visible:outline-1"
           >
-            Clear
+            Clear ({activeFilterCount})
           </button>
         )}
       </div>

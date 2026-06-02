@@ -57,13 +57,13 @@ def test_build_filter_always_includes_user_id():
 def test_build_filter_applies_stage_filter_when_set():
     # Arrange
     uid = ObjectId()
-    query = ApplicationListQuery(stage="Onsite")
+    query = ApplicationListQuery(stage=["Onsite"])
 
     # Act
     f = _build_filter(uid, query)
 
     # Assert
-    assert f["current_stage"] == "Onsite"
+    assert f["current_stage"] == {"$in": ["Onsite"]}
 
 
 def test_build_filter_applies_cursor_descending():

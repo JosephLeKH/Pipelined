@@ -3,7 +3,7 @@
 import { useMemo, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 
-const FILTER_KEYS = ["stage", "company_type", "remote_status", "date_from", "date_to", "include_archived"];
+const FILTER_KEYS = ["stage", "company_type", "remote_status", "tags", "date_from", "date_to", "include_archived", "q"];
 
 function updateParams(searchParams, setSearchParams, fn) {
   const next = new URLSearchParams(searchParams);

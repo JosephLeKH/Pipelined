@@ -84,10 +84,10 @@ describe("FilterBar", () => {
   it("should show Clear when filters are active and clear them on click", async () => {
     render(<FilterBar />, { wrapper: makeWrapper(["/?stage=Offer"]) });
 
-    const clearBtn = screen.getByRole("button", { name: "Clear" });
+    const clearBtn = screen.getByRole("button", { name: /Clear 1 filter/i });
     await userEvent.click(clearBtn);
 
-    expect(screen.queryByRole("button", { name: "Clear" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Clear \d+ filter/i })).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Stage: All" })).toBeInTheDocument();
   });
 

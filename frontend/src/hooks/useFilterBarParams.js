@@ -18,15 +18,26 @@ export const DATE_PRESET_OPTIONS = [
   { id: "90d", label: "Last 90 days" },
 ];
 
+function formatLocalIso(date) {
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, "0");
+  const dd = String(date.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
+}
+
+export function todayLocalIso() {
+  return formatLocalIso(new Date());
+}
+
 export function isoDateDaysAgo(days) {
   const d = new Date();
   d.setDate(d.getDate() - days);
-  return d.toISOString().slice(0, 10);
+  return formatLocalIso(d);
 }
 
 export function detectDatePreset(dateFrom, dateTo) {
   if (!dateFrom && !dateTo) return "any";
-  const today = new Date().toISOString().slice(0, 10);
+  const today = todayLocalIso();
   if (dateTo && dateTo !== today) return "custom";
   for (const [id, days] of Object.entries(DATE_PRESET_DAYS)) {
     if (dateFrom === isoDateDaysAgo(days)) return id;
@@ -96,7 +107,7 @@ export function useFilterBarParams() {
       if (presetId !== "any") {
         const days = DATE_PRESET_DAYS[presetId];
         next.set("date_from", isoDateDaysAgo(days));
-        next.set("date_to", new Date().toISOString().slice(0, 10));
+        next.set("date_to", todayLocalIso());
       }
       setSearchParams(next, { replace: true });
     },
