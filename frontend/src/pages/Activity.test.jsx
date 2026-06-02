@@ -94,10 +94,10 @@ function makeWrapper(initialPath = "/activity") {
 }
 
 describe("ActivityPage", () => {
-  it("should render the Activity heading", async () => {
+  it("should render the Scout's Activity heading", async () => {
     render(<ActivityPage />, { wrapper: makeWrapper() });
 
-    expect(await screen.findByRole("heading", { name: /^activity$/i })).toBeDefined();
+    expect(await screen.findByRole("heading", { name: /scout's activity/i })).toBeDefined();
   });
 
   it("should render agent activity rows with summary and timestamp", async () => {
@@ -109,10 +109,10 @@ describe("ActivityPage", () => {
     expect(screen.getAllByRole("time")).toHaveLength(3);
   });
 
-  it("should show run count", async () => {
+  it("should show subheading", async () => {
     render(<ActivityPage />, { wrapper: makeWrapper() });
 
-    expect(await screen.findByText("3 runs")).toBeDefined();
+    expect(await screen.findByText("Everything Scout has done for you, newest first.")).toBeDefined();
   });
 
   it("should group entries under date headings", async () => {
@@ -120,6 +120,32 @@ describe("ActivityPage", () => {
 
     expect(await screen.findByText("Today")).toBeDefined();
     expect(screen.getByText("Yesterday")).toBeDefined();
+  });
+
+  it("should render filter chips with All selected by default", async () => {
+    render(<ActivityPage />, { wrapper: makeWrapper() });
+
+    await screen.findByText("All");
+    expect(screen.getByRole("tab", { name: "All", selected: true })).toBeDefined();
+    expect(screen.getByRole("tab", { name: "Scored", selected: false })).toBeDefined();
+    expect(screen.getByRole("tab", { name: "Drafted", selected: false })).toBeDefined();
+    expect(screen.getByRole("tab", { name: "Found", selected: false })).toBeDefined();
+    expect(screen.getByRole("tab", { name: "Flagged", selected: false })).toBeDefined();
+  });
+
+  it("should update aria-selected when filter chip is clicked", async () => {
+    render(<ActivityPage />, { wrapper: makeWrapper() });
+
+    const allChip = await screen.findByRole("tab", { name: "All" });
+    const scoredChip = screen.getByRole("tab", { name: "Scored" });
+
+    expect(allChip).toHaveAttribute("aria-selected", "true");
+    expect(scoredChip).toHaveAttribute("aria-selected", "false");
+
+    fireEvent.click(scoredChip);
+
+    expect(allChip).toHaveAttribute("aria-selected", "false");
+    expect(scoredChip).toHaveAttribute("aria-selected", "true");
   });
 
   it("should show empty state when no entries", async () => {

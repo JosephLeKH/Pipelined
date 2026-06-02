@@ -32,12 +32,16 @@ function ActivityFeedSkeleton() {
   );
 }
 
-function AgentActivityFeed({ entries, isLoading, onEntryClick, emptyMessage }) {
+function AgentActivityFeed({ entries, isLoading, onEntryClick, emptyMessage, filterTypes = null }) {
   if (isLoading) {
     return <ActivityFeedSkeleton />;
   }
 
-  if (entries.length === 0) {
+  const filteredEntries = filterTypes
+    ? entries.filter((e) => filterTypes.includes(e.agent_type))
+    : entries;
+
+  if (filteredEntries.length === 0) {
     return (
       <div className="rounded-lg border border-border-1 bg-surface-0 px-6 py-16 text-center">
         <Bot className="mx-auto mb-3 h-10 w-10 text-text-3/40" aria-hidden="true" />
@@ -49,7 +53,7 @@ function AgentActivityFeed({ entries, isLoading, onEntryClick, emptyMessage }) {
     );
   }
 
-  const groups = groupAgentEntriesByDate(entries);
+  const groups = groupAgentEntriesByDate(filteredEntries);
 
   return (
     <div
