@@ -75,8 +75,9 @@ describe("ManualAddForm", () => {
     // Arrange / Act
     render(<ManualAddForm isOpen onClose={() => {}} />, { wrapper: makeWrapper() });
 
-    // Assert
-    const today = new Date().toISOString().slice(0, 10);
+    // Assert — must be the user's local date, not UTC.
+    const now = new Date();
+    const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
     const dateInput = screen.getByLabelText(/date applied/i);
     expect(dateInput).toHaveValue(today);
   });

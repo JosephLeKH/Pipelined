@@ -2,7 +2,9 @@
 
 import { useState, useCallback } from "react";
 
-const getTodayString = () => new Date().toISOString().slice(0, 10);
+import { toISODate } from "../lib/dateUtils";
+
+const getTodayString = () => toISODate(new Date());
 const DEFAULT_SOURCE = "manual";
 
 export function useManualAddFormState({ reset }) {
