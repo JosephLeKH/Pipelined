@@ -254,3 +254,49 @@ describe("auth bootstrap", () => {
     );
   });
 });
+
+// ── cacheRecentSave extended fields ──────────────────────────────────────────
+
+describe("cacheRecentSave extended fields", () => {
+  it("persists updated_at, apply_pack_ready, interview_prep_ready, viewed_at", async () => {
+    chrome.storage.session.get.mockResolvedValue({ pipelined_auth_token: "tkn" });
+    chrome.storage.local.get.mockResolvedValue({ recent_saves: [] });
+
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      status: 201,
+      json: () => Promise.resolve({
+        data: {
+          id: "app-1",
+          company: "Acme",
+          role_title: "SWE",
+          current_stage: "Applied",
+          date_applied: "2026-06-02T00:00:00Z",
+          updated_at: "2026-06-02T00:00:00Z",
+          apply_pack: { talking_points: ["a"] },
+          interview_prep_briefing: null,
+          viewed_at: null,
+        },
+      }),
+    });
+
+    await handleSave({
+      fields: { role_title: "SWE", company_name: "Acme" },
+      boardId: "linkedin",
+      pageText: null,
+      jobDescription: null,
+      sourceUrl: "https://linkedin.com/jobs/view/1",
+    });
+
+    const setCalls = chrome.storage.local.set.mock.calls;
+    const recentSavesCall = setCalls.find((c) => c[0]?.recent_saves);
+    expect(recentSavesCall).toBeDefined();
+    expect(recentSavesCall[0].recent_saves[0]).toMatchObject({
+      id: "app-1",
+      updated_at: "2026-06-02T00:00:00Z",
+      apply_pack_ready: true,
+      interview_prep_ready: false,
+      viewed_at: null,
+    });
+  });
+});
