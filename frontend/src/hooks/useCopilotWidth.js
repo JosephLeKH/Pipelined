@@ -9,12 +9,18 @@ import {
   COPILOT_WIDTH_STORAGE_KEY,
 } from "../lib/constants";
 
+// Reserve ~100px on narrow viewports so the main content area is never fully
+// hidden by the drawer (was clamped only against an absolute pixel max).
+const COPILOT_VIEWPORT_RESERVE_PX = 100;
+
 function clampWidth(value) {
   if (!Number.isFinite(value)) return COPILOT_DRAWER_WIDTH_PX;
-  return Math.max(
-    COPILOT_DRAWER_WIDTH_MIN_PX,
-    Math.min(COPILOT_DRAWER_WIDTH_MAX_PX, value),
-  );
+  const viewportCap =
+    typeof window !== "undefined" && Number.isFinite(window.innerWidth)
+      ? Math.max(COPILOT_DRAWER_WIDTH_MIN_PX, window.innerWidth - COPILOT_VIEWPORT_RESERVE_PX)
+      : COPILOT_DRAWER_WIDTH_MAX_PX;
+  const upperBound = Math.min(COPILOT_DRAWER_WIDTH_MAX_PX, viewportCap);
+  return Math.max(COPILOT_DRAWER_WIDTH_MIN_PX, Math.min(upperBound, value));
 }
 
 function readWidth() {
