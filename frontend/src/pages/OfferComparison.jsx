@@ -3,11 +3,13 @@ import confetti from "canvas-confetti";
 import Download from "lucide-react/dist/esm/icons/download";
 import Handshake from "lucide-react/dist/esm/icons/handshake";
 import LayoutDashboard from "lucide-react/dist/esm/icons/layout-dashboard";
+import Plus from "lucide-react/dist/esm/icons/plus";
 import Trophy from "lucide-react/dist/esm/icons/trophy";
 
 import EmptyState from "../components/EmptyState";
 import { OfferNegotiationPanel } from "../components/OfferNegotiationPanel";
 import { EditableCell } from "../components/OfferEditableCell";
+import { AddOfferDialog } from "../components/AddOfferDialog";
 import { useApplications, useUpdateApplication } from "../hooks/useApplications";
 import { OFFER_FIELDS, OFFER_STAGE } from "../lib/constants";
 import { Button } from "../components/ui/button";
@@ -94,6 +96,23 @@ function OfferHeaderCell({ app, isWinner, onMarkWinner }) {
         </Button>
       </div>
     </th>
+  );
+}
+
+function SingleOfferHint({ onAddOffer }) {
+  return (
+    <div
+      className="mb-4 flex items-center justify-between gap-3 rounded-lg border border-border bg-card p-4"
+      data-testid="single-offer-hint"
+    >
+      <p className="text-sm text-muted-foreground">
+        Only one offer here. Add another to see a side-by-side comparison.
+      </p>
+      <Button type="button" variant="outline" size="sm" onClick={onAddOffer} className="shrink-0 gap-1.5">
+        <Plus className="h-3.5 w-3.5" aria-hidden="true" />
+        Add offer
+      </Button>
+    </div>
   );
 }
 
@@ -197,6 +216,7 @@ function OfferComparison() {
   const { mutate: updateApp } = useUpdateApplication();
   const { winnerId, handleSave, handleMarkWinner } = useOfferHandlers(updateApp);
   const [activeTab, setActiveTab] = useState("compare");
+  const [addOpen, setAddOpen] = useState(false);
 
   if (isLoading) return <LoadingState />;
   if (error) return <ErrorState onRetry={refetch} />;
@@ -204,11 +224,20 @@ function OfferComparison() {
   const apps = data?.data ?? [];
   if (apps.length === 0) {
     return (
-      <EmptyState
-        icon={Trophy}
-        title="No offers yet"
-        description="Move an application to the Offer stage to compare packages here."
-      />
+      <>
+        <EmptyState
+          icon={Trophy}
+          title="No offers yet"
+          description="Add an offer to start comparing packages side by side."
+          action={
+            <Button type="button" onClick={() => setAddOpen(true)} className="gap-1.5">
+              <Plus className="h-4 w-4" aria-hidden="true" />
+              Add offer
+            </Button>
+          }
+        />
+        <AddOfferDialog open={addOpen} onOpenChange={setAddOpen} />
+      </>
     );
   }
 
@@ -219,6 +248,15 @@ function OfferComparison() {
           <OfferComparisonHeader />
           <div className="flex items-center gap-3">
             <TabBar activeTab={activeTab} onTabChange={setActiveTab} />
+            <Button
+              type="button"
+              onClick={() => setAddOpen(true)}
+              className="flex items-center gap-1.5"
+              aria-label="Add another offer"
+            >
+              <Plus className="h-4 w-4" aria-hidden="true" />
+              Add offer
+            </Button>
             <Button
               type="button"
               variant="outline"
@@ -232,12 +270,14 @@ function OfferComparison() {
           </div>
         </div>
         <div id="panel-compare" role="tabpanel" aria-labelledby="tab-compare" hidden={activeTab !== "compare"}>
+          {apps.length === 1 ? <SingleOfferHint onAddOffer={() => setAddOpen(true)} /> : null}
           <OfferComparisonTable apps={apps} winnerId={winnerId} handleSave={handleSave} handleMarkWinner={handleMarkWinner} />
         </div>
         <div id="panel-negotiate" role="tabpanel" aria-labelledby="tab-negotiate" hidden={activeTab !== "negotiate"}>
           <OfferNegotiationPanel apps={apps} />
         </div>
       </main>
+      <AddOfferDialog open={addOpen} onOpenChange={setAddOpen} />
     </>
   );
 }

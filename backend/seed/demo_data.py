@@ -12,7 +12,11 @@ from pymongo import ReturnDocument
 
 from auth.constants import DEFAULT_STAGES
 from database import get_collection
-from seed.applications import DEMO_MARKER, build_demo_applications
+from seed.applications import (
+    DEMO_MARKER,
+    build_demo_applications,
+    build_openai_offer,
+)
 from seed.events import build_demo_events
 from seed.notifications import build_demo_notifications
 from seed.pending import build_demo_job_listings, build_demo_pending_opportunities
@@ -31,6 +35,69 @@ async def _already_seeded(apps: AsyncIOMotorCollection, uid: ObjectId) -> bool:
     return existing is not None
 
 
+async def _backfill_openai_offer(
+    apps: AsyncIOMotorCollection,
+    uid: ObjectId,
+    stages: list[str],
+) -> bool:
+    """Insert the OpenAI Offer-stage app for users seeded before the second
+    offer existed. No-op if the user already has it.
+
+    Returns True if inserted.
+    """
+    existing = await apps.find_one(
+        {"user_id": uid, DEMO_MARKER: True, "normalised_company": "openai"},
+        projection={"_id": 1},
+    )
+    if existing is not None:
+        return False
+
+    await apps.insert_one(build_openai_offer(uid, stages))
+    return True
+
+
+async def _backfill_notification_urls(
+    notifications: AsyncIOMotorCollection,
+    apps: AsyncIOMotorCollection,
+    uid: ObjectId,
+) -> int:
+    """Repair existing demo notifications missing action_url (pre-fix data).
+
+    Returns the count of notifications updated.
+    """
+    missing = await notifications.count_documents(
+        {"user_id": uid, DEMO_MARKER: True, "action_url": None}
+    )
+    if missing == 0:
+        return 0
+
+    stripe = await apps.find_one(
+        {"user_id": uid, DEMO_MARKER: True, "company": "Stripe"}, projection={"_id": 1}
+    )
+    google = await apps.find_one(
+        {"user_id": uid, DEMO_MARKER: True, "company": "Google"}, projection={"_id": 1}
+    )
+    if not stripe or not google:
+        return 0
+
+    updates = [
+        ({"type": "welcome"}, "/today"),
+        ({"type": "interview_tomorrow"}, f"/dashboard?selected={stripe['_id']}"),
+        (
+            {"type": "follow_up_due"},
+            f"/dashboard?selected={google['_id']}&action=follow-up",
+        ),
+    ]
+    fixed = 0
+    for type_filter, url in updates:
+        result = await notifications.update_many(
+            {"user_id": uid, DEMO_MARKER: True, "action_url": None, **type_filter},
+            {"$set": {"action_url": url}},
+        )
+        fixed += result.modified_count
+    return fixed
+
+
 async def seed_demo_data_for_user(user_id: str, stages: list[str]) -> int:
     """Insert demo apps, calendar events, and notifications for the user.
 
@@ -45,6 +112,12 @@ async def seed_demo_data_for_user(user_id: str, stages: list[str]) -> int:
         notifications = get_collection("notifications")
 
         if await _already_seeded(apps, uid):
+            inserted_openai = await _backfill_openai_offer(apps, uid, stages)
+            if inserted_openai:
+                logger.info("demo_openai_offer_backfilled", user_id=user_id)
+            fixed = await _backfill_notification_urls(notifications, apps, uid)
+            if fixed:
+                logger.info("demo_notification_urls_backfilled", user_id=user_id, fixed=fixed)
             logger.info("demo_seed_skipped", user_id=user_id, reason="already_seeded")
             return 0
 
@@ -59,7 +132,7 @@ async def seed_demo_data_for_user(user_id: str, stages: list[str]) -> int:
         if event_docs:
             await events.insert_many(event_docs)
 
-        notification_docs = build_demo_notifications(uid)
+        notification_docs = build_demo_notifications(uid, apps_by_company)
         if notification_docs:
             await notifications.insert_many(notification_docs)
 

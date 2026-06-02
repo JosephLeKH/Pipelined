@@ -5,7 +5,8 @@ import OfferComparison from "./OfferComparison";
 
 vi.mock("../hooks/useApplications", () => ({
   useApplications: vi.fn(),
-  useUpdateApplication: vi.fn(() => ({ mutate: vi.fn() })),
+  useUpdateApplication: vi.fn(() => ({ mutate: vi.fn(), mutateAsync: vi.fn() })),
+  useCreateApplication: vi.fn(() => ({ mutate: vi.fn(), mutateAsync: vi.fn() })),
 }));
 
 import { useApplications, useUpdateApplication } from "../hooks/useApplications";

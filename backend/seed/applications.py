@@ -1,4 +1,4 @@
-"""Seed data: 7 realistic demo applications across every default stage."""
+"""Seed data: 8 realistic demo applications across every default stage."""
 
 from datetime import datetime, timedelta, timezone
 
@@ -20,11 +20,70 @@ def _stage_history(*entries: tuple[str, datetime]) -> list[dict]:
     return [{"stage": s, "transitioned_at": t} for s, t in entries]
 
 
+def build_openai_offer(uid: ObjectId, stages: list[str]) -> dict:
+    """OpenAI Offer-stage app. Extracted so the demo backfill can reuse it
+    when an existing seeded user has only the Anthropic offer.
+    """
+    now = datetime.now(timezone.utc)
+    return {
+        "user_id": uid,
+        "stages": stages,
+        "source": "manual",
+        "archived": False,
+        "deleted": False,
+        "created_at": now,
+        "updated_at": now,
+        DEMO_MARKER: True,
+        "role_title": "Member of Technical Staff",
+        "company": "OpenAI",
+        "normalised_company": "openai",
+        "normalised_role": "member of technical staff",
+        "current_stage": "Offer",
+        "date_applied": _days_ago(36),
+        "tags": ["ai", "dream", "big-tech"],
+        "notes": "Written offer received 2026-05-29. Recruiter open to a counter "
+                 "on base; equity grant is non-negotiable per their bands.",
+        "fit_score": 91,
+        "fit_score_reason": "Strong research-engineering match; lighter on "
+                            "their applied-research tooling stack.",
+        "fit_score_status": "complete",
+        "fit_score_computed_at": _days_ago(30),
+        "compensation": "$250k base + PPUs",
+        "location": "San Francisco, CA",
+        "remote_status": "onsite",
+        "company_type": "mid",
+        "company_domain": "openai.com",
+        "offer_details": {
+            "base_salary": 250000,
+            "equity": "$220k PPUs over 4 years (1-year cliff)",
+            "equity_annual_value": 55000,
+            "vesting_years": "4",
+            "signing_bonus": 15000,
+            "total_comp": 320000,
+            "benefits": "Health, 401k 6% match, $5k annual learning stipend",
+            "start_date": "2026-08-04",
+            "location": "San Francisco, CA",
+            "remote_policy": "onsite (3 days/week minimum)",
+            "deadline": "2026-06-15",
+            "notes": "Higher base than Anthropic, smaller signing. PPUs vs RSU "
+                     "is the key tradeoff to model.",
+        },
+        "deadline": _days_from_now(14),
+        "stage_history": _stage_history(
+            ("Applied", _days_ago(36)),
+            ("Phone Screen", _days_ago(28)),
+            ("Onsite", _days_ago(15)),
+            ("Offer", _days_ago(4)),
+        ),
+    }
+
+
 def build_demo_applications(uid: ObjectId, stages: list[str]) -> list[dict]:
-    """Return 7 hardcoded application docs ready for insert_many.
+    """Return 8 hardcoded application docs ready for insert_many.
 
     Spans every default stage and includes notes, fit scores, tags, follow-up
-    dates, location, and offer details where appropriate.
+    dates, location, and offer details where appropriate. Includes two Offer-
+    stage apps (Anthropic, OpenAI) so the comparison page has real content.
     """
     now = datetime.now(timezone.utc)
     base = {
@@ -127,6 +186,7 @@ def build_demo_applications(uid: ObjectId, stages: list[str]) -> list[dict]:
                 ("Offer", _days_ago(1)),
             ),
         },
+        build_openai_offer(uid, stages),
         {
             **base,
             "role_title": "Software Engineer",

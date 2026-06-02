@@ -24,10 +24,18 @@ WELCOME_BODY = (
 )
 
 
-def build_demo_notifications(uid: ObjectId) -> list[dict]:
-    """Three notifications: welcome, Stripe interview reminder, Google follow-up due."""
+def build_demo_notifications(
+    uid: ObjectId, apps_by_company: dict[str, ObjectId]
+) -> list[dict]:
+    """Three notifications: welcome, Stripe interview reminder, Google follow-up due.
+
+    Stripe and Google notifications deep-link to their respective seeded
+    application detail panels so clicking expands the relevant app.
+    """
     now = datetime.now(timezone.utc)
-    base = {"user_id": uid, "read": False, "action_url": None, DEMO_MARKER: True}
+    base = {"user_id": uid, "read": False, DEMO_MARKER: True}
+    stripe_id = apps_by_company["Stripe"]
+    google_id = apps_by_company["Google"]
 
     return [
         # Slightly older so the welcome message sits second-newest after the
@@ -37,7 +45,7 @@ def build_demo_notifications(uid: ObjectId) -> list[dict]:
             "type": "welcome",
             "title": WELCOME_TITLE,
             "body": WELCOME_BODY,
-            "action_url": "/dashboard",
+            "action_url": "/today",
             "created_at": now - timedelta(minutes=5),
         },
         {
@@ -46,6 +54,7 @@ def build_demo_notifications(uid: ObjectId) -> list[dict]:
             "title": "Stripe phone screen in 2 days",
             "body": "Backend Engineer, Payments Platform. 11am PT. "
                     "Brush up on event-driven systems before the call.",
+            "action_url": f"/dashboard?selected={stripe_id}",
             "created_at": now - timedelta(minutes=2),
         },
         {
@@ -54,6 +63,7 @@ def build_demo_notifications(uid: ObjectId) -> list[dict]:
             "title": "Follow up with Google",
             "body": "Your check-in date is tomorrow. The onsite was 2 days ago "
                     "and the recruiter said to expect news this week.",
+            "action_url": f"/dashboard?selected={google_id}&action=follow-up",
             "created_at": now - timedelta(minutes=1),
         },
     ]
