@@ -32,6 +32,7 @@ from auth.constants import (
 from auth.schemas import TokenPayload
 from config import settings
 from database import get_collection
+from seed.demo_data import seed_demo_data_for_user
 from motor.motor_asyncio import AsyncIOMotorCollection
 
 # Re-exported for router backward compatibility.
@@ -184,6 +185,7 @@ async def create_user(
     doc["_id"] = result.inserted_id
 
     logger.info("user_created", user_id=str(result.inserted_id), email=email)
+    await seed_demo_data_for_user(str(result.inserted_id), DEFAULT_STAGES)
     return doc
 
 

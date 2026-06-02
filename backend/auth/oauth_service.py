@@ -23,6 +23,7 @@ from auth.constants import (
 )
 from config import settings
 from database import get_collection
+from seed.demo_data import seed_demo_data_for_user
 
 logger = structlog.get_logger()
 
@@ -103,6 +104,7 @@ async def get_or_create_google_user(
     result = await users.insert_one(doc)
     doc["_id"] = result.inserted_id
     logger.info("google_user_created", user_id=str(result.inserted_id), email=email)
+    await seed_demo_data_for_user(str(result.inserted_id), DEFAULT_STAGES)
     return doc
 
 
@@ -195,6 +197,7 @@ async def _insert_github_user(
     result = await users.insert_one(doc)
     doc["_id"] = result.inserted_id
     logger.info("github_user_created", user_id=str(result.inserted_id), email=email)
+    await seed_demo_data_for_user(str(result.inserted_id), DEFAULT_STAGES)
     return doc
 
 
