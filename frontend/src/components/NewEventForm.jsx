@@ -8,6 +8,7 @@ import { Button } from "./ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -47,9 +48,9 @@ function AppSelector({ apps, applicationId, onApplicationChange }) {
         </SelectTrigger>
         <SelectContent>
           {filteredApps.length === 0 ? (
-            <SelectItem value="" disabled>
+            <div className="px-2 py-1.5 text-sm text-text-3" role="presentation">
               No matching applications
-            </SelectItem>
+            </div>
           ) : (
             filteredApps.map((app) => (
               <SelectItem key={app.id} value={app.id}>
@@ -78,6 +79,9 @@ function NewEventForm({ initialDate, initialApplicationId, onClose }) {
           <DialogTitle id="new-event-dialog-title" className="text-base font-semibold text-text-1">
             Add interview / event
           </DialogTitle>
+          <DialogDescription className="sr-only">
+            Link an interview or other calendar event to an existing application.
+          </DialogDescription>
         </DialogHeader>
         <form id="new-event-form" onSubmit={hook.handleSubmit} className="flex flex-col gap-4 px-6 py-4">
           <AppSelector
