@@ -154,3 +154,39 @@ async def test_approve_apply_pack_idempotent(client, test_user):
     assert app_doc.get("apply_pack") is not None
     # apply_pack should be attached only once; no error flags
     assert app_doc.get("apply_pack_attach_error") is None or app_doc.get("apply_pack_attach_error") is False
+
+
+async def test_approve_pending_carries_pre_scored_fit(client, test_user):
+    """Approving a pre-scored pending opportunity carries fit to skip auto_score_fit.
+
+    auto_score_fit checks app.get("ai_analysis") and skips if present. If approve
+    copies the pending opportunity's match_score/match_reason to ai_analysis on the
+    new application, auto_score_fit will silently skip and not redundantly rescore.
+    """
+    user, cookies = test_user
+    opp_id, _ = await _seed_pending(user["id"])
+
+    with as_user(client, cookies):
+        response = await client.post(f"/api/autopilot/pending/{opp_id}/approve")
+
+    assert response.status_code == 200
+    app_id = response.json()["data"]["application_id"]
+
+    # Verify ai_analysis was carried over from match_score/match_reason
+    app_doc = await database.get_collection("applications").find_one(
+        {"_id": ObjectId(app_id)}
+    )
+    assert app_doc.get("ai_analysis") is not None
+    ai_analysis = app_doc["ai_analysis"]
+    assert ai_analysis["fit_score"] == 92  # from _seed_pending match_score
+    assert ai_analysis["match_reason"] == "Strong fit"  # from _seed_pending
+    assert ai_analysis["summary"] == "Strong fit"
+    assert ai_analysis["scored_at"] is not None
+    assert app_doc.get("fit_score_status") == "complete"
+    assert app_doc.get("fit_score_computed_at") is not None
+
+    # Verify auto_score_fit would skip due to ai_analysis presence
+    # (This is implicitly tested by the above assertions, but we can also
+    # directly test the skip guard in applications/service_ai.py which checks:
+    # if app.get("ai_analysis"): ... return)
+    assert app_doc.get("ai_analysis") is not None

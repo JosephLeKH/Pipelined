@@ -102,6 +102,45 @@ async def approve_pending_opportunity(user_id: str, opportunity_id: str) -> tupl
     else:
         app_id = str(app_doc["_id"])
 
+    warnings: list[str] = []
+
+    # Carry over pre-computed fit score to skip auto_score_fit redundancy.
+    # auto_score_fit checks app.get("ai_analysis") and skips if present.
+    match_score = doc.get("match_score")
+    match_reason = doc.get("match_reason")
+    if match_score is not None and match_reason:
+        now = datetime.now(timezone.utc)
+        ai_analysis = {
+            "fit_score": match_score,
+            "matched_skills": [],
+            "missing_skills": [],
+            "summary": match_reason,
+            "match_reason": match_reason,
+            "scored_at": now,
+        }
+        try:
+            await get_collection("applications").update_one(
+                {
+                    "_id": ObjectId(app_id),
+                    "user_id": ObjectId(user_id),
+                    "ai_analysis": {"$exists": False},
+                },
+                {
+                    "$set": {
+                        "ai_analysis": ai_analysis,
+                        "fit_score_status": "complete",
+                        "fit_score_computed_at": now,
+                    }
+                },
+            )
+        except Exception as exc:
+            logger.exception(
+                "ai_analysis_carry_over_failed",
+                application_id=app_id,
+                error=str(exc),
+            )
+            warnings.append("ai_analysis_carry_over_failed")
+
     cover = doc.get("cover_letter") or {}
     talking_points = doc.get("talking_points") or []
     apply_pack = {
@@ -110,8 +149,6 @@ async def approve_pending_opportunity(user_id: str, opportunity_id: str) -> tupl
         "linkedin_note": "",
         "talking_points": talking_points,
     }
-
-    warnings: list[str] = []
     try:
         app_collection = get_collection("applications")
         app_obj_id = ObjectId(app_id)
