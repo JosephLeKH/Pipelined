@@ -10,6 +10,7 @@ import AutopilotFlow from "../components/marketing/AutopilotFlow";
 import FeatureBento from "../components/marketing/FeatureBento";
 import NumberedSection from "../components/marketing/NumberedSection";
 import LandingChangelog from "../components/marketing/LandingChangelog";
+import ExtensionMock from "../components/marketing/ExtensionMock";
 import { LANDING_SECTIONS } from "../components/marketing/landingSections";
 
 function LandingPage() {
@@ -24,7 +25,11 @@ function LandingPage() {
         <AutopilotFlow />
         <FeatureBento />
         {LANDING_SECTIONS.map((section) => (
-          <NumberedSection key={section.id} {...section} />
+          <NumberedSection
+            key={section.id}
+            {...section}
+            customScreenshot={section.id === "capture" ? <ExtensionMock /> : undefined}
+          />
         ))}
         <LandingChangelog />
       </main>

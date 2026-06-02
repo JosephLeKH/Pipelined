@@ -19,6 +19,7 @@ export default function NumberedSection({
   ctaHref,
   screenshot,
   imageSide = "right",
+  customScreenshot,
 }) {
   const revealRef = useMarketingReveal();
   const textOrder = imageSide === "right" ? "order-1" : "order-1 md:order-2";
@@ -55,13 +56,15 @@ export default function NumberedSection({
 
   const imageBlock = (
     <div className={imageOrder}>
-      <MarketingScreenshot
-        src={screenshot?.src}
-        alt={screenshot?.alt ?? headline}
-        width={screenshot?.width ?? 800}
-        height={screenshot?.height ?? 600}
-        label={screenshot?.label}
-      />
+      {customScreenshot ?? (
+        <MarketingScreenshot
+          src={screenshot?.src}
+          alt={screenshot?.alt ?? headline}
+          width={screenshot?.width ?? 800}
+          height={screenshot?.height ?? 600}
+          label={screenshot?.label}
+        />
+      )}
     </div>
   );
 
