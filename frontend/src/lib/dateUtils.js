@@ -139,11 +139,19 @@ export function isStale(updatedAt) {
 }
 
 /**
- * Check if a follow-up is overdue (follow-up date is in the past).
+ * Check if a follow-up is overdue (follow-up date is before today, local tz).
  */
 export function isFollowUpOverdue(followUpDate) {
   if (!followUpDate) return false;
-  return new Date(followUpDate) < new Date(new Date().toDateString());
+  const followUp = parseISOSafe(followUpDate);
+  const followUpStart = new Date(
+    followUp.getFullYear(),
+    followUp.getMonth(),
+    followUp.getDate()
+  );
+  const now = new Date();
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  return followUpStart < todayStart;
 }
 
 /**

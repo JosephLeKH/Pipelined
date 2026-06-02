@@ -8,7 +8,7 @@ import ChevronDown from "lucide-react/dist/esm/icons/chevron-down";
 import ExternalLink from "lucide-react/dist/esm/icons/external-link";
 
 import { STAGE_COLORS, DEFAULT_STAGE_COLOR, MS_PER_DAY, PREP_CHECKLIST_STARTER_SUGGESTIONS } from "../lib/constants";
-import { formatDateShort, formatRelative } from "../lib/dateUtils";
+import { formatDateShort, formatRelative, isFollowUpOverdue } from "../lib/dateUtils";
 import { useUpdateApplication } from "../hooks/useApplications";
 import { ChecklistItem, AddChecklistItem } from "./PrepChecklist";
 import TagInput from "./TagInput";
@@ -85,20 +85,10 @@ export function DetailPanelMetaRow({ application }) {
   );
 }
 
-function isFollowUpOverdueLocal(rawDate) {
-  if (!rawDate) return false;
-  const [y, m, d] = rawDate.slice(0, 10).split("-").map(Number);
-  if (!y || !m || !d) return false;
-  const followUpStart = new Date(y, m - 1, d).getTime();
-  const now = new Date();
-  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-  return followUpStart < todayStart;
-}
-
 export function FollowUpSection({ application, onUpdate }) {
   const rawDate = application.follow_up_date;
   const dateValue = rawDate ? rawDate.slice(0, 10) : "";
-  const isOverdue = isFollowUpOverdueLocal(rawDate);
+  const isOverdue = isFollowUpOverdue(rawDate);
   const overdueDays = isOverdue
     ? Math.floor((Date.now() - new Date(rawDate).getTime()) / MS_PER_DAY)
     : 0;
