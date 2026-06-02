@@ -20,6 +20,7 @@ import {
   showBannerSuccess,
   showBannerError,
   showBannerDuplicate,
+  showBannerUnauth,
 } from "./banner_helpers.js";
 import { injectContactBanner } from "./contact_banner.js";
 import { MSG, PAGE_TEXT_MAX_CHARS } from "../shared/constants.js";
@@ -52,6 +53,12 @@ async function init() {
 
   const fields = board.extractFields();
   if (!fields.role_title && !fields.company_name && board.BOARD_ID !== "workday") return;
+
+  const authStatus = await sendToBackground(MSG.GET_AUTH_STATUS, {});
+  if (!authStatus?.authenticated) {
+    injectUnauthBanner();
+    return;
+  }
 
   if (fields.type === "contact") {
     injectContactBanner(fields);
@@ -99,6 +106,14 @@ function injectBanner(fields, boardId) {
     },
     { signal: escapeSignal }
   );
+}
+
+function injectUnauthBanner() {
+  const { host, shadow } = createBannerHost("");
+  document.body.appendChild(host);
+  showBannerUnauth(shadow, host, () => {
+    window.open("https://pipelined-zci7h.ondigitalocean.app/dashboard", "_blank", "noopener,noreferrer");
+  });
 }
 
 async function handleSave(shadow, host, fields, boardId) {

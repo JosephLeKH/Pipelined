@@ -217,3 +217,27 @@ export function showBannerDuplicate(shadow, host, existingId) {
     });
   }
 }
+
+/**
+ * Replaces the banner row with a sign-in CTA when the user is logged out.
+ * @param {ShadowRoot} shadow
+ * @param {HTMLElement} host
+ * @param {() => void} onSignIn
+ */
+export function showBannerUnauth(shadow, host, onSignIn) {
+  const text = shadow.querySelector(".pipelined-text");
+  if (text) text.textContent = "Sign in so Scout can save this role";
+
+  const button = document.createElement("button");
+  button.className = "pipelined-cta";
+  button.dataset.action = "signin";
+  button.textContent = "Sign in \u2192";
+  button.addEventListener("click", () => {
+    onSignIn();
+    dismiss(host);
+  });
+  const row = shadow.querySelector(".pipelined-row");
+  if (row) row.appendChild(button);
+
+  setTimeout(() => dismiss(host), BANNER_AUTO_DISMISS_MS);
+}
