@@ -45,6 +45,7 @@ let FADE_DURATION_MS;
 let initAutoSave;
 let AUTO_SAVE_DEBOUNCE_MS;
 let clearSavedUrls;
+let init;
 
 beforeAll(async () => {
   setupDOM();
@@ -54,11 +55,25 @@ beforeAll(async () => {
   initAutoSave = mod.initAutoSave;
   AUTO_SAVE_DEBOUNCE_MS = mod.AUTO_SAVE_DEBOUNCE_MS;
   clearSavedUrls = mod.clearSavedUrls;
+  init = mod.init;
 
   const helpers = await import("../content/banner_helpers.js");
   dismiss = helpers.dismiss;
   BANNER_AUTO_DISMISS_MS = helpers.BANNER_AUTO_DISMISS_MS;
   FADE_DURATION_MS = helpers.FADE_DURATION_MS;
+
+  global.chrome = {
+    runtime: {
+      sendMessage: jest.fn(),
+      onMessage: { addListener: jest.fn() },
+    },
+    storage: {
+      local: {
+        get: jest.fn().mockResolvedValue({}),
+        set: jest.fn().mockResolvedValue(undefined),
+      },
+    },
+  };
 });
 
 beforeEach(() => {
@@ -260,5 +275,35 @@ describe("initAutoSave()", () => {
     // Second call for same URL — URL is now in savedUrls
     const second = await initAutoSave({ role_title: "SWE", company_name: "Acme" }, "linkedin");
     expect(second).toBe(false);
+  });
+});
+
+// ── Auth-aware banner ─────────────────────────────────────────────────────────
+
+describe("auth-aware banner", () => {
+  it("shows a Sign-in CTA when GET_AUTH_STATUS reports unauthenticated", async () => {
+    jest.useRealTimers();
+    setupDOM();
+    spyOnAttachShadow();
+
+    chrome.runtime.sendMessage.mockImplementation((msg) => {
+      if (msg.type === "GET_AUTH_STATUS") return Promise.resolve({ authenticated: false });
+      return Promise.resolve({ status: "success" });
+    });
+
+    // Make a LinkedIn job page that the linkedin board module will detect.
+    document.body.innerHTML = `
+      <div class="job-details-jobs-unified-top-card__job-title">Software Engineer</div>
+      <div class="job-details-jobs-unified-top-card__company-name">Acme Corp</div>
+    `;
+
+    await init();
+
+    const host = document.querySelector("pipelined-banner");
+    expect(host).not.toBeNull();
+    const shadow = host.shadowRoot;
+    expect(shadow).not.toBeNull();
+    expect(shadow.textContent).toMatch(/Sign in/i);
+    expect(shadow.querySelector("[data-action='save']")).toBeNull();
   });
 });
