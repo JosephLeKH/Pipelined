@@ -22,6 +22,29 @@ logger = structlog.get_logger()
 
 _MAX_ITERATIONS = 12
 
+# Fields the agent does NOT fill — the loop populates them post-hoc.
+_AUTO_BRIEFING_FIELDS = ("company", "role", "generated_at", "next_action")
+
+
+def _build_briefing_schema() -> dict[str, Any]:
+    """Pydantic schema for InterviewBriefing minus fields the loop fills itself.
+
+    Keeps $defs at the top level so $refs resolve when this dict is the tool's
+    `parameters` object.
+    """
+    schema = InterviewBriefing.model_json_schema()
+    props = schema.get("properties", {})
+    for field in _AUTO_BRIEFING_FIELDS:
+        props.pop(field, None)
+    schema["required"] = [
+        r for r in schema.get("required", []) if r not in _AUTO_BRIEFING_FIELDS
+    ]
+    schema["additionalProperties"] = False
+    return schema
+
+
+_BRIEFING_SCHEMA = _build_briefing_schema()
+
 TOOL_DEFS: list[dict[str, Any]] = [
     {
         "type": "function",
@@ -104,21 +127,12 @@ TOOL_DEFS: list[dict[str, Any]] = [
         "function": {
             "name": "finish",
             "description": (
-                "Call this when you have gathered sufficient information. "
-                "Provide the complete InterviewBriefing as structured JSON. "
-                "Do not call this until you have data for ALL four sections: "
-                "compensation, interview_process, company_intel, and personalized."
+                "Call this when you have data for ALL four sections "
+                "(compensation, interview_process, company_intel, personalized). "
+                "Fill EVERY field per the parameters schema — no shortcuts, no extra keys. "
+                "`rounds` must be a list of objects (name/description/what_to_expect), not strings."
             ),
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "briefing": {
-                        "type": "object",
-                        "description": "Complete InterviewBriefing JSON matching the schema",
-                    }
-                },
-                "required": ["briefing"],
-            },
+            "parameters": _BRIEFING_SCHEMA,
         },
     },
 ]
@@ -258,7 +272,7 @@ async def run_agent(
             tool_input: dict[str, Any] = json.loads(tc.function.arguments)
 
             if tool_name == "finish":
-                briefing_result = tool_input.get("briefing", {})
+                briefing_result = tool_input
                 messages.append({"role": "tool", "tool_call_id": tc.id, "content": "Done."})
                 continue
 
