@@ -102,7 +102,7 @@ describe("CommandPalette", () => {
     render(<CommandPalette />, { wrapper: Wrapper });
     openPalette();
     expect(screen.getByText("Today")).toBeInTheDocument();
-    expect(screen.getByText("Inbox")).toBeInTheDocument();
+    expect(screen.getByText("Scout's Drafts")).toBeInTheDocument();
     expect(screen.getByText("Dashboard")).toBeInTheDocument();
     expect(screen.getByText("Calendar")).toBeInTheDocument();
     expect(screen.getByText("Analytics")).toBeInTheDocument();

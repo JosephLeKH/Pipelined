@@ -26,12 +26,12 @@ import SidebarUserMenu from "./SidebarUserMenu";
 
 const WORKSPACE_ITEMS = [
   { id: "today", to: "/today", label: "Today", sublabel: "Daily focus", icon: Sun },
-  { id: "inbox", to: "/inbox/pending", label: "Inbox", icon: Inbox, badgeKey: "pending", matchPrefix: "/inbox" },
+  { id: "inbox", to: "/inbox/pending", label: "Scout's Drafts", icon: Inbox, badgeKey: "pending", matchPrefix: "/inbox" },
   { id: "dashboard", to: "/dashboard", label: "Pipeline", sublabel: "All applications", icon: LayoutDashboard },
   { id: "jobs", to: "/jobs", label: "Job Board", icon: Briefcase },
   { id: "calendar", to: "/calendar", label: "Calendar", icon: CalendarDays },
   { id: "analytics", to: "/analytics", label: "Analytics", icon: BarChart2 },
-  { id: "activity", to: "/activity", label: "Activity", icon: Activity },
+  { id: "activity", to: "/activity", label: "Scout's Activity", icon: Activity },
   { id: "tags", to: "/tags", label: "Tags", icon: TagIcon },
 ];
 
