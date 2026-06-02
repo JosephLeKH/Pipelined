@@ -251,11 +251,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 
   if (message.type === MSG.GET_AUTH_STATUS) {
-    Promise.all([getToken(), chrome.storage.local.get("display_name")])
-      .then(([token, { display_name = "" }]) =>
-        sendResponse({ authenticated: !!token, display_name })
-      )
-      .catch(() => sendResponse({ authenticated: false, display_name: "" }));
+    (async () => {
+      let token = await getToken();
+      if (!token) {
+        await refreshToken();
+        token = await getToken();
+      }
+      const { display_name = "" } = await chrome.storage.local.get("display_name");
+      sendResponse({ authenticated: !!token, display_name });
+    })().catch(() => sendResponse({ authenticated: false, display_name: "" }));
     return true;
   }
 
@@ -269,6 +273,38 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return true;
   }
 
+  if (message.type === MSG.LOGOUT) {
+    (async () => {
+      try {
+        await fetch(`${API_BASE}/api/auth/logout`, {
+          method: "POST",
+          credentials: "include",
+        });
+      } catch (err) {
+        console.error("[background] Backend logout failed:", err);
+      }
+      await clearToken();
+      try {
+        await chrome.storage.local.remove("display_name");
+      } catch (err) {
+        console.error("[background] Failed to clear display_name:", err);
+      }
+      sendResponse({ ok: true });
+    })().catch(() => sendResponse({ ok: false }));
+    return true;
+  }
+
   console.warn("[background] Unknown message type:", message.type);
   sendResponse({ success: false, error: "Unknown message type" });
+});
+
+// ── Bootstrap ─────────────────────────────────────────────────────────────────
+
+chrome.runtime.onInstalled.addListener(async ({ reason }) => {
+  if (reason !== "install" && reason !== "update") return;
+  try {
+    await refreshToken();
+  } catch (err) {
+    console.error("[background] Bootstrap refresh failed:", err);
+  }
 });
