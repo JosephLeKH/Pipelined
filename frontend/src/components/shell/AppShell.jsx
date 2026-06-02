@@ -10,6 +10,7 @@ import FeedbackWidget from "../FeedbackWidget";
 import OfflineBanner from "../OfflineBanner";
 import ShortcutHelp from "../ShortcutHelp";
 import UpgradePlanModal from "../UpgradePlanModal";
+import WhatsNewScoutModal from "../WhatsNewScoutModal";
 import { OPEN_COPILOT_EVENT, OPEN_COMMAND_PALETTE_EVENT } from "../../lib/constants";
 import { useHotkeys } from "../../hooks/useHotkeys";
 import { useCopilotDocked } from "../../hooks/useCopilotDocked";
@@ -82,6 +83,7 @@ function AppShell() {
       <ShortcutHelp />
       <UpgradePlanModal />
       <FeedbackWidget />
+      <WhatsNewScoutModal />
     </>
   );
 }
