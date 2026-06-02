@@ -8,11 +8,9 @@
   </head>
   <body>
     <header class="header">
-      <div class="logo-wrap">
-        <svg class="logo-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <line x1="6" x2="6" y1="3" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/>
-        </svg>
-        <span class="logo">Pipelined</span>
+      <div id="brand-slot" class="logo-wrap" data-scout-mount>
+        <!-- scoutAvatarHtml() output injected by popup.js -->
+        <span class="logo">Scout</span>
       </div>
       <div id="user-menu" class="user-menu hidden">
         <button id="user-menu-trigger" class="user-menu-trigger" type="button" aria-haspopup="true" aria-expanded="false">
@@ -47,6 +45,14 @@
       </div>
 
       <div id="authenticated" class="state hidden">
+        <div id="briefing-tile" class="briefing-tile hidden">
+          <span class="briefing-icon" aria-hidden="true"></span>
+          <div class="briefing-body">
+            <div class="briefing-heading">Scout's briefing</div>
+            <div class="briefing-sub" id="briefing-sub"></div>
+          </div>
+          <button type="button" class="briefing-open" id="briefing-open">Open →</button>
+        </div>
         <div id="apply-hints" class="apply-hints hidden">
           <h2 class="hints-heading">Apply hints</h2>
           <p class="hints-note">Read-only — copy from dashboard to apply. We never auto-fill forms.</p>

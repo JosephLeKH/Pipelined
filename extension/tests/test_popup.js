@@ -9,7 +9,9 @@ import { APP_DASHBOARD_URL } from "../shared/constants.js";
 
 const POPUP_HTML = `
   <header class="header">
-    <span class="logo">Pipelined</span>
+    <div id="brand-slot" class="logo-wrap" data-scout-mount>
+      <span class="logo">Scout</span>
+    </div>
     <span id="user-name" class="user-name"></span>
     <button id="sign-out" class="btn-sign-out hidden">Sign out</button>
   </header>
@@ -20,6 +22,14 @@ const POPUP_HTML = `
       <button id="open-dashboard" class="btn btn-primary">Sign in to Pipelined</button>
     </div>
     <div id="authenticated" class="state hidden">
+      <div id="briefing-tile" class="briefing-tile hidden">
+        <span class="briefing-icon" aria-hidden="true"></span>
+        <div class="briefing-body">
+          <div class="briefing-heading">Scout's briefing</div>
+          <div class="briefing-sub" id="briefing-sub"></div>
+        </div>
+        <button type="button" class="briefing-open" id="briefing-open">Open →</button>
+      </div>
       <div id="apply-hints" class="apply-hints hidden">
         <h2 class="hints-heading">Apply hints</h2>
         <p class="hints-note">Read-only — copy from dashboard to apply.</p>
@@ -62,6 +72,9 @@ let escapeHtml;
 let relativeTime;
 let signOut;
 let renderApplyHints;
+let renderAutoSaveToggle;
+let renderBrandSlot;
+let renderBriefingTile;
 
 beforeAll(async () => {
   setupDOM();
@@ -458,5 +471,63 @@ describe("escapeHtml()", () => {
 
   it("should coerce non-strings to strings", () => {
     expect(escapeHtml(42)).toBe("42");
+  });
+});
+
+// ── renderSaves with Scout signals ──────────────────────────────────────
+
+describe("renderSaves() with signal chips", () => {
+  it("should render a signal chip when Scout signal exists", () => {
+    renderSaves([
+      {
+        company: "Acme",
+        role_title: "SWE",
+        stage: "applied",
+        id: "1",
+        fit_score: 90,
+        viewed_at: null,
+      },
+    ]);
+
+    const chip = document.querySelector(".signal-chip");
+
+    expect(chip).not.toBeNull();
+    expect(chip.textContent).toContain("High fit");
+    expect(chip.classList.contains("signal-chip--high_fit")).toBe(true);
+  });
+
+  it("should not render a signal chip when Scout signal is null", () => {
+    renderSaves([
+      {
+        company: "Acme",
+        role_title: "SWE",
+        stage: "applied",
+        id: "1",
+        fit_score: 45,
+        viewed_at: null,
+      },
+    ]);
+
+    const chip = document.querySelector(".signal-chip");
+
+    expect(chip).toBeNull();
+  });
+
+  it("should render signal chip before stage badge for visual hierarchy", () => {
+    renderSaves([
+      {
+        company: "Acme",
+        role_title: "SWE",
+        stage: "applied",
+        id: "1",
+        fit_score: 85,
+        viewed_at: null,
+      },
+    ]);
+
+    const meta = document.querySelector(".card-meta");
+    const firstChild = meta.firstChild;
+
+    expect(firstChild.classList.contains("signal-chip")).toBe(true);
   });
 });

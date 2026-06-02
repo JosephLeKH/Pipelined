@@ -3,6 +3,8 @@
 import { MSG, MAX_RECENT, APP_DASHBOARD_URL, MS_PER_DAY, MS_PER_HOUR, MS_PER_MINUTE } from "../shared/constants.js";
 import { stageAbbrev, stageDotColor } from "../shared/STAGE_ABBREV.js";
 import { closeUserMenu, setupUserMenu } from "./popup_menu.js";
+import { scoutAvatarHtml } from "../shared/ScoutAvatar.js";
+import { computeScoutSignal } from "../shared/scoutSignals.js";
 
 const FIT_HIGH_MIN = 80;
 const FIT_MED_MIN = 50;
@@ -109,6 +111,15 @@ function buildCardMeta(s) {
 
   const meta = document.createElement("div");
   meta.className = "card-meta";
+
+  const signal = computeScoutSignal(s);
+  if (signal) {
+    const chip = document.createElement("span");
+    chip.className = `signal-chip signal-chip--${signal.type}`;
+    chip.textContent = signal.label;
+    meta.appendChild(chip);
+  }
+
   meta.appendChild(badge);
   if (s.fit_score != null) meta.appendChild(buildFitBadge(s.fit_score));
   meta.appendChild(time);
@@ -209,6 +220,39 @@ export async function signOut() {
   show("unauthenticated");
 }
 
+function renderBrandSlot(saves) {
+  const slot = document.getElementById("brand-slot");
+  if (!slot) return;
+  // Remove any previously-injected avatar so re-renders don't stack
+  slot.querySelectorAll(".scout-avatar").forEach((n) => n.remove());
+  const hasUnreadSignal = saves.some((s) => computeScoutSignal(s) !== null);
+  slot.insertAdjacentHTML(
+    "afterbegin",
+    scoutAvatarHtml({ size: "md", state: hasUnreadSignal ? "pulse" : "idle" }),
+  );
+}
+
+async function renderBriefingTile() {
+  const tile = document.getElementById("briefing-tile");
+  const sub = document.getElementById("briefing-sub");
+  const open = document.getElementById("briefing-open");
+  if (!tile || !sub || !open) return;
+  let briefData = null;
+  try {
+    const result = await chrome.storage.local.get("morning_brief_ready");
+    briefData = result?.morning_brief_ready ?? null;
+  } catch (err) {
+    console.error("[popup] Failed to read morning_brief_ready:", err);
+    return;
+  }
+  if (!briefData) return;
+  tile.classList.remove("hidden");
+  sub.textContent = briefData.summary || "New missions waiting";
+  open.addEventListener("click", () => {
+    chrome.tabs.create({ url: APP_DASHBOARD_URL.replace("/dashboard", "/today") });
+  });
+}
+
 export async function renderAutoSaveToggle() {
   const row = document.getElementById("auto-save-row");
   if (!row) return;
@@ -243,6 +287,7 @@ export async function init() {
   const authStatus = await chrome.runtime.sendMessage({ type: MSG.GET_AUTH_STATUS });
 
   if (!authStatus.authenticated) {
+    renderBrandSlot([]);
     show("unauthenticated");
     return;
   }
@@ -262,6 +307,8 @@ export async function init() {
     console.error("[popup] Failed to read recent_saves:", err);
   }
   renderSaves(recent_saves);
+  renderBrandSlot(recent_saves);
+  await renderBriefingTile();
   renderApplyHints(recent_saves);
   show("authenticated");
   await renderAutoSaveToggle();

@@ -154,3 +154,19 @@
 .btn-primary { background: var(--brand-600); color: var(--surface-0); }
 .btn-primary:hover { background: var(--brand-700); }
 .btn-primary:focus-visible { outline: 2px solid var(--brand-600); outline-offset: 2px; }
+
+/* Scout signal chips */
+.signal-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px;
+  border-radius: 9999px;
+  font: 500 10px/1 inherit;
+  border: 1px solid var(--border-1);
+  background: var(--surface-2);
+  color: var(--text-2);
+}
+.signal-chip--high_fit    { color: var(--status-success); border-color: rgba(23,94,84,0.20); }
+.signal-chip--ghost       { color: var(--status-orange);  border-color: rgba(249,115,22,0.20); }
+.signal-chip--tools_ready { color: var(--brand-600);      border-color: rgba(140,21,21,0.20); }
