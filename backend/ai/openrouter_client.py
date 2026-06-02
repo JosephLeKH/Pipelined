@@ -102,11 +102,83 @@ def get_openrouter_client() -> AsyncOpenAI:
     """Return the primary LLM client (DO if configured, else OpenRouter).
 
     Name kept for backward compatibility; callers do not get automatic fallback.
+    Prefer `chat_completion_with_fallback()` for new code that wants failover.
     """
     providers = _ordered_providers()
     if not providers:
         raise OpenRouterError("No LLM provider configured")
     return _client_for(providers[0])
+
+
+def _build_chat_kwargs(
+    provider: _Provider,
+    messages: list[dict],
+    max_tokens: int,
+    temperature: float,
+    tools: list | None,
+    tool_choice: str | None,
+) -> dict:
+    """Assemble create() kwargs, pinning the provider's own default model."""
+    kwargs: dict = {
+        "model": provider.model,
+        "messages": messages,
+        "max_tokens": max_tokens,
+        "temperature": temperature,
+    }
+    if tools is not None:
+        kwargs["tools"] = tools
+    if tool_choice is not None:
+        kwargs["tool_choice"] = tool_choice
+    return kwargs
+
+
+async def chat_completion_with_fallback(
+    messages: list[dict],
+    *,
+    max_tokens: int = DEFAULT_MAX_TOKENS,
+    temperature: float = DEFAULT_TEMPERATURE,
+    timeout: float | None = None,
+    tools: list | None = None,
+    tool_choice: str | None = None,
+):
+    """Chat completion against DO (primary) with OpenRouter fallback on transient errors.
+
+    Uses each provider's configured default model so the model namespace matches
+    the active provider (DO: llama; OpenRouter: gemini). Callers should prefer
+    this over `get_openrouter_client().chat.completions.create()` whenever they
+    want transparent failover plus correct model resolution.
+
+    Returns the SDK's ChatCompletion so callers can read `.choices[0].message`,
+    `.usage`, etc.
+    """
+    providers = _ordered_providers()
+    if not providers:
+        raise OpenRouterError("No LLM provider configured")
+
+    last_exc: BaseException | None = None
+    for provider in providers:
+        client = _client_for(provider)
+        kwargs = _build_chat_kwargs(
+            provider, messages, max_tokens, temperature, tools, tool_choice
+        )
+        try:
+            coro = client.chat.completions.create(**kwargs)
+            if timeout is not None:
+                return await asyncio.wait_for(coro, timeout=timeout)
+            return await coro
+        except RateLimitError as exc:
+            logger.warning("llm_chat_quota", provider=provider.name, error=str(exc))
+            raise AIQuotaExceededError() from exc
+        except _TRANSIENT_ERRORS as exc:
+            last_exc = exc
+            logger.warning(
+                "llm_chat_failed",
+                provider=provider.name,
+                model=provider.model,
+                error=str(exc),
+            )
+
+    raise OpenRouterError(str(last_exc) if last_exc else "All LLM providers failed")
 
 
 def _strip_markdown_fences(content: str) -> str:

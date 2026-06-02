@@ -3,9 +3,9 @@
 import json
 
 import structlog
-from openai import APIConnectionError, APITimeoutError, AsyncOpenAI, OpenAIError
+from openai import APIConnectionError, APITimeoutError, OpenAIError
 
-from ai.openrouter_client import get_openrouter_client
+from ai.openrouter_client import chat_completion_with_fallback
 from config import settings
 from parsing.ai_cache import (
     check_budget,
@@ -32,23 +32,20 @@ SYSTEM_PROMPT = (
 )
 
 
-async def _call_completion(
-    client: AsyncOpenAI, page_text: str
-) -> tuple[dict | None, int, int]:
-    """Call OpenRouter and parse JSON response.
+async def _call_completion(page_text: str) -> tuple[dict | None, int, int]:
+    """Run the parse completion (DO primary, OpenRouter fallback) and parse JSON.
 
     Returns (parsed_dict, input_tokens, output_tokens) or (None, 0, 0) on error.
     """
     try:
-        response = await client.chat.completions.create(
-            model=settings.openrouter_default_model,
-            temperature=PARSE_TEMPERATURE,
-            max_tokens=PARSE_MAX_TOKENS,
-            timeout=PARSE_TIMEOUT_SECONDS,
+        response = await chat_completion_with_fallback(
             messages=[
                 {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": page_text},
             ],
+            temperature=PARSE_TEMPERATURE,
+            max_tokens=PARSE_MAX_TOKENS,
+            timeout=PARSE_TIMEOUT_SECONDS,
         )
         raw = response.choices[0].message.content or ""
         parsed = json.loads(raw)
@@ -81,7 +78,7 @@ async def parse_with_openai(page_text: str) -> dict:
     if not await check_budget():
         return null_result
 
-    parsed, input_tokens, output_tokens = await _call_completion(get_openrouter_client(), page_text)
+    parsed, input_tokens, output_tokens = await _call_completion(page_text)
     if parsed is None:
         return null_result
 

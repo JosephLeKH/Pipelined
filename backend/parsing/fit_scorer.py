@@ -4,9 +4,9 @@ import json
 from typing import Any
 
 import structlog
-from openai import AsyncOpenAI, OpenAIError
+from openai import OpenAIError
 
-from ai.openrouter_client import get_openrouter_client
+from ai.openrouter_client import chat_completion_with_fallback
 from config import settings
 from parsing.ai_cache import (
     check_and_increment_quota,
@@ -63,23 +63,24 @@ def _validate_parsed_result(parsed: dict) -> dict | None:
 
 
 async def _call_openai(
-    client: AsyncOpenAI,
     resume_text: str,
     job_description: str,
 ) -> tuple[dict, Any] | None:
-    """Call OpenAI and return (validated_result, response) or None on any error."""
+    """Run the fit-score completion (DO primary, OpenRouter fallback) and validate.
+
+    Returns (validated_result, response) or None on any error.
+    """
     user_content = f"RESUME:\n{resume_text}\n\nJOB DESCRIPTION:\n{job_description}"
 
     try:
-        response = await client.chat.completions.create(
-            model=settings.openrouter_default_model,
-            temperature=FIT_SCORE_TEMPERATURE,
-            max_tokens=FIT_SCORE_MAX_TOKENS,
-            timeout=FIT_SCORE_TIMEOUT_SECONDS,
+        response = await chat_completion_with_fallback(
             messages=[
                 {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": user_content},
             ],
+            temperature=FIT_SCORE_TEMPERATURE,
+            max_tokens=FIT_SCORE_MAX_TOKENS,
+            timeout=FIT_SCORE_TIMEOUT_SECONDS,
         )
         raw = response.choices[0].message.content or ""
         parsed = json.loads(raw)
@@ -112,7 +113,7 @@ async def _execute_score_fit(
     if user_id:
         await check_and_increment_quota(user_id)
 
-    call_result = await _call_openai(get_openrouter_client(), resume_text, job_description)
+    call_result = await _call_openai(resume_text, job_description)
     if call_result is None:
         return null_result
 

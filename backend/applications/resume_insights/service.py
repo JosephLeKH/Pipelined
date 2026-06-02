@@ -124,7 +124,6 @@ async def generate_resume_insights(user_id: str, app_id: str) -> ResumeInsightsR
     raw = await complete_json(
         RESUME_INSIGHTS_SYSTEM_PROMPT,
         user_message,
-        model=settings.openrouter_default_model,
         temperature=0.3,
         max_tokens=RESUME_INSIGHTS_MAX_TOKENS,
         timeout=RESUME_INSIGHTS_TIMEOUT_SECONDS,

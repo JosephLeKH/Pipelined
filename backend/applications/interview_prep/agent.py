@@ -12,8 +12,7 @@ from typing import Any
 import structlog
 
 from ai.next_action import NextAction
-from ai.openrouter_client import get_openrouter_client
-from config import settings
+from ai.openrouter_client import chat_completion_with_fallback
 
 from .constants import INTERVIEW_ROUND_FOCUS
 from .schemas import InterviewBriefing
@@ -203,7 +202,6 @@ async def run_agent(
       {"type": "done", "briefing": {...}}
       {"type": "error", "message": "..."}
     """
-    client = get_openrouter_client()
     system_prompt = _build_system_prompt(company, role, resume_text, interview_round)
 
     round_hint = ""
@@ -223,11 +221,10 @@ async def run_agent(
     ]
 
     for iteration in range(_MAX_ITERATIONS):
-        response = await client.chat.completions.create(
-            model=settings.openrouter_default_model,
+        response = await chat_completion_with_fallback(
+            messages=messages,
             max_tokens=4096,
-            messages=messages,  # type: ignore[arg-type]
-            tools=TOOL_DEFS,  # type: ignore[arg-type]
+            tools=TOOL_DEFS,
             tool_choice="auto",
         )
 

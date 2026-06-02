@@ -145,7 +145,6 @@ async def generate_apply_pack(user_id: str, app_id: str) -> ApplyPackResponse:
     raw = await complete_json(
         APPLY_PACK_SYSTEM_PROMPT,
         user_message,
-        model=settings.openrouter_default_model,
         temperature=0.4,
         max_tokens=APPLY_PACK_MAX_TOKENS,
         timeout=APPLY_PACK_TIMEOUT_SECONDS,
@@ -191,7 +190,6 @@ async def stream_apply_pack_with_steps(
         async for delta in stream_chat(
             APPLY_PACK_SYSTEM_PROMPT,
             [{"role": "user", "content": user_message}],
-            model=settings.openrouter_default_model,
             temperature=0.4,
             max_tokens=APPLY_PACK_MAX_TOKENS,
             timeout=APPLY_PACK_TIMEOUT_SECONDS,

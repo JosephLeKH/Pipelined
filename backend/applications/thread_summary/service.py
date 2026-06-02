@@ -109,7 +109,6 @@ async def generate_thread_summary(user_id: str, app_id: str) -> ThreadSummaryRes
     raw = await complete_json(
         THREAD_SUMMARY_SYSTEM_PROMPT,
         user_message,
-        model=settings.openrouter_default_model,
         temperature=0.4,
         max_tokens=THREAD_SUMMARY_MAX_TOKENS,
         timeout=THREAD_SUMMARY_TIMEOUT_SECONDS,
