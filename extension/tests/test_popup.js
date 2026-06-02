@@ -357,12 +357,6 @@ describe("openDashboard()", () => {
 // ── signOut() ────────────────────────────────────────────────────────────────
 
 describe("signOut()", () => {
-  it("should clear the session storage", () => {
-    signOut();
-
-    expect(chrome.storage.session.clear).toHaveBeenCalled();
-  });
-
   it("should show the unauthenticated state after sign-out", async () => {
     show("authenticated");
 

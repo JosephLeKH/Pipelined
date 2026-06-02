@@ -201,14 +201,9 @@ export function openDashboard() {
 
 export async function signOut() {
   try {
-    await chrome.storage.session.clear();
+    await chrome.runtime.sendMessage({ type: MSG.LOGOUT });
   } catch (err) {
-    console.error("[popup] Failed to clear session storage:", err);
-  }
-  try {
-    await chrome.storage.local.remove("display_name");
-  } catch (err) {
-    console.error("[popup] Failed to remove display_name from local storage:", err);
+    console.error("[popup] LOGOUT message failed:", err);
   }
   closeUserMenu();
   show("unauthenticated");
