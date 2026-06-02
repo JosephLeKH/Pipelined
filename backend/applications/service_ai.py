@@ -154,3 +154,50 @@ async def _score_and_update(
         )
     except Exception:
         logger.error("fit_score_persist_failed", app_id=app_id, user_id=user_id, exc_info=True)
+
+
+async def auto_score_fit(user_id: str, application_id: str) -> None:
+    """Background-task entrypoint: silently score a freshly-created application.
+
+    Skips when:
+      - app not found or already scored (idempotent — Autopilot may have pre-scored)
+      - user has no resume on file
+      - generator errors (swallows + logs, never raises)
+
+    Args:
+        user_id: User ID (string) to look up resume.
+        application_id: Application ID (string) to score.
+    """
+    try:
+        apps = get_collection("applications")
+        app = await apps.find_one(
+            {"_id": ObjectId(application_id), "user_id": ObjectId(user_id)}
+        )
+        if app is None:
+            logger.info("auto_score_fit_skipped_not_found", app_id=application_id)
+            return
+        if app.get("ai_analysis"):
+            logger.info("auto_score_fit_skipped_already_scored", app_id=application_id)
+            return
+
+        # Fetch user's resume text.
+        users = get_collection("users")
+        user = await users.find_one({"_id": ObjectId(user_id)})
+        if user is None:
+            logger.info("auto_score_fit_skipped_user_not_found", user_id=user_id)
+            return
+        resume_text = user.get("resume_text", "")
+        if not resume_text:
+            logger.info("auto_score_fit_skipped_no_resume", user_id=user_id)
+            return
+
+        await _score_and_update(
+            app_id=application_id,
+            user_id=user_id,
+            resume_text=resume_text,
+            job_description=app.get("job_description", "") or "",
+            role_title=app.get("role_title", "") or "",
+            company=app.get("company", "") or "",
+        )
+    except Exception:
+        logger.exception("auto_score_fit_failed", app_id=application_id, user_id=user_id)
