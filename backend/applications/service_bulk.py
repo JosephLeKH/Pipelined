@@ -14,6 +14,7 @@ from pymongo import ReturnDocument
 from applications.schemas import BulkEditUpdate
 from applications.schemas_analytics import ImportResult, ImportRowError, MAX_IMPORT_ROWS
 from applications.service import fetch_user_stages
+from applications.service_ai import auto_score_fit
 from applications.service_constants import DELETED_PURGE_DAYS, INITIAL_STAGE, MERGEABLE_FIELDS
 from database import get_client, get_collection
 
@@ -21,6 +22,7 @@ logger = structlog.get_logger()
 
 UNDO_STACK_TTL_HOURS = 2
 CONFLICT_STAGE = "offer"
+_BULK_AUTO_SCORE_CONCURRENCY = 5
 
 
 async def bulk_delete(user_id: str, ids: list[str]) -> tuple[int, str, list[str]]:
@@ -273,8 +275,11 @@ async def _process_import_row(
     return doc, None
 
 
-async def import_applications(user_id: str, csv_bytes: bytes) -> ImportResult:
-    """Parse CSV bytes and bulk-insert applications, skipping duplicates."""
+async def import_applications(user_id: str, csv_bytes: bytes) -> tuple[ImportResult, list[str]]:
+    """Parse CSV bytes and bulk-insert applications, skipping duplicates.
+
+    Returns (ImportResult, list of inserted application IDs as strings).
+    """
     uid = ObjectId(user_id)
     apps = get_collection("applications")
     stages = await fetch_user_stages(uid)
@@ -294,12 +299,14 @@ async def import_applications(user_id: str, csv_bytes: bytes) -> ImportResult:
         elif doc:
             docs_to_insert.append(doc)
     imported = 0
+    inserted_ids: list[str] = []
     if docs_to_insert:
         result = await apps.insert_many(docs_to_insert, ordered=False)
         imported = len(result.inserted_ids)
+        inserted_ids = [str(oid) for oid in result.inserted_ids]
         logger.info("applications_imported", user_id=user_id, count=imported)
     skipped = len([e for e in errors if "Duplicate" in e.reason])
-    return ImportResult(imported=imported, skipped=skipped, errors=errors, warning=warning)
+    return ImportResult(imported=imported, skipped=skipped, errors=errors, warning=warning), inserted_ids
 
 
 def _is_empty(value: object) -> bool:
@@ -362,3 +369,26 @@ async def merge_applications(user_id: str, source_id: str, target_id: str) -> di
     if result:
         logger.info("applications_merged", user_id=user_id, source_id=source_id, target_id=target_id)
     return result
+
+
+async def _bounded_auto_score(
+    semaphore: asyncio.Semaphore, user_id: str, app_id: str
+) -> None:
+    """Score one application with semaphore-gated concurrency."""
+    async with semaphore:
+        await auto_score_fit(user_id=user_id, application_id=app_id)
+
+
+async def schedule_bulk_auto_scores(user_id: str, application_ids: list[str]) -> None:
+    """Fan out auto_score_fit calls capped at _BULK_AUTO_SCORE_CONCURRENCY concurrent.
+
+    Errors are swallowed by auto_score_fit itself; asyncio.gather uses return_exceptions
+    so one failure doesn't tank the rest.
+    """
+    if not application_ids:
+        return
+    semaphore = asyncio.Semaphore(_BULK_AUTO_SCORE_CONCURRENCY)
+    await asyncio.gather(
+        *(_bounded_auto_score(semaphore, user_id, app_id) for app_id in application_ids),
+        return_exceptions=True,
+    )

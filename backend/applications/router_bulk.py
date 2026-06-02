@@ -1,7 +1,7 @@
 """Bulk operation route handlers for applications."""
 
 import structlog
-from fastapi import APIRouter, Depends, HTTPException, UploadFile
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, UploadFile
 
 from applications import service_bulk
 from applications.schemas import (
@@ -96,6 +96,7 @@ async def bulk_edit_applications(
 @bulk_router.post("/import", status_code=200)
 async def import_applications_csv(
     file: UploadFile,
+    background_tasks: BackgroundTasks,
     user: dict = Depends(get_current_user),
 ) -> dict:
     """Import applications from a CSV file. Returns {imported, skipped, errors}."""
@@ -117,7 +118,12 @@ async def import_applications_csv(
             status_code=413,
             detail={"code": "FILE_TOO_LARGE", "message": "CSV file exceeds 2 MB limit."},
         )
-    result = await service_bulk.import_applications(user_id, csv_bytes)
+    result, inserted_ids = await service_bulk.import_applications(user_id, csv_bytes)
+    background_tasks.add_task(
+        service_bulk.schedule_bulk_auto_scores,
+        user_id=user_id,
+        application_ids=inserted_ids,
+    )
     return {"data": result.model_dump()}
 
 
