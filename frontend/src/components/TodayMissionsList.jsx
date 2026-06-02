@@ -23,7 +23,7 @@ function TodayEmptyState() {
       </div>
       <p className="text-base font-semibold text-text-1">You&apos;re caught up.</p>
       <p className="mt-1 max-w-sm text-sm text-text-3">
-        No missions ranked for today. Enjoy the breather.
+        Scout didn't rank any missions for you today.
       </p>
     </div>
   );
@@ -132,7 +132,7 @@ function TodayMissionsList({
   return (
     <section aria-label="Today's missions">
       <h2 className="mb-2 text-xs font-medium uppercase tracking-wider text-text-3">
-        Today&apos;s missions
+        Scout ranked these for you
       </h2>
       <div className="overflow-hidden rounded-lg border border-border-1 bg-surface-0">
         {activeMissions.length > 0 && (

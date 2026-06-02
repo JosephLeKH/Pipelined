@@ -124,7 +124,8 @@ describe("TodayPage", () => {
 
     render(<TodayPage />, { wrapper: makeWrapper() });
 
-    expect(await screen.findByRole("heading", { level: 1, name: /Good morning, Test\./i })).toBeInTheDocument();
+    const heading = await screen.findByRole("heading", { level: 1 });
+    expect(heading).toHaveTextContent("Scout's briefing for May 23");
     expect(screen.getByText("0 / 5 applications this week")).toBeInTheDocument();
     expect(screen.getByText("Acme · follow-up overdue")).toBeInTheDocument();
     expect(screen.getByText("Follow-up is overdue. Respond today")).toBeInTheDocument();
@@ -185,13 +186,13 @@ describe("TodayPage", () => {
     render(<TodayPage />, { wrapper: makeWrapper() });
 
     expect(await screen.findByText("You're caught up.")).toBeInTheDocument();
-    expect(screen.getByText(/No missions ranked for today/i)).toBeInTheDocument();
+    expect(screen.getByText(/Scout didn't rank any missions for you today/i)).toBeInTheDocument();
   });
 
   it("should show collapsible morning brief section", async () => {
     render(<TodayPage />, { wrapper: makeWrapper() });
 
-    expect(await screen.findByRole("button", { name: /tap to read your morning brief/i }))
+    expect(await screen.findByRole("button", { name: /tap to read scout's briefing/i }))
       .toBeInTheDocument();
     expect(screen.getByText(/Morning brief · 9am/i)).toBeInTheDocument();
   });
@@ -200,7 +201,7 @@ describe("TodayPage", () => {
     const user = userEvent.setup();
     render(<TodayPage />, { wrapper: makeWrapper() });
 
-    await user.click(await screen.findByRole("button", { name: /tap to read your morning brief/i }));
+    await user.click(await screen.findByRole("button", { name: /tap to read scout's briefing/i }));
 
     expect(await screen.findByText("Beta Corp · follow-up")).toBeInTheDocument();
     expect(screen.getByText("1 follow-up")).toBeInTheDocument();

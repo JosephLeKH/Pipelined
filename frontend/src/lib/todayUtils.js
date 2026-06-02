@@ -27,11 +27,12 @@ export function getFirstName(user) {
   return "there";
 }
 
-/** Build greeting line, e.g. "Good morning, Joseph." */
-export function formatTodayGreeting(user, now = new Date()) {
-  const timeOfDay = getTimeOfDay(now);
-  const firstName = getFirstName(user);
-  return `Good ${timeOfDay}, ${firstName}.`;
+/** Build Scout briefing heading line, e.g. "Scout's briefing for Jun 1". */
+export function formatTodayGreeting(user, briefDate) {
+  const date = briefDate ? new Date(`${briefDate}T12:00:00`) : new Date();
+  const month = date.toLocaleDateString("en-US", { month: "short" });
+  const day = date.getDate();
+  return `Scout's briefing for ${month} ${day}`;
 }
 
 /** Build date row, e.g. "Wednesday, May 25 · 5 missions". */

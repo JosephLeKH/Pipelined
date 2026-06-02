@@ -61,13 +61,13 @@ function BriefEmptyState({ brief, emptyMessage, onGenerateBrief, isGenerating, g
         ?? generateError?.message
         ?? "Could not generate brief. Try again in a bit."
     : null;
-  const headline = brief?.summary_line ?? "Nothing to surface today";
+  const headline = brief?.summary_line ?? "Scout's still scanning";
   return (
     <div className="px-1 py-2 text-center">
       <Sun className="mx-auto mb-2 h-6 w-6 text-text-3" aria-hidden="true" />
       <p className="text-sm font-medium text-text-1">{headline}</p>
       <p className="mt-1 text-xs text-text-3">
-        {brief ? emptyMessage : "Your brief tracks follow-ups, interviews, high-fit roles, and approvals from your pipeline."}
+        {brief ? emptyMessage : "Scout's working on today's briefing. Check back at your usual time, or generate one now."}
       </p>
       {onGenerateBrief && (
         <div>
@@ -145,7 +145,7 @@ function BriefCollapsedButton({ ToggleIcon, onClick }) {
       ].join(" ")}
     >
       <ToggleIcon className="h-4 w-4 shrink-0 text-text-3" aria-hidden="true" />
-      <span className="text-sm text-text-2">Tap to read your morning brief</span>
+      <span className="text-sm text-text-2">Tap to read Scout's briefing</span>
     </button>
   );
 }

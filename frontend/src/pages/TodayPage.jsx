@@ -34,7 +34,7 @@ function TodayGreeting({ user, briefDate, missionCount }) {
         {dateRow}
       </p>
       <h1 className="mt-2 text-3xl font-semibold tracking-tight text-text-1">
-        {formatTodayGreeting(user)}
+        {formatTodayGreeting(user, briefDate)}
       </h1>
     </header>
   );
