@@ -85,10 +85,8 @@ describe("PanelBody — Scout-first layout", () => {
     );
 
     const take = screen.getByLabelText("Scout's Take");
-    expect(take).toBeInTheDocument();
-    // Verify Notes section exists
     const notes = screen.getByLabelText("Notes");
-    expect(notes).toBeInTheDocument();
+    expect(take.compareDocumentPosition(notes) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
   it("renders Scout's Toolkit with all six tools", () => {
