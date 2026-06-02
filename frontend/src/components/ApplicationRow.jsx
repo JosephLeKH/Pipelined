@@ -216,6 +216,7 @@ function ApplicationRow({
           <Tooltip>
             <TooltipTrigger asChild>
               <span
+                role="img"
                 aria-label={signal.label}
                 className="hidden w-7 shrink-0 items-center justify-center text-text-2 md:flex"
               >
