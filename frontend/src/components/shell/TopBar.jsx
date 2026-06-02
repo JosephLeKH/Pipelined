@@ -11,13 +11,14 @@ import Sun from "lucide-react/dist/esm/icons/sun";
 
 import { useAuth } from "../../context/AuthContext";
 import { useTheme } from "../../context/ThemeContext";
-import { OPEN_COMMAND_PALETTE_EVENT } from "../../lib/constants";
+import { OPEN_COMMAND_PALETTE_EVENT, OPEN_COPILOT_EVENT } from "../../lib/constants";
 import { getRouteTitle } from "../../lib/routeMeta";
 import { getModKeyLabel } from "../../lib/platform";
 import { trackEvent } from "../../lib/analytics";
 import NotificationBell from "../NotificationBell";
 import { Button } from "../ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+import TopBarScoutMenu from "./TopBarScoutMenu";
 import TopBarUserMenu from "./TopBarUserMenu";
 
 const THEME_ICONS = { system: Monitor, light: Sun, dark: Moon };
@@ -103,6 +104,10 @@ function TopBar({ onToggleMobileSidebar }) {
           </TooltipTrigger>
           <TooltipContent side="bottom">{THEME_TOOLTIPS[theme]}</TooltipContent>
         </Tooltip>
+        <TopBarScoutMenu
+          hasNew={false}
+          onAskScout={() => window.dispatchEvent(new CustomEvent(OPEN_COPILOT_EVENT))}
+        />
         <TopBarUserMenu user={user} />
       </div>
     </header>
