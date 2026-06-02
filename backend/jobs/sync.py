@@ -17,6 +17,7 @@ from bson import ObjectId
 from config import settings
 from database import get_collection
 from jobs.date_parser import parse_listing_date
+from jobs.html_parser import has_html_tables, parse_html_tables
 from motor.motor_asyncio import AsyncIOMotorCollection
 
 logger = structlog.get_logger()
@@ -265,11 +266,20 @@ async def _mark_stale_listings(col: AsyncIOMotorCollection) -> None:
 
 
 async def _sync_repo(client: httpx.AsyncClient, repo: str, col: AsyncIOMotorCollection) -> None:
-    """Fetch README for one repo and upsert all parsed listings."""
+    """Fetch README for one repo and upsert all parsed listings.
+
+    Dispatches between the markdown-table parser (vanshb03 forks) and the
+    HTML-table parser (SimplifyJobs / Pitt-CSC) by sniffing the README body.
+    """
     try:
         content = await _fetch_readme_content(client, repo)
-        listings = parse_internship_table(content)
-        logger.info("repo_parsed", repo=repo, listing_count=len(listings))
+        if has_html_tables(content):
+            listings = parse_html_tables(content)
+            parser_kind = "html"
+        else:
+            listings = parse_internship_table(content)
+            parser_kind = "markdown"
+        logger.info("repo_parsed", repo=repo, parser=parser_kind, listing_count=len(listings))
         for listing in listings:
             _derive_listing_fields(repo, listing)
             await _upsert_listing(col, listing)

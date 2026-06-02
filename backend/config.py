@@ -86,6 +86,9 @@ class Settings(BaseSettings):
         "vanshb03/Summer2027-Internships@dev",
         "vanshb03/Summer2027-Internships@dev:OFFSEASON_README.md",
         "vanshb03/New-Grad-2027",
+        "SimplifyJobs/Summer2026-Internships@dev",
+        "SimplifyJobs/Summer2026-Internships@dev:README-Off-Season.md",
+        "SimplifyJobs/New-Grad-Positions@dev",
     ]
 
     # Rate Limiting
