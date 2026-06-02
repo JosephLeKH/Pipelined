@@ -17,8 +17,12 @@ Exempt paths (handled by auth or browser-initiated flows):
 
 import secrets
 
+import jwt
 import structlog
 from starlette.types import ASGIApp, Receive, Scope, Send
+
+from auth.service import JWT_ALGORITHM
+from config import settings
 
 logger = structlog.get_logger()
 
@@ -78,6 +82,33 @@ def _raw_cookie_header(headers: list[tuple[bytes, bytes]]) -> str:
     return ""
 
 
+def _has_valid_bearer_token(headers: list[tuple[bytes, bytes]]) -> bool:
+    """Return True iff Authorization is `Bearer <jwt>` and the JWT signature
+    verifies against our signing key.
+
+    Expiry and claims are intentionally not checked here — those are the
+    route handler's concern via `get_current_user`. We only need enough
+    proof that the request originates from a client holding a token we
+    issued, which is sufficient to rule out a forged-cross-origin request.
+    """
+    auth = _get_header(headers, b"authorization")
+    if not auth or not auth.lower().startswith("bearer "):
+        return False
+    token = auth.split(" ", 1)[1].strip()
+    if not token:
+        return False
+    try:
+        jwt.decode(
+            token,
+            settings.jwt_secret,
+            algorithms=[JWT_ALGORITHM],
+            options={"verify_exp": False, "verify_signature": True},
+        )
+        return True
+    except jwt.PyJWTError:
+        return False
+
+
 _CSRF_ERROR_BODY = b'{"error":{"code":"CSRF_TOKEN_MISMATCH","message":"CSRF token mismatch."}}'
 
 
@@ -97,6 +128,12 @@ class CSRFMiddleware:
 
         if method in _MUTATION_METHODS and path not in _EXEMPT_PATHS:
             headers = scope.get("headers", [])
+            if _has_valid_bearer_token(headers):
+                # Bearer-authenticated requests are not vulnerable to CSRF and
+                # have no opportunity to acquire a double-submit cookie. Allow
+                # through; auth/expiry checks happen downstream.
+                await self.app(scope, receive, send)
+                return
             cookie_token = _get_cookie(headers, CSRF_COOKIE_NAME)
             header_token = _get_header(headers, b"x-csrf-token")
 
