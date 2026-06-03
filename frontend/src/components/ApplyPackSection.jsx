@@ -52,6 +52,42 @@ function CopyFieldButton({ text, label }) {
   );
 }
 
+const SALUTATION_RE = /^(Dear|Hi|Hello|Greetings|To whom)\b[^,]{0,80},\s+/i;
+const PARAGRAPH_CUES = /(?<=[.!?])\s+(?=(?:In my (?:current|recent|previous|prior)\b|I'm (?:particularly )?(?:drawn|impressed|excited)\b|What (?:draws|excites)\b|Thank you\b|Sincerely\b|Best regards\b))/;
+
+function splitCoverLetterParagraphs(text) {
+  const trimmed = (text ?? "").trim();
+  if (!trimmed) return [];
+
+  const byBlankLine = trimmed.split(/\n\s*\n+/).map((p) => p.trim()).filter(Boolean);
+  if (byBlankLine.length > 1) return byBlankLine;
+
+  const paragraphs = [];
+  let body = trimmed;
+  const salutationMatch = body.match(SALUTATION_RE);
+  if (salutationMatch) {
+    paragraphs.push(salutationMatch[0].replace(/\s+$/, ""));
+    body = body.slice(salutationMatch[0].length);
+  }
+  for (const chunk of body.split(PARAGRAPH_CUES)) {
+    const trimmedChunk = chunk.trim();
+    if (trimmedChunk) paragraphs.push(trimmedChunk);
+  }
+  return paragraphs;
+}
+
+function CoverLetterContent({ text }) {
+  const paragraphs = splitCoverLetterParagraphs(text);
+  if (paragraphs.length === 0) return null;
+  return (
+    <div className="flex flex-col gap-3 font-sans text-sm leading-relaxed text-foreground">
+      {paragraphs.map((paragraph, i) => (
+        <p key={i} className="whitespace-pre-wrap">{paragraph}</p>
+      ))}
+    </div>
+  );
+}
+
 function ApplyPackField({ label, text, children }) {
   return (
     <div className="flex flex-col gap-1.5 rounded-lg border border-border-1 bg-surface-1/50 p-3">
@@ -119,7 +155,7 @@ function ApplyPackSection({ application, onPackGenerated, bare = false }) {
       {localPack && (
         <div className="flex flex-col gap-3">
           <ApplyPackField label="Cover letter" text={localPack.cover_letter}>
-            <pre className="text-xs text-foreground whitespace-pre-wrap font-sans">{localPack.cover_letter}</pre>
+            <CoverLetterContent text={localPack.cover_letter} />
           </ApplyPackField>
           {localPack.short_answers?.map((item) => (
             <ApplyPackField

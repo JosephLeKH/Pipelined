@@ -220,7 +220,7 @@ export function MockInterviewPanel({ applicationId, application, interviewRound 
               className="flex items-center gap-1"
             >
               {isGeneratingDebrief && <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />}
-              {isGeneratingDebrief ? "Generating debrief…" : "End session &amp; debrief"}
+              {isGeneratingDebrief ? "Generating debrief…" : "End session & debrief"}
             </Button>
             <Button type="button" variant="ghost" size="sm" onClick={reset} disabled={isStreaming || isGeneratingDebrief}>
               Reset
