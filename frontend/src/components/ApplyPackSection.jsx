@@ -4,15 +4,13 @@ import { useState } from "react";
 
 import Check from "lucide-react/dist/esm/icons/check";
 import Copy from "lucide-react/dist/esm/icons/copy";
-import Info from "lucide-react/dist/esm/icons/info";
 import RefreshCw from "lucide-react/dist/esm/icons/refresh-cw";
 import Sparkles from "lucide-react/dist/esm/icons/sparkles";
 import { toast } from "sonner";
 
 import { generateApplyPack } from "../api/applications";
 import { getAiToastError } from "../lib/aiConstants";
-import { COPY_RESET_MS, NO_AUTO_SEND_MESSAGE } from "../lib/constants";
-import { SUCCESS_BANNER } from "../lib/designTokens";
+import { COPY_RESET_MS } from "../lib/constants";
 import { formatAiFreshness } from "../lib/fitDisplay";
 import AiSection from "./AiSection";
 import { Button } from "./ui/button";
@@ -54,33 +52,50 @@ function CopyFieldButton({ text, label }) {
 
 const SALUTATION_RE = /^(Dear|Hi|Hello|Greetings|To whom)\b[^,]{0,80},\s+/i;
 const PARAGRAPH_CUES = /(?<=[.!?])\s+(?=(?:In my (?:current|recent|previous|prior)\b|I'm (?:particularly )?(?:drawn|impressed|excited)\b|What (?:draws|excites)\b|Thank you\b|Sincerely\b|Best regards\b))/;
+const SIGN_OFF_RE = /(?<=[.!?])\s+(?=(?:Sincerely|Best regards|Best|Regards|Warm regards|Thank you,|Thanks,)\b)/;
+const SIGN_OFF_LINE_BREAK_RE = /^(Sincerely|Best regards|Best|Regards|Warm regards|Thanks|Thank you),\s+/;
+
+function formatSignOffLine(line) {
+  return line.replace(SIGN_OFF_LINE_BREAK_RE, "$1,\n");
+}
+
+function extractSignOff(paragraph) {
+  const parts = paragraph.split(SIGN_OFF_RE);
+  if (parts.length < 2) return [paragraph];
+  const signOff = formatSignOffLine(parts.slice(1).join(" ").trim());
+  return [parts[0].trim(), signOff].filter(Boolean);
+}
 
 function splitCoverLetterParagraphs(text) {
   const trimmed = (text ?? "").trim();
   if (!trimmed) return [];
 
+  let paragraphs;
   const byBlankLine = trimmed.split(/\n\s*\n+/).map((p) => p.trim()).filter(Boolean);
-  if (byBlankLine.length > 1) return byBlankLine;
+  if (byBlankLine.length > 1) {
+    paragraphs = byBlankLine;
+  } else {
+    paragraphs = [];
+    let body = trimmed;
+    const salutationMatch = body.match(SALUTATION_RE);
+    if (salutationMatch) {
+      paragraphs.push(salutationMatch[0].replace(/\s+$/, ""));
+      body = body.slice(salutationMatch[0].length);
+    }
+    for (const chunk of body.split(PARAGRAPH_CUES)) {
+      const trimmedChunk = chunk.trim();
+      if (trimmedChunk) paragraphs.push(trimmedChunk);
+    }
+  }
 
-  const paragraphs = [];
-  let body = trimmed;
-  const salutationMatch = body.match(SALUTATION_RE);
-  if (salutationMatch) {
-    paragraphs.push(salutationMatch[0].replace(/\s+$/, ""));
-    body = body.slice(salutationMatch[0].length);
-  }
-  for (const chunk of body.split(PARAGRAPH_CUES)) {
-    const trimmedChunk = chunk.trim();
-    if (trimmedChunk) paragraphs.push(trimmedChunk);
-  }
-  return paragraphs;
+  return paragraphs.flatMap(extractSignOff);
 }
 
 function CoverLetterContent({ text }) {
   const paragraphs = splitCoverLetterParagraphs(text);
   if (paragraphs.length === 0) return null;
   return (
-    <div className="flex flex-col gap-3 font-sans text-sm leading-relaxed text-foreground">
+    <div className="flex flex-col gap-4 font-sans text-sm leading-relaxed text-foreground">
       {paragraphs.map((paragraph, i) => (
         <p key={i} className="whitespace-pre-wrap">{paragraph}</p>
       ))}
@@ -130,10 +145,6 @@ function ApplyPackSection({ application, onPackGenerated, bare = false }) {
         <p className="text-xs text-muted-foreground">Generated {freshness}</p>
       )}
       <p className="text-xs text-muted-foreground">Based on your resume, profile, and this job</p>
-      <div className={`${SUCCESS_BANNER} flex items-start gap-2 px-3 py-2 text-xs`}>
-        <Info className="h-3.5 w-3.5 shrink-0 mt-0.5" aria-hidden="true" />
-        <p>{NO_AUTO_SEND_MESSAGE}</p>
-      </div>
       <Button
         type="button"
         variant="outline"

@@ -334,5 +334,3 @@ export const NEGOTIATION_TEMPLATES = [
 export const WATCHLIST_COMPANIES_MAX = 25;
 export const WATCHLIST_COMPANY_NAME_MAX_LENGTH = 100;
 export const WATCHLIST_CAREERS_URL_MAX_LENGTH = 500;
-
-export const NO_AUTO_SEND_MESSAGE = "No auto-send — review and send manually.";
