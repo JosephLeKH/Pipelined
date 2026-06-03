@@ -1,7 +1,9 @@
-/** URL-driven filter state and navigation handlers for the Dashboard page. */
+/** URL-driven filter state for the Dashboard.
+ *  Application selection now navigates to /applications/:id instead of
+ *  toggling a drawer via ?selected= — see ApplicationDetailPage. */
 
 import { useMemo, useCallback } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 const FILTER_KEYS = ["stage", "company_type", "remote_status", "tags", "date_from", "date_to", "include_archived", "q"];
 
@@ -13,6 +15,7 @@ function updateParams(searchParams, setSearchParams, fn) {
 
 export function useDashboardFilters() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   const stages = searchParams.getAll("stage");
   const companyTypes = searchParams.getAll("company_type");
@@ -20,7 +23,6 @@ export function useDashboardFilters() {
   const dateFrom = searchParams.get("date_from");
   const dateTo = searchParams.get("date_to");
   const includeArchived = searchParams.get("include_archived") === "true";
-  const selectedId = searchParams.get("selected") ?? "";
 
   const filters = useMemo(() => {
     const f = {};
@@ -35,20 +37,15 @@ export function useDashboardFilters() {
 
   const update = useCallback((fn) => updateParams(searchParams, setSearchParams, fn), [searchParams, setSearchParams]);
 
-  const handleSelect = useCallback((app) => update((n) => n.set("selected", app.id)), [update]);
-  const handleClosePanel = useCallback(() => update((n) => n.delete("selected")), [update]);
+  const handleSelect = useCallback((app) => navigate(`/applications/${app.id}`), [navigate]);
   const handleClearFilters = useCallback(() => update((n) => FILTER_KEYS.forEach((k) => n.delete(k))), [update]);
   const handleViewFollowUps = useCallback((firstAppId) => {
-    update((n) => {
-      if (firstAppId) {
-        n.set("selected", firstAppId);
-        n.set("section", "follow-up");
-      } else {
-        n.set("follow_up_due", "true");
-      }
-      n.delete("action");
-    });
-  }, [update]);
+    if (firstAppId) {
+      navigate(`/applications/${firstAppId}?section=follow-up`);
+      return;
+    }
+    update((n) => { n.set("follow_up_due", "true"); n.delete("action"); });
+  }, [navigate, update]);
 
-  return { filters, selectedId, includeArchived, handleSelect, handleClosePanel, handleClearFilters, handleViewFollowUps };
+  return { filters, selectedId: "", includeArchived, handleSelect, handleClearFilters, handleViewFollowUps };
 }

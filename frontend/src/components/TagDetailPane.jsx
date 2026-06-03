@@ -87,7 +87,7 @@ function TagDetailPane({ tagName, tagColor, totalCount }) {
   }, [apps, search]);
 
   function handleOpen(id) {
-    navigate(`/dashboard?selected=${id}`);
+    navigate(`/applications/${id}`);
   }
 
   if (!tagName) {

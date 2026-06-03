@@ -62,7 +62,7 @@ export function CommandPalette() {
     (item) => {
       if (item.type === "app") {
         recordRecentApplication(item.id);
-        navigate(`/dashboard?selected=${item.id}`);
+        navigate(`/applications/${item.id}`);
       } else if (item.type === "nav") {
         navigate(item.path);
       } else if (item.type === "action") {

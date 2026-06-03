@@ -48,7 +48,7 @@ function DetailPanelTabs({ activeTab, onSelect, runningCount = 0 }) {
     <div
       role="tablist"
       aria-label="Application detail tabs"
-      className="flex items-center gap-1 border-b border-border-1 bg-surface-0 px-4"
+      className="flex items-center gap-2 border-b border-border-1"
     >
       {TABS.map((tab) => (
         <TabButton

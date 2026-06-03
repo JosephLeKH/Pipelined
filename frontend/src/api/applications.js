@@ -279,6 +279,14 @@ export async function generateApplyPack(appId) {
   return client.post(`/applications/${appId}/apply-pack`);
 }
 
+/** Find the job URL (via web search if missing) and scrape a cleaned JD preview.
+ *  Returns { source_url, job_description, is_valid_job_page, company_match_confidence, source, search_query }.
+ *  Caller persists with updateApplication() after the user confirms. */
+export async function findJobDescription(appId) {
+  const res = await client.post(`/applications/${appId}/find-jd`);
+  return res.data.data;
+}
+
 /**
  * Stream apply pack generation with reasoning steps.
  * @param {string} appId

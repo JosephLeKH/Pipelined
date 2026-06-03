@@ -5,7 +5,7 @@ import { DetailPanelTimeline } from "../../DetailPanelTimeline";
 
 function ActivityTab({ application, onAddEvent }) {
   return (
-    <div className="flex flex-col gap-4 p-4">
+    <div className="flex flex-col gap-6">
       <DetailPanelTimeline
         stageHistory={application.stage_history}
         applicationId={application.id}

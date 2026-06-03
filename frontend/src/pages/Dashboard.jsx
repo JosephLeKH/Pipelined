@@ -1,4 +1,5 @@
-/** Dashboard page: composes StatsBar, FilterBar, ApplicationList or KanbanBoard, DetailPanel, ManualAddForm. */
+/** Dashboard page: composes StatsBar, FilterBar, ApplicationList or KanbanBoard, ManualAddForm.
+ *  Application selection navigates to /applications/:id (the full-page detail). */
 
 import { useEffect, useState, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
@@ -16,11 +17,10 @@ import { useFilterBarParams } from "../hooks/useFilterBarParams";
 import ApplicationList from "../components/ApplicationList";
 import KanbanBoard from "../components/KanbanBoard";
 import CsvImportModal from "../components/CsvImportModal";
-import DetailPanel from "../components/DetailPanel";
 import ManualAddForm from "../components/ManualAddForm";
 import OnboardingChecklist from "../components/OnboardingChecklist";
 import { DashboardToolbar } from "../components/DashboardToolbar";
-import { useApplication, useApplicationStats } from "../hooks/useApplications";
+import { useApplicationStats } from "../hooks/useApplications";
 import { useApplicationExport } from "../hooks/useApplicationExport";
 import { useDashboardFilters } from "../hooks/useDashboardFilters";
 import { VIEW_MODE_STORAGE_KEY, OPEN_IMPORT_CSV_EVENT } from "../lib/constants";
@@ -38,9 +38,6 @@ function DashboardContent({
   onImportCsv,
   shortcutsEnabled,
   onClearFilters,
-  selectedApp,
-  selectedId,
-  onClosePanel,
   isModalOpen,
   isImportOpen,
   onCloseModal,
@@ -48,7 +45,6 @@ function DashboardContent({
   addPrefillStage,
   followUpsDue,
   onViewFollowUps,
-  expandFollowUpDraft,
   filtersActive,
 }) {
   return (
@@ -88,16 +84,10 @@ function DashboardContent({
               onImportCsv={onImportCsv}
               shortcutsEnabled={shortcutsEnabled}
               onClearFilters={onClearFilters}
-              selectedId={selectedId}
             />
           )}
         </section>
       </div>
-      <DetailPanel
-        application={selectedApp ?? null}
-        onClose={onClosePanel}
-        expandFollowUpDraft={expandFollowUpDraft}
-      />
       <ManualAddForm isOpen={isModalOpen} onClose={onCloseModal} initialStage={addPrefillStage} />
       <CsvImportModal isOpen={isImportOpen} onClose={onCloseImport} />
     </div>
@@ -129,12 +119,8 @@ function Dashboard() {
     catch { return "list"; }
   });
   const { handleCsvExport, isLoading: isExporting } = useApplicationExport();
-  const expandFollowUpDraft =
-    searchParams.get("section") === "follow-up" ||
-    searchParams.get("action") === "follow-up";
-  const { filters, selectedId, includeArchived, handleSelect, handleClosePanel, handleClearFilters, handleViewFollowUps } = useDashboardFilters();
+  const { filters, includeArchived, handleSelect, handleClearFilters, handleViewFollowUps } = useDashboardFilters();
   const { activeFilterCount } = useFilterBarParams();
-  const { data: selectedApp } = useApplication(selectedId);
   const { data: stats } = useApplicationStats();
   const handleExport = useCallback(async () => {
     await handleCsvExport(includeArchived);
@@ -164,12 +150,11 @@ function Dashboard() {
         isExporting={isExporting}
         onExport={handleExport}
         filters={filters} onSelect={handleSelect} onAdd={openAddModal} onImportCsv={() => setIsImportOpen(true)}
-        shortcutsEnabled={shortcutsEnabled} onClearFilters={handleClearFilters} selectedApp={selectedApp} selectedId={selectedId} onClosePanel={handleClosePanel}
+        shortcutsEnabled={shortcutsEnabled} onClearFilters={handleClearFilters}
         isModalOpen={isModalOpen} isImportOpen={isImportOpen} onCloseModal={closeAddModal} onCloseImport={() => setIsImportOpen(false)}
         addPrefillStage={addPrefillStage}
         followUpsDue={stats?.follow_ups_due ?? 0}
         onViewFollowUps={() => handleViewFollowUps(stats?.first_follow_up_due_id)}
-        expandFollowUpDraft={expandFollowUpDraft}
         filtersActive={activeFilterCount > 0}
       />
     </>

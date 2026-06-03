@@ -13,7 +13,7 @@ function openCopilot() {
 function startMockInterview(navigate) {
   const recentId = getRecentApplicationIds()[0];
   if (recentId) {
-    navigate(`/dashboard?selected=${recentId}`);
+    navigate(`/applications/${recentId}`);
     return;
   }
   navigate("/dashboard");

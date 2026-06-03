@@ -83,6 +83,7 @@ function makeWrapper(initialPath = "/activity") {
               <Routes>
                 <Route path="/activity" element={children} />
                 <Route path="/dashboard" element={<LocationCapture />} />
+                <Route path="/applications/:id" element={<LocationCapture />} />
                 <Route path="/inbox/pending" element={<LocationCapture />} />
               </Routes>
             </AuthProvider>
@@ -177,7 +178,7 @@ describe("ActivityPage", () => {
     const entry = await screen.findByText("Gmail sync: 12 new emails classified");
     fireEvent.click(entry);
 
-    expect(capturedLocation).toBe("/dashboard?selected=app1");
+    expect(capturedLocation).toBe("/applications/app1");
   });
 
   it("should navigate to pending inbox for autopilot entry", async () => {

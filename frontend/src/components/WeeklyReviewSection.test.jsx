@@ -45,7 +45,7 @@ describe("WeeklyReviewSection", () => {
     renderSection({ review: MOCK_REVIEW, isLoading: false });
 
     const link = screen.getByRole("link", { name: /Acme · Engineer/i });
-    expect(link).toHaveAttribute("href", "/dashboard?selected=507f1f77bcf86cd799439011");
+    expect(link).toHaveAttribute("href", "/applications/507f1f77bcf86cd799439011");
   });
 
   it("should show loading skeleton while fetching", () => {

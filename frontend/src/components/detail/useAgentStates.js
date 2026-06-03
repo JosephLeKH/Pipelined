@@ -42,7 +42,16 @@ function followUpDraftState(app) {
   return { state: STATE_IDLE, summary: "Draft when you're ready" };
 }
 
+function jobFinderState(app) {
+  const hasUrl = Boolean(app.source_url);
+  const hasJd = typeof app.job_description === "string" && app.job_description.trim().length >= 200;
+  if (hasUrl && hasJd) return { state: STATE_READY, summary: "URL and JD on file" };
+  if (hasUrl) return { state: STATE_IDLE, summary: "URL on file — scrape JD" };
+  return { state: STATE_IDLE, summary: "Find the listing URL and scrape its JD" };
+}
+
 const RESOLVERS = {
+  job_finder: jobFinderState,
   apply_pack: applyPackState,
   resume_insights: resumeInsightsState,
   email_recap: emailRecapState,

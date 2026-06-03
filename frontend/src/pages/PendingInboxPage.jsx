@@ -38,7 +38,7 @@ function PendingInboxPage() {
     try {
       const result = await approve(opportunityId);
       toast.success(APPROVE_TOAST);
-      navigate(`/dashboard?selected=${result.application_id}`);
+      navigate(`/applications/${result.application_id}`);
     } catch {
       toast.error("Failed to approve opportunity.");
     } finally {

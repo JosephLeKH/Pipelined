@@ -145,7 +145,7 @@ function WeeklyReviewSection({ review, isLoading, error }) {
             {staleApps.slice(0, 5).map((app) => (
               <li key={app.id}>
                 <Link
-                  to={`/dashboard?selected=${app.id}`}
+                  to={`/applications/${app.id}`}
                   className={[
                     "flex items-center justify-between px-2 py-2 text-sm hover:bg-surface-2",
                     "focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600",

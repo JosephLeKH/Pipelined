@@ -94,7 +94,7 @@ export function formatActivityTimestamp(isoString) {
 
 export function getAgentActivityHref(entry) {
   if (entry.application_id) {
-    return `/dashboard?selected=${entry.application_id}`;
+    return `/applications/${entry.application_id}`;
   }
   if (entry.agent_type === "autopilot") return "/inbox/pending";
   if (entry.agent_type === "brief" || entry.agent_type === "review") return "/today";

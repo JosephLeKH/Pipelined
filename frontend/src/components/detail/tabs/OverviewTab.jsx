@@ -55,14 +55,16 @@ function OfferBlock({ application, onUpdate }) {
 
 function OverviewTab({ application, onUpdate }) {
   return (
-    <div className="flex flex-col gap-4 p-4">
+    <div className="flex flex-col gap-6">
       <FactsBlock application={application} />
-      <GroupCard title="Tags">
-        <TagsSection application={application} onUpdate={onUpdate} />
-      </GroupCard>
-      <GroupCard title="Follow-up">
-        <FollowUpSection application={application} onUpdate={onUpdate} />
-      </GroupCard>
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <GroupCard title="Tags">
+          <TagsSection application={application} onUpdate={onUpdate} />
+        </GroupCard>
+        <GroupCard title="Follow-up">
+          <FollowUpSection application={application} onUpdate={onUpdate} />
+        </GroupCard>
+      </div>
       <GroupCard title="Contacts">
         <ContactsSection applicationId={application.id} />
       </GroupCard>

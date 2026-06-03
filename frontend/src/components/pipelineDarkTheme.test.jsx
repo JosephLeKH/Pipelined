@@ -8,7 +8,8 @@ import { SortableContext } from "@dnd-kit/sortable";
 import ApplicationRow from "./ApplicationRow";
 import FitBadge from "./FitBadge";
 import KanbanCard from "./KanbanCard";
-import { DetailPanelHeader } from "./DetailPanelHeader";
+import { MemoryRouter } from "react-router-dom";
+import ApplicationDetailHeader from "./detail/ApplicationDetailHeader";
 import { withTooltipProvider } from "../test/testProviders";
 
 const APP = {
@@ -106,11 +107,13 @@ describe("PRD-04 pipeline — dark theme", () => {
     expect(card).toHaveClass("bg-surface-0", "border-border-1");
   });
 
-  it("should render DetailPanelHeader with semantic text tokens", () => {
+  it("should render ApplicationDetailHeader with semantic text tokens", () => {
     render(
-      <DetailPanelHeader application={PANEL_APP} onClose={() => {}} onDelete={() => {}} />
+      <MemoryRouter>
+        <ApplicationDetailHeader application={PANEL_APP} onDelete={() => {}} />
+      </MemoryRouter>
     );
 
-    expect(screen.getByRole("heading", { name: /acme corp/i })).toHaveClass("text-text-1");
+    expect(screen.getByRole("heading", { name: /software engineer/i })).toHaveClass("text-text-1");
   });
 });

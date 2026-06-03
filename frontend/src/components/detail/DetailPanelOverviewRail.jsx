@@ -48,7 +48,7 @@ function DetailPanelOverviewRail({ application, onStageChange }) {
   }, []);
 
   return (
-    <div className="flex flex-col gap-2 border-b border-border-1 bg-surface-0 px-4 py-3">
+    <div className="flex flex-col gap-4 rounded-lg border border-border-1 bg-surface-0 p-5">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <span className="text-[0.625rem] font-medium uppercase tracking-wider text-text-3">Stage</span>

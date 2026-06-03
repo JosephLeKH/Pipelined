@@ -97,7 +97,7 @@ describe("PendingInboxPage approve flow", () => {
     await userEvent.click(screen.getByRole("button", { name: /add to pipeline as/i }));
 
     await waitFor(() => {
-      expect(screen.getByTestId("location")).toHaveTextContent("/dashboard?selected=app99");
+      expect(screen.getByTestId("location")).toHaveTextContent("/applications/app99");
     });
     expect(toast.success).toHaveBeenCalledWith("Added to pipeline. Apply when ready.");
   });

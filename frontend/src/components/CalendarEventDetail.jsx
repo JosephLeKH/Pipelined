@@ -101,7 +101,7 @@ function ApplicationLink({ applicationId, company, roleTitle }) {
     <div className="border-b border-border-1 px-4 py-3">
       <span className="text-xs font-medium uppercase tracking-wide text-text-3">Application</span>
       <Link
-        to={`/dashboard?selected=${applicationId}`}
+        to={`/applications/${applicationId}`}
         className={[
           "mt-1 inline-flex items-center gap-1 text-sm font-medium text-brand-600 hover:text-brand-700",
           "dark:text-brand-400 dark:hover:text-brand-300",
@@ -236,7 +236,7 @@ function CalendarEventDetail({ event, onClose }) {
         {event.application_id && (
           <div className="mt-auto border-t border-border-1 px-4 py-4">
             <Button asChild size="sm" className={`${BUTTON_PRIMARY} h-8 w-full dark:focus-visible:outline-1`}>
-              <Link to={`/dashboard?selected=${event.application_id}`}>Open application</Link>
+              <Link to={`/applications/${event.application_id}`}>Open application</Link>
             </Button>
           </div>
         )}

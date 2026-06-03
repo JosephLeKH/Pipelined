@@ -128,11 +128,11 @@ describe("CalendarEventDetail", () => {
 
     expect(screen.getByRole("link", { name: /acme corp · software engineer/i })).toHaveAttribute(
       "href",
-      "/dashboard?selected=app1"
+      "/applications/app1"
     );
     expect(screen.getByRole("link", { name: /open application/i })).toHaveAttribute(
       "href",
-      "/dashboard?selected=app1"
+      "/applications/app1"
     );
   });
 

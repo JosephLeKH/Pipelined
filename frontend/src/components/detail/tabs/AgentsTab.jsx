@@ -5,6 +5,7 @@ import FileText from "lucide-react/dist/esm/icons/file-text";
 import BookOpen from "lucide-react/dist/esm/icons/book-open";
 import Mail from "lucide-react/dist/esm/icons/mail";
 import MessageSquare from "lucide-react/dist/esm/icons/message-square";
+import Search from "lucide-react/dist/esm/icons/search";
 import Sparkles from "lucide-react/dist/esm/icons/sparkles";
 
 import { useAuth } from "../../../context/AuthContext";
@@ -12,20 +13,19 @@ import AiFitSection from "../../AiFitSection";
 import ApplyPackSection from "../../ApplyPackSection";
 import FollowUpDraftSection from "../../FollowUpDraftSection";
 import { InterviewPrepAgent } from "../../InterviewPrepAgent";
+import JobFinderSection from "../../JobFinderSection";
 import ResumeInsightsSection from "../../ResumeInsightsSection";
 import ThreadSummarySection from "../../ThreadSummarySection";
 import AgentRow from "../AgentRow";
 
 function PinnedFit({ application, hasResume, aiScoresRemainingToday, onUpdate }) {
   return (
-    <div className="p-4">
-      <AiFitSection
-        application={application}
-        hasResume={hasResume}
-        aiScoresRemainingToday={aiScoresRemainingToday}
-        onScoreGenerated={(data) => onUpdate(data)}
-      />
-    </div>
+    <AiFitSection
+      application={application}
+      hasResume={hasResume}
+      aiScoresRemainingToday={aiScoresRemainingToday}
+      onScoreGenerated={(data) => onUpdate(data)}
+    />
   );
 }
 
@@ -34,19 +34,27 @@ function AgentsTab({ application, onUpdate, agentStates, expandFollowUpDraft = f
   const hasResume = Boolean(user?.has_resume);
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col gap-6">
       <PinnedFit
         application={application}
         hasResume={hasResume}
         aiScoresRemainingToday={user?.ai_scores_remaining_today}
         onUpdate={onUpdate}
       />
-      <div className="border-t border-border-1 px-4 pb-2 pt-3">
-        <h3 className="text-[0.625rem] font-semibold uppercase tracking-wider text-text-3">
+      <div>
+        <h3 className="mb-3 text-[0.625rem] font-semibold uppercase tracking-wider text-text-3">
           Agents
         </h3>
-      </div>
-      <ul className="border-t border-border-1">
+        <ul className="overflow-hidden rounded-lg border border-border-1">
+        <AgentRow
+          rowId="agent-job-finder"
+          icon={Search}
+          title="Job Finder"
+          state={agentStates.job_finder.state}
+          summary={agentStates.job_finder.summary}
+        >
+          <JobFinderSection bare application={application} onUpdate={onUpdate} />
+        </AgentRow>
         <AgentRow
           rowId="agent-apply-pack"
           icon={FileText}
@@ -114,7 +122,8 @@ function AgentsTab({ application, onUpdate, agentStates, expandFollowUpDraft = f
         >
           <FollowUpDraftSection bare application={application} autoExpand={expandFollowUpDraft} />
         </AgentRow>
-      </ul>
+        </ul>
+      </div>
     </div>
   );
 }

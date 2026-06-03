@@ -50,7 +50,7 @@ describe("groupAgentEntriesByDate", () => {
 describe("getAgentActivityHref", () => {
   it("should link to dashboard when application_id is present", () => {
     expect(getAgentActivityHref({ application_id: "abc123", agent_type: "fit" }))
-      .toBe("/dashboard?selected=abc123");
+      .toBe("/applications/abc123");
   });
 
   it("should link to pending inbox for autopilot without application", () => {
