@@ -4,6 +4,8 @@ from datetime import datetime, timedelta, timezone
 
 from bson import ObjectId
 
+from seed.extras import extras_for
+
 
 DEMO_MARKER = "__demo__"
 
@@ -34,6 +36,7 @@ def build_openai_offer(uid: ObjectId, stages: list[str]) -> dict:
         "created_at": now,
         "updated_at": now,
         DEMO_MARKER: True,
+        **extras_for("OpenAI"),
         "role_title": "Member of Technical Staff",
         "company": "OpenAI",
         "normalised_company": "openai",
@@ -82,9 +85,18 @@ def build_demo_applications(uid: ObjectId, stages: list[str]) -> list[dict]:
     """Return 8 hardcoded application docs ready for insert_many.
 
     Spans every default stage and includes notes, fit scores, tags, follow-up
-    dates, location, and offer details where appropriate. Includes two Offer-
-    stage apps (Anthropic, OpenAI) so the comparison page has real content.
+    dates, location, source URL, job description, and offer details where
+    appropriate. Includes two Offer-stage apps (Anthropic, OpenAI) so the
+    comparison page has real content.
     """
+    docs = _build_demo_applications_raw(uid, stages)
+    for doc in docs:
+        for key, value in extras_for(doc["company"]).items():
+            doc.setdefault(key, value)
+    return docs
+
+
+def _build_demo_applications_raw(uid: ObjectId, stages: list[str]) -> list[dict]:
     now = datetime.now(timezone.utc)
     base = {
         "user_id": uid,

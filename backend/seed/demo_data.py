@@ -18,6 +18,7 @@ from seed.applications import (
     build_openai_offer,
 )
 from seed.events import build_demo_events
+from seed.extras import JOB_EXTRAS
 from seed.notifications import build_demo_notifications
 from seed.pending import build_demo_job_listings, build_demo_pending_opportunities
 
@@ -54,6 +55,51 @@ async def _backfill_openai_offer(
 
     await apps.insert_one(build_openai_offer(uid, stages))
     return True
+
+
+async def _backfill_seed_extras(
+    apps: AsyncIOMotorCollection,
+    uid: ObjectId,
+) -> int:
+    """Fill source_url / job_description on seeded apps that lack them.
+
+    Only writes a field when the existing value is missing or empty, so a
+    user's own edits to a seeded app are never clobbered. Returns the count
+    of documents updated.
+    """
+    updated = 0
+    for company, extras in JOB_EXTRAS.items():
+        missing_clauses = [
+            {field: {"$in": [None, ""]}} for field in extras
+        ] + [
+            {field: {"$exists": False}} for field in extras
+        ]
+        doc = await apps.find_one(
+            {
+                "user_id": uid,
+                DEMO_MARKER: True,
+                "company": company,
+                "$or": missing_clauses,
+            },
+            projection={field: 1 for field in extras},
+        )
+        if doc is None:
+            continue
+
+        patch = {
+            field: value
+            for field, value in extras.items()
+            if not doc.get(field)
+        }
+        if not patch:
+            continue
+
+        result = await apps.update_one(
+            {"_id": doc["_id"]},
+            {"$set": patch},
+        )
+        updated += result.modified_count
+    return updated
 
 
 async def _backfill_notification_urls(
@@ -115,6 +161,13 @@ async def seed_demo_data_for_user(user_id: str, stages: list[str]) -> int:
             inserted_openai = await _backfill_openai_offer(apps, uid, stages)
             if inserted_openai:
                 logger.info("demo_openai_offer_backfilled", user_id=user_id)
+            patched_extras = await _backfill_seed_extras(apps, uid)
+            if patched_extras:
+                logger.info(
+                    "demo_seed_extras_backfilled",
+                    user_id=user_id,
+                    apps_patched=patched_extras,
+                )
             fixed = await _backfill_notification_urls(notifications, apps, uid)
             if fixed:
                 logger.info("demo_notification_urls_backfilled", user_id=user_id, fixed=fixed)
