@@ -11,7 +11,19 @@ import FeatureBento from "../components/marketing/FeatureBento";
 import NumberedSection from "../components/marketing/NumberedSection";
 import LandingChangelog from "../components/marketing/LandingChangelog";
 import ExtensionMock from "../components/marketing/ExtensionMock";
+import TodayMock from "../components/marketing/TodayMock";
+import ApplyPackMock from "../components/marketing/ApplyPackMock";
+import MockInterviewMock from "../components/marketing/MockInterviewMock";
+import AnalyticsMock from "../components/marketing/AnalyticsMock";
 import { LANDING_SECTIONS } from "../components/marketing/landingSections";
+
+const SECTION_MOCKS = {
+  capture: <ExtensionMock />,
+  plan: <TodayMock />,
+  apply: <ApplyPackMock />,
+  prep: <MockInterviewMock />,
+  review: <AnalyticsMock />,
+};
 
 function LandingPage() {
   const { user } = useAuth();
@@ -28,7 +40,7 @@ function LandingPage() {
           <NumberedSection
             key={section.id}
             {...section}
-            customScreenshot={section.id === "capture" ? <ExtensionMock /> : undefined}
+            customScreenshot={SECTION_MOCKS[section.id]}
           />
         ))}
         <LandingChangelog />
