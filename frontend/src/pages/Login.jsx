@@ -19,7 +19,10 @@ function Login() {
       <div className="flex flex-col">
         <div className="order-1">
           <h1 className={AUTH_HEADLINE}>Welcome back</h1>
-          <p className={`${AUTH_SUBHEAD} mb-8`}>Log in to keep your search moving</p>
+          <p className={AUTH_SUBHEAD}>Log in to keep your search moving</p>
+          <p className="mb-8 mt-2 text-xs text-text-3">
+            Beta access is limited to <span className="font-medium text-text-2">@stanford.edu</span> emails for now.
+          </p>
         </div>
 
         <div className="order-4">
