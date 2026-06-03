@@ -71,7 +71,7 @@ function NotificationItem({ notification, onNavigate }) {
       <button
         type="button"
         onClick={handleClick}
-        className="flex h-14 w-full items-start gap-3 border-b border-border-1 bg-surface-0 px-4 py-3 text-left hover:bg-surface-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 focus-visible:outline-offset-[-2px] dark:focus-visible:outline-1"
+        className="flex w-full items-start gap-3 border-b border-border-1 bg-surface-0 px-4 py-3 text-left hover:bg-surface-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 focus-visible:outline-offset-[-2px] dark:focus-visible:outline-1"
       >
         <Icon className={`h-4 w-4 shrink-0 mt-0.5 ${iconColor}`} aria-hidden="true" />
         <div className="min-w-0 flex-1">
