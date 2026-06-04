@@ -3,4 +3,7 @@ asyncio_mode = "strict"
 asyncio_default_fixture_loop_scope = "session"
 testpaths = ["tests"]
 pythonpath = ["."]
-addopts = "--import-mode=importlib"
+# --timeout=30 prevents hung tests from blowing the CI job (some agentic
+# tests can deadlock on patched async streams). 30s is comfortably above
+# the slowest healthy test (~5s for SSE flows) so it only kills true hangs.
+addopts = "--import-mode=importlib --timeout=30"
