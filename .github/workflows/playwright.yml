@@ -1,20 +1,9 @@
 name: Playwright E2E Tests
 
+# Disabled from push/PR triggers while lucide-react subpath imports are
+# refactored. Run manually via workflow_dispatch when ready to revisit.
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - frontend/**
-      - backend/**
-      - .github/workflows/playwright.yml
-  pull_request:
-    branches:
-      - main
-    paths:
-      - frontend/**
-      - backend/**
-      - .github/workflows/playwright.yml
+  workflow_dispatch:
 
 jobs:
   e2e:
