@@ -16,10 +16,24 @@ TEST_CSRF_TOKEN = "a" * 64  # 32-byte equivalent; matches cookie + header
 
 @pytest_asyncio.fixture(scope="session", loop_scope="session")
 async def app():
-    """Create the FastAPI app, wipe all collections once, then connect."""
+    """Create the FastAPI app, wipe all collections once, then connect.
+
+    Pins the CSRF token generator to TEST_CSRF_TOKEN so server-issued
+    pipelined_csrf cookies always match the X-CSRF-Token header the test
+    client sends — otherwise tests that extract dict(response.cookies)
+    end up sending a stale random token in the cookie and get 403'd.
+    """
     limiter.enabled = False
     from config import settings as _settings
     _settings.disable_tier_limits = True
+    _settings.disable_email_allowlist = True
+
+    # Pin CSRF token to the static test value so cookie and header always match.
+    from auth import router as auth_router_module
+    from middleware import csrf as csrf_module
+    auth_router_module.generate_csrf_token = lambda: TEST_CSRF_TOKEN
+    csrf_module.generate_csrf_token = lambda: TEST_CSRF_TOKEN
+
     application = create_app(testing=True)
     await connect()
     await ensure_indexes()

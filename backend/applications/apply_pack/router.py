@@ -41,7 +41,7 @@ async def generate_apply_pack(
     try:
         # Validate application before streaming
         app_doc = await apply_pack_service._fetch_application(user_id, app_id)
-        job_description = app_doc.get("job_description", "").strip()
+        job_description = (app_doc.get("job_description") or "").strip()
         if not job_description:
             raise MissingJobDescriptionError
         resume_text = (await apply_pack_service._fetch_resume_text(user_id)).strip()
@@ -65,10 +65,16 @@ async def generate_apply_pack(
         try:
             pack = await apply_pack_service.generate_apply_pack(user_id, app_id)
             return {"data": pack.model_dump()}
-        except (AIQuotaExceededError, OpenRouterError) as exc:
+        except AIQuotaExceededError as exc:
             raise HTTPException(
-                status_code=429 if isinstance(exc, AIQuotaExceededError) else 503,
-                detail={"code": "ai_error", "message": str(exc)},
+                status_code=429,
+                detail={"code": "ai_quota_exceeded", "message": f"AI quota exceeded: {exc}"},
+                headers={"Retry-After": "60"},
+            )
+        except OpenRouterError as exc:
+            raise HTTPException(
+                status_code=503,
+                detail={"code": "AI_NOT_CONFIGURED", "message": str(exc)},
             )
         except Exception:
             logger.exception("apply_pack_json_error", app_id=app_id)

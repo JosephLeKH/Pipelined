@@ -91,23 +91,19 @@ def test_compute_cache_key_differs_by_model():
 
 
 async def test_cache_miss_calls_openai(app, monkeypatch):
-    """A cache miss triggers an OpenAI call and stores the result."""
-    monkeypatch.setattr("parsing.fit_scorer.settings.openai_api_key", "test-key")
-    monkeypatch.setattr("parsing.fit_scorer.settings.openai_model", "gpt-4o-mini")
+    """A cache miss triggers an OpenRouter call and stores the result."""
+    monkeypatch.setattr("parsing.fit_scorer.settings.openrouter_api_key", "test-key")
+    monkeypatch.setattr("parsing.fit_scorer.settings.openrouter_default_model", "gpt-4o-mini")
 
-    mock_create = AsyncMock(
+    mock_completion = AsyncMock(
         return_value=_make_openai_response(json.dumps(VALID_FIT_PAYLOAD))
     )
-    with patch("parsing.fit_scorer._get_client") as mock_client_fn:
-        mock_client = MagicMock()
-        mock_client.chat.completions.create = mock_create
-        mock_client_fn.return_value = mock_client
-
+    with patch("parsing.fit_scorer.chat_completion_with_fallback", mock_completion):
         from parsing.fit_scorer import score_fit
         result = await score_fit("Python engineer resume.", "Backend engineer at Google.")
 
     assert result["fit_score"] == 78
-    mock_create.assert_called_once()
+    mock_completion.assert_called_once()
 
     # Verify stored in cache
     cache_key = compute_cache_key("gpt-4o-mini", "Python engineer resume."[:500] + "" + "")
@@ -117,24 +113,20 @@ async def test_cache_miss_calls_openai(app, monkeypatch):
 
 
 async def test_cache_hit_skips_openai(app, monkeypatch):
-    """A cache hit returns the stored response without calling OpenAI."""
-    monkeypatch.setattr("parsing.fit_scorer.settings.openai_api_key", "test-key")
-    monkeypatch.setattr("parsing.fit_scorer.settings.openai_model", "gpt-4o-mini")
+    """A cache hit returns the stored response without calling OpenRouter."""
+    monkeypatch.setattr("parsing.fit_scorer.settings.openrouter_api_key", "test-key")
+    monkeypatch.setattr("parsing.fit_scorer.settings.openrouter_default_model", "gpt-4o-mini")
 
     cache_key = compute_cache_key("gpt-4o-mini", "unique resume for hit test"[:500])
     await store_response(cache_key, VALID_FIT_PAYLOAD, "gpt-4o-mini", 50, 100)
 
-    mock_create = AsyncMock()
-    with patch("parsing.fit_scorer._get_client") as mock_client_fn:
-        mock_client = MagicMock()
-        mock_client.chat.completions.create = mock_create
-        mock_client_fn.return_value = mock_client
-
+    mock_completion = AsyncMock()
+    with patch("parsing.fit_scorer.chat_completion_with_fallback", mock_completion):
         from parsing.fit_scorer import score_fit
         result = await score_fit("unique resume for hit test", "some job description")
 
     assert result["fit_score"] == 78
-    mock_create.assert_not_called()
+    mock_completion.assert_not_called()
 
 
 # ---------------------------------------------------------------------------
@@ -228,16 +220,12 @@ async def test_get_ai_scores_remaining_decrements_correctly():
 
 async def test_budget_cap_returns_none_when_exceeded(app, monkeypatch):
     """score_fit returns null values when the monthly budget is exceeded."""
-    monkeypatch.setattr("parsing.fit_scorer.settings.openai_api_key", "test-key")
-    monkeypatch.setattr("parsing.fit_scorer.settings.openai_model", "gpt-4o-mini")
+    monkeypatch.setattr("parsing.fit_scorer.settings.openrouter_api_key", "test-key")
+    monkeypatch.setattr("parsing.fit_scorer.settings.openrouter_default_model", "gpt-4o-mini")
     monkeypatch.setattr("parsing.ai_cache.settings.openai_monthly_budget_usd", 0.0)
 
-    mock_create = AsyncMock()
-    with patch("parsing.fit_scorer._get_client") as mock_client_fn:
-        mock_client = MagicMock()
-        mock_client.chat.completions.create = mock_create
-        mock_client_fn.return_value = mock_client
-
+    mock_completion = AsyncMock()
+    with patch("parsing.fit_scorer.chat_completion_with_fallback", mock_completion):
         # Seed a budget record above the cap
         if database.db is not None:
             month = datetime.now(timezone.utc).strftime("%Y-%m")
@@ -251,7 +239,7 @@ async def test_budget_cap_returns_none_when_exceeded(app, monkeypatch):
         result = await score_fit("Budget exceeded resume.", "Any job.")
 
     assert result["fit_score"] is None
-    mock_create.assert_not_called()
+    mock_completion.assert_not_called()
 
 
 async def test_check_budget_returns_true_when_under_limit(monkeypatch):

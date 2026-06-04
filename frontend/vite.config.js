@@ -42,5 +42,9 @@ export default defineConfig({
     setupFiles: ["./src/test/setup.js"],
     globals: true,
     exclude: ["e2e/**", "node_modules/**"],
+    // CI runners are slower than dev machines. 10s per test prevents waitFor
+    // flakes on the multi-step CsvImportModal flows without masking real hangs.
+    testTimeout: 10_000,
+    hookTimeout: 10_000,
   },
 });

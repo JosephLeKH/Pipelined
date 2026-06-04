@@ -17,12 +17,36 @@ from applications.apply_pack.service import (
 import database
 
 
-@pytest.mark.asyncio
+def _patch_apply_pack_prereqs():
+    """Patch _fetch_application and _fetch_resume_text so router validation passes
+    and we exercise the generate_apply_pack code path under test."""
+    return [
+        patch.object(
+            apply_pack_service,
+            "_fetch_application",
+            AsyncMock(return_value={
+                "_id": ObjectId(),
+                "user_id": ObjectId(),
+                "role_title": "Test Role",
+                "company": "Test Co",
+                "job_description": "We need a backend engineer with Python.",
+            }),
+        ),
+        patch.object(
+            apply_pack_service,
+            "_fetch_resume_text",
+            AsyncMock(return_value="Python engineer with 3 years of experience."),
+        ),
+    ]
+
+
+@pytest.mark.asyncio(loop_scope="session")
 async def test_apply_pack_router_handles_ai_quota_exceeded(client, test_user, test_app_id):
     """POST /api/applications/{id}/apply-pack returns 429 on AIQuotaExceededError."""
     _, cookies = test_user
 
-    with patch.object(
+    fetch_app, fetch_resume = _patch_apply_pack_prereqs()
+    with fetch_app, fetch_resume, patch.object(
         apply_pack_service,
         "generate_apply_pack",
         side_effect=AIQuotaExceededError(),
@@ -30,6 +54,7 @@ async def test_apply_pack_router_handles_ai_quota_exceeded(client, test_user, te
         response = await client.post(
             f"/api/applications/{test_app_id}/apply-pack",
             cookies=cookies,
+            headers={"Accept": "application/json"},
         )
 
     assert response.status_code == 429
@@ -39,12 +64,13 @@ async def test_apply_pack_router_handles_ai_quota_exceeded(client, test_user, te
     assert response.headers.get("Retry-After") == "60"
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio(loop_scope="session")
 async def test_apply_pack_router_handles_openrouter_error(client, test_user, test_app_id):
     """POST /api/applications/{id}/apply-pack returns 503 on OpenRouterError."""
     _, cookies = test_user
 
-    with patch.object(
+    fetch_app, fetch_resume = _patch_apply_pack_prereqs()
+    with fetch_app, fetch_resume, patch.object(
         apply_pack_service,
         "generate_apply_pack",
         side_effect=OpenRouterError("No provider configured"),
@@ -52,6 +78,7 @@ async def test_apply_pack_router_handles_openrouter_error(client, test_user, tes
         response = await client.post(
             f"/api/applications/{test_app_id}/apply-pack",
             cookies=cookies,
+            headers={"Accept": "application/json"},
         )
 
     assert response.status_code == 503
@@ -59,7 +86,7 @@ async def test_apply_pack_router_handles_openrouter_error(client, test_user, tes
     assert data["detail"]["code"] == "AI_NOT_CONFIGURED"
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio(loop_scope="session")
 async def test_background_fit_score_timeout_persists_error_status(test_user, test_app_id):
     """_score_and_update persists fit_score_status: 'error' on timeout."""
     from applications.service_ai import _score_and_update
@@ -68,19 +95,13 @@ async def test_background_fit_score_timeout_persists_error_status(test_user, tes
     user_id = ObjectId(user_doc["id"])
     app_id = ObjectId(test_app_id)
 
-    # Create a test application document
+    # The test_app_id fixture already created the application document.
     apps = database.db["applications"]
-    await apps.insert_one({
-        "_id": app_id,
-        "user_id": user_id,
-        "role_title": "Test Role",
-        "company": "Test Company",
-    })
 
     with patch("applications.service_ai.score_fit", side_effect=asyncio.TimeoutError()):
         await _score_and_update(
-            str(user_id),
             str(app_id),
+            str(user_id),
             "test resume",
             "test jd",
         )
@@ -92,7 +113,7 @@ async def test_background_fit_score_timeout_persists_error_status(test_user, tes
     assert app_doc.get("fit_score_error_at") is not None
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio(loop_scope="session")
 async def test_background_fit_score_quota_error_persists_error_status(test_user, test_app_id):
     """_score_and_update persists fit_score_status: 'error' on QuotaExceededError."""
     from applications.service_ai import _score_and_update
@@ -102,19 +123,13 @@ async def test_background_fit_score_quota_error_persists_error_status(test_user,
     user_id = ObjectId(user_doc["id"])
     app_id = ObjectId(test_app_id)
 
-    # Create a test application document
+    # The test_app_id fixture already created the application document.
     apps = database.db["applications"]
-    await apps.insert_one({
-        "_id": app_id,
-        "user_id": user_id,
-        "role_title": "Test Role",
-        "company": "Test Company",
-    })
 
     with patch("applications.service_ai.score_fit", side_effect=QuotaExceededError(20)):
         await _score_and_update(
-            str(user_id),
             str(app_id),
+            str(user_id),
             "test resume",
             "test jd",
         )
@@ -126,7 +141,7 @@ async def test_background_fit_score_quota_error_persists_error_status(test_user,
     assert app_doc.get("fit_score_error_at") is not None
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio(loop_scope="session")
 async def test_background_fit_score_success_persists_complete_status(test_user, test_app_id):
     """_score_and_update persists fit_score_status: 'complete' on success."""
     from applications.service_ai import _score_and_update
@@ -135,14 +150,8 @@ async def test_background_fit_score_success_persists_complete_status(test_user, 
     user_id = ObjectId(user_doc["id"])
     app_id = ObjectId(test_app_id)
 
-    # Create a test application document
+    # The test_app_id fixture already created the application document.
     apps = database.db["applications"]
-    await apps.insert_one({
-        "_id": app_id,
-        "user_id": user_id,
-        "role_title": "Test Role",
-        "company": "Test Company",
-    })
 
     fit_result = {
         "fit_score": 78,
@@ -153,8 +162,8 @@ async def test_background_fit_score_success_persists_complete_status(test_user, 
 
     with patch("applications.service_ai.score_fit", return_value=fit_result):
         await _score_and_update(
-            str(user_id),
             str(app_id),
+            str(user_id),
             "test resume",
             "test jd",
         )

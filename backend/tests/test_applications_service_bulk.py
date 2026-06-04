@@ -8,7 +8,7 @@ import pytest
 from applications.service_bulk import schedule_bulk_auto_scores
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio(loop_scope="session")
 async def test_schedule_bulk_auto_scores_runs_all() -> None:
     """schedule_bulk_auto_scores invokes auto_score_fit for each application."""
     ids = [f"app-{i}" for i in range(12)]
@@ -17,7 +17,7 @@ async def test_schedule_bulk_auto_scores_runs_all() -> None:
         assert mock_auto.await_count == 12
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio(loop_scope="session")
 async def test_schedule_bulk_auto_scores_empty_list_noop() -> None:
     """schedule_bulk_auto_scores with empty list does nothing."""
     with patch("applications.service_bulk.auto_score_fit", new=AsyncMock()) as mock_auto:
@@ -25,7 +25,7 @@ async def test_schedule_bulk_auto_scores_empty_list_noop() -> None:
         mock_auto.assert_not_called()
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio(loop_scope="session")
 async def test_schedule_bulk_auto_scores_caps_concurrency() -> None:
     """At any instant, no more than 5 auto_score_fit calls run concurrently."""
     in_flight = 0

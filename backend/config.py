@@ -133,6 +133,10 @@ class Settings(BaseSettings):
     # Tier limits — set to True in tests to bypass enforcement
     disable_tier_limits: bool = False
 
+    # Email domain allow-list — set to True in tests so fixtures can register
+    # @example.com users without tripping the Stanford gate.
+    disable_email_allowlist: bool = False
+
     # AI Reasoning / Step Streaming
     reasoning_enabled: bool = True
     reasoning_streaming: bool = True

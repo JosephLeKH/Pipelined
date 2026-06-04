@@ -95,7 +95,7 @@ class _ScriptedLLM:
         return self._scripted.pop(0)
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio(loop_scope="session")
 async def test_agent_retries_after_validation_error_then_succeeds(monkeypatch):
     """A bad first finish() call should trigger a corrective re-prompt and a passing retry."""
     scripted = _ScriptedLLM(
@@ -136,7 +136,7 @@ async def test_agent_retries_after_validation_error_then_succeeds(monkeypatch):
     assert briefing["interview_process"]["rounds"][0]["name"] == "Recruiter screen"
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio(loop_scope="session")
 async def test_agent_gives_up_after_max_validation_retries(monkeypatch):
     """If the model never produces a valid briefing, return an error (no infinite loop)."""
     # _MAX_VALIDATION_RETRIES = 2 → 1 original + 2 retries = 3 bad calls total.
@@ -163,7 +163,7 @@ async def test_agent_gives_up_after_max_validation_retries(monkeypatch):
     assert "Couldn't assemble a valid briefing" in error_events[0]["message"]
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio(loop_scope="session")
 async def test_agent_first_attempt_success_uses_one_llm_call(monkeypatch):
     """Happy path: a valid finish() on the first try should not trigger any retry prompts."""
     scripted = _ScriptedLLM(

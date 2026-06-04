@@ -72,7 +72,13 @@ EMAIL_DOMAIN_NOT_ALLOWED_DETAIL = {
 
 
 def _require_allowed_email_domain(email: str) -> None:
-    """Raise 403 if the email's domain is not in the allow-list."""
+    """Raise 403 if the email's domain is not in the allow-list.
+
+    Bypassed when settings.disable_email_allowlist is True so test fixtures can
+    register @example.com users without tripping the Stanford gate.
+    """
+    if settings.disable_email_allowlist:
+        return
     if not is_email_domain_allowed(email):
         raise HTTPException(status_code=403, detail=EMAIL_DOMAIN_NOT_ALLOWED_DETAIL)
 
