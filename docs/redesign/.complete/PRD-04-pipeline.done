@@ -1,9 +1,0 @@
-# PRD-04-pipeline — complete
-
-- Branch: redesign/prd-04-pipeline
-- Iterations: 14
-- Final commit: e3212d095ec100cca7f5ca33a0f2c34bb1c9f7f8
-- Linear sources cited:
-  - https://linear.app/method — accessible list semantics, dialog naming, visible-label parity for filter triggers
-  - https://windframe.dev/styles/linear — dark-mode muted text contrast, compact header density on desktop
-- Open follow-ups: none
